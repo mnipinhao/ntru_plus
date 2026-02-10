@@ -202,23 +202,26 @@ ushr    v7.16b, v5.16b, #1  // Parallel bit operations
 
 ## 📈 Performance Testing Framework
 
-### **Tools Created**:
-1. **`working_profiler.c`**: Complete KEM operation bottleneck analysis ✅
-2. **`simple_makefile`**: Working build system ✅
-3. **`cycle_test.c`**: ARM64 hardware cycle counter profiling
-4. **`performance_test.c`**: Function-level comparison framework
+### **Benchmark Suite** (📁 `ntruplus/bench/`):
+1. **`ntruplus_bottleneck_profiler.c`**: Complete KEM operation bottleneck analysis ✅
+2. **`function_speed_test.c`**: Individual function performance statistics ✅
+3. **`Makefile`**: Clean build system with multiple targets ✅
+4. **`README.md`**: Complete benchmark suite documentation ✅
 
 ### **Usage**:
 ```bash
-# Build and run the working profiler
-make -f simple_makefile run
+# Navigate to benchmark directory
+cd ntruplus/bench/
 
-# Output: Complete cost-benefit analysis with Amdahl's Law calculations
+# Run main bottleneck analysis
+make run
+
+# Run all benchmarks
+make run-all
+
+# Get help
+make help
 ```
-
-### **Files NOT Needed** (can be deleted):
-- ❌ `ntruplus_profiler.c` - Over-engineered, doesn't compile
-- ❌ `profiler_makefile` - References broken profiler file
 
 ---
 
@@ -272,15 +275,21 @@ make -f simple_makefile run
 
 ### **Build and Run Analysis**:
 ```bash
-# Clone and navigate to project
-cd ntruplus
+# Navigate to benchmark suite
+cd ntruplus/bench/
 
-# Run the working profiler (updated command)
-make -f simple_makefile run
+# Run main bottleneck analysis
+make run
 
 # Expected output: Cost-benefit analysis with actual cycle counts
-# KeyGen: 677 cycles, Encap: 308 cycles, Decap: 273 cycles
+# KeyGen: ~695 cycles, Encap: ~308 cycles, Decap: ~274 cycles
 # Specialized functions: < 2.2% contribution
+
+# For detailed function analysis
+make function-test
+
+# For help with all available benchmarks
+make help
 ```
 
 ### **Test Environment Verification**:
