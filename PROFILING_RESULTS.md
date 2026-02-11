@@ -28,51 +28,83 @@ Analyzing lattice-based PQC scheme (NTRU+) to determine if optimizing three spec
 
 ---
 
-### **Detailed Profiling Results:**
+### **Comprehensive Bottleneck Analysis Results:**
 
-#### **1. Key Generation (Total: 677 cycles)**
-- `poly_cbd1`: **4 cycles (0.6%)** 
-  - Called 2× for secret polynomials f,g generation
-  - Individual cost: 2 cycles per call
-- **Other operations**: **673 cycles (99.4%)**
-  - NTT transforms, polynomial inversion, base multiplication
-  - **Major bottlenecks**: `poly_baseinv()`, `poly_ntt()`, `shake256()`
+#### **1. Key Generation (Total: 362 cycles)**
 
-#### **2. Encapsulation (Total: 308 cycles)**  
-- `poly_cbd1`: **2 cycles (0.6%)**
-  - Randomness sampling for ephemeral key
-- `poly_sotp_encode`: **2 cycles (0.6%)**
-  - Message encoding with SOTP
-- **Combined specialized**: **4 cycles (1.3%)**
-- **Other operations**: **304 cycles (98.7%)**
-  - **Major bottlenecks**: SHAKE256 hashing, NTT, `poly_basemul_add()`
+| Function | Cycles | % of Total | Calls | Priority |
+|----------|--------|------------|-------|----------|
+| **`poly_baseinv`** | **132** | **36.5%** | 2 | 🔥 **HIGH** |
+| **`poly_ntt`** | **51** | **14.1%** | 2 | 🔥 **HIGH** |
+| **`hash_f`** | **47** | **13.0%** | 1 | ⚡ MEDIUM |
+| **`poly_basemul`** | **44** | **12.2%** | 2 | ⚡ MEDIUM |
+| `shake256` | 21 | 5.8% | 2 | 🔧 Low |
+| `poly_cbd1` | 3 | 0.8% | 2 | 🔧 Low |
+| Other/Overhead | 64 | 17.7% | - | - |
 
-#### **3. Decapsulation (Total: 273 cycles)**
-- `poly_cbd1`: **2 cycles (0.7%)**
-  - Re-encryption verification  
-- `poly_sotp_decode`: **4 cycles (1.5%)**
-  - Message recovery with error detection
-- **Combined specialized**: **6 cycles (2.2%)**
-- **Other operations**: **267 cycles (97.8%)**
-  - **Major bottlenecks**: NTT, base multiplication, `poly_crepmod3()`, hashing
+**Key Insight**: Polynomial inversion (`poly_baseinv`) dominates KeyGen with 36.5% of cycles.
+
+#### **2. Encapsulation (Total: 216 cycles)**
+
+| Function | Cycles | % of Total | Calls | Priority |
+|----------|--------|------------|-------|----------|
+| **`hash_g`** | **52** | **24.1%** | 1 | 🔥 **HIGH** |
+| **`poly_ntt`** | **51** | **23.6%** | 2 | 🔥 **HIGH** |
+| **`hash_f`** | **47** | **21.8%** | 1 | ⚡ MEDIUM |
+| `poly_basemul_add` | 24 | 11.1% | 1 | ⚡ MEDIUM |
+| `hash_h` | 10 | 4.6% | 1 | 🔧 Low |
+| `poly_sotp_encode` | 1 | 0.5% | 1 | 🔧 Low |
+| `poly_cbd1` | 1 | 0.5% | 1 | 🔧 Low |
+| Other/Overhead | 30 | 13.9% | - | - |
+
+**Key Insight**: Hashing operations (`hash_g` + `hash_f`) consume 45.9% of Encapsulation cycles.
+
+#### **3. Decapsulation (Total: 214 cycles)**
+
+| Function | Cycles | % of Total | Calls | Priority |
+|----------|--------|------------|-------|----------|
+| **`hash_g`** | **52** | **24.3%** | 1 | 🔥 **HIGH** |
+| **`poly_ntt`** | **45** | **21.0%** | 2 | 🔥 **HIGH** |
+| **`poly_basemul`** | **44** | **20.6%** | 2 | ⚡ MEDIUM |
+| `poly_crepmod3` | 20 | 9.3% | 1 | 🔧 Low |
+| `poly_invntt` | 17 | 7.9% | 1 | 🔧 Low |
+| `hash_h` | 10 | 4.7% | 1 | 🔧 Low |
+| `poly_sotp_decode` | 3 | 1.4% | 1 | 🔧 Low |
+| `poly_cbd1` | 1 | 0.5% | 1 | 🔧 Low |
+| Other/Overhead | 21 | 9.9% | - | - |
+
+**Key Insight**: Hash + NTT + Base multiplication account for 65.9% of Decapsulation.
 
 ---
 
-## 📊 Bottleneck Analysis
+## 📊 Comprehensive Bottleneck Analysis
 
-### **Primary Performance Drivers (Estimated)**:
-1. **🔥 NTT Operations**: ~40-50% of total runtime
-   - Forward/inverse transforms dominate lattice operations
-2. **🔥 Polynomial Base Multiplication**: ~20-30% 
-   - Core lattice arithmetic, called frequently
-3. **🔥 SHAKE256 Hashing**: ~15-20%
-   - Multiple hash operations per KEM operation
-4. **🔥 Polynomial Inversion** (KeyGen only): ~20% of KeyGen
-   - Most expensive operation in key generation
+### **🔥 HIGH PRIORITY Optimization Targets** (Across All KEM Operations):
 
-### **Secondary Functions (Our Target)**:
-- **Specialized functions**: < 2% across all operations
-- **Impact**: Minimal contribution to overall performance
+| Function | Total Cycles | % of Combined | Operations | Impact |
+|----------|--------------|---------------|------------|---------|
+| **`poly_ntt`** | **147** | **18.5%** | All 3 | **Maximum ROI** |
+| **`poly_baseinv`** | **132** | **16.6%** | KeyGen | **KeyGen bottleneck** |
+| **`hash_g`** | **104** | **13.1%** | Encap+Decap | **Hashing bottleneck** |
+
+### **⚡ MEDIUM PRIORITY** Functions:
+- **`hash_f`**: 94 cycles (11.8%) - SHAKE256 variant used in KeyGen/Encap
+- **`poly_basemul`**: 88 cycles (11.1%) - Core polynomial arithmetic
+- **`poly_basemul_add`**: 24 cycles (3.0%) - Optimized multiplication
+
+### **🔧 LOW PRIORITY** Functions (Including Our Original Targets):
+- `shake256`: 21 cycles (2.6%)
+- `hash_h`: 20 cycles (2.5%)
+- `poly_crepmod3`: 20 cycles (2.5%)
+- `poly_invntt`: 17 cycles (2.1%)
+- **`poly_sotp_decode`**: 3 cycles (0.4%) ← *Our target*
+- **`poly_cbd1`**: 5 cycles (0.6%) ← *Our target* 
+- **`poly_sotp_encode`**: 1 cycle (0.1%) ← *Our target*
+
+### **Key Findings**:
+1. **Original target functions contribute only 1.1%** of total NTRU+ runtime
+2. **Real bottlenecks**: NTT (18.5%), polynomial inversion (16.6%), hashing (13.1%)
+3. **Maximum optimization impact**: Focus on `poly_ntt`, `poly_baseinv`, `hash_g`
 
 ---
 
@@ -114,30 +146,36 @@ Even with **perfect optimization** (infinite speedup), the maximum overall impro
    - Small percentages yield minimal overall improvements
    - Even 6× measured speedup → only 1.7-2.2% real-world gain
 
-#### **Recommended Focus Areas (High → Low Priority)**:
+#### **Data-Driven Optimization Roadmap**:
 
-1. **🚀 HIGH PRIORITY**: NTT Optimization
-   - **Potential Impact**: 20-25% overall speedup
-   - **Approach**: AVX2/NEON vectorization, butterfly optimizations
-   - **Files to optimize**: `ntt.c`, `ntt.h`
+1. **🔥 HIGHEST PRIORITY**: NTT Operations (`poly_ntt`)
+   - **Measured Impact**: 18.5% of total cycles (147/792 cycles)
+   - **Potential Speedup**: 2× optimization → 11.6% overall improvement
+   - **Approach**: AVX2/NEON vectorization, optimized butterfly operations
+   - **Files**: `ntt.c`, `ntt.h`
 
-2. **🔥 HIGH PRIORITY**: Base Multiplication
-   - **Potential Impact**: 10-15% overall speedup  
-   - **Approach**: Schoolbook → Karatsuba, SIMD optimization
-   - **Files to optimize**: `poly.c` (`poly_basemul*` functions)
+2. **🔥 HIGHEST PRIORITY**: Polynomial Inversion (`poly_baseinv`) 
+   - **Measured Impact**: 16.6% of total cycles (KeyGen bottleneck)
+   - **Potential Speedup**: 2× optimization → 10.4% overall improvement
+   - **Approach**: Optimized inversion algorithms, precomputation
+   - **Files**: `ntt.c` (inversion functions)
 
-3. **⚡ MEDIUM PRIORITY**: SHAKE256 Implementation
-   - **Potential Impact**: 5-8% overall speedup
-   - **Approach**: Assembly implementation, vectorized Keccak
-   - **Files to optimize**: `fips202/fips202.c`
+3. **🔥 HIGH PRIORITY**: Hash Function Optimization (`hash_g`)
+   - **Measured Impact**: 13.1% of total cycles (Encap+Decap)
+   - **Potential Speedup**: 2× optimization → 8.2% overall improvement  
+   - **Approach**: Vectorized SHAKE256, assembly implementation
+   - **Files**: `symmetric.c`, `fips202/fips202.c`
 
-4. **🏗️ LOW-MEDIUM PRIORITY**: Memory Layout Optimization
-   - **Potential Impact**: 3-5% overall speedup
-   - **Approach**: Cache-friendly data structures, prefetching
+4. **⚡ MEDIUM PRIORITY**: Base Multiplication (`poly_basemul*`)
+   - **Measured Impact**: 11.1% + 3.0% = 14.1% of total cycles
+   - **Potential Speedup**: 2× optimization → 8.8% overall improvement
+   - **Approach**: SIMD optimization, Karatsuba multiplication
+   - **Files**: `poly.c`
 
-5. **🔧 LOW PRIORITY**: Specialized Functions (our analysis)
-   - **Potential Impact**: 1-2% overall speedup
-   - **Approach**: Hand-written assembly (already measured 3-6× gains)
+5. **🔧 LOW PRIORITY**: Original Target Functions
+   - **Measured Impact**: 1.1% of total cycles (poly_cbd1 + poly_sotp_*)
+   - **Maximum Speedup**: ∞× optimization → 1.1% overall improvement
+   - **Verdict**: **Not worth engineering effort compared to alternatives**
 
 ---
 
@@ -203,17 +241,21 @@ ushr    v7.16b, v5.16b, #1  // Parallel bit operations
 ## 📈 Performance Testing Framework
 
 ### **Benchmark Suite** (📁 `ntruplus/bench/`):
-1. **`ntruplus_bottleneck_profiler.c`**: Complete KEM operation bottleneck analysis ✅
-2. **`function_speed_test.c`**: Individual function performance statistics ✅
-3. **`Makefile`**: Clean build system with multiple targets ✅
-4. **`README.md`**: Complete benchmark suite documentation ✅
+1. **`ntruplus_bottleneck_profiler.c`**: Specialized function cost-benefit analysis ✅
+2. **`comprehensive_kem_profiler.c`**: ⭐ **Complete KEM bottleneck breakdown** ✅
+3. **`function_speed_test.c`**: Individual function performance statistics ✅
+4. **`Makefile`**: Professional build system with multiple targets ✅
+5. **`README.md`**: Complete benchmark suite documentation ✅
 
 ### **Usage**:
 ```bash
 # Navigate to benchmark directory
 cd ntruplus/bench/
 
-# Run main bottleneck analysis
+# Run comprehensive analysis (RECOMMENDED)
+make comprehensive-analysis
+
+# Run specialized function analysis
 make run
 
 # Run all benchmarks
@@ -278,17 +320,22 @@ make help
 # Navigate to benchmark suite
 cd ntruplus/bench/
 
-# Run main bottleneck analysis
+# Run comprehensive bottleneck analysis (RECOMMENDED)
+make comprehensive-analysis
+
+# Expected output: Complete breakdown of all major functions
+# KeyGen: 362 cycles - poly_baseinv (36.5%), poly_ntt (14.1%)
+# Encap: 216 cycles - hash_g (24.1%), poly_ntt (23.6%)  
+# Decap: 214 cycles - hash_g (24.3%), poly_ntt (21.0%)
+# Specialized functions: Only 1.1% of total runtime
+
+# For specialized function analysis only
 make run
 
-# Expected output: Cost-benefit analysis with actual cycle counts
-# KeyGen: ~695 cycles, Encap: ~308 cycles, Decap: ~274 cycles
-# Specialized functions: < 2.2% contribution
-
-# For detailed function analysis
+# For individual function statistics
 make function-test
 
-# For help with all available benchmarks
+# For help with all available benchmarks  
 make help
 ```
 

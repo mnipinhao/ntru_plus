@@ -3,12 +3,12 @@
 
 CC = gcc
 CFLAGS = -O3 -march=native -Wall -Wextra -std=c99
-INCLUDES = -I../../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768 \
-           -I../../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768/fips202
+INCLUDES = -I../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768 \
+           -I../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768/fips202
 LDFLAGS = -lm
 
 # NTRU+ source files (relative to bench directory)
-NTRU_ROOT = ../../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768
+NTRU_ROOT = ../ntruplus-KpqC-Final/Optimized_Implementation/NTRU+768
 NTRU_SOURCES = $(NTRU_ROOT)/kem.c \
                $(NTRU_ROOT)/poly.c \
                $(NTRU_ROOT)/ntt.c \
@@ -19,6 +19,7 @@ NTRU_SOURCES = $(NTRU_ROOT)/kem.c \
 # Main benchmark targets
 BOTTLENECK_PROFILER = ntruplus_bottleneck_profiler
 INDIVIDUAL_FUNCTION_TEST = function_speed_test
+COMPREHENSIVE_PROFILER = comprehensive_kem_profiler
 ASSEMBLY_COMPARISON = assembly_vs_c_comparison
 
 # Default target
@@ -40,6 +41,15 @@ function-test: $(INDIVIDUAL_FUNCTION_TEST)
 $(INDIVIDUAL_FUNCTION_TEST): function_speed_test.c
 	$(CC) $(CFLAGS) $(INCLUDES) $< $(NTRU_SOURCES) -o $@ $(LDFLAGS)
 
+# Comprehensive KEM operation analysis (detailed breakdown of all major functions)
+comprehensive-analysis: $(COMPREHENSIVE_PROFILER)
+	@echo "=== COMPREHENSIVE NTRU+ KEM ANALYSIS ==="
+	@echo "Profiling ALL major functions in KeyGen/Encap/Decap..."
+	./$(COMPREHENSIVE_PROFILER)
+
+$(COMPREHENSIVE_PROFILER): comprehensive_kem_profiler.c
+	$(CC) $(CFLAGS) $(INCLUDES) $< $(NTRU_SOURCES) -o $@ $(LDFLAGS)
+
 # Assembly vs C comparison (if assembly files are available)
 assembly-comparison: $(ASSEMBLY_COMPARISON)
 	./$(ASSEMBLY_COMPARISON)
@@ -51,11 +61,11 @@ $(ASSEMBLY_COMPARISON): assembly_vs_c_comparison.c
 run: bottleneck-analysis
 
 # Run all available benchmarks
-run-all: bottleneck-analysis function-test
+run-all: bottleneck-analysis function-test comprehensive-analysis
 
 # Clean up
 clean:
-	rm -f $(BOTTLENECK_PROFILER) $(INDIVIDUAL_FUNCTION_TEST) $(ASSEMBLY_COMPARISON) *.o
+	rm -f $(BOTTLENECK_PROFILER) $(INDIVIDUAL_FUNCTION_TEST) $(COMPREHENSIVE_PROFILER) $(ASSEMBLY_COMPARISON) *.o
 
 # Help
 help:
@@ -65,6 +75,7 @@ help:
 	@echo "Targets:"
 	@echo "  bottleneck-analysis   - Main cost-benefit analysis (default)"
 	@echo "  function-test         - Individual function speed testing"
+	@echo "  comprehensive-analysis - Detailed breakdown of ALL major functions"
 	@echo "  assembly-comparison   - Compare C vs hand-written assembly"
 	@echo "  run                   - Quick run (same as bottleneck-analysis)"
 	@echo "  run-all              - Run all available benchmarks"
