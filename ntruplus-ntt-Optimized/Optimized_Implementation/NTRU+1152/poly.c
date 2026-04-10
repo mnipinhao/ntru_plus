@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "params.h"
 #include "poly.h"
 #include "ntt.h"
@@ -54,6 +55,7 @@ void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
 		r[3*i+2] = (t[1] >> 4);
 	}
 }
+
 
 /*************************************************
 * Name:        poly_frombytes
@@ -216,25 +218,24 @@ void poly_invntt(poly *r, const poly *a)
 **************************************************/
 int poly_baseinv(poly *r, const poly *a)
 {
-	int16_t den[NTRUPLUS_N / 4];
-
-	for(int i = 0; i < NTRUPLUS_N/8; ++i)
+	for(size_t i = 0; i < NTRUPLUS_N/8; ++i)
 	{
-		if(baseinv_1(r->coeffs + 8*i, den + 2*i, a->coeffs + 8*i, zetas[144 + i]))
+		if(baseinv(r->coeffs + 8*i, a->coeffs + 8*i, zetas[144 + i]))
 		{
 			for (size_t j = 0; j < NTRUPLUS_N; ++j)
 				r->coeffs[j] = 0;
 
 			return 1;
-		}
-	}
+		} 
 
-	fqinv_batch(den);
+		if(baseinv(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, -zetas[144 + i]))
+		{
+			for (size_t j = 0; j < NTRUPLUS_N; ++j)
+				r->coeffs[j] = 0;
 
-	for(int i = 0; i < NTRUPLUS_N/8; ++i)
-	{
-		baseinv_2(r->coeffs + 8*i, den + 2*i);
-	}
+			return 1;
+		} 
+	 }
 
 	return 0;
 }
@@ -251,7 +252,10 @@ int poly_baseinv(poly *r, const poly *a)
 void poly_basemul(poly *r, const poly *a, const poly *b)
 {
 	for(int i = 0; i < NTRUPLUS_N/8; ++i)
+	{
 		basemul(r->coeffs + 8*i, a->coeffs + 8*i, b->coeffs + 8*i, zetas[144 + i]);
+		basemul(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, b->coeffs + 8*i + 4, -zetas[144 + i]);
+	}
 }
 
 /*************************************************
@@ -266,7 +270,10 @@ void poly_basemul(poly *r, const poly *a, const poly *b)
 void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c)
 {
 	for(int i = 0; i < NTRUPLUS_N/8; ++i)
+	{
 		basemul_add(r->coeffs + 8*i, a->coeffs + 8*i, b->coeffs + 8*i, c->coeffs + 8*i, zetas[144 + i]);
+		basemul_add(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, b->coeffs + 8*i + 4, c->coeffs + 8*i + 4, -zetas[144 + i]);
+	}
 }
 
 /*************************************************

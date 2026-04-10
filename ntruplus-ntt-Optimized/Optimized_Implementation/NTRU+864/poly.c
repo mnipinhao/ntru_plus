@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "params.h"
 #include "poly.h"
 #include "ntt.h"
@@ -146,7 +147,6 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N/8], const poly *a, const uint8_t buf
 	uint8_t t1, t2, t3;
 	uint16_t t4;
 	uint32_t r = 0;
-	uint8_t mask;
 
 	for(size_t i = 0; i < NTRUPLUS_N / 8; i++)
 	{
@@ -154,7 +154,7 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N/8], const poly *a, const uint8_t buf
 		t2 = buf[i + NTRUPLUS_N / 8];
 		t3 = 0;
 
-		for(size_t j = 0; j < 8; j++)
+		for(int j = 0; j < 8; j++)
 		{
 			t4 = t2 & 0x1;
 			t4 += a->coeffs[8*i + j];
@@ -171,11 +171,6 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N/8], const poly *a, const uint8_t buf
 
 	r = r >> 1;
 	r = (-(uint32_t)r) >> 31;
-
-	mask = (uint8_t)(r - 1);
-
-	for (size_t i = 0; i < NTRUPLUS_N / 8; i++)
-		msg[i] &= mask;
 
 	return r;
 }
@@ -218,25 +213,24 @@ void poly_invntt(poly *r, const poly *a)
 **************************************************/
 int poly_baseinv(poly *r, const poly *a)
 {
-	int16_t den[NTRUPLUS_N / 3];
-
 	for(int i = 0; i < NTRUPLUS_N/6; ++i)
 	{
-		if(baseinv_1(r->coeffs + 6*i, den + 2*i, a->coeffs + 6*i, zetas[144 + i]))
+		if(baseinv(r->coeffs+6*i, a->coeffs+6*i, zetas[144+i]))
 		{
 			for (size_t j = 0; j < NTRUPLUS_N; ++j)
 				r->coeffs[j] = 0;
 
 			return 1;
 		}
-	}
 
-	fqinv_batch(den);
+		if(baseinv(r->coeffs+6*i+3, a->coeffs+6*i+3, -zetas[144+i]))
+		{
+			for (size_t j = 0; j < NTRUPLUS_N; ++j)
+				r->coeffs[j] = 0;
 
-	for(int i = 0; i < NTRUPLUS_N/6; ++i)
-	{
-		baseinv_2(r->coeffs + 6*i, den + 2*i);
-	}
+			return 1;
+		}
+	 }
 
 	return 0;
 }
@@ -253,7 +247,10 @@ int poly_baseinv(poly *r, const poly *a)
 void poly_basemul(poly *r, const poly *a, const poly *b)
 {
 	for(int i = 0; i < NTRUPLUS_N/6; i++)
+	{
 		basemul(r->coeffs+6*i,   a->coeffs+6*i,   b->coeffs+6*i,    zetas[144+i]);
+		basemul(r->coeffs+6*i+3, a->coeffs+6*i+3, b->coeffs+6*i+3, -zetas[144+i]);
+	}
 }
 
 /*************************************************
@@ -269,7 +266,10 @@ void poly_basemul(poly *r, const poly *a, const poly *b)
 void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c)
 {
 	for(int i = 0; i < NTRUPLUS_N/6; i++)
+	{
 		basemul_add(r->coeffs+6*i,   a->coeffs+6*i,   b->coeffs+6*i,   c->coeffs+6*i,    zetas[144+i]);
+		basemul_add(r->coeffs+6*i+3, a->coeffs+6*i+3, b->coeffs+6*i+3, c->coeffs+6*i+3, -zetas[144+i]);
+	}
 }
 
 /*************************************************
