@@ -42,6 +42,31 @@ const int16_t zetas[192] = {
 	 1221,  -218,   294,  -732, -1095,   892,  1588,  -779
 };
 
+/*
+ * Split the forward twiddles into:
+ *   1) top-level h-branch constants for the x^2 - x + 1 split
+ *   2) radix-3 roots {1, omega, omega^2}
+ *   3) the later binary radix-2 chain (a slice of zetas[])
+ *
+ * The external zetas[] table stays unchanged because poly.c still uses
+ * zetas[96..191] as the current base-ring lambda contract.
+ */
+static const int16_t ntruplus_top_h_branch_twiddles[2] = {
+	-1033,   886
+};
+
+static const int16_t ntruplus_top_h_cubic_roots[2] = {
+	 -682,  -708
+};
+
+static const int16_t ntruplus_top_h_cubic_root_squares[2] = {
+	 -248,   682
+};
+
+static const int16_t ntruplus_radix3_root_powers[3] = {
+	 -147,  -886,  1033
+};
+
 /*************************************************
 * Name:        montgomery_reduce
 *
@@ -142,6 +167,69 @@ static inline int16_t fqinv(int16_t a)
 }
 
 /*************************************************
+* Name:        ntt_top6_good_thomas
+*
+* Description: Computes the top 2x3 split of the forward transform in an
+*              explicit (h, t) root form while keeping the current output
+*              layout expected by the later binary radix-2 chain.
+*
+*              For each i < 128, define
+*                f_i(y) = sum_{j=0}^5 a[i + 128*j] * y^j.
+*
+*              The six outputs are evaluations at y = alpha_h * omega^t,
+*              where:
+*                alpha_h^3 in {z, z^5}
+*                omega is a primitive cube root of unity.
+*
+*              This makes the top-level h split and the radix-3 roots
+*              explicit instead of keeping them mixed in a single zetas[]
+*              walk.
+*
+* Arguments:   - int16_t r[NTRUPLUS_N]: output buffer
+*              - const int16_t a[NTRUPLUS_N]: input coefficients
+*
+* Returns:     none.
+**************************************************/
+static void ntt_top6_good_thomas(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	int16_t x[6];
+
+	for (int i = 0; i < NTRUPLUS_N / 6; i++)
+	{
+		x[0] = a[i];
+		x[1] = a[i + 128];
+		x[2] = a[i + 256];
+		x[3] = a[i + 384];
+		x[4] = a[i + 512];
+		x[5] = a[i + 640];
+
+		for (int h = 0; h < 2; h++)
+		{
+			int base = i + h * 384;
+			int16_t u0, u1, u2;
+			int16_t t1, t2;
+
+			u0 = x[0] + fqmul(ntruplus_top_h_branch_twiddles[h], x[3]);
+			u1 = x[1] + fqmul(ntruplus_top_h_branch_twiddles[h], x[4]);
+			u2 = x[2] + fqmul(ntruplus_top_h_branch_twiddles[h], x[5]);
+
+			t1 = fqmul(ntruplus_top_h_cubic_roots[h], u1);
+			t2 = fqmul(ntruplus_top_h_cubic_root_squares[h], u2);
+
+			r[base] = u0 + t1 + t2;
+			r[base + 128] =
+			    u0
+			    + fqmul(ntruplus_radix3_root_powers[1], t1)
+			    + fqmul(ntruplus_radix3_root_powers[2], t2);
+			r[base + 256] =
+			    u0
+			    + fqmul(ntruplus_radix3_root_powers[2], t1)
+			    + fqmul(ntruplus_radix3_root_powers[1], t2);
+		}
+	}
+}
+
+/*************************************************
 * Name:        ntt
 *
 * Description: Number-theoretic transform (NTT) in R_q. Transforms the
@@ -159,42 +247,17 @@ static inline int16_t fqinv(int16_t a)
 **************************************************/
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	int16_t t1, t2, t3;
-	int16_t zeta1, zeta2;
-	int k = 1;
+	int16_t t1;
+	int16_t zeta1;
+	int k = 0;
 
-	zeta1 = zetas[k++];
-
-	for (int i = 0; i < NTRUPLUS_N / 2; i++)
-	{
-		t1 = fqmul(zeta1, a[i + NTRUPLUS_N / 2]);
-
-		r[i + NTRUPLUS_N / 2] = a[i] + a[i + NTRUPLUS_N / 2] - t1;
-		r[i                 ] = a[i]                         + t1;
-	}
-
-	for (int start = 0; start < NTRUPLUS_N; start += 384)
-	{
-		zeta1 = zetas[k++];
-		zeta2 = zetas[k++];
-
-		for (int i = start; i < start + 128; i++)
-		{
-			t1 = fqmul(zeta1, r[i + 128]);
-			t2 = fqmul(zeta2, r[i + 256]);
-			t3 = fqmul(NTRUPLUS_OMEGA, t1 - t2);
-
-			r[i + 256] = r[i] - t1 - t3;
-			r[i + 128] = r[i] - t2 + t3;
-			r[i      ] = r[i] + t1 + t2;
-		}		
-	}
+	ntt_top6_good_thomas(r, a);
 
 	for (int step = 64; step >= 4; step >>= 1)
 	{
 		for (int start = 0; start < NTRUPLUS_N; start += (step << 1))
 		{
-			zeta1 = zetas[k++];
+			zeta1 = zetas[6 + k++];
 
 			for (int i = start; i < start + step; i++)
 			{
