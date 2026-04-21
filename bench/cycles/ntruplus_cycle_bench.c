@@ -93,24 +93,23 @@ static void setup_counter_gap(void) {
   g_counter_gap = accum / (unsigned long long)loops;
 }
 
-static int cmp_u64(const void *a, const void *b) {
-  uint64_t ua = *(const uint64_t *)a;
-  uint64_t ub = *(const uint64_t *)b;
-  if (ua < ub) {
-    return -1;
+static void sort_u64(uint64_t *samples, int count) {
+  for (int i = 0; i < count - 1; ++i) {
+    for (int j = i + 1; j < count; ++j) {
+      if (samples[i] > samples[j]) {
+        uint64_t tmp = samples[i];
+        samples[i] = samples[j];
+        samples[j] = tmp;
+      }
+    }
   }
-  if (ua > ub) {
-    return 1;
-  }
-  return 0;
 }
 
 static stats_t compute_stats(uint64_t *samples, int count) {
   stats_t s;
   s.min = UINT64_MAX;
   s.max = 0;
-  long double sum = 0.0L;
-  long double sum_sq = 0.0L;
+  uint64_t total = 0;
 
   for (int i = 0; i < count; ++i) {
     uint64_t v = samples[i];
@@ -120,25 +119,33 @@ static stats_t compute_stats(uint64_t *samples, int count) {
     if (v > s.max) {
       s.max = v;
     }
-    sum += (long double)v;
-    sum_sq += (long double)v * (long double)v;
+    total += v;
   }
 
-  s.mean = (double)(sum / (long double)count);
-  qsort(samples, (size_t)count, sizeof(uint64_t), cmp_u64);
+  s.mean = (double)total / (double)count;
+  sort_u64(samples, count);
   if ((count % 2) == 0) {
     s.median = ((double)samples[count / 2 - 1] + (double)samples[count / 2]) / 2.0;
   } else {
     s.median = (double)samples[count / 2];
   }
 
-  long double count_ld = (long double)count;
-  long double mean_sq = (sum * sum) / (count_ld * count_ld);
-  long double variance = (sum_sq / count_ld) - mean_sq;
-  if (variance < 0.0L) {
-    variance = 0.0L;
+  double variance = 0.0;
+  for (int i = 0; i < count; ++i) {
+    double diff = (double)samples[i] - s.mean;
+    variance += diff * diff;
   }
-  s.stddev = sqrt((double)variance);
+  variance /= (double)count;
+  s.stddev = sqrt(variance);
+  if (!isfinite(s.mean)) {
+    s.mean = 0.0;
+  }
+  if (!isfinite(s.median)) {
+    s.median = 0.0;
+  }
+  if (!isfinite(s.stddev)) {
+    s.stddev = 0.0;
+  }
   return s;
 }
 

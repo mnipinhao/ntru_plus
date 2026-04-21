@@ -41,6 +41,8 @@ def main() -> None:
         raise SystemExit("Unit mismatch between baseline and optimized benchmark outputs")
 
     unit = baseline["unit"]
+    baseline_label = baseline.get("label", "baseline")
+    optimized_label = optimized.get("label", "optimized")
     comparison = {}
     for metric in METRICS:
         b_mean = float(baseline["results"][metric]["mean"])
@@ -61,6 +63,8 @@ def main() -> None:
         "unit": unit,
         "iterations": baseline["iterations"],
         "warmup": baseline["warmup"],
+        "baseline_label": baseline_label,
+        "optimized_label": optimized_label,
         "comparison": comparison,
     }
 
@@ -69,14 +73,16 @@ def main() -> None:
     output_json_path.write_text(json.dumps(output, indent=2) + "\n")
 
     lines = [
-        "# NTRU+ Baseline vs Optimized Cycle Comparison",
+        "# NTRU+ Cycle Comparison",
         "",
         f"- Run tag: `{args.tag}`",
         f"- Unit: `{unit}`",
         f"- Iterations: `{baseline['iterations']}`",
         f"- Warmup: `{baseline['warmup']}`",
+        f"- Implementation A: `{baseline_label}`",
+        f"- Implementation B: `{optimized_label}`",
         "",
-        "| Metric | Baseline mean | Optimized mean | Speedup | Improvement |",
+        f"| Metric | {baseline_label} mean | {optimized_label} mean | Speedup ({baseline_label}/{optimized_label}) | Improvement |",
         "|---|---:|---:|---:|---:|",
     ]
 
@@ -97,10 +103,10 @@ def main() -> None:
             "",
             "## KEM Aggregate",
             "",
-            f"- Baseline total mean: `{baseline_total:.3f} {unit}`",
-            f"- Optimized total mean: `{optimized_total:.3f} {unit}`",
-            f"- Overall speedup: `{overall_speedup:.3f}x`",
-            f"- Overall improvement: `{overall_gain:.2f}%`",
+            f"- {baseline_label} total mean: `{baseline_total:.3f} {unit}`",
+            f"- {optimized_label} total mean: `{optimized_total:.3f} {unit}`",
+            f"- Overall speedup ({baseline_label}/{optimized_label}): `{overall_speedup:.3f}x`",
+            f"- Overall improvement if choosing {optimized_label}: `{overall_gain:.2f}%`",
             "",
         ]
     )

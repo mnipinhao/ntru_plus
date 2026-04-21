@@ -1,61 +1,91 @@
-# NTRU+ Bench Suite (Baseline vs Optimized)
+# NTRU+ Bench Suite
 
-This directory is the single execution layer for:
+`bench/` is the unified entry point for comparing two implementation directories:
 
-1. Correctness validation with KAT (`baseline` vs `optimized`)
-2. Cycle-accurate function/KEM benchmarking
-3. Automatic speedup and improvement reports
+1. KAT-based correctness validation
+2. Cycle benchmarking for the shared KEM/poly APIs
+3. Auto-generated comparison reports under `bench/results/`
 
-## Directory Layout
+The important change is that the compare flow no longer hardcodes one "baseline" tree and one "optimized" tree. It now accepts any two implementation directories that already ship a working `Makefile`, such as:
 
-```text
-bench/
-├── Makefile
-├── kat/                         # KAT helpers (reserved)
-├── cycles/
-│   ├── ntruplus_cycle_bench.c  # Per-tree cycle runner
-│   └── compare_cycles.py        # Baseline-vs-optimized comparator
-├── results/
-│   ├── kat/<RUN_TAG>/
-│   └── cycles/<RUN_TAG>/
-├── ntruplus_bottleneck_profiler.c
-├── function_speed_test.c
-└── comprehensive_kem_profiler.c
-```
+- `../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768`
+- `../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768`
+- `../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768`
 
 ## Core Commands
 
 ```bash
 cd bench
 
+# default: KpqC reference vs ntt-Optimized optimized for the selected PARAM_SET
+make compare
+
 # correctness only
 make compare-kat
 
-# correctness + performance (KAT-gated)
-make compare
-
-# same as compare (explicit)
+# explicit alias of compare
 make cycles-compare
 ```
 
-## Output Artifacts
+## Compare Arbitrary Implementations
 
-For each run (`RUN_TAG`, auto timestamp unless provided):
+```bash
+cd bench
 
-- `results/kat/<RUN_TAG>/baseline.rsp`
-- `results/kat/<RUN_TAG>/optimized.rsp`
-- `results/kat/<RUN_TAG>/status.txt`
-- `results/cycles/<RUN_TAG>/raw_baseline.json`
-- `results/cycles/<RUN_TAG>/raw_optimized.json`
-- `results/cycles/<RUN_TAG>/comparison.json`
-- `results/cycles/<RUN_TAG>/summary.md`
+make impl-compare \
+  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
+  LABEL_A=kpqc_aarch64 \
+  LABEL_B=ntt_opt
+```
 
-## Useful Runtime Knobs
+Reference vs optimized:
+
+```bash
+make impl-compare \
+  IMPL_A=../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768 \
+  IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
+  LABEL_A=kpqc_ref \
+  LABEL_B=ntt_opt
+```
+
+Correctness only for arbitrary paths:
+
+```bash
+make impl-compare-kat \
+  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768
+```
+
+## Useful Knobs
 
 ```bash
 make RUN_TAG=my_test compare
-make RUN_TAG=my_test CYCLE_ITERATIONS=3000 CYCLE_WARMUP=200 cycles-compare
+make PARAM_SET=NTRU+1152 compare
+make CYCLE_ITERATIONS=3000 CYCLE_WARMUP=200 compare
 ```
+
+## How It Works
+
+`bench_impls.py` asks each implementation's own `Makefile` for the `test` and `PQCgenKAT_kem` compile commands via `make -n`, then reuses those commands to build:
+
+- the implementation's KAT generator
+- the shared `cycles/ntruplus_cycle_bench.c` harness
+
+That keeps the bench flow aligned with each implementation's actual source list and compile flags instead of duplicating per-variant logic in `bench/Makefile`.
+
+## Output Artifacts
+
+For each run tag:
+
+- `results/kat/<RUN_TAG>/<LABEL>.req`
+- `results/kat/<RUN_TAG>/<LABEL>.rsp`
+- `results/kat/<RUN_TAG>/status.txt`
+- `results/kat/<RUN_TAG>/metadata.json`
+- `results/cycles/<RUN_TAG>/raw_<LABEL>.json`
+- `results/cycles/<RUN_TAG>/comparison.json`
+- `results/cycles/<RUN_TAG>/summary.md`
+- `results/cycles/<RUN_TAG>/metadata.json`
 
 ## What Is Measured
 
@@ -70,30 +100,20 @@ make RUN_TAG=my_test CYCLE_ITERATIONS=3000 CYCLE_WARMUP=200 cycles-compare
 - `encap`
 - `decap`
 
-Comparator computes:
+The comparison summary also reports aggregate KEM speedup over `keygen + encap + decap`.
 
-- `speedup = baseline_mean / optimized_mean`
-- `improvement_pct = (baseline_mean - optimized_mean) / baseline_mean * 100`
+## Constraints
 
-It also prints aggregated KEM speedup over `keygen + encap + decap`.
+- Both implementations must target the same parameter set, checked through `params.h`.
+- Architecture-specific implementations still need a compatible host.
+  For example, `aarch64` paths need an arm64/aarch64 machine, and `avx2` paths need an x86_64 host with AVX2 support.
 
 ## Legacy Profilers
 
-Existing profiling targets are preserved:
+Existing one-off profilers are still available:
 
 ```bash
 make bottleneck-analysis
 make function-test
 make comprehensive-analysis
 ```
-
-## Troubleshooting
-
-- Missing optimized tree: run `./scripts/setup_workspace.sh`
-- KAT mismatch: inspect `results/kat/<RUN_TAG>/diff.txt`
-- Architecture without cycle counter: harness falls back to `CLOCK_MONOTONIC` (`unit = ns`)
-
-## Related Docs
-
-- Main workflow: `../WORKFLOW.md`
-- Profiling analysis: `../PROFILING_RESULTS.md`

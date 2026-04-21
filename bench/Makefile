@@ -1,51 +1,41 @@
-CC = gcc
-CFLAGS = -O3 -march=native -Wall -Wextra -Wpedantic -std=c99
-LDFLAGS = -lm
+CC ?= gcc
+CFLAGS ?= -O3 -march=native -Wall -Wextra -Wpedantic -std=c99
+LDFLAGS ?= -lm
 
 BASELINE_ROOT = ../ntruplus-KpqC-Final
-OPTIMIZED_ROOT = ../ntruplus-Optimized
-PARAM_SET = NTRU+768
-IMPL_DIR = Reference_Implementation/$(PARAM_SET)
+OPTIMIZED_ROOT = ../ntruplus-ntt-Optimized
+PARAM_SET ?= NTRU+768
 
-BASELINE_IMPL = $(BASELINE_ROOT)/$(IMPL_DIR)
-OPTIMIZED_IMPL = $(OPTIMIZED_ROOT)/$(IMPL_DIR)
-
-BASELINE_INCLUDES = -I$(BASELINE_IMPL) -I$(BASELINE_IMPL)/fips202
-OPTIMIZED_INCLUDES = -I$(OPTIMIZED_IMPL) -I$(OPTIMIZED_IMPL)/fips202
-
-BASELINE_SOURCES = $(BASELINE_IMPL)/kem.c \
-                   $(BASELINE_IMPL)/poly.c \
-                   $(BASELINE_IMPL)/ntt.c \
-                   $(BASELINE_IMPL)/symmetric.c \
-                   $(BASELINE_IMPL)/randombytes.c \
-                   $(BASELINE_IMPL)/fips202/fips202.c
-OPTIMIZED_SOURCES = $(OPTIMIZED_IMPL)/kem.c \
-                    $(OPTIMIZED_IMPL)/poly.c \
-                    $(OPTIMIZED_IMPL)/ntt.c \
-                    $(OPTIMIZED_IMPL)/symmetric.c \
-                    $(OPTIMIZED_IMPL)/randombytes.c \
-                    $(OPTIMIZED_IMPL)/fips202/fips202.c
-
-BASELINE_KAT_SOURCES = $(BASELINE_IMPL)/kat/PQCgenKAT_kem.c \
-                       $(BASELINE_IMPL)/kat/aes.c \
-                       $(BASELINE_IMPL)/kat/rng.c
-OPTIMIZED_KAT_SOURCES = $(OPTIMIZED_IMPL)/kat/PQCgenKAT_kem.c \
-                        $(OPTIMIZED_IMPL)/kat/aes.c \
-                        $(OPTIMIZED_IMPL)/kat/rng.c
+BENCH_DRIVER = ./bench_impls.py
+DEFAULT_IMPL_A = $(BASELINE_ROOT)/Reference_Implementation/$(PARAM_SET)
+DEFAULT_IMPL_B = $(OPTIMIZED_ROOT)/Optimized_Implementation/$(PARAM_SET)
+IMPL_A ?= $(DEFAULT_IMPL_A)
+IMPL_B ?= $(DEFAULT_IMPL_B)
+LABEL_A ?=
+LABEL_B ?=
 
 BUILD_DIR = build
 RESULTS_DIR = results
 KAT_RESULTS_DIR = $(RESULTS_DIR)/kat
 CYCLES_RESULTS_DIR = $(RESULTS_DIR)/cycles
 RUN_TAG ?= $(shell date +%Y%m%d_%H%M%S)
-KAT_RUN_DIR = $(KAT_RESULTS_DIR)/$(RUN_TAG)
-CYCLES_RUN_DIR = $(CYCLES_RESULTS_DIR)/$(RUN_TAG)
 
 CYCLE_ITERATIONS ?= 1000
 CYCLE_WARMUP ?= 100
 
-LEGACY_INCLUDES = -I$(BASELINE_IMPL) -I$(BASELINE_IMPL)/fips202
-LEGACY_SOURCES = $(BASELINE_SOURCES)
+COMPARE_ARGS = --impl-a "$(IMPL_A)" --impl-b "$(IMPL_B)" --run-tag "$(RUN_TAG)" \
+	--iterations $(CYCLE_ITERATIONS) --warmup $(CYCLE_WARMUP) \
+	$(if $(LABEL_A),--label-a "$(LABEL_A)") \
+	$(if $(LABEL_B),--label-b "$(LABEL_B)")
+
+LEGACY_IMPL = $(BASELINE_ROOT)/Reference_Implementation/$(PARAM_SET)
+LEGACY_INCLUDES = -I$(LEGACY_IMPL) -I$(LEGACY_IMPL)/fips202
+LEGACY_SOURCES = $(LEGACY_IMPL)/kem.c \
+                 $(LEGACY_IMPL)/poly.c \
+                 $(LEGACY_IMPL)/ntt.c \
+                 $(LEGACY_IMPL)/symmetric.c \
+                 $(LEGACY_IMPL)/randombytes.c \
+                 $(LEGACY_IMPL)/fips202/fips202.c
 
 BOTTLENECK_PROFILER = ntruplus_bottleneck_profiler
 INDIVIDUAL_FUNCTION_TEST = function_speed_test
@@ -68,9 +58,9 @@ AARCH64_ASM = $(AARCH64_ROOT)/asm/add.s \
               $(AARCH64_ROOT)/asm/cbd.s \
               $(AARCH64_ROOT)/CE/f1600.S
 
-.PHONY: all setup validate kat-baseline kat-optimized compare-kat cycles-baseline cycles-optimized \
-	cycles-compare compare clean clean-results help run run-all bottleneck-analysis \
-	function-test comprehensive-analysis aarch64-benchmark aarch64-comparison
+.PHONY: all setup validate compare-kat cycles-compare compare impl-compare impl-compare-kat \
+	clean clean-results help run run-all bottleneck-analysis function-test \
+	comprehensive-analysis aarch64-benchmark aarch64-comparison
 
 all: validate
 
@@ -79,78 +69,12 @@ setup:
 
 validate: compare-kat
 
-kat-baseline: setup
-	@mkdir -p $(KAT_RUN_DIR)
-	@echo "[KAT] building baseline generator..."
-	$(CC) $(CFLAGS) $(BASELINE_INCLUDES) -o $(BUILD_DIR)/kat_baseline \
-		$(BASELINE_KAT_SOURCES) \
-		$(BASELINE_IMPL)/kem.c \
-		$(BASELINE_IMPL)/poly.c \
-		$(BASELINE_IMPL)/ntt.c \
-		$(BASELINE_IMPL)/symmetric.c \
-		$(BASELINE_IMPL)/fips202/fips202.c
-	@rm -f $(BUILD_DIR)/PQCkemKAT_*.req $(BUILD_DIR)/PQCkemKAT_*.rsp
-	@cd $(BUILD_DIR) && ./kat_baseline > /dev/null
-	@mv $(BUILD_DIR)/PQCkemKAT_*.rsp $(KAT_RUN_DIR)/baseline.rsp
-	@mv $(BUILD_DIR)/PQCkemKAT_*.req $(KAT_RUN_DIR)/baseline.req
-	@echo "[KAT] baseline output: $(KAT_RUN_DIR)/baseline.rsp"
+compare-kat impl-compare-kat: setup
+	@python3 $(BENCH_DRIVER) kat $(COMPARE_ARGS)
 
-kat-optimized: setup
-	@mkdir -p $(KAT_RUN_DIR)
-	@echo "[KAT] building optimized generator..."
-	$(CC) $(CFLAGS) $(OPTIMIZED_INCLUDES) -o $(BUILD_DIR)/kat_optimized \
-		$(OPTIMIZED_KAT_SOURCES) \
-		$(OPTIMIZED_IMPL)/kem.c \
-		$(OPTIMIZED_IMPL)/poly.c \
-		$(OPTIMIZED_IMPL)/ntt.c \
-		$(OPTIMIZED_IMPL)/symmetric.c \
-		$(OPTIMIZED_IMPL)/fips202/fips202.c
-	@rm -f $(BUILD_DIR)/PQCkemKAT_*.req $(BUILD_DIR)/PQCkemKAT_*.rsp
-	@cd $(BUILD_DIR) && ./kat_optimized > /dev/null
-	@mv $(BUILD_DIR)/PQCkemKAT_*.rsp $(KAT_RUN_DIR)/optimized.rsp
-	@mv $(BUILD_DIR)/PQCkemKAT_*.req $(KAT_RUN_DIR)/optimized.req
-	@echo "[KAT] optimized output: $(KAT_RUN_DIR)/optimized.rsp"
+cycles-compare compare impl-compare: setup
+	@python3 $(BENCH_DRIVER) compare $(COMPARE_ARGS)
 
-compare-kat: kat-baseline kat-optimized
-	@mkdir -p $(KAT_RUN_DIR)
-	@echo "[KAT] comparing baseline vs optimized..."
-	@if diff -q $(KAT_RUN_DIR)/baseline.rsp $(KAT_RUN_DIR)/optimized.rsp > /dev/null; then \
-		echo "[KAT] PASS: byte-identical outputs"; \
-		printf "PASS\n" > $(KAT_RUN_DIR)/status.txt; \
-	else \
-		echo "[KAT] FAIL: outputs differ"; \
-		diff $(KAT_RUN_DIR)/baseline.rsp $(KAT_RUN_DIR)/optimized.rsp > $(KAT_RUN_DIR)/diff.txt || true; \
-		printf "FAIL\n" > $(KAT_RUN_DIR)/status.txt; \
-		exit 1; \
-	fi
-
-$(BUILD_DIR)/cycle_bench_baseline: cycles/ntruplus_cycle_bench.c
-	$(CC) $(CFLAGS) $(BASELINE_INCLUDES) -DBENCH_LABEL=\"baseline\" $< $(BASELINE_SOURCES) -o $@ $(LDFLAGS)
-
-$(BUILD_DIR)/cycle_bench_optimized: cycles/ntruplus_cycle_bench.c
-	$(CC) $(CFLAGS) $(OPTIMIZED_INCLUDES) -DBENCH_LABEL=\"optimized\" $< $(OPTIMIZED_SOURCES) -o $@ $(LDFLAGS)
-
-cycles-baseline: setup $(BUILD_DIR)/cycle_bench_baseline
-	@mkdir -p $(CYCLES_RUN_DIR)
-	@$(BUILD_DIR)/cycle_bench_baseline $(CYCLES_RUN_DIR)/raw_baseline.json $(CYCLE_ITERATIONS) $(CYCLE_WARMUP)
-	@echo "[CYCLES] baseline output: $(CYCLES_RUN_DIR)/raw_baseline.json"
-
-cycles-optimized: setup $(BUILD_DIR)/cycle_bench_optimized
-	@mkdir -p $(CYCLES_RUN_DIR)
-	@$(BUILD_DIR)/cycle_bench_optimized $(CYCLES_RUN_DIR)/raw_optimized.json $(CYCLE_ITERATIONS) $(CYCLE_WARMUP)
-	@echo "[CYCLES] optimized output: $(CYCLES_RUN_DIR)/raw_optimized.json"
-
-cycles-compare: compare-kat cycles-baseline cycles-optimized
-	@python3 cycles/compare_cycles.py \
-		--baseline $(CYCLES_RUN_DIR)/raw_baseline.json \
-		--optimized $(CYCLES_RUN_DIR)/raw_optimized.json \
-		--output-json $(CYCLES_RUN_DIR)/comparison.json \
-		--output-md $(CYCLES_RUN_DIR)/summary.md \
-		--tag $(RUN_TAG)
-	@echo "[CYCLES] comparison output: $(CYCLES_RUN_DIR)/comparison.json"
-	@echo "[CYCLES] summary output: $(CYCLES_RUN_DIR)/summary.md"
-
-compare: cycles-compare
 run: compare
 run-all: compare bottleneck-analysis function-test comprehensive-analysis
 
@@ -183,27 +107,30 @@ aarch64-comparison: $(AARCH64_COMPARISON)
 	@./$(AARCH64_COMPARISON)
 
 clean:
-	rm -f $(BUILD_DIR)/kat_baseline $(BUILD_DIR)/kat_optimized \
-		$(BUILD_DIR)/cycle_bench_baseline $(BUILD_DIR)/cycle_bench_optimized \
-		$(BOTTLENECK_PROFILER) $(INDIVIDUAL_FUNCTION_TEST) $(COMPREHENSIVE_PROFILER) \
+	rm -f $(BOTTLENECK_PROFILER) $(INDIVIDUAL_FUNCTION_TEST) $(COMPREHENSIVE_PROFILER) \
 		$(AARCH64_BENCHMARK) $(AARCH64_COMPARISON)
-	rm -f $(BUILD_DIR)/PQCkemKAT_*.req $(BUILD_DIR)/PQCkemKAT_*.rsp
+	rm -rf $(BUILD_DIR)/*
 
 clean-results:
-	rm -rf $(RESULTS_DIR)/kat/* $(RESULTS_DIR)/cycles/*
+	rm -rf $(KAT_RESULTS_DIR)/* $(CYCLES_RESULTS_DIR)/*
 
 help:
-	@echo "NTRU+ unified benchmark/validation targets"
+	@echo "NTRU+ benchmark/validation targets"
 	@echo ""
-	@echo "Core workflow:"
-	@echo "  make compare-kat                      # KAT baseline vs optimized"
-	@echo "  make cycles-compare                   # KAT-gated cycle comparison"
-	@echo "  make compare                          # Alias of cycles-compare"
+	@echo "Default compare flow:"
+	@echo "  make compare"
+	@echo "  make compare-kat"
+	@echo ""
+	@echo "Compare arbitrary implementations:"
+	@echo "  make impl-compare IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 LABEL_A=kpqc_aarch64 LABEL_B=ntt_opt"
 	@echo ""
 	@echo "Useful vars:"
-	@echo "  RUN_TAG=<label>                       # result directory suffix"
-	@echo "  CYCLE_ITERATIONS=<n>                  # default 1000"
-	@echo "  CYCLE_WARMUP=<n>                      # default 100"
+	@echo "  PARAM_SET=<NTRU+768|NTRU+864|NTRU+1152>    # default compare only"
+	@echo "  IMPL_A=<path> IMPL_B=<path>                # arbitrary implementation dirs"
+	@echo "  LABEL_A=<name> LABEL_B=<name>              # optional report labels"
+	@echo "  RUN_TAG=<label>                            # result directory suffix"
+	@echo "  CYCLE_ITERATIONS=<n>                       # default 1000"
+	@echo "  CYCLE_WARMUP=<n>                           # default 100"
 	@echo ""
-	@echo "Legacy analysis targets still available:"
+	@echo "Legacy analysis targets:"
 	@echo "  make bottleneck-analysis function-test comprehensive-analysis"
