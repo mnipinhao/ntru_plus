@@ -42,28 +42,6 @@ const int16_t zetas[192] = {
 	 1221,  -218,   294,  -732, -1095,   892,  1588,  -779
 };
 
-/*
- * Split the forward twiddles into:
- *   1) the top h-branch constant z
- *   2) the radix-3 root omega
- *   3) the later binary radix-2 chain (a slice of zetas[])
- *
- * Relations used by the top helper:
- *   z^5 = 1 - z
- *   alpha1 = z * alpha0^2
- *   alpha1^2 = -alpha0
- *
- * The external zetas[] table stays unchanged because poly.c still uses
- * zetas[96..191] as the current base-ring lambda contract.
- */
-static const int16_t ntruplus_top_h_branch_z = -1033;
-static const int16_t ntruplus_top_h_alpha0 = -682;
-static const int16_t ntruplus_top_h_alpha0_sq = -248;
-static const int16_t ntruplus_top_h_alpha1 = -708;
-static const int16_t ntruplus_step64_block_twiddles[6] = {
-	    1,  -722,  -723,  -257, -1124,  -867
-};
-
 /*************************************************
 * Name:        montgomery_reduce
 *
@@ -163,114 +141,6 @@ static inline int16_t fqinv(int16_t a)
 	return t2;
 }
 
-static inline void ntt_top6_eval_at(
-    const int16_t a[NTRUPLUS_N], int i,
-    int16_t *y0, int16_t *y1, int16_t *y2,
-    int16_t *y3, int16_t *y4, int16_t *y5)
-{
-	const int16_t x0 = a[i];
-	const int16_t x1 = a[i + 128];
-	const int16_t x2 = a[i + 256];
-	const int16_t x3 = a[i + 384];
-	const int16_t x4 = a[i + 512];
-	const int16_t x5 = a[i + 640];
-
-	int16_t m3, m4, m5;
-	int16_t u00, u01, u02;
-	int16_t u10, u11, u12;
-	int16_t b0, c0, d0;
-	int16_t b1, c1, d1;
-
-	m3 = fqmul(ntruplus_top_h_branch_z, x3);
-	m4 = fqmul(ntruplus_top_h_branch_z, x4);
-	m5 = fqmul(ntruplus_top_h_branch_z, x5);
-
-	u00 = x0 + m3;
-	u01 = x1 + m4;
-	u02 = x2 + m5;
-
-	u10 = x0 + x3 - m3;
-	u11 = x1 + x4 - m4;
-	u12 = x2 + x5 - m5;
-
-	b0 = fqmul(ntruplus_top_h_alpha0, u01);
-	c0 = fqmul(ntruplus_top_h_alpha0_sq, u02);
-	d0 = fqmul(NTRUPLUS_OMEGA, b0 - c0);
-
-	*y0 = u00 + b0 + c0;
-	*y1 = u00 - c0 + d0;
-	*y2 = u00 - b0 - d0;
-
-	b1 = fqmul(ntruplus_top_h_alpha1, u11);
-	c1 = fqmul(ntruplus_top_h_alpha0, u12);
-	d1 = fqmul(NTRUPLUS_OMEGA, b1 + c1);
-
-	*y3 = u10 + b1 - c1;
-	*y4 = u10 + c1 + d1;
-	*y5 = u10 - b1 - d1;
-}
-
-/*************************************************
-* Name:        ntt_top6_step64_fused
-*
-* Description: Computes the top 2x3 transform and the first binary radix-2
-*              stage together.
-*
-*              For each i < 64, the step=64 butterflies are:
-*                (r[i +   0], r[i +  64]) twiddle zetas[6]
-*                (r[i + 128], r[i + 192]) twiddle zetas[7]
-*                (r[i + 256], r[i + 320]) twiddle zetas[8]
-*                (r[i + 384], r[i + 448]) twiddle zetas[9]
-*                (r[i + 512], r[i + 576]) twiddle zetas[10]
-*                (r[i + 640], r[i + 704]) twiddle zetas[11]
-*
-*              The upper input of each pair gets multiplied by the block
-*              twiddle from zetas[]. Note that zetas[] is stored in Montgomery
-*              form, so the first block still needs fqmul(1, ...); the lower
-*              input only participates in the final add/sub.
-*
-* Arguments:   - int16_t r[NTRUPLUS_N]: output buffer
-*              - const int16_t a[NTRUPLUS_N]: input coefficients
-*
-* Returns:     none.
-**************************************************/
-static void ntt_top6_step64_fused(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
-{
-	for (int i = 0; i < 64; i++)
-	{
-		int16_t y0_lo, y1_lo, y2_lo, y3_lo, y4_lo, y5_lo;
-		int16_t y0_hi, y1_hi, y2_hi, y3_hi, y4_hi, y5_hi;
-		int16_t t;
-
-		ntt_top6_eval_at(a, i, &y0_lo, &y1_lo, &y2_lo, &y3_lo, &y4_lo, &y5_lo);
-		ntt_top6_eval_at(a, i + 64, &y0_hi, &y1_hi, &y2_hi, &y3_hi, &y4_hi, &y5_hi);
-
-		t = fqmul(ntruplus_step64_block_twiddles[0], y0_hi);
-		r[i]      = barrett_reduce(y0_lo + t);
-		r[i + 64] = barrett_reduce(y0_lo - t);
-
-		t = fqmul(ntruplus_step64_block_twiddles[1], y1_hi);
-		r[i + 128] = barrett_reduce(y1_lo + t);
-		r[i + 192] = barrett_reduce(y1_lo - t);
-
-		t = fqmul(ntruplus_step64_block_twiddles[2], y2_hi);
-		r[i + 256] = barrett_reduce(y2_lo + t);
-		r[i + 320] = barrett_reduce(y2_lo - t);
-
-		t = fqmul(ntruplus_step64_block_twiddles[3], y3_hi);
-		r[i + 384] = barrett_reduce(y3_lo + t);
-		r[i + 448] = barrett_reduce(y3_lo - t);
-
-		t = fqmul(ntruplus_step64_block_twiddles[4], y4_hi);
-		r[i + 512] = barrett_reduce(y4_lo + t);
-		r[i + 576] = barrett_reduce(y4_lo - t);
-
-		t = fqmul(ntruplus_step64_block_twiddles[5], y5_hi);
-		r[i + 640] = barrett_reduce(y5_lo + t);
-		r[i + 704] = barrett_reduce(y5_lo - t);
-	}
-}
-
 /*************************************************
 * Name:        ntt
 *
@@ -289,17 +159,42 @@ static void ntt_top6_step64_fused(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLU
 **************************************************/
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	int16_t t1;
-	int16_t zeta1;
-	int k = 0;
+	int16_t t1, t2, t3;
+	int16_t zeta1, zeta2;
+	int k = 1;
 
-	ntt_top6_step64_fused(r, a);
+	zeta1 = zetas[k++];
 
-	for (int step = 32; step >= 4; step >>= 1)
+	for (int i = 0; i < NTRUPLUS_N / 2; i++)
+	{
+		t1 = fqmul(zeta1, a[i + NTRUPLUS_N / 2]);
+
+		r[i + NTRUPLUS_N / 2] = a[i] + a[i + NTRUPLUS_N / 2] - t1;
+		r[i                 ] = a[i]                         + t1;
+	}
+
+	for (int start = 0; start < NTRUPLUS_N; start += 384)
+	{
+		zeta1 = zetas[k++];
+		zeta2 = zetas[k++];
+
+		for (int i = start; i < start + 128; i++)
+		{
+			t1 = fqmul(zeta1, r[i + 128]);
+			t2 = fqmul(zeta2, r[i + 256]);
+			t3 = fqmul(NTRUPLUS_OMEGA, t1 - t2);
+
+			r[i + 256] = r[i] - t1 - t3;
+			r[i + 128] = r[i] - t2 + t3;
+			r[i      ] = r[i] + t1 + t2;
+		}		
+	}
+
+	for (int step = 64; step >= 4; step >>= 1)
 	{
 		for (int start = 0; start < NTRUPLUS_N; start += (step << 1))
 		{
-			zeta1 = zetas[12 + k++];
+			zeta1 = zetas[k++];
 
 			for (int i = start; i < start + step; i++)
 			{
