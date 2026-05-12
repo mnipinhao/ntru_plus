@@ -11,6 +11,9 @@
 #define NTRUPLUS_ZMINUSZ5INV -1665 // (z - z^5)^(-1) * R mod q
                                    // where z = zeta^((n/d)/6)
 
+#define GT96_OMEGA3     NTRUPLUS_OMEGA // (omega96^32 * R) mod q
+#define GT96_OMEGA3_SQ        1033 // (omega96^64 * R) mod q
+
 #define NTRUPLUS_NINV         -811 // (n/d)^(-1) * R mod q
 #define NTRUPLUS_2NINV       -1622 // 2 * (n/d)^(-1) * R mod q
 
@@ -42,7 +45,21 @@ const int16_t zetas[192] = {
 	 1221,  -218,   294,  -732, -1095,   892,  1588,  -779
 };
 
-static const int16_t tw_c_inv[96] = {
+/*
+ * Branch twist tables in Montgomery form.
+ *
+ * After the first split, branch b is r[b*384 .. b*384+383].  For each
+ * branch polynomial A_b(y) = sum_k a_{4k+r} y^k, the inverse twist uses
+ * a_{4k+r} -> a_{4k+r} * F_b^{-k}.  The matching reference evaluation is
+ * at alpha = F_b * lambda, since
+ *
+ *   sum_k a_k F_b^{-k} alpha^k = A_b(alpha / F_b).
+ *
+ * The factors are chosen so alpha^96 = 1 for the 96-point cyclic NTT:
+ *   branch 0: F_0 = 2
+ *   branch 1: F_1 = 22
+ */
+static const int16_t tw_branch0_inv[96] = {
 	-147,   1655,   -901,   1278,    639,  -1409,   1024,    512,
 	 256,    128,     64,     32,     16,      8,      4,      2,
 	   1,  -1728,   -864,   -432,   -216,   -108,    -54,    -27,
@@ -56,7 +73,7 @@ static const int16_t tw_c_inv[96] = {
 	-257,   1600,    800,    400,    200,    100,     50,     25,
    -1716,   -858,   -429,   1514,    757,  -1350,   -675,   1391,
 };
-static const int16_t tw_d_inv[96] = {
+static const int16_t tw_branch1_inv[96] = {
 	-147,    779,   -436,    923,  -1058,   1209,  -1045,   1681,
 	-395,   1082,    992,  -1212,   1202,   1626,   1331,  -1668,
 	 867,   -432,  -1591,   -858,    -39,  -1416,   1507,  -1660,
@@ -70,7 +87,7 @@ static const int16_t tw_d_inv[96] = {
 	 723,    190,   1580,   -871,   -511,   1391,  -1351,    410,
 	1590,   -242,    -11,   1728,   -550,    -25,    156,  -1250,
 };
-static const int16_t tw_c[96] = {
+static const int16_t tw_branch0[96] = {
 	-147,   -294,   -588,  -1176,   1105,  -1247,    963,  -1531,
 	 395,    790,   1580,   -297,   -594,  -1188,   1081,  -1295,
 	 867,  -1723,     11,     22,     44,     88,    176,    352,
@@ -84,7 +101,7 @@ static const int16_t tw_c[96] = {
 	 723,   1446,   -565,  -1130,   1197,  -1063,   1331,   -795,
    -1590,    277,    554,   1108,  -1241,    975,  -1507,    443,
 };
-static const int16_t tw_d[96] = {
+static const int16_t tw_branch1[96] = {
 	-147,    223,   1449,    765,   -455,    361,   1028,  -1583,
 	-256,   1282,    548,   1685,   -957,   -312,     50,   1100,
 	   1,     22,    484,    277,   -820,   -755,    675,   1022,
@@ -97,6 +114,40 @@ static const int16_t tw_d[96] = {
 	 109,  -1059,    901,   -920,    502,    673,    978,    774,
 	-257,   1260,     64,   1408,   -137,    443,   -625,     78,
 	1716,   -275,    864,   1723,   -121,    795,    205,   1053,
+};
+
+/*
+ * Good-Thomas reference constants for the cyclic 96-point NTT.
+ *
+ * The canonical primitive 96th root is omega96 = 675 in normal form.  This
+ * root is branch 1 block 0 after applying the verified F_b scaling, and every
+ * alpha = F_b * lambda used by the two branches is a power of it.  The tables
+ * below are in Montgomery form when they are used by fqmul().
+ */
+static const int16_t gt96_omega32_powers[32] = {
+	 -147,    484,   -794,    874,    109,    864,   -446,   -554,
+	  366,   -429,  -1339,     11,  -1118,    177,   1181,   1591,
+	  147,   -484,    794,   -874,   -109,   -864,    446,    554,
+	 -366,    429,   1339,    -11,   1118,   -177,  -1181,  -1591,
+};
+
+static const uint8_t gt96_branch_exponents[2][96] = {
+	{
+		66, 18, 90, 42, 78, 30,  6, 54, 72, 24,  0, 48, 84, 36, 12, 60,
+		69, 21, 93, 45, 81, 33,  9, 57, 75, 27,  3, 51, 87, 39, 15, 63,
+		67, 19, 91, 43, 79, 31,  7, 55, 73, 25,  1, 49, 85, 37, 13, 61,
+		70, 22, 94, 46, 82, 34, 10, 58, 76, 28,  4, 52, 88, 40, 16, 64,
+		68, 20, 92, 44, 80, 32,  8, 56, 74, 26,  2, 50, 86, 38, 14, 62,
+		71, 23, 95, 47, 83, 35, 11, 59, 77, 29,  5, 53, 89, 41, 17, 65,
+	},
+	{
+		 1, 49, 25, 73, 13, 61, 37, 85,  7, 55, 31, 79, 19, 67, 43, 91,
+		 4, 52, 28, 76, 16, 64, 40, 88, 10, 58, 34, 82, 22, 70, 46, 94,
+		 2, 50, 26, 74, 14, 62, 38, 86,  8, 56, 32, 80, 20, 68, 44, 92,
+		 5, 53, 29, 77, 17, 65, 41, 89, 11, 59, 35, 83, 23, 71, 47, 95,
+		 3, 51, 27, 75, 15, 63, 39, 87,  9, 57, 33, 81, 21, 69, 45, 93,
+		 6, 54, 30, 78, 18, 66, 42, 90, 12, 60, 36, 84, 24, 72, 48,  0,
+	},
 };
 /*************************************************
 * Name:        montgomery_reduce
@@ -154,6 +205,105 @@ static inline int16_t barrett_reduce(int16_t a)
 static inline int16_t fqmul(int16_t a, int16_t b)
 {
     return montgomery_reduce((int32_t)a * b);
+}
+
+static unsigned bitreverse5(unsigned x)
+{
+	unsigned r = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		r = (r << 1) | (x & 1U);
+		x >>= 1;
+	}
+
+	return r;
+}
+
+static void ntt32_radix2(int16_t out[32], const int16_t in[32])
+{
+	for (unsigned i = 0; i < 32; i++)
+	{
+		out[bitreverse5(i)] = barrett_reduce(in[i]);
+	}
+
+	for (unsigned len = 2; len <= 32; len <<= 1)
+	{
+		const int16_t root = gt96_omega32_powers[32 / len];
+
+		for (unsigned start = 0; start < 32; start += len)
+		{
+			int16_t w = NTRUPLUS_R;
+
+			for (unsigned j = 0; j < len / 2; j++)
+			{
+				const int16_t u = out[start + j];
+				const int16_t v = fqmul(out[start + j + len / 2], w);
+
+				out[start + j] = barrett_reduce(u + v);
+				out[start + j + len / 2] = barrett_reduce(u - v);
+				w = fqmul(w, root);
+			}
+		}
+	}
+}
+
+static void dft3_forward(int16_t *a0, int16_t *a1, int16_t *a2)
+{
+	const int16_t x0 = *a0;
+	const int16_t x1 = *a1;
+	const int16_t x2 = *a2;
+	const int16_t y0 = barrett_reduce(x0 + x1 + x2);
+	const int16_t y1 = barrett_reduce(x0 +
+	                                  fqmul(x1, GT96_OMEGA3) +
+	                                  fqmul(x2, GT96_OMEGA3_SQ));
+	const int16_t y2 = barrett_reduce(x0 +
+	                                  fqmul(x1, GT96_OMEGA3_SQ) +
+	                                  fqmul(x2, GT96_OMEGA3));
+
+	*a0 = y0;
+	*a1 = y1;
+	*a2 = y2;
+}
+
+static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
+{
+	int16_t mat[3][32];
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			const int n = (64*n3 + 33*n32) % 96;
+			mat[n3][n32] = in[n];
+		}
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		int16_t row[32];
+
+		ntt32_radix2(row, mat[n3]);
+
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			mat[n3][k32] = row[k32];
+		}
+	}
+
+	for (int k32 = 0; k32 < 32; k32++)
+	{
+		dft3_forward(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
+	}
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			const int k = (32*k3 + 3*k32) % 96;
+			out[k] = mat[k3][k32];
+		}
+	}
 }
 
 
@@ -215,12 +365,14 @@ static inline int16_t fqinv(int16_t a)
 **************************************************/
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	int16_t t1, t2, t3;
-	int16_t zeta1, zeta2;
-	int k = 1;
+	int16_t t1;
+	int16_t zeta1;
 
-	zeta1 = zetas[k++];
+	zeta1 = zetas[1];
 
+	/* Step 1: split the 768-coefficient polynomial into two 384-coefficient
+	 * branches.  This is the same top-level split used by the original NTT.
+	 */
 	for (int i = 0; i < NTRUPLUS_N / 2; i++)
 	{
 		t1 = fqmul(zeta1, a[i + NTRUPLUS_N / 2]);
@@ -229,14 +381,26 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 		r[i                 ] = a[i]                         + t1;
 	}
 
-	// Sanity check: twist the two 384-coefficient branches, then undo it.
+	/*
+	 * Good-Thomas reference path for the verified twisted formulation:
+	 * each branch is twisted into a cyclic length-96 problem on four
+	 * stride-4 streams, transformed, then scattered back to the original
+	 * quartic block order.
+	 */
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
-		const int16_t *tw_inv = branch == 0 ? tw_c_inv : tw_d_inv;
-		const int16_t *tw = branch == 0 ? tw_c : tw_d;
+		const int16_t *tw_inv = branch == 0 ? tw_branch0_inv : tw_branch1_inv;
+		const int16_t *tw = branch == 0 ? tw_branch0 : tw_branch1;
+		const uint8_t *exponents = gt96_branch_exponents[branch];
 
-		for (int i = 0; i < NTRUPLUS_N / 8; i++)
+		/* The forward tables are kept beside the inverse tables for checks. */
+		(void)tw;
+
+		/* Step 2: twist each branch by F_b^{-k}.  After this twist, each
+		 * stride-4 lane becomes a cyclic 96-point NTT problem.
+		 */
+		for (int i = 0; i < 96; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
@@ -244,45 +408,30 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 			}
 		}
 
-		for (int i = 0; i < NTRUPLUS_N / 8; i++)
+		/* Step 3: run the Good-Thomas 96-point NTT independently on the
+		 * four lanes A_0(y), A_1(y), A_2(y), A_3(y), where y = x^4.
+		 */
+		for (int lane = 0; lane < 4; lane++)
 		{
-			for (int j = 0; j < 4; j++)
+			int16_t in[96];
+			int16_t out[96];
+
+			/* Gather one stride-4 lane into a contiguous 96-coefficient
+			 * input for ntt96_goodthomas().
+			 */
+			for (int i = 0; i < 96; i++)
 			{
-				r[branch_start + 4*i + j] = fqmul(r[branch_start + 4*i + j], tw[i]);
+				in[i] = r[branch_start + 4*i + lane];
 			}
-		}
-	}
 
-	// Twist: using y = x^4
-	for (int start = 0; start < NTRUPLUS_N; start += 384)
-	{
-		zeta1 = zetas[k++];
-		zeta2 = zetas[k++];
+			ntt96_goodthomas(out, in);
 
-		for (int i = start; i < start + 128; i++)
-		{
-			t1 = fqmul(zeta1, r[i + 128]);
-			t2 = fqmul(zeta2, r[i + 256]);
-			t3 = fqmul(NTRUPLUS_OMEGA, t1 - t2);
-
-			r[i + 256] = r[i] - t1 - t3;
-			r[i + 128] = r[i] - t2 + t3;
-			r[i      ] = r[i] + t1 + t2;
-		}		
-	}
-
-	for (int step = 64; step >= 4; step >>= 1)
-	{
-		for (int start = 0; start < NTRUPLUS_N; start += (step << 1))
-		{
-			zeta1 = zetas[k++];
-
-			for (int i = start; i < start + step; i++)
+			/* Step 4: scatter the natural Good-Thomas output back to the
+			 * block order expected by the original NTRU+ NTT domain.
+			 */
+			for (int block = 0; block < 96; block++)
 			{
-				t1 = fqmul(zeta1, r[i + step]);
-				
-				r[i + step] = barrett_reduce(r[i] - t1);
-				r[i       ] = barrett_reduce(r[i] + t1);
+				r[branch_start + 4*block + lane] = out[exponents[block]];
 			}
 		}
 	}
