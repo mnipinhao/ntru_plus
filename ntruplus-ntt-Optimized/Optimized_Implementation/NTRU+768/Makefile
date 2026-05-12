@@ -7,7 +7,7 @@ RM = /bin/rm -f
 SOURCES= kem.c poly.c ntt.c symmetric.c fips202/fips202.c
 HEADERS= api.h params.h poly.h ntt.h symmetric.h fips202/fips202.h
 
-.PHONY: all PQCgenKAT_kem test clean
+.PHONY: all PQCgenKAT_kem test test_twisted_ntt_reference dump_layout clean
 
 BUILD_DIR = build
 
@@ -22,6 +22,14 @@ PQCgenKAT_kem: $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) kat/PQCgenKAT_kem.c kat
 test: $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test randombytes.c test/test.c $(SOURCES)
+
+test_twisted_ntt_reference: $(HEADERS) ntt.c test/test_twisted_ntt_reference.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_twisted_ntt_reference test/test_twisted_ntt_reference.c
+
+dump_layout: $(HEADERS) ntt.c test/dump_layout.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/dump_layout test/dump_layout.c
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp

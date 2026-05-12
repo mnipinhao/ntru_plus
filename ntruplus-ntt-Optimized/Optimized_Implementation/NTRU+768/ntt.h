@@ -5,9 +5,15 @@
 #include "params.h"
 
 extern const int16_t zetas[192];
+extern const int16_t gt_lambda[2][96];
 
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
 void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
+void ntt_gt_oldlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
+void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
+void invntt_oldlayout_reference(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
+void invntt_gt_oldlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
+void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
 
 int  baseinv(int16_t r[4], const int16_t a[4], const int16_t zeta);
 void basemul(int16_t r[4], const int16_t a[4], const int16_t b[4], const int16_t zeta);

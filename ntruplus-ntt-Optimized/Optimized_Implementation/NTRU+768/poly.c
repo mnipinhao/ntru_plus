@@ -219,24 +219,35 @@ void poly_invntt(poly *r, const poly *a)
 **************************************************/
 int poly_baseinv(poly *r, const poly *a)
 {
-	for(size_t i = 0; i < NTRUPLUS_N/8; ++i)
+	/*
+	 * GT-natural NTT-domain layout:
+	 *   branch 0: coeffs[  0..383]
+	 *   branch 1: coeffs[384..767]
+	 *   block j: coeffs[branch_start + 4*j .. +4*j+3]
+	 *
+	 * Physical block j stores logical Good-Thomas output j.  Therefore the
+	 * base ring for that quartic block is Z_q[X]/(X^4 - lambda_j), with
+	 * lambda_j = omega96^j/F_b.  gt_lambda[branch][j] is this lambda in
+	 * centered Montgomery form; it is not a butterfly twiddle.
+	 */
+	for (int branch = 0; branch < 2; branch++)
 	{
-		if(baseinv(r->coeffs + 8*i, a->coeffs + 8*i, zetas[96 + i]))
+		const int branch_start = (NTRUPLUS_N / 2) * branch;
+
+		for (int j = 0; j < 96; j++)
 		{
-			for (size_t j = 0; j < NTRUPLUS_N; ++j)
-				r->coeffs[j] = 0;
+			const int pos = branch_start + 4*j;
+			const int16_t zeta = gt_lambda[branch][j];
 
-			return 1;
-		} 
+			if(baseinv(r->coeffs + pos, a->coeffs + pos, zeta))
+			{
+				for (size_t k = 0; k < NTRUPLUS_N; ++k)
+					r->coeffs[k] = 0;
 
-		if(baseinv(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, -zetas[96 + i]))
-		{
-			for (size_t j = 0; j < NTRUPLUS_N; ++j)
-				r->coeffs[j] = 0;
-
-			return 1;
-		} 
-	 }
+				return 1;
+			}
+		}
+	}
 
 	return 0;
 }
@@ -252,10 +263,22 @@ int poly_baseinv(poly *r, const poly *a)
 **************************************************/
 void poly_basemul(poly *r, const poly *a, const poly *b)
 {
-	for(int i = 0; i < NTRUPLUS_N/8; ++i)
+	/*
+	 * GT-natural layout keeps quartic blocks block-major.  Physical block j
+	 * is logical Good-Thomas output j, so basemul uses gt_lambda[branch][j]
+	 * as the X^4 - lambda_j folding constant.
+	 */
+	for (int branch = 0; branch < 2; branch++)
 	{
-		basemul(r->coeffs + 8*i, a->coeffs + 8*i, b->coeffs + 8*i, zetas[96 + i]);
-		basemul(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, b->coeffs + 8*i + 4, -zetas[96 + i]);
+		const int branch_start = (NTRUPLUS_N / 2) * branch;
+
+		for (int j = 0; j < 96; j++)
+		{
+			const int pos = branch_start + 4*j;
+			const int16_t zeta = gt_lambda[branch][j];
+
+			basemul(r->coeffs + pos, a->coeffs + pos, b->coeffs + pos, zeta);
+		}
 	}
 }
 
@@ -271,10 +294,18 @@ void poly_basemul(poly *r, const poly *a, const poly *b)
 **************************************************/
 void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c)
 {
-	for(int i = 0; i < NTRUPLUS_N/8; ++i)
+	/* Same GT-natural block-to-lambda layout as poly_basemul(). */
+	for (int branch = 0; branch < 2; branch++)
 	{
-		basemul_add(r->coeffs + 8*i, a->coeffs + 8*i, b->coeffs + 8*i, c->coeffs + 8*i, zetas[96 + i]);
-		basemul_add(r->coeffs + 8*i + 4, a->coeffs + 8*i + 4, b->coeffs + 8*i + 4, c->coeffs + 8*i + 4, -zetas[96 + i]);
+		const int branch_start = (NTRUPLUS_N / 2) * branch;
+
+		for (int j = 0; j < 96; j++)
+		{
+			const int pos = branch_start + 4*j;
+			const int16_t zeta = gt_lambda[branch][j];
+
+			basemul_add(r->coeffs + pos, a->coeffs + pos, b->coeffs + pos, c->coeffs + pos, zeta);
+		}
 	}
 }
 

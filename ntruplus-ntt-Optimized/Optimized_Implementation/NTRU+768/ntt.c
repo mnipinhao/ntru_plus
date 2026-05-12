@@ -149,6 +149,47 @@ static const uint8_t gt96_branch_exponents[2][96] = {
 		 6, 54, 30, 78, 18, 66, 42, 90, 12, 60, 36, 84, 24, 72, 48,  0,
 	},
 };
+
+/*
+ * GT-natural quartic folding constants in centered signed Montgomery form.
+ *
+ * In GT-natural layout, physical block j stores logical Good-Thomas output
+ * j.  The quartic block is interpreted in Z_q[X] / (X^4 - lambda_j), where
+ *   branch 0: lambda_j = omega96^j / 2
+ *   branch 1: lambda_j = omega96^j / 22
+ * and omega96 = 675.  These constants are not butterfly twiddles; they are
+ * the per-block zeta values passed to basemul()/baseinv().
+ */
+const int16_t gt_lambda[2][96] = {
+	{
+		 1655,    514,   1250,    242,    871,    235,   -397,   1671,
+		  943,    437,   1130,  -1247,  -1674,    489,   1660,    432,
+		 1212,  -1209,   -223,   1583,    312,   -277,   -297,     31,
+		  183,   -927,     -8,   1514,  -1322,   -444,   1059,   -774,
+		 -443,  -1723,  -1473,   1341,   -559,   -512,    100,  -1640,
+		 -760,  -1364,  -1138,   -696,    352,   -933,   -601,  -1206,
+		-1655,   -514,  -1250,   -242,   -871,   -235,    397,  -1671,
+		 -943,   -437,  -1130,   1247,   1674,   -489,  -1660,   -432,
+		-1212,   1209,    223,  -1583,   -312,    277,    297,    -31,
+		 -183,    927,      8,  -1514,   1322,    444,  -1059,    774,
+		  443,   1723,   1473,  -1341,    559,    512,   -100,   1640,
+		  760,   1364,   1138,    696,   -352,    933,    601,   1206
+	},
+	{
+		  779,    361,   1685,     22,   1022,  -1550,   1221,   1409,
+		  400,    354,    417,   1458,  -1095,    673,   1408,   -275,
+		 1053,  -1367,    294,   1401,  -1543,   -968,    -27,   -940,
+		 1588,    230,   -315,   1709,  -1063,   1531,   -218,   1501,
+		  274,  -1728,  -1391,   1379,    892,    582,  -1248,   1108,
+		 1188,   -124,   -732,    251,     32,    858,  -1626,  -1681,
+		 -779,   -361,  -1685,    -22,  -1022,   1550,  -1221,  -1409,
+		 -400,   -354,   -417,  -1458,   1095,   -673,  -1408,    275,
+		-1053,   1367,   -294,  -1401,   1543,    968,     27,    940,
+		-1588,   -230,    315,  -1709,   1063,  -1531,    218,  -1501,
+		 -274,   1728,   1391,  -1379,   -892,   -582,   1248,  -1108,
+		-1188,    124,    732,   -251,    -32,   -858,   1626,   1681
+	}
+};
 /*************************************************
 * Name:        montgomery_reduce
 *
@@ -306,6 +347,83 @@ static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	}
 }
 
+static void intt32_slow(int16_t out[32], const int16_t in[32])
+{
+	for (int n = 0; n < 32; n++)
+	{
+		int16_t acc = 0;
+
+		for (int k = 0; k < 32; k++)
+		{
+			const int e = (n * k) & 31;
+			const int inv_e = (32 - e) & 31;
+
+			acc = barrett_reduce(acc +
+			                     fqmul(in[k], gt96_omega32_powers[inv_e]));
+		}
+
+		out[n] = acc;
+	}
+}
+
+static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
+{
+	const int16_t y0 = *a0;
+	const int16_t y1 = *a1;
+	const int16_t y2 = *a2;
+	const int16_t x0 = barrett_reduce(y0 + y1 + y2);
+	const int16_t x1 = barrett_reduce(y0 +
+	                                  fqmul(y1, GT96_OMEGA3_SQ) +
+	                                  fqmul(y2, GT96_OMEGA3));
+	const int16_t x2 = barrett_reduce(y0 +
+	                                  fqmul(y1, GT96_OMEGA3) +
+	                                  fqmul(y2, GT96_OMEGA3_SQ));
+
+	*a0 = x0;
+	*a1 = x1;
+	*a2 = x2;
+}
+
+static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
+{
+	int16_t mat[3][32];
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			const int k = (32*k3 + 3*k32) % 96;
+			mat[k3][k32] = in[k];
+		}
+	}
+
+	for (int k32 = 0; k32 < 32; k32++)
+	{
+		dft3_inverse(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		int16_t row[32];
+
+		intt32_slow(row, mat[n3]);
+
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			mat[n3][n32] = row[n32];
+		}
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			const int n = (64*n3 + 33*n32) % 96;
+			out[n] = mat[n3][n32];
+		}
+	}
+}
+
 
 /*************************************************
 * Name:        fqinv
@@ -348,7 +466,7 @@ static inline int16_t fqinv(int16_t a)
 }
 
 /*************************************************
-* Name:        ntt
+* Name:        ntt_gt_layout
 *
 * Description: Number-theoretic transform (NTT) in R_q. Transforms the
 *              coefficient representation of a into a representation
@@ -363,7 +481,8 @@ static inline int16_t fqinv(int16_t a)
 *
 * Returns:     none.
 **************************************************/
-void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+static void ntt_gt_layout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N],
+                          int natural_layout)
 {
 	int16_t t1;
 	int16_t zeta1;
@@ -384,18 +503,14 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 	/*
 	 * Good-Thomas reference path for the verified twisted formulation:
 	 * each branch is twisted into a cyclic length-96 problem on four
-	 * stride-4 streams, transformed, then scattered back to the original
-	 * quartic block order.
+	 * stride-4 streams, transformed, then stored in the block-major layout
+	 * selected by the caller.
 	 */
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 		const int16_t *tw_inv = branch == 0 ? tw_branch0_inv : tw_branch1_inv;
-		const int16_t *tw = branch == 0 ? tw_branch0 : tw_branch1;
 		const uint8_t *exponents = gt96_branch_exponents[branch];
-
-		/* The forward tables are kept beside the inverse tables for checks. */
-		(void)tw;
 
 		/* Step 2: twist each branch by F_b^{-k}.  After this twist, each
 		 * stride-4 lane becomes a cyclic 96-point NTT problem.
@@ -426,24 +541,56 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 
 			ntt96_goodthomas(out, in);
 
-			/* Step 4: scatter the natural Good-Thomas output back to the
-			 * block order expected by the original NTRU+ NTT domain.
-			 */
-			for (int block = 0; block < 96; block++)
+			if (natural_layout)
 			{
-				r[branch_start + 4*block + lane] = out[exponents[block]];
+				/*
+				 * GT-natural layout:
+				 * physical block j stores logical 96-point
+				 * Good-Thomas output out[j].  The output remains
+				 * block-major: block j is four consecutive lanes
+				 * at branch_start + 4*j.
+				 */
+				for (int j = 0; j < 96; j++)
+				{
+					r[branch_start + 4*j + lane] = out[j];
+				}
+			}
+			else
+			{
+				/* Old-compatible layout:
+				 * physical block b stores logical output
+				 * out[gt96_branch_exponents[branch][b]].
+				 */
+				for (int block = 0; block < 96; block++)
+				{
+					r[branch_start + 4*block + lane] = out[exponents[block]];
+				}
 			}
 		}
 	}
 }
 
+void ntt_gt_oldlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	ntt_gt_layout(r, a, 0);
+}
+
+void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	ntt_gt_layout(r, a, 1);
+}
+
+void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	ntt_gt_naturallayout(r, a);
+}
+
 /*************************************************
-* Name:        invntt
+* Name:        invntt_oldlayout_reference
 *
-* Description: Inverse number-theoretic transform (NTT) in R_q. Transforms
-*              the NTT representation of a, where each block of 4
-*              coefficients corresponds to an element of Zq[X]/(X^4 - zeta_i),
-*              back to the coefficient representation in R_q.
+* Description: Original inverse NTT for the old-compatible NTT-domain block
+*              order.  Kept as a reference while the public invntt() uses the
+*              GT-natural inverse path.
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector; coefficient
 *                                       representation of a in R_q
@@ -453,7 +600,7 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 *
 * Returns:     none.
 **************************************************/
-void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+void invntt_oldlayout_reference(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
 	int16_t t1, t2, t3;
 	int16_t zeta1, zeta2;
@@ -505,6 +652,147 @@ void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 		r[i               ] = fqmul(NTRUPLUS_NINV, t1 - t2);
 		r[i + NTRUPLUS_N/2] = fqmul(NTRUPLUS_2NINV, t2);	
 	}
+}
+
+/*************************************************
+* Name:        invntt_gt_oldlayout
+*
+* Description: Debug/reference inverse for the Good-Thomas forward path while
+*              consuming the old-compatible NTT-domain block-major layout.
+*              It reverses the ntt_gt_oldlayout() scatter, applies an
+*              unnormalized inverse 96-point Good-Thomas transform per lane,
+*              untwists each branch, then
+*              performs the original two-branch merge.
+*
+* Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector
+*              - const int16_t a[NTRUPLUS_N]: pointer to input vector in
+*                                            old-compatible NTT layout
+*
+* Returns:     none.
+**************************************************/
+void invntt_gt_oldlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	int16_t branches[NTRUPLUS_N];
+	int16_t t1, t2;
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+		const int16_t *tw = branch == 0 ? tw_branch0 : tw_branch1;
+		const uint8_t *exponents = gt96_branch_exponents[branch];
+
+		for (int lane = 0; lane < 4; lane++)
+		{
+			int16_t natural[96];
+			int16_t coeffs[96];
+
+			/* Undo the old-compatible scatter:
+			 * physical block -> canonical Good-Thomas logical j.
+			 */
+			for (int block = 0; block < 96; block++)
+			{
+				natural[exponents[block]] =
+					a[branch_start + 4*block + lane];
+			}
+
+			/* The inverse is intentionally unnormalized.  Its output is
+			 * 96 times the twisted branch coefficients.
+			 */
+			invntt96_goodthomas(coeffs, natural);
+
+			/* Forward used F_b^{-k}; multiply by F_b^k to untwist. */
+			for (int i = 0; i < 96; i++)
+			{
+				branches[branch_start + 4*i + lane] =
+					fqmul(coeffs[i], tw[i]);
+			}
+		}
+	}
+
+	/* Merge the two 384-coefficient branches.  At this point each branch is
+	 * scaled by 96, so the original final constants NINV=1/192 and
+	 * 2NINV=1/96 recover the coefficient representation.
+	 */
+	for (int i = 0; i < NTRUPLUS_N/2; i++)
+	{
+		t1 = branches[i] + branches[i + NTRUPLUS_N/2];
+		t2 = fqmul(NTRUPLUS_ZMINUSZ5INV, branches[i] - branches[i + NTRUPLUS_N/2]);
+
+		r[i               ] = fqmul(NTRUPLUS_NINV, t1 - t2);
+		r[i + NTRUPLUS_N/2] = fqmul(NTRUPLUS_2NINV, t2);
+	}
+}
+
+/*************************************************
+* Name:        invntt_gt_naturallayout
+*
+* Description: Inverse for the GT-natural NTT-domain layout.  Physical block
+*              j is already logical Good-Thomas output j, so the inverse
+*              gathers each lane directly and does not undo exponents[].
+*
+* Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector
+*              - const int16_t a[NTRUPLUS_N]: pointer to input vector in
+*                                            GT-natural NTT layout
+*
+* Returns:     none.
+**************************************************/
+void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	int16_t branches[NTRUPLUS_N];
+	int16_t t1, t2;
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+		const int16_t *tw = branch == 0 ? tw_branch0 : tw_branch1;
+
+		for (int lane = 0; lane < 4; lane++)
+		{
+			int16_t natural[96];
+			int16_t coeffs[96];
+
+			/*
+			 * GT-natural layout:
+			 * physical block j is logical Good-Thomas index j.
+			 * Each quartic block remains block-major, so this lane is
+			 * gathered from branch_start + 4*j + lane.
+			 */
+			for (int j = 0; j < 96; j++)
+			{
+				natural[j] = a[branch_start + 4*j + lane];
+			}
+
+			/* The inverse is intentionally unnormalized.  Its output is
+			 * 96 times the twisted branch coefficients.
+			 */
+			invntt96_goodthomas(coeffs, natural);
+
+			/* Forward used F_b^{-k}; multiply by F_b^k to untwist. */
+			for (int i = 0; i < 96; i++)
+			{
+				branches[branch_start + 4*i + lane] =
+					fqmul(coeffs[i], tw[i]);
+			}
+		}
+	}
+
+	/* Merge the two 384-coefficient branches.  At this point each branch is
+	 * scaled by 96, so the original final constants NINV=1/192 and
+	 * 2NINV=1/96 recover the coefficient representation.
+	 */
+	for (int i = 0; i < NTRUPLUS_N/2; i++)
+	{
+		t1 = branches[i] + branches[i + NTRUPLUS_N/2];
+		t2 = fqmul(NTRUPLUS_ZMINUSZ5INV, branches[i] - branches[i + NTRUPLUS_N/2]);
+
+		r[i               ] = fqmul(NTRUPLUS_NINV, t1 - t2);
+		r[i + NTRUPLUS_N/2] = fqmul(NTRUPLUS_2NINV, t2);
+	}
+}
+
+void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	invntt_gt_naturallayout(r, a);
 }
 
 /*************************************************
