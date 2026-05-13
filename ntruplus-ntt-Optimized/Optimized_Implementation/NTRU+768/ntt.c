@@ -131,6 +131,13 @@ static const int16_t gt96_omega32_powers[32] = {
 	 -366,    429,   1339,    -11,   1118,   -177,  -1181,  -1591,
 };
 
+static const int16_t gt96_omega32_inv_powers[32] = {
+	 -147,  -1591,  -1181,   -177,   1118,    -11,   1339,    429,
+	 -366,    554,    446,   -864,   -109,   -874,    794,   -484,
+	  147,   1591,   1181,    177,  -1118,     11,  -1339,   -429,
+	  366,   -554,   -446,    864,    109,    874,   -794,    484,
+};
+
 static const uint8_t gt96_branch_exponents[2][96] = {
 	{
 		66, 18, 90, 42, 78, 30,  6, 54, 72, 24,  0, 48, 84, 36, 12, 60,
@@ -289,6 +296,40 @@ static void ntt32_radix2(int16_t out[32], const int16_t in[32])
 	}
 }
 
+static void intt32_radix2(int16_t out[32], const int16_t in[32])
+{
+	/*
+	 * Unnormalized inverse cyclic 32-point NTT with the same radix-2 shape
+	 * as ntt32_radix2().  The root is omega32^{-1}, where
+	 * omega32 = omega96^3.  Because this is unnormalized,
+	 * intt32_radix2(ntt32_radix2(x)) = 32*x.
+	 */
+	for (unsigned i = 0; i < 32; i++)
+	{
+		out[bitreverse5(i)] = barrett_reduce(in[i]);
+	}
+
+	for (unsigned len = 2; len <= 32; len <<= 1)
+	{
+		const int16_t root = gt96_omega32_inv_powers[32 / len];
+
+		for (unsigned start = 0; start < 32; start += len)
+		{
+			int16_t w = NTRUPLUS_R;
+
+			for (unsigned j = 0; j < len / 2; j++)
+			{
+				const int16_t u = out[start + j];
+				const int16_t v = fqmul(out[start + j + len / 2], w);
+
+				out[start + j] = barrett_reduce(u + v);
+				out[start + j + len / 2] = barrett_reduce(u - v);
+				w = fqmul(w, root);
+			}
+		}
+	}
+}
+
 static void dft3_forward(int16_t *a0, int16_t *a1, int16_t *a2)
 {
 	const int16_t x0 = *a0;
@@ -347,6 +388,7 @@ static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	}
 }
 
+#ifdef NTRUPLUS_NTT_REFERENCE_TEST
 static void intt32_slow(int16_t out[32], const int16_t in[32])
 {
 	for (int n = 0; n < 32; n++)
@@ -365,6 +407,7 @@ static void intt32_slow(int16_t out[32], const int16_t in[32])
 		out[n] = acc;
 	}
 }
+#endif
 
 static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 {
@@ -384,7 +427,8 @@ static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 	*a2 = x2;
 }
 
-static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
+#ifdef NTRUPLUS_NTT_REFERENCE_TEST
+static void invntt96_goodthomas_slow(int16_t out[96], const int16_t in[96])
 {
 	int16_t mat[3][32];
 
@@ -423,7 +467,47 @@ static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 		}
 	}
 }
+#endif
 
+static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
+{
+	int16_t mat[3][32];
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			const int k = (32*k3 + 3*k32) % 96;
+			mat[k3][k32] = in[k];
+		}
+	}
+
+	for (int k32 = 0; k32 < 32; k32++)
+	{
+		dft3_inverse(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		int16_t row[32];
+
+		intt32_radix2(row, mat[n3]);
+
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			mat[n3][n32] = row[n32];
+		}
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			const int n = (64*n3 + 33*n32) % 96;
+			out[n] = mat[n3][n32];
+		}
+	}
+}
 
 /*************************************************
 * Name:        fqinv

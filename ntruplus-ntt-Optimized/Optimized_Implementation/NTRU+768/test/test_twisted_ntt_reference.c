@@ -5,6 +5,7 @@
  * Debug-only harness. Include ntt.c directly so this file checks the same
  * static Montgomery helpers and twist tables used by the implementation.
  */
+#define NTRUPLUS_NTT_REFERENCE_TEST
 #include "../ntt.c"
 
 #define TEST_VECTORS 8
@@ -571,6 +572,18 @@ static int coeff96_match_count(const int16_t a[96], const int16_t b[96])
 	return count;
 }
 
+static int coeff32_match_count(const int16_t a[32], const int16_t b[32])
+{
+	int count = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		count += equal_modq(a[i], b[i]);
+	}
+
+	return count;
+}
+
 static int check_ntt96_cyclic_mixedradix(void)
 {
 	int min_matches = 96;
@@ -666,6 +679,93 @@ static int check_ntt96_goodthomas(void)
 	printf("ntt96_goodthomas check: vs slow %d/96, vs mixed-radix %d/96\n",
 	       min_vs_slow, min_vs_mixed);
 	return min_vs_slow == 96 && min_vs_mixed == 96;
+}
+
+static int check_intt32_radix2(void)
+{
+	int min_vs_slow = 32;
+	int min_roundtrip = 32;
+	int16_t in[32];
+	int16_t freq[32];
+	int16_t slow[32];
+	int16_t fast[32];
+	int16_t scaled[32];
+
+	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
+	{
+		uint32_t s = 0x27d4eb2du ^ seed;
+		int matches = 0;
+
+		for (int i = 0; i < 32; i++)
+		{
+			s = s * 1664525u + 1013904223u;
+			freq[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+		}
+
+		intt32_slow(slow, freq);
+		intt32_radix2(fast, freq);
+		matches = coeff32_match_count(slow, fast);
+		if (matches < min_vs_slow)
+		{
+			min_vs_slow = matches;
+		}
+
+		s = 0x165667b1u ^ seed;
+		for (int i = 0; i < 32; i++)
+		{
+			s = s * 1664525u + 1013904223u;
+			in[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+		}
+
+		ntt32_radix2(freq, in);
+		intt32_radix2(fast, freq);
+		for (int i = 0; i < 32; i++)
+		{
+			scaled[i] = (int16_t)field_mul(in[i], 32);
+		}
+
+		matches = coeff32_match_count(scaled, fast);
+		if (matches < min_roundtrip)
+		{
+			min_roundtrip = matches;
+		}
+	}
+
+	printf("intt32_radix2 check: vs slow %d/32, roundtrip %d/32 after 32 scaling\n",
+	       min_vs_slow, min_roundtrip);
+	return min_vs_slow == 32 && min_roundtrip == 32;
+}
+
+static int check_invntt96_goodthomas_fast_vs_slow(void)
+{
+	int min_matches = 96;
+	int16_t freq[96];
+	int16_t slow[96];
+	int16_t fast[96];
+
+	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
+	{
+		uint32_t s = 0x94d049bbu ^ seed;
+		int matches;
+
+		for (int i = 0; i < 96; i++)
+		{
+			s = s * 1664525u + 1013904223u;
+			freq[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+		}
+
+		invntt96_goodthomas_slow(slow, freq);
+		invntt96_goodthomas(fast, freq);
+		matches = coeff96_match_count(slow, fast);
+		if (matches < min_matches)
+		{
+			min_matches = matches;
+		}
+	}
+
+	printf("invntt96_goodthomas fast-vs-slow check: %d/96 minimum coefficient match\n",
+	       min_matches);
+	return min_matches == 96;
 }
 
 static int check_invntt96_goodthomas(void)
@@ -1109,6 +1209,8 @@ int main(void)
 	ok &= check_original_direct_eval();
 	ok &= check_ntt96_cyclic_mixedradix();
 	ok &= check_ntt96_goodthomas();
+	ok &= check_intt32_radix2();
+	ok &= check_invntt96_goodthomas_fast_vs_slow();
 	ok &= check_invntt96_goodthomas();
 
 	printf("branch 0 lambda^96=%d, branch 1 lambda^96=%d, F0^96=%d, F1^96=%d\n",
