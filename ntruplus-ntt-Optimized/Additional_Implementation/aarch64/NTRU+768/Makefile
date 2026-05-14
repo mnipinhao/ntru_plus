@@ -19,7 +19,7 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_scaffold clean
 
 BUILD_DIR = build
 
@@ -34,6 +34,14 @@ PQCgenKAT_kem: $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) kat/PQCgenKAT_kem.c kat
 test: $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test randombytes.c test/test.c $(SOURCES)
+
+test_gt_reference: $(HEADERS) ntt.h ntt.c gt_test/test_gt_reference.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_gt_reference gt_test/test_gt_reference.c
+
+test_gt_scaffold: $(HEADERS) ntt.h gt_asm.h ntt.c gt_asm_scaffold.c gt_test/test_gt_scaffold.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_gt_scaffold gt_test/test_gt_scaffold.c gt_asm_scaffold.c ntt.c
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
