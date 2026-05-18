@@ -194,7 +194,7 @@
 <body>
   <header>
     <h1>Register Pack Plan Viewer</h1>
-    <div class="subtle">ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/build/gt_register_pack_plan.csv</div>
+    <div class="subtle">build/gt_register_pack_plan.csv</div>
   </header>
   <main>
     <aside>
@@ -239,8 +239,18 @@
         <ol class="guide">
           <li>Pick one <code>phase</code>, then narrow by <code>branch</code>, <code>quartic_lane</code>, or NTT stage.</li>
           <li>Each grid cell is one proposed NEON halfword lane, for example <code>v4.h[0]</code>.</li>
+          <li>The registers shown here are a kernel-local working tile. The same <code>v4..v7</code> names are reused for different loop iterations.</li>
           <li>The big number in a cell is <code>physical_pos</code> when that phase still maps to one source coefficient. <code>-1</code> means this phase is an intermediate value.</li>
           <li><code>+N rows</code> means your filters are still broad; click the cell or narrow filters to see the individual rows.</li>
+        </ol>
+      </details>
+      <details open>
+        <summary>Why only v4-v7?</summary>
+        <ol class="guide">
+          <li>AArch64 has <code>v0..v31</code>, but this CSV is not a complete allocation for all live values.</li>
+          <li>A 32-point NTT row has 32 int16 values, and one vector register holds 8 int16 lanes, so one row fits exactly in four registers: <code>v4..v7</code>.</li>
+          <li>The full transform has many rows across branch, quartic lane, and <code>k3</code>. Those rows are processed as repeated tiles, not all kept in registers at once.</li>
+          <li>Extra registers such as <code>v8..v31</code> are still available for temporaries, twiddles, loads, stores, or a later more aggressive schedule.</li>
         </ol>
       </details>
       <details>
@@ -287,7 +297,7 @@
       branch: "Top-level 384-coefficient branch: 0 means r[0..383], 1 means r[384..767].",
       quartic_lane: "Lane inside a quartic block, 0..3. A physical block has four coefficients.",
       vector_group: "Group of eight 16-bit lanes. For n32/work indexes this is floor(index / 8).",
-      register: "Proposed AArch64 NEON vector register, usually v4..v7.",
+      register: "Proposed AArch64 NEON vector register inside this working tile. These names are reused across loop iterations.",
       register_lane: "Halfword lane inside that register, shown as v?.h[lane], 0..7.",
       physical_pos: "Original physical coefficient position r[pos] when the row still corresponds to one coefficient. -1 means not applicable.",
       branch_pos: "Position inside the selected 384-coefficient branch. physical_pos - 384*branch.",

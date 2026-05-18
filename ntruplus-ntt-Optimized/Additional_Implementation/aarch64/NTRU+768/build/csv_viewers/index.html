@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Good-Thomas CSV Viewers</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f7fa;
+      color: #17202a;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { max-width: 1040px; margin: 0 auto; padding: 28px 22px; }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: 0; }
+    .subtle { color: #637083; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 20px; }
+    .card {
+      display: block;
+      border: 1px solid #d9e0ea;
+      border-radius: 8px;
+      background: white;
+      color: inherit;
+      text-decoration: none;
+      padding: 14px;
+    }
+    .card:hover { outline: 2px solid #0f766e; outline-offset: 1px; }
+    .card strong { display: block; font-size: 16px; margin-bottom: 6px; }
+    .meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 9px; color: #637083; font-size: 13px; }
+    code { background: #f1f5f9; border-radius: 4px; padding: 1px 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Good-Thomas CSV Viewers</h1>
+    <div class="subtle">Generated from build/*.csv. Each page is self-contained and searchable.</div>
+    <p class="subtle">Specialized register-grid viewer: <a href="../gt_register_pack_plan.html"><code>gt_register_pack_plan.html</code></a></p>
+    <div class="grid">
+      <a class="card" href="dft3_twiddle_schedule.html"><strong>dft3_twiddle_schedule.csv</strong><div class="subtle">3-point DFT 的 explicit matrix view。它列出 input row n3 到 output row k3 時使用 omega3 的哪個 power；實際 C reference 使用一乘法公式，但這張表適合檢查數學 mapping。</div><div class="meta"><span>288 rows</span><span>7 columns</span><span><code>dft3_twiddle_schedule.html</code></span></div></a>
+<a class="card" href="forward_mapping.html"><strong>forward_mapping.csv</strong><div class="subtle">每一列是一個 physical coefficient position。這張表用來從原始 r[pos] 追到 branch、quartic block、lane、twist table index、Good-Thomas input CRT coordinate，以及 DFT3 explicit matrix factor。</div><div class="meta"><span>768 rows</span><span>21 columns</span><span><code>forward_mapping.html</code></span></div></a>
+<a class="card" href="gt_register_pack_plan.html"><strong>gt_register_pack_plan.csv</strong><div class="subtle">Good-Thomas forward 的 register-level mapping。它把 input CRT pack、DFT3 output、NTT32 bitreverse pack、NTT32 butterfly operand 都對應到 proposed v?.h[lane]。若要看格狀 register view，也可打開專用 gt_register_pack_plan.html。</div><div class="meta"><span>6144 rows</span><span>30 columns</span><span><code>gt_register_pack_plan.html</code></span></div></a>
+<a class="card" href="ntt32_neon_plan.html"><strong>ntt32_neon_plan.csv</strong><div class="subtle">32-point row 假設 pack 成 v4=work[0..7], v5=work[8..15], v6=work[16..23], v7=work[24..31] 後，每個 butterfly pair 的 register/lane 形狀。重點看 pair_shape 與 shuffle_need。</div><div class="meta"><span>80 rows</span><span>18 columns</span><span><code>ntt32_neon_plan.html</code></span></div></a>
+<a class="card" href="ntt32_twiddle_schedule.html"><strong>ntt32_twiddle_schedule.csv</strong><div class="subtle">32-point radix-2 CT butterflies 的 twiddle schedule。它列出每一層 len/start/j 的 low/high index，以及 high operand 要乘的 omega32 power。</div><div class="meta"><span>240 rows</span><span>10 columns</span><span><code>ntt32_twiddle_schedule.html</code></span></div></a>
+<a class="card" href="reduction_bound_trace.html"><strong>reduction_bound_trace.csv</strong><div class="subtle">sample-based reduction range trace。它用幾組 deterministic inputs 跑 Good-Thomas forward subpath，記錄每個 phase 的 min/max、是否超出 centered q range、是否超出 int16 range。</div><div class="meta"><span>22160 rows</span><span>18 columns</span><span><code>reduction_bound_trace.html</code></span></div></a>
+<a class="card" href="reduction_static_bounds.html"><strong>reduction_static_bounds.csv</strong><div class="subtle">symbolic conservative range model，從 top split 開始估每個 reduction policy 的 worst-case bound。這張表不是 sample trace，而是保守範圍分析。</div><div class="meta"><span>170 rows</span><span>17 columns</span><span><code>reduction_static_bounds.html</code></span></div></a>
+    </div>
+  </main>
+</body>
+</html>

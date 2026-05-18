@@ -305,6 +305,157 @@ static void dump_gt_register_pack_plan(void)
 	fclose(fp);
 }
 
+/*
+ * NEON planning view for one 32-point row.
+ *
+ * This is not a new mathematical mapping.  It assumes the bitreversed row is
+ * packed contiguously as:
+ *
+ *   v4 = work[0..7], v5 = work[8..15],
+ *   v6 = work[16..23], v7 = work[24..31].
+ *
+ * The dump classifies each CT butterfly pair by register/lane shape.  That is
+ * the useful signal for ASM planning: same-register pairs require a shuffle or
+ * half-vector split, while cross-register same-lane pairs can be handled by
+ * vector-wise butterfly instructions directly.
+ */
+static const char *ntt32_reg_for_index(int index)
+{
+	static const char *regs[4] = { "v4", "v5", "v6", "v7" };
+
+	return regs[index / 8];
+}
+
+static const char *ntt32_pair_shape(unsigned lo, unsigned hi)
+{
+	const unsigned lo_reg = lo / 8;
+	const unsigned hi_reg = hi / 8;
+	const unsigned lo_lane = lo & 7U;
+	const unsigned hi_lane = hi & 7U;
+
+	if (lo_reg != hi_reg && lo_lane == hi_lane)
+	{
+		return "cross_register_same_lane";
+	}
+	if (lo_reg == hi_reg && hi_lane == lo_lane + 1)
+	{
+		return "same_register_adjacent_lanes";
+	}
+	if (lo_reg == hi_reg && hi_lane == lo_lane + 2)
+	{
+		return "same_register_distance_2";
+	}
+	if (lo_reg == hi_reg && hi_lane == lo_lane + 4)
+	{
+		return "same_register_low_high_half";
+	}
+
+	return "irregular";
+}
+
+static const char *ntt32_shuffle_need(unsigned len)
+{
+	switch (len)
+	{
+	case 2:
+		return "yes_even_odd_deinterleave";
+	case 4:
+		return "yes_lane_distance_2_shuffle";
+	case 8:
+		return "yes_half_vector_split";
+	case 16:
+	case 32:
+		return "no_cross_register_same_lane";
+	default:
+		return "unknown";
+	}
+}
+
+static const char *ntt32_vector_strategy(unsigned len)
+{
+	switch (len)
+	{
+	case 2:
+		return "split_even_odd_lanes_per_register_then_reinterleave";
+	case 4:
+		return "group_lanes_0_1_vs_2_3_and_4_5_vs_6_7";
+	case 8:
+		return "split_each_register_into_low4_and_high4_halves";
+	case 16:
+		return "vector_butterflies_v4_vs_v5_and_v6_vs_v7";
+	case 32:
+		return "vector_butterflies_v4_vs_v6_and_v5_vs_v7";
+	default:
+		return "unknown";
+	}
+}
+
+static void dump_ntt32_neon_plan(void)
+{
+	FILE *fp = fopen("build/ntt32_neon_plan.csv", "w");
+
+	if (fp == NULL)
+	{
+		perror("build/ntt32_neon_plan.csv");
+		return;
+	}
+
+	fprintf(fp,
+	        "stage,len,step,start,j,lo_index,hi_index,lo_register,lo_lane,"
+	        "hi_register,hi_lane,twiddle_power,twiddle_mont,twiddle_normal,"
+	        "pair_shape,shuffle_need,vector_strategy,notes\n");
+
+	int stage = 0;
+
+	for (unsigned len = 2; len <= 32; len <<= 1)
+	{
+		const unsigned step = 32 / len;
+
+		stage++;
+
+		for (unsigned start = 0; start < 32; start += len)
+		{
+			for (unsigned j = 0; j < len / 2; j++)
+			{
+				const unsigned lo = start + j;
+				const unsigned hi = lo + len / 2;
+				const unsigned power = step * j;
+				const int16_t twiddle = gt96_omega32_powers[power];
+				const char *notes = "high_operand_multiplied_by_twiddle";
+
+				if (power == 0)
+				{
+					notes = "twiddle_is_montgomery_one_multiply_can_be_skipped";
+				}
+
+				fprintf(fp,
+				        "%d,%u,%u,%u,%u,%u,%u,%s,%u,%s,%u,%u,%d,%d,"
+				        "%s,%s,%s,%s\n",
+				        stage,
+				        len,
+				        step,
+				        start,
+				        j,
+				        lo,
+				        hi,
+				        ntt32_reg_for_index((int)lo),
+				        lo & 7U,
+				        ntt32_reg_for_index((int)hi),
+				        hi & 7U,
+				        power,
+				        twiddle,
+				        normal_from_mont(twiddle),
+				        ntt32_pair_shape(lo, hi),
+				        ntt32_shuffle_need(len),
+				        ntt32_vector_strategy(len),
+				        notes);
+			}
+		}
+	}
+
+	fclose(fp);
+}
+
 typedef struct
 {
 	int32_t min;
@@ -420,6 +571,15 @@ static int next_fqmul_montgomery_safe(const bounds_t *b)
 	const int64_t montgomery_input_bound = (int64_t)NTRUPLUS_Q * (1 << 15);
 
 	return max_abs <= INT16_MAX && product_bound < montgomery_input_bound;
+}
+
+static bounds_t bounds_from_abs(int32_t bound)
+{
+	bounds_t b;
+
+	b.min = -bound;
+	b.max = bound;
+	return b;
 }
 
 static int16_t centered_reduce_i32(int32_t a)
@@ -841,6 +1001,216 @@ static void dump_reduction_bound_trace(void)
 	fclose(fp);
 }
 
+static void static_bound_report(FILE *fp,
+                                const char *input_model,
+                                const char *schedule_name,
+                                const char *phase,
+                                int stage,
+                                unsigned len,
+                                const char *policy,
+                                int32_t input_bound,
+                                int32_t fqmul_input_bound,
+                                int32_t output_bound,
+                                const char *notes)
+{
+	const bounds_t out = bounds_from_abs(output_bound);
+	const bounds_t fqmul_in = bounds_from_abs(fqmul_input_bound);
+
+	fprintf(fp,
+	        "%s,%s,%s,%d,%u,%s,%d,%d,%d,%d,%d,%d,%d,%s,%d,%d,%s\n",
+	        input_model,
+	        schedule_name,
+	        phase,
+	        stage,
+	        len,
+	        policy,
+	        input_bound,
+	        fqmul_input_bound,
+	        output_bound,
+	        max_abs_bound(&out),
+	        q_multiple_bound(&out),
+	        exceeds_centered_q(&out),
+	        exceeds_i16(&out),
+	        range_class(&out),
+	        next_addsub_i16_safe(&out),
+	        next_fqmul_montgomery_safe(&fqmul_in),
+	        notes);
+}
+
+static void dump_reduction_static_bounds(void)
+{
+	static const reduction_schedule_t schedules[] = {
+		{ "current_ref", 1, 1, 1 },
+		{ "defer_dft_to_ntt_input", 0, 1, 1 },
+		{ "defer_dft_no_ntt_input_reduce", 0, 0, 1 },
+		{ "ntt_reduce_every_2_stages", 1, 1, 2 },
+		{ "ntt_reduce_final_only", 1, 1, 0 },
+	};
+	static const struct
+	{
+		const char *name;
+		int32_t input_bound;
+	} input_models[] = {
+		{ "centered_input_abs_le_q_over_2", NTRUPLUS_Q / 2 },
+		{ "signed_modq_input_abs_lt_q", NTRUPLUS_Q - 1 },
+	};
+	FILE *fp = fopen("build/reduction_static_bounds.csv", "w");
+
+	if (fp == NULL)
+	{
+		perror("build/reduction_static_bounds.csv");
+		return;
+	}
+
+	fprintf(fp,
+	        "input_model,schedule,phase,stage,len,policy,"
+	        "input_bound_abs,fqmul_input_bound_abs,output_bound_abs,"
+	        "max_abs,ceil_abs_over_q,exceeds_centered_q,exceeds_int16,"
+	        "range_class,next_addsub_i16_safe,next_fqmul_montgomery_safe,"
+	        "notes\n");
+
+	for (unsigned m = 0; m < sizeof(input_models) / sizeof(input_models[0]); m++)
+	{
+		const int32_t in = input_models[m].input_bound;
+		const int32_t fqmul_out = NTRUPLUS_Q - 1;
+		const int32_t centered = NTRUPLUS_Q / 2;
+		const int32_t top_branch0 = in + fqmul_out;
+		const int32_t top_branch1 = 2*in + fqmul_out;
+		const int32_t top_bound = top_branch0 > top_branch1 ?
+			top_branch0 : top_branch1;
+		const int32_t twist_bound = fqmul_out;
+		const int32_t dft_d_raw_bound = 2*twist_bound;
+		const int32_t dft_t_bound = fqmul_out;
+		const int32_t dft_y_raw_bound = 3*twist_bound;
+
+		for (unsigned s = 0; s < sizeof(schedules) / sizeof(schedules[0]); s++)
+		{
+			const reduction_schedule_t *schedule = &schedules[s];
+			int32_t dft_stored_bound;
+			int32_t row_bound;
+			int stage = 0;
+
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "top_split_raw",
+			                    -1,
+			                    0,
+			                    "no_reduce",
+			                    in,
+			                    in,
+			                    top_bound,
+			                    "r0=a0+t1_and_r1=a0+a1-t1");
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "after_twist",
+			                    -1,
+			                    0,
+			                    "fqmul",
+			                    top_bound,
+			                    top_bound,
+			                    twist_bound,
+			                    "twist_fqmul_reduces_to_montgomery_output_range");
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "dft3_d_raw",
+			                    -1,
+			                    0,
+			                    "before_d_reduce",
+			                    twist_bound,
+			                    twist_bound,
+			                    dft_d_raw_bound,
+			                    "x1-x2_before_barrett_reduce");
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "dft3_t",
+			                    -1,
+			                    0,
+			                    "fqmul_omega3",
+			                    centered,
+			                    centered,
+			                    dft_t_bound,
+			                    "d_is_centered_before_fqmul");
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "dft3_y_raw",
+			                    -1,
+			                    0,
+			                    "before_optional_reduce",
+			                    twist_bound,
+			                    twist_bound,
+			                    dft_y_raw_bound,
+			                    "x0+x1+x2_or_x0-xi+t");
+
+			dft_stored_bound = schedule->reduce_dft_output ?
+				centered : dft_y_raw_bound;
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "dft3_y_stored",
+			                    -1,
+			                    0,
+			                    schedule->reduce_dft_output ? "reduced" : "lazy",
+			                    dft_y_raw_bound,
+			                    dft_y_raw_bound,
+			                    dft_stored_bound,
+			                    "input_to_ntt32_before_optional_bitreverse_reduce");
+
+			row_bound = schedule->reduce_ntt_input ? centered : dft_stored_bound;
+			static_bound_report(fp,
+			                    input_models[m].name,
+			                    schedule->name,
+			                    "ntt32_bitreverse_input",
+			                    0,
+			                    1,
+			                    schedule->reduce_ntt_input ? "reduced" : "lazy",
+			                    dft_stored_bound,
+			                    dft_stored_bound,
+			                    row_bound,
+			                    "work_bitreverse_input_bound");
+
+			for (unsigned len = 2; len <= 32; len <<= 1)
+			{
+				const int reduce_stage = should_reduce_stage(schedule, stage + 1);
+				const int32_t raw_bound = row_bound + fqmul_out;
+				const int32_t stored_bound = reduce_stage ? centered : raw_bound;
+
+				stage++;
+				static_bound_report(fp,
+				                    input_models[m].name,
+				                    schedule->name,
+				                    "ntt32_stage_raw",
+				                    stage,
+				                    len,
+				                    "before_optional_reduce",
+				                    row_bound,
+				                    row_bound,
+				                    raw_bound,
+				                    "u_plus_or_minus_fqmul(high_twiddle)");
+				static_bound_report(fp,
+				                    input_models[m].name,
+				                    schedule->name,
+				                    "ntt32_stage_stored",
+				                    stage,
+				                    len,
+				                    reduce_stage ? "reduced" : "lazy",
+				                    raw_bound,
+				                    raw_bound,
+				                    stored_bound,
+				                    "stored_after_stage");
+
+				row_bound = stored_bound;
+			}
+		}
+	}
+
+	fclose(fp);
+}
+
 static void dump_dft3_twiddle_schedule(void)
 {
 	FILE *fp = fopen("build/dft3_twiddle_schedule.csv", "w");
@@ -933,8 +1303,10 @@ int main(void)
 {
 	dump_dft3_twiddle_schedule();
 	dump_ntt32_twiddle_schedule();
+	dump_ntt32_neon_plan();
 	dump_gt_register_pack_plan();
 	dump_reduction_bound_trace();
+	dump_reduction_static_bounds();
 
 	printf("physical_pos,branch,branch_pos,block_k,lane,twist_table,twist_index,twist_mont,twist_normal,gt_in_index,input_crt_n3,input_crt_n32,dft_to_k3_0_exp,dft_to_k3_0_mont,dft_to_k3_0_normal,dft_to_k3_1_exp,dft_to_k3_1_mont,dft_to_k3_1_normal,dft_to_k3_2_exp,dft_to_k3_2_mont,dft_to_k3_2_normal\n");
 
