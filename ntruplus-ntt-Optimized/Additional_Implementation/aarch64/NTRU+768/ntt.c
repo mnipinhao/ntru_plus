@@ -99,6 +99,8 @@ static const int16_t untwist_branch1[96] = {
  * root is branch 1 block 0 after applying the verified F_b scaling, and every
  * alpha = F_b * lambda used by the two branches is a power of it.  The tables
  * below are in Montgomery form when they are used by fqmul().
+ *
+ * TODO: it can only use one table, because omega32_inv_powers is the reverse of omega32_powers. So if you want to use inv_powers you can read gt96_omega32_powers[32] backwards.
  */
 static const int16_t gt96_omega32_powers[32] = {
 	 -147,    484,   -794,    874,    109,    864,   -446,   -554,
@@ -294,17 +296,56 @@ static void dft3_forward(int16_t *a0, int16_t *a1, int16_t *a2)
 	const int16_t x0 = *a0;
 	const int16_t x1 = *a1;
 	const int16_t x2 = *a2;
+	const int16_t d = barrett_reduce(x1 - x2);
+	const int16_t t = fqmul(d, GT96_OMEGA3);
 	const int16_t y0 = barrett_reduce(x0 + x1 + x2);
-	const int16_t y1 = barrett_reduce(x0 +
-	                                  fqmul(x1, GT96_OMEGA3) +
-	                                  fqmul(x2, GT96_OMEGA3_SQ));
-	const int16_t y2 = barrett_reduce(x0 +
-	                                  fqmul(x1, GT96_OMEGA3_SQ) +
-	                                  fqmul(x2, GT96_OMEGA3));
+
+	/*
+	 * Since 1 + omega3 + omega3^2 = 0:
+	 *   y1 = x0 + omega3*x1 + omega3^2*x2
+	 *      = x0 - x2 + omega3*(x1 - x2)
+	 *   y2 = x0 + omega3^2*x1 + omega3*x2
+	 *      = x0 - x1 - omega3*(x1 - x2)
+	 *
+	 * This keeps the same unnormalized 3-point DFT while using one
+	 * Montgomery multiplication per lane instead of four.
+	 */
+	const int16_t y1 = barrett_reduce(x0 - x2 + t);
+	const int16_t y2 = barrett_reduce(x0 - x1 - t);
 
 	*a0 = y0;
 	*a1 = y1;
 	*a2 = y2;
+}
+
+static void ntt96_goodthomas_core(int16_t mat[3][32])
+{
+	/*
+	 * The 96-point transform separates into a 3-point transform on the
+	 * n3 dimension and a 32-point transform on the n32 dimension:
+	 *
+	 *   omega96^((64*n3 + 33*n32) * (32*k3 + 3*k32))
+	 *     = omega96^(32*n3*k3) * omega96^(3*n32*k32).
+	 *
+	 * These two dimensions commute.  Do the 3-point DFT first so the
+	 * reference follows the schedule intended for the AArch64 path.
+	 */
+	for (int n32 = 0; n32 < 32; n32++)
+	{
+		dft3_forward(&mat[0][n32], &mat[1][n32], &mat[2][n32]);
+	}
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		int16_t row[32];
+
+		ntt32_radix2(row, mat[k3]);
+
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			mat[k3][k32] = row[k32];
+		}
+	}
 }
 
 static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
@@ -320,22 +361,7 @@ static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
 		}
 	}
 
-	for (int n3 = 0; n3 < 3; n3++)
-	{
-		int16_t row[32];
-
-		ntt32_radix2(row, mat[n3]);
-
-		for (int k32 = 0; k32 < 32; k32++)
-		{
-			mat[n3][k32] = row[k32];
-		}
-	}
-
-	for (int k32 = 0; k32 < 32; k32++)
-	{
-		dft3_forward(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
-	}
+	ntt96_goodthomas_core(mat);
 
 	for (int k3 = 0; k3 < 3; k3++)
 	{
@@ -373,19 +399,28 @@ static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 	const int16_t y0 = *a0;
 	const int16_t y1 = *a1;
 	const int16_t y2 = *a2;
+	const int16_t d = barrett_reduce(y2 - y1);
+	const int16_t t = fqmul(d, GT96_OMEGA3);
 	const int16_t x0 = barrett_reduce(y0 + y1 + y2);
-	const int16_t x1 = barrett_reduce(y0 +
-	                                  fqmul(y1, GT96_OMEGA3_SQ) +
-	                                  fqmul(y2, GT96_OMEGA3));
-	const int16_t x2 = barrett_reduce(y0 +
-	                                  fqmul(y1, GT96_OMEGA3) +
-	                                  fqmul(y2, GT96_OMEGA3_SQ));
+
+	/*
+	 * Inverse 3-point DFT is also unnormalized.  Using omega3^2=-1-omega3:
+	 *   x1 = y0 + omega3^2*y1 + omega3*y2
+	 *      = y0 - y1 + omega3*(y2 - y1)
+	 *   x2 = y0 + omega3*y1 + omega3^2*y2
+	 *      = y0 - y2 - omega3*(y2 - y1)
+	 */
+	const int16_t x1 = barrett_reduce(y0 - y1 + t);
+	const int16_t x2 = barrett_reduce(y0 - y2 - t);
 
 	*a0 = x0;
 	*a1 = x1;
 	*a2 = x2;
 }
 
+/*
+ * TODO: i think this can be removed, the reference testing you can use ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 to check the correctness of the optimized implementation.
+ */
 #ifdef NTRUPLUS_NTT_REFERENCE_TEST
 static void invntt96_goodthomas_slow(int16_t out[96], const int16_t in[96])
 {
@@ -541,8 +576,8 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 	/*
 	 * Good-Thomas reference path for the verified twisted formulation:
 	 * each branch is twisted into a cyclic length-96 problem on four
-	 * stride-4 streams, transformed, then stored in GT-natural block-major
-	 * layout.
+	 * stride-4 streams, transformed through an explicit in[96]/out[96]
+	 * 96-point kernel, then stored in GT-natural block-major layout.
 	 */
 	for (int branch = 0; branch < 2; branch++)
 	{
@@ -556,7 +591,8 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				r[branch_start + 4*i + j] = fqmul(r[branch_start + 4*i + j], twist[i]);
+				r[branch_start + 4*i + j] =
+					fqmul(r[branch_start + 4*i + j], twist[i]);
 			}
 		}
 
@@ -568,8 +604,10 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 			int16_t in[96];
 			int16_t out[96];
 
-			/* Gather one stride-4 lane into a contiguous 96-coefficient
-			 * input for ntt96_goodthomas().
+			/* Gather one stride-4 lane into a contiguous input for the
+			 * 96-point Good-Thomas kernel.  This is intentionally
+			 * explicit so the future assembly routine has a simple
+			 * in/out reference boundary.
 			 */
 			for (int i = 0; i < 96; i++)
 			{

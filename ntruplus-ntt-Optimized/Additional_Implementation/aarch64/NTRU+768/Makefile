@@ -19,7 +19,7 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_scaffold clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_scaffold dump_forward_mapping clean
 
 BUILD_DIR = build
 
@@ -42,6 +42,11 @@ test_gt_reference: $(HEADERS) ntt.h ntt.c gt_test/test_gt_reference.c
 test_gt_scaffold: $(HEADERS) ntt.h gt_asm.h ntt.c gt_asm_scaffold.c gt_test/test_gt_scaffold.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_gt_scaffold gt_test/test_gt_scaffold.c gt_asm_scaffold.c ntt.c
+
+dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/dump_forward_mapping gt_test/dump_forward_mapping.c
+	./$(BUILD_DIR)/dump_forward_mapping > $(BUILD_DIR)/forward_mapping.csv
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
