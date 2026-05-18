@@ -1,4 +1,5 @@
 CC =gcc
+PYTHON ?= python3
 CFLAGS += -Wall -Wextra -Wpedantic -Wmissing-prototypes -Wredundant-decls \
   -Wshadow -Wpointer-arith -O3 -fomit-frame-pointer
 NISTFLAGS += -Wno-unused-result -O3 -fomit-frame-pointer
@@ -19,7 +20,7 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_scaffold dump_forward_mapping clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_scaffold test_gt_ntt32_asm dump_forward_mapping csv_viewers clean
 
 BUILD_DIR = build
 
@@ -43,10 +44,18 @@ test_gt_scaffold: $(HEADERS) ntt.h gt_asm.h ntt.c gt_asm_scaffold.c gt_test/test
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_gt_scaffold gt_test/test_gt_scaffold.c gt_asm_scaffold.c ntt.c
 
+test_gt_ntt32_asm: $(HEADERS) ntt.h gt_asm.h ntt.c asm/gt_ntt32.s gt_test/test_gt_ntt32_asm.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_gt_ntt32_asm gt_test/test_gt_ntt32_asm.c asm/gt_ntt32.s
+
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/dump_forward_mapping gt_test/dump_forward_mapping.c
 	./$(BUILD_DIR)/dump_forward_mapping > $(BUILD_DIR)/forward_mapping.csv
+	$(PYTHON) gt_test/make_register_pack_viewer.py $(BUILD_DIR)/gt_register_pack_plan.csv -o $(BUILD_DIR)/gt_register_pack_plan.html
+	$(PYTHON) gt_test/make_csv_viewers.py $(BUILD_DIR)
+
+csv_viewers: dump_forward_mapping
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
