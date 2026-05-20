@@ -272,41 +272,12 @@ static unsigned NTRUPLUS_UNUSED gt96_rowbitrev_logical_index(unsigned physical_j
 	return gt96_output_crt_index(k3, k32);
 }
 
-static void NTRUPLUS_UNUSED ntt32_radix2(int16_t out[32], const int16_t in[32])
-{
-	for (unsigned i = 0; i < 32; i++)
-	{
-		out[bitreverse5(i)] = barrett_reduce(in[i]);
-	}
-
-	for (unsigned len = 2; len <= 32; len <<= 1)
-	{
-		const int16_t root = gt96_omega32_powers[32 / len];
-
-		for (unsigned start = 0; start < 32; start += len)
-		{
-			int16_t w = NTRUPLUS_R;
-
-			for (unsigned j = 0; j < len / 2; j++)
-			{
-				const int16_t u = out[start + j];
-				const int16_t v = fqmul(out[start + j + len / 2], w);
-
-				out[start + j] = barrett_reduce(u + v);
-				out[start + j + len / 2] = barrett_reduce(u - v);
-				w = fqmul(w, root);
-			}
-		}
-	}
-}
-
 static void ntt32_radix2_dif_bitrevout(int16_t out[32], const int16_t in[32])
 {
 	/*
 	 * Forward cyclic 32-point NTT using radix-2 decimation-in-frequency.
 	 *
-	 * Unlike ntt32_radix2(), this routine does not bit-reverse the input.
-	 * It consumes natural-order input and produces bit-reversed output:
+	 * This routine consumes natural-order input and produces bit-reversed output:
 	 *
 	 *   out[bitreverse5(k)] = NTT32(in)[k].
 	 *
