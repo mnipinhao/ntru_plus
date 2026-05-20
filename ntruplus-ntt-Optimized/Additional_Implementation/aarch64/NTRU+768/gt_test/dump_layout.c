@@ -3,8 +3,8 @@
 
 /*
  * Layout dump helper. Include ntt.c directly so this debug tool uses the same
- * static Montgomery helpers, twist/untwist tables, and GT-natural lambda table
- * as the implementation under inspection.
+ * static Montgomery helpers, twist/untwist tables, and lambda table as the
+ * implementation under inspection.
  */
 #include "../ntt.c"
 
@@ -56,33 +56,35 @@ static int normal_from_mont(int16_t a)
 	return modq(montgomery_reduce(a));
 }
 
-static void dump_gt_natural_lambda_row(int branch, int j)
+static void dump_gt_rowbitrev_lambda_row(int branch, int physical_j)
 {
 	const int branch_start = (NTRUPLUS_N / 2) * branch;
-	const int pos = branch_start + 4*j;
+	const int logical_j = (int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+	const int pos = branch_start + 4*physical_j;
 
-	printf("%6d | %7d | %3d..%-3d | %11d | %13d\n",
+	printf("%6d | %14d | %9d | %3d..%-3d | %11d | %13d\n",
 	       branch,
-	       j,
+	       physical_j,
+	       logical_j,
 	       pos,
 	       pos + 3,
-	       gt_lambda[branch][j],
-	       normal_from_mont(gt_lambda[branch][j]));
+	       gt_lambda[branch][logical_j],
+	       normal_from_mont(gt_lambda[branch][logical_j]));
 }
 
-static void dump_gt_natural_lambda_layout(void)
+static void dump_gt_rowbitrev_lambda_layout(void)
 {
 	const int sample_blocks[] = {0, 1, 2, 3, 94, 95};
 
-	printf("\n# GT-natural quartic block to lambda layout\n");
-	printf("branch | block j | positions | lambda_mont | lambda_normal\n");
-	printf("-------+---------+-----------+-------------+--------------\n");
+	printf("\n# GT row-bitrev quartic block to lambda layout\n");
+	printf("branch | physical block | logical j | positions | lambda_mont | lambda_normal\n");
+	printf("-------+----------------+-----------+-----------+-------------+--------------\n");
 
 	for (int branch = 0; branch < 2; branch++)
 	{
 		for (size_t i = 0; i < sizeof(sample_blocks) / sizeof(sample_blocks[0]); i++)
 		{
-			dump_gt_natural_lambda_row(branch, sample_blocks[i]);
+			dump_gt_rowbitrev_lambda_row(branch, sample_blocks[i]);
 		}
 	}
 }
@@ -120,38 +122,41 @@ int main(void)
 	};
 	int ok = 1;
 
-	printf("# GT-natural layout only.\n");
+	printf("# GT row-bitrev layout.\n");
 	printf("# alpha_j and lambda_j are normal representatives in [0,%d).\n",
 	       NTRUPLUS_Q);
 	printf("# omega96=%d, F0=%d, F1=%d\n",
 	       OMEGA96_NORMAL, factors[0], factors[1]);
-	printf("physical pos | branch | lane r | logical j | alpha_j | lambda_j | table index\n");
-	printf("-------------+--------+--------+-----------+---------+----------+------------\n");
+	printf("physical pos | branch | lane r | physical block | logical j | alpha_j | lambda_j | table index\n");
+	printf("-------------+--------+--------+----------------+-----------+---------+----------+------------\n");
 
 	for (int pos = 0; pos < NTRUPLUS_N; pos++)
 	{
 		const int branch = pos / (NTRUPLUS_N / 2);
 		const int branch_pos = pos - branch * (NTRUPLUS_N / 2);
-		const int j = branch_pos / 4;
+		const int physical_j = branch_pos / 4;
+		const int logical_j =
+			(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
 		const int lane = pos & 3;
-		const int lambda = normal_from_mont(gt_lambda[branch][j]);
+		const int lambda = normal_from_mont(gt_lambda[branch][logical_j]);
 		const int alpha = field_mul(lambda, factors[branch]);
-		const int expected_alpha = field_pow(OMEGA96_NORMAL, j);
+		const int expected_alpha = field_pow(OMEGA96_NORMAL, logical_j);
 
 		if (alpha != expected_alpha)
 		{
 			ok = 0;
 		}
 
-		printf("%12d | %6d | %6d | %9d | %7d | %8d | gt_lambda[%d][%2d]\n",
+		printf("%12d | %6d | %6d | %14d | %9d | %7d | %8d | gt_lambda[%d][%2d]\n",
 		       pos,
 		       branch,
 		       lane,
-		       j,
+		       physical_j,
+		       logical_j,
 		       alpha,
 		       lambda,
 		       branch,
-		       j);
+		       logical_j);
 	}
 
 	if (!verify_gt_lambda_formula(factors))
@@ -159,11 +164,11 @@ int main(void)
 		ok = 0;
 	}
 
-	dump_gt_natural_lambda_layout();
+	dump_gt_rowbitrev_lambda_layout();
 
 	if (!ok)
 	{
-		fprintf(stderr, "layout dump mismatch: computed layout differs from GT-natural tables\n");
+		fprintf(stderr, "layout dump mismatch: computed layout differs from row-bitrev tables\n");
 		return 1;
 	}
 

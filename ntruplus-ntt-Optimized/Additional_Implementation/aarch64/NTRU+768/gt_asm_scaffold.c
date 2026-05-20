@@ -4,7 +4,7 @@
 
 void poly_ntt_gt_ref(poly *r, const poly *a)
 {
-	ntt_gt_naturallayout(r->coeffs, a->coeffs);
+	ntt_gt_rowbitrevlayout(r->coeffs, a->coeffs);
 }
 
 /*

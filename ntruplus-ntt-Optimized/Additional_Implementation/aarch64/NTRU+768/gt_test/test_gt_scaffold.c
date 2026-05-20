@@ -58,7 +58,7 @@ int main(void)
 		int matches;
 
 		fill_poly(&a, seed);
-		ntt_gt_naturallayout(ref.coeffs, a.coeffs);
+		ntt_gt_rowbitrevlayout(ref.coeffs, a.coeffs);
 		poly_ntt_gt_asm(&got, &a);
 
 		matches = coeff_match_count(&ref, &got);

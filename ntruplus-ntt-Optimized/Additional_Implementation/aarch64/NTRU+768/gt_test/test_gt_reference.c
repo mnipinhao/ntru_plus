@@ -92,18 +92,6 @@ static int coeff_match_count(const int16_t a[NTRUPLUS_N],
 	return count;
 }
 
-static int coeff96_match_count(const int16_t a[96], const int16_t b[96])
-{
-	int count = 0;
-
-	for (int i = 0; i < 96; i++)
-	{
-		count += equal_modq(a[i], b[i]);
-	}
-
-	return count;
-}
-
 static int coeff32_match_count(const int16_t a[32], const int16_t b[32])
 {
 	int count = 0;
@@ -129,7 +117,26 @@ static void split_layer_reference(int16_t r[NTRUPLUS_N],
 	}
 }
 
-static void slow_ntt96_direct(int16_t out[96], const int16_t in[96])
+static void direct_ntt32(int16_t out[32], const int16_t in[32])
+{
+	for (int j = 0; j < 32; j++)
+	{
+		const int omega32 = field_pow(OMEGA96_NORMAL, 3);
+		const int alpha = field_pow(omega32, j);
+		int power = 1;
+		int acc = 0;
+
+		for (int k = 0; k < 32; k++)
+		{
+			acc = (acc + field_mul(in[k], power)) % NTRUPLUS_Q;
+			power = field_mul(power, alpha);
+		}
+
+		out[j] = (int16_t)acc;
+	}
+}
+
+static void direct_ntt96(int16_t out[96], const int16_t in[96])
 {
 	for (int j = 0; j < 96; j++)
 	{
@@ -147,9 +154,9 @@ static void slow_ntt96_direct(int16_t out[96], const int16_t in[96])
 	}
 }
 
-static void slow_gt_natural_direct(int16_t out[NTRUPLUS_N],
-                                   const int16_t a[NTRUPLUS_N],
-                                   const int factors[2])
+static void direct_gt_rowbitrev(int16_t out[NTRUPLUS_N],
+                                const int16_t a[NTRUPLUS_N],
+                                const int factors[2])
 {
 	int16_t split[NTRUPLUS_N];
 
@@ -184,11 +191,14 @@ static void slow_gt_natural_direct(int16_t out[NTRUPLUS_N],
 				in[k] = split[branch_start + 4*k + lane];
 			}
 
-			slow_ntt96_direct(direct, in);
+			direct_ntt96(direct, in);
 
-			for (int j = 0; j < 96; j++)
+			for (int physical_j = 0; physical_j < 96; physical_j++)
 			{
-				out[branch_start + 4*j + lane] = direct[j];
+				const unsigned logical_j =
+					gt96_rowbitrev_logical_index((unsigned)physical_j);
+
+				out[branch_start + 4*physical_j + lane] = direct[logical_j];
 			}
 		}
 	}
@@ -253,16 +263,17 @@ static int check_gt_lambda_formula(const int factors[2])
 	return 1;
 }
 
-static int check_ntt32_radix2(void)
+static int check_ntt32_radix2_dif_bitrevout(void)
 {
 	int min_matches = 32;
 	int16_t in[32];
-	int16_t slow[32];
-	int16_t fast[32];
+	int16_t direct[32];
+	int16_t bitrev[32];
+	int16_t expected_bitrev[32];
 
 	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
 	{
-		uint32_t s = 0x85ebca6bu ^ seed;
+		uint32_t s = 0xd1b54a35u ^ seed;
 
 		for (int i = 0; i < 32; i++)
 		{
@@ -270,32 +281,22 @@ static int check_ntt32_radix2(void)
 			in[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
 		}
 
-		for (int j = 0; j < 32; j++)
+		direct_ntt32(direct, in);
+		ntt32_radix2_dif_bitrevout(bitrev, in);
+
+		for (int k = 0; k < 32; k++)
 		{
-			const int omega32 = field_pow(OMEGA96_NORMAL, 3);
-			const int alpha = field_pow(omega32, j);
-			int power = 1;
-			int acc = 0;
-
-			for (int k = 0; k < 32; k++)
-			{
-				acc = (acc + field_mul(in[k], power)) % NTRUPLUS_Q;
-				power = field_mul(power, alpha);
-			}
-
-			slow[j] = (int16_t)acc;
+			expected_bitrev[bitreverse5((unsigned)k)] = direct[k];
 		}
 
-		ntt32_radix2(fast, in);
-
-		const int matches = coeff32_match_count(slow, fast);
+		const int matches = coeff32_match_count(expected_bitrev, bitrev);
 		if (matches < min_matches)
 		{
 			min_matches = matches;
 		}
 	}
 
-	printf("ntt32_radix2 check: %d/32 minimum coefficient match\n",
+	printf("ntt32_radix2_dif_bitrevout check: %d/32 minimum coefficient match\n",
 	       min_matches);
 	return min_matches == 32;
 }
@@ -304,7 +305,7 @@ static int check_ntt96_goodthomas(void)
 {
 	int min_matches = 96;
 	int16_t in[96];
-	int16_t slow[96];
+	int16_t direct[96];
 	int16_t gt[96];
 
 	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
@@ -317,106 +318,64 @@ static int check_ntt96_goodthomas(void)
 			in[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
 		}
 
-		slow_ntt96_direct(slow, in);
+		direct_ntt96(direct, in);
 		ntt96_goodthomas(gt, in);
 
-		const int matches = coeff96_match_count(slow, gt);
+		int matches = 0;
+		for (int physical_j = 0; physical_j < 96; physical_j++)
+		{
+			const unsigned logical_j =
+				gt96_rowbitrev_logical_index((unsigned)physical_j);
+
+			matches += equal_modq(gt[physical_j], direct[logical_j]);
+		}
 		if (matches < min_matches)
 		{
 			min_matches = matches;
 		}
 	}
 
-	printf("ntt96_goodthomas check: %d/96 minimum coefficient match\n",
+	printf("ntt96_goodthomas row-bitrev check: %d/96 minimum coefficient match\n",
 	       min_matches);
 	return min_matches == 96;
 }
 
-static int check_intt32_radix2(void)
+static int check_intt32_radix2_bitrevin(void)
 {
-	int min_vs_slow = 32;
-	int min_roundtrip = 32;
+	int min_bitrev_roundtrip = 32;
 	int16_t in[32];
 	int16_t freq[32];
-	int16_t slow[32];
 	int16_t fast[32];
 	int16_t scaled[32];
 
 	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
 	{
-		uint32_t s = 0x27d4eb2du ^ seed;
+		uint32_t s = 0x165667b1u ^ seed;
 		int matches = 0;
 
-		for (int i = 0; i < 32; i++)
-		{
-			s = s * 1664525u + 1013904223u;
-			freq[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-		}
-
-		intt32_slow(slow, freq);
-		intt32_radix2(fast, freq);
-		matches = coeff32_match_count(slow, fast);
-		if (matches < min_vs_slow)
-		{
-			min_vs_slow = matches;
-		}
-
-		s = 0x165667b1u ^ seed;
 		for (int i = 0; i < 32; i++)
 		{
 			s = s * 1664525u + 1013904223u;
 			in[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
 		}
 
-		ntt32_radix2(freq, in);
-		intt32_radix2(fast, freq);
 		for (int i = 0; i < 32; i++)
 		{
 			scaled[i] = (int16_t)field_mul(in[i], 32);
 		}
 
+		ntt32_radix2_dif_bitrevout(freq, in);
+		intt32_radix2_bitrevin(fast, freq);
 		matches = coeff32_match_count(scaled, fast);
-		if (matches < min_roundtrip)
+		if (matches < min_bitrev_roundtrip)
 		{
-			min_roundtrip = matches;
+			min_bitrev_roundtrip = matches;
 		}
 	}
 
-	printf("intt32_radix2 check: vs slow %d/32, roundtrip %d/32 after 32 scaling\n",
-	       min_vs_slow, min_roundtrip);
-	return min_vs_slow == 32 && min_roundtrip == 32;
-}
-
-static int check_invntt96_goodthomas_fast_vs_slow(void)
-{
-	int min_matches = 96;
-	int16_t freq[96];
-	int16_t slow[96];
-	int16_t fast[96];
-
-	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
-	{
-		uint32_t s = 0x94d049bbu ^ seed;
-
-		for (int i = 0; i < 96; i++)
-		{
-			s = s * 1664525u + 1013904223u;
-			freq[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-		}
-
-		invntt96_goodthomas_slow(slow, freq);
-		invntt96_goodthomas(fast, freq);
-
-		const int matches = coeff96_match_count(slow, fast);
-		if (matches < min_matches)
-		{
-			min_matches = matches;
-		}
-	}
-
-	printf("invntt96_goodthomas fast-vs-slow check: %d/96 minimum coefficient match\n",
-	       min_matches);
-	return min_matches == 96;
+	printf("intt32_radix2_bitrevin roundtrip: %d/32 after 32 scaling\n",
+	       min_bitrev_roundtrip);
+	return min_bitrev_roundtrip == 32;
 }
 
 static int check_invntt96_goodthomas(void)
@@ -456,7 +415,7 @@ static int check_invntt96_goodthomas(void)
 	return min_matches == 96;
 }
 
-static int check_full_ntt_gt_natural_direct(const int factors[2])
+static int check_full_ntt_gt_rowbitrev_direct(const int factors[2])
 {
 	int min_vs_direct = NTRUPLUS_N;
 	int min_public = NTRUPLUS_N;
@@ -468,8 +427,8 @@ static int check_full_ntt_gt_natural_direct(const int factors[2])
 	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
 	{
 		fill_input(a, seed);
-		slow_gt_natural_direct(direct, a, factors);
-		ntt_gt_naturallayout(gt, a);
+		direct_gt_rowbitrev(direct, a, factors);
+		ntt_gt_rowbitrevlayout(gt, a);
 		ntt(public_ntt, a);
 
 		int matches = coeff_match_count(direct, gt);
@@ -485,12 +444,12 @@ static int check_full_ntt_gt_natural_direct(const int factors[2])
 		}
 	}
 
-	printf("full ntt GT-natural layout: vs direct %d/768, public ntt %d/768\n",
+	printf("full ntt GT-row-bitrev layout: vs direct %d/768, public ntt %d/768\n",
 	       min_vs_direct, min_public);
 	return min_vs_direct == NTRUPLUS_N && min_public == NTRUPLUS_N;
 }
 
-static int check_invntt_gt_naturallayout_roundtrip(void)
+static int check_invntt_gt_rowbitrevlayout_roundtrip(void)
 {
 	int min_gt = NTRUPLUS_N;
 	int min_public = NTRUPLUS_N;
@@ -503,8 +462,8 @@ static int check_invntt_gt_naturallayout_roundtrip(void)
 	{
 		fill_input(a, seed);
 
-		ntt_gt_naturallayout(gt_ntt, a);
-		invntt_gt_naturallayout(round, gt_ntt);
+		ntt_gt_rowbitrevlayout(gt_ntt, a);
+		invntt_gt_rowbitrevlayout(round, gt_ntt);
 		int matches = coeff_match_count(a, round);
 		if (matches < min_gt)
 		{
@@ -520,7 +479,7 @@ static int check_invntt_gt_naturallayout_roundtrip(void)
 		}
 	}
 
-	printf("invntt_gt_naturallayout roundtrip: direct %d/768, public ntt/invntt %d/768\n",
+	printf("invntt_gt_rowbitrevlayout roundtrip: direct %d/768, public ntt/invntt %d/768\n",
 	       min_gt, min_public);
 	return min_gt == NTRUPLUS_N && min_public == NTRUPLUS_N;
 }
@@ -559,24 +518,26 @@ static void schoolbook_mul_reference(int16_t r[NTRUPLUS_N],
 	}
 }
 
-static void naturallayout_basemul_reference(int16_t r[NTRUPLUS_N],
-                                            const int16_t a[NTRUPLUS_N],
-                                            const int16_t b[NTRUPLUS_N])
+static void rowbitrev_basemul_reference(int16_t r[NTRUPLUS_N],
+                                        const int16_t a[NTRUPLUS_N],
+                                        const int16_t b[NTRUPLUS_N])
 {
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int j = 0; j < 96; j++)
+		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
-			const int pos = branch_start + 4*j;
+			const int pos = branch_start + 4*physical_j;
+			const unsigned logical_j =
+				gt96_rowbitrev_logical_index((unsigned)physical_j);
 
-			basemul(r + pos, a + pos, b + pos, gt_lambda[branch][j]);
+			basemul(r + pos, a + pos, b + pos, gt_lambda[branch][logical_j]);
 		}
 	}
 }
 
-static int check_gt_natural_multiplication(void)
+static int check_gt_rowbitrev_multiplication(void)
 {
 	int min_vs_schoolbook = NTRUPLUS_N;
 	int16_t a[NTRUPLUS_N];
@@ -593,10 +554,10 @@ static int check_gt_natural_multiplication(void)
 		fill_input(b, seed + 0x100u);
 		schoolbook_mul_reference(schoolbook, a, b);
 
-		ntt_gt_naturallayout(natural_a, a);
-		ntt_gt_naturallayout(natural_b, b);
-		naturallayout_basemul_reference(natural_c, natural_a, natural_b);
-		invntt_gt_naturallayout(natural_round, natural_c);
+		ntt_gt_rowbitrevlayout(natural_a, a);
+		ntt_gt_rowbitrevlayout(natural_b, b);
+		rowbitrev_basemul_reference(natural_c, natural_a, natural_b);
+		invntt_gt_rowbitrevlayout(natural_round, natural_c);
 
 		const int matches = coeff_match_count(schoolbook, natural_round);
 		if (matches < min_vs_schoolbook)
@@ -605,7 +566,7 @@ static int check_gt_natural_multiplication(void)
 		}
 	}
 
-	printf("GT-natural multiplication: vs schoolbook %d/768\n",
+	printf("GT-row-bitrev multiplication: vs schoolbook %d/768\n",
 	       min_vs_schoolbook);
 	return min_vs_schoolbook == NTRUPLUS_N;
 }
@@ -703,14 +664,13 @@ int main(void)
 
 	ok &= check_twist_tables();
 	ok &= check_gt_lambda_formula(branch_factors);
-	ok &= check_ntt32_radix2();
+	ok &= check_ntt32_radix2_dif_bitrevout();
 	ok &= check_ntt96_goodthomas();
-	ok &= check_intt32_radix2();
-	ok &= check_invntt96_goodthomas_fast_vs_slow();
+	ok &= check_intt32_radix2_bitrevin();
 	ok &= check_invntt96_goodthomas();
-	ok &= check_full_ntt_gt_natural_direct(branch_factors);
-	ok &= check_invntt_gt_naturallayout_roundtrip();
-	ok &= check_gt_natural_multiplication();
+	ok &= check_full_ntt_gt_rowbitrev_direct(branch_factors);
+	ok &= check_invntt_gt_rowbitrevlayout_roundtrip();
+	ok &= check_gt_rowbitrev_multiplication();
 	ok &= check_gt_natural_basemul_add();
 	ok &= check_gt_natural_baseinv();
 

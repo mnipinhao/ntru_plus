@@ -2,6 +2,12 @@
 #include "params.h"
 #include "ntt.h"
 
+#if defined(__GNUC__) || defined(__clang__)
+#define NTRUPLUS_UNUSED __attribute__((unused))
+#else
+#define NTRUPLUS_UNUSED
+#endif
+
 #define NTRUPLUS_R            -147 // R = 2^16 mod q
 #define NTRUPLUS_RINV         -682 // (R)^(-1) mod q
 #define NTRUPLUS_RSQ           867 // (R^2) mod q
@@ -117,10 +123,12 @@ static const int16_t gt96_omega32_inv_powers[32] = {
 };
 
 /*
- * GT-natural quartic folding constants in centered signed Montgomery form.
+ * Good-Thomas quartic folding constants in centered signed Montgomery form.
  *
- * In GT-natural layout, physical block j stores logical Good-Thomas output
- * j.  The quartic block is interpreted in Z_q[X] / (X^4 - lambda_j), where
+ * The table is indexed by logical Good-Thomas output j.  In row-bitrev
+ * physical layout, recover the logical index with
+ * gt96_rowbitrev_logical_index(physical_j) before using this table.  The
+ * quartic block is interpreted in Z_q[X] / (X^4 - lambda_j), where
  *   branch 0: lambda_j = omega96^j / 2
  *   branch 1: lambda_j = omega96^j / 22
  * and omega96 = 675.  These constants are not butterfly twiddles; they are
@@ -229,7 +237,42 @@ static unsigned bitreverse5(unsigned x)
 	return r;
 }
 
-static void ntt32_radix2(int16_t out[32], const int16_t in[32])
+static unsigned gt96_output_crt_index(unsigned k3, unsigned k32)
+{
+	return (32*k3 + 3*k32) % 96;
+}
+
+static unsigned gt96_output_crt_k3(unsigned j)
+{
+	return (2*j) % 3;
+}
+
+static unsigned gt96_output_crt_k32(unsigned j)
+{
+	return (11*j) & 31U;
+}
+
+static unsigned NTRUPLUS_UNUSED gt96_rowbitrev_logical_index(unsigned physical_j)
+{
+	/*
+	 * Row-bitrev layout keeps the Good-Thomas output CRT scatter, but the
+	 * 32-point row coordinate is stored in bit-reversed order:
+	 *
+	 *   physical coordinate: (k3, k32_br)
+	 *   logical coordinate : (k3, bitreverse5(k32_br))
+	 *
+	 * Therefore a physical quartic block does not directly use
+	 * gt_lambda[branch][physical_j].  Basemul/baseinv must first recover the
+	 * logical GT index stored at that physical block.
+	 */
+	const unsigned k3 = gt96_output_crt_k3(physical_j);
+	const unsigned k32_br = gt96_output_crt_k32(physical_j);
+	const unsigned k32 = bitreverse5(k32_br);
+
+	return gt96_output_crt_index(k3, k32);
+}
+
+static void NTRUPLUS_UNUSED ntt32_radix2(int16_t out[32], const int16_t in[32])
 {
 	for (unsigned i = 0; i < 32; i++)
 	{
@@ -257,17 +300,63 @@ static void ntt32_radix2(int16_t out[32], const int16_t in[32])
 	}
 }
 
-static void intt32_radix2(int16_t out[32], const int16_t in[32])
+static void ntt32_radix2_dif_bitrevout(int16_t out[32], const int16_t in[32])
 {
 	/*
-	 * Unnormalized inverse cyclic 32-point NTT with the same radix-2 shape
-	 * as ntt32_radix2().  The root is omega32^{-1}, where
-	 * omega32 = omega96^3.  Because this is unnormalized,
-	 * intt32_radix2(ntt32_radix2(x)) = 32*x.
+	 * Forward cyclic 32-point NTT using radix-2 decimation-in-frequency.
+	 *
+	 * Unlike ntt32_radix2(), this routine does not bit-reverse the input.
+	 * It consumes natural-order input and produces bit-reversed output:
+	 *
+	 *   out[bitreverse5(k)] = NTT32(in)[k].
+	 *
+	 * This is the shape intended for the next NEON kernel, because the first
+	 * two stages are cross-register butterflies when a row is packed as
+	 * v4=out[0..7], v5=out[8..15], v6=out[16..23], v7=out[24..31].
 	 */
 	for (unsigned i = 0; i < 32; i++)
 	{
-		out[bitreverse5(i)] = barrett_reduce(in[i]);
+		out[i] = barrett_reduce(in[i]);
+	}
+
+	for (unsigned len = 32; len >= 2; len >>= 1)
+	{
+		const int16_t root = gt96_omega32_powers[32 / len];
+
+		for (unsigned start = 0; start < 32; start += len)
+		{
+			int16_t w = NTRUPLUS_R;
+
+			for (unsigned j = 0; j < len / 2; j++)
+			{
+				const int16_t u = out[start + j];
+				const int16_t v = out[start + j + len / 2];
+				const int16_t diff = barrett_reduce(u - v);
+
+				out[start + j] = barrett_reduce(u + v);
+				out[start + j + len / 2] = fqmul(diff, w);
+				w = fqmul(w, root);
+			}
+		}
+	}
+}
+
+static void intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
+{
+	/*
+	 * Unnormalized inverse cyclic 32-point NTT matching
+	 * ntt32_radix2_dif_bitrevout().
+	 *
+	 * Input is already in bit-reversed frequency order:
+	 *   in[bitreverse5(k)] = F[k]
+	 *
+	 * The increasing-len inverse radix-2 DIT butterflies normally start from
+	 * bit-reversed frequency input, so no extra input permutation is needed.
+	 * The output is natural-order time-domain data and is scaled by 32.
+	 */
+	for (unsigned i = 0; i < 32; i++)
+	{
+		out[i] = barrett_reduce(in[i]);
 	}
 
 	for (unsigned len = 2; len <= 32; len <<= 1)
@@ -339,10 +428,21 @@ static void ntt96_goodthomas_core(int16_t mat[3][32])
 	{
 		int16_t row[32];
 
-		ntt32_radix2(row, mat[k3]);
+		ntt32_radix2_dif_bitrevout(row, mat[k3]);
 
 		for (int k32 = 0; k32 < 32; k32++)
 		{
+			/*
+			 * Keep the local 32-point output in bit-reversed order.
+			 * The public block layout is therefore:
+			 *
+			 *   physical (k3, k32_br) stores logical
+			 *   (k3, bitreverse5(k32_br)).
+			 *
+			 * This matches the intended ASM pair:
+			 *   forward: natural row input -> bitreversed row output
+			 *   inverse: bitreversed row input -> natural row output
+			 */
 			mat[k3][k32] = row[k32];
 		}
 	}
@@ -367,32 +467,11 @@ static void ntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	{
 		for (int k32 = 0; k32 < 32; k32++)
 		{
-			const int k = (32*k3 + 3*k32) % 96;
+			const int k = gt96_output_crt_index((unsigned)k3, (unsigned)k32);
 			out[k] = mat[k3][k32];
 		}
 	}
 }
-
-#ifdef NTRUPLUS_NTT_REFERENCE_TEST
-static void intt32_slow(int16_t out[32], const int16_t in[32])
-{
-	for (int n = 0; n < 32; n++)
-	{
-		int16_t acc = 0;
-
-		for (int k = 0; k < 32; k++)
-		{
-			const int e = (n * k) & 31;
-			const int inv_e = (32 - e) & 31;
-
-			acc = barrett_reduce(acc +
-			                     fqmul(in[k], gt96_omega32_powers[inv_e]));
-		}
-
-		out[n] = acc;
-	}
-}
-#endif
 
 static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 {
@@ -418,51 +497,6 @@ static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 	*a2 = x2;
 }
 
-/*
- * TODO: i think this can be removed, the reference testing you can use ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 to check the correctness of the optimized implementation.
- */
-#ifdef NTRUPLUS_NTT_REFERENCE_TEST
-static void invntt96_goodthomas_slow(int16_t out[96], const int16_t in[96])
-{
-	int16_t mat[3][32];
-
-	for (int k3 = 0; k3 < 3; k3++)
-	{
-		for (int k32 = 0; k32 < 32; k32++)
-		{
-			const int k = (32*k3 + 3*k32) % 96;
-			mat[k3][k32] = in[k];
-		}
-	}
-
-	for (int k32 = 0; k32 < 32; k32++)
-	{
-		dft3_inverse(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
-	}
-
-	for (int n3 = 0; n3 < 3; n3++)
-	{
-		int16_t row[32];
-
-		intt32_slow(row, mat[n3]);
-
-		for (int n32 = 0; n32 < 32; n32++)
-		{
-			mat[n3][n32] = row[n32];
-		}
-	}
-
-	for (int n3 = 0; n3 < 3; n3++)
-	{
-		for (int n32 = 0; n32 < 32; n32++)
-		{
-			const int n = (64*n3 + 33*n32) % 96;
-			out[n] = mat[n3][n32];
-		}
-	}
-}
-#endif
-
 static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 {
 	int16_t mat[3][32];
@@ -471,7 +505,7 @@ static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	{
 		for (int k32 = 0; k32 < 32; k32++)
 		{
-			const int k = (32*k3 + 3*k32) % 96;
+			const int k = gt96_output_crt_index((unsigned)k3, (unsigned)k32);
 			mat[k3][k32] = in[k];
 		}
 	}
@@ -485,7 +519,7 @@ static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	{
 		int16_t row[32];
 
-		intt32_radix2(row, mat[n3]);
+		intt32_radix2_bitrevin(row, mat[n3]);
 
 		for (int n32 = 0; n32 < 32; n32++)
 		{
@@ -544,21 +578,22 @@ static inline int16_t fqinv(int16_t a)
 }
 
 /*************************************************
-* Name:        ntt_gt_naturallayout
+* Name:        ntt_gt_rowbitrevlayout
 *
 * Description: Number-theoretic transform (NTT) in R_q using the
-*              Good-Thomas natural block-major layout.  Physical block j
-*              stores logical 96-point Good-Thomas output j, and each block
-*              represents an element of Zq[X]/(X^4 - gt_lambda[branch][j]).
+*              Good-Thomas row-bitrev block-major layout.  Physical block
+*              j stores the logical 96-point Good-Thomas output recovered by
+*              gt96_rowbitrev_logical_index(j), and each block represents an
+*              element of Zq[X]/(X^4 - gt_lambda[branch][logical_j]).
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector in
-*                                       GT-natural NTT representation
+*                                       GT row-bitrev NTT representation
 *              - const int16_t a[NTRUPLUS_N]: pointer to input vector of
 *                                            coefficients of a in R_q
 *
 * Returns:     none.
 **************************************************/
-void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+void ntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
 	int16_t t1;
 
@@ -574,10 +609,10 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 	}
 
 	/*
-	 * Good-Thomas reference path for the verified twisted formulation:
-	 * each branch is twisted into a cyclic length-96 problem on four
+	 * Good-Thomas reference path for the verified twisted formulation.
+	 * Each branch is twisted into a cyclic length-96 problem on four
 	 * stride-4 streams, transformed through an explicit in[96]/out[96]
-	 * 96-point kernel, then stored in GT-natural block-major layout.
+	 * 96-point kernel, then stored in row-bitrev block-major layout.
 	 */
 	for (int branch = 0; branch < 2; branch++)
 	{
@@ -617,10 +652,12 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 			ntt96_goodthomas(out, in);
 
 			/*
-			 * GT-natural layout:
-			 * physical block j stores logical 96-point Good-Thomas
-			 * output out[j].  The output remains block-major: block j
-			 * is four consecutive lanes at branch_start + 4*j.
+			 * Row-bitrev layout:
+			 * out[j] is already the value for physical block j; the
+			 * logical GT index stored there is
+			 * gt96_rowbitrev_logical_index(j).  The output remains
+			 * block-major: block j is four consecutive lanes at
+			 * branch_start + 4*j.
 			 */
 			for (int j = 0; j < 96; j++)
 			{
@@ -632,23 +669,30 @@ void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	ntt_gt_naturallayout(r, a);
+	ntt_gt_rowbitrevlayout(r, a);
+}
+
+void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	/* Compatibility alias kept while callers migrate to the clearer name. */
+	ntt_gt_rowbitrevlayout(r, a);
 }
 
 /*************************************************
-* Name:        invntt_gt_naturallayout
+* Name:        invntt_gt_rowbitrevlayout
 *
-* Description: Inverse for the GT-natural NTT-domain layout.  Physical block
-*              j is already logical Good-Thomas output j, so the inverse
-*              gathers each lane directly.
+ * Description: Inverse for the row-bitrev NTT-domain layout.  Each 32-point
+ *              row is already bit-reversed in the frequency coordinate, so
+ *              the inverse row kernel consumes it directly and returns
+ *              natural-order time-domain coefficients.
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector
 *              - const int16_t a[NTRUPLUS_N]: pointer to input vector in
-*                                            GT-natural NTT layout
+*                                            GT row-bitrev NTT layout
 *
 * Returns:     none.
 **************************************************/
-void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
 	int16_t branches[NTRUPLUS_N];
 	int16_t t1, t2;
@@ -663,11 +707,9 @@ void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 			int16_t natural[96];
 			int16_t coeffs[96];
 
-			/*
-			 * GT-natural layout:
-			 * physical block j is logical Good-Thomas index j.
-			 * Each quartic block remains block-major, so this lane is
-			 * gathered from branch_start + 4*j + lane.
+			/* Row-bitrev layout: physical block j is gathered directly.
+			 * invntt96_goodthomas() interprets the row coordinate as
+			 * bit-reversed frequency input.
 			 */
 			for (int j = 0; j < 96; j++)
 			{
@@ -704,7 +746,13 @@ void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 
 void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	invntt_gt_naturallayout(r, a);
+	invntt_gt_rowbitrevlayout(r, a);
+}
+
+void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	/* Compatibility alias kept while callers migrate to the clearer name. */
+	invntt_gt_rowbitrevlayout(r, a);
 }
 
 /*************************************************
