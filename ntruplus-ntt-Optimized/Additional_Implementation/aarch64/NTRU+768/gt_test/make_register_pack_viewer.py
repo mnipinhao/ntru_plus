@@ -343,7 +343,7 @@ def write_viewer(rows, csv_path, output_path):
       dft_output_k3: "Row coordinate after the 3-point DFT, k3 = 0..2.",
       ntt32_stage: "Radix-2 32-point NTT stage. -1 before NTT32, 0 for initial bit-reversed pack, 1..5 for butterflies.",
       ntt32_len: "Butterfly span length for that stage: 1 for initial pack, then 2, 4, 8, 16, 32.",
-      ntt32_work_index: "Index in the 32-element work array after bit-reversal or during NTT32 butterflies.",
+      ntt32_work_index: "Index in the 32-element work array; initial pack is natural order, then DIF butterflies update it in place.",
       ntt32_input_k32: "Original DFT3 output column k32 that was placed into a bit-reversed work index.",
       ntt32_role: "Role of the value: source, dft_output, state, lo, or hi.",
       pair_lo_index: "Low operand work index in a butterfly pair.",

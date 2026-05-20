@@ -672,12 +672,6 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 	ntt_gt_rowbitrevlayout(r, a);
 }
 
-void ntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
-{
-	/* Compatibility alias kept while callers migrate to the clearer name. */
-	ntt_gt_rowbitrevlayout(r, a);
-}
-
 /*************************************************
 * Name:        invntt_gt_rowbitrevlayout
 *
@@ -746,12 +740,6 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 
 void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
-	invntt_gt_rowbitrevlayout(r, a);
-}
-
-void invntt_gt_naturallayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
-{
-	/* Compatibility alias kept while callers migrate to the clearer name. */
 	invntt_gt_rowbitrevlayout(r, a);
 }
 

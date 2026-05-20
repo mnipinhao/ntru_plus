@@ -18,17 +18,39 @@ CSV_GUIDES = {
         "但這張表適合檢查數學 mapping。"
     ),
     "ntt32_twiddle_schedule.csv": (
-        "32-point radix-2 CT butterflies 的 twiddle schedule。它列出每一層 "
-        "len/start/j 的 low/high index，以及 high operand 要乘的 omega32 power。"
+        "32-point radix-2 DIF butterflies 的 twiddle schedule。它列出每一層 "
+        "len/start/j 的 low/high index，以及 high output 要乘的 omega32 power。"
     ),
     "ntt32_neon_plan.csv": (
         "32-point row 假設 pack 成 v4=work[0..7], v5=work[8..15], "
-        "v6=work[16..23], v7=work[24..31] 後，每個 butterfly pair 的 "
+        "v6=work[16..23], v7=work[24..31] 後，每個 DIF butterfly pair 的 "
         "register/lane 形狀。重點看 pair_shape 與 shuffle_need。"
+    ),
+    "full_fused_gt_plan.csv": (
+        "從 top split 後的 physical coefficient 出發，串起 twist、Good-Thomas "
+        "input CRT coordinate、DFT3 output row、natural NTT32 input work index、"
+        "bitreversed NTT32 output index，以及預計放入的 v?.h[lane]。這張表用來看 "
+        "full fused forward schedule。"
+    ),
+    "gt_stage_top_split_plan.csv": (
+        "逐 pair 顯示 768 -> 384 + 384 的第一次分解。包含 low/high input、"
+        "branch0/branch1 output formula，以及對照原 ntt.s level0 的 load/temp/output register。"
+    ),
+    "gt_stage_twist_plan.csv": (
+        "逐 branch/block 顯示 twist 階段。每個 quartic block 的 4 個 lane 共用同一個 "
+        "F_b^{-k} constant，表中同時列 Montgomery form 和 normal form。"
+    ),
+    "gt_stage_dft3_plan.csv": (
+        "逐 DFT3 column 顯示三個 source positions x0/x1/x2、各自 twist constant，"
+        "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。"
+    ),
+    "gt_stage_ntt32_input_plan.csv": (
+        "逐 DFT3 output element 顯示進入 32-point DIF NTT 前的 natural input pack："
+        "k32 直接放到 work[k32]，32-point kernel 產生 bitreversed output。"
     ),
     "gt_register_pack_plan.csv": (
         "Good-Thomas forward 的 register-level mapping。它把 input CRT pack、"
-        "DFT3 output、NTT32 bitreverse pack、NTT32 butterfly operand 都對應到 "
+        "DFT3 output、NTT32 natural input pack、NTT32 DIF butterfly operand 都對應到 "
         "proposed v?.h[lane]。若要看格狀 register view，也可打開專用 "
         "gt_register_pack_plan.html。"
     ),
@@ -46,11 +68,67 @@ CSV_GUIDES = {
 
 COLUMN_GUIDES = {
     "physical_pos": "原始或目前 physical coefficient position，通常是 r[pos] 的 pos。",
+    "top_split_output_pos": "top split 後 branch 內的 physical output position，也就是後續 twist 的輸入。",
+    "top_split_branch_pos": "top split output 在 384-coefficient branch 內的 offset。",
+    "top_split_pair_index": "top split 的 low/high input pair index。low 是 a[i]，high 是 a[i+384]。",
+    "pair_i": "top split pair index i。low 是 a[i]，high 是 a[i+384]。",
+    "top_split_low_input_pos": "top split 使用的 low input coefficient position。",
+    "top_split_high_input_pos": "top split 使用的 high input coefficient position。",
+    "low_input_pos": "top split 使用的 low input coefficient position。",
+    "high_input_pos": "top split 使用的 high input coefficient position。",
+    "top_zeta_mont": "top split constant 的 Montgomery form。",
+    "top_zeta_normal": "top split constant 轉回 normal field representation。",
+    "asm_loop_iter": "原 ntt.s level0 內 8-lane slice loop iteration，0..7。",
+    "asm_lane": "原 ntt.s level0 的 NEON halfword lane，0..7。",
+    "asm_low_load_register": "原 ntt.s level0 載入 low half 的 register。",
+    "asm_high_load_register": "原 ntt.s level0 載入 high half 的 register。",
+    "asm_temp_register": "原 ntt.s level0 存 t=fqmul(zeta_top, high) 的 temporary register。",
+    "branch0_output_pos": "top split branch 0 output physical position。",
+    "branch0_output_register": "原 ntt.s level0 branch 0 output register。",
+    "branch0_formula": "branch 0 output 的 symbolic formula。",
+    "branch1_output_pos": "top split branch 1 output physical position。",
+    "branch1_output_register": "原 ntt.s level0 branch 1 output register。",
+    "branch1_formula": "branch 1 output 的 symbolic formula。",
+    "top_split_formula": "branch output 公式：branch0 是 low+zeta*high，branch1 是 low+high-zeta*high。",
     "branch": "top split 後的 384-coefficient branch：0 是 r[0..383]，1 是 r[384..767]。",
+    "base_F": "branch twist 使用的 F_b。branch 0 是 2，branch 1 是 22。",
+    "exponent": "twist exponent，forward 是 -k。",
+    "position_start": "quartic block 起始 physical position。",
+    "position_end": "quartic block 結束 physical position。",
+    "lane_count": "這個 block 內有幾個 lanes。NTRU+768 quartic block 是 4。",
+    "operation": "這個 stage 的 symbolic operation。",
+    "expanded_positions": "這個 row 涵蓋的 physical positions。",
     "branch_pos": "branch 內部 offset，也就是 physical_pos - 384*branch。",
     "block_k": "branch 內 quartic block index，0..95。",
+    "source_block_k": "這個 source coefficient 在 branch 內的 quartic block index，也就是 GT input index。",
+    "source_n3": "這個 source coefficient 的 Good-Thomas input CRT row coordinate。",
+    "source_n32": "這個 source coefficient 的 Good-Thomas input CRT column coordinate。",
+    "source_vector_group": "以 8 個 n32 columns 為一組時，source_n32 所在 vector group。",
+    "source_input_register": "DFT3 input pack 中，source_n3 暫定放入的 register。",
+    "source_input_register_lane": "DFT3 input pack 中，source_n32 對應的 halfword lane。",
+    "input_pack_registers": "DFT3 input column 暫定使用的 register pack。",
+    "d_mont_constant": "one-multiply DFT3 公式中 t=omega3*(x1-x2) 使用的 omega3 Montgomery constant。",
+    "dft_y0_formula": "DFT3 output y0 的 formula。",
+    "dft_y1_formula": "DFT3 output y1 的 formula。",
+    "dft_y2_formula": "DFT3 output y2 的 formula。",
+    "y0_row_k3": "DFT3 y0 對應的 output row k3。",
+    "y1_row_k3": "DFT3 y1 對應的 output row k3。",
+    "y2_row_k3": "DFT3 y2 對應的 output row k3。",
+    "x0_pos": "DFT3 column 的 x0 source physical position，也就是 n3=0。",
+    "x1_pos": "DFT3 column 的 x1 source physical position，也就是 n3=1。",
+    "x2_pos": "DFT3 column 的 x2 source physical position，也就是 n3=2。",
+    "x0_block": "x0 source 的 branch block index。",
+    "x1_block": "x1 source 的 branch block index。",
+    "x2_block": "x2 source 的 branch block index。",
+    "x0_twist_mont": "x0 source 使用的 twist Montgomery constant。",
+    "x1_twist_mont": "x1 source 使用的 twist Montgomery constant。",
+    "x2_twist_mont": "x2 source 使用的 twist Montgomery constant。",
+    "x0_twist_normal": "x0 source 使用的 twist normal constant。",
+    "x1_twist_normal": "x1 source 使用的 twist normal constant。",
+    "x2_twist_normal": "x2 source 使用的 twist normal constant。",
     "lane": "quartic block 內 lane，0..3。",
     "quartic_lane": "quartic block 內 lane，0..3。",
+    "twist_table": "forward twist table name：twist_branch0 或 twist_branch1。",
     "twist_index": "forward twist table index，通常等於 block_k。",
     "twist_mont": "Montgomery form twist constant，centered int16。",
     "twist_normal": "twist constant 轉回 normal field representation。",
@@ -61,8 +139,14 @@ COLUMN_GUIDES = {
     "gt_in_index": "ntt96_goodthomas() 的 logical input index。",
     "row_k3": "DFT3 後的 Good-Thomas row，0..2。",
     "dft_output_k3": "DFT3 output row coordinate，0..2。",
+    "dft3_column": "DFT3 column，也就是 Good-Thomas n32 coordinate。",
+    "dft3_output_k3": "DFT3 output row k3，0..2。",
+    "dft3_factor_exp": "explicit DFT3 matrix factor omega3^exp 的 exp；實際 implementation 可能用一乘法公式。",
+    "dft3_factor_mont": "explicit DFT3 matrix factor 的 Montgomery form。",
+    "dft3_factor_normal": "explicit DFT3 matrix factor 的 normal representation。",
+    "dft3_one_mul_role": "目前一乘法 DFT3 公式中，這個 source 對 output row 的角色。",
     "stage": "radix-2 NTT stage，通常 1..5。",
-    "len": "目前 CT butterfly group length，2,4,8,16,32。",
+    "len": "目前 DIF butterfly group length，32,16,8,4,2。",
     "start": "32-point row 裡的 current group start index。",
     "j": "butterfly offset inside current group。",
     "lo_index": "butterfly low operand work index。",
@@ -74,6 +158,22 @@ COLUMN_GUIDES = {
     "twiddle_normal": "twiddle 轉回 normal field representation。",
     "register": "proposed AArch64 NEON register name，例如 v4。",
     "register_lane": "halfword lane index，0..7。",
+    "input_work_index": "進入 DIF NTT32 的 natural-order work index；目前等於 input_k32。",
+    "bitrev_output_index": "DIF NTT32 output 的 bit-reversed output index，bitreverse5(k32)。",
+    "bitrev_output_register": "DIF NTT32 bit-reversed output index 對應的 register。",
+    "bitrev_output_lane": "DIF NTT32 bit-reversed output index 對應的 lane。",
+    "ntt32_input_k32": "進入 32-point row 的原始 k32 column。",
+    "ntt32_work_index": "32-point row 的 work array index；initial pack 是 natural order，後續由 DIF butterflies in-place 更新。",
+    "ntt32_input_work_index": "DIF NTT32 的 natural input work index；目前等於 ntt32_input_k32。",
+    "ntt32_input_register": "DIF NTT32 natural input pack register。",
+    "ntt32_input_register_lane": "DIF NTT32 natural input pack lane。",
+    "ntt32_input_vector_group": "DIF NTT32 natural input pack vector group。",
+    "ntt32_bitrev_output_index": "DIF NTT32 output 對應的 bit-reversed index。",
+    "ntt32_bitrev_output_register": "DIF NTT32 bit-reversed output register。",
+    "ntt32_bitrev_output_lane": "DIF NTT32 bit-reversed output lane。",
+    "ntt32_register": "NTT32 initial row pack 中 work index 所在 register。",
+    "ntt32_register_lane": "NTT32 initial row pack 中 work index 所在 halfword lane。",
+    "ntt32_vector_group": "NTT32 initial row pack 中 work index 所在 vector group。",
     "lo_register": "low operand 所在 register。",
     "hi_register": "high operand 所在 register。",
     "lo_lane": "low operand 所在 halfword lane。",
