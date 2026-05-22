@@ -227,6 +227,75 @@
     }
     .kv div { padding: 6px 9px; font-size: 12px; }
     .kv div:first-child { color: var(--muted); background: #fafbfc; }
+    .matrix-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .matrix-head {
+      margin-bottom: 10px;
+    }
+    .matrix-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .matrix-list {
+      display: grid;
+      gap: 14px;
+    }
+    .matrix-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 10px;
+    }
+    .matrix-card-title {
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+    .matrix-wrap {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      scrollbar-gutter: stable;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      margin-top: 8px;
+      padding-bottom: 4px;
+    }
+    .matrix-table {
+      min-width: 1120px;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .flatten-table {
+      min-width: 3600px;
+    }
+    .matrix-table th,
+    .matrix-table td {
+      padding: 6px 7px;
+      white-space: nowrap;
+      font-size: 12px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .matrix-table th:first-child,
+    .matrix-table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      text-align: left;
+      background: #f8fafc;
+      font-weight: 800;
+    }
+    .matrix-table thead th:first-child { z-index: 3; }
+    .matrix-cell {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #0f172a;
+    }
     @media (max-width: 980px) {
       main { grid-template-columns: 1fr; }
       aside { max-height: none; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -307,6 +376,7 @@
       </details>
     </aside>
     <section>
+      
       <div class="controls">
         <div>
           <strong id="tableTitle">Rows</strong>
@@ -516,6 +586,7 @@
       `).join("");
     }
     init();
+    
   </script>
 </body>
 </html>

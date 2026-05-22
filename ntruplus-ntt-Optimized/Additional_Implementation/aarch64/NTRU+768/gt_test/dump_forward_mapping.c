@@ -76,6 +76,43 @@ static int physical_pos_for_input_crt(int branch, int lane, int n3, int n32)
 	return branch_start + 4*block + lane;
 }
 
+static void format_branch_lane_stream(char out[80], int branch, int lane)
+{
+	const int branch_start = branch * (NTRUPLUS_N / 2);
+
+	snprintf(out,
+	         80,
+	         "Branch%d lane%d: r[%d,%d,%d,...,%d]",
+	         branch,
+	         lane,
+	         branch_start + lane,
+	         branch_start + lane + 4,
+	         branch_start + lane + 8,
+	         branch_start + 4*95 + lane);
+}
+
+static void format_dft3_offset_group(char out[128],
+                                     int branch,
+                                     int lane,
+                                     int n3,
+                                     int vector_group)
+{
+	int used = 0;
+
+	out[0] = '\0';
+	for (int i = 0; i < 8; i++)
+	{
+		const int n32 = 8*vector_group + i;
+		const int pos = physical_pos_for_input_crt(branch, lane, n3, n32);
+
+		used += snprintf(out + used,
+		                 128 - used,
+		                 "%sr%d",
+		                 i == 0 ? "" : " ",
+		                 pos);
+	}
+}
+
 static const char *ntt32_reg_for_index(int index);
 
 static const char *top_split_formula_for_branch(int branch)
@@ -240,6 +277,7 @@ static void dump_gt_stage_dft3_plan(void)
 
 	fprintf(fp,
 	        "branch,quartic_lane,n32,vector_group,register_lane,"
+	        "matrix_lane_stream,x0_offsets_8,x1_offsets_8,x2_offsets_8,"
 	        "x0_pos,x0_block,x0_twist_mont,x0_twist_normal,"
 	        "x1_pos,x1_block,x1_twist_mont,x1_twist_normal,"
 	        "x2_pos,x2_block,x2_twist_mont,x2_twist_normal,"
@@ -255,15 +293,26 @@ static void dump_gt_stage_dft3_plan(void)
 		{
 			for (int n32 = 0; n32 < 32; n32++)
 			{
+				char matrix_lane_stream[80];
+				char x0_offsets[128];
+				char x1_offsets[128];
+				char x2_offsets[128];
 				const int x0_block = input_crt_n(0, n32);
 				const int x1_block = input_crt_n(1, n32);
 				const int x2_block = input_crt_n(2, n32);
 				const int x0_pos = physical_pos_for_input_crt(branch, lane, 0, n32);
 				const int x1_pos = physical_pos_for_input_crt(branch, lane, 1, n32);
 				const int x2_pos = physical_pos_for_input_crt(branch, lane, 2, n32);
+				const int vector_group = n32 / 8;
+
+				format_branch_lane_stream(matrix_lane_stream, branch, lane);
+				format_dft3_offset_group(x0_offsets, branch, lane, 0, vector_group);
+				format_dft3_offset_group(x1_offsets, branch, lane, 1, vector_group);
+				format_dft3_offset_group(x2_offsets, branch, lane, 2, vector_group);
 
 				fprintf(fp,
 				        "%d,%d,%d,%d,%d,"
+				        "\"%s\",\"%s\",\"%s\",\"%s\","
 				        "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,"
 				        "v4=x0_v5=x1_v6=x2,%d,"
 				        "y0=x0+x1+x2,"
@@ -273,8 +322,12 @@ static void dump_gt_stage_dft3_plan(void)
 				        branch,
 				        lane,
 				        n32,
-				        n32 / 8,
+				        vector_group,
 				        n32 & 7,
+				        matrix_lane_stream,
+				        x0_offsets,
+				        x1_offsets,
+				        x2_offsets,
 				        x0_pos,
 				        x0_block,
 				        twist[x0_block],
@@ -1703,6 +1756,60 @@ static void dump_ntt32_twiddle_schedule(void)
 	fclose(fp);
 }
 
+static void dump_gt_rowbitrev_basemul_table(void)
+{
+	FILE *fp = fopen("build/gt_rowbitrev_basemul_table.csv", "w");
+
+	if (fp == NULL)
+	{
+		perror("build/gt_rowbitrev_basemul_table.csv");
+		return;
+	}
+
+	fprintf(fp,
+	        "branch,physical_j,position_start,position_end,k3,k32_br,"
+	        "logical_k32,logical_j,lambda_table,lambda_mont,lambda_normal,"
+	        "asm_zeta_vector_index,asm_zeta_vector_lane,notes\n");
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+
+		for (int physical_j = 0; physical_j < 96; physical_j++)
+		{
+			const int pos = branch_start + 4*physical_j;
+			const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
+			const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
+			const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
+			const int logical_j =
+				(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+			const int asm_vector = branch * 12 + physical_j / 8;
+			const int asm_lane = physical_j & 7;
+
+			fprintf(fp,
+			        "%d,%d,%d,%d,%d,%d,%d,%d,"
+			        "gt_rowbitrev_lambda[%d][%d],%d,%d,%d,%d,"
+			        "physical_order_zeta_for_ZqX_mod_X4_minus_lambda\n",
+			        branch,
+			        physical_j,
+			        pos,
+			        pos + 3,
+			        k3,
+			        k32_br,
+			        logical_k32,
+			        logical_j,
+			        branch,
+			        physical_j,
+			        gt_rowbitrev_lambda[branch][physical_j],
+			        normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]),
+			        asm_vector,
+			        asm_lane);
+		}
+	}
+
+	fclose(fp);
+}
+
 int main(void)
 {
 	dump_gt_stage_top_split_plan();
@@ -1716,6 +1823,7 @@ int main(void)
 	dump_gt_register_pack_plan();
 	dump_reduction_bound_trace();
 	dump_reduction_static_bounds();
+	dump_gt_rowbitrev_basemul_table();
 
 	printf("physical_pos,branch,branch_pos,block_k,lane,twist_table,twist_index,twist_mont,twist_normal,gt_in_index,input_crt_n3,input_crt_n32,dft_to_k3_0_exp,dft_to_k3_0_mont,dft_to_k3_0_normal,dft_to_k3_1_exp,dft_to_k3_1_mont,dft_to_k3_1_normal,dft_to_k3_2_exp,dft_to_k3_2_mont,dft_to_k3_2_normal\n");
 

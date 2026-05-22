@@ -59,17 +59,23 @@ static int normal_from_mont(int16_t a)
 static void dump_gt_rowbitrev_lambda_row(int branch, int physical_j)
 {
 	const int branch_start = (NTRUPLUS_N / 2) * branch;
+	const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
+	const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
+	const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
 	const int logical_j = (int)gt96_rowbitrev_logical_index((unsigned)physical_j);
 	const int pos = branch_start + 4*physical_j;
 
-	printf("%6d | %14d | %9d | %3d..%-3d | %11d | %13d\n",
+	printf("%6d | %14d | %2d | %6d | %11d | %9d | %3d..%-3d | %11d | %13d\n",
 	       branch,
 	       physical_j,
+	       k3,
+	       k32_br,
+	       logical_k32,
 	       logical_j,
 	       pos,
 	       pos + 3,
-	       gt_lambda[branch][logical_j],
-	       normal_from_mont(gt_lambda[branch][logical_j]));
+	       gt_rowbitrev_lambda[branch][physical_j],
+	       normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]));
 }
 
 static void dump_gt_rowbitrev_lambda_layout(void)
@@ -77,8 +83,8 @@ static void dump_gt_rowbitrev_lambda_layout(void)
 	const int sample_blocks[] = {0, 1, 2, 3, 94, 95};
 
 	printf("\n# GT row-bitrev quartic block to lambda layout\n");
-	printf("branch | physical block | logical j | positions | lambda_mont | lambda_normal\n");
-	printf("-------+----------------+-----------+-----------+-------------+--------------\n");
+	printf("branch | physical block | k3 | k32_br | logical_k32 | logical j | positions | lambda_mont | lambda_normal\n");
+	printf("-------+----------------+----+--------+-------------+-----------+-----------+-------------+--------------\n");
 
 	for (int branch = 0; branch < 2; branch++)
 	{
@@ -114,6 +120,29 @@ static int verify_gt_lambda_formula(const int factors[2])
 	return 1;
 }
 
+static int verify_gt_rowbitrev_lambda_table(void)
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		for (int physical_j = 0; physical_j < 96; physical_j++)
+		{
+			const int logical_j =
+				(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+
+			if (gt_rowbitrev_lambda[branch][physical_j] !=
+			    gt_lambda[branch][logical_j])
+			{
+				fprintf(stderr,
+				        "GT row-bitrev lambda mismatch: branch=%d physical_j=%d logical_j=%d\n",
+				        branch, physical_j, logical_j);
+				return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
 int main(void)
 {
 	const int factors[2] = {
@@ -127,18 +156,21 @@ int main(void)
 	       NTRUPLUS_Q);
 	printf("# omega96=%d, F0=%d, F1=%d\n",
 	       OMEGA96_NORMAL, factors[0], factors[1]);
-	printf("physical pos | branch | lane r | physical block | logical j | alpha_j | lambda_j | table index\n");
-	printf("-------------+--------+--------+----------------+-----------+---------+----------+------------\n");
+	printf("physical pos | branch | lane r | physical block | k3 | k32_br | logical_k32 | logical j | alpha_j | lambda_j | table index\n");
+	printf("-------------+--------+--------+----------------+----+--------+-------------+-----------+---------+----------+------------\n");
 
 	for (int pos = 0; pos < NTRUPLUS_N; pos++)
 	{
 		const int branch = pos / (NTRUPLUS_N / 2);
 		const int branch_pos = pos - branch * (NTRUPLUS_N / 2);
 		const int physical_j = branch_pos / 4;
+		const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
+		const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
+		const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
 		const int logical_j =
 			(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
 		const int lane = pos & 3;
-		const int lambda = normal_from_mont(gt_lambda[branch][logical_j]);
+		const int lambda = normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]);
 		const int alpha = field_mul(lambda, factors[branch]);
 		const int expected_alpha = field_pow(OMEGA96_NORMAL, logical_j);
 
@@ -147,19 +179,27 @@ int main(void)
 			ok = 0;
 		}
 
-		printf("%12d | %6d | %6d | %14d | %9d | %7d | %8d | gt_lambda[%d][%2d]\n",
+		printf("%12d | %6d | %6d | %14d | %2d | %6d | %11d | %9d | %7d | %8d | gt_rowbitrev_lambda[%d][%2d]\n",
 		       pos,
 		       branch,
 		       lane,
 		       physical_j,
+		       k3,
+		       k32_br,
+		       logical_k32,
 		       logical_j,
 		       alpha,
 		       lambda,
 		       branch,
-		       logical_j);
+		       physical_j);
 	}
 
 	if (!verify_gt_lambda_formula(factors))
+	{
+		ok = 0;
+	}
+
+	if (!verify_gt_rowbitrev_lambda_table())
 	{
 		ok = 0;
 	}

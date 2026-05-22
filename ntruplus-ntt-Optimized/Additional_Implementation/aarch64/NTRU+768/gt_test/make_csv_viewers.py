@@ -42,7 +42,8 @@ CSV_GUIDES = {
     ),
     "gt_stage_dft3_plan.csv": (
         "逐 DFT3 column 顯示三個 source positions x0/x1/x2、各自 twist constant，"
-        "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。"
+        "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。也包含 branch/lane 的 "
+        "GT matrix stream 與每 8 個 n32 columns 的 x0/x1/x2 offset sequence。"
     ),
     "gt_stage_ntt32_input_plan.csv": (
         "逐 DFT3 output element 顯示進入 32-point DIF NTT 前的 natural input pack："
@@ -107,6 +108,10 @@ COLUMN_GUIDES = {
     "source_input_register": "DFT3 input pack 中，source_n3 暫定放入的 register。",
     "source_input_register_lane": "DFT3 input pack 中，source_n32 對應的 halfword lane。",
     "input_pack_registers": "DFT3 input column 暫定使用的 register pack。",
+    "matrix_lane_stream": "這個 branch/quartic lane 對應的 GT matrix coefficient stream，例如 Branch0 lane0: r[0,4,8,...,380]。",
+    "x0_offsets_8": "當前 vector_group 的 x0=n3=0 source offsets，依 n32 遞增列成 r* sequence。",
+    "x1_offsets_8": "當前 vector_group 的 x1=n3=1 source offsets，依 n32 遞增列成 r* sequence。",
+    "x2_offsets_8": "當前 vector_group 的 x2=n3=2 source offsets，依 n32 遞增列成 r* sequence。",
     "d_mont_constant": "one-multiply DFT3 公式中 t=omega3*(x1-x2) 使用的 omega3 Montgomery constant。",
     "dft_y0_formula": "DFT3 output y0 的 formula。",
     "dft_y1_formula": "DFT3 output y1 的 formula。",
@@ -427,6 +432,75 @@ VIEWER_TEMPLATE = """<!doctype html>
     }
     .kv div { padding: 6px 9px; font-size: 12px; }
     .kv div:first-child { color: var(--muted); background: #fafbfc; }
+    .matrix-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .matrix-head {
+      margin-bottom: 10px;
+    }
+    .matrix-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .matrix-list {
+      display: grid;
+      gap: 14px;
+    }
+    .matrix-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 10px;
+    }
+    .matrix-card-title {
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+    .matrix-wrap {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      scrollbar-gutter: stable;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      margin-top: 8px;
+      padding-bottom: 4px;
+    }
+    .matrix-table {
+      min-width: 1120px;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .flatten-table {
+      min-width: 3600px;
+    }
+    .matrix-table th,
+    .matrix-table td {
+      padding: 6px 7px;
+      white-space: nowrap;
+      font-size: 12px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .matrix-table th:first-child,
+    .matrix-table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      text-align: left;
+      background: #f8fafc;
+      font-weight: 800;
+    }
+    .matrix-table thead th:first-child { z-index: 3; }
+    .matrix-cell {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #0f172a;
+    }
     @media (max-width: 980px) {
       main { grid-template-columns: 1fr; }
       aside { max-height: none; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -507,6 +581,7 @@ VIEWER_TEMPLATE = """<!doctype html>
       </details>
     </aside>
     <section>
+      __SPECIAL_PANEL__
       <div class="controls">
         <div>
           <strong id="tableTitle">Rows</strong>
@@ -716,9 +791,143 @@ VIEWER_TEMPLATE = """<!doctype html>
       `).join("");
     }
     init();
+    __SPECIAL_SCRIPT__
   </script>
 </body>
 </html>
+"""
+
+
+DFT3_MATRIX_PANEL = """
+      <div class="matrix-panel" id="dft3MatrixPanel">
+        <div class="matrix-head">
+          <div class="matrix-title">GT Matrices</div>
+          <div class="subtle">All branch/lane groups shown as 3 x 32 Good-Thomas input matrices. Each group also includes the flattened x0,x1,x2 load order, top split formula, and twist number.</div>
+        </div>
+        <div class="matrix-list" id="matrixList"></div>
+      </div>
+"""
+
+
+DFT3_MATRIX_SCRIPT = """
+    function initDft3MatrixView() {
+      const panel = document.getElementById("dft3MatrixPanel");
+      if (!panel) return;
+
+      const list = document.getElementById("matrixList");
+      const groups = new Map();
+
+      for (const row of rows) {
+        const key = `${row.branch}:${row.quartic_lane}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(row);
+      }
+
+      const sortedKeys = Array.from(groups.keys()).sort((a, b) => {
+        const [ab, al] = a.split(":").map(Number);
+        const [bb, bl] = b.split(":").map(Number);
+        return (ab - bb) || (al - bl);
+      });
+
+      function rowByN32(groupRows) {
+        const byN32 = new Map();
+        for (const row of groupRows) byN32.set(Number(row.n32), row);
+        return byN32;
+      }
+
+      function topSplitFormula(branch, pos) {
+        const p = Number(pos);
+        if (Number(branch) === 0) return `a${p}+z*a${p + 384}`;
+        return `a${p - 384}+a${p}-z*a${p}`;
+      }
+
+      function flatEntries(byN32) {
+        const entries = [];
+        for (let n32 = 0; n32 < 32; n32++) {
+          const row = byN32.get(n32) || {};
+          for (const name of ["x0", "x1", "x2"]) {
+            entries.push({
+              label: `${n32}:${name}`,
+              n32,
+              name,
+              pos: row[`${name}_pos`] ?? "",
+              block: row[`${name}_block`] ?? "",
+              twist: row[`${name}_twist_mont`] ?? "",
+              twistNormal: row[`${name}_twist_normal`] ?? ""
+            });
+          }
+        }
+        return entries;
+      }
+
+      function renderMatrixTable(byN32) {
+        const header = `<thead><tr><th>row</th>${Array.from({length: 32}, (_, i) => `<th>n32=${i}</th>`).join("")}</tr></thead>`;
+        const body = ["x0", "x1", "x2"].map((name, n3) => {
+          const cells = Array.from({length: 32}, (_, n32) => {
+            const row = byN32.get(n32) || {};
+            const pos = row[`${name}_pos`] ?? "";
+            const block = row[`${name}_block`] ?? "";
+            const twist = row[`${name}_twist_mont`] ?? "";
+            const title = `n3=${n3}, n32=${n32}, block=${block}, twist=${twist}`;
+            return `<td class="matrix-cell" title="${htmlEscape(title)}">${pos === "" ? "" : `r${htmlEscape(pos)}`}</td>`;
+          }).join("");
+          return `<tr><td>${name} / n3=${n3}</td>${cells}</tr>`;
+        }).join("");
+
+        return `<div class="matrix-wrap"><table class="matrix-table">${header}<tbody>${body}</tbody></table></div>`;
+      }
+
+      function renderFlatOrderTable(branch, entries) {
+        const header = `<thead><tr><th>row</th>${entries.map(e => `<th>${htmlEscape(e.label)}</th>`).join("")}</tr></thead>`;
+        const coeffRow = entries.map(e => `<td class="matrix-cell">r${htmlEscape(e.pos)}</td>`).join("");
+        const topSplitRow = entries.map(e => {
+          const formula = topSplitFormula(branch, e.pos);
+          return `<td class="matrix-cell" title="r${htmlEscape(e.pos)}=${htmlEscape(formula)}">${htmlEscape(formula)}</td>`;
+        }).join("");
+        const twistRow = entries.map(e => {
+          const title = `block=${e.block}, normal=${e.twistNormal}`;
+          return `<td class="matrix-cell" title="${htmlEscape(title)}">tw[${htmlEscape(e.block)}]=${htmlEscape(e.twist)}</td>`;
+        }).join("");
+        const dft3OpRow = Array.from({length: 32}, (_, n32) => {
+          const formula = "d=x1-x2; t=omega3*d; y0=x0+x1+x2; y1=x0-x2+t; y2=x0-x1-t";
+          return `<td class="matrix-cell" colspan="3" title="n32=${n32}">${formula}</td>`;
+        }).join("");
+
+        return `
+          <div class="matrix-wrap">
+            <table class="matrix-table flatten-table">
+              ${header}
+              <tbody>
+                <tr><td>flattened order</td>${coeffRow}</tr>
+                <tr><td>top split operation</td>${topSplitRow}</tr>
+                <tr><td>Twist Number</td>${twistRow}</tr>
+                <tr><td>DFT3 operation</td>${dft3OpRow}</tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderMatrixCard(key) {
+        const groupRows = (groups.get(key) || []).slice().sort((a, b) => Number(a.n32) - Number(b.n32));
+        const byN32 = rowByN32(groupRows);
+        const sample = groupRows[0] || {};
+        const branch = sample.branch || key.split(":")[0];
+        const entries = flatEntries(byN32);
+        const title = sample.matrix_lane_stream || `Branch${key.replace(":", " lane")}`;
+
+        return `
+          <div class="matrix-card">
+            <div class="matrix-card-title">${htmlEscape(title)}</div>
+            ${renderMatrixTable(byN32)}
+            ${renderFlatOrderTable(branch, entries)}
+          </div>
+        `;
+      }
+
+      list.innerHTML = sortedKeys.map(renderMatrixCard).join("");
+    }
+    initDft3MatrixView();
 """
 
 
@@ -790,6 +999,7 @@ def page_title(csv_path):
 
 def write_viewer(csv_path, output_path, build_dir):
     columns, rows = read_rows(csv_path)
+    is_dft3_plan = csv_path.name == "gt_stage_dft3_plan.csv"
     payload = {
         "columns": columns,
         "rows": rows,
@@ -804,6 +1014,8 @@ def write_viewer(csv_path, output_path, build_dir):
                                                        if csv_path.is_relative_to(build_dir.parent)
                                                        else csv_path)))
                 .replace("__DESCRIPTION__", html.escape(description))
+                .replace("__SPECIAL_PANEL__", DFT3_MATRIX_PANEL if is_dft3_plan else "")
+                .replace("__SPECIAL_SCRIPT__", DFT3_MATRIX_SCRIPT if is_dft3_plan else "")
                 .replace("__PAYLOAD__", payload_json))
     output_path.write_text(document)
     return {
