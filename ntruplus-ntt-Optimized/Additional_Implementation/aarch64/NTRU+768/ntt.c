@@ -166,6 +166,51 @@ const int16_t gt_lambda[2][96] = {
 		-1188,    124,    732,   -251,    -32,   -858,   1626,   1681
 	}
 };
+
+/*
+ * The same quartic folding constants, repacked in physical row-bitrev block
+ * order.
+ *
+ * Forward NTT output is not GT-natural: physical block j stores logical index
+ * gt96_rowbitrev_logical_index(j).  For C reference loops and future ASM table
+ * packing, this table makes the basemul/baseinv zeta lookup match memory order:
+ *
+ *   gt_rowbitrev_lambda[branch][physical_j]
+ *     = gt_lambda[branch][gt96_rowbitrev_logical_index(physical_j)]
+ *
+ * This table is still a lambda/zeta table for X^4 - lambda.  It is not a
+ * butterfly twiddle table.
+ */
+const int16_t gt_rowbitrev_lambda[2][96] = {
+	{
+		  1655,   -601,    -31,  -1655,   1473,     31,    183,  -1473,
+		 -1364,   -183,   1130,   1364,  -1674,  -1130,   1209,   1674,
+		 -1583,  -1209,   -559,   1583,   -235,    559,    696,    235,
+		  -397,   -696,    444,    397,    774,   -444,   1059,   -774,
+		  -443,  -1059,   1671,    443,   -223,  -1671,   -943,    223,
+		   927,    943,  -1138,   -927,    352,   1138,    514,   -352,
+		   242,   -514,   -312,   -242,    512,    312,   1514,   -512,
+		   100,  -1514,    489,   -100,    432,   -489,  -1660,   -432,
+		 -1212,   1660,  -1640,   1212,  -1250,   1640,    760,   1250,
+		   437,   -760,      8,   -437,   1322,     -8,  -1723,  -1322,
+		  1341,   1723,    871,  -1341,   -277,   -871,   1247,    277,
+		   297,  -1247,   -933,   -297,  -1206,    933,    601,   1206
+	},
+	{
+		   779,  -1626,    940,   -779,   1391,   -940,   1588,  -1391,
+		  -124,  -1588,    417,    124,  -1095,   -417,   1367,   1095,
+		 -1401,  -1367,    892,   1401,   1550,   -892,   -251,  -1550,
+		  1221,    251,  -1531,  -1221,  -1501,   1531,   -218,   1501,
+		   274,    218,   1409,   -274,    294,  -1409,   -400,   -294,
+		  -230,    400,   -732,    230,     32,    732,    361,    -32,
+		    22,   -361,   1543,    -22,   -582,  -1543,   1709,    582,
+		 -1248,  -1709,    673,   1248,   -275,   -673,  -1408,    275,
+		 -1053,   1408,   1108,   1053,  -1685,  -1108,  -1188,   1685,
+		   354,   1188,    315,   -354,   1063,   -315,  -1728,  -1063,
+		  1379,   1728,   1022,  -1379,   -968,  -1022,  -1458,    968,
+		    27,   1458,    858,    -27,  -1681,   -858,   1626,   1681
+	}
+};
 /*************************************************
 * Name:        montgomery_reduce
 *
@@ -669,22 +714,24 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 
 		for (int lane = 0; lane < 4; lane++)
 		{
-			int16_t natural[96];
+			int16_t rowbitrev_freq[96];
 			int16_t coeffs[96];
 
-			/* Row-bitrev layout: physical block j is gathered directly.
-			 * invntt96_goodthomas() interprets the row coordinate as
-			 * bit-reversed frequency input.
+			/*
+			 * Row-bitrev frequency layout: physical block j is gathered
+			 * directly.  This is not GT-natural order; inside
+			 * invntt96_goodthomas(), the 32-point row coordinate is
+			 * interpreted as bit-reversed frequency input.
 			 */
 			for (int j = 0; j < 96; j++)
 			{
-				natural[j] = a[branch_start + 4*j + lane];
+				rowbitrev_freq[j] = a[branch_start + 4*j + lane];
 			}
 
 			/* The inverse is intentionally unnormalized.  Its output is
 			 * 96 times the twisted branch coefficients.
 			 */
-			invntt96_goodthomas(coeffs, natural);
+			invntt96_goodthomas(coeffs, rowbitrev_freq);
 
 			/* Forward used F_b^{-k}; multiply by F_b^k to untwist. */
 			for (int i = 0; i < 96; i++)

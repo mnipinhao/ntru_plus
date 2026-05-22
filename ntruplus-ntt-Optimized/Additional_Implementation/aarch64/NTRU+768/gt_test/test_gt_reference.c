@@ -263,6 +263,31 @@ static int check_gt_lambda_formula(const int factors[2])
 	return 1;
 }
 
+static int check_gt_rowbitrev_lambda_table(void)
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		for (int physical_j = 0; physical_j < 96; physical_j++)
+		{
+			const unsigned logical_j =
+				gt96_rowbitrev_logical_index((unsigned)physical_j);
+			const int16_t expected = gt_lambda[branch][logical_j];
+			const int16_t actual = gt_rowbitrev_lambda[branch][physical_j];
+
+			if (actual != expected)
+			{
+				printf("gt_rowbitrev_lambda mismatch: branch=%d physical_j=%d "
+				       "logical_j=%u actual=%d expected=%d\n",
+				       branch, physical_j, logical_j, actual, expected);
+				return 0;
+			}
+		}
+	}
+
+	printf("gt_rowbitrev_lambda physical-order table check: ok\n");
+	return 1;
+}
+
 static int check_ntt32_radix2_dif_bitrevout(void)
 {
 	int min_matches = 32;
@@ -529,10 +554,9 @@ static void rowbitrev_basemul_reference(int16_t r[NTRUPLUS_N],
 		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
 			const int pos = branch_start + 4*physical_j;
-			const unsigned logical_j =
-				gt96_rowbitrev_logical_index((unsigned)physical_j);
 
-			basemul(r + pos, a + pos, b + pos, gt_lambda[branch][logical_j]);
+			basemul(r + pos, a + pos, b + pos,
+			        gt_rowbitrev_lambda[branch][physical_j]);
 		}
 	}
 }
@@ -664,6 +688,7 @@ int main(void)
 
 	ok &= check_twist_tables();
 	ok &= check_gt_lambda_formula(branch_factors);
+	ok &= check_gt_rowbitrev_lambda_table();
 	ok &= check_ntt32_radix2_dif_bitrevout();
 	ok &= check_ntt96_goodthomas();
 	ok &= check_intt32_radix2_bitrevin();

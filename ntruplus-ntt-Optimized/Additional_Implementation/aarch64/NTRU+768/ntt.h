@@ -5,6 +5,7 @@
 #include "params.h"
 
 extern const int16_t gt_lambda[2][96];
+extern const int16_t gt_rowbitrev_lambda[2][96];
 
 void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
 void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N]);
