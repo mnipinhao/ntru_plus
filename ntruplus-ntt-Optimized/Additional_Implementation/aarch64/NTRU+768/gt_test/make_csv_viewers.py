@@ -40,6 +40,12 @@ CSV_GUIDES = {
         "逐 branch/block 顯示 twist 階段。每個 quartic block 的 4 個 lane 共用同一個 "
         "F_b^{-k} constant，表中同時列 Montgomery form 和 normal form。"
     ),
+    "gt_stage1_dft3_store_plan.csv": (
+        "第一階段 ASM staging plan：從原始 natural input 的 low/high pair 出發，"
+        "列出 top split、branch-dependent twist、Good-Thomas input CRT permutation，"
+        "以及最後 store 到 DFT3-friendly staging buffer 的位置。表中同時給出推薦的 "
+        "LD4-friendly layout 與 alternative LD3-friendly layout。"
+    ),
     "gt_stage_dft3_plan.csv": (
         "逐 DFT3 column 顯示三個 source positions x0/x1/x2、各自 twist constant，"
         "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。也包含 branch/lane 的 "
@@ -90,6 +96,28 @@ COLUMN_GUIDES = {
     "branch1_output_pos": "top split branch 1 output physical position。",
     "branch1_output_register": "原 ntt.s level0 branch 1 output register。",
     "branch1_formula": "branch 1 output 的 symbolic formula。",
+    "stage1_order": "第一階段推薦 LD4-friendly staging 的 linear coefficient order；等同 ld4_staging_coeff_offset。",
+    "group": "8 個 n32 columns 為一組的 vector group，0..3。",
+    "n3": "Good-Thomas input CRT row coordinate。DFT3 input 中 n3=0/1/2 對應 x0/x1/x2。",
+    "n32": "Good-Thomas input CRT column coordinate，0..31。",
+    "n32_lane": "目前 vector group 內的 n32 lane，0..7。",
+    "source_chunk_role": "當前 source block 屬於這個 group 的哪個 loaded chunk：A=chunk g, B=chunk g+4, C=chunk g+8。",
+    "source_chunk": "branch 內 8-block chunk index，0..11。每個 chunk 是 32 coefficients。",
+    "source_branch_pos": "source coefficient 在 384-coefficient branch 內的 offset。",
+    "source_after_top_split_pos": "top split 後、twist 前的 branch physical position。",
+    "ld4_load_chunk_low": "第一階段 LD4 讀 low half 時涵蓋的 original input range。",
+    "ld4_load_chunk_high": "第一階段 LD4 讀 high half 時涵蓋的 original input range。",
+    "ld4_vector_lane": "LD4 deinterleave 後，這個 block 在 8-lane vector 中的 lane，等於 block_k mod 8。",
+    "ld4_staging_expr": "推薦 DFT3 staging layout 的 logical slot：tmp_ld4[branch][group][n3][n32_lane][quartic_lane]。",
+    "ld4_staging_coeff_offset": "推薦 LD4-friendly DFT3 staging buffer 的 linear int16 offset。",
+    "ld4_staging_byte_offset": "推薦 LD4-friendly DFT3 staging buffer 的 byte offset。",
+    "dft3_ld4_load_row": "下一階段 DFT3 用 LD4 讀這一 row 時的 logical row name。",
+    "dft3_ld4_output_register": "下一階段 LD4 後，這個 coefficient 會落入哪個 DFT3 input vector/lane。",
+    "ld3_staging_expr": "Alternative DFT3 staging layout 的 logical slot：tmp_ld3[branch][quartic_lane][group][n32_lane][n3]。",
+    "ld3_staging_coeff_offset": "Alternative LD3-friendly DFT3 staging buffer 的 linear int16 offset。",
+    "ld3_staging_byte_offset": "Alternative LD3-friendly DFT3 staging buffer 的 byte offset。",
+    "dft3_ld3_load_group": "Alternative DFT3 用 LD3 讀這一 group 時的 logical group name。",
+    "dft3_ld3_output_register": "Alternative LD3 後，這個 coefficient 會落入 x0/x1/x2 的哪個 vector。",
     "top_split_formula": "branch output 公式：branch0 是 low+zeta*high，branch1 是 low+high-zeta*high。",
     "branch": "top split 後的 384-coefficient branch：0 是 r[0..383]，1 是 r[384..767]。",
     "base_F": "branch twist 使用的 F_b。branch 0 是 2，branch 1 是 22。",

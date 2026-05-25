@@ -151,6 +151,163 @@ static const char *dft3_one_mul_role(int source_n3, int output_k3)
 	}
 }
 
+static const char *dft3_input_name(int n3)
+{
+	static const char *names[3] = { "x0", "x1", "x2" };
+
+	return names[n3];
+}
+
+static const char *chunk_role_name(int role)
+{
+	static const char *names[3] = { "A", "B", "C" };
+
+	return names[role];
+}
+
+static int dft3_ld4_stage_coeff_offset(int branch,
+                                       int group,
+                                       int n3,
+                                       int n32_lane,
+                                       int quartic_lane)
+{
+	return (((branch * 4 + group) * 3 + n3) * 8 + n32_lane) * 4 +
+		quartic_lane;
+}
+
+static int dft3_ld3_stage_coeff_offset(int branch,
+                                       int quartic_lane,
+                                       int group,
+                                       int n32_lane,
+                                       int n3)
+{
+	return (((branch * 4 + quartic_lane) * 4 + group) * 8 + n32_lane) * 3 +
+		n3;
+}
+
+static void dump_gt_stage1_dft3_store_plan(void)
+{
+	FILE *fp = fopen("build/gt_stage1_dft3_store_plan.csv", "w");
+
+	if (fp == NULL)
+	{
+		perror("build/gt_stage1_dft3_store_plan.csv");
+		return;
+	}
+
+	fprintf(fp,
+	        "stage1_order,branch,group,n3,n32,n32_lane,quartic_lane,"
+	        "source_chunk_role,source_chunk,source_block_k,source_branch_pos,"
+	        "source_after_top_split_pos,low_input_pos,high_input_pos,"
+	        "top_zeta_mont,top_zeta_normal,top_split_formula,twist_table,"
+	        "twist_index,twist_mont,twist_normal,operation,"
+	        "ld4_load_chunk_low,ld4_load_chunk_high,ld4_vector_lane,"
+	        "ld4_staging_expr,ld4_staging_coeff_offset,ld4_staging_byte_offset,"
+	        "dft3_ld4_load_row,dft3_ld4_output_register,"
+	        "ld3_staging_expr,ld3_staging_coeff_offset,ld3_staging_byte_offset,"
+	        "dft3_ld3_load_group,dft3_ld3_output_register,notes\n");
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+		const int16_t *twist = branch == 0 ? twist_branch0 : twist_branch1;
+		const char *twist_name = branch == 0 ? "twist_branch0" : "twist_branch1";
+
+		for (int group = 0; group < 4; group++)
+		{
+			for (int n3 = 0; n3 < 3; n3++)
+			{
+				for (int n32_lane = 0; n32_lane < 8; n32_lane++)
+				{
+					const int n32 = 8*group + n32_lane;
+					const int source_block = input_crt_n(n3, n32);
+					const int source_chunk = source_block / 8;
+					const int chunk_role = (source_chunk - group) / 4;
+					const int source_branch_pos = 4*source_block;
+
+					for (int lane = 0; lane < 4; lane++)
+					{
+						const int source_pos = branch_start + source_branch_pos + lane;
+						const int low_input_pos = source_branch_pos + lane;
+						const int high_input_pos = low_input_pos + NTRUPLUS_N / 2;
+						const int ld4_offset =
+							dft3_ld4_stage_coeff_offset(branch, group, n3, n32_lane, lane);
+						const int ld3_offset =
+							dft3_ld3_stage_coeff_offset(branch, lane, group, n32_lane, n3);
+						const int stage_order = ld4_offset;
+
+						fprintf(fp,
+						        "%d,%d,%d,%d,%d,%d,%d,"
+						        "%s,%d,%d,%d,%d,%d,%d,"
+						        "%d,%d,%s,%s,"
+						        "%d,%d,%d,"
+						        "top_split_then_twist_then_store_dft3_input,"
+						        "a[%d..%d],a[%d..%d],%d,"
+						        "tmp_ld4[branch%d][group%d][n3%d][n32_lane%d][q%d],"
+						        "%d,%d,ld4_tmp_ld4_branch%d_group%d_n3%d,%s_q%d_vlane%d,"
+						        "tmp_ld3[branch%d][q%d][group%d][n32_lane%d][n3%d],"
+						        "%d,%d,ld3_tmp_ld3_branch%d_q%d_group%d,%s_vlane%d,"
+						        "LD4_layout_is_recommended_for_four_quartic_lanes;LD3_layout_is_alternative_per_quartic_lane\n",
+						        stage_order,
+						        branch,
+						        group,
+						        n3,
+						        n32,
+						        n32_lane,
+						        lane,
+						        chunk_role_name(chunk_role),
+						        source_chunk,
+						        source_block,
+						        source_branch_pos + lane,
+						        source_pos,
+						        low_input_pos,
+						        high_input_pos,
+						        NTRUPLUS_ZETA_TOP_SPLIT,
+						        normal_from_mont(NTRUPLUS_ZETA_TOP_SPLIT),
+						        top_split_formula_for_branch(branch),
+						        twist_name,
+						        source_block,
+						        twist[source_block],
+						        normal_from_mont(twist[source_block]),
+						        32*source_chunk,
+						        32*source_chunk + 31,
+						        32*source_chunk + NTRUPLUS_N / 2,
+						        32*source_chunk + NTRUPLUS_N / 2 + 31,
+						        source_block & 7,
+						        branch,
+						        group,
+						        n3,
+						        n32_lane,
+						        lane,
+						        ld4_offset,
+						        2*ld4_offset,
+						        branch,
+						        group,
+						        n3,
+						        dft3_input_name(n3),
+						        lane,
+						        n32_lane,
+						        branch,
+						        lane,
+						        group,
+						        n32_lane,
+						        n3,
+						        ld3_offset,
+						        2*ld3_offset,
+						        branch,
+						        lane,
+						        group,
+						        dft3_input_name(n3),
+						        n32_lane);
+					}
+				}
+			}
+		}
+	}
+
+	fclose(fp);
+}
+
 static void dump_gt_stage_top_split_plan(void)
 {
 	FILE *fp = fopen("build/gt_stage_top_split_plan.csv", "w");
@@ -1814,6 +1971,7 @@ int main(void)
 {
 	dump_gt_stage_top_split_plan();
 	dump_gt_stage_twist_plan();
+	dump_gt_stage1_dft3_store_plan();
 	dump_gt_stage_dft3_plan();
 	dump_gt_stage_ntt32_input_plan();
 	dump_dft3_twiddle_schedule();
