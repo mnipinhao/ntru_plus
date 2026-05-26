@@ -46,6 +46,12 @@ CSV_GUIDES = {
         "以及最後 store 到 DFT3-friendly staging buffer 的位置。表中同時給出推薦的 "
         "LD4-friendly layout 與 alternative LD3-friendly layout。"
     ),
+    "gt_blockpair_phase2_plan.csv": (
+        "目前 block-pair ASM note 的 Phase2 plan。每列是一個 packed vector P(k)："
+        "source positions、實際 B0/B1 value、branch0/branch1 twist multiplier、"
+        "sqrdmulh precompute vector，以及要用哪個 st3 register order 存成下一階段 "
+        "LD3 可直接讀的 DFT3 x0/x1/x2。"
+    ),
     "gt_stage_dft3_plan.csv": (
         "逐 DFT3 column 顯示三個 source positions x0/x1/x2、各自 twist constant，"
         "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。也包含 branch/lane 的 "
@@ -101,6 +107,27 @@ COLUMN_GUIDES = {
     "n3": "Good-Thomas input CRT row coordinate。DFT3 input 中 n3=0/1/2 對應 x0/x1/x2。",
     "n32": "Good-Thomas input CRT column coordinate，0..31。",
     "n32_lane": "目前 vector group 內的 n32 lane，0..7。",
+    "half": "每個 8-column group 中的半個 tile：0 代表前 4 columns，1 代表後 4 columns。",
+    "store_col": "half-tile 裡的 DFT3 store column，0..3；對應一條 st3。",
+    "dft3_input": "DFT3 input role：x0 是 n3=0，x1 是 n3=1，x2 是 n3=2。",
+    "source_n3": "這個 packed vector 在 DFT3 input CRT mapping 裡的 n3。",
+    "packed_register": "zip1/zip2 後放 P(k) 的 NEON register。",
+    "packed_name": "zip1/zip2 後、twist 前的 packed vector 名稱 P(k)。",
+    "twisted_name": "乘完 branch-specific twist 後的 packed vector 名稱 PT(k)。",
+    "block_k": "branch-local quartic block index k。P(k) 包含 B0[4k..4k+3] 和 B1[4k..4k+3]。",
+    "source_positions": "P(k) 每個 lane 對應的原始 source positions，用 | 分隔；前四個是 low，後四個是 high。",
+    "value_vector": "P(k) 每個 lane 的實際值，用 | 分隔；前四個是 B0，後四個是 B1。",
+    "branch0_twist_mont": "twist_branch0[k] 的 Montgomery-form C table value。",
+    "branch1_twist_mont": "twist_branch1[k] 的 Montgomery-form C table value。",
+    "branch0_twist_asm_multiplier": "branch 0 twist 轉成 ASM mul/sqrdmulh/mls 使用的 centered normal multiplier。",
+    "branch1_twist_asm_multiplier": "branch 1 twist 轉成 ASM mul/sqrdmulh/mls 使用的 centered normal multiplier。",
+    "branch0_twist_precompute": "branch 0 twist multiplier 對應的 sqrdmulh quotient estimate：round(c*2^15/q)。",
+    "branch1_twist_precompute": "branch 1 twist multiplier 對應的 sqrdmulh quotient estimate：round(c*2^15/q)。",
+    "twist_vector_normal": "P(k) 的 8-lane twist multiplier vector：[tw0,tw0,tw0,tw0,tw1,tw1,tw1,tw1]。",
+    "twist_vector_precompute": "P(k) 的 8-lane precompute vector：[pre0,pre0,pre0,pre0,pre1,pre1,pre1,pre1]。",
+    "twist_operation": "P(k) 乘 branch-specific twist 後變成 PT(k) 的 symbolic operation。",
+    "st3_register_order": "這個 half-tile column 要用的 st3 register order；下一階段 LD3 會回復 x0/x1/x2。",
+    "next_ld3_result": "下一階段 LD3 後 x0/x1/x2 分別對應哪些 register 的內容。",
     "source_chunk_role": "當前 source block 屬於這個 group 的哪個 loaded chunk：A=chunk g, B=chunk g+4, C=chunk g+8。",
     "source_chunk": "branch 內 8-block chunk index，0..11。每個 chunk 是 32 coefficients。",
     "source_branch_pos": "source coefficient 在 384-coefficient branch 內的 offset。",

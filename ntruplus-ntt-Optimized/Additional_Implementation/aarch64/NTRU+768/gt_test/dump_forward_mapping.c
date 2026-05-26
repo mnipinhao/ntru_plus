@@ -33,6 +33,36 @@ static int normal_from_mont(int16_t a)
 	return modq(montgomery_reduce(a));
 }
 
+static int centered_modq(int32_t a)
+{
+	int r = modq(a);
+
+	if (r > NTRUPLUS_Q / 2)
+	{
+		r -= NTRUPLUS_Q;
+	}
+
+	return r;
+}
+
+static int centered_normal_from_mont(int16_t a)
+{
+	return centered_modq(montgomery_reduce(a));
+}
+
+static int asm_precompute_from_normal(int c)
+{
+	const int32_t scale = 1 << 15;
+	const int64_t product = (int64_t)c * scale;
+
+	if (product >= 0)
+	{
+		return (int)((product + NTRUPLUS_Q / 2) / NTRUPLUS_Q);
+	}
+
+	return -(int)((-product + NTRUPLUS_Q / 2) / NTRUPLUS_Q);
+}
+
 static int input_crt_n(int n3, int n32)
 {
 	return (64*n3 + 33*n32) % 96;
@@ -1967,11 +1997,193 @@ static void dump_gt_rowbitrev_basemul_table(void)
 	fclose(fp);
 }
 
+static const char *blockpair_register_for_block(int group, int half, int block)
+{
+	static const char *role0_regs[4] = { "v22", "v23", "v24", "v25" };
+	static const char *role1_regs[4] = { "v26", "v27", "v28", "v29" };
+	static const char *role2_regs[4] = { "v30", "v31", "v4", "v5" };
+	const int base = 8*group + 4*half;
+
+	if (block >= base && block < base + 4)
+	{
+		return role0_regs[block - base];
+	}
+	if (block >= 32 + base && block < 32 + base + 4)
+	{
+		return role1_regs[block - (32 + base)];
+	}
+	if (block >= 64 + base && block < 64 + base + 4)
+	{
+		return role2_regs[block - (64 + base)];
+	}
+
+	return "out_of_tile";
+}
+
+static void format_blockpair_source_vector(char out[160], int block)
+{
+	const int p = 4*block;
+
+	snprintf(out, 160,
+	         "a%d|a%d|a%d|a%d|a%d|a%d|a%d|a%d",
+	         p + 0,
+	         p + 1,
+	         p + 2,
+	         p + 3,
+	         p + NTRUPLUS_N / 2 + 0,
+	         p + NTRUPLUS_N / 2 + 1,
+	         p + NTRUPLUS_N / 2 + 2,
+	         p + NTRUPLUS_N / 2 + 3);
+}
+
+static void format_blockpair_value_vector(char out[192], int block)
+{
+	const int p = 4*block;
+
+	snprintf(out, 192,
+	         "B0[%d]|B0[%d]|B0[%d]|B0[%d]|B1[%d]|B1[%d]|B1[%d]|B1[%d]",
+	         p + 0,
+	         p + 1,
+	         p + 2,
+	         p + 3,
+	         p + 0,
+	         p + 1,
+	         p + 2,
+	         p + 3);
+}
+
+static void format_twist_blockpair_vector(char out[192], int branch0_value, int branch1_value)
+{
+	snprintf(out, 192,
+	         "%d|%d|%d|%d|%d|%d|%d|%d",
+	         branch0_value,
+	         branch0_value,
+	         branch0_value,
+	         branch0_value,
+	         branch1_value,
+	         branch1_value,
+	         branch1_value,
+	         branch1_value);
+}
+
+static void dump_gt_blockpair_phase2_plan(void)
+{
+	FILE *fp = fopen("build/gt_blockpair_phase2_plan.csv", "w");
+
+	if (fp == NULL)
+	{
+		perror("build/gt_blockpair_phase2_plan.csv");
+		return;
+	}
+
+	fprintf(fp,
+	        "group,half,n32,store_col,dft3_input,source_n3,packed_register,"
+	        "packed_name,twisted_name,block_k,source_positions,value_vector,"
+	        "branch0_twist_mont,branch1_twist_mont,"
+	        "branch0_twist_asm_multiplier,branch1_twist_asm_multiplier,"
+	        "branch0_twist_precompute,branch1_twist_precompute,"
+	        "twist_vector_normal,twist_vector_precompute,twist_operation,"
+	        "st3_register_order,next_ld3_result,notes\n");
+
+	for (int group = 0; group < 4; group++)
+	{
+		for (int half = 0; half < 2; half++)
+		{
+			for (int col = 0; col < 4; col++)
+			{
+				const int n32 = 8*group + 4*half + col;
+				const int blocks[3] = {
+					input_crt_n(0, n32),
+					input_crt_n(1, n32),
+					input_crt_n(2, n32)
+				};
+				const char *regs[3] = {
+					blockpair_register_for_block(group, half, blocks[0]),
+					blockpair_register_for_block(group, half, blocks[1]),
+					blockpair_register_for_block(group, half, blocks[2])
+				};
+				char st3_order[96];
+				char next_ld3[96];
+
+				snprintf(st3_order, sizeof(st3_order),
+				         "st3_{%s.8h|%s.8h|%s.8h}_[dst_g%d_h%d_col%d]",
+				         regs[0],
+				         regs[1],
+				         regs[2],
+				         group,
+				         half,
+				         col);
+				snprintf(next_ld3, sizeof(next_ld3),
+				         "ld3_returns_x0=%s_x1=%s_x2=%s",
+				         regs[0],
+				         regs[1],
+				         regs[2]);
+
+				for (int n3 = 0; n3 < 3; n3++)
+				{
+					const int block = blocks[n3];
+					const char *reg = regs[n3];
+					const int16_t mont0 = twist_branch0[block];
+					const int16_t mont1 = twist_branch1[block];
+					const int normal0 = centered_normal_from_mont(mont0);
+					const int normal1 = centered_normal_from_mont(mont1);
+					const int pre0 = asm_precompute_from_normal(normal0);
+					const int pre1 = asm_precompute_from_normal(normal1);
+					char source_vector[160];
+					char value_vector[192];
+					char twist_normal_vector[192];
+					char twist_precompute_vector[192];
+
+					format_blockpair_source_vector(source_vector, block);
+					format_blockpair_value_vector(value_vector, block);
+					format_twist_blockpair_vector(twist_normal_vector, normal0, normal1);
+					format_twist_blockpair_vector(twist_precompute_vector, pre0, pre1);
+
+					fprintf(fp,
+					        "%d,%d,%d,%d,%s,%d,%s,"
+					        "P%d,PT%d,%d,%s,%s,"
+					        "%d,%d,%d,%d,%d,%d,%s,%s,"
+					        "PT%d=fqmul(P%d,TW%d),%s,%s,"
+					        "blockpair_shape_after_zip;TW=[tw0x4|tw1x4];TP=[pre0x4|pre1x4]\n",
+					        group,
+					        half,
+					        n32,
+					        col,
+					        dft3_input_name(n3),
+					        n3,
+					        reg,
+					        block,
+					        block,
+					        block,
+					        source_vector,
+					        value_vector,
+					        mont0,
+					        mont1,
+					        normal0,
+					        normal1,
+					        pre0,
+					        pre1,
+					        twist_normal_vector,
+					        twist_precompute_vector,
+					        block,
+					        block,
+					        block,
+					        st3_order,
+					        next_ld3);
+				}
+			}
+		}
+	}
+
+	fclose(fp);
+}
+
 int main(void)
 {
 	dump_gt_stage_top_split_plan();
 	dump_gt_stage_twist_plan();
 	dump_gt_stage1_dft3_store_plan();
+	dump_gt_blockpair_phase2_plan();
 	dump_gt_stage_dft3_plan();
 	dump_gt_stage_ntt32_input_plan();
 	dump_dft3_twiddle_schedule();
