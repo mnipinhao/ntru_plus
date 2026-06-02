@@ -600,8 +600,8 @@ static void dump_gt_stage_ntt32_input_plan(void)
 
 					fprintf(fp,
 					        "%d,%d,%d,%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,"
-					        "work[%d]=dft3_row_%d[%d];after_missing_len2_out[bitreverse5(%d)]=NTT32[%d],"
-					        "natural_input_pack_for_incomplete_dif_ntt32_pre_len2_output\n",
+					        "work[%d]=dft3_row_%d[%d];complete_dif_out[bitreverse5(%d)]=NTT32[%d],"
+					        "natural_input_pack_for_complete_dif_ntt32_bitrev_output\n",
 					        branch,
 					        lane,
 					        k3,
@@ -748,10 +748,9 @@ static void dump_gt_register_pack_plan(void)
 				 *   v4 = work[0..7], v5 = work[8..15],
 				 *   v6 = work[16..23], v7 = work[24..31].
 				 *
-				 * work[k32] receives the DFT3 output at column k32.
-				 * The incomplete kernel stops before the final len=2
-				 * butterflies.  If that missing layer is later completed,
-				 * the corresponding full row output would be:
+				 * work[k32] receives the DFT3 output at column k32.  The
+				 * complete DIF kernel leaves the row in bit-reversed
+				 * frequency order:
 				 *
 				 *   out[bitreverse5(k32)] = NTT32(row)[k32].
 				 */
@@ -773,7 +772,7 @@ static void dump_gt_register_pack_plan(void)
 					        "%d,0,32,%d,%d,state,-1,-1,"
 					        "0,%d,%d,"
 					        "%d,%d,%d,%d,%d,%d,"
-					        "natural_input_for_incomplete_dif_ntt32_pre_len2_output\n",
+					        "natural_input_for_complete_dif_ntt32_bitrev_output\n",
 					        branch,
 					        lane,
 					        work / 8,
@@ -795,7 +794,7 @@ static void dump_gt_register_pack_plan(void)
 
 				int stage = 0;
 
-				for (unsigned len = 32; len >= 4; len >>= 1)
+				for (unsigned len = 32; len >= 2; len >>= 1)
 				{
 					const unsigned step = 32 / len;
 
@@ -955,7 +954,7 @@ static void NTRUPLUS_UNUSED dump_full_fused_gt_plan(void)
 						        "%d,%d,%d,%d,v%d,%d,%s,%d,%d,%d,"
 						        "%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,"
 						        "%d,%d,%s,%d,%d,%d,%s,%d,"
-						        "top_split_then_twist_then_dft3_contribution_then_incomplete_ntt32_pre_len2;bitrev_columns_show_output_after_missing_len2\n",
+						        "top_split_then_twist_then_dft3_contribution_then_complete_ntt32;bitrev_columns_are_physical_output_order\n",
 						        branch,
 						        lane,
 						        physical_pos,
@@ -1084,7 +1083,7 @@ static void dump_ntt32_neon_plan(void)
 
 	int stage = 0;
 
-	for (unsigned len = 32; len >= 4; len >>= 1)
+	for (unsigned len = 32; len >= 2; len >>= 1)
 	{
 		const unsigned step = 32 / len;
 
@@ -1561,7 +1560,7 @@ static void trace_reduction_schedule(FILE *fp,
 
 				int stage = 0;
 
-				for (unsigned len = 32; len >= 4; len >>= 1)
+				for (unsigned len = 32; len >= 2; len >>= 1)
 				{
 					const unsigned step = 32 / len;
 					const int reduce_stage = should_reduce_stage(schedule, stage + 1);
@@ -1849,7 +1848,7 @@ static void NTRUPLUS_UNUSED dump_reduction_static_bounds(void)
 			                    row_bound,
 			                    "work_natural_input_bound");
 
-			for (unsigned len = 32; len >= 4; len >>= 1)
+			for (unsigned len = 32; len >= 2; len >>= 1)
 			{
 				const int reduce_stage = should_reduce_stage(schedule, stage + 1);
 				const int32_t sum_bound = row_bound + row_bound;
@@ -1943,7 +1942,7 @@ static void dump_ntt32_twiddle_schedule(void)
 	{
 		int stage = 0;
 
-		for (unsigned len = 32; len >= 4; len >>= 1)
+		for (unsigned len = 32; len >= 2; len >>= 1)
 		{
 			const unsigned step = 32 / len;
 
@@ -1958,7 +1957,7 @@ static void dump_ntt32_twiddle_schedule(void)
 					const unsigned power = step * j;
 					const int16_t twiddle = gt96_omega32_powers[power];
 
-					fprintf(fp, "%d,%d,%u,%u,%u,%u,%u,%u,%d,%d,incomplete_dif_pre_len2,high_output_is_(low-high)_times_twiddle\n",
+					fprintf(fp, "%d,%d,%u,%u,%u,%u,%u,%u,%d,%d,complete_dif_bitrev_output,high_output_is_(low-high)_times_twiddle\n",
 					        row_k3,
 					        stage,
 					        len,
@@ -1988,63 +1987,44 @@ static void dump_gt_rowbitrev_basemul_table(void)
 	}
 
 	fprintf(fp,
-	        "branch,k3,pair,pair_role,physical_j,paired_physical_j,"
-	        "position_start,position_end,k32_pre_len2,logical_k32_after_len2,"
-	        "logical_j_after_len2,lambda_table,lambda_mont,lambda_normal,"
+	        "branch,physical_j,position_start,position_end,k3,k32_bitrev_order,"
+	        "logical_k32,logical_j,lambda_table,lambda_mont,lambda_normal,"
 	        "asm_zeta_vector_index,asm_zeta_vector_lane,operation,notes\n");
 
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int k3 = 0; k3 < 3; k3++)
+		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
-			for (int pair = 0; pair < 16; pair++)
-			{
-				for (int role = 0; role < 2; role++)
-				{
-					const int k32 = 2*pair + role;
-					const int peer_k32 = 2*pair + (1 - role);
-					const int physical_j =
-						gt96_output_crt_index((unsigned)k3, (unsigned)k32);
-					const int peer_j =
-						gt96_output_crt_index((unsigned)k3, (unsigned)peer_k32);
-					const int pos = branch_start + 4*physical_j;
-					const int logical_k32 = (int)bitreverse5((unsigned)k32);
-					const int logical_j =
-						(int)gt96_output_crt_index((unsigned)k3,
-						                           (unsigned)logical_k32);
-					const int asm_vector = branch * 12 + physical_j / 8;
-					const int asm_lane = physical_j & 7;
-					const char *role_name = role == 0 ? "plus" : "minus";
-					const char *operation =
-						role == 0 ? "complete_pair_lo_plus_hi_then_basemul"
-						          : "complete_pair_lo_minus_hi_then_basemul";
+			const int pos = branch_start + 4*physical_j;
+			const int k3 = (2*physical_j) % 3;
+			const int k32_bitrev_order = (11*physical_j) & 31;
+			const int logical_k32 = (int)bitreverse5((unsigned)k32_bitrev_order);
+			const int logical_j =
+				(int)gt96_output_crt_index((unsigned)k3, (unsigned)logical_k32);
+			const int asm_vector = branch * 12 + physical_j / 8;
+			const int asm_lane = physical_j & 7;
 
-					fprintf(fp,
-					        "%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,"
-					        "gt_rowbitrev_lambda[%d][%d],%d,%d,%d,%d,%s,"
-					        "incomplete_pair_basemul_then_uncomplete_with_half\n",
-					        branch,
-					        k3,
-					        pair,
-					        role_name,
-					        physical_j,
-					        peer_j,
-					        pos,
-					        pos + 3,
-					        k32,
-					        logical_k32,
-					        logical_j,
-					        branch,
-					        physical_j,
-					        gt_rowbitrev_lambda[branch][physical_j],
-					        normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]),
-					        asm_vector,
-					        asm_lane,
-					        operation);
-				}
-			}
+			fprintf(fp,
+			        "%d,%d,%d,%d,%d,%d,%d,%d,"
+			        "gt_rowbitrev_lambda[%d][%d],%d,%d,%d,%d,"
+			        "direct_quartic_basemul_or_baseinv,"
+			        "complete_rowbitrev_block_uses_physical_order_lambda\n",
+			        branch,
+			        physical_j,
+			        pos,
+			        pos + 3,
+			        k3,
+			        k32_bitrev_order,
+			        logical_k32,
+			        logical_j,
+			        branch,
+			        physical_j,
+			        gt_rowbitrev_lambda[branch][physical_j],
+			        normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]),
+			        asm_vector,
+			        asm_lane);
 		}
 	}
 
@@ -2495,14 +2475,14 @@ static void dump_gt_twist_before_zip_table(void)
 int main(void)
 {
 	/*
-	 * Keep only the dumps that are useful for the current incomplete
-	 * Good-Thomas + ASM work:
+	 * Keep only the dumps that are useful for the current complete
+	 * row-bitrev Good-Thomas + ASM work:
 	 *
 	 * - gt_blockpair_phase2_plan feeds the interactive phase123 viewer.
 	 * - gt_twist_before_zip_table gives the current twist/precompute order.
 	 * - gt_stage_ntt32_input_plan, ntt32_* and gt_register_pack_plan describe
-	 *   the row input and incomplete 32-point kernel shape.
-	 * - gt_rowbitrev_basemul_table describes incomplete pair basemul layout.
+	 *   the row input and complete 32-point DIF kernel shape.
+	 * - gt_rowbitrev_basemul_table describes physical-order lambda layout.
 	 */
 	dump_gt_blockpair_phase2_plan();
 	dump_gt_twist_before_zip_table();

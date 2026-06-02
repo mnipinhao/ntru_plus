@@ -23,10 +23,6 @@
 #define POLYNTT_ASM_DUMP_STAGE2_MEMORY 0
 #endif
 
-#ifndef POLYNTT_ASM_INCOMPLETE_NTT32
-#define POLYNTT_ASM_INCOMPLETE_NTT32 1
-#endif
-
 #define POLYNTT_ASM_PARTIAL (POLYNTT_ASM_STAGE1_ZIP || POLYNTT_ASM_STAGE2_DFT3)
 #define POLYNTT_ASM_OUTPUT_NOT_POINTWISE POLYNTT_ASM_PARTIAL
 
@@ -36,10 +32,10 @@
  * ntt.c, so this test does not depend on production poly.c or asm/ntt.s.
  *
  * Default policy is strict exact matching to catch permutation and reduction
- * shape errors early.  The current C reference emits incomplete pre-len2
- * forward output; the matching incomplete basemul/invntt path is used for
- * roundtrip and multiplication checks.  For an intentionally lazy-reduced ASM
- * kernel, build with -DPOLYNTT_ASM_ALLOW_LAZY=1 to accept mod-q equality.
+ * shape errors early.  The current C reference emits complete row-bitrev
+ * forward output; basemul/baseinv can use gt_rowbitrev_lambda[] in physical
+ * memory order.  For an intentionally lazy-reduced ASM kernel, build with
+ * -DPOLYNTT_ASM_ALLOW_LAZY=1 to accept mod-q equality.
  */
 
 static int modq(int64_t a)
@@ -514,28 +510,14 @@ static void rowbitrev_basemul_reference(poly *r, const poly *a, const poly *b)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int k3 = 0; k3 < 3; k3++)
+		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
-			for (int pair = 0; pair < 16; pair++)
-			{
-				const int k32_lo = 2*pair;
-				const int k32_hi = k32_lo + 1;
-				const int physical_lo =
-					(int)((32*(unsigned)k3 + 3*(unsigned)k32_lo) % 96);
-				const int physical_hi =
-					(int)((32*(unsigned)k3 + 3*(unsigned)k32_hi) % 96);
-				const int pos_lo = branch_start + 4*physical_lo;
-				const int pos_hi = branch_start + 4*physical_hi;
+			const int pos = branch_start + 4*physical_j;
 
-				basemul_incomplete_pair(r->coeffs + pos_lo,
-				                        r->coeffs + pos_hi,
-				                        a->coeffs + pos_lo,
-				                        a->coeffs + pos_hi,
-				                        b->coeffs + pos_lo,
-				                        b->coeffs + pos_hi,
-				                        gt_rowbitrev_lambda[branch][physical_lo],
-				                        gt_rowbitrev_lambda[branch][physical_hi]);
-			}
+			basemul(r->coeffs + pos,
+			        a->coeffs + pos,
+			        b->coeffs + pos,
+			        gt_rowbitrev_lambda[branch][physical_j]);
 		}
 	}
 }
@@ -627,10 +609,8 @@ int main(void)
 #elif POLYNTT_ASM_STAGE2_DFT3
 	       "stage2 DFT3 row-major NTT32 input layout, mod-q equality");
 #else
-	       POLYNTT_ASM_INCOMPLETE_NTT32 ?
-		       "strict exact incomplete forward output equality"
-		       : (POLYNTT_ASM_ALLOW_LAZY ? "mod-q equality accepts lazy reduction"
-		                                 : "strict exact output equality"));
+		       POLYNTT_ASM_ALLOW_LAZY ? "mod-q equality accepts lazy reduction"
+		                              : "strict exact complete row-bitrev output equality");
 #endif
 
 	ok &= check_reference_differential();
