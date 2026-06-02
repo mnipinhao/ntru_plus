@@ -11,14 +11,35 @@
 #define POLYNTT_ASM_ALLOW_LAZY 0
 #endif
 
+#ifndef POLYNTT_ASM_STAGE1_ZIP
+#define POLYNTT_ASM_STAGE1_ZIP 0
+#endif
+
+#ifndef POLYNTT_ASM_STAGE2_DFT3
+#define POLYNTT_ASM_STAGE2_DFT3 0
+#endif
+
+#ifndef POLYNTT_ASM_DUMP_STAGE2_MEMORY
+#define POLYNTT_ASM_DUMP_STAGE2_MEMORY 0
+#endif
+
+#ifndef POLYNTT_ASM_INCOMPLETE_NTT32
+#define POLYNTT_ASM_INCOMPLETE_NTT32 1
+#endif
+
+#define POLYNTT_ASM_PARTIAL (POLYNTT_ASM_STAGE1_ZIP || POLYNTT_ASM_STAGE2_DFT3)
+#define POLYNTT_ASM_OUTPUT_NOT_POINTWISE POLYNTT_ASM_PARTIAL
+
 /*
  * Link this harness with exactly one poly_ntt() implementation, normally
  * asm/my_ntt.s.  The golden output comes from the C Good-Thomas reference in
  * ntt.c, so this test does not depend on production poly.c or asm/ntt.s.
  *
  * Default policy is strict exact matching to catch permutation and reduction
- * shape errors early.  For an intentionally lazy-reduced ASM kernel, build
- * with -DPOLYNTT_ASM_ALLOW_LAZY=1 to accept mod-q equality.
+ * shape errors early.  The current C reference emits incomplete pre-len2
+ * forward output; the matching incomplete basemul/invntt path is used for
+ * roundtrip and multiplication checks.  For an intentionally lazy-reduced ASM
+ * kernel, build with -DPOLYNTT_ASM_ALLOW_LAZY=1 to accept mod-q equality.
  */
 
 static int modq(int64_t a)
@@ -100,9 +121,188 @@ static void fill_impulse(poly *a, int pos, int16_t value)
 	a->coeffs[pos] = value;
 }
 
+#if POLYNTT_ASM_PARTIAL
+static int mul_modq(int a, int b)
+{
+	return modq((int64_t)a * b);
+}
+
+static int pow_modq(int base, int exp)
+{
+	int acc = 1;
+	int x = modq(base);
+
+	while (exp > 0)
+	{
+		if (exp & 1)
+		{
+			acc = mul_modq(acc, x);
+		}
+		x = mul_modq(x, x);
+		exp >>= 1;
+	}
+
+	return acc;
+}
+
+static int inv_modq(int a)
+{
+	/* q is prime, so a^{-1} = a^{q-2}. */
+	return pow_modq(a, NTRUPLUS_Q - 2);
+}
+
+static int twist_normal(int branch, int block)
+{
+	const int f = branch == 0 ? 2 : 22;
+
+	return pow_modq(inv_modq(f), block);
+}
+
+#if POLYNTT_ASM_STAGE1_ZIP
+static void store_stage1_pack(poly *r,
+                              int *outpos,
+                              const int b0[384],
+                              const int b1[384],
+                              int block)
+{
+	const int tw0 = twist_normal(0, block);
+	const int tw1 = twist_normal(1, block);
+
+	for (int lane = 0; lane < 4; lane++)
+	{
+		r->coeffs[(*outpos)++] = (int16_t)mul_modq(b0[4*block + lane], tw0);
+	}
+
+	for (int lane = 0; lane < 4; lane++)
+	{
+		r->coeffs[(*outpos)++] = (int16_t)mul_modq(b1[4*block + lane], tw1);
+	}
+}
+
+static void reference_stage1_dft3_input(poly *r, const poly *a)
+{
+	int b0[384];
+	int b1[384];
+	int outpos = 0;
+
+	/* my_ntt.s uses the Neon Barrett multiplier form.  This reference keeps
+	 * only the mathematical residue: top_zeta_mont = -1033 corresponds to
+	 * the normal field multiplier -722.
+	 */
+	for (int i = 0; i < NTRUPLUS_N / 2; i++)
+	{
+		const int low = a->coeffs[i];
+		const int high = a->coeffs[i + NTRUPLUS_N / 2];
+		const int t = mul_modq(high, -722);
+
+		b0[i] = modq(low + t);
+		b1[i] = modq(low + high - t);
+	}
+
+	for (int loop = 0; loop < 8; loop++)
+	{
+		const int a_base = 4 * loop;
+		const int b_base = 32 + 4 * loop;
+		const int c_base = 64 + 4 * loop;
+		const int order[12] = {
+			a_base + 0, c_base + 0, b_base + 0,
+			b_base + 1, a_base + 1, c_base + 1,
+			c_base + 2, b_base + 2, a_base + 2,
+			a_base + 3, c_base + 3, b_base + 3
+		};
+
+		for (int i = 0; i < 12; i++)
+		{
+			store_stage1_pack(r, &outpos, b0, b1, order[i]);
+		}
+	}
+}
+#endif
+
+#if POLYNTT_ASM_STAGE2_DFT3
+static int stage1_value(const int b0[384],
+                        const int b1[384],
+                        int branch,
+                        int block,
+                        int lane)
+{
+	const int *b = branch == 0 ? b0 : b1;
+
+	return mul_modq(b[4*block + lane], twist_normal(branch, block));
+}
+
+static void store_stage2_dft3_column(poly *r,
+                                     const int b0[384],
+                                     const int b1[384],
+                                     int n32,
+                                     int x0_block,
+                                     int x1_block,
+                                     int x2_block)
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		for (int lane = 0; lane < 4; lane++)
+		{
+			const int x0 = stage1_value(b0, b1, branch, x0_block, lane);
+			const int x1 = stage1_value(b0, b1, branch, x1_block, lane);
+			const int x2 = stage1_value(b0, b1, branch, x2_block, lane);
+			const int d = x1 - x2;
+			const int t = mul_modq(d, -723);
+			const int packed_lane = 4*branch + lane;
+
+			r->coeffs[(0*32 + n32)*8 + packed_lane] =
+				(int16_t)modq(x0 + x1 + x2);
+			r->coeffs[(1*32 + n32)*8 + packed_lane] =
+				(int16_t)modq(x0 - x2 + t);
+			r->coeffs[(2*32 + n32)*8 + packed_lane] =
+				(int16_t)modq(x0 - x1 - t);
+		}
+	}
+}
+
+static void reference_stage2_dft3_output(poly *r, const poly *a)
+{
+	int b0[384];
+	int b1[384];
+
+	for (int i = 0; i < NTRUPLUS_N / 2; i++)
+	{
+		const int low = a->coeffs[i];
+		const int high = a->coeffs[i + NTRUPLUS_N / 2];
+		const int t = mul_modq(high, -722);
+
+		b0[i] = modq(low + t);
+		b1[i] = modq(low + high - t);
+	}
+
+	for (int loop = 0; loop < 8; loop++)
+	{
+		const int a_base = 4 * loop;
+		const int b_base = 32 + 4 * loop;
+		const int c_base = 64 + 4 * loop;
+
+		store_stage2_dft3_column(r, b0, b1, a_base + 0,
+		                         a_base + 0, c_base + 0, b_base + 0);
+		store_stage2_dft3_column(r, b0, b1, a_base + 1,
+		                         b_base + 1, a_base + 1, c_base + 1);
+		store_stage2_dft3_column(r, b0, b1, a_base + 2,
+		                         c_base + 2, b_base + 2, a_base + 2);
+		store_stage2_dft3_column(r, b0, b1, a_base + 3,
+	                         a_base + 3, c_base + 3, b_base + 3);
+	}
+}
+#endif
+#endif
+
 static void reference_poly_ntt(poly *r, const poly *a)
 {
+#if POLYNTT_ASM_STAGE2_DFT3
+	reference_stage2_dft3_output(r, a);
+#elif POLYNTT_ASM_STAGE1_ZIP
+	reference_stage1_dft3_input(r, a);
+#else
 	ntt_gt_rowbitrevlayout(r->coeffs, a->coeffs);
+#endif
 }
 
 static int compare_poly(const char *label, const poly *asm_out, const poly *ref)
@@ -134,7 +334,9 @@ static int compare_poly(const char *label, const poly *asm_out, const poly *ref)
 	printf("%-28s exact %3d/768, mod-q %3d/768\n",
 	       label, exact_matches, mod_matches);
 
-#if POLYNTT_ASM_ALLOW_LAZY
+#if POLYNTT_ASM_PARTIAL
+	return mod_matches == NTRUPLUS_N;
+#elif POLYNTT_ASM_ALLOW_LAZY
 	return mod_matches == NTRUPLUS_N;
 #else
 	return exact_matches == NTRUPLUS_N;
@@ -151,6 +353,89 @@ static int compare_to_reference_case(const char *label, const poly *input)
 
 	return compare_poly(label, &asm_out, &ref);
 }
+
+#if POLYNTT_ASM_DUMP_STAGE2_MEMORY
+static void stage2_source_blocks(int n32, int *x0, int *x1, int *x2)
+{
+	const int loop = n32 / 4;
+	const int col = n32 % 4;
+	const int a_base = 4 * loop;
+	const int b_base = 32 + 4 * loop;
+	const int c_base = 64 + 4 * loop;
+
+	switch (col)
+	{
+	case 0:
+		*x0 = a_base + 0;
+		*x1 = c_base + 0;
+		*x2 = b_base + 0;
+		break;
+	case 1:
+		*x0 = b_base + 1;
+		*x1 = a_base + 1;
+		*x2 = c_base + 1;
+		break;
+	case 2:
+		*x0 = c_base + 2;
+		*x1 = b_base + 2;
+		*x2 = a_base + 2;
+		break;
+	default:
+		*x0 = a_base + 3;
+		*x1 = c_base + 3;
+		*x2 = b_base + 3;
+		break;
+	}
+}
+
+static void dump_stage2_memory(void)
+{
+	poly input;
+	poly asm_out;
+
+	fill_pattern(&input, "ramp", 0);
+	poly_ntt(&asm_out, &input);
+
+	printf("stage2 DFT3 row-major memory dump, input=ramp\n");
+	printf("memory layout: coeff[(row_k3*32 + n32)*8 + lane]\n");
+	printf("lane 0..3 = branch0 quartic lane0..3, lane 4..7 = branch1 quartic lane0..3\n");
+
+	for (int row = 0; row < 3; row++)
+	{
+		printf("\nrow_k3=%d\n", row);
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			int x0;
+			int x1;
+			int x2;
+			const int coeff_offset = (row * 32 + n32) * 8;
+			const int byte_offset = coeff_offset * (int)sizeof(int16_t);
+
+			stage2_source_blocks(n32, &x0, &x1, &x2);
+
+			printf("  n32=%2d loop=%d col=%d off=%3d byte=%4d "
+			       "src_blocks(x0,x1,x2)=(%2d,%2d,%2d) "
+			       "lanes=[%6d %6d %6d %6d | %6d %6d %6d %6d]\n",
+			       n32,
+			       n32 / 4,
+			       n32 % 4,
+			       coeff_offset,
+			       byte_offset,
+			       x0,
+			       x1,
+			       x2,
+			       asm_out.coeffs[coeff_offset + 0],
+			       asm_out.coeffs[coeff_offset + 1],
+			       asm_out.coeffs[coeff_offset + 2],
+			       asm_out.coeffs[coeff_offset + 3],
+			       asm_out.coeffs[coeff_offset + 4],
+			       asm_out.coeffs[coeff_offset + 5],
+			       asm_out.coeffs[coeff_offset + 6],
+			       asm_out.coeffs[coeff_offset + 7]);
+		}
+	}
+}
+#endif
 
 static int check_reference_differential(void)
 {
@@ -192,6 +477,7 @@ static int check_reference_differential(void)
 	return ok;
 }
 
+#if !POLYNTT_ASM_OUTPUT_NOT_POINTWISE
 static int check_roundtrip(void)
 {
 	poly input;
@@ -228,14 +514,28 @@ static void rowbitrev_basemul_reference(poly *r, const poly *a, const poly *b)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int physical_j = 0; physical_j < 96; physical_j++)
+		for (int k3 = 0; k3 < 3; k3++)
 		{
-			const int pos = branch_start + 4*physical_j;
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int k32_lo = 2*pair;
+				const int k32_hi = k32_lo + 1;
+				const int physical_lo =
+					(int)((32*(unsigned)k3 + 3*(unsigned)k32_lo) % 96);
+				const int physical_hi =
+					(int)((32*(unsigned)k3 + 3*(unsigned)k32_hi) % 96);
+				const int pos_lo = branch_start + 4*physical_lo;
+				const int pos_hi = branch_start + 4*physical_hi;
 
-			basemul(r->coeffs + pos,
-			        a->coeffs + pos,
-			        b->coeffs + pos,
-			        gt_rowbitrev_lambda[branch][physical_j]);
+				basemul_incomplete_pair(r->coeffs + pos_lo,
+				                        r->coeffs + pos_hi,
+				                        a->coeffs + pos_lo,
+				                        a->coeffs + pos_hi,
+				                        b->coeffs + pos_lo,
+				                        b->coeffs + pos_hi,
+				                        gt_rowbitrev_lambda[branch][physical_lo],
+				                        gt_rowbitrev_lambda[branch][physical_hi]);
+			}
 		}
 	}
 }
@@ -310,18 +610,34 @@ static int check_multiplication(void)
 	printf("%-28s mod-q %3d/768\n", "multiplication", min_matches);
 	return min_matches == NTRUPLUS_N;
 }
+#endif
 
 int main(void)
 {
 	int ok = 1;
 
+#if POLYNTT_ASM_DUMP_STAGE2_MEMORY
+	dump_stage2_memory();
+	return 0;
+#endif
+
 	printf("polyntt ASM test policy: %s\n",
-	       POLYNTT_ASM_ALLOW_LAZY ? "mod-q equality accepts lazy reduction"
-	                              : "strict exact output equality");
+#if POLYNTT_ASM_STAGE1_ZIP
+	       "stage1 top-split/twist/DFT3-input layout, mod-q equality");
+#elif POLYNTT_ASM_STAGE2_DFT3
+	       "stage2 DFT3 row-major NTT32 input layout, mod-q equality");
+#else
+	       POLYNTT_ASM_INCOMPLETE_NTT32 ?
+		       "strict exact incomplete forward output equality"
+		       : (POLYNTT_ASM_ALLOW_LAZY ? "mod-q equality accepts lazy reduction"
+		                                 : "strict exact output equality"));
+#endif
 
 	ok &= check_reference_differential();
+#if !POLYNTT_ASM_OUTPUT_NOT_POINTWISE
 	ok &= check_roundtrip();
 	ok &= check_multiplication();
+#endif
 
 	return ok ? 0 : 1;
 }

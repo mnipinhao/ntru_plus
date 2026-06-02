@@ -11,6 +11,7 @@
 #define NTRUPLUS_R            -147 // R = 2^16 mod q
 #define NTRUPLUS_RINV         -682 // (R)^(-1) mod q
 #define NTRUPLUS_RSQ           867 // (R^2) mod q
+#define NTRUPLUS_HALF         1655 // (1/2 * R) mod q
 #define NTRUPLUS_QINV        12929 // (q)^(-1) mod (2^16)
 
 #define NTRUPLUS_OMEGA        -886 // (omega * R) mod q
@@ -317,25 +318,27 @@ static unsigned NTRUPLUS_UNUSED gt96_rowbitrev_logical_index(unsigned physical_j
 	return gt96_output_crt_index(k3, k32);
 }
 
-static void ntt32_radix2_dif_bitrevout(int16_t out[32], const int16_t in[32])
+static void ntt32_radix2_dif_incomplete(int16_t out[32], const int16_t in[32])
 {
 	/*
-	 * Forward cyclic 32-point NTT using radix-2 decimation-in-frequency.
+	 * Incomplete forward cyclic 32-point NTT using radix-2
+	 * decimation-in-frequency.
 	 *
-	 * This routine consumes natural-order input and produces bit-reversed output:
+	 * This consumes natural-order input and runs only:
 	 *
-	 *   out[bitreverse5(k)] = NTT32(in)[k].
+	 *   len = 32, 16, 8, 4
 	 *
-	 * This is the shape intended for the next NEON kernel, because the first
-	 * two stages are cross-register butterflies when a row is packed as
-	 * v4=out[0..7], v5=out[8..15], v6=out[16..23], v7=out[24..31].
+	 * The final len=2 DIF butterflies are intentionally skipped.  Therefore
+	 * out[] is the pre-final-layer state, not full bit-reversed NTT32 output.
+	 * Adjacent pairs (2*m, 2*m+1) still contain the missing two-point layer.
+	 * The matching basemul/baseinv helpers operate on those pairs directly.
 	 */
 	for (unsigned i = 0; i < 32; i++)
 	{
 		out[i] = barrett_reduce(in[i]);
 	}
 
-	for (unsigned len = 32; len >= 2; len >>= 1)
+	for (unsigned len = 32; len >= 4; len >>= 1)
 	{
 		const int16_t root = gt96_omega32_powers[32 / len];
 
@@ -357,11 +360,11 @@ static void ntt32_radix2_dif_bitrevout(int16_t out[32], const int16_t in[32])
 	}
 }
 
-static void intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
+static void NTRUPLUS_UNUSED intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
 {
 	/*
-	 * Unnormalized inverse cyclic 32-point NTT matching
-	 * ntt32_radix2_dif_bitrevout().
+	 * Unnormalized inverse cyclic 32-point NTT for the complete bit-reversed
+	 * 32-point representation.
 	 *
 	 * Input is already in bit-reversed frequency order:
 	 *   in[bitreverse5(k)] = F[k]
@@ -369,6 +372,9 @@ static void intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
 	 * The increasing-len inverse radix-2 DIT butterflies normally start from
 	 * bit-reversed frequency input, so no extra input permutation is needed.
 	 * The output is natural-order time-domain data and is scaled by 32.
+	 *
+	 * This is kept as an oracle for the complete representation.  The
+	 * incomplete path uses intt32_radix2_incomplete() instead.
 	 */
 	for (unsigned i = 0; i < 32; i++)
 	{
@@ -393,6 +399,53 @@ static void intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
 				w = fqmul(w, root);
 			}
 		}
+	}
+}
+
+static void intt32_radix2_incomplete(int16_t out[32], const int16_t in[32])
+{
+	/*
+	 * Inverse row kernel for ntt32_radix2_dif_incomplete().
+	 *
+	 * The skipped forward len=2 layer would map each adjacent pair
+	 *   (u, v) -> (u + v, u - v).
+	 * The complete inverse DIT kernel would immediately apply the same
+	 * two-point butterfly and produce (2u, 2v), then continue with len=4.
+	 *
+	 * To consume the incomplete representation directly, start the inverse at
+	 * len=4 and multiply the final row by 2.  This keeps the row scaling equal
+	 * to the complete 32-point inverse:
+	 *
+	 *   intt32_radix2_incomplete(ntt32_radix2_dif_incomplete(x)) = 32*x.
+	 */
+	for (unsigned i = 0; i < 32; i++)
+	{
+		out[i] = barrett_reduce(in[i]);
+	}
+
+	for (unsigned len = 4; len <= 32; len <<= 1)
+	{
+		const int16_t root = gt96_omega32_inv_powers[32 / len];
+
+		for (unsigned start = 0; start < 32; start += len)
+		{
+			int16_t w = NTRUPLUS_R;
+
+			for (unsigned j = 0; j < len / 2; j++)
+			{
+				const int16_t u = out[start + j];
+				const int16_t v = fqmul(out[start + j + len / 2], w);
+
+				out[start + j] = barrett_reduce(u + v);
+				out[start + j + len / 2] = barrett_reduce(u - v);
+				w = fqmul(w, root);
+			}
+		}
+	}
+
+	for (unsigned i = 0; i < 32; i++)
+	{
+		out[i] = barrett_reduce(out[i] + out[i]);
 	}
 }
 
@@ -444,20 +497,22 @@ static void ntt96_goodthomas_core(int16_t mat[3][32])
 	{
 		int16_t row[32];
 
-		ntt32_radix2_dif_bitrevout(row, mat[k3]);
+		ntt32_radix2_dif_incomplete(row, mat[k3]);
 
 		for (int k32 = 0; k32 < 32; k32++)
 		{
 			/*
-			 * Keep the local 32-point output in bit-reversed order.
-			 * The public block layout is therefore:
+			 * Keep the local 32-point row in the incomplete DIF state.
+			 * Unlike the previous complete row-bitrev path, this is not
+			 * a finished point-value NTT row:
 			 *
-			 *   physical (k3, k32_br) stores logical
-			 *   (k3, bitreverse5(k32_br)).
+			 *   stages done    : len=32,16,8,4
+			 *   stage skipped  : len=2
 			 *
-			 * This matches the intended ASM pair:
-			 *   forward: natural row input -> bitreversed row output
-			 *   inverse: bitreversed row input -> natural row output
+			 * The adjacent k32 pairs still contain one unresolved radix-2
+			 * layer.  The matching incomplete basemul/baseinv helpers
+			 * operate on those pairs, and the inverse row kernel consumes
+			 * this state directly.
 			 */
 			mat[k3][k32] = row[k32];
 		}
@@ -535,7 +590,8 @@ static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 	{
 		int16_t row[32];
 
-		intt32_radix2_bitrevin(row, mat[n3]);
+		/* Consume the incomplete pre-len2 row directly. */
+		intt32_radix2_incomplete(row, mat[n3]);
 
 		for (int n32 = 0; n32 < 32; n32++)
 		{
@@ -691,10 +747,11 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 /*************************************************
 * Name:        invntt_gt_rowbitrevlayout
 *
- * Description: Inverse for the row-bitrev NTT-domain layout.  Each 32-point
- *              row is already bit-reversed in the frequency coordinate, so
- *              the inverse row kernel consumes it directly and returns
- *              natural-order time-domain coefficients.
+ * Description: Inverse for the incomplete row-bitrev NTT-domain layout.
+ *              Each 32-point row is stored before the final len=2 DIF layer.
+ *              The inverse row kernel consumes that representation directly,
+ *              starts at inverse len=4, and restores the same 96x branch
+ *              scaling as the complete inverse path.
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector
 *              - const int16_t a[NTRUPLUS_N]: pointer to input vector in
@@ -718,10 +775,10 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 			int16_t coeffs[96];
 
 			/*
-			 * Row-bitrev frequency layout: physical block j is gathered
-			 * directly.  This is not GT-natural order; inside
-			 * invntt96_goodthomas(), the 32-point row coordinate is
-			 * interpreted as bit-reversed frequency input.
+			 * Incomplete row-bitrev frequency layout: physical block j
+			 * is gathered directly.  This is not GT-natural order, and
+			 * adjacent k32 pairs still represent the state before the
+			 * skipped len=2 layer.
 			 */
 			for (int j = 0; j < 96; j++)
 			{
@@ -863,4 +920,109 @@ void basemul_add(int16_t r[4], const int16_t a[4], const int16_t b[4], const int
 	r[1] = montgomery_reduce(c[1]*NTRUPLUS_R + r[1]*NTRUPLUS_RSQ); // R^0
 	r[2] = montgomery_reduce(c[2]*NTRUPLUS_R + r[2]*NTRUPLUS_RSQ); // R^0
 	r[3] = montgomery_reduce(c[3]*NTRUPLUS_R + r[3]*NTRUPLUS_RSQ); // R^0
+}
+
+static void incomplete_pair_complete(int16_t plus[4], int16_t minus[4],
+                                     const int16_t lo[4], const int16_t hi[4])
+{
+	/*
+	 * Complete the skipped len=2 DIF layer for one adjacent k32 pair:
+	 *
+	 *   plus  = lo + hi
+	 *   minus = lo - hi
+	 *
+	 * plus/minus are the two complete point-value quartic blocks that would
+	 * have been produced by a full row-bitrev NTT32.
+	 */
+	for (int lane = 0; lane < 4; lane++)
+	{
+		plus[lane] = barrett_reduce(lo[lane] + hi[lane]);
+		minus[lane] = barrett_reduce(lo[lane] - hi[lane]);
+	}
+}
+
+static void incomplete_pair_uncomplete(int16_t lo[4], int16_t hi[4],
+                                       const int16_t plus[4],
+                                       const int16_t minus[4])
+{
+	/*
+	 * Inverse of the skipped len=2 layer:
+	 *
+	 *   lo = (plus + minus) / 2
+	 *   hi = (plus - minus) / 2
+	 *
+	 * NTRUPLUS_HALF is 1/2 in Montgomery form, so fqmul() performs the
+	 * division by 2 modulo q.
+	 */
+	for (int lane = 0; lane < 4; lane++)
+	{
+		lo[lane] = fqmul(barrett_reduce(plus[lane] + minus[lane]),
+		                 NTRUPLUS_HALF);
+		hi[lane] = fqmul(barrett_reduce(plus[lane] - minus[lane]),
+		                 NTRUPLUS_HALF);
+	}
+}
+
+void basemul_incomplete_pair(int16_t r_lo[4], int16_t r_hi[4],
+                             const int16_t a_lo[4], const int16_t a_hi[4],
+                             const int16_t b_lo[4], const int16_t b_hi[4],
+                             const int16_t zeta_lo,
+                             const int16_t zeta_hi)
+{
+	int16_t a_plus[4], a_minus[4];
+	int16_t b_plus[4], b_minus[4];
+	int16_t r_plus[4], r_minus[4];
+
+	incomplete_pair_complete(a_plus, a_minus, a_lo, a_hi);
+	incomplete_pair_complete(b_plus, b_minus, b_lo, b_hi);
+
+	basemul(r_plus, a_plus, b_plus, zeta_lo);
+	basemul(r_minus, a_minus, b_minus, zeta_hi);
+
+	incomplete_pair_uncomplete(r_lo, r_hi, r_plus, r_minus);
+}
+
+void basemul_add_incomplete_pair(int16_t r_lo[4], int16_t r_hi[4],
+                                 const int16_t a_lo[4], const int16_t a_hi[4],
+                                 const int16_t b_lo[4], const int16_t b_hi[4],
+                                 const int16_t c_lo[4], const int16_t c_hi[4],
+                                 const int16_t zeta_lo,
+                                 const int16_t zeta_hi)
+{
+	int16_t product_lo[4];
+	int16_t product_hi[4];
+
+	basemul_incomplete_pair(product_lo, product_hi,
+	                        a_lo, a_hi,
+	                        b_lo, b_hi,
+	                        zeta_lo, zeta_hi);
+
+	for (int lane = 0; lane < 4; lane++)
+	{
+		r_lo[lane] = barrett_reduce(product_lo[lane] + c_lo[lane]);
+		r_hi[lane] = barrett_reduce(product_hi[lane] + c_hi[lane]);
+	}
+}
+
+int baseinv_incomplete_pair(int16_t r_lo[4], int16_t r_hi[4],
+                            const int16_t a_lo[4], const int16_t a_hi[4],
+                            const int16_t zeta_lo,
+                            const int16_t zeta_hi)
+{
+	int16_t a_plus[4], a_minus[4];
+	int16_t inv_plus[4], inv_minus[4];
+
+	incomplete_pair_complete(a_plus, a_minus, a_lo, a_hi);
+
+	if (baseinv(inv_plus, a_plus, zeta_lo))
+	{
+		return 1;
+	}
+	if (baseinv(inv_minus, a_minus, zeta_hi))
+	{
+		return 1;
+	}
+
+	incomplete_pair_uncomplete(r_lo, r_hi, inv_plus, inv_minus);
+	return 0;
 }

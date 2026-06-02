@@ -136,6 +136,28 @@ static void direct_ntt32(int16_t out[32], const int16_t in[32])
 	}
 }
 
+static void complete_ntt32_final_len2(int16_t out[32], const int16_t in[32])
+{
+	for (int i = 0; i < 32; i++)
+	{
+		out[i] = in[i];
+	}
+
+	/*
+	 * ntt32_radix2_dif_incomplete() intentionally stops after len=4.
+	 * Completing len=2 here recovers the old full DIF bit-reversed row.
+	 */
+	for (unsigned start = 0; start < 32; start += 2)
+	{
+		const int16_t u = out[start];
+		const int16_t v = out[start + 1];
+		const int16_t diff = barrett_reduce(u - v);
+
+		out[start] = barrett_reduce(u + v);
+		out[start + 1] = fqmul(diff, NTRUPLUS_R);
+	}
+}
+
 static void direct_ntt96(int16_t out[96], const int16_t in[96])
 {
 	for (int j = 0; j < 96; j++)
@@ -151,6 +173,66 @@ static void direct_ntt96(int16_t out[96], const int16_t in[96])
 		}
 
 		out[j] = (int16_t)acc;
+	}
+}
+
+static void complete_ntt96_final_len2(int16_t out[96], const int16_t in[96])
+{
+	int16_t mat[3][32];
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		int16_t row[32];
+		int16_t completed[32];
+
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			const int k = gt96_output_crt_index((unsigned)k3, (unsigned)k32);
+			row[k32] = in[k];
+		}
+
+		complete_ntt32_final_len2(completed, row);
+
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			mat[k3][k32] = completed[k32];
+		}
+	}
+
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			const int k = gt96_output_crt_index((unsigned)k3, (unsigned)k32);
+			out[k] = mat[k3][k32];
+		}
+	}
+}
+
+static void complete_poly_final_len2(int16_t out[NTRUPLUS_N],
+                                     const int16_t in[NTRUPLUS_N])
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+
+		for (int lane = 0; lane < 4; lane++)
+		{
+			int16_t row_in[96];
+			int16_t row_out[96];
+
+			for (int j = 0; j < 96; j++)
+			{
+				row_in[j] = in[branch_start + 4*j + lane];
+			}
+
+			complete_ntt96_final_len2(row_out, row_in);
+
+			for (int j = 0; j < 96; j++)
+			{
+				out[branch_start + 4*j + lane] = row_out[j];
+			}
+		}
 	}
 }
 
@@ -288,12 +370,13 @@ static int check_gt_rowbitrev_lambda_table(void)
 	return 1;
 }
 
-static int check_ntt32_radix2_dif_bitrevout(void)
+static int check_ntt32_radix2_dif_incomplete(void)
 {
 	int min_matches = 32;
 	int16_t in[32];
 	int16_t direct[32];
-	int16_t bitrev[32];
+	int16_t incomplete[32];
+	int16_t completed[32];
 	int16_t expected_bitrev[32];
 
 	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
@@ -307,21 +390,22 @@ static int check_ntt32_radix2_dif_bitrevout(void)
 		}
 
 		direct_ntt32(direct, in);
-		ntt32_radix2_dif_bitrevout(bitrev, in);
+		ntt32_radix2_dif_incomplete(incomplete, in);
+		complete_ntt32_final_len2(completed, incomplete);
 
 		for (int k = 0; k < 32; k++)
 		{
 			expected_bitrev[bitreverse5((unsigned)k)] = direct[k];
 		}
 
-		const int matches = coeff32_match_count(expected_bitrev, bitrev);
+		const int matches = coeff32_match_count(expected_bitrev, completed);
 		if (matches < min_matches)
 		{
 			min_matches = matches;
 		}
 	}
 
-	printf("ntt32_radix2_dif_bitrevout check: %d/32 minimum coefficient match\n",
+	printf("ntt32_radix2_dif_incomplete + explicit len=2 check: %d/32 minimum coefficient match\n",
 	       min_matches);
 	return min_matches == 32;
 }
@@ -344,7 +428,10 @@ static int check_ntt96_goodthomas(void)
 		}
 
 		direct_ntt96(direct, in);
-		ntt96_goodthomas(gt, in);
+		int16_t incomplete[96];
+
+		ntt96_goodthomas(incomplete, in);
+		complete_ntt96_final_len2(gt, incomplete);
 
 		int matches = 0;
 		for (int physical_j = 0; physical_j < 96; physical_j++)
@@ -360,7 +447,7 @@ static int check_ntt96_goodthomas(void)
 		}
 	}
 
-	printf("ntt96_goodthomas row-bitrev check: %d/96 minimum coefficient match\n",
+	printf("ntt96_goodthomas incomplete + explicit len=2 check: %d/96 minimum coefficient match\n",
 	       min_matches);
 	return min_matches == 96;
 }
@@ -368,7 +455,9 @@ static int check_ntt96_goodthomas(void)
 static int check_intt32_radix2_bitrevin(void)
 {
 	int min_bitrev_roundtrip = 32;
+	int min_incomplete_roundtrip = 32;
 	int16_t in[32];
+	int16_t incomplete[32];
 	int16_t freq[32];
 	int16_t fast[32];
 	int16_t scaled[32];
@@ -389,18 +478,26 @@ static int check_intt32_radix2_bitrevin(void)
 			scaled[i] = (int16_t)field_mul(in[i], 32);
 		}
 
-		ntt32_radix2_dif_bitrevout(freq, in);
+		ntt32_radix2_dif_incomplete(incomplete, in);
+		complete_ntt32_final_len2(freq, incomplete);
 		intt32_radix2_bitrevin(fast, freq);
 		matches = coeff32_match_count(scaled, fast);
 		if (matches < min_bitrev_roundtrip)
 		{
 			min_bitrev_roundtrip = matches;
 		}
+
+		intt32_radix2_incomplete(fast, incomplete);
+		matches = coeff32_match_count(scaled, fast);
+		if (matches < min_incomplete_roundtrip)
+		{
+			min_incomplete_roundtrip = matches;
+		}
 	}
 
-	printf("intt32_radix2_bitrevin roundtrip: %d/32 after 32 scaling\n",
-	       min_bitrev_roundtrip);
-	return min_bitrev_roundtrip == 32;
+	printf("intt32 roundtrip: complete-bitrev %d/32, incomplete %d/32 after 32 scaling\n",
+	       min_bitrev_roundtrip, min_incomplete_roundtrip);
+	return min_bitrev_roundtrip == 32 && min_incomplete_roundtrip == 32;
 }
 
 static int check_invntt96_goodthomas(void)
@@ -453,8 +550,13 @@ static int check_full_ntt_gt_rowbitrev_direct(const int factors[2])
 	{
 		fill_input(a, seed);
 		direct_gt_rowbitrev(direct, a, factors);
-		ntt_gt_rowbitrevlayout(gt, a);
-		ntt(public_ntt, a);
+		int16_t gt_incomplete[NTRUPLUS_N];
+		int16_t public_incomplete[NTRUPLUS_N];
+
+		ntt_gt_rowbitrevlayout(gt_incomplete, a);
+		ntt(public_incomplete, a);
+		complete_poly_final_len2(gt, gt_incomplete);
+		complete_poly_final_len2(public_ntt, public_incomplete);
 
 		int matches = coeff_match_count(direct, gt);
 		if (matches < min_vs_direct)
@@ -469,7 +571,7 @@ static int check_full_ntt_gt_rowbitrev_direct(const int factors[2])
 		}
 	}
 
-	printf("full ntt GT-row-bitrev layout: vs direct %d/768, public ntt %d/768\n",
+	printf("full ntt GT-row-bitrev layout after explicit len=2: vs direct %d/768, public ntt %d/768\n",
 	       min_vs_direct, min_public);
 	return min_vs_direct == NTRUPLUS_N && min_public == NTRUPLUS_N;
 }
@@ -551,14 +653,66 @@ static void rowbitrev_basemul_reference(int16_t r[NTRUPLUS_N],
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int physical_j = 0; physical_j < 96; physical_j++)
+		for (int k3 = 0; k3 < 3; k3++)
 		{
-			const int pos = branch_start + 4*physical_j;
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int k32_lo = 2*pair;
+				const int k32_hi = k32_lo + 1;
+				const int physical_lo =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_lo);
+				const int physical_hi =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_hi);
+				const int pos_lo = branch_start + 4*physical_lo;
+				const int pos_hi = branch_start + 4*physical_hi;
 
-			basemul(r + pos, a + pos, b + pos,
-			        gt_rowbitrev_lambda[branch][physical_j]);
+				basemul_incomplete_pair(r + pos_lo, r + pos_hi,
+				                        a + pos_lo, a + pos_hi,
+				                        b + pos_lo, b + pos_hi,
+				                        gt_rowbitrev_lambda[branch][physical_lo],
+				                        gt_rowbitrev_lambda[branch][physical_hi]);
+			}
 		}
 	}
+}
+
+static int rowbitrev_baseinv_reference(int16_t r[NTRUPLUS_N],
+                                       const int16_t a[NTRUPLUS_N])
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+
+		for (int k3 = 0; k3 < 3; k3++)
+		{
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int k32_lo = 2*pair;
+				const int k32_hi = k32_lo + 1;
+				const int physical_lo =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_lo);
+				const int physical_hi =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_hi);
+				const int pos_lo = branch_start + 4*physical_lo;
+				const int pos_hi = branch_start + 4*physical_hi;
+
+				if (baseinv_incomplete_pair(r + pos_lo, r + pos_hi,
+				                            a + pos_lo, a + pos_hi,
+				                            gt_rowbitrev_lambda[branch][physical_lo],
+				                            gt_rowbitrev_lambda[branch][physical_hi]))
+				{
+					for (int i = 0; i < NTRUPLUS_N; i++)
+					{
+						r[i] = 0;
+					}
+
+					return 1;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 
 static int check_gt_rowbitrev_multiplication(void)
@@ -593,6 +747,192 @@ static int check_gt_rowbitrev_multiplication(void)
 	printf("GT-row-bitrev multiplication: vs schoolbook %d/768\n",
 	       min_vs_schoolbook);
 	return min_vs_schoolbook == NTRUPLUS_N;
+}
+
+static int check_gt_rowbitrev_basemul_add(void)
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		for (int k3 = 0; k3 < 3; k3++)
+		{
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int k32_lo = 2*pair;
+				const int k32_hi = k32_lo + 1;
+				const int physical_lo =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_lo);
+				const int physical_hi =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_hi);
+				const int16_t zeta_lo = gt_rowbitrev_lambda[branch][physical_lo];
+				const int16_t zeta_hi = gt_rowbitrev_lambda[branch][physical_hi];
+				int16_t a_lo[4], a_hi[4];
+				int16_t b_lo[4], b_hi[4];
+				int16_t c_lo[4], c_hi[4];
+				int16_t prod_lo[4], prod_hi[4];
+				int16_t add_lo[4], add_hi[4];
+				uint32_t s = (uint32_t)(0xc2b2ae35u + 389u * branch +
+				                         71u * k3 + 17u * pair);
+
+				for (int lane = 0; lane < 4; lane++)
+				{
+					s = s * 1664525u + 1013904223u;
+					a_lo[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					a_hi[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					b_lo[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					b_hi[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					c_lo[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					c_hi[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+				}
+
+				basemul_incomplete_pair(prod_lo, prod_hi,
+				                        a_lo, a_hi,
+				                        b_lo, b_hi,
+				                        zeta_lo, zeta_hi);
+				basemul_add_incomplete_pair(add_lo, add_hi,
+				                            a_lo, a_hi,
+				                            b_lo, b_hi,
+				                            c_lo, c_hi,
+				                            zeta_lo, zeta_hi);
+
+				for (int lane = 0; lane < 4; lane++)
+				{
+					if (!equal_modq(add_lo[lane], prod_lo[lane] + c_lo[lane]) ||
+					    !equal_modq(add_hi[lane], prod_hi[lane] + c_hi[lane]))
+					{
+						printf("rowbitrev incomplete basemul_add mismatch: branch=%d k3=%d pair=%d lane=%d\n",
+						       branch, k3, pair, lane);
+						return 0;
+					}
+				}
+			}
+		}
+	}
+
+	printf("GT-row-bitrev incomplete basemul_add check: ok\n");
+	return 1;
+}
+
+static int check_gt_rowbitrev_baseinv(void)
+{
+	int checked = 0;
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		for (int k3 = 0; k3 < 3; k3++)
+		{
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int k32_lo = 2*pair;
+				const int k32_hi = k32_lo + 1;
+				const int physical_lo =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_lo);
+				const int physical_hi =
+					gt96_output_crt_index((unsigned)k3, (unsigned)k32_hi);
+				const int16_t zeta_lo = gt_rowbitrev_lambda[branch][physical_lo];
+				const int16_t zeta_hi = gt_rowbitrev_lambda[branch][physical_hi];
+				int16_t a_lo[4];
+				int16_t a_hi[4];
+				int16_t inv_lo[4];
+				int16_t inv_hi[4];
+				int16_t prod_lo[4];
+				int16_t prod_hi[4];
+				uint32_t s = (uint32_t)(0x85ebca6bu + 307u * branch +
+				                         53u * k3 + 11u * pair);
+
+				for (int lane = 0; lane < 4; lane++)
+				{
+					s = s * 1664525u + 1013904223u;
+					a_lo[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+					s = s * 1664525u + 1013904223u;
+					a_hi[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+				}
+
+				if (baseinv_incomplete_pair(inv_lo, inv_hi,
+				                            a_lo, a_hi,
+				                            zeta_lo, zeta_hi))
+				{
+					continue;
+				}
+
+				basemul_incomplete_pair(prod_lo, prod_hi,
+				                        a_lo, a_hi,
+				                        inv_lo, inv_hi,
+				                        zeta_lo, zeta_hi);
+
+				if (!equal_modq(prod_lo[0], 1) ||
+				    !equal_modq(prod_lo[1], 0) ||
+				    !equal_modq(prod_lo[2], 0) ||
+				    !equal_modq(prod_lo[3], 0) ||
+				    !equal_modq(prod_hi[0], 0) ||
+				    !equal_modq(prod_hi[1], 0) ||
+				    !equal_modq(prod_hi[2], 0) ||
+				    !equal_modq(prod_hi[3], 0))
+				{
+					printf("rowbitrev incomplete baseinv mismatch: branch=%d k3=%d pair=%d\n",
+					       branch, k3, pair);
+					return 0;
+				}
+
+				checked++;
+			}
+		}
+	}
+
+	printf("GT-row-bitrev incomplete baseinv check: %d invertible pairs checked\n",
+	       checked);
+	return checked > 0;
+}
+
+static int check_gt_rowbitrev_poly_baseinv_identity(void)
+{
+	int16_t a[NTRUPLUS_N] = {0};
+	int16_t inv[NTRUPLUS_N];
+	int16_t prod[NTRUPLUS_N];
+
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+
+		for (int k3 = 0; k3 < 3; k3++)
+		{
+			for (int pair = 0; pair < 16; pair++)
+			{
+				const int physical_lo =
+					gt96_output_crt_index((unsigned)k3, (unsigned)(2*pair));
+				const int pos_lo = branch_start + 4*physical_lo;
+
+				/* Incomplete representation of complete identity at both
+				 * points in the pair: lo=identity, hi=zero.
+				 */
+				a[pos_lo] = 1;
+			}
+		}
+	}
+
+	if (rowbitrev_baseinv_reference(inv, a))
+	{
+		printf("GT-row-bitrev polynomial baseinv identity unexpectedly failed\n");
+		return 0;
+	}
+
+	rowbitrev_basemul_reference(prod, a, inv);
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		if (!equal_modq(prod[i], a[i]))
+		{
+			printf("GT-row-bitrev polynomial baseinv identity mismatch: i=%d\n", i);
+			return 0;
+		}
+	}
+
+	printf("GT-row-bitrev polynomial baseinv identity check: ok\n");
+	return 1;
 }
 
 static int check_gt_natural_basemul_add(void)
@@ -689,13 +1029,16 @@ int main(void)
 	ok &= check_twist_tables();
 	ok &= check_gt_lambda_formula(branch_factors);
 	ok &= check_gt_rowbitrev_lambda_table();
-	ok &= check_ntt32_radix2_dif_bitrevout();
+	ok &= check_ntt32_radix2_dif_incomplete();
 	ok &= check_ntt96_goodthomas();
 	ok &= check_intt32_radix2_bitrevin();
 	ok &= check_invntt96_goodthomas();
 	ok &= check_full_ntt_gt_rowbitrev_direct(branch_factors);
 	ok &= check_invntt_gt_rowbitrevlayout_roundtrip();
 	ok &= check_gt_rowbitrev_multiplication();
+	ok &= check_gt_rowbitrev_basemul_add();
+	ok &= check_gt_rowbitrev_baseinv();
+	ok &= check_gt_rowbitrev_poly_baseinv_identity();
 	ok &= check_gt_natural_basemul_add();
 	ok &= check_gt_natural_baseinv();
 

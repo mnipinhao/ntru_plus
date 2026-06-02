@@ -52,6 +52,12 @@ CSV_GUIDES = {
         "sqrdmulh precompute vector，以及要用哪個 st3 register order 存成下一階段 "
         "LD3 可直接讀的 DFT3 x0/x1/x2。"
     ),
+    "gt_twist_before_zip_table.csv": (
+        "Twist-before-zip 的 table plan。每列是一個 top split 後的 branch-separated "
+        "vector，例如 B1[0..7] 或 B0[256..263]。表中列出 blocks k0/k1、ASM normal "
+        "multiplier vector [k0x4|k1x4]、sqrdmulh precompute vector，以及 compact "
+        ".hword 格式。對應的完整 .s table 另輸出到 build/gt_twist_before_zip_table.s。"
+    ),
     "gt_stage_dft3_plan.csv": (
         "逐 DFT3 column 顯示三個 source positions x0/x1/x2、各自 twist constant，"
         "以及目前 one-multiply DFT3 的 y0/y1/y2 公式。也包含 branch/lane 的 "
@@ -121,10 +127,13 @@ COLUMN_GUIDES = {
     "branch1_twist_mont": "twist_branch1[k] 的 Montgomery-form C table value。",
     "branch0_twist_asm_multiplier": "branch 0 twist 轉成 ASM mul/sqrdmulh/mls 使用的 centered normal multiplier。",
     "branch1_twist_asm_multiplier": "branch 1 twist 轉成 ASM mul/sqrdmulh/mls 使用的 centered normal multiplier。",
-    "branch0_twist_precompute": "branch 0 twist multiplier 對應的 sqrdmulh quotient estimate：round(c*2^15/q)。",
-    "branch1_twist_precompute": "branch 1 twist multiplier 對應的 sqrdmulh quotient estimate：round(c*2^15/q)。",
+    "branch0_twist_precompute": "branch 0 twist multiplier 對應的 sqrdmulh quotient estimate：signed nearest integer of c*2^15/q。",
+    "branch1_twist_precompute": "branch 1 twist multiplier 對應的 sqrdmulh quotient estimate：signed nearest integer of c*2^15/q。",
     "twist_vector_normal": "P(k) 的 8-lane twist multiplier vector：[tw0,tw0,tw0,tw0,tw1,tw1,tw1,tw1]。",
     "twist_vector_precompute": "P(k) 的 8-lane precompute vector：[pre0,pre0,pre0,pre0,pre1,pre1,pre1,pre1]。",
+    "semi_expanded_multiplier_hword": "semi-expanded table 的 multiplier .hword 內容，vector shape 是 [k0x4|k1x4]。",
+    "semi_expanded_precompute_hword": "semi-expanded table 的 precompute .hword 內容，vector shape 是 [k0x4|k1x4]。",
+    "compact_hword": "compact table 的 .hword 內容：[m[k0],m[k1],pre[k0],pre[k1]]，runtime 需要 expand。",
     "twist_operation": "P(k) 乘 branch-specific twist 後變成 PT(k) 的 symbolic operation。",
     "st3_register_order": "這個 half-tile column 要用的 st3 register order；下一階段 LD3 會回復 x0/x1/x2。",
     "next_ld3_result": "下一階段 LD3 後 x0/x1/x2 分別對應哪些 register 的內容。",
@@ -219,18 +228,18 @@ COLUMN_GUIDES = {
     "register": "proposed AArch64 NEON register name，例如 v4。",
     "register_lane": "halfword lane index，0..7。",
     "input_work_index": "進入 DIF NTT32 的 natural-order work index；目前等於 input_k32。",
-    "bitrev_output_index": "DIF NTT32 output 的 bit-reversed output index，bitreverse5(k32)。",
-    "bitrev_output_register": "DIF NTT32 bit-reversed output index 對應的 register。",
-    "bitrev_output_lane": "DIF NTT32 bit-reversed output index 對應的 lane。",
+    "bitrev_output_index": "目前 forward NTT32 停在 incomplete pre-len2；這欄表示如果補上 missing len=2 後，完整 DIF output 會落到的 bit-reversed index，bitreverse5(k32)。",
+    "bitrev_output_register": "如果補上 missing len=2 後，完整 bit-reversed output index 對應的 register。",
+    "bitrev_output_lane": "如果補上 missing len=2 後，完整 bit-reversed output index 對應的 lane。",
     "ntt32_input_k32": "進入 32-point row 的原始 k32 column。",
     "ntt32_work_index": "32-point row 的 work array index；initial pack 是 natural order，後續由 DIF butterflies in-place 更新。",
     "ntt32_input_work_index": "DIF NTT32 的 natural input work index；目前等於 ntt32_input_k32。",
     "ntt32_input_register": "DIF NTT32 natural input pack register。",
     "ntt32_input_register_lane": "DIF NTT32 natural input pack lane。",
     "ntt32_input_vector_group": "DIF NTT32 natural input pack vector group。",
-    "ntt32_bitrev_output_index": "DIF NTT32 output 對應的 bit-reversed index。",
-    "ntt32_bitrev_output_register": "DIF NTT32 bit-reversed output register。",
-    "ntt32_bitrev_output_lane": "DIF NTT32 bit-reversed output lane。",
+    "ntt32_bitrev_output_index": "目前 NTT32 停在 incomplete pre-len2；這欄表示如果補上 missing len=2 後，完整 DIF output 對應的 bit-reversed index。",
+    "ntt32_bitrev_output_register": "如果補上 missing len=2 後，完整 bit-reversed output register。",
+    "ntt32_bitrev_output_lane": "如果補上 missing len=2 後，完整 bit-reversed output lane。",
     "ntt32_register": "NTT32 initial row pack 中 work index 所在 register。",
     "ntt32_register_lane": "NTT32 initial row pack 中 work index 所在 halfword lane。",
     "ntt32_vector_group": "NTT32 initial row pack 中 work index 所在 vector group。",
@@ -239,6 +248,12 @@ COLUMN_GUIDES = {
     "lo_lane": "low operand 所在 halfword lane。",
     "hi_lane": "high operand 所在 halfword lane。",
     "pair_shape": "butterfly pair 的 register/lane 幾何形狀，用來判斷是否需要 shuffle。",
+    "pair": "incomplete NTT32 中尚未做 len=2 的相鄰 k32 pair index，0..15。",
+    "pair_role": "此 row 在 incomplete pair 中對應補完 len=2 後的 plus 或 minus 分支。",
+    "paired_physical_j": "同一個 incomplete k32 pair 的另一個 physical block。",
+    "k32_pre_len2": "尚未做 final len=2 前的 row coordinate。",
+    "logical_k32_after_len2": "若補上 final len=2 後，此 physical block 對應的完整 bit-reversed logical k32。",
+    "logical_j_after_len2": "若補上 final len=2 後，此 physical block 對應的完整 GT logical index。",
     "shuffle_need": "以目前 pack 來看這個 stage 是否需要 shuffle。",
     "vector_strategy": "對這個 stage 建議的 vector implementation shape。",
     "case": "range trace 的 input case。",

@@ -20,7 +20,7 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm dump_forward_mapping csv_viewers clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s
@@ -53,9 +53,12 @@ test_polyntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c $(POLYNTT_AS
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/dump_forward_mapping gt_test/dump_forward_mapping.c
-	./$(BUILD_DIR)/dump_forward_mapping > $(BUILD_DIR)/forward_mapping.csv
+	./$(BUILD_DIR)/dump_forward_mapping
 	$(PYTHON) gt_test/make_register_pack_viewer.py $(BUILD_DIR)/gt_register_pack_plan.csv -o $(BUILD_DIR)/gt_register_pack_plan.html
 	$(PYTHON) gt_test/make_csv_viewers.py $(BUILD_DIR)
+	$(PYTHON) gt_test/make_phase123_viewer.py $(BUILD_DIR) -o $(BUILD_DIR)/gt_phase123_flow_viewer.html
+
+gt_phase123_flow_viewer: dump_forward_mapping
 
 csv_viewers: dump_forward_mapping
 

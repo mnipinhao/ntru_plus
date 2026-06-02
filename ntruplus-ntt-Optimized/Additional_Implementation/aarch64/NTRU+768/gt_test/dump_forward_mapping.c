@@ -52,6 +52,18 @@ static int centered_normal_from_mont(int16_t a)
 
 static int asm_precompute_from_normal(int c)
 {
+	/*
+	 * sqrdmulh-compatible signed nearest integer for the Neon Barrett
+	 * multiplication sequence:
+	 *
+	 *   sqrdmulh hi, a, p
+	 *   mul      lo, a, c
+	 *   mls      lo, hi, q
+	 *
+	 * p is nearest_integer(c * 2^15 / q).  Keep the negative case explicit;
+	 * C casts or floating round() are too easy to make inconsistent with the
+	 * assembly table.
+	 */
 	const int32_t scale = 1 << 15;
 	const int64_t product = (int64_t)c * scale;
 
@@ -68,7 +80,7 @@ static int input_crt_n(int n3, int n32)
 	return (64*n3 + 33*n32) % 96;
 }
 
-static void find_input_crt_coords(int n, int *out_n3, int *out_n32)
+static void NTRUPLUS_UNUSED find_input_crt_coords(int n, int *out_n3, int *out_n32)
 {
 	for (int n3 = 0; n3 < 3; n3++)
 	{
@@ -215,7 +227,7 @@ static int dft3_ld3_stage_coeff_offset(int branch,
 		n3;
 }
 
-static void dump_gt_stage1_dft3_store_plan(void)
+static void NTRUPLUS_UNUSED dump_gt_stage1_dft3_store_plan(void)
 {
 	FILE *fp = fopen("build/gt_stage1_dft3_store_plan.csv", "w");
 
@@ -338,7 +350,7 @@ static void dump_gt_stage1_dft3_store_plan(void)
 	fclose(fp);
 }
 
-static void dump_gt_stage_top_split_plan(void)
+static void NTRUPLUS_UNUSED dump_gt_stage_top_split_plan(void)
 {
 	FILE *fp = fopen("build/gt_stage_top_split_plan.csv", "w");
 
@@ -395,7 +407,7 @@ static void dump_gt_stage_top_split_plan(void)
 	fclose(fp);
 }
 
-static void dump_gt_stage_twist_plan(void)
+static void NTRUPLUS_UNUSED dump_gt_stage_twist_plan(void)
 {
 	FILE *fp = fopen("build/gt_stage_twist_plan.csv", "w");
 
@@ -452,7 +464,7 @@ static void dump_gt_stage_twist_plan(void)
 	fclose(fp);
 }
 
-static void dump_gt_stage_dft3_plan(void)
+static void NTRUPLUS_UNUSED dump_gt_stage_dft3_plan(void)
 {
 	FILE *fp = fopen("build/gt_stage_dft3_plan.csv", "w");
 
@@ -569,8 +581,8 @@ static void dump_gt_stage_ntt32_input_plan(void)
 
 					fprintf(fp,
 					        "%d,%d,%d,%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,"
-					        "work[%d]=dft3_row_%d[%d];out[bitreverse5(%d)]=NTT32[%d],"
-					        "natural_input_pack_for_dif_ntt32_bitrev_output\n",
+					        "work[%d]=dft3_row_%d[%d];after_missing_len2_out[bitreverse5(%d)]=NTT32[%d],"
+					        "natural_input_pack_for_incomplete_dif_ntt32_pre_len2_output\n",
 					        branch,
 					        lane,
 					        k3,
@@ -718,7 +730,10 @@ static void dump_gt_register_pack_plan(void)
 				 *   v6 = work[16..23], v7 = work[24..31].
 				 *
 				 * work[k32] receives the DFT3 output at column k32.
-				 * The kernel itself produces bit-reversed output:
+				 * The incomplete kernel stops before the final len=2
+				 * butterflies.  If that missing layer is later completed,
+				 * the corresponding full row output would be:
+				 *
 				 *   out[bitreverse5(k32)] = NTT32(row)[k32].
 				 */
 				for (int work = 0; work < 32; work++)
@@ -739,7 +754,7 @@ static void dump_gt_register_pack_plan(void)
 					        "%d,0,32,%d,%d,state,-1,-1,"
 					        "0,%d,%d,"
 					        "%d,%d,%d,%d,%d,%d,"
-					        "natural_input_for_dif_ntt32_bitrev_output\n",
+					        "natural_input_for_incomplete_dif_ntt32_pre_len2_output\n",
 					        branch,
 					        lane,
 					        work / 8,
@@ -761,7 +776,7 @@ static void dump_gt_register_pack_plan(void)
 
 				int stage = 0;
 
-				for (unsigned len = 32; len >= 2; len >>= 1)
+				for (unsigned len = 32; len >= 4; len >>= 1)
 				{
 					const unsigned step = 32 / len;
 
@@ -852,7 +867,7 @@ static const char *ntt32_reg_for_index(int index)
 	return regs[index / 8];
 }
 
-static void dump_full_fused_gt_plan(void)
+static void NTRUPLUS_UNUSED dump_full_fused_gt_plan(void)
 {
 	FILE *fp = fopen("build/full_fused_gt_plan.csv", "w");
 
@@ -921,7 +936,7 @@ static void dump_full_fused_gt_plan(void)
 						        "%d,%d,%d,%d,v%d,%d,%s,%d,%d,%d,"
 						        "%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,"
 						        "%d,%d,%s,%d,%d,%d,%s,%d,"
-						        "top_split_then_twist_then_dft3_contribution_then_natural_ntt32_input_bitrev_output\n",
+						        "top_split_then_twist_then_dft3_contribution_then_incomplete_ntt32_pre_len2;bitrev_columns_show_output_after_missing_len2\n",
 						        branch,
 						        lane,
 						        physical_pos,
@@ -1050,7 +1065,7 @@ static void dump_ntt32_neon_plan(void)
 
 	int stage = 0;
 
-	for (unsigned len = 32; len >= 2; len >>= 1)
+	for (unsigned len = 32; len >= 4; len >>= 1)
 	{
 		const unsigned step = 32 / len;
 
@@ -1527,7 +1542,7 @@ static void trace_reduction_schedule(FILE *fp,
 
 				int stage = 0;
 
-				for (unsigned len = 32; len >= 2; len >>= 1)
+				for (unsigned len = 32; len >= 4; len >>= 1)
 				{
 					const unsigned step = 32 / len;
 					const int reduce_stage = should_reduce_stage(schedule, stage + 1);
@@ -1595,7 +1610,7 @@ static void trace_reduction_schedule(FILE *fp,
 	}
 }
 
-static void dump_reduction_bound_trace(void)
+static void NTRUPLUS_UNUSED dump_reduction_bound_trace(void)
 {
 	static const char *cases[] = {
 		"zero",
@@ -1679,7 +1694,7 @@ static void static_bound_report(FILE *fp,
 	        notes);
 }
 
-static void dump_reduction_static_bounds(void)
+static void NTRUPLUS_UNUSED dump_reduction_static_bounds(void)
 {
 	static const reduction_schedule_t schedules[] = {
 		{ "current_ref", 1, 1, 1 },
@@ -1815,7 +1830,7 @@ static void dump_reduction_static_bounds(void)
 			                    row_bound,
 			                    "work_natural_input_bound");
 
-			for (unsigned len = 32; len >= 2; len >>= 1)
+			for (unsigned len = 32; len >= 4; len >>= 1)
 			{
 				const int reduce_stage = should_reduce_stage(schedule, stage + 1);
 				const int32_t sum_bound = row_bound + row_bound;
@@ -1855,7 +1870,7 @@ static void dump_reduction_static_bounds(void)
 	fclose(fp);
 }
 
-static void dump_dft3_twiddle_schedule(void)
+static void NTRUPLUS_UNUSED dump_dft3_twiddle_schedule(void)
 {
 	FILE *fp = fopen("build/dft3_twiddle_schedule.csv", "w");
 
@@ -1909,7 +1924,7 @@ static void dump_ntt32_twiddle_schedule(void)
 	{
 		int stage = 0;
 
-		for (unsigned len = 32; len >= 2; len >>= 1)
+		for (unsigned len = 32; len >= 4; len >>= 1)
 		{
 			const unsigned step = 32 / len;
 
@@ -1924,7 +1939,7 @@ static void dump_ntt32_twiddle_schedule(void)
 					const unsigned power = step * j;
 					const int16_t twiddle = gt96_omega32_powers[power];
 
-					fprintf(fp, "%d,%d,%u,%u,%u,%u,%u,%u,%d,%d,dif_bitrevout,high_output_is_(low-high)_times_twiddle\n",
+					fprintf(fp, "%d,%d,%u,%u,%u,%u,%u,%u,%d,%d,incomplete_dif_pre_len2,high_output_is_(low-high)_times_twiddle\n",
 					        row_k3,
 					        stage,
 					        len,
@@ -1954,43 +1969,62 @@ static void dump_gt_rowbitrev_basemul_table(void)
 	}
 
 	fprintf(fp,
-	        "branch,physical_j,position_start,position_end,k3,k32_br,"
-	        "logical_k32,logical_j,lambda_table,lambda_mont,lambda_normal,"
-	        "asm_zeta_vector_index,asm_zeta_vector_lane,notes\n");
+	        "branch,k3,pair,pair_role,physical_j,paired_physical_j,"
+	        "position_start,position_end,k32_pre_len2,logical_k32_after_len2,"
+	        "logical_j_after_len2,lambda_table,lambda_mont,lambda_normal,"
+	        "asm_zeta_vector_index,asm_zeta_vector_lane,operation,notes\n");
 
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int branch_start = branch * (NTRUPLUS_N / 2);
 
-		for (int physical_j = 0; physical_j < 96; physical_j++)
+		for (int k3 = 0; k3 < 3; k3++)
 		{
-			const int pos = branch_start + 4*physical_j;
-			const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
-			const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
-			const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
-			const int logical_j =
-				(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
-			const int asm_vector = branch * 12 + physical_j / 8;
-			const int asm_lane = physical_j & 7;
+			for (int pair = 0; pair < 16; pair++)
+			{
+				for (int role = 0; role < 2; role++)
+				{
+					const int k32 = 2*pair + role;
+					const int peer_k32 = 2*pair + (1 - role);
+					const int physical_j =
+						gt96_output_crt_index((unsigned)k3, (unsigned)k32);
+					const int peer_j =
+						gt96_output_crt_index((unsigned)k3, (unsigned)peer_k32);
+					const int pos = branch_start + 4*physical_j;
+					const int logical_k32 = (int)bitreverse5((unsigned)k32);
+					const int logical_j =
+						(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+					const int asm_vector = branch * 12 + physical_j / 8;
+					const int asm_lane = physical_j & 7;
+					const char *role_name = role == 0 ? "plus" : "minus";
+					const char *operation =
+						role == 0 ? "complete_pair_lo_plus_hi_then_basemul"
+						          : "complete_pair_lo_minus_hi_then_basemul";
 
-			fprintf(fp,
-			        "%d,%d,%d,%d,%d,%d,%d,%d,"
-			        "gt_rowbitrev_lambda[%d][%d],%d,%d,%d,%d,"
-			        "physical_order_zeta_for_ZqX_mod_X4_minus_lambda\n",
-			        branch,
-			        physical_j,
-			        pos,
-			        pos + 3,
-			        k3,
-			        k32_br,
-			        logical_k32,
-			        logical_j,
-			        branch,
-			        physical_j,
-			        gt_rowbitrev_lambda[branch][physical_j],
-			        normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]),
-			        asm_vector,
-			        asm_lane);
+					fprintf(fp,
+					        "%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,"
+					        "gt_rowbitrev_lambda[%d][%d],%d,%d,%d,%d,%s,"
+					        "incomplete_pair_basemul_then_uncomplete_with_half\n",
+					        branch,
+					        k3,
+					        pair,
+					        role_name,
+					        physical_j,
+					        peer_j,
+					        pos,
+					        pos + 3,
+					        k32,
+					        logical_k32,
+					        logical_j,
+					        branch,
+					        physical_j,
+					        gt_rowbitrev_lambda[branch][physical_j],
+					        normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]),
+					        asm_vector,
+					        asm_lane,
+					        operation);
+				}
+			}
 		}
 	}
 
@@ -2178,66 +2212,285 @@ static void dump_gt_blockpair_phase2_plan(void)
 	fclose(fp);
 }
 
+static void format_twist_pair_vector(char out[192], int first, int second)
+{
+	snprintf(out, 192,
+	         "%d|%d|%d|%d|%d|%d|%d|%d",
+	         first,
+	         first,
+	         first,
+	         first,
+	         second,
+	         second,
+	         second,
+	         second);
+}
+
+static void format_compact_pair(char out[96], int first_mul, int second_mul,
+                                int first_pre, int second_pre)
+{
+	snprintf(out, 96,
+	         "%d|%d|%d|%d",
+	         first_mul,
+	         second_mul,
+	         first_pre,
+	         second_pre);
+}
+
+static const char *branch_output_name(int branch)
+{
+	return branch == 0 ? "B0" : "B1";
+}
+
+static const char *twist_table_name_for_branch(int branch)
+{
+	return branch == 0 ? "twist_branch0" : "twist_branch1";
+}
+
+static const int16_t *twist_table_for_branch(int branch)
+{
+	return branch == 0 ? twist_branch0 : twist_branch1;
+}
+
+static int twist_before_zip_register(int branch, int chunk_role, int pair)
+{
+	const int base = branch == 0 ? 4 : 10;
+
+	return base + 2*chunk_role + pair;
+}
+
+static unsigned hword_hex(int value)
+{
+	return (unsigned)((uint16_t)(int16_t)value);
+}
+
+static void emit_asm_hword_vector(FILE *fp, int first, int second)
+{
+	fprintf(fp,
+	        "    .hword 0x%04x, 0x%04x, 0x%04x, 0x%04x, "
+	        "0x%04x, 0x%04x, 0x%04x, 0x%04x\n",
+	        hword_hex(first),
+	        hword_hex(first),
+	        hword_hex(first),
+	        hword_hex(first),
+	        hword_hex(second),
+	        hword_hex(second),
+	        hword_hex(second),
+	        hword_hex(second));
+}
+
+static void dump_gt_twist_before_zip_table(void)
+{
+	FILE *csv = fopen("build/gt_twist_before_zip_table.csv", "w");
+	FILE *asm_table = fopen("build/gt_twist_before_zip_table.s", "w");
+
+	if (csv == NULL)
+	{
+		perror("build/gt_twist_before_zip_table.csv");
+	}
+	if (asm_table == NULL)
+	{
+		perror("build/gt_twist_before_zip_table.s");
+	}
+	if (csv == NULL || asm_table == NULL)
+	{
+		if (csv != NULL)
+		{
+			fclose(csv);
+		}
+		if (asm_table != NULL)
+		{
+			fclose(asm_table);
+		}
+		return;
+	}
+
+	fprintf(csv,
+	        "loop,group,half,branch,branch_output,top_split_output_register,"
+	        "coeff_start,coeff_end,block0,block1,twist_table,"
+	        "twist_index0,twist_index1,twist_mont0,twist_mont1,"
+	        "twist_asm_multiplier0,twist_asm_multiplier1,"
+	        "twist_precompute0,twist_precompute1,"
+	        "twist_multiplier_vector,twist_precompute_vector,"
+	        "semi_expanded_multiplier_hword,semi_expanded_precompute_hword,"
+	        "compact_hword,operation,notes\n");
+
+	fprintf(asm_table,
+	        "/* Auto-generated by gt_test/dump_forward_mapping.c.\n"
+	        " * Twist-before-zip table for the current block-pair schedule.\n"
+	        " * Order: loop 0..7; inside each loop B1 v10..v15, then B0 v4..v9.\n"
+	        " * semi_expanded entries are consumed as multiplier vector then precompute vector.\n"
+	        " * compact entries are: m[k0], m[k1], pre[k0], pre[k1].\n"
+	        " * Values are emitted as unsigned 16-bit hex two's-complement hwords.\n"
+	        " */\n\n"
+	        ".align 4\n"
+	        "gt_twist_before_zip_semi_expanded:\n");
+
+	for (int loop = 0; loop < 8; loop++)
+	{
+		const int group = loop / 2;
+		const int half = loop & 1;
+		const int base = 8*group + 4*half;
+
+		for (int branch_order = 0; branch_order < 2; branch_order++)
+		{
+			const int branch = branch_order == 0 ? 1 : 0;
+			const int16_t *twist = twist_table_for_branch(branch);
+
+			for (int chunk_role = 0; chunk_role < 3; chunk_role++)
+			{
+				for (int pair = 0; pair < 2; pair++)
+				{
+					const int block0 = 32*chunk_role + base + 2*pair;
+					const int block1 = block0 + 1;
+					const int coeff_start = 4*block0;
+					const int coeff_end = coeff_start + 7;
+					const int reg = twist_before_zip_register(branch, chunk_role, pair);
+					const int mont0 = twist[block0];
+					const int mont1 = twist[block1];
+					const int normal0 = centered_normal_from_mont(twist[block0]);
+					const int normal1 = centered_normal_from_mont(twist[block1]);
+					const int pre0 = asm_precompute_from_normal(normal0);
+					const int pre1 = asm_precompute_from_normal(normal1);
+					char mul_vector[192];
+					char pre_vector[192];
+					char compact[96];
+
+					format_twist_pair_vector(mul_vector, normal0, normal1);
+					format_twist_pair_vector(pre_vector, pre0, pre1);
+					format_compact_pair(compact, normal0, normal1, pre0, pre1);
+
+					fprintf(csv,
+					        "%d,%d,%d,%d,%s,v%d,"
+					        "%d,%d,%d,%d,%s,"
+					        "%d,%d,%d,%d,%d,%d,%d,%d,"
+					        "%s,%s,%s,%s,%s,"
+					        "fqmul_%s[%d..%d]_by_twist_%s_k%d_k%d,"
+					        "twist_before_zip;vector_shape=[k0x4|k1x4]\n",
+					        loop,
+					        group,
+					        half,
+					        branch,
+					        branch_output_name(branch),
+					        reg,
+					        coeff_start,
+					        coeff_end,
+					        block0,
+					        block1,
+					        twist_table_name_for_branch(branch),
+					        block0,
+					        block1,
+					        mont0,
+					        mont1,
+					        normal0,
+					        normal1,
+					        pre0,
+					        pre1,
+					        mul_vector,
+					        pre_vector,
+					        mul_vector,
+					        pre_vector,
+					        compact,
+					        branch_output_name(branch),
+					        coeff_start,
+					        coeff_end,
+					        twist_table_name_for_branch(branch),
+					        block0,
+					        block1);
+
+					fprintf(asm_table,
+					        "    // loop %d group=%d half=%d %s v%d coeff %s[%d..%d], blocks k=%d,%d\n",
+					        loop,
+					        group,
+					        half,
+					        branch_output_name(branch),
+					        reg,
+					        branch_output_name(branch),
+					        coeff_start,
+					        coeff_end,
+					        block0,
+					        block1);
+					emit_asm_hword_vector(asm_table, normal0, normal1);
+					emit_asm_hword_vector(asm_table, pre0, pre1);
+				}
+			}
+		}
+	}
+
+	fprintf(asm_table,
+	        "\n.align 4\n"
+	        "gt_twist_before_zip_compact:\n");
+
+	for (int loop = 0; loop < 8; loop++)
+	{
+		const int group = loop / 2;
+		const int half = loop & 1;
+		const int base = 8*group + 4*half;
+
+		for (int branch_order = 0; branch_order < 2; branch_order++)
+		{
+			const int branch = branch_order == 0 ? 1 : 0;
+			const int16_t *twist = twist_table_for_branch(branch);
+
+			for (int chunk_role = 0; chunk_role < 3; chunk_role++)
+			{
+				for (int pair = 0; pair < 2; pair++)
+				{
+					const int block0 = 32*chunk_role + base + 2*pair;
+					const int block1 = block0 + 1;
+					const int coeff_start = 4*block0;
+					const int coeff_end = coeff_start + 7;
+					const int reg = twist_before_zip_register(branch, chunk_role, pair);
+					const int normal0 = centered_normal_from_mont(twist[block0]);
+					const int normal1 = centered_normal_from_mont(twist[block1]);
+					const int pre0 = asm_precompute_from_normal(normal0);
+					const int pre1 = asm_precompute_from_normal(normal1);
+
+					fprintf(asm_table,
+					        "    // loop %d group=%d half=%d %s v%d coeff %s[%d..%d], blocks k=%d,%d\n"
+					        "    .hword 0x%04x, 0x%04x, 0x%04x, 0x%04x\n",
+					        loop,
+					        group,
+					        half,
+					        branch_output_name(branch),
+					        reg,
+					        branch_output_name(branch),
+					        coeff_start,
+					        coeff_end,
+					        block0,
+					        block1,
+					        hword_hex(normal0),
+					        hword_hex(normal1),
+					        hword_hex(pre0),
+					        hword_hex(pre1));
+				}
+			}
+		}
+	}
+
+	fclose(csv);
+	fclose(asm_table);
+}
+
 int main(void)
 {
-	dump_gt_stage_top_split_plan();
-	dump_gt_stage_twist_plan();
-	dump_gt_stage1_dft3_store_plan();
+	/*
+	 * Keep only the dumps that are useful for the current incomplete
+	 * Good-Thomas + ASM work:
+	 *
+	 * - gt_blockpair_phase2_plan feeds the interactive phase123 viewer.
+	 * - gt_twist_before_zip_table gives the current twist/precompute order.
+	 * - gt_stage_ntt32_input_plan, ntt32_* and gt_register_pack_plan describe
+	 *   the row input and incomplete 32-point kernel shape.
+	 * - gt_rowbitrev_basemul_table describes incomplete pair basemul layout.
+	 */
 	dump_gt_blockpair_phase2_plan();
-	dump_gt_stage_dft3_plan();
+	dump_gt_twist_before_zip_table();
 	dump_gt_stage_ntt32_input_plan();
-	dump_dft3_twiddle_schedule();
 	dump_ntt32_twiddle_schedule();
 	dump_ntt32_neon_plan();
-	dump_full_fused_gt_plan();
 	dump_gt_register_pack_plan();
-	dump_reduction_bound_trace();
-	dump_reduction_static_bounds();
 	dump_gt_rowbitrev_basemul_table();
-
-	printf("physical_pos,branch,branch_pos,block_k,lane,twist_table,twist_index,twist_mont,twist_normal,gt_in_index,input_crt_n3,input_crt_n32,dft_to_k3_0_exp,dft_to_k3_0_mont,dft_to_k3_0_normal,dft_to_k3_1_exp,dft_to_k3_1_mont,dft_to_k3_1_normal,dft_to_k3_2_exp,dft_to_k3_2_mont,dft_to_k3_2_normal\n");
-
-	for (int pos = 0; pos < NTRUPLUS_N; pos++)
-	{
-		const int branch = pos / (NTRUPLUS_N / 2);
-		const int branch_start = branch * (NTRUPLUS_N / 2);
-		const int branch_pos = pos - branch_start;
-		const int block = branch_pos / 4;
-		const int lane = branch_pos & 3;
-		const int16_t *twist = branch == 0 ? twist_branch0 : twist_branch1;
-		const char *twist_name = branch == 0 ? "twist_branch0" : "twist_branch1";
-		int n3;
-		int n32;
-
-		find_input_crt_coords(block, &n3, &n32);
-
-		printf("%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d",
-		       pos,
-		       branch,
-		       branch_pos,
-		       block,
-		       lane,
-		       twist_name,
-		       block,
-		       twist[block],
-		       normal_from_mont(twist[block]),
-		       block,
-		       n3,
-		       n32);
-
-		for (int k3 = 0; k3 < 3; k3++)
-		{
-			const int exp = (n3 * k3) % 3;
-			const int16_t twiddle = dft3_twiddle_mont(exp);
-
-			printf(",%d,%d,%d",
-			       exp,
-			       twiddle,
-			       normal_from_mont(twiddle));
-		}
-
-		printf("\n");
-	}
 
 	return 0;
 }

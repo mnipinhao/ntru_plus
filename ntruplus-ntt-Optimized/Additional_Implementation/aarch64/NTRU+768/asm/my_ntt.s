@@ -5,22 +5,32 @@ _poly_ntt:
     dst       .req x0
     src       .req x1
     zetas_ptr .req x2
+    twist_ptr .req x3
+    row0_ptr .req x4
+    row1_ptr .req x5
+    row2_ptr .req x6
     counter   .req x8
     
     adr zetas_ptr, zetas
-    
-    ld1 {v0.8h - v3.8h}, [zetas_ptr], #64
+    ldr q0, [zetas_ptr]
 
-    mov counter, #128
+    adr twist_ptr, twist_table
+    mov row0_ptr, dst
+    add row1_ptr, dst, #512
+    add row2_ptr, dst, #1024
+    mov counter, #8
 
-_looptop_012:
+_loop_phase123:
     #level 0
-    ldr q10, [src, #6*128]
-    ldr q11, [src, #7*128]
-    ldr q12, [src, #8*128]
-    ldr q13, [src, #9*128]
-    ldr q14, [src, #10*128]
-    ldr q15, [src, #11*128]
+    // high side
+    ldr q10, [src, #6*128]        // a384..a391
+    ldr q11, [src, #6*128 + 16]   // a392..a399
+
+    ldr q12, [src, #8*128]        // a512..a519
+    ldr q13, [src, #8*128 + 16]   // a520..a527
+
+    ldr q14, [src, #10*128]       // a640..a647
+    ldr q15, [src, #10*128 + 16]  // a648..a655
 
     mul v16.8h, v10.8h, v0.h[4]
     mul v17.8h, v11.8h, v0.h[4]
@@ -51,13 +61,13 @@ _looptop_012:
     sub v14.8h, v14.8h, v20.8h
     sub v15.8h, v15.8h, v21.8h
 
-    #load 2
-    ldr q4, [src, #0*128]
-    ldr q5, [src, #1*128]
-    ldr q6, [src, #2*128]
-    ldr q7, [src, #3*128]
-    ldr q8, [src, #4*128]
-    ldr q9, [src, #5*128]
+    #load low side
+    ldr q4,  [src, #0*128]        // a0..a7
+    ldr q5,  [src, #0*128 + 16]   // a8..a15
+    ldr q6,  [src, #2*128]        // a128..a135
+    ldr q7,  [src, #2*128 + 16]   // a136..a143
+    ldr q8,  [src, #4*128]        // a256..a263
+    ldr q9,  [src, #4*128 + 16]   // a264..a271
 
     #update 2
     add v10.8h, v10.8h, v4.8h
@@ -74,1044 +84,516 @@ _looptop_012:
     add v8.8h, v8.8h, v20.8h
     add v9.8h, v9.8h, v21.8h
 
-    #level 1
-    #mul 1
-    mul v16.8h, v6.8h, v0.h[6]
-    mul v17.8h, v7.8h, v0.h[6]
-    mul v18.8h, v8.8h, v1.h[0]
-    mul v19.8h, v9.8h, v1.h[0]
+    #Twist
+    # load twist table
+    ldr q1, [twist_ptr], #16   // multiplier vector
+    ldr q2, [twist_ptr], #16   // precompute vector
 
-    sqrdmulh v6.8h, v6.8h, v0.h[7]
-    sqrdmulh v7.8h, v7.8h, v0.h[7]
-    sqrdmulh v8.8h, v8.8h, v1.h[1]
-    sqrdmulh v9.8h, v9.8h, v1.h[1]
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
 
-    mls v16.8h, v6.8h, v0.h[0] //t1
-    mls v17.8h, v7.8h, v0.h[0] //t1
-    mls v18.8h, v8.8h, v0.h[0] //t2
-    mls v19.8h, v9.8h, v0.h[0] //t2
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldr q1, [twist_ptr], #16      // [50,50,50,50,-312,-312,-312,-312]
+    ldr q2, [twist_ptr], #16      // [474,474,474,474,-2957,-2957,-2957,-2957]
 
-    sub  v6.8h, v16.8h, v18.8h
-    sub  v7.8h, v17.8h, v19.8h
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
 
-    #mul 2
-    mul v20.8h,  v6.8h, v0.h[2]
-    mul v21.8h,  v7.8h, v0.h[2]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldr q1, [twist_ptr], #16      // [867,867,867,867,-432,-432,-432,-432]
+    ldr q2, [twist_ptr], #16      // [8218,8218,8218,8218,-4095,-4095,-4095,-4095]
 
-    sqrdmulh  v6.8h, v6.8h, v0.h[3]
-    sqrdmulh  v7.8h, v7.8h, v0.h[3]
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
 
-    mls v20.8h, v6.8h, v0.h[0] //t3
-    mls v21.8h, v7.8h, v0.h[0] //t3
-
-    #update
-    sub v8.8h, v4.8h, v16.8h //r[i] - t1
-    sub v9.8h, v5.8h, v17.8h //r[i] - t1
-
-    sub v6.8h, v4.8h, v18.8h //r[i] - t2
-    sub v7.8h, v5.8h, v19.8h //r[i] - t2
-
-    add v4.8h, v4.8h, v16.8h //r[i] + t1
-    add v5.8h, v5.8h, v17.8h //r[i] + t1
-
-    sub v8.8h, v8.8h, v20.8h //r[i] - t1 - t3
-    sub v9.8h, v9.8h, v21.8h //r[i] - t1 - t3
-
-    add v6.8h, v6.8h, v20.8h //r[i] - t2 + t3
-    add v7.8h, v7.8h, v21.8h //r[i] - t2 + t3
-
-    add v4.8h, v4.8h, v18.8h //r[i] + t1 + t2
-    add v5.8h, v5.8h, v19.8h //r[i] + t1 + t2
-
-    #mul 1
-    mul v16.8h, v12.8h, v1.h[2]
-    mul v17.8h, v13.8h, v1.h[2]
-    mul v18.8h, v14.8h, v1.h[4]
-    mul v19.8h, v15.8h, v1.h[4]
-
-    sqrdmulh v12.8h, v12.8h, v1.h[3]
-    sqrdmulh v13.8h, v13.8h, v1.h[3]
-    sqrdmulh v14.8h, v14.8h, v1.h[5]
-    sqrdmulh v15.8h, v15.8h, v1.h[5]
-
-    mls v16.8h, v12.8h, v0.h[0] //t1
-    mls v17.8h, v13.8h, v0.h[0] //t1
-    mls v18.8h, v14.8h, v0.h[0] //t2
-    mls v19.8h, v15.8h, v0.h[0] //t2
-
-    sub  v12.8h, v16.8h, v18.8h
-    sub  v13.8h, v17.8h, v19.8h
-
-    #mul 2
-    mul v20.8h,  v12.8h, v0.h[2]
-    mul v21.8h,  v13.8h, v0.h[2]
-
-    sqrdmulh  v12.8h, v12.8h, v0.h[3]
-    sqrdmulh  v13.8h, v13.8h, v0.h[3]
-
-    mls v20.8h, v12.8h, v0.h[0] //t3
-    mls v21.8h, v13.8h, v0.h[0] //t3
-
-    #update
-    sub v14.8h, v10.8h, v16.8h //r[i] - t1
-    sub v15.8h, v11.8h, v17.8h //r[i] - t1
-
-    sub v12.8h, v10.8h, v18.8h //r[i] - t2
-    sub v13.8h, v11.8h, v19.8h //r[i] - t2
-
-    add v10.8h, v10.8h, v16.8h //r[i] + t1
-    add v11.8h, v11.8h, v17.8h //r[i] + t1
-
-    sub v14.8h, v14.8h, v20.8h //r[i] - t1 - t3
-    sub v15.8h, v15.8h, v21.8h //r[i] - t1 - t3
-
-    add v12.8h, v12.8h, v20.8h //r[i] - t2 + t3
-    add v13.8h, v13.8h, v21.8h //r[i] - t2 + t3
-
-    add v10.8h, v10.8h, v18.8h //r[i] + t1 + t2
-    add v11.8h, v11.8h, v19.8h //r[i] + t1 + t2
-
-    #level2
-    #mul 1
-    mul v16.8h,  v5.8h, v1.h[6]
-    mul v17.8h,  v7.8h, v2.h[0]
-    mul v18.8h,  v9.8h, v2.h[2]
-
-    sqrdmulh  v5.8h,  v5.8h, v1.h[7]
-    sqrdmulh  v7.8h,  v7.8h, v2.h[1]
-    sqrdmulh  v9.8h,  v9.8h, v2.h[3]
-
-    mls v16.8h,  v5.8h, v0.h[0] //t1
-    mls v17.8h,  v7.8h, v0.h[0] //t1
-    mls v18.8h,  v9.8h, v0.h[0] //t1
-
-    mul v19.8h, v11.8h, v2.h[4]
-    mul v20.8h, v13.8h, v2.h[6]
-    mul v21.8h, v15.8h, v3.h[0]
-
-    sqrdmulh v11.8h, v11.8h, v2.h[5]
-    sqrdmulh v13.8h, v13.8h, v2.h[7]
-    sqrdmulh v15.8h, v15.8h, v3.h[1]
-
-    mls v19.8h, v11.8h, v0.h[0] //t2
-    mls v20.8h, v13.8h, v0.h[0] //t2
-    mls v21.8h, v15.8h, v0.h[0] //t2
-
-    #update
-    sub  v5.8h,  v4.8h, v16.8h
-    sub  v7.8h,  v6.8h, v17.8h
-    sub  v9.8h,  v8.8h, v18.8h
-    sub v11.8h, v10.8h, v19.8h
-    sub v13.8h, v12.8h, v20.8h
-    sub v15.8h, v14.8h, v21.8h
-
-    add  v4.8h,  v4.8h, v16.8h
-    add  v6.8h,  v6.8h, v17.8h
-    add  v8.8h,  v8.8h, v18.8h
-    add v10.8h, v10.8h, v19.8h
-    add v12.8h, v12.8h, v20.8h
-    add v14.8h, v14.8h, v21.8h
-
-    str q4, [dst, #0*128]
-    str q5, [dst, #1*128]
-    str q6, [dst, #2*128]
-    str q7, [dst, #3*128]
-    str q8, [dst, #4*128]
-    str q9, [dst, #5*128]
-    str q10, [dst, #6*128]
-    str q11, [dst, #7*128]
-    str q12, [dst, #8*128]
-    str q13, [dst, #9*128]
-    str q14, [dst, #10*128]
-    str q15, [dst, #11*128]
-
-    add src, src, #16
-    add dst, dst, #16
-    subs counter, counter, #16
-    b.ne _looptop_012
-
-    sub src, src, #128
-    sub dst, dst, #128
-
-    mov counter, #1536
-
-_looptop_3456:
-    #zeta
-    ld1 {v0.8h - v3.8h}, [zetas_ptr], #64
-
-    #load
-    ldr  q4, [dst, #0*16]
-    ldr  q5, [dst, #1*16]
-    ldr  q6, [dst, #2*16]
-    ldr  q7, [dst, #3*16]
-    ldr  q8, [dst, #4*16]
-    ldr  q9, [dst, #5*16]
-    ldr q10, [dst, #6*16]
-    ldr q11, [dst, #7*16]
-
-    #reduce
-    sqdmulh v24.8h, v4.8h, v0.h[1]
-    sqdmulh v25.8h, v5.8h, v0.h[1]
-    sqdmulh v26.8h, v6.8h, v0.h[1]
-    sqdmulh v27.8h, v7.8h, v0.h[1]
-
-    srshr v24.8h, v24.8h, #11
-    srshr v25.8h, v25.8h, #11
-    srshr v26.8h, v26.8h, #11
-    srshr v27.8h, v27.8h, #11
-
-    mls v4.8h, v24.8h, v0.h[0]
-    mls v5.8h, v25.8h, v0.h[0]
-    mls v6.8h, v26.8h, v0.h[0]
-    mls v7.8h, v27.8h, v0.h[0]
-
-    sqdmulh v28.8h,  v8.8h, v0.h[1]
-    sqdmulh v29.8h,  v9.8h, v0.h[1]
-    sqdmulh v30.8h, v10.8h, v0.h[1]
-    sqdmulh v31.8h, v11.8h, v0.h[1]
-
-    srshr v28.8h, v28.8h, #11
-    srshr v29.8h, v29.8h, #11
-    srshr v30.8h, v30.8h, #11
-    srshr v31.8h, v31.8h, #11
-
-    mls  v8.8h, v28.8h, v0.h[0]
-    mls  v9.8h, v29.8h, v0.h[0]
-    mls v10.8h, v30.8h, v0.h[0]
-    mls v11.8h, v31.8h, v0.h[0]
-
-    #level 3
-    #mul
-    mul v12.8h,  v8.8h, v0.h[2]
-    mul v13.8h,  v9.8h, v0.h[2]
-    mul v14.8h, v10.8h, v0.h[2]
-    mul v15.8h, v11.8h, v0.h[2]
-
-    sqrdmulh  v8.8h,  v8.8h, v0.h[3]
-    sqrdmulh  v9.8h,  v9.8h, v0.h[3]
-    sqrdmulh v10.8h, v10.8h, v0.h[3]
-    sqrdmulh v11.8h, v11.8h, v0.h[3]
-
-    mls v12.8h,  v8.8h, v0.h[0]
-    mls v13.8h,  v9.8h, v0.h[0]
-    mls v14.8h, v10.8h, v0.h[0]
-    mls v15.8h, v11.8h, v0.h[0]
-
-    #update
-    sub  v8.8h, v4.8h, v12.8h
-    sub  v9.8h, v5.8h, v13.8h
-    sub v10.8h, v6.8h, v14.8h
-    sub v11.8h, v7.8h, v15.8h
-
-    add v4.8h, v4.8h, v12.8h
-    add v5.8h, v5.8h, v13.8h
-    add v6.8h, v6.8h, v14.8h
-    add v7.8h, v7.8h, v15.8h
-
-    #level 4
-    #mul
-    mul v12.8h,  v6.8h, v0.h[4]
-    mul v13.8h,  v7.8h, v0.h[4]
-    mul v14.8h, v10.8h, v0.h[6]
-    mul v15.8h, v11.8h, v0.h[6]
-
-    sqrdmulh  v6.8h,  v6.8h, v0.h[5]
-    sqrdmulh  v7.8h,  v7.8h, v0.h[5]
-    sqrdmulh v10.8h, v10.8h, v0.h[7]
-    sqrdmulh v11.8h, v11.8h, v0.h[7]
-
-    mls v12.8h,  v6.8h, v0.h[0]
-    mls v13.8h,  v7.8h, v0.h[0]
-    mls v14.8h, v10.8h, v0.h[0]
-    mls v15.8h, v11.8h, v0.h[0]
-
-    #update
-    sub  v6.8h,  v4.8h, v12.8h
-    sub  v7.8h,  v5.8h, v13.8h
-    sub v10.8h,  v8.8h, v14.8h
-    sub v11.8h,  v9.8h, v15.8h
-
-    add  v4.8h,  v4.8h, v12.8h
-    add  v5.8h,  v5.8h, v13.8h
-    add  v8.8h,  v8.8h, v14.8h
-    add  v9.8h,  v9.8h, v15.8h
-    
-    #level 5
-    #mul
-    mul v28.8h,  v5.8h, v1.h[0]
-    mul v29.8h,  v7.8h, v1.h[2]
-    mul v30.8h,  v9.8h, v1.h[4]
-    mul v31.8h, v11.8h, v1.h[6]
-
-    sqrdmulh  v5.8h,  v5.8h, v1.h[1]
-    sqrdmulh  v7.8h,  v7.8h, v1.h[3]
-    sqrdmulh  v9.8h,  v9.8h, v1.h[5]
-    sqrdmulh v11.8h, v11.8h, v1.h[7]
-
-    mls v28.8h,  v5.8h, v0.h[0]
-    mls v29.8h,  v7.8h, v0.h[0]
-    mls v30.8h,  v9.8h, v0.h[0]
-    mls v31.8h, v11.8h, v0.h[0]
-
-    #update
-    sub  v5.8h,  v4.8h, v28.8h
-    sub  v7.8h,  v6.8h, v29.8h
-    sub  v9.8h,  v8.8h, v30.8h
-    sub v11.8h, v10.8h, v31.8h
-
-    add  v4.8h,  v4.8h, v28.8h
-    add  v6.8h,  v6.8h, v29.8h
-    add  v8.8h,  v8.8h, v30.8h
-    add v10.8h, v10.8h, v31.8h
-
-    #shuffle
-    trn1 v12.2d, v4.2d, v8.2d
-    trn2 v13.2d, v4.2d, v8.2d
-    trn1 v14.2d, v5.2d, v9.2d
-    trn2 v15.2d, v5.2d, v9.2d
-    trn1 v16.2d, v6.2d, v10.2d
-    trn2 v17.2d, v6.2d, v10.2d
-    trn1 v18.2d, v7.2d, v11.2d
-    trn2 v19.2d, v7.2d, v11.2d
-
-    trn1 v20.4s, v12.4s, v16.4s
-    trn2 v21.4s, v12.4s, v16.4s
-    trn1 v22.4s, v13.4s, v17.4s
-    trn2 v23.4s, v13.4s, v17.4s
-    trn1 v24.4s, v14.4s, v18.4s
-    trn2 v25.4s, v14.4s, v18.4s
-    trn1 v26.4s, v15.4s, v19.4s
-    trn2 v27.4s, v15.4s, v19.4s
-
-    trn1  v4.8h, v20.8h, v24.8h
-    trn2  v5.8h, v20.8h, v24.8h
-    trn1  v6.8h, v21.8h, v25.8h
-    trn2  v7.8h, v21.8h, v25.8h
-    trn1  v8.8h, v22.8h, v26.8h
-    trn2  v9.8h, v22.8h, v26.8h
-    trn1 v10.8h, v23.8h, v27.8h
-    trn2 v11.8h, v23.8h, v27.8h
-
-    #level 6
-    #mul
-    mul v28.8h,  v8.8h, v2.8h
-    mul v29.8h,  v9.8h, v2.8h
-    mul v30.8h, v10.8h, v2.8h
-    mul v31.8h, v11.8h, v2.8h
-
-    sqrdmulh  v8.8h,  v8.8h, v3.8h
-    sqrdmulh  v9.8h,  v9.8h, v3.8h
-    sqrdmulh v10.8h, v10.8h, v3.8h
-    sqrdmulh v11.8h, v11.8h, v3.8h
-
-    mls v28.8h,  v8.8h, v0.h[0]
-    mls v29.8h,  v9.8h, v0.h[0]
-    mls v30.8h, v10.8h, v0.h[0]
-    mls v31.8h, v11.8h, v0.h[0]
-
-    #update
-    sub  v8.8h, v4.8h, v28.8h
-    sub  v9.8h, v5.8h, v29.8h
-    sub v10.8h, v6.8h, v30.8h
-    sub v11.8h, v7.8h, v31.8h
-
-    add v4.8h, v4.8h, v28.8h
-    add v5.8h, v5.8h, v29.8h
-    add v6.8h, v6.8h, v30.8h
-    add v7.8h, v7.8h, v31.8h
-
-    #reduce
-    sqdmulh v28.8h,  v8.8h, v0.h[1]
-    sqdmulh v29.8h,  v9.8h, v0.h[1]
-    sqdmulh v30.8h,  v10.8h, v0.h[1]
-    sqdmulh v31.8h,  v11.8h, v0.h[1]
-
-    srshr   v28.8h, v28.8h, #11
-    srshr   v29.8h, v29.8h, #11
-    srshr   v30.8h, v30.8h, #11
-    srshr   v31.8h, v31.8h, #11
-
-    mls      v8.8h, v28.8h, v0.h[0]
-    mls      v9.8h, v29.8h, v0.h[0]
-    mls      v10.8h, v30.8h, v0.h[0]
-    mls      v11.8h, v31.8h, v0.h[0]
-
-    sqdmulh v24.8h,  v4.8h, v0.h[1]
-    sqdmulh v25.8h,  v5.8h, v0.h[1]
-    sqdmulh v26.8h,  v6.8h, v0.h[1]
-    sqdmulh v27.8h,  v7.8h, v0.h[1]
-
-    srshr   v24.8h, v24.8h, #11
-    srshr   v25.8h, v25.8h, #11
-    srshr   v26.8h, v26.8h, #11
-    srshr   v27.8h, v27.8h, #11
-
-    mls      v4.8h, v24.8h, v0.h[0]
-    mls      v5.8h, v25.8h, v0.h[0]
-    mls      v6.8h, v26.8h, v0.h[0]
-    mls      v7.8h, v27.8h, v0.h[0]
-
-    #store
-    st1 {v4.8h - v7.8h},  [dst], #64
-    st1 {v8.8h - v11.8h}, [dst], #64
-
-    subs counter, counter, #128
-    b.ne _looptop_3456
-
-    .unreq    dst
-    .unreq    src
-    .unreq    zetas_ptr
-    .unreq    counter
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldr q1, [twist_ptr], #16      // [-1591,-1591,-1591,-1591,-858,-858,-858,-858]
+    ldr q2, [twist_ptr], #16      // [-15081,-15081,-15081,-15081,-8133,-8133,-8133,-8133]
 
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+
+
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldr q1, [twist_ptr], #16      // [1520,1520,1520,1520,-1188,-1188,-1188,-1188]
+    ldr q2, [twist_ptr], #16      // [14408,14408,14408,14408,-11261,-11261,-11261,-11261]
+
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+
+
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldr q1, [twist_ptr], #16      // [-54,-54,-54,-54,-631,-631,-631,-631]
+    ldr q2, [twist_ptr], #16      // [-512,-512,-512,-512,-5981,-5981,-5981,-5981]
+
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldr q1, [twist_ptr], #16      // [1,1,1,1,-1728,-1728,-1728,-1728]
+    ldr q2, [twist_ptr], #16      // [9,9,9,9,-16379,-16379,-16379,-16379]
+
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldr q1, [twist_ptr], #16      // [-864,-864,-864,-864,-432,-432,-432,-432]
+    ldr q2, [twist_ptr], #16      // [-8190,-8190,-8190,-8190,-4095,-4095,-4095,-4095]
+
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldr q1, [twist_ptr], #16      // [-1571,-1571,-1571,-1571,943,943,943,943]
+    ldr q2, [twist_ptr], #16      // [-14891,-14891,-14891,-14891,8938,8938,8938,8938]
+
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldr q1, [twist_ptr], #16      // [-1257,-1257,-1257,-1257,1100,1100,1100,1100]
+    ldr q2, [twist_ptr], #16      // [-11915,-11915,-11915,-11915,10427,10427,10427,10427]
+
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldr q1, [twist_ptr], #16      // [-257,-257,-257,-257,1600,1600,1600,1600]
+    ldr q2, [twist_ptr], #16      // [-2436,-2436,-2436,-2436,15166,15166,15166,15166]
+
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldr q1, [twist_ptr], #16      // [800,800,800,800,400,400,400,400]
+    ldr q2, [twist_ptr], #16      // [7583,7583,7583,7583,3791,3791,3791,3791]
+
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+
+    # Permutation
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+
+    # DFT3
+    // d = x1 - x2
+    sub      v6.8h, v30.8h, v26.8h
+
+    // t = omega3 * d mod q
+    sqrdmulh v7.8h, v6.8h, v0.h[3]   // pre = -6853
+    mul      v8.8h, v6.8h, v0.h[2]   // mul = -723
+    mls      v8.8h, v7.8h, v0.h[0]   // q = 3457
+
+    // y0 = x0 + x1 + x2
+    add      v9.8h,  v22.8h, v30.8h
+    add      v9.8h,  v9.8h,  v26.8h   // v9 = y0
+
+    // y1 = x0 - x2 + t
+    sub      v10.8h, v22.8h, v26.8h
+    add      v10.8h, v10.8h, v8.8h    // v10 = y1
+
+    // y2 = x0 - x1 - t
+    sub      v11.8h, v22.8h, v30.8h
+    sub      v11.8h, v11.8h, v8.8h    // v11 = y2
+
+    str q9,  [row0_ptr, #0]
+    str q10, [row1_ptr, #0]
+    str q11, [row2_ptr, #0]
+
+    // x0 = v27 = P(base + 33)
+    // x1 = v23 = P(base + 1)
+    // x2 = v31 = P(base + 65)
+
+    sub      v6.8h,  v23.8h, v31.8h   // d = x1 - x2
+    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
+    mul      v8.8h,  v6.8h,  v0.h[2]
+    mls      v8.8h,  v7.8h,  v0.h[0]  // t
+
+    add      v9.8h,  v27.8h, v23.8h
+    add      v9.8h,  v9.8h,  v31.8h  // y0
+
+    sub      v10.8h, v27.8h, v31.8h
+    add      v10.8h, v10.8h, v8.8h   // y1
+
+    sub      v11.8h, v27.8h, v23.8h
+    sub      v11.8h, v11.8h, v8.8h   // y2
+
+    str q9,  [row0_ptr, #16]
+    str q10, [row1_ptr, #16]
+    str q11, [row2_ptr, #16]
+
+    // x0 = v4  = P(base + 66)
+    // x1 = v28 = P(base + 34)
+    // x2 = v24 = P(base + 2)
+
+    sub      v6.8h,  v28.8h, v24.8h
+    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
+    mul      v8.8h,  v6.8h,  v0.h[2]
+    mls      v8.8h,  v7.8h,  v0.h[0]
+
+    add      v9.8h,  v4.8h,  v28.8h
+    add      v9.8h,  v9.8h,  v24.8h
+
+    sub      v10.8h, v4.8h,  v24.8h
+    add      v10.8h, v10.8h, v8.8h
+
+    sub      v11.8h, v4.8h,  v28.8h
+    sub      v11.8h, v11.8h, v8.8h
+
+    str q9,  [row0_ptr, #32]
+    str q10, [row1_ptr, #32]
+    str q11, [row2_ptr, #32]
+
+    // x0 = v25 = P(base + 3)
+    // x1 = v5  = P(base + 67)
+    // x2 = v29 = P(base + 35)
+
+    sub      v6.8h,  v5.8h,  v29.8h
+    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
+    mul      v8.8h,  v6.8h,  v0.h[2]
+    mls      v8.8h,  v7.8h,  v0.h[0]
+
+    add      v9.8h,  v25.8h, v5.8h
+    add      v9.8h,  v9.8h,  v29.8h
+
+    sub      v10.8h, v25.8h, v29.8h
+    add      v10.8h, v10.8h, v8.8h
+
+    sub      v11.8h, v25.8h, v5.8h
+    sub      v11.8h, v11.8h, v8.8h
+
+    str q9,  [row0_ptr, #48]
+    str q10, [row1_ptr, #48]
+    str q11, [row2_ptr, #48]
+
+    add src, src, #32
+    add row0_ptr, row0_ptr, #64
+    add row1_ptr, row1_ptr, #64
+    add row2_ptr, row2_ptr, #64
+    subs counter, counter, #1
+    b.ne _loop_phase123
+
+    # Phase 4 32-point NTT
     ret
-
-
-.global poly_invntt
-.global _poly_invntt
-poly_invntt:
-_poly_invntt:
-    dst       .req x0
-    src       .req x1    
-    zetas_ptr .req x2
-    counter   .req x8
-
-    adr zetas_ptr, zetas_inv
-
-    mov counter, #1536
-
-    _looptop_6543:
-    #zetas
-    ld1 {v0.8h - v3.8h}, [zetas_ptr], #64
-
-    #load
-    ld1 {v4.8h - v7.8h},  [src], #64
-    ld1 {v8.8h - v11.8h}, [src], #64
-
-    #level 6
-    #update
-    sub v12.8h,  v8.8h, v4.8h
-    sub v13.8h,  v9.8h, v5.8h
-    sub v14.8h, v10.8h, v6.8h
-    sub v15.8h, v11.8h, v7.8h
-
-    add v4.8h, v4.8h,  v8.8h
-    add v5.8h, v5.8h,  v9.8h
-    add v6.8h, v6.8h, v10.8h
-    add v7.8h, v7.8h, v11.8h
-
-    #mul
-    mul  v8.8h, v12.8h, v2.8h
-    mul  v9.8h, v13.8h, v2.8h
-    mul v10.8h, v14.8h, v2.8h
-    mul v11.8h, v15.8h, v2.8h
-
-    sqrdmulh v12.8h, v12.8h, v3.8h
-    sqrdmulh v13.8h, v13.8h, v3.8h
-    sqrdmulh v14.8h, v14.8h, v3.8h
-    sqrdmulh v15.8h, v15.8h, v3.8h
-
-    mls  v8.8h, v12.8h, v0.h[0]
-    mls  v9.8h, v13.8h, v0.h[0]
-    mls v10.8h, v14.8h, v0.h[0]
-    mls v11.8h, v15.8h, v0.h[0]
-
-    #shuffle
-    trn1 v12.2d, v4.2d, v8.2d
-    trn2 v13.2d, v4.2d, v8.2d
-    trn1 v14.2d, v5.2d, v9.2d
-    trn2 v15.2d, v5.2d, v9.2d
-    trn1 v16.2d, v6.2d, v10.2d
-    trn2 v17.2d, v6.2d, v10.2d
-    trn1 v18.2d, v7.2d, v11.2d
-    trn2 v19.2d, v7.2d, v11.2d
-
-    trn1 v20.4s, v12.4s, v16.4s
-    trn2 v21.4s, v12.4s, v16.4s
-    trn1 v22.4s, v13.4s, v17.4s
-    trn2 v23.4s, v13.4s, v17.4s
-    trn1 v24.4s, v14.4s, v18.4s
-    trn2 v25.4s, v14.4s, v18.4s
-    trn1 v26.4s, v15.4s, v19.4s
-    trn2 v27.4s, v15.4s, v19.4s
-
-    trn1  v4.8h, v20.8h, v24.8h
-    trn2  v5.8h, v20.8h, v24.8h
-    trn1  v6.8h, v21.8h, v25.8h
-    trn2  v7.8h, v21.8h, v25.8h
-    trn1  v8.8h, v22.8h, v26.8h
-    trn2  v9.8h, v22.8h, v26.8h
-    trn1 v10.8h, v23.8h, v27.8h
-    trn2 v11.8h, v23.8h, v27.8h
-
-    #level 5
-    #update
-    sub v12.8h,  v5.8h,  v4.8h
-    sub v13.8h,  v7.8h,  v6.8h
-    sub v14.8h,  v9.8h,  v8.8h
-    sub v15.8h, v11.8h, v10.8h
-
-    add  v4.8h,  v5.8h,  v4.8h
-    add  v6.8h,  v7.8h,  v6.8h
-    add  v8.8h,  v9.8h,  v8.8h
-    add v10.8h, v11.8h, v10.8h
-
-    #mul
-    mul  v5.8h, v12.8h, v0.h[2]
-    mul  v7.8h, v13.8h, v0.h[4]
-    mul  v9.8h, v14.8h, v0.h[6]
-    mul v11.8h, v15.8h, v1.h[0]
-
-    sqrdmulh v12.8h, v12.8h, v0.h[3]
-    sqrdmulh v13.8h, v13.8h, v0.h[5]
-    sqrdmulh v14.8h, v14.8h, v0.h[7]
-    sqrdmulh v15.8h, v15.8h, v1.h[1]
-
-    mls  v5.8h, v12.8h, v0.h[0]
-    mls  v7.8h, v13.8h, v0.h[0]
-    mls  v9.8h, v14.8h, v0.h[0]
-    mls v11.8h, v15.8h, v0.h[0]
-
-    #level 4
-    #update
-    sub v12.8h, v6.8h, v4.8h
-    sub v13.8h, v7.8h, v5.8h
-    sub v14.8h, v10.8h, v8.8h
-    sub v15.8h, v11.8h, v9.8h
-
-    add v4.8h, v6.8h, v4.8h
-    add v5.8h, v7.8h, v5.8h
-    add v8.8h, v10.8h, v8.8h
-    add v9.8h, v11.8h, v9.8h
-
-    #mul
-    mul  v6.8h, v12.8h, v1.h[2]
-    mul  v7.8h, v13.8h, v1.h[2]
-    mul v10.8h, v14.8h, v1.h[4]
-    mul v11.8h, v15.8h, v1.h[4]
-
-    sqrdmulh v12.8h, v12.8h, v1.h[3]
-    sqrdmulh v13.8h, v13.8h, v1.h[3]
-    sqrdmulh v14.8h, v14.8h, v1.h[5]
-    sqrdmulh v15.8h, v15.8h, v1.h[5]
-
-    mls  v6.8h, v12.8h, v0.h[0]
-    mls  v7.8h, v13.8h, v0.h[0]
-    mls v10.8h, v14.8h, v0.h[0]
-    mls v11.8h, v15.8h, v0.h[0]
-
-    #reduce
-    sqdmulh v28.8h,  v4.8h, v0.h[1]
-    sqdmulh v29.8h,  v5.8h, v0.h[1]
-    sqdmulh v30.8h,  v8.8h, v0.h[1]
-    sqdmulh v31.8h,  v9.8h, v0.h[1]
-
-    srshr   v28.8h, v28.8h, #11
-    srshr   v29.8h, v29.8h, #11
-    srshr   v30.8h, v30.8h, #11
-    srshr   v31.8h, v31.8h, #11
-
-    mls      v4.8h, v28.8h, v0.h[0]
-    mls      v5.8h, v29.8h, v0.h[0]
-    mls      v8.8h, v30.8h, v0.h[0]
-    mls      v9.8h, v31.8h, v0.h[0]
-
-    #level 3
-    #update
-    sub v12.8h,  v8.8h, v4.8h
-    sub v13.8h,  v9.8h, v5.8h
-    sub v14.8h, v10.8h, v6.8h
-    sub v15.8h, v11.8h, v7.8h
-
-    add v4.8h,  v8.8h, v4.8h
-    add v5.8h,  v9.8h, v5.8h
-    add v6.8h, v10.8h, v6.8h
-    add v7.8h, v11.8h, v7.8h
-
-    #mul
-    mul  v8.8h, v12.8h, v1.h[6]
-    mul  v9.8h, v13.8h, v1.h[6]
-    mul v10.8h, v14.8h, v1.h[6]
-    mul v11.8h, v15.8h, v1.h[6]
-
-    sqrdmulh v12.8h, v12.8h, v1.h[7]
-    sqrdmulh v13.8h, v13.8h, v1.h[7]
-    sqrdmulh v14.8h, v14.8h, v1.h[7]
-    sqrdmulh v15.8h, v15.8h, v1.h[7]
-
-    mls  v8.8h, v12.8h, v0.h[0]
-    mls  v9.8h, v13.8h, v0.h[0]
-    mls v10.8h, v14.8h, v0.h[0]
-    mls v11.8h, v15.8h, v0.h[0]
-
-    #store
-    st1 {v4.8h - v7.8h},  [dst], #64
-    st1 {v8.8h - v11.8h}, [dst], #64
-
-    subs counter, counter, #128
-    b.ne _looptop_6543
-
-    sub dst, dst, #1536
-
-    ld1 {v0.8h - v3.8h}, [zetas_ptr], #64
-
-    mov counter, #128
-
-_looptop_210:
-    #load
-    ldr  q5, [dst, #0*128]
-    ldr  q6, [dst, #1*128]
-    ldr  q7, [dst, #2*128]
-    ldr  q8, [dst, #3*128]
-    ldr  q9, [dst, #4*128]
-    ldr q10, [dst, #5*128]
-    ldr q11, [dst, #6*128]
-    ldr q12, [dst, #7*128]
-    ldr q13, [dst, #8*128]
-    ldr q14, [dst, #9*128]
-    ldr q15, [dst, #10*128]
-    ldr q16, [dst, #11*128]
-
-    #level 2
-    #update 1
-    sub  v17.8h,  v6.8h,  v5.8h
-    sub  v18.8h,  v8.8h,  v7.8h
-    sub  v19.8h, v10.8h,  v9.8h
-    sub  v20.8h, v12.8h, v11.8h
-    sub  v21.8h, v14.8h, v13.8h
-    sub  v22.8h, v16.8h, v15.8h
-
-    add   v5.8h,  v5.8h,  v6.8h
-    add   v7.8h,  v7.8h,  v8.8h
-    add   v9.8h,  v9.8h, v10.8h
-    add  v11.8h, v11.8h, v12.8h
-    add  v13.8h, v13.8h, v14.8h
-    add  v15.8h, v15.8h, v16.8h
-
-    #mul 1
-    mul  v6.8h, v17.8h, v0.h[4]
-    mul  v8.8h, v18.8h, v0.h[6]
-    mul v10.8h, v19.8h, v1.h[0]
-    mul v12.8h, v20.8h, v1.h[2]
-    mul v14.8h, v21.8h, v1.h[4]
-    mul v16.8h, v22.8h, v1.h[6]
-
-    sqrdmulh v17.8h, v17.8h, v0.h[5]
-    sqrdmulh v18.8h, v18.8h, v0.h[7]
-    sqrdmulh v19.8h, v19.8h, v1.h[1]
-    sqrdmulh v20.8h, v20.8h, v1.h[3]
-    sqrdmulh v21.8h, v21.8h, v1.h[5]
-    sqrdmulh v22.8h, v22.8h, v1.h[7]
-
-    mls  v6.8h, v17.8h, v0.h[0]
-    mls  v8.8h, v18.8h, v0.h[0]
-    mls v10.8h, v19.8h, v0.h[0]
-    mls v12.8h, v20.8h, v0.h[0]
-    mls v14.8h, v21.8h, v0.h[0]
-    mls v16.8h, v22.8h, v0.h[0]
-
-    #reduce
-    sqdmulh v26.8h,  v5.8h, v0.h[1]
-    sqdmulh v27.8h,  v7.8h, v0.h[1]
-    sqdmulh v28.8h,  v9.8h, v0.h[1]
-
-    srshr   v26.8h, v26.8h, #11
-    srshr   v27.8h, v27.8h, #11
-    srshr   v28.8h, v28.8h, #11
-
-    mls       v5.8h, v26.8h, v0.h[0]
-    mls       v7.8h, v27.8h, v0.h[0]
-    mls       v9.8h, v28.8h, v0.h[0]
-
-    sqdmulh v29.8h, v11.8h, v0.h[1]
-    sqdmulh v30.8h, v13.8h, v0.h[1]
-    sqdmulh v31.8h, v15.8h, v0.h[1]
-
-    srshr   v29.8h, v29.8h, #11
-    srshr   v30.8h, v30.8h, #11
-    srshr   v31.8h, v31.8h, #11
-
-    mls      v11.8h, v29.8h, v0.h[0]
-    mls      v13.8h, v30.8h, v0.h[0]
-    mls      v15.8h, v31.8h, v0.h[0]
-
-    #level 1
-    #update 1
-    sub v30.8h, v7.8h, v5.8h //r[i + step] - r[i]
-    sub v31.8h, v8.8h, v6.8h //r[i + step] - r[i]
-
-    #mul 1
-    mul v17.8h, v30.8h, v0.h[2]
-    mul v18.8h, v31.8h, v0.h[2]
-
-    sqrdmulh v30.8h, v30.8h, v0.h[3]
-    sqrdmulh v31.8h, v31.8h, v0.h[3]
-
-    mls v17.8h, v30.8h, v0.h[0] //t1
-    mls v18.8h, v31.8h, v0.h[0] //t1
-
-    #update 2
-    sub  v30.8h,  v9.8h,  v7.8h //r[i + 2*step] - r[i + step]
-    sub  v31.8h, v10.8h,  v8.8h //r[i + 2*step] - r[i + step]
-    
-    sub  v28.8h,  v9.8h,  v5.8h //r[i + 2*step] - r[i]
-    sub  v29.8h, v10.8h,  v6.8h //r[i + 2*step] - r[i]
-
-    add   v5.8h,  v5.8h,  v7.8h //r[i] + r[i + step]
-    add   v6.8h,  v6.8h,  v8.8h //r[i] + r[i + step]
-
-    sub  v30.8h, v30.8h, v17.8h //r[i + 2*step] - r[i + step] - t1
-    sub  v31.8h, v31.8h, v18.8h //r[i + 2*step] - r[i + step] - t1
-
-    add  v28.8h, v28.8h, v17.8h //r[i + 2*step] - r[i] + t1
-    add  v29.8h, v29.8h, v18.8h //r[i + 2*step] - r[i] + t1
-    
-    add   v5.8h,  v5.8h,  v9.8h //r[i] + r[i + step] + r[i + 2*step]
-    add   v6.8h,  v6.8h, v10.8h //r[i] + r[i + step] + r[i + 2*step]
-
-    #mul 2
-    mul  v9.8h, v30.8h, v2.h[2] //fqmul(zeta2, r[i + 2*step] - r[i + step] - t1);
-    mul v10.8h, v31.8h, v2.h[2] //fqmul(zeta2, r[i + 2*step] - r[i + step] - t1);
-    mul  v7.8h, v28.8h, v2.h[0] //fqmul(zeta1, r[i + 2*step] - r[i]        + t1);
-    mul  v8.8h, v29.8h, v2.h[0] //fqmul(zeta1, r[i + 2*step] - r[i]        + t1);
-
-    sqrdmulh v30.8h, v30.8h, v2.h[3]
-    sqrdmulh v31.8h, v31.8h, v2.h[3]
-    sqrdmulh v28.8h, v28.8h, v2.h[1]
-    sqrdmulh v29.8h, v29.8h, v2.h[1]
-
-    mls  v9.8h, v30.8h, v0.h[0]
-    mls v10.8h, v31.8h, v0.h[0]
-    mls  v7.8h, v28.8h, v0.h[0]
-    mls  v8.8h, v29.8h, v0.h[0]
-
-    #update 1
-    sub v30.8h, v13.8h, v11.8h //r[i + step] - r[i]
-    sub v31.8h, v14.8h, v12.8h //r[i + step] - r[i]
-
-    #mul 1
-    mul v17.8h, v30.8h, v0.h[2]
-    mul v18.8h, v31.8h, v0.h[2]
-
-    sqrdmulh v30.8h, v30.8h, v0.h[3]
-    sqrdmulh v31.8h, v31.8h, v0.h[3]
-
-    mls v17.8h, v30.8h, v0.h[0] //t1
-    mls v18.8h, v31.8h, v0.h[0] //t1
-
-    #update 2
-    sub  v30.8h, v15.8h, v13.8h //r[i + 2*step] - r[i + step]
-    sub  v31.8h, v16.8h, v14.8h //r[i + 2*step] - r[i + step]
-    
-    sub  v28.8h, v15.8h, v11.8h //r[i + 2*step] - r[i]
-    sub  v29.8h, v16.8h, v12.8h //r[i + 2*step] - r[i]
-
-    add v11.8h, v11.8h, v13.8h //r[i] + r[i + step]
-    add v12.8h, v12.8h, v14.8h //r[i] + r[i + step]
-
-    sub  v30.8h, v30.8h, v17.8h //r[i + 2*step] - r[i + step] - t1
-    sub  v31.8h, v31.8h, v18.8h //r[i + 2*step] - r[i + step] - t1
-
-    add  v28.8h, v28.8h, v17.8h //r[i + 2*step] - r[i] + t1
-    add  v29.8h, v29.8h, v18.8h //r[i + 2*step] - r[i] + t1
-    
-    add   v11.8h,  v11.8h, v15.8h //r[i] + r[i + step] + r[i + 2*step]
-    add   v12.8h,  v12.8h, v16.8h //r[i] + r[i + step] + r[i + 2*step]
-
-    #mul 2
-    mul v15.8h, v30.8h, v2.h[6] //fqmul(zeta2, r[i + 2*step] - r[i + step] - t1);
-    mul v16.8h, v31.8h, v2.h[6] //fqmul(zeta2, r[i + 2*step] - r[i + step] - t1);
-    mul v13.8h, v28.8h, v2.h[4] //fqmul(zeta1, r[i + 2*step] - r[i]        + t1);
-    mul v14.8h, v29.8h, v2.h[4] //fqmul(zeta1, r[i + 2*step] - r[i]        + t1);
-
-    sqrdmulh v30.8h, v30.8h, v2.h[7]
-    sqrdmulh v31.8h, v31.8h, v2.h[7]
-    sqrdmulh v28.8h, v28.8h, v2.h[5]
-    sqrdmulh v29.8h, v29.8h, v2.h[5]
-
-    mls v15.8h, v30.8h, v0.h[0]
-    mls v16.8h, v31.8h, v0.h[0]
-    mls v13.8h, v28.8h, v0.h[0]
-    mls v14.8h, v29.8h, v0.h[0]
-
-    #level 0
-    #update 1
-    sub  v17.8h,  v5.8h, v11.8h
-    sub  v18.8h,  v6.8h, v12.8h
-    sub  v19.8h,  v7.8h, v13.8h
-    sub  v20.8h,  v8.8h, v14.8h
-    sub  v21.8h,  v9.8h, v15.8h
-    sub  v22.8h, v10.8h, v16.8h
-
-    add   v5.8h,  v5.8h, v11.8h //t1
-    add   v6.8h,  v6.8h, v12.8h //t1
-    add   v7.8h,  v7.8h, v13.8h //t1
-    add   v8.8h,  v8.8h, v14.8h //t1
-    add   v9.8h,  v9.8h, v15.8h //t1
-    add  v10.8h, v10.8h, v16.8h //t1
-
-    #mul 1
-    mul v23.8h, v17.8h, v3.h[0]
-    mul v24.8h, v18.8h, v3.h[0]
-    mul v25.8h, v19.8h, v3.h[0]
-
-    sqrdmulh v17.8h, v17.8h, v3.h[1]
-    sqrdmulh v18.8h, v18.8h, v3.h[1]
-    sqrdmulh v19.8h, v19.8h, v3.h[1]
-
-    mls v23.8h, v17.8h, v0.h[0] //t2
-    mls v24.8h, v18.8h, v0.h[0] //t2
-    mls v25.8h, v19.8h, v0.h[0] //t2
-
-    mul v26.8h, v20.8h, v3.h[0]
-    mul v27.8h, v21.8h, v3.h[0]
-    mul v28.8h, v22.8h, v3.h[0]
-
-    sqrdmulh v20.8h, v20.8h, v3.h[1]
-    sqrdmulh v21.8h, v21.8h, v3.h[1]
-    sqrdmulh v22.8h, v22.8h, v3.h[1]
-
-    mls v26.8h, v20.8h, v0.h[0] //t2
-    mls v27.8h, v21.8h, v0.h[0] //t2
-    mls v28.8h, v22.8h, v0.h[0] //t2
-
-    #update 2
-    sub  v17.8h,  v5.8h, v23.8h //t1 - t2
-    sub  v18.8h,  v6.8h, v24.8h //t1 - t2
-    sub  v19.8h,  v7.8h, v25.8h //t1 - t2
-    sub  v20.8h,  v8.8h, v26.8h //t1 - t2
-    sub  v21.8h,  v9.8h, v27.8h //t1 - t2
-    sub  v22.8h, v10.8h, v28.8h //t1 - t2
-
-    #mul 2
-    mul  v5.8h, v17.8h, v3.h[2]
-    mul  v6.8h, v18.8h, v3.h[2]
-    mul  v7.8h, v19.8h, v3.h[2]
-
-    sqrdmulh v17.8h, v17.8h, v3.h[3]
-    sqrdmulh v18.8h, v18.8h, v3.h[3]
-    sqrdmulh v19.8h, v19.8h, v3.h[3]
-
-    mls  v5.8h, v17.8h, v0.h[0]
-    mls  v6.8h, v18.8h, v0.h[0]
-    mls  v7.8h, v19.8h, v0.h[0]
-
-    mul  v8.8h, v20.8h, v3.h[2]
-    mul  v9.8h, v21.8h, v3.h[2]
-    mul v10.8h, v22.8h, v3.h[2]
-
-    sqrdmulh v20.8h, v20.8h, v3.h[3]
-    sqrdmulh v21.8h, v21.8h, v3.h[3]
-    sqrdmulh v22.8h, v22.8h, v3.h[3]
-
-    mls  v8.8h, v20.8h, v0.h[0]
-    mls  v9.8h, v21.8h, v0.h[0]
-    mls v10.8h, v22.8h, v0.h[0]
-
-    mul v11.8h, v23.8h, v3.h[4]
-    mul v12.8h, v24.8h, v3.h[4]
-    mul v13.8h, v25.8h, v3.h[4]
-
-    sqrdmulh v23.8h, v23.8h, v3.h[5]
-    sqrdmulh v24.8h, v24.8h, v3.h[5]
-    sqrdmulh v25.8h, v25.8h, v3.h[5]
-
-    mls v11.8h, v23.8h, v0.h[0]
-    mls v12.8h, v24.8h, v0.h[0]
-    mls v13.8h, v25.8h, v0.h[0]
-
-    mul v14.8h, v26.8h, v3.h[4]
-    mul v15.8h, v27.8h, v3.h[4]
-    mul v16.8h, v28.8h, v3.h[4]
-
-    sqrdmulh v26.8h, v26.8h, v3.h[5]
-    sqrdmulh v27.8h, v27.8h, v3.h[5]
-    sqrdmulh v28.8h, v28.8h, v3.h[5]
-
-    mls v14.8h, v26.8h, v0.h[0]
-    mls v15.8h, v27.8h, v0.h[0]
-    mls v16.8h, v28.8h, v0.h[0]
-
-    #reduce
-    sqdmulh v20.8h,  v5.8h, v0.h[1]
-    sqdmulh v21.8h,  v6.8h, v0.h[1]
-    sqdmulh v22.8h,  v7.8h, v0.h[1]
-
-    srshr   v20.8h, v20.8h, #11
-    srshr   v21.8h, v21.8h, #11
-    srshr   v22.8h, v22.8h, #11
-
-    mls       v5.8h, v20.8h, v0.h[0]
-    mls       v6.8h, v21.8h, v0.h[0]
-    mls       v7.8h, v22.8h, v0.h[0]
-
-    sqdmulh v23.8h,  v8.8h, v0.h[1]
-    sqdmulh v24.8h,  v9.8h, v0.h[1]
-    sqdmulh v25.8h,  v10.8h, v0.h[1]
-
-    srshr   v23.8h, v23.8h, #11
-    srshr   v24.8h, v24.8h, #11
-    srshr   v25.8h, v25.8h, #11
-
-    mls       v8.8h, v23.8h, v0.h[0]
-    mls       v9.8h, v24.8h, v0.h[0]
-    mls      v10.8h, v25.8h, v0.h[0]
-
-    sqdmulh v26.8h,  v11.8h, v0.h[1]
-    sqdmulh v27.8h,  v12.8h, v0.h[1]
-    sqdmulh v28.8h,  v13.8h, v0.h[1]
-
-    srshr   v26.8h, v26.8h, #11
-    srshr   v27.8h, v27.8h, #11
-    srshr   v28.8h, v28.8h, #11
-
-    mls      v11.8h, v26.8h, v0.h[0]
-    mls      v12.8h, v27.8h, v0.h[0]
-    mls      v13.8h, v28.8h, v0.h[0]
-
-    sqdmulh v29.8h,  v14.8h, v0.h[1]
-    sqdmulh v30.8h,  v15.8h, v0.h[1]
-    sqdmulh v31.8h,  v16.8h, v0.h[1]
-
-    srshr   v29.8h, v29.8h, #11
-    srshr   v30.8h, v30.8h, #11
-    srshr   v31.8h, v31.8h, #11
-
-    mls      v14.8h, v29.8h, v0.h[0]
-    mls      v15.8h, v30.8h, v0.h[0]
-    mls      v16.8h, v31.8h, v0.h[0]
-    
-    #store
-    str q5, [dst, #0*128]
-    str q6, [dst, #1*128]
-    str q7, [dst, #2*128]
-    str q8, [dst, #3*128]
-    str q9, [dst, #4*128]
-    str q10, [dst, #5*128]
-    str q11, [dst, #6*128]  
-    str q12, [dst, #7*128]
-    str q13, [dst, #8*128]
-    str q14, [dst, #9*128]
-    str q15, [dst, #10*128]
-    str q16, [dst, #11*128]
-
-    add dst, dst, #16
-    subs counter, counter, #16
-    b.ne _looptop_210
-
-    .unreq    dst
-    .unreq    src
-    .unreq    zetas_ptr
-    .unreq    counter
-
-ret
-
 
 .align 4
 zetas:
-    .hword 0x0d81, 0x4bd4, 0xfd2d, 0xe53b, 0xfd2e, 0xe544, 0xf9dd, 0xc5d5
-    .hword 0xfeff, 0xf67c, 0xfb9c, 0xd662, 0x0623, 0x3a2b, 0xfd56, 0xe6c0
-    .hword 0x05e6, 0x37e9, 0xfb0f, 0xd129, 0xfbf7, 0xd9c0, 0xfc8a, 0xdf32
-    .hword 0x0093, 0x0571, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
-    .hword 0x0d81, 0x4bd4, 0xf94d, 0xc080, 0xfccc, 0xe1a3, 0xff28, 0xf801
-    .hword 0x01e4, 0x11ec, 0xfe53, 0xf01e, 0x0360, 0x1ffe, 0x00b1, 0x068e
-    .hword 0x0016, 0x06ad, 0xfeed, 0x0454, 0x0162, 0xf940, 0xfc38, 0x035a
-    .hword 0x00d1, 0x3f47, 0xf5d1, 0x2906, 0x0d1b, 0xc005, 0xdc29, 0x1fc5
-    .hword 0x0d81, 0x4bd4, 0x032d, 0x1e1a, 0xff87, 0xfb85, 0xfd0b, 0xe3f9
-    .hword 0x036a, 0x205c, 0x000b, 0x0068, 0xfdd6, 0xeb7d, 0x0637, 0x3ae9
-    .hword 0x04c5, 0xff26, 0x0126, 0xfd24, 0xfbb9, 0x037c, 0x0634, 0xfcf5
-    .hword 0x2d36, 0xf7ee, 0x0ae3, 0xe4e6, 0xd775, 0x2107, 0x3acc, 0xe328
-    .hword 0x0d81, 0x4bd4, 0x006d, 0x0409, 0xfea4, 0xf31d, 0x03a9, 0x22b2
-    .hword 0x01d6, 0x1167, 0xfc88, 0xdf1f, 0x040f, 0x2678, 0x02d9, 0x1afe
-    .hword 0x03fe, 0xfbd9, 0x041d, 0x04a4, 0x01a1, 0xfa91, 0xffe5, 0xf9a6
-    .hword 0x25d7, 0xd8a4, 0x26fd, 0x2bfd, 0x0f71, 0xcc7f, 0xff00, 0xc3cc
-    .hword 0x0d81, 0x4bd4, 0xfba2, 0xd69b, 0x037d, 0x2111, 0x0183, 0x0e54
-    .hword 0x03c3, 0x23a8, 0xfcf9, 0xe34e, 0x003e, 0x024c, 0x0415, 0x26b1
-    .hword 0x0581, 0x05dd, 0x0579, 0x00fb, 0x02a1, 0x0246, 0x00e6, 0xfe97
-    .hword 0x342c, 0x3794, 0x33e0, 0x094b, 0x18eb, 0x158d, 0x0884, 0xf2a2
-    .hword 0x0d81, 0x4bd4, 0x0270, 0x171b, 0xfda5, 0xe9ac, 0x06b1, 0x3f6d
-    .hword 0xff8d, 0xfbbe, 0xf9f4, 0xc6af, 0xfedd, 0xf53a, 0xfa90, 0xcc76
-    .hword 0xf9f2, 0x05fb, 0xfaa9, 0xff84, 0x05b2, 0x0563, 0xfc54, 0xf96f
-    .hword 0xc69c, 0x38b0, 0xcd63, 0xfb69, 0x35fc, 0x330f, 0xdd32, 0xc1c2
-    .hword 0x0d81, 0x4bd4, 0x02c0, 0x1a11, 0xfbaf, 0xd716, 0x0422, 0x272d
-    .hword 0x03d2, 0x2436, 0xfc00, 0xda16, 0x0643, 0x3b5a, 0xfbfc, 0xd9f0
-    .hword 0x0190, 0x0112, 0xf9f9, 0x0020, 0x0580, 0xfb20, 0xfec5, 0xf96b
-    .hword 0x0ecf, 0x0a25, 0xc6de, 0x012f, 0x3422, 0xd1cb, 0xf456, 0xc19c
-    .hword 0x0d81, 0x4bd4, 0x04ee, 0x2eba, 0xfce6, 0xe29a, 0xfac5, 0xce6c
-    .hword 0xfe84, 0xf1ee, 0xfda2, 0xe990, 0x050d, 0x2fe0, 0x0295, 0x1879
-    .hword 0xfd0d, 0xfaf1, 0x031b, 0x0277, 0x006c, 0xfe66, 0xfaba, 0x0684
-    .hword 0xe40c, 0xd00d, 0x1d70, 0x175d, 0x0400, 0xf0d2, 0xce04, 0x3dc3
-    .hword 0x0d81, 0x4bd4, 0xf9ca, 0xc521, 0xfe42, 0xef7c, 0x049d, 0x2bba
-    .hword 0x0594, 0x34e0, 0xf9d4, 0xc580, 0xfdcb, 0xeb15, 0xfc20, 0xdb45
-    .hword 0x051e, 0xfc14, 0x038e, 0xfb02, 0xfc68, 0x05a4, 0x0469, 0xfd03
-    .hword 0x3081, 0xdad3, 0x21b2, 0xd0ae, 0xddf0, 0x3577, 0x29cd, 0xe3ad
-    .hword 0x0d81, 0x4bd4, 0x064b, 0x3ba6, 0xfb53, 0xd3ae, 0x01ff, 0x12ec
-    .hword 0xfdc7, 0xeaef, 0xf9af, 0xc421, 0xfa06, 0xc75a, 0x04af, 0x2c65
-    .hword 0xfa5a, 0x01f0, 0x0316, 0x02ca, 0x012f, 0xff42, 0x0576, 0xfbc6
-    .hword 0xca76, 0x125d, 0x1d40, 0x1a70, 0x0b38, 0xf8f7, 0x33c3, 0xd7f0
-    .hword 0x0d81, 0x4bd4, 0x00de, 0x0838, 0xfdae, 0xea02, 0xfb4e, 0xd37f
-    .hword 0x0385, 0x215c, 0x0665, 0x3c9d, 0x0345, 0x1efe, 0xfa57, 0xca59
-    .hword 0xfd1a, 0xff80, 0xfbb8, 0x0640, 0x04ec, 0xff52, 0x05ff, 0xfafe
-    .hword 0xe487, 0xfb43, 0xd76b, 0x3b3e, 0x2ea7, 0xf98f, 0x38d6, 0xd088
-    .hword 0x0d81, 0x4bd4, 0x05cc, 0x36f2, 0xff77, 0xfaed, 0x00c8, 0x0768
-    .hword 0x00b0, 0x0684, 0xff64, 0xfa39, 0x04e9, 0x2e8b, 0xfa1d, 0xc834
-    .hword 0xfb68, 0xfdef, 0x0368, 0x0593, 0x0232, 0xfeab, 0xff91, 0xfc65
-    .hword 0xd475, 0xec6a, 0x2049, 0x34d6, 0x14cf, 0xf360, 0xfbe4, 0xddd3
-    .hword 0x0d81, 0x4bd4, 0x0100, 0x097b, 0xfff0, 0xff68, 0x03bd, 0x236f
-    .hword 0xfd8f, 0xe8dc, 0x0004, 0x0026, 0xfcc2, 0xe145, 0xffce, 0xfe26
-    .hword 0x019f, 0x0019, 0xfffe, 0x0588, 0x004e, 0x0058, 0xfc31, 0xfbb4
-    .hword 0x0f5e, 0x00ed, 0xffed, 0x346e, 0x02e3, 0x0342, 0xdbe6, 0xd745
+    .hword 0x0d81, 0x4bd4, 0xfd2d, 0xe53b, 0xfd2e, 0xe544, 0x0000, 0x0000
 
 .align 4
-zetas_inv:
-    .hword 0x0d81, 0x4bd4, 0xffce, 0xfe26, 0xfcc2, 0xe145, 0x0004, 0x0026
-    .hword 0xfd8f, 0xe8dc, 0x03bd, 0x236f, 0xfff0, 0xff68, 0x0100, 0x097b
-    .hword 0xfbb4, 0xfc31, 0x0058, 0x004e, 0x0588, 0xfffe, 0x0019, 0x019f
-    .hword 0xd745, 0xdbe6, 0x0342, 0x02e3, 0x346e, 0xffed, 0x00ed, 0x0f5e
-    .hword 0x0d81, 0x4bd4, 0xfa1d, 0xc834, 0x04e9, 0x2e8b, 0xff64, 0xfa39
-    .hword 0x00b0, 0x0684, 0x00c8, 0x0768, 0xff77, 0xfaed, 0x05cc, 0x36f2
-    .hword 0xfc65, 0xff91, 0xfeab, 0x0232, 0x0593, 0x0368, 0xfdef, 0xfb68
-    .hword 0xddd3, 0xfbe4, 0xf360, 0x14cf, 0x34d6, 0x2049, 0xec6a, 0xd475
-    .hword 0x0d81, 0x4bd4, 0xfa57, 0xca59, 0x0345, 0x1efe, 0x0665, 0x3c9d
-    .hword 0x0385, 0x215c, 0xfb4e, 0xd37f, 0xfdae, 0xea02, 0x00de, 0x0838
-    .hword 0xfafe, 0x05ff, 0xff52, 0x04ec, 0x0640, 0xfbb8, 0xff80, 0xfd1a
-    .hword 0xd088, 0x38d6, 0xf98f, 0x2ea7, 0x3b3e, 0xd76b, 0xfb43, 0xe487
-    .hword 0x0d81, 0x4bd4, 0x04af, 0x2c65, 0xfa06, 0xc75a, 0xf9af, 0xc421
-    .hword 0xfdc7, 0xeaef, 0x01ff, 0x12ec, 0xfb53, 0xd3ae, 0x064b, 0x3ba6
-    .hword 0xfbc6, 0x0576, 0xff42, 0x012f, 0x02ca, 0x0316, 0x01f0, 0xfa5a
-    .hword 0xd7f0, 0x33c3, 0xf8f7, 0x0b38, 0x1a70, 0x1d40, 0x125d, 0xca76
-    .hword 0x0d81, 0x4bd4, 0xfc20, 0xdb45, 0xfdcb, 0xeb15, 0xf9d4, 0xc580
-    .hword 0x0594, 0x34e0, 0x049d, 0x2bba, 0xfe42, 0xef7c, 0xf9ca, 0xc521
-    .hword 0xfd03, 0x0469, 0x05a4, 0xfc68, 0xfb02, 0x038e, 0xfc14, 0x051e
-    .hword 0xe3ad, 0x29cd, 0x3577, 0xddf0, 0xd0ae, 0x21b2, 0xdad3, 0x3081
-    .hword 0x0d81, 0x4bd4, 0x0295, 0x1879, 0x050d, 0x2fe0, 0xfda2, 0xe990
-    .hword 0xfe84, 0xf1ee, 0xfac5, 0xce6c, 0xfce6, 0xe29a, 0x04ee, 0x2eba
-    .hword 0x0684, 0xfaba, 0xfe66, 0x006c, 0x0277, 0x031b, 0xfaf1, 0xfd0d
-    .hword 0x3dc3, 0xce04, 0xf0d2, 0x0400, 0x175d, 0x1d70, 0xd00d, 0xe40c
-    .hword 0x0d81, 0x4bd4, 0xfbfc, 0xd9f0, 0x0643, 0x3b5a, 0xfc00, 0xda16
-    .hword 0x03d2, 0x2436, 0x0422, 0x272d, 0xfbaf, 0xd716, 0x02c0, 0x1a11
-    .hword 0xf96b, 0xfec5, 0xfb20, 0x0580, 0x0020, 0xf9f9, 0x0112, 0x0190
-    .hword 0xc19c, 0xf456, 0xd1cb, 0x3422, 0x012f, 0xc6de, 0x0a25, 0x0ecf
-    .hword 0x0d81, 0x4bd4, 0xfa90, 0xcc76, 0xfedd, 0xf53a, 0xf9f4, 0xc6af
-    .hword 0xff8d, 0xfbbe, 0x06b1, 0x3f6d, 0xfda5, 0xe9ac, 0x0270, 0x171b
-    .hword 0xf96f, 0xfc54, 0x0563, 0x05b2, 0xff84, 0xfaa9, 0x05fb, 0xf9f2
-    .hword 0xc1c2, 0xdd32, 0x330f, 0x35fc, 0xfb69, 0xcd63, 0x38b0, 0xc69c
-    .hword 0x0d81, 0x4bd4, 0x0415, 0x26b1, 0x003e, 0x024c, 0xfcf9, 0xe34e
-    .hword 0x03c3, 0x23a8, 0x0183, 0x0e54, 0x037d, 0x2111, 0xfba2, 0xd69b
-    .hword 0xfe97, 0x00e6, 0x0246, 0x02a1, 0x00fb, 0x0579, 0x05dd, 0x0581
-    .hword 0xf2a2, 0x0884, 0x158d, 0x18eb, 0x094b, 0x33e0, 0x3794, 0x342c
-    .hword 0x0d81, 0x4bd4, 0x02d9, 0x1afe, 0x040f, 0x2678, 0xfc88, 0xdf1f
-    .hword 0x01d6, 0x1167, 0x03a9, 0x22b2, 0xfea4, 0xf31d, 0x006d, 0x0409
-    .hword 0xf9a6, 0xffe5, 0xfa91, 0x01a1, 0x04a4, 0x041d, 0xfbd9, 0x03fe
-    .hword 0xc3cc, 0xff00, 0xcc7f, 0x0f71, 0x2bfd, 0x26fd, 0xd8a4, 0x25d7
-    .hword 0x0d81, 0x4bd4, 0x0637, 0x3ae9, 0xfdd6, 0xeb7d, 0x000b, 0x0068
-    .hword 0x036a, 0x205c, 0xfd0b, 0xe3f9, 0xff87, 0xfb85, 0x032d, 0x1e1a
-    .hword 0xfcf5, 0x0634, 0x037c, 0xfbb9, 0xfd24, 0x0126, 0xff26, 0x04c5
-    .hword 0xe328, 0x3acc, 0x2107, 0xd775, 0xe4e6, 0x0ae3, 0xf7ee, 0x2d36
-    .hword 0x0d81, 0x4bd4, 0x00b1, 0x068e, 0x0360, 0x1ffe, 0xfe53, 0xf01e
-    .hword 0x01e4, 0x11ec, 0xff28, 0xf801, 0xfccc, 0xe1a3, 0xf94d, 0xc080
-    .hword 0x035a, 0xfc38, 0xf940, 0x0162, 0x0454, 0xfeed, 0x06ad, 0x0016
-    .hword 0x1fc5, 0xdc29, 0xc005, 0x0d1b, 0x2906, 0xf5d1, 0x3f47, 0x00d1
-    .hword 0x0d81, 0x4bd4, 0xfd2d, 0xe53b, 0x0093, 0x0571, 0xfc8a, 0xdf32
-    .hword 0xfbf7, 0xd9c0, 0xfb0f, 0xd129, 0x05e6, 0x37e9, 0xfd56, 0xe6c0
-    .hword 0xfb9c, 0xd662, 0x0623, 0x3a2b, 0xf9dd, 0xc5d5, 0xfeff, 0xf67c
-    .hword 0x0662, 0x3c80, 0xffee, 0xff55, 0xffdc, 0xfeab, 0x0000, 0x0000
+twist_table:
+    // loop 0 group=0 half=0 B1 v10 coeff B1[0..7], blocks k=0,1
+    .hword 0x0001, 0x0001, 0x0001, 0x0001, 0x044c, 0x044c, 0x044c, 0x044c
+    .hword 0x0009, 0x0009, 0x0009, 0x0009, 0x28bb, 0x28bb, 0x28bb, 0x28bb
+    // loop 0 group=0 half=0 B1 v11 coeff B1[8..15], blocks k=2,3
+    .hword 0x0032, 0x0032, 0x0032, 0x0032, 0xfec8, 0xfec8, 0xfec8, 0xfec8
+    .hword 0x01da, 0x01da, 0x01da, 0x01da, 0xf473, 0xf473, 0xf473, 0xf473
+    // loop 0 group=0 half=0 B1 v12 coeff B1[128..135], blocks k=32,33
+    .hword 0x0363, 0x0363, 0x0363, 0x0363, 0xfe50, 0xfe50, 0xfe50, 0xfe50
+    .hword 0x201a, 0x201a, 0x201a, 0x201a, 0xf001, 0xf001, 0xf001, 0xf001
+    // loop 0 group=0 half=0 B1 v13 coeff B1[136..143], blocks k=34,35
+    .hword 0xf9c9, 0xf9c9, 0xf9c9, 0xf9c9, 0xfca6, 0xfca6, 0xfca6, 0xfca6
+    .hword 0xc517, 0xc517, 0xc517, 0xc517, 0xe03b, 0xe03b, 0xe03b, 0xe03b
+    // loop 0 group=0 half=0 B1 v14 coeff B1[256..263], blocks k=64,65
+    .hword 0x05f0, 0x05f0, 0x05f0, 0x05f0, 0xfb5c, 0xfb5c, 0xfb5c, 0xfb5c
+    .hword 0x3848, 0x3848, 0x3848, 0x3848, 0xd403, 0xd403, 0xd403, 0xd403
+    // loop 0 group=0 half=0 B1 v15 coeff B1[264..271], blocks k=66,67
+    .hword 0xffca, 0xffca, 0xffca, 0xffca, 0xfd89, 0xfd89, 0xfd89, 0xfd89
+    .hword 0xfe00, 0xfe00, 0xfe00, 0xfe00, 0xe8a3, 0xe8a3, 0xe8a3, 0xe8a3
+    // loop 0 group=0 half=0 B0 v4 coeff B0[0..7], blocks k=0,1
+    .hword 0x0001, 0x0001, 0x0001, 0x0001, 0xf940, 0xf940, 0xf940, 0xf940
+    .hword 0x0009, 0x0009, 0x0009, 0x0009, 0xc005, 0xc005, 0xc005, 0xc005
+    // loop 0 group=0 half=0 B0 v5 coeff B0[8..15], blocks k=2,3
+    .hword 0xfca0, 0xfca0, 0xfca0, 0xfca0, 0xfe50, 0xfe50, 0xfe50, 0xfe50
+    .hword 0xe002, 0xe002, 0xe002, 0xe002, 0xf001, 0xf001, 0xf001, 0xf001
+    // loop 0 group=0 half=0 B0 v6 coeff B0[128..135], blocks k=32,33
+    .hword 0xf9dd, 0xf9dd, 0xf9dd, 0xf9dd, 0x03af, 0x03af, 0x03af, 0x03af
+    .hword 0xc5d5, 0xc5d5, 0xc5d5, 0xc5d5, 0x22ea, 0x22ea, 0x22ea, 0x22ea
+    // loop 0 group=0 half=0 B0 v7 coeff B0[136..143], blocks k=34,35
+    .hword 0xfb17, 0xfb17, 0xfb17, 0xfb17, 0x044c, 0x044c, 0x044c, 0x044c
+    .hword 0xd175, 0xd175, 0xd175, 0xd175, 0x28bb, 0x28bb, 0x28bb, 0x28bb
+    // loop 0 group=0 half=0 B0 v8 coeff B0[256..263], blocks k=64,65
+    .hword 0xfeff, 0xfeff, 0xfeff, 0xfeff, 0x0640, 0x0640, 0x0640, 0x0640
+    .hword 0xf67c, 0xf67c, 0xf67c, 0xf67c, 0x3b3e, 0x3b3e, 0x3b3e, 0x3b3e
+    // loop 0 group=0 half=0 B0 v9 coeff B0[264..271], blocks k=66,67
+    .hword 0x0320, 0x0320, 0x0320, 0x0320, 0x0190, 0x0190, 0x0190, 0x0190
+    .hword 0x1d9f, 0x1d9f, 0x1d9f, 0x1d9f, 0x0ecf, 0x0ecf, 0x0ecf, 0x0ecf
+    // loop 1 group=0 half=1 B1 v10 coeff B1[16..23], blocks k=4,5
+    .hword 0xfc43, 0xfc43, 0xfc43, 0xfc43, 0x0695, 0x0695, 0x0695, 0x0695
+    .hword 0xdc91, 0xdc91, 0xdc91, 0xdc91, 0x3e64, 0x3e64, 0x3e64, 0x3e64
+    // loop 1 group=0 half=1 B1 v11 coeff B1[24..31], blocks k=6,7
+    .hword 0x0224, 0x0224, 0x0224, 0x0224, 0x0502, 0x0502, 0x0502, 0x0502
+    .hword 0x144a, 0x144a, 0x144a, 0x144a, 0x2f78, 0x2f78, 0x2f78, 0x2f78
+    // loop 1 group=0 half=1 B1 v12 coeff B1[144..151], blocks k=36,37
+    .hword 0xffd9, 0xffd9, 0xffd9, 0xffd9, 0xfa78, 0xfa78, 0xfa78, 0xfa78
+    .hword 0xfe8e, 0xfe8e, 0xfe8e, 0xfe8e, 0xcb92, 0xcb92, 0xcb92, 0xcb92
+    // loop 1 group=0 half=1 B1 v13 coeff B1[152..159], blocks k=38,39
+    .hword 0x05e3, 0x05e3, 0x05e3, 0x05e3, 0xf984, 0xf984, 0xf984, 0xf984
+    .hword 0x37cc, 0x37cc, 0x37cc, 0x37cc, 0xc289, 0xc289, 0xc289, 0xc289
+    // loop 1 group=0 half=1 B1 v14 coeff B1[272..279], blocks k=68,69
+    .hword 0x02f5, 0x02f5, 0x02f5, 0x02f5, 0xfe4b, 0xfe4b, 0xfe4b, 0xfe4b
+    .hword 0x1c07, 0x1c07, 0x1c07, 0x1c07, 0xefd2, 0xefd2, 0xefd2, 0xefd2
+    // loop 1 group=0 half=1 B1 v15 coeff B1[280..287], blocks k=70,71
+    .hword 0xff4f, 0xff4f, 0xff4f, 0xff4f, 0xfbac, 0xfbac, 0xfbac, 0xfbac
+    .hword 0xf972, 0xf972, 0xf972, 0xf972, 0xd6fa, 0xd6fa, 0xd6fa, 0xd6fa
+    // loop 1 group=0 half=1 B0 v4 coeff B0[16..23], blocks k=4,5
+    .hword 0xff28, 0xff28, 0xff28, 0xff28, 0xff94, 0xff94, 0xff94, 0xff94
+    .hword 0xf801, 0xf801, 0xf801, 0xf801, 0xfc00, 0xfc00, 0xfc00, 0xfc00
+    // loop 1 group=0 half=1 B0 v5 coeff B0[24..31], blocks k=6,7
+    .hword 0xffca, 0xffca, 0xffca, 0xffca, 0xffe5, 0xffe5, 0xffe5, 0xffe5
+    .hword 0xfe00, 0xfe00, 0xfe00, 0xfe00, 0xff00, 0xff00, 0xff00, 0xff00
+    // loop 1 group=0 half=1 B0 v6 coeff B0[144..151], blocks k=36,37
+    .hword 0x0226, 0x0226, 0x0226, 0x0226, 0x0113, 0x0113, 0x0113, 0x0113
+    .hword 0x145d, 0x145d, 0x145d, 0x145d, 0x0a2f, 0x0a2f, 0x0a2f, 0x0a2f
+    // loop 1 group=0 half=1 B0 v7 coeff B0[152..159], blocks k=38,39
+    .hword 0xf9c9, 0xf9c9, 0xf9c9, 0xf9c9, 0x03a5, 0x03a5, 0x03a5, 0x03a5
+    .hword 0xc517, 0xc517, 0xc517, 0xc517, 0x228c, 0x228c, 0x228c, 0x228c
+    // loop 1 group=0 half=1 B0 v8 coeff B0[272..279], blocks k=68,69
+    .hword 0x00c8, 0x00c8, 0x00c8, 0x00c8, 0x0064, 0x0064, 0x0064, 0x0064
+    .hword 0x0768, 0x0768, 0x0768, 0x0768, 0x03b4, 0x03b4, 0x03b4, 0x03b4
+    // loop 1 group=0 half=1 B0 v9 coeff B0[280..287], blocks k=70,71
+    .hword 0x0032, 0x0032, 0x0032, 0x0032, 0x0019, 0x0019, 0x0019, 0x0019
+    .hword 0x01da, 0x01da, 0x01da, 0x01da, 0x00ed, 0x00ed, 0x00ed, 0x00ed
+    // loop 2 group=1 half=0 B1 v10 coeff B1[32..39], blocks k=8,9
+    .hword 0xff00, 0xff00, 0xff00, 0xff00, 0xf9d1, 0xf9d1, 0xf9d1, 0xf9d1
+    .hword 0xf685, 0xf685, 0xf685, 0xf685, 0xc563, 0xc563, 0xc563, 0xc563
+    // loop 2 group=1 half=0 B1 v11 coeff B1[40..47], blocks k=10,11
+    .hword 0x0404, 0x0404, 0x0404, 0x0404, 0x0169, 0x0169, 0x0169, 0x0169
+    .hword 0x2610, 0x2610, 0x2610, 0x2610, 0x0d5e, 0x0d5e, 0x0d5e, 0x0d5e
+    // loop 2 group=1 half=0 B1 v12 coeff B1[160..167], blocks k=40,41
+    .hword 0xfd40, 0xfd40, 0xfd40, 0xfd40, 0xffe0, 0xffe0, 0xffe0, 0xffe0
+    .hword 0xe5ef, 0xe5ef, 0xe5ef, 0xe5ef, 0xfed1, 0xfed1, 0xfed1, 0xfed1
+    // loop 2 group=1 half=0 B1 v13 coeff B1[168..175], blocks k=42,43
+    .hword 0xfd8a, 0xfd8a, 0xfd8a, 0xfd8a, 0xf9c0, 0xf9c0, 0xf9c0, 0xf9c0
+    .hword 0xe8ac, 0xe8ac, 0xe8ac, 0xe8ac, 0xc4c2, 0xc4c2, 0xc4c2, 0xc4c2
+    // loop 2 group=1 half=0 B1 v14 coeff B1[288..295], blocks k=72,73
+    .hword 0x05f1, 0x05f1, 0x05f1, 0x05f1, 0xffa8, 0xffa8, 0xffa8, 0xffa8
+    .hword 0x3851, 0x3851, 0x3851, 0x3851, 0xfcbe, 0xfcbe, 0xfcbe, 0xfcbe
+    // loop 2 group=1 half=0 B1 v15 coeff B1[296..303], blocks k=74,75
+    .hword 0xfffc, 0xfffc, 0xfffc, 0xfffc, 0xfc51, 0xfc51, 0xfc51, 0xfc51
+    .hword 0xffda, 0xffda, 0xffda, 0xffda, 0xdd16, 0xdd16, 0xdd16, 0xdd16
+    // loop 2 group=1 half=0 B0 v4 coeff B0[32..39], blocks k=8,9
+    .hword 0x06b3, 0x06b3, 0x06b3, 0x06b3, 0xfc99, 0xfc99, 0xfc99, 0xfc99
+    .hword 0x3f80, 0x3f80, 0x3f80, 0x3f80, 0xdfc0, 0xdfc0, 0xdfc0, 0xdfc0
+    // loop 2 group=1 half=0 B0 v5 coeff B0[40..47], blocks k=10,11
+    .hword 0x050d, 0x050d, 0x050d, 0x050d, 0xfbc6, 0xfbc6, 0xfbc6, 0xfbc6
+    .hword 0x2fe0, 0x2fe0, 0x2fe0, 0x2fe0, 0xd7f0, 0xd7f0, 0xd7f0, 0xd7f0
+    // loop 2 group=1 half=0 B0 v6 coeff B0[160..167], blocks k=40,41
+    .hword 0xfb12, 0xfb12, 0xfb12, 0xfb12, 0xfd89, 0xfd89, 0xfd89, 0xfd89
+    .hword 0xd146, 0xd146, 0xd146, 0xd146, 0xe8a3, 0xe8a3, 0xe8a3, 0xe8a3
+    // loop 2 group=1 half=0 B0 v7 coeff B0[168..175], blocks k=42,43
+    .hword 0x0585, 0x0585, 0x0585, 0x0585, 0xfc02, 0xfc02, 0xfc02, 0xfc02
+    .hword 0x3451, 0x3451, 0x3451, 0x3451, 0xda29, 0xda29, 0xda29, 0xda29
+    // loop 2 group=1 half=0 B0 v8 coeff B0[288..295], blocks k=72,73
+    .hword 0xf94c, 0xf94c, 0xf94c, 0xf94c, 0xfca6, 0xfca6, 0xfca6, 0xfca6
+    .hword 0xc076, 0xc076, 0xc076, 0xc076, 0xe03b, 0xe03b, 0xe03b, 0xe03b
+    // loop 2 group=1 half=0 B0 v9 coeff B0[296..303], blocks k=74,75
+    .hword 0xfe53, 0xfe53, 0xfe53, 0xfe53, 0x05ea, 0x05ea, 0x05ea, 0x05ea
+    .hword 0xf01e, 0xf01e, 0xf01e, 0xf01e, 0x380f, 0x380f, 0x380f, 0x380f
+    // loop 3 group=1 half=1 B1 v10 coeff B1[48..55], blocks k=12,13
+    .hword 0xfe39, 0xfe39, 0xfe39, 0xfe39, 0x02fd, 0x02fd, 0x02fd, 0x02fd
+    .hword 0xef27, 0xef27, 0xef27, 0xef27, 0x1c53, 0x1c53, 0x1c53, 0x1c53
+    // loop 3 group=1 half=1 B1 v11 coeff B1[56..63], blocks k=14,15
+    .hword 0x05a9, 0x05a9, 0x05a9, 0x05a9, 0x00df, 0x00df, 0x00df, 0x00df
+    .hword 0x35a7, 0x35a7, 0x35a7, 0x35a7, 0x0842, 0x0842, 0x0842, 0x0842
+    // loop 3 group=1 half=1 B1 v12 coeff B1[176..183], blocks k=44,45
+    .hword 0xfe7d, 0xfe7d, 0xfe7d, 0xfe7d, 0xfe17, 0xfe17, 0xfe17, 0xfe17
+    .hword 0xf1ac, 0xf1ac, 0xf1ac, 0xf1ac, 0xede5, 0xede5, 0xede5, 0xede5
+    // loop 3 group=1 half=1 B1 v13 coeff B1[184..191], blocks k=46,47
+    .hword 0x0570, 0x0570, 0x0570, 0x0570, 0xff05, 0xff05, 0xff05, 0xff05
+    .hword 0x338a, 0x338a, 0x338a, 0x338a, 0xf6b5, 0xf6b5, 0xf6b5, 0xf6b5
+    // loop 3 group=1 half=1 B1 v14 coeff B1[304..311], blocks k=76,77
+    .hword 0xff38, 0xff38, 0xff38, 0xff38, 0x04e0, 0x04e0, 0x04e0, 0x04e0
+    .hword 0xf898, 0xf898, 0xf898, 0xf898, 0x2e35, 0x2e35, 0x2e35, 0x2e35
+    // loop 3 group=1 half=1 B1 v15 coeff B1[312..319], blocks k=78,79
+    .hword 0x0173, 0x0173, 0x0173, 0x0173, 0x00ae, 0x00ae, 0x00ae, 0x00ae
+    .hword 0x0dbd, 0x0dbd, 0x0dbd, 0x0dbd, 0x0671, 0x0671, 0x0671, 0x0671
+    // loop 3 group=1 half=1 B0 v4 coeff B0[48..55], blocks k=12,13
+    .hword 0xfde3, 0xfde3, 0xfde3, 0xfde3, 0x05b2, 0x05b2, 0x05b2, 0x05b2
+    .hword 0xebf8, 0xebf8, 0xebf8, 0xebf8, 0x35fc, 0x35fc, 0x35fc, 0x35fc
+    // loop 3 group=1 half=1 B0 v5 coeff B0[56..63], blocks k=14,15
+    .hword 0x02d9, 0x02d9, 0x02d9, 0x02d9, 0xfaac, 0xfaac, 0xfaac, 0xfaac
+    .hword 0x1afe, 0x1afe, 0x1afe, 0x1afe, 0xcd7f, 0xcd7f, 0xcd7f, 0xcd7f
+    // loop 3 group=1 half=1 B0 v6 coeff B0[176..183], blocks k=44,45
+    .hword 0xfe01, 0xfe01, 0xfe01, 0xfe01, 0x05c1, 0x05c1, 0x05c1, 0x05c1
+    .hword 0xed14, 0xed14, 0xed14, 0xed14, 0x368a, 0x368a, 0x368a, 0x368a
+    // loop 3 group=1 half=1 B0 v7 coeff B0[184..191], blocks k=46,47
+    .hword 0xfc20, 0xfc20, 0xfc20, 0xfc20, 0xfe10, 0xfe10, 0xfe10, 0xfe10
+    .hword 0xdb45, 0xdb45, 0xdb45, 0xdb45, 0xeda3, 0xeda3, 0xeda3, 0xeda3
+    // loop 3 group=1 half=1 B0 v8 coeff B0[304..311], blocks k=76,77
+    .hword 0x02f5, 0x02f5, 0x02f5, 0x02f5, 0xfaba, 0xfaba, 0xfaba, 0xfaba
+    .hword 0x1c07, 0x1c07, 0x1c07, 0x1c07, 0xce04, 0xce04, 0xce04, 0xce04
+    // loop 3 group=1 half=1 B0 v9 coeff B0[312..319], blocks k=78,79
+    .hword 0xfd5d, 0xfd5d, 0xfd5d, 0xfd5d, 0x056f, 0x056f, 0x056f, 0x056f
+    .hword 0xe702, 0xe702, 0xe702, 0xe702, 0x3381, 0x3381, 0x3381, 0x3381
+    // loop 4 group=2 half=0 B1 v10 coeff B1[64..71], blocks k=16,17
+    .hword 0xff6d, 0xff6d, 0xff6d, 0xff6d, 0x030b, 0x030b, 0x030b, 0x030b
+    .hword 0xfa8f, 0xfa8f, 0xfa8f, 0xfa8f, 0x1cd8, 0x1cd8, 0x1cd8, 0x1cd8
+    // loop 4 group=2 half=0 B1 v11 coeff B1[72..79], blocks k=18,19
+    .hword 0xfe4c, 0xfe4c, 0xfe4c, 0xfe4c, 0x039b, 0x039b, 0x039b, 0x039b
+    .hword 0xefdb, 0xefdb, 0xefdb, 0xefdb, 0x222d, 0x222d, 0x222d, 0x222d
+    // loop 4 group=2 half=0 B1 v12 coeff B1[192..199], blocks k=48,49
+    .hword 0x01cc, 0x01cc, 0x01cc, 0x01cc, 0x04fe, 0x04fe, 0x04fe, 0x04fe
+    .hword 0x1108, 0x1108, 0x1108, 0x1108, 0x2f52, 0x2f52, 0x2f52, 0x2f52
+    // loop 4 group=2 half=0 B1 v13 coeff B1[200..207], blocks k=50,51
+    .hword 0xfb51, 0xfb51, 0xfb51, 0xfb51, 0x068a, 0x068a, 0x068a, 0x068a
+    .hword 0xd39b, 0xd39b, 0xd39b, 0xd39b, 0x3dfb, 0x3dfb, 0x3dfb, 0x3dfb
+    // loop 4 group=2 half=0 B1 v14 coeff B1[320..327], blocks k=80,81
+    .hword 0x04f1, 0x04f1, 0x04f1, 0x04f1, 0xf979, 0xf979, 0xf979, 0xf979
+    .hword 0x2ed7, 0x2ed7, 0x2ed7, 0x2ed7, 0xc221, 0xc221, 0xc221, 0xc221
+    // loop 4 group=2 half=0 B1 v15 coeff B1[328..335], blocks k=82,83
+    .hword 0x0400, 0x0400, 0x0400, 0x0400, 0xfdba, 0xfdba, 0xfdba, 0xfdba
+    .hword 0x25ea, 0x25ea, 0x25ea, 0x25ea, 0xea73, 0xea73, 0xea73, 0xea73
+    // loop 4 group=2 half=0 B0 v4 coeff B0[64..71], blocks k=16,17
+    .hword 0xfd56, 0xfd56, 0xfd56, 0xfd56, 0xfeab, 0xfeab, 0xfeab, 0xfeab
+    .hword 0xe6c0, 0xe6c0, 0xe6c0, 0xe6c0, 0xf360, 0xf360, 0xf360, 0xf360
+    // loop 4 group=2 half=0 B0 v5 coeff B0[72..79], blocks k=18,19
+    .hword 0x0616, 0x0616, 0x0616, 0x0616, 0x030b, 0x030b, 0x030b, 0x030b
+    .hword 0x39b0, 0x39b0, 0x39b0, 0x39b0, 0x1cd8, 0x1cd8, 0x1cd8, 0x1cd8
+    // loop 4 group=2 half=0 B0 v6 coeff B0[192..199], blocks k=48,49
+    .hword 0xff08, 0xff08, 0xff08, 0xff08, 0xff84, 0xff84, 0xff84, 0xff84
+    .hword 0xf6d1, 0xf6d1, 0xf6d1, 0xf6d1, 0xfb69, 0xfb69, 0xfb69, 0xfb69
+    // loop 4 group=2 half=0 B0 v7 coeff B0[200..207], blocks k=50,51
+    .hword 0xffc2, 0xffc2, 0xffc2, 0xffc2, 0xffe1, 0xffe1, 0xffe1, 0xffe1
+    .hword 0xfdb4, 0xfdb4, 0xfdb4, 0xfdb4, 0xfeda, 0xfeda, 0xfeda, 0xfeda
+    // loop 4 group=2 half=0 B0 v8 coeff B0[320..327], blocks k=80,81
+    .hword 0xfbf7, 0xfbf7, 0xfbf7, 0xfbf7, 0x04bc, 0x04bc, 0x04bc, 0x04bc
+    .hword 0xd9c0, 0xd9c0, 0xd9c0, 0xd9c0, 0x2ce0, 0x2ce0, 0x2ce0, 0x2ce0
+    // loop 4 group=2 half=0 B0 v9 coeff B0[328..335], blocks k=82,83
+    .hword 0x025e, 0x025e, 0x025e, 0x025e, 0x012f, 0x012f, 0x012f, 0x012f
+    .hword 0x1670, 0x1670, 0x1670, 0x1670, 0x0b38, 0x0b38, 0x0b38, 0x0b38
+    // loop 5 group=2 half=1 B1 v10 coeff B1[80..87], blocks k=20,21
+    .hword 0xfbde, 0xfbde, 0xfbde, 0xfbde, 0x04b9, 0x04b9, 0x04b9, 0x04b9
+    .hword 0xd8d3, 0xd8d3, 0xd8d3, 0xd8d3, 0x2cc4, 0x2cc4, 0x2cc4, 0x2cc4
+    // loop 5 group=2 half=1 B1 v11 coeff B1[88..95], blocks k=22,23
+    .hword 0xfbeb, 0xfbeb, 0xfbeb, 0xfbeb, 0x0691, 0x0691, 0x0691, 0x0691
+    .hword 0xd94f, 0xd94f, 0xd94f, 0xd94f, 0x3e3e, 0x3e3e, 0x3e3e, 0x3e3e
+    // loop 5 group=2 half=1 B1 v12 coeff B1[208..215], blocks k=52,53
+    .hword 0xfb63, 0xfb63, 0xfb63, 0xfb63, 0x02dc, 0x02dc, 0x02dc, 0x02dc
+    .hword 0xd446, 0xd446, 0xd446, 0xd446, 0x1b1a, 0x1b1a, 0x1b1a, 0x1b1a
+    // loop 5 group=2 half=1 B1 v13 coeff B1[216..223], blocks k=54,55
+    .hword 0xfee7, 0xfee7, 0xfee7, 0xfee7, 0xfa6d, 0xfa6d, 0xfa6d, 0xfa6d
+    .hword 0xf598, 0xf598, 0xf598, 0xf598, 0xcb2a, 0xcb2a, 0xcb2a, 0xcb2a
+    // loop 5 group=2 half=1 B1 v14 coeff B1[336..343], blocks k=84,85
+    .hword 0xfd71, 0xfd71, 0xfd71, 0xfd71, 0xfa5c, 0xfa5c, 0xfa5c, 0xfa5c
+    .hword 0xe7bf, 0xe7bf, 0xe7bf, 0xe7bf, 0xca89, 0xca89, 0xca89, 0xca89
+    // loop 5 group=2 half=1 B1 v15 coeff B1[344..351], blocks k=86,87
+    .hword 0xf99b, 0xf99b, 0xf99b, 0xf99b, 0x018d, 0x018d, 0x018d, 0x018d
+    .hword 0xc363, 0xc363, 0xc363, 0xc363, 0x0eb3, 0x0eb3, 0x0eb3, 0x0eb3
+    // loop 5 group=2 half=1 B0 v4 coeff B0[80..87], blocks k=20,21
+    .hword 0xfac5, 0xfac5, 0xfac5, 0xfac5, 0x0423, 0x0423, 0x0423, 0x0423
+    .hword 0xce6c, 0xce6c, 0xce6c, 0xce6c, 0x2736, 0x2736, 0x2736, 0x2736
+    // loop 5 group=2 half=1 B0 v5 coeff B0[88..95], blocks k=22,23
+    .hword 0xfb51, 0xfb51, 0xfb51, 0xfb51, 0x0469, 0x0469, 0x0469, 0x0469
+    .hword 0xd39b, 0xd39b, 0xd39b, 0xd39b, 0x29cd, 0x29cd, 0x29cd, 0x29cd
+    // loop 5 group=2 half=1 B0 v6 coeff B0[208..215], blocks k=52,53
+    .hword 0x06b1, 0x06b1, 0x06b1, 0x06b1, 0xfc98, 0xfc98, 0xfc98, 0xfc98
+    .hword 0x3f6d, 0x3f6d, 0x3f6d, 0x3f6d, 0xdfb7, 0xdfb7, 0xdfb7, 0xdfb7
+    // loop 5 group=2 half=1 B0 v7 coeff B0[216..223], blocks k=54,55
+    .hword 0xfe4c, 0xfe4c, 0xfe4c, 0xfe4c, 0xff26, 0xff26, 0xff26, 0xff26
+    .hword 0xefdb, 0xefdb, 0xefdb, 0xefdb, 0xf7ee, 0xf7ee, 0xf7ee, 0xf7ee
+    // loop 5 group=2 half=1 B0 v8 coeff B0[336..343], blocks k=84,85
+    .hword 0xf9d7, 0xf9d7, 0xf9d7, 0xf9d7, 0x03ac, 0x03ac, 0x03ac, 0x03ac
+    .hword 0xc59c, 0xc59c, 0xc59c, 0xc59c, 0x22ce, 0x22ce, 0x22ce, 0x22ce
+    // loop 5 group=2 half=1 B0 v9 coeff B0[344..351], blocks k=86,87
+    .hword 0x01d6, 0x01d6, 0x01d6, 0x01d6, 0x00eb, 0x00eb, 0x00eb, 0x00eb
+    .hword 0x1167, 0x1167, 0x1167, 0x1167, 0x08b4, 0x08b4, 0x08b4, 0x08b4
+    // loop 6 group=3 half=0 B1 v10 coeff B1[96..103], blocks k=24,25
+    .hword 0xfe75, 0xfe75, 0xfe75, 0xfe75, 0x043a, 0x043a, 0x043a, 0x043a
+    .hword 0xf160, 0xf160, 0xf160, 0xf160, 0x2810, 0x2810, 0x2810, 0x2810
+    // loop 6 group=3 half=0 B1 v11 coeff B1[104..111], blocks k=26,27
+    .hword 0x03e0, 0x03e0, 0x03e0, 0x03e0, 0xfb44, 0xfb44, 0xfb44, 0xfb44
+    .hword 0x24bb, 0x24bb, 0x24bb, 0x24bb, 0xd320, 0xd320, 0xd320, 0xd320
+    // loop 6 group=3 half=0 B1 v12 coeff B1[224..231], blocks k=56,57
+    .hword 0xff22, 0xff22, 0xff22, 0xff22, 0x04df, 0x04df, 0x04df, 0x04df
+    .hword 0xf7c8, 0xf7c8, 0xf7c8, 0xf7c8, 0x2e2c, 0x2e2c, 0x2e2c, 0x2e2c
+    // loop 6 group=3 half=0 B1 v13 coeff B1[232..239], blocks k=58,59
+    .hword 0xfd27, 0xfd27, 0xfd27, 0xfd27, 0x007c, 0x007c, 0x007c, 0x007c
+    .hword 0xe502, 0xe502, 0xe502, 0xe502, 0x0497, 0x0497, 0x0497, 0x0497
+    // loop 6 group=3 half=0 B1 v14 coeff B1[352..359], blocks k=88,89
+    .hword 0x045e, 0x045e, 0x045e, 0x045e, 0xfc84, 0xfc84, 0xfc84, 0xfc84
+    .hword 0x2965, 0x2965, 0x2965, 0x2965, 0xdef9, 0xdef9, 0xdef9, 0xdef9
+    // loop 6 group=3 half=0 B1 v15 coeff B1[360..367], blocks k=90,91
+    .hword 0x024c, 0x024c, 0x024c, 0x024c, 0x0155, 0x0155, 0x0155, 0x0155
+    .hword 0x15c5, 0x15c5, 0x15c5, 0x15c5, 0x0ca0, 0x0ca0, 0x0ca0, 0x0ca0
+    // loop 6 group=3 half=0 B0 v4 coeff B0[96..103], blocks k=24,25
+    .hword 0xfb74, 0xfb74, 0xfb74, 0xfb74, 0xfdba, 0xfdba, 0xfdba, 0xfdba
+    .hword 0xd4e7, 0xd4e7, 0xd4e7, 0xd4e7, 0xea73, 0xea73, 0xea73, 0xea73
+    // loop 6 group=3 half=0 B0 v5 coeff B0[104..111], blocks k=26,27
+    .hword 0xfedd, 0xfedd, 0xfedd, 0xfedd, 0x062f, 0x062f, 0x062f, 0x062f
+    .hword 0xf53a, 0xf53a, 0xf53a, 0xf53a, 0x3a9d, 0x3a9d, 0x3a9d, 0x3a9d
+    // loop 6 group=3 half=0 B0 v6 coeff B0[224..231], blocks k=56,57
+    .hword 0xff93, 0xff93, 0xff93, 0xff93, 0x068a, 0x068a, 0x068a, 0x068a
+    .hword 0xfbf7, 0xfbf7, 0xfbf7, 0xfbf7, 0x3dfb, 0x3dfb, 0x3dfb, 0x3dfb
+    // loop 6 group=3 half=0 B0 v7 coeff B0[232..239], blocks k=58,59
+    .hword 0x0345, 0x0345, 0x0345, 0x0345, 0xfae2, 0xfae2, 0xfae2, 0xfae2
+    .hword 0x1efe, 0x1efe, 0x1efe, 0x1efe, 0xcf7f, 0xcf7f, 0xcf7f, 0xcf7f
+    // loop 6 group=3 half=0 B0 v8 coeff B0[352..359], blocks k=88,89
+    .hword 0xf9b5, 0xf9b5, 0xf9b5, 0xf9b5, 0x039b, 0x039b, 0x039b, 0x039b
+    .hword 0xc45a, 0xc45a, 0xc45a, 0xc45a, 0x222d, 0x222d, 0x222d, 0x222d
+    // loop 6 group=3 half=0 B0 v9 coeff B0[360..367], blocks k=90,91
+    .hword 0xfb0d, 0xfb0d, 0xfb0d, 0xfb0d, 0x0447, 0x0447, 0x0447, 0x0447
+    .hword 0xd116, 0xd116, 0xd116, 0xd116, 0x288b, 0x288b, 0x288b, 0x288b
+    // loop 7 group=3 half=1 B1 v10 coeff B1[112..119], blocks k=28,29
+    .hword 0x04b2, 0x04b2, 0x04b2, 0x04b2, 0x065a, 0x065a, 0x065a, 0x065a
+    .hword 0x2c81, 0x2c81, 0x2c81, 0x2c81, 0x3c34, 0x3c34, 0x3c34, 0x3c34
+    // loop 7 group=3 half=1 B1 v11 coeff B1[120..127], blocks k=30,31
+    .hword 0x0533, 0x0533, 0x0533, 0x0533, 0xf97c, 0xf97c, 0xf97c, 0xf97c
+    .hword 0x3148, 0x3148, 0x3148, 0x3148, 0xc23d, 0xc23d, 0xc23d, 0xc23d
+    // loop 7 group=3 half=1 B1 v12 coeff B1[240..247], blocks k=60,61
+    .hword 0x0629, 0x0629, 0x0629, 0x0629, 0xfd36, 0xfd36, 0xfd36, 0xfd36
+    .hword 0x3a64, 0x3a64, 0x3a64, 0x3a64, 0xe590, 0xe590, 0xe590, 0xe590
+    // loop 7 group=3 half=1 B1 v13 coeff B1[248..255], blocks k=62,63
+    .hword 0xfd6b, 0xfd6b, 0xfd6b, 0xfd6b, 0xfb96, 0xfb96, 0xfb96, 0xfb96
+    .hword 0xe787, 0xe787, 0xe787, 0xe787, 0xd629, 0xd629, 0xd629, 0xd629
+    // loop 7 group=3 half=1 B1 v14 coeff B1[368..375], blocks k=92,93
+    .hword 0xf94f, 0xf94f, 0xf94f, 0xf94f, 0xff15, 0xff15, 0xff15, 0xff15
+    .hword 0xc093, 0xc093, 0xc093, 0xc093, 0xf74c, 0xf74c, 0xf74c, 0xf74c
+    // loop 7 group=3 half=1 B1 v15 coeff B1[376..383], blocks k=94,95
+    .hword 0x0307, 0x0307, 0x0307, 0x0307, 0xfa9d, 0xfa9d, 0xfa9d, 0xfa9d
+    .hword 0x1cb2, 0x1cb2, 0x1cb2, 0x1cb2, 0xccf1, 0xccf1, 0xccf1, 0xccf1
+    // loop 7 group=3 half=1 B0 v4 coeff B0[112..119], blocks k=28,29
+    .hword 0xfc57, 0xfc57, 0xfc57, 0xfc57, 0x04ec, 0x04ec, 0x04ec, 0x04ec
+    .hword 0xdd4e, 0xdd4e, 0xdd4e, 0xdd4e, 0x2ea7, 0x2ea7, 0x2ea7, 0x2ea7
+    // loop 7 group=3 half=1 B0 v5 coeff B0[120..127], blocks k=30,31
+    .hword 0x0276, 0x0276, 0x0276, 0x0276, 0x013b, 0x013b, 0x013b, 0x013b
+    .hword 0x1754, 0x1754, 0x1754, 0x1754, 0x0baa, 0x0baa, 0x0baa, 0x0baa
+    // loop 7 group=3 half=1 B0 v6 coeff B0[240..247], blocks k=60,61
+    .hword 0xfd71, 0xfd71, 0xfd71, 0xfd71, 0x0579, 0x0579, 0x0579, 0x0579
+    .hword 0xe7bf, 0xe7bf, 0xe7bf, 0xe7bf, 0x33e0, 0x33e0, 0x33e0, 0x33e0
+    // loop 7 group=3 half=1 B0 v7 coeff B0[248..255], blocks k=62,63
+    .hword 0xfbfc, 0xfbfc, 0xfbfc, 0xfbfc, 0xfdfe, 0xfdfe, 0xfdfe, 0xfdfe
+    .hword 0xd9f0, 0xd9f0, 0xd9f0, 0xd9f0, 0xecf8, 0xecf8, 0xecf8, 0xecf8
+    // loop 7 group=3 half=1 B0 v8 coeff B0[368..375], blocks k=92,93
+    .hword 0xfb63, 0xfb63, 0xfb63, 0xfb63, 0x0472, 0x0472, 0x0472, 0x0472
+    .hword 0xd446, 0xd446, 0xd446, 0xd446, 0x2a23, 0x2a23, 0x2a23, 0x2a23
+    // loop 7 group=3 half=1 B0 v9 coeff B0[376..383], blocks k=94,95
+    .hword 0x0239, 0x0239, 0x0239, 0x0239, 0xfa5c, 0xfa5c, 0xfa5c, 0xfa5c
+    .hword 0x1511, 0x1511, 0x1511, 0x1511, 0xca89, 0xca89, 0xca89, 0xca89
