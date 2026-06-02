@@ -2,12 +2,6 @@
 #include "params.h"
 #include "ntt.h"
 
-#if defined(__GNUC__) || defined(__clang__)
-#define NTRUPLUS_UNUSED __attribute__((unused))
-#else
-#define NTRUPLUS_UNUSED
-#endif
-
 #define NTRUPLUS_R            -147 // R = 2^16 mod q
 #define NTRUPLUS_RINV         -682 // (R)^(-1) mod q
 #define NTRUPLUS_RSQ           867 // (R^2) mod q
@@ -124,60 +118,21 @@ static const int16_t gt96_omega32_inv_powers[32] = {
 };
 
 /*
- * Good-Thomas quartic folding constants in centered signed Montgomery form.
+ * Good-Thomas quartic folding constants in physical row-bitrev block order.
  *
- * The table is indexed by logical Good-Thomas output j.  In row-bitrev
- * physical layout, recover the logical index with
- * gt96_rowbitrev_logical_index(physical_j) before using this table.  The
- * quartic block is interpreted in Z_q[X] / (X^4 - lambda_j), where
- *   branch 0: lambda_j = omega96^j / 2
- *   branch 1: lambda_j = omega96^j / 22
- * and omega96 = 675.  These constants are not butterfly twiddles; they are
- * the per-block zeta values passed to basemul()/baseinv().
+ * Forward NTT output is not GT-natural.  Each physical block j stores a
+ * row-bitrev Good-Thomas frequency coordinate:
  *
- * TODO: it can store half like gt_lambda[2][48], because lambda_j is symmetric.
- */
-const int16_t gt_lambda[2][96] = {
-	{
-		 1655,    514,   1250,    242,    871,    235,   -397,   1671,
-		  943,    437,   1130,  -1247,  -1674,    489,   1660,    432,
-		 1212,  -1209,   -223,   1583,    312,   -277,   -297,     31,
-		  183,   -927,     -8,   1514,  -1322,   -444,   1059,   -774,
-		 -443,  -1723,  -1473,   1341,   -559,   -512,    100,  -1640,
-		 -760,  -1364,  -1138,   -696,    352,   -933,   -601,  -1206,
-		-1655,   -514,  -1250,   -242,   -871,   -235,    397,  -1671,
-		 -943,   -437,  -1130,   1247,   1674,   -489,  -1660,   -432,
-		-1212,   1209,    223,  -1583,   -312,    277,    297,    -31,
-		 -183,    927,      8,  -1514,   1322,    444,  -1059,    774,
-		  443,   1723,   1473,  -1341,    559,    512,   -100,   1640,
-		  760,   1364,   1138,    696,   -352,    933,    601,   1206
-	},
-	{
-		  779,    361,   1685,     22,   1022,  -1550,   1221,   1409,
-		  400,    354,    417,   1458,  -1095,    673,   1408,   -275,
-		 1053,  -1367,    294,   1401,  -1543,   -968,    -27,   -940,
-		 1588,    230,   -315,   1709,  -1063,   1531,   -218,   1501,
-		  274,  -1728,  -1391,   1379,    892,    582,  -1248,   1108,
-		 1188,   -124,   -732,    251,     32,    858,  -1626,  -1681,
-		 -779,   -361,  -1685,    -22,  -1022,   1550,  -1221,  -1409,
-		 -400,   -354,   -417,  -1458,   1095,   -673,  -1408,    275,
-		-1053,   1367,   -294,  -1401,   1543,    968,     27,    940,
-		-1588,   -230,    315,  -1709,   1063,  -1531,    218,  -1501,
-		 -274,   1728,   1391,  -1379,   -892,   -582,   1248,  -1108,
-		-1188,    124,    732,   -251,    -32,   -858,   1626,   1681
-	}
-};
-
-/*
- * The same quartic folding constants, repacked in physical row-bitrev block
- * order.
+ *   k3        = 2*j mod 3
+ *   k32_br    = 11*j mod 32
+ *   logical j = CRT(k3, bitreverse5(k32_br))
  *
- * Forward NTT output is not GT-natural: physical block j stores logical index
- * gt96_rowbitrev_logical_index(j).  For C reference loops and future ASM table
- * packing, this table makes the basemul/baseinv zeta lookup match memory order:
+ * This table is already packed in physical memory order, so basemul/baseinv
+ * can read gt_rowbitrev_lambda[branch][j] directly.  Mathematically each
+ * entry is lambda_b[logical_j] * R, where:
  *
- *   gt_rowbitrev_lambda[branch][physical_j]
- *     = gt_lambda[branch][gt96_rowbitrev_logical_index(physical_j)]
+ *   branch 0: lambda_b[j] = omega96^j / 2
+ *   branch 1: lambda_b[j] = omega96^j / 22
  *
  * This table is still a lambda/zeta table for X^4 - lambda.  It is not a
  * butterfly twiddle table.
@@ -270,52 +225,9 @@ static inline int16_t fqmul(int16_t a, int16_t b)
     return montgomery_reduce((int32_t)a * b);
 }
 
-static unsigned bitreverse5(unsigned x)
-{
-	unsigned r = 0;
-
-	for (int i = 0; i < 5; i++)
-	{
-		r = (r << 1) | (x & 1U);
-		x >>= 1;
-	}
-
-	return r;
-}
-
 static unsigned gt96_output_crt_index(unsigned k3, unsigned k32)
 {
 	return (32*k3 + 3*k32) % 96;
-}
-
-static unsigned gt96_output_crt_k3(unsigned j)
-{
-	return (2*j) % 3;
-}
-
-static unsigned gt96_output_crt_k32(unsigned j)
-{
-	return (11*j) & 31U;
-}
-
-static unsigned NTRUPLUS_UNUSED gt96_rowbitrev_logical_index(unsigned physical_j)
-{
-	/*
-	 * Row-bitrev layout keeps the Good-Thomas output CRT scatter, but the
-	 * 32-point row coordinate is stored in bit-reversed order:
-	 *
-	 *   physical coordinate: (k3, k32_br)
-	 *   logical coordinate : (k3, bitreverse5(k32_br))
-	 *
-	 * Therefore a physical quartic block does not directly use
-	 * gt_lambda[branch][physical_j].  Basemul/baseinv must first recover the
-	 * logical GT index stored at that physical block.
-	 */
-	const unsigned k3 = gt96_output_crt_k3(physical_j);
-	const unsigned k32_br = gt96_output_crt_k32(physical_j);
-	const unsigned k32 = bitreverse5(k32_br);
-
-	return gt96_output_crt_index(k3, k32);
 }
 
 static void ntt32_radix2_dif_incomplete(int16_t out[32], const int16_t in[32])
@@ -354,48 +266,6 @@ static void ntt32_radix2_dif_incomplete(int16_t out[32], const int16_t in[32])
 
 				out[start + j] = barrett_reduce(u + v);
 				out[start + j + len / 2] = fqmul(diff, w);
-				w = fqmul(w, root);
-			}
-		}
-	}
-}
-
-static void NTRUPLUS_UNUSED intt32_radix2_bitrevin(int16_t out[32], const int16_t in[32])
-{
-	/*
-	 * Unnormalized inverse cyclic 32-point NTT for the complete bit-reversed
-	 * 32-point representation.
-	 *
-	 * Input is already in bit-reversed frequency order:
-	 *   in[bitreverse5(k)] = F[k]
-	 *
-	 * The increasing-len inverse radix-2 DIT butterflies normally start from
-	 * bit-reversed frequency input, so no extra input permutation is needed.
-	 * The output is natural-order time-domain data and is scaled by 32.
-	 *
-	 * This is kept as an oracle for the complete representation.  The
-	 * incomplete path uses intt32_radix2_incomplete() instead.
-	 */
-	for (unsigned i = 0; i < 32; i++)
-	{
-		out[i] = barrett_reduce(in[i]);
-	}
-
-	for (unsigned len = 2; len <= 32; len <<= 1)
-	{
-		const int16_t root = gt96_omega32_inv_powers[32 / len];
-
-		for (unsigned start = 0; start < 32; start += len)
-		{
-			int16_t w = NTRUPLUS_R;
-
-			for (unsigned j = 0; j < len / 2; j++)
-			{
-				const int16_t u = out[start + j];
-				const int16_t v = fqmul(out[start + j + len / 2], w);
-
-				out[start + j] = barrett_reduce(u + v);
-				out[start + j + len / 2] = barrett_reduce(u - v);
 				w = fqmul(w, root);
 			}
 		}
@@ -654,9 +524,9 @@ static inline int16_t fqinv(int16_t a)
 *
 * Description: Number-theoretic transform (NTT) in R_q using the
 *              Good-Thomas row-bitrev block-major layout.  Physical block
-*              j stores the logical 96-point Good-Thomas output recovered by
-*              gt96_rowbitrev_logical_index(j), and each block represents an
-*              element of Zq[X]/(X^4 - gt_lambda[branch][logical_j]).
+*              j stores the row-bitrev 96-point Good-Thomas output, and
+*              each block uses gt_rowbitrev_lambda[branch][j] as the
+*              X^4 folding constant for basemul/baseinv.
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector in
 *                                       GT row-bitrev NTT representation
@@ -725,9 +595,8 @@ void ntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 
 			/*
 			 * Row-bitrev layout:
-			 * out[j] is already the value for physical block j; the
-			 * logical GT index stored there is
-			 * gt96_rowbitrev_logical_index(j).  The output remains
+			 * out[j] is already the value for physical block j in the
+			 * incomplete row-bitrev layout.  The output remains
 			 * block-major: block j is four consecutive lanes at
 			 * branch_start + 4*j.
 			 */

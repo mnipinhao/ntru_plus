@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <limits.h>
 
+#if defined(__GNUC__) || defined(__clang__)
+#define NTRUPLUS_UNUSED __attribute__((unused))
+#else
+#define NTRUPLUS_UNUSED
+#endif
+
 /*
  * Forward mapping dump helper.
  *
@@ -15,6 +21,19 @@
  * future assembly load schedule.
  */
 #include "../ntt.c"
+
+static unsigned bitreverse5(unsigned x)
+{
+	unsigned r = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		r = (r << 1) | (x & 1U);
+		x >>= 1;
+	}
+
+	return r;
+}
 
 static int modq(int32_t a)
 {
@@ -1993,7 +2012,8 @@ static void dump_gt_rowbitrev_basemul_table(void)
 					const int pos = branch_start + 4*physical_j;
 					const int logical_k32 = (int)bitreverse5((unsigned)k32);
 					const int logical_j =
-						(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+						(int)gt96_output_crt_index((unsigned)k3,
+						                           (unsigned)logical_k32);
 					const int asm_vector = branch * 12 + physical_j / 8;
 					const int asm_lane = physical_j & 7;
 					const char *role_name = role == 0 ? "plus" : "minus";

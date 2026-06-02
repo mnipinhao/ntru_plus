@@ -12,6 +12,19 @@
 #define TEST_VECTORS 8
 #define OMEGA96_NORMAL 675
 
+static unsigned bitreverse5(unsigned x)
+{
+	unsigned r = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		r = (r << 1) | (x & 1U);
+		x >>= 1;
+	}
+
+	return r;
+}
+
 static int modq(int64_t a)
 {
 	int r = a % NTRUPLUS_Q;
@@ -236,6 +249,15 @@ static void complete_poly_final_len2(int16_t out[NTRUPLUS_N],
 	}
 }
 
+static unsigned rowbitrev_logical_index(unsigned physical_j)
+{
+	const unsigned k3 = (2 * physical_j) % 3;
+	const unsigned k32_br = (11 * physical_j) & 31U;
+	const unsigned logical_k32 = bitreverse5(k32_br);
+
+	return gt96_output_crt_index(k3, logical_k32);
+}
+
 static void direct_gt_rowbitrev(int16_t out[NTRUPLUS_N],
                                 const int16_t a[NTRUPLUS_N],
                                 const int factors[2])
@@ -278,7 +300,7 @@ static void direct_gt_rowbitrev(int16_t out[NTRUPLUS_N],
 			for (int physical_j = 0; physical_j < 96; physical_j++)
 			{
 				const unsigned logical_j =
-					gt96_rowbitrev_logical_index((unsigned)physical_j);
+					rowbitrev_logical_index((unsigned)physical_j);
 
 				out[branch_start + 4*physical_j + lane] = direct[logical_j];
 			}
@@ -320,46 +342,25 @@ static int check_twist_tables(void)
 	return 1;
 }
 
-static int check_gt_lambda_formula(const int factors[2])
+static int check_gt_rowbitrev_lambda_table(const int factors[2])
 {
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int factor_inv = field_inv(factors[branch]);
 
-		for (int j = 0; j < 96; j++)
-		{
-			const int expected = field_mul(field_pow(OMEGA96_NORMAL, j),
-			                               factor_inv);
-			const int actual = normal_from_mont(gt_lambda[branch][j]);
-
-			if (actual != expected)
-			{
-				printf("gt_lambda mismatch: branch=%d j=%d actual=%d expected=%d\n",
-				       branch, j, actual, expected);
-				return 0;
-			}
-		}
-	}
-
-	printf("gt_lambda formula check: ok (omega96=%d)\n", OMEGA96_NORMAL);
-	return 1;
-}
-
-static int check_gt_rowbitrev_lambda_table(void)
-{
-	for (int branch = 0; branch < 2; branch++)
-	{
 		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
 			const unsigned logical_j =
-				gt96_rowbitrev_logical_index((unsigned)physical_j);
-			const int16_t expected = gt_lambda[branch][logical_j];
-			const int16_t actual = gt_rowbitrev_lambda[branch][physical_j];
+				rowbitrev_logical_index((unsigned)physical_j);
+			const int expected =
+				field_mul(field_pow(OMEGA96_NORMAL, (int)logical_j), factor_inv);
+			const int actual =
+				normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]);
 
 			if (actual != expected)
 			{
 				printf("gt_rowbitrev_lambda mismatch: branch=%d physical_j=%d "
-				       "logical_j=%u actual=%d expected=%d\n",
+				       "logical_j=%u actual_normal=%d expected_normal=%d\n",
 				       branch, physical_j, logical_j, actual, expected);
 				return 0;
 			}
@@ -437,7 +438,7 @@ static int check_ntt96_goodthomas(void)
 		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
 			const unsigned logical_j =
-				gt96_rowbitrev_logical_index((unsigned)physical_j);
+				rowbitrev_logical_index((unsigned)physical_j);
 
 			matches += equal_modq(gt[physical_j], direct[logical_j]);
 		}
@@ -452,13 +453,11 @@ static int check_ntt96_goodthomas(void)
 	return min_matches == 96;
 }
 
-static int check_intt32_radix2_bitrevin(void)
+static int check_intt32_radix2_incomplete(void)
 {
-	int min_bitrev_roundtrip = 32;
 	int min_incomplete_roundtrip = 32;
 	int16_t in[32];
 	int16_t incomplete[32];
-	int16_t freq[32];
 	int16_t fast[32];
 	int16_t scaled[32];
 
@@ -479,14 +478,6 @@ static int check_intt32_radix2_bitrevin(void)
 		}
 
 		ntt32_radix2_dif_incomplete(incomplete, in);
-		complete_ntt32_final_len2(freq, incomplete);
-		intt32_radix2_bitrevin(fast, freq);
-		matches = coeff32_match_count(scaled, fast);
-		if (matches < min_bitrev_roundtrip)
-		{
-			min_bitrev_roundtrip = matches;
-		}
-
 		intt32_radix2_incomplete(fast, incomplete);
 		matches = coeff32_match_count(scaled, fast);
 		if (matches < min_incomplete_roundtrip)
@@ -495,9 +486,9 @@ static int check_intt32_radix2_bitrevin(void)
 		}
 	}
 
-	printf("intt32 roundtrip: complete-bitrev %d/32, incomplete %d/32 after 32 scaling\n",
-	       min_bitrev_roundtrip, min_incomplete_roundtrip);
-	return min_bitrev_roundtrip == 32 && min_incomplete_roundtrip == 32;
+	printf("intt32_radix2_incomplete roundtrip: %d/32 after 32 scaling\n",
+	       min_incomplete_roundtrip);
+	return min_incomplete_roundtrip == 32;
 }
 
 static int check_invntt96_goodthomas(void)
@@ -935,90 +926,6 @@ static int check_gt_rowbitrev_poly_baseinv_identity(void)
 	return 1;
 }
 
-static int check_gt_natural_basemul_add(void)
-{
-	for (int branch = 0; branch < 2; branch++)
-	{
-		for (int j = 0; j < 96; j++)
-		{
-			int16_t a[4];
-			int16_t b[4];
-			int16_t c[4];
-			int16_t mul[4];
-			int16_t add[4];
-			uint32_t s = (uint32_t)(0x517cc1b7u + 97u * branch + 13u * j);
-
-			for (int lane = 0; lane < 4; lane++)
-			{
-				s = s * 1664525u + 1013904223u;
-				a[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-				s = s * 1664525u + 1013904223u;
-				b[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-				s = s * 1664525u + 1013904223u;
-				c[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-			}
-
-			basemul(mul, a, b, gt_lambda[branch][j]);
-			basemul_add(add, a, b, c, gt_lambda[branch][j]);
-
-			for (int lane = 0; lane < 4; lane++)
-			{
-				if (!equal_modq(add[lane], mul[lane] + c[lane]))
-				{
-					printf("basemul_add mismatch: branch=%d j=%d lane=%d\n",
-					       branch, j, lane);
-					return 0;
-				}
-			}
-		}
-	}
-
-	printf("GT-natural basemul_add check: ok\n");
-	return 1;
-}
-
-static int check_gt_natural_baseinv(void)
-{
-	int checked = 0;
-
-	for (int branch = 0; branch < 2; branch++)
-	{
-		for (int j = 0; j < 96; j++)
-		{
-			int16_t a[4];
-			int16_t inv[4];
-			int16_t prod[4];
-			uint32_t s = (uint32_t)(0x6a09e667u + 193u * branch + 29u * j);
-
-			for (int lane = 0; lane < 4; lane++)
-			{
-				s = s * 1664525u + 1013904223u;
-				a[lane] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
-			}
-
-			if (baseinv(inv, a, gt_lambda[branch][j]))
-			{
-				continue;
-			}
-
-			basemul(prod, a, inv, gt_lambda[branch][j]);
-			if (!equal_modq(prod[0], 1) ||
-			    !equal_modq(prod[1], 0) ||
-			    !equal_modq(prod[2], 0) ||
-			    !equal_modq(prod[3], 0))
-			{
-				printf("baseinv mismatch: branch=%d j=%d\n", branch, j);
-				return 0;
-			}
-
-			checked++;
-		}
-	}
-
-	printf("GT-natural baseinv check: %d invertible blocks checked\n", checked);
-	return checked > 0;
-}
-
 int main(void)
 {
 	const int f0 = normal_from_mont(untwist_branch0[1]);
@@ -1027,11 +934,10 @@ int main(void)
 	int ok = 1;
 
 	ok &= check_twist_tables();
-	ok &= check_gt_lambda_formula(branch_factors);
-	ok &= check_gt_rowbitrev_lambda_table();
+	ok &= check_gt_rowbitrev_lambda_table(branch_factors);
 	ok &= check_ntt32_radix2_dif_incomplete();
 	ok &= check_ntt96_goodthomas();
-	ok &= check_intt32_radix2_bitrevin();
+	ok &= check_intt32_radix2_incomplete();
 	ok &= check_invntt96_goodthomas();
 	ok &= check_full_ntt_gt_rowbitrev_direct(branch_factors);
 	ok &= check_invntt_gt_rowbitrevlayout_roundtrip();
@@ -1039,8 +945,6 @@ int main(void)
 	ok &= check_gt_rowbitrev_basemul_add();
 	ok &= check_gt_rowbitrev_baseinv();
 	ok &= check_gt_rowbitrev_poly_baseinv_identity();
-	ok &= check_gt_natural_basemul_add();
-	ok &= check_gt_natural_baseinv();
 
 	return ok ? 0 : 1;
 }

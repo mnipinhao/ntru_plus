@@ -10,6 +10,19 @@
 
 #define OMEGA96_NORMAL 675
 
+static unsigned bitreverse5(unsigned x)
+{
+	unsigned r = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		r = (r << 1) | (x & 1U);
+		x >>= 1;
+	}
+
+	return r;
+}
+
 static int modq(int32_t a)
 {
 	int r = a % NTRUPLUS_Q;
@@ -56,13 +69,22 @@ static int normal_from_mont(int16_t a)
 	return modq(montgomery_reduce(a));
 }
 
+static unsigned rowbitrev_logical_index(unsigned physical_j)
+{
+	const unsigned k3 = (2 * physical_j) % 3;
+	const unsigned k32_br = (11 * physical_j) & 31U;
+	const unsigned logical_k32 = bitreverse5(k32_br);
+
+	return gt96_output_crt_index(k3, logical_k32);
+}
+
 static void dump_gt_rowbitrev_lambda_row(int branch, int physical_j)
 {
 	const int branch_start = (NTRUPLUS_N / 2) * branch;
-	const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
-	const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
+	const int k3 = (2 * physical_j) % 3;
+	const int k32_br = (11 * physical_j) & 31;
 	const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
-	const int logical_j = (int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+	const int logical_j = (int)rowbitrev_logical_index((unsigned)physical_j);
 	const int pos = branch_start + 4*physical_j;
 
 	printf("%6d | %14d | %2d | %6d | %11d | %9d | %3d..%-3d | %11d | %13d\n",
@@ -95,46 +117,26 @@ static void dump_gt_rowbitrev_lambda_layout(void)
 	}
 }
 
-static int verify_gt_lambda_formula(const int factors[2])
+static int verify_gt_rowbitrev_lambda_table(const int factors[2])
 {
 	for (int branch = 0; branch < 2; branch++)
 	{
 		const int factor_inv = field_inv(factors[branch]);
 
-		for (int j = 0; j < 96; j++)
+		for (int physical_j = 0; physical_j < 96; physical_j++)
 		{
-			const int expected = field_mul(field_pow(OMEGA96_NORMAL, j),
-			                               factor_inv);
-			const int actual = normal_from_mont(gt_lambda[branch][j]);
+			const int logical_j =
+				(int)rowbitrev_logical_index((unsigned)physical_j);
+			const int expected =
+				field_mul(field_pow(OMEGA96_NORMAL, logical_j), factor_inv);
+			const int actual =
+				normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]);
 
 			if (actual != expected)
 			{
 				fprintf(stderr,
-				        "GT lambda formula mismatch: branch=%d j=%d actual=%d expected=%d\n",
-				        branch, j, actual, expected);
-				return 0;
-			}
-		}
-	}
-
-	return 1;
-}
-
-static int verify_gt_rowbitrev_lambda_table(void)
-{
-	for (int branch = 0; branch < 2; branch++)
-	{
-		for (int physical_j = 0; physical_j < 96; physical_j++)
-		{
-			const int logical_j =
-				(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
-
-			if (gt_rowbitrev_lambda[branch][physical_j] !=
-			    gt_lambda[branch][logical_j])
-			{
-				fprintf(stderr,
-				        "GT row-bitrev lambda mismatch: branch=%d physical_j=%d logical_j=%d\n",
-				        branch, physical_j, logical_j);
+				        "GT row-bitrev lambda mismatch: branch=%d physical_j=%d logical_j=%d actual=%d expected=%d\n",
+				        branch, physical_j, logical_j, actual, expected);
 				return 0;
 			}
 		}
@@ -164,11 +166,11 @@ int main(void)
 		const int branch = pos / (NTRUPLUS_N / 2);
 		const int branch_pos = pos - branch * (NTRUPLUS_N / 2);
 		const int physical_j = branch_pos / 4;
-		const int k3 = (int)gt96_output_crt_k3((unsigned)physical_j);
-		const int k32_br = (int)gt96_output_crt_k32((unsigned)physical_j);
+		const int k3 = (2 * physical_j) % 3;
+		const int k32_br = (11 * physical_j) & 31;
 		const int logical_k32 = (int)bitreverse5((unsigned)k32_br);
 		const int logical_j =
-			(int)gt96_rowbitrev_logical_index((unsigned)physical_j);
+			(int)rowbitrev_logical_index((unsigned)physical_j);
 		const int lane = pos & 3;
 		const int lambda = normal_from_mont(gt_rowbitrev_lambda[branch][physical_j]);
 		const int alpha = field_mul(lambda, factors[branch]);
@@ -194,12 +196,7 @@ int main(void)
 		       physical_j);
 	}
 
-	if (!verify_gt_lambda_formula(factors))
-	{
-		ok = 0;
-	}
-
-	if (!verify_gt_rowbitrev_lambda_table())
+	if (!verify_gt_rowbitrev_lambda_table(factors))
 	{
 		ok = 0;
 	}
