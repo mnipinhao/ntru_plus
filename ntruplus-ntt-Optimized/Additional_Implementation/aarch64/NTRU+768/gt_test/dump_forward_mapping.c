@@ -219,6 +219,68 @@ static const char *dft3_input_name(int n3)
 	return names[n3];
 }
 
+static const char *branch_output_name(int branch);
+
+static const char *dft3_output_name(int k3)
+{
+	static const char *names[3] = { "Y0", "Y1", "Y2" };
+
+	return names[k3];
+}
+
+static const char *dft3_output_formula(int k3)
+{
+	static const char *formulas[3] = {
+		"Y0=x0+x1+x2",
+		"Y1=x0-x2+omega3*(x1-x2)",
+		"Y2=x0-x1-omega3*(x1-x2)"
+	};
+
+	return formulas[k3];
+}
+
+static void format_gt_matrix_name(char out[32], int branch, int lane)
+{
+	snprintf(out, 32, "M%d=B%d_q%d", 4*branch + lane, branch, lane);
+}
+
+static void format_phase3_q_contents(char out[256], int k3, int k32)
+{
+	snprintf(out, 256,
+	         "Q<w%02d_s0>=[M0_%s[%d]|M1_%s[%d]|M2_%s[%d]|M3_%s[%d]|"
+	         "M4_%s[%d]|M5_%s[%d]|M6_%s[%d]|M7_%s[%d]]",
+	         k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32,
+	         dft3_output_name(k3), k32);
+}
+
+static void format_phase3_source(char out[128],
+                                 int branch,
+                                 int lane,
+                                 int n3,
+                                 int k32)
+{
+	const int block = input_crt_n(n3, k32);
+	const int low = 4*block + lane;
+	const int high = low + NTRUPLUS_N / 2;
+	const int branch_pos = 4*block + lane;
+
+	snprintf(out, 128,
+	         "%s=%s[%d]*twist[%d]_from_a%d|a%d",
+	         dft3_input_name(n3),
+	         branch_output_name(branch),
+	         branch_pos,
+	         block,
+	         low,
+	         high);
+}
+
 static const char *chunk_role_name(int role)
 {
 	static const char *names[3] = { "A", "B", "C" };
@@ -577,17 +639,30 @@ static void dump_gt_stage_ntt32_input_plan(void)
 	}
 
 	fprintf(fp,
-	        "branch,quartic_lane,dft_output_k3,input_k32,input_work_index,"
-	        "ntt32_register,ntt32_register_lane,ntt32_vector_group,"
-	        "bitrev_output_index,bitrev_output_register,bitrev_output_lane,"
-	        "source_pos_n3_0,source_pos_n3_1,source_pos_n3_2,"
-	        "source_block_n3_0,source_block_n3_1,source_block_n3_2,"
+	        "example_scope,gt_matrix,gt_matrix_lane,branch,quartic_lane,"
+	        "phase3_row_k3,phase3_col_k32,phase3_value,phase3_formula,"
+	        "phase3_q_register,phase3_q_lane,phase3_q_contents,"
+	        "phase3_row_base_coeff_index,phase3_memory_index,"
+	        "phase3_byte_offset,ntt32_load_instruction,"
+	        "ntt32_load_byte_offset_from_row_base,ntt32_loaded_lane,"
+	        "ntt32_work_index,bitrev_output_index,"
+	        "x0_top_split_output_index,x0_block,x0_original_low_index,"
+	        "x0_original_high_index,x0_source,"
+	        "x1_top_split_output_index,x1_block,x1_original_low_index,"
+	        "x1_original_high_index,x1_source,"
+	        "x2_top_split_output_index,x2_block,x2_original_low_index,"
+	        "x2_original_high_index,x2_source,"
 	        "operation,notes\n");
 
 	for (int branch = 0; branch < 2; branch++)
 	{
 		for (int lane = 0; lane < 4; lane++)
 		{
+			char matrix_name[32];
+			const int packed_lane = 4*branch + lane;
+
+			format_gt_matrix_name(matrix_name, branch, lane);
+
 			for (int k3 = 0; k3 < 3; k3++)
 			{
 				for (int k32 = 0; k32 < 32; k32++)
@@ -597,33 +672,97 @@ static void dump_gt_stage_ntt32_input_plan(void)
 					const int pos0 = physical_pos_for_input_crt(branch, lane, 0, k32);
 					const int pos1 = physical_pos_for_input_crt(branch, lane, 1, k32);
 					const int pos2 = physical_pos_for_input_crt(branch, lane, 2, k32);
+					const int block0 = input_crt_n(0, k32);
+					const int block1 = input_crt_n(1, k32);
+					const int block2 = input_crt_n(2, k32);
+					const int low0 = 4*block0 + lane;
+					const int low1 = 4*block1 + lane;
+					const int low2 = 4*block2 + lane;
+					const int high0 = low0 + NTRUPLUS_N / 2;
+					const int high1 = low1 + NTRUPLUS_N / 2;
+					const int high2 = low2 + NTRUPLUS_N / 2;
+					const int phase3_row_base = k3 * 32 * 8;
+					const int phase3_q_base = (k3 * 32 + k32) * 8;
+					const int phase3_index = phase3_q_base + packed_lane;
+					char q_contents[256];
+					char source0[128];
+					char source1[128];
+					char source2[128];
+					char load_instruction[96];
+					char loaded_lane[48];
+					char operation[128];
+					const char *example =
+						(branch == 0 && lane == 0 && k3 == 0) ?
+						"first_matrix_first_row" : "all_matrices_all_rows";
+
+					format_phase3_q_contents(q_contents, k3, k32);
+					format_phase3_source(source0, branch, lane, 0, k32);
+					format_phase3_source(source1, branch, lane, 1, k32);
+					format_phase3_source(source2, branch, lane, 2, k32);
+					snprintf(load_instruction, sizeof(load_instruction),
+					         "ldr Q<w%02d_s0> [row_base #16*%d]",
+					         work,
+					         work);
+					snprintf(loaded_lane, sizeof(loaded_lane),
+					         "V<w%02d_s0>.h[%d]",
+					         work,
+					         packed_lane);
+					snprintf(operation, sizeof(operation),
+					         "%s=%s[%d]_goes_to_work[%d]_lane%d",
+					         loaded_lane,
+					         dft3_output_name(k3),
+					         k32,
+					         work,
+					         packed_lane);
 
 					fprintf(fp,
-					        "%d,%d,%d,%d,%d,%s,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,"
-					        "work[%d]=dft3_row_%d[%d];complete_dif_out[bitreverse5(%d)]=NTT32[%d],"
-					        "natural_input_pack_for_complete_dif_ntt32_bitrev_output\n",
+					        "%s,%s,%d,%d,%d,"
+					        "%d,%d,%s,%s,"
+					        "Q<w%02d_s0>,%d,%s,"
+					        "%d,%d,%d,%s,"
+					        "%d,%s,"
+					        "%d,%d,"
+					        "%d,%d,%d,%d,%s,"
+					        "%d,%d,%d,%d,%s,"
+					        "%d,%d,%d,%d,%s,"
+					        "%s,"
+					        "phase3_memory_is_row_major_k3_then_k32_with_8_packed_GT_matrices;ntt32_loads_one_Q_per_k32\n",
+					        example,
+					        matrix_name,
+					        packed_lane,
 					        branch,
 					        lane,
 					        k3,
 					        k32,
+					        dft3_output_name(k3),
+					        dft3_output_formula(k3),
 					        work,
-					        ntt32_reg_for_index(work),
-					        work & 7,
-					        work / 8,
+					        packed_lane,
+					        q_contents,
+					        phase3_row_base,
+					        phase3_index,
+					        phase3_index * 2,
+					        load_instruction,
+					        work * 16,
+					        loaded_lane,
+					        work,
 					        bitrev_out,
-					        ntt32_reg_for_index(bitrev_out),
-					        bitrev_out & 7,
 					        pos0,
+					        block0,
+					        low0,
+					        high0,
+					        source0,
 					        pos1,
+					        block1,
+					        low1,
+					        high1,
+					        source1,
 					        pos2,
-					        input_crt_n(0, k32),
-					        input_crt_n(1, k32),
-					        input_crt_n(2, k32),
-					        work,
-					        k3,
-					        k32,
-					        k32,
-					        bitrev_out);
+					        block2,
+					        low2,
+					        high2,
+					        source2,
+					        operation);
 				}
 			}
 		}
@@ -744,12 +883,12 @@ static void dump_gt_register_pack_plan(void)
 			for (int k3 = 0; k3 < 3; k3++)
 			{
 				/*
-				 * Proposed 32-point row input pack for the DIF kernel:
+				 * Proposed 32-point row input pack for the CT kernel:
 				 *   v4 = work[0..7], v5 = work[8..15],
 				 *   v6 = work[16..23], v7 = work[24..31].
 				 *
 				 * work[k32] receives the DFT3 output at column k32.  The
-				 * complete DIF kernel leaves the row in bit-reversed
+				 * complete CT kernel leaves the row in bit-reversed
 				 * frequency order:
 				 *
 				 *   out[bitreverse5(k32)] = NTT32(row)[k32].
@@ -772,7 +911,7 @@ static void dump_gt_register_pack_plan(void)
 					        "%d,0,32,%d,%d,state,-1,-1,"
 					        "0,%d,%d,"
 					        "%d,%d,%d,%d,%d,%d,"
-					        "natural_input_for_complete_dif_ntt32_bitrev_output\n",
+					        "natural_input_for_complete_ct_ntt32_bitrev_output\n",
 					        branch,
 					        lane,
 					        work / 8,
@@ -792,21 +931,18 @@ static void dump_gt_register_pack_plan(void)
 					        tw2);
 				}
 
-				int stage = 0;
-
-				for (unsigned len = 32; len >= 2; len >>= 1)
+				for (unsigned stage = 1; stage <= 5; stage++)
 				{
-					const unsigned step = 32 / len;
-
-					stage++;
+					const unsigned distance = 1U << (5 - stage);
+					const unsigned len = distance * 2;
 
 					for (unsigned start = 0; start < 32; start += len)
 					{
-						for (unsigned j = 0; j < len / 2; j++)
+						for (unsigned j = 0; j < distance; j++)
 						{
 							const unsigned lo = start + j;
-							const unsigned hi = lo + len / 2;
-							const unsigned power = step * j;
+							const unsigned hi = lo + distance;
+							const unsigned power = ntt32_ct_twiddle_power(stage, lo);
 							const int16_t twiddle = gt96_omega32_powers[power];
 							const int lo_reg = 4 + (int)lo / 8;
 							const int hi_reg = 4 + (int)hi / 8;
@@ -814,10 +950,10 @@ static void dump_gt_register_pack_plan(void)
 							fprintf(fp,
 							        "ntt32_butterfly_operand,%d,%d,%d,v%d,%u,"
 							        "-1,-1,-1,-1,-1,-1,"
-							        "%d,%d,%u,%u,-1,lo,%u,%u,"
+							        "%d,%u,%u,%u,-1,lo,%u,%u,"
 							        "%u,%d,%d,"
 							        "-1,-1,-1,-1,-1,-1,"
-							        "low_operand_for_dif_butterfly\n",
+							        "low_operand_for_ct_butterfly_t=fqmul_high_twiddle\n",
 							        branch,
 							        lane,
 							        (int)lo / 8,
@@ -836,10 +972,10 @@ static void dump_gt_register_pack_plan(void)
 							fprintf(fp,
 							        "ntt32_butterfly_operand,%d,%d,%d,v%d,%u,"
 							        "-1,-1,-1,-1,-1,-1,"
-							        "%d,%d,%u,%u,-1,hi,%u,%u,"
+							        "%d,%u,%u,%u,-1,hi,%u,%u,"
 							        "%u,%d,%d,"
 							        "-1,-1,-1,-1,-1,-1,"
-							        "dif_high_output_gets_(lo-hi)_times_twiddle\n",
+							        "ct_high_operand_is_multiplied_by_twiddle_then_low_minus_t\n",
 							        branch,
 							        lane,
 							        (int)hi / 8,
@@ -868,12 +1004,12 @@ static void dump_gt_register_pack_plan(void)
  * NEON planning view for one 32-point row.
  *
  * This is not a new mathematical mapping.  It assumes the natural-order row is
- * packed contiguously before the radix-2 DIF kernel as:
+ * packed contiguously before the radix-2 CT kernel as:
  *
  *   v4 = work[0..7], v5 = work[8..15],
  *   v6 = work[16..23], v7 = work[24..31].
  *
- * The dump classifies each DIF butterfly pair by register/lane shape.  That is
+ * The dump classifies each CT butterfly pair by register/lane shape.  That is
  * the useful signal for ASM planning: same-register pairs require a shuffle or
  * half-vector split, while cross-register same-lane pairs can be handled by
  * vector-wise butterfly instructions directly.
@@ -1081,31 +1217,29 @@ static void dump_ntt32_neon_plan(void)
 	        "hi_register,hi_lane,twiddle_power,twiddle_mont,twiddle_normal,"
 	        "pair_shape,shuffle_need,vector_strategy,notes\n");
 
-	int stage = 0;
-
-	for (unsigned len = 32; len >= 2; len >>= 1)
+	for (unsigned stage = 1; stage <= 5; stage++)
 	{
+		const unsigned distance = 1U << (5 - stage);
+		const unsigned len = distance * 2;
 		const unsigned step = 32 / len;
-
-		stage++;
 
 		for (unsigned start = 0; start < 32; start += len)
 		{
-			for (unsigned j = 0; j < len / 2; j++)
+			for (unsigned j = 0; j < distance; j++)
 			{
 				const unsigned lo = start + j;
-				const unsigned hi = lo + len / 2;
-				const unsigned power = step * j;
+				const unsigned hi = lo + distance;
+				const unsigned power = ntt32_ct_twiddle_power(stage, lo);
 				const int16_t twiddle = gt96_omega32_powers[power];
-				const char *notes = "dif_high_output_is_(low-high)_multiplied_by_twiddle";
+				const char *notes = "ct_t_is_high_times_twiddle_low_plus_t_high_low_minus_t";
 
 				if (power == 0)
 				{
-					notes = "dif_twiddle_is_montgomery_one_multiply_can_be_skipped";
+					notes = "ct_twiddle_is_montgomery_one_multiply_can_be_skipped";
 				}
 
 				fprintf(fp,
-				        "%d,%u,%u,%u,%u,%u,%u,%s,%u,%s,%u,%u,%d,%d,"
+				        "%u,%u,%u,%u,%u,%u,%u,%s,%u,%s,%u,%u,%d,%d,"
 				        "%s,%s,%s,%s\n",
 				        stage,
 				        len,
@@ -1558,18 +1692,16 @@ static void trace_reduction_schedule(FILE *fp,
 				             schedule->reduce_ntt_input ? "reduced" : "lazy",
 				             ntt_input_bounds);
 
-				int stage = 0;
-
-				for (unsigned len = 32; len >= 2; len >>= 1)
+				for (unsigned stage = 1; stage <= 5; stage++)
 				{
-					const unsigned step = 32 / len;
-					const int reduce_stage = should_reduce_stage(schedule, stage + 1);
+					const unsigned distance = 1U << (5 - stage);
+					const unsigned len = distance * 2;
+					const int reduce_stage = should_reduce_stage(schedule, (int)stage);
 					bounds_t input_bounds;
 					bounds_t fqmul_bounds;
 					bounds_t raw_bounds;
 					bounds_t stored_bounds;
 
-					stage++;
 					bounds_init(&input_bounds);
 					bounds_init(&fqmul_bounds);
 					bounds_init(&raw_bounds);
@@ -1582,25 +1714,24 @@ static void trace_reduction_schedule(FILE *fp,
 
 					for (unsigned start = 0; start < 32; start += len)
 					{
-						int16_t w = NTRUPLUS_R;
-
-						for (unsigned j = 0; j < len / 2; j++)
+						for (unsigned j = 0; j < distance; j++)
 						{
 							const unsigned lo = start + j;
-							const unsigned hi = lo + len / 2;
+							const unsigned hi = lo + distance;
+							const unsigned power = ntt32_ct_twiddle_power(stage, lo);
 							const int32_t u = row[lo];
 							const int32_t v = row[hi];
-							const int32_t sum = u + v;
-							const int32_t diff = u - v;
-							const int32_t hi_out = fqmul_wide(diff, w);
+							const int32_t t =
+								fqmul_wide(v, gt96_omega32_powers[power]);
+							const int32_t sum = u + t;
+							const int32_t diff = u - t;
 
-							bounds_update(&fqmul_bounds, hi_out);
+							bounds_update(&fqmul_bounds, t);
 							bounds_update(&raw_bounds, sum);
-							bounds_update(&raw_bounds, hi_out);
+							bounds_update(&raw_bounds, diff);
 
 							row[lo] = reduce_stage ? trace_reduce_i32(sum) : sum;
-							row[hi] = reduce_stage ? trace_reduce_i32(hi_out) : hi_out;
-							w = fqmul(w, gt96_omega32_powers[step]);
+							row[hi] = reduce_stage ? trace_reduce_i32(diff) : diff;
 						}
 					}
 
@@ -1613,7 +1744,8 @@ static void trace_reduction_schedule(FILE *fp,
 					             branch, lane, k3, stage, len, "before_butterfly",
 					             input_bounds);
 					trace_report(fp, case_name, schedule->name, "ntt32_stage_fqmul",
-					             branch, lane, k3, stage, len, "dif_high_output",
+					             branch, lane, k3, (int)stage, len,
+					             "ct_t_high_times_twiddle",
 					             fqmul_bounds);
 					trace_report(fp, case_name, schedule->name, "ntt32_stage_raw",
 					             branch, lane, k3, stage, len, "before_optional_reduce",
@@ -1763,7 +1895,6 @@ static void NTRUPLUS_UNUSED dump_reduction_static_bounds(void)
 			const reduction_schedule_t *schedule = &schedules[s];
 			int32_t dft_stored_bound;
 			int32_t row_bound;
-			int stage = 0;
 
 			static_bound_report(fp,
 			                    input_models[m].name,
@@ -1833,7 +1964,7 @@ static void NTRUPLUS_UNUSED dump_reduction_static_bounds(void)
 			                    dft_y_raw_bound,
 			                    dft_y_raw_bound,
 			                    dft_stored_bound,
-			                    "input_to_dif_ntt32_before_optional_reduce");
+			                    "input_to_ct_ntt32_before_optional_reduce");
 
 			row_bound = schedule->reduce_ntt_input ? centered : dft_stored_bound;
 			static_bound_report(fp,
@@ -1848,31 +1979,30 @@ static void NTRUPLUS_UNUSED dump_reduction_static_bounds(void)
 			                    row_bound,
 			                    "work_natural_input_bound");
 
-			for (unsigned len = 32; len >= 2; len >>= 1)
+			for (unsigned stage = 1; stage <= 5; stage++)
 			{
-				const int reduce_stage = should_reduce_stage(schedule, stage + 1);
-				const int32_t sum_bound = row_bound + row_bound;
-				const int32_t raw_bound =
-					sum_bound > fqmul_out ? sum_bound : fqmul_out;
+				const unsigned distance = 1U << (5 - stage);
+				const unsigned len = distance * 2;
+				const int reduce_stage = should_reduce_stage(schedule, (int)stage);
+				const int32_t raw_bound = row_bound + fqmul_out;
 				const int32_t stored_bound = reduce_stage ? centered : raw_bound;
 
-				stage++;
 				static_bound_report(fp,
 				                    input_models[m].name,
 				                    schedule->name,
 				                    "ntt32_stage_raw",
-				                    stage,
+				                    (int)stage,
 				                    len,
 				                    "before_optional_reduce",
 				                    row_bound,
 				                    row_bound,
 				                    raw_bound,
-				                    "dif_low_is_u_plus_v_high_is_fqmul(u_minus_v)");
+				                    "ct_outputs_are_low_plus_t_and_low_minus_t");
 				static_bound_report(fp,
 				                    input_models[m].name,
 				                    schedule->name,
 				                    "ntt32_stage_stored",
-				                    stage,
+				                    (int)stage,
 				                    len,
 				                    reduce_stage ? "reduced" : "lazy",
 				                    raw_bound,
@@ -1940,24 +2070,20 @@ static void dump_ntt32_twiddle_schedule(void)
 
 	for (int row_k3 = 0; row_k3 < 3; row_k3++)
 	{
-		int stage = 0;
-
-		for (unsigned len = 32; len >= 2; len >>= 1)
+		for (unsigned stage = 1; stage <= 5; stage++)
 		{
-			const unsigned step = 32 / len;
-
-			stage++;
-
+			const unsigned distance = 1U << (5 - stage);
+			const unsigned len = distance * 2;
 			for (unsigned start = 0; start < 32; start += len)
 			{
-				for (unsigned j = 0; j < len / 2; j++)
+				for (unsigned j = 0; j < distance; j++)
 				{
 					const unsigned lo = start + j;
-					const unsigned hi = lo + len / 2;
-					const unsigned power = step * j;
+					const unsigned hi = lo + distance;
+					const unsigned power = ntt32_ct_twiddle_power(stage, lo);
 					const int16_t twiddle = gt96_omega32_powers[power];
 
-					fprintf(fp, "%d,%d,%u,%u,%u,%u,%u,%u,%d,%d,complete_dif_bitrev_output,high_output_is_(low-high)_times_twiddle\n",
+					fprintf(fp, "%d,%u,%u,%u,%u,%u,%u,%u,%d,%d,complete_ct_bitrev_output,ct_t_is_high_times_twiddle_low_plus_t_high_low_minus_t\n",
 					        row_k3,
 					        stage,
 					        len,
@@ -2481,7 +2607,7 @@ int main(void)
 	 * - gt_blockpair_phase2_plan feeds the interactive phase123 viewer.
 	 * - gt_twist_before_zip_table gives the current twist/precompute order.
 	 * - gt_stage_ntt32_input_plan, ntt32_* and gt_register_pack_plan describe
-	 *   the row input and complete 32-point DIF kernel shape.
+	 *   the row input and complete 32-point CT kernel shape.
 	 * - gt_rowbitrev_basemul_table describes physical-order lambda layout.
 	 */
 	dump_gt_blockpair_phase2_plan();

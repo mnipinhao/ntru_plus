@@ -230,43 +230,74 @@ static unsigned gt96_output_crt_index(unsigned k3, unsigned k32)
 	return (32*k3 + 3*k32) % 96;
 }
 
-static void ntt32_radix2_dif(int16_t out[32], const int16_t in[32])
+static unsigned bitreverse_limited(unsigned x, unsigned bits)
+{
+	unsigned r = 0;
+
+	for (unsigned i = 0; i < bits; i++)
+	{
+		r = (r << 1) | (x & 1U);
+		x >>= 1;
+	}
+
+	return r;
+}
+
+static unsigned ntt32_ct_twiddle_power(unsigned stage, unsigned lo)
+{
+	/*
+	 * Recursive CT schedule for natural input -> complete bit-reversed
+	 * output.  At stage s, butterflies pair indices that differ in bit
+	 * 5-s.  The twiddle exponent is the bit-reversed prefix of the bits
+	 * above that butterfly bit, scaled by the subtransform stride.
+	 */
+	if (stage == 1)
+	{
+		return 0;
+	}
+
+	return bitreverse_limited(lo >> (6 - stage), stage - 1) << (5 - stage);
+}
+
+static void ntt32_radix2_ct_bitrev(int16_t out[32], const int16_t in[32])
 {
 	/*
 	 * Complete forward cyclic 32-point NTT using radix-2
-	 * decimation-in-frequency.
+	 * Cooley-Tukey butterflies.
 	 *
-	 * This consumes natural-order input and runs:
+	 * This consumes natural-order input and runs a recursive CT schedule
+	 * that leaves the row in bit-reversed frequency order.  That output
+	 * order is kept because it is convenient for the ASM store schedule;
+	 * the lambda table is packed in the same physical order.
 	 *
-	 *   len = 32, 16, 8, 4, 2
-	 *
-	 * DIF leaves the row in bit-reversed frequency order.  That output order
-	 * is kept because it is convenient for the future ASM store schedule; the
-	 * lambda table is packed in the same physical order.
+	 * CT butterfly:
+	 *   t  = fqmul(high, twiddle)
+	 *   lo = low + t
+	 *   hi = low - t
 	 */
 	for (unsigned i = 0; i < 32; i++)
 	{
 		out[i] = barrett_reduce(in[i]);
 	}
 
-	for (unsigned len = 32; len >= 2; len >>= 1)
+	for (unsigned stage = 1; stage <= 5; stage++)
 	{
-		const int16_t root = gt96_omega32_powers[32 / len];
+		const unsigned distance = 1U << (5 - stage);
 
-		for (unsigned start = 0; start < 32; start += len)
+		for (unsigned lo = 0; lo < 32; lo++)
 		{
-			int16_t w = NTRUPLUS_R;
-
-			for (unsigned j = 0; j < len / 2; j++)
+			if ((lo & distance) != 0)
 			{
-				const int16_t u = out[start + j];
-				const int16_t v = out[start + j + len / 2];
-				const int16_t diff = barrett_reduce(u - v);
-
-				out[start + j] = barrett_reduce(u + v);
-				out[start + j + len / 2] = fqmul(diff, w);
-				w = fqmul(w, root);
+				continue;
 			}
+
+			const unsigned hi = lo + distance;
+			const unsigned power = ntt32_ct_twiddle_power(stage, lo);
+			const int16_t u = out[lo];
+			const int16_t t = fqmul(out[hi], gt96_omega32_powers[power]);
+
+			out[lo] = barrett_reduce(u + t);
+			out[hi] = barrett_reduce(u - t);
 		}
 	}
 }
@@ -278,9 +309,9 @@ static void intt32_radix2_dit(int16_t out[32], const int16_t in[32])
 	 * decimation-in-time.
 	 *
 	 * Input is the bit-reversed frequency order produced by
-	 * ntt32_radix2_dif().  The output is natural order and scaled by 32:
+	 * ntt32_radix2_ct_bitrev().  The output is natural order and scaled by 32:
 	 *
-	 *   intt32_radix2_dit(ntt32_radix2_dif(x)) = 32*x.
+	 *   intt32_radix2_dit(ntt32_radix2_ct_bitrev(x)) = 32*x.
 	 */
 	for (unsigned i = 0; i < 32; i++)
 	{
@@ -356,12 +387,12 @@ static void ntt96_goodthomas_core(int16_t mat[3][32])
 	{
 		int16_t row[32];
 
-		ntt32_radix2_dif(row, mat[k3]);
+		ntt32_radix2_ct_bitrev(row, mat[k3]);
 
 		for (int k32 = 0; k32 < 32; k32++)
 		{
 			/*
-			 * Keep the complete DIF bit-reversed row order.  Physical
+			 * Keep the complete CT bit-reversed row order.  Physical
 			 * block order follows the ASM-friendly store order, and
 			 * gt_rowbitrev_lambda[] is packed to match it.
 			 */
@@ -597,7 +628,7 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 * Name:        invntt_gt_rowbitrevlayout
 *
 * Description: Inverse for the complete row-bitrev NTT-domain layout.  Each
-*              32-point row is stored in complete DIF bit-reversed order, and
+*              32-point row is stored in complete CT bit-reversed order, and
 *              the inverse row kernel consumes that representation directly.
 *
 * Arguments:   - int16_t r[NTRUPLUS_N]: pointer to output vector
@@ -624,7 +655,7 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 			/*
 			 * Complete row-bitrev frequency layout: physical block j
 			 * is gathered directly.  This is not GT-natural order; the
-			 * physical order is chosen to match the 32-point DIF output
+			 * physical order is chosen to match the 32-point CT output
 			 * and the physical-order lambda table.
 			 */
 			for (int j = 0; j < 96; j++)

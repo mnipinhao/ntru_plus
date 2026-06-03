@@ -289,7 +289,7 @@ static int check_gt_rowbitrev_lambda_table(const int factors[2])
 	return 1;
 }
 
-static int check_ntt32_radix2_dif(void)
+static int check_ntt32_radix2_ct_bitrev(void)
 {
 	int min_matches = 32;
 	int16_t in[32];
@@ -308,7 +308,7 @@ static int check_ntt32_radix2_dif(void)
 		}
 
 		direct_ntt32(direct, in);
-		ntt32_radix2_dif(rowbitrev, in);
+		ntt32_radix2_ct_bitrev(rowbitrev, in);
 
 		for (int k = 0; k < 32; k++)
 		{
@@ -322,7 +322,7 @@ static int check_ntt32_radix2_dif(void)
 		}
 	}
 
-	printf("ntt32_radix2_dif complete row-bitrev check: %d/32 minimum coefficient match\n",
+	printf("ntt32_radix2_ct_bitrev complete row-bitrev check: %d/32 minimum coefficient match\n",
 	       min_matches);
 	return min_matches == 32;
 }
@@ -390,7 +390,7 @@ static int check_intt32_radix2_dit(void)
 			scaled[i] = (int16_t)field_mul(in[i], 32);
 		}
 
-		ntt32_radix2_dif(freq, in);
+		ntt32_radix2_ct_bitrev(freq, in);
 		intt32_radix2_dit(fast, freq);
 		matches = coeff32_match_count(scaled, fast);
 		if (matches < min_roundtrip)
@@ -763,7 +763,7 @@ int main(void)
 
 	ok &= check_twist_tables();
 	ok &= check_gt_rowbitrev_lambda_table(branch_factors);
-	ok &= check_ntt32_radix2_dif();
+	ok &= check_ntt32_radix2_ct_bitrev();
 	ok &= check_ntt96_goodthomas();
 	ok &= check_intt32_radix2_dit();
 	ok &= check_invntt96_goodthomas();

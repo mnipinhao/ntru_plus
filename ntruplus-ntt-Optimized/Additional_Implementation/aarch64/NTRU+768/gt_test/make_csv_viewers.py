@@ -18,12 +18,12 @@ CSV_GUIDES = {
         "但這張表適合檢查數學 mapping。"
     ),
     "ntt32_twiddle_schedule.csv": (
-        "32-point radix-2 DIF butterflies 的 twiddle schedule。它列出每一層 "
-        "len/start/j 的 low/high index，以及 high output 要乘的 omega32 power。"
+        "32-point radix-2 CT butterflies 的 twiddle schedule。它列出每一層 "
+        "len/start/j 的 low/high index，以及 high operand 要乘的 omega32 power。"
     ),
     "ntt32_neon_plan.csv": (
         "32-point row 假設 pack 成 v4=work[0..7], v5=work[8..15], "
-        "v6=work[16..23], v7=work[24..31] 後，每個 DIF butterfly pair 的 "
+        "v6=work[16..23], v7=work[24..31] 後，每個 CT butterfly pair 的 "
         "register/lane 形狀。重點看 pair_shape 與 shuffle_need。"
     ),
     "full_fused_gt_plan.csv": (
@@ -64,12 +64,13 @@ CSV_GUIDES = {
         "GT matrix stream 與每 8 個 n32 columns 的 x0/x1/x2 offset sequence。"
     ),
     "gt_stage_ntt32_input_plan.csv": (
-        "逐 DFT3 output element 顯示進入 32-point DIF NTT 前的 natural input pack："
-        "k32 直接放到 work[k32]，32-point kernel 產生 bitreversed output。"
+        "逐 Phase3 DFT3 output element 顯示進入 32-point CT NTT 前要載入的 "
+        "Q<workXX_s0>：包含 packed GT matrix lane、phase3 memory index、"
+        "原始 a[i] physical pair，以及 ntt32 的 ldr Q offset。"
     ),
     "gt_register_pack_plan.csv": (
         "Good-Thomas forward 的 register-level mapping。它把 input CRT pack、"
-        "DFT3 output、NTT32 natural input pack、NTT32 DIF butterfly operand 都對應到 "
+        "DFT3 output、NTT32 natural input pack、NTT32 CT butterfly operand 都對應到 "
         "proposed v?.h[lane]。若要看格狀 register view，也可打開專用 "
         "gt_register_pack_plan.html。"
     ),
@@ -215,7 +216,7 @@ COLUMN_GUIDES = {
     "dft3_factor_normal": "explicit DFT3 matrix factor 的 normal representation。",
     "dft3_one_mul_role": "目前一乘法 DFT3 公式中，這個 source 對 output row 的角色。",
     "stage": "radix-2 NTT stage，通常 1..5。",
-    "len": "目前 DIF butterfly group length，32,16,8,4,2。",
+    "len": "目前 CT butterfly group length，32,16,8,4,2。",
     "start": "32-point row 裡的 current group start index。",
     "j": "butterfly offset inside current group。",
     "lo_index": "butterfly low operand work index。",
@@ -227,28 +228,56 @@ COLUMN_GUIDES = {
     "twiddle_normal": "twiddle 轉回 normal field representation。",
     "register": "proposed AArch64 NEON register name，例如 v4。",
     "register_lane": "halfword lane index，0..7。",
-    "input_work_index": "進入 DIF NTT32 的 natural-order work index；目前等於 input_k32。",
-    "bitrev_output_index": "complete DIF NTT32 的 bit-reversed physical output index，bitreverse5(k32)。",
-    "bitrev_output_register": "complete DIF bit-reversed output index 對應的 register。",
-    "bitrev_output_lane": "complete DIF bit-reversed output index 對應的 lane。",
+    "input_work_index": "進入 CT NTT32 的 natural-order work index；目前等於 input_k32。",
+    "bitrev_output_index": "complete CT NTT32 的 bit-reversed physical output index，bitreverse5(k32)。",
+    "bitrev_output_register": "complete CT bit-reversed output index 對應的 register。",
+    "bitrev_output_lane": "complete CT bit-reversed output index 對應的 lane。",
     "ntt32_input_k32": "進入 32-point row 的原始 k32 column。",
-    "ntt32_work_index": "32-point row 的 work array index；initial pack 是 natural order，後續由 DIF butterflies in-place 更新。",
-    "ntt32_input_work_index": "DIF NTT32 的 natural input work index；目前等於 ntt32_input_k32。",
-    "ntt32_input_register": "DIF NTT32 natural input pack register。",
-    "ntt32_input_register_lane": "DIF NTT32 natural input pack lane。",
-    "ntt32_input_vector_group": "DIF NTT32 natural input pack vector group。",
-    "ntt32_bitrev_output_index": "complete DIF NTT32 output 對應的 bit-reversed physical row index。",
-    "ntt32_bitrev_output_register": "complete DIF bit-reversed output register。",
-    "ntt32_bitrev_output_lane": "complete DIF bit-reversed output lane。",
+    "ntt32_work_index": "32-point row 的 work array index；initial pack 是 natural order，後續由 CT butterflies in-place 更新。",
+    "ntt32_input_work_index": "CT NTT32 的 natural input work index；目前等於 ntt32_input_k32。",
+    "ntt32_input_register": "CT NTT32 natural input pack register。",
+    "ntt32_input_register_lane": "CT NTT32 natural input pack lane。",
+    "ntt32_input_vector_group": "CT NTT32 natural input pack vector group。",
+    "ntt32_bitrev_output_index": "complete CT NTT32 output 對應的 bit-reversed physical row index。",
+    "ntt32_bitrev_output_register": "complete CT bit-reversed output register。",
+    "ntt32_bitrev_output_lane": "complete CT bit-reversed output lane。",
     "ntt32_register": "NTT32 initial row pack 中 work index 所在 register。",
     "ntt32_register_lane": "NTT32 initial row pack 中 work index 所在 halfword lane。",
     "ntt32_vector_group": "NTT32 initial row pack 中 work index 所在 vector group。",
+    "example_scope": "first_matrix_first_row 代表 branch=0 quartic_lane=0 k3=0 的示範 32-point row；其餘列保留全體 mapping。",
+    "gt_matrix": "8-way parallel NTT32 的 matrix lane 名稱，例如 M0=B0_q0。",
+    "gt_matrix_lane": "Q vector 中的 packed lane，0..7，等於 4*branch+quartic_lane。",
+    "phase3_row_k3": "Phase3 DFT3 output row，也就是進入哪一條 32-point NTT row。",
+    "phase3_col_k32": "Phase3 DFT3 output column，也是 NTT32 natural input work index。",
+    "phase3_value": "Phase3 output value 名稱，Y0/Y1/Y2。",
+    "phase3_formula": "這個 Phase3 output row 的 DFT3 公式。",
+    "phase3_q_register": "進入 NTT32 時要載入的 symbolic Q register。",
+    "phase3_q_lane": "這個 GT matrix 在 Q register 中的 halfword lane。",
+    "phase3_q_contents": "整個 Q vector 的 8-way matrix lane 內容摘要。",
+    "phase3_row_base_coeff_index": "該 k3 row 在 phase3 staging buffer 的 coefficient base index。",
+    "phase3_memory_index": "這個 packed lane 在 phase3 staging buffer 的 coefficient index。",
+    "phase3_byte_offset": "phase3_memory_index 對應 byte offset，int16 所以乘 2。",
+    "ntt32_load_instruction": "進入 NTT32 時對這個 k32/work index 的 load。",
+    "ntt32_load_byte_offset_from_row_base": "相對 row_base 的 load byte offset；Q vector 每個 k32 佔 16 bytes。",
+    "ntt32_loaded_lane": "load 後此 GT matrix value 落入的 symbolic vector lane。",
+    "x0_top_split_output_index": "DFT3 x0 對應的 top-split/twist 後 physical index。",
+    "x1_top_split_output_index": "DFT3 x1 對應的 top-split/twist 後 physical index。",
+    "x2_top_split_output_index": "DFT3 x2 對應的 top-split/twist 後 physical index。",
+    "x0_original_low_index": "產生 x0 所用 top-split pair 的原始 low a[i] index。",
+    "x1_original_low_index": "產生 x1 所用 top-split pair 的原始 low a[i] index。",
+    "x2_original_low_index": "產生 x2 所用 top-split pair 的原始 low a[i] index。",
+    "x0_original_high_index": "產生 x0 所用 top-split pair 的原始 high a[i+384] index。",
+    "x1_original_high_index": "產生 x1 所用 top-split pair 的原始 high a[i+384] index。",
+    "x2_original_high_index": "產生 x2 所用 top-split pair 的原始 high a[i+384] index。",
+    "x0_source": "x0 的 branch output/twist/source 摘要。",
+    "x1_source": "x1 的 branch output/twist/source 摘要。",
+    "x2_source": "x2 的 branch output/twist/source 摘要。",
     "lo_register": "low operand 所在 register。",
     "hi_register": "high operand 所在 register。",
     "lo_lane": "low operand 所在 halfword lane。",
     "hi_lane": "high operand 所在 halfword lane。",
     "pair_shape": "butterfly pair 的 register/lane 幾何形狀，用來判斷是否需要 shuffle。",
-    "k32_bitrev_order": "complete DIF output 中的 physical row coordinate；logical k32 要再套 bitreverse5() 還原。",
+    "k32_bitrev_order": "complete CT output 中的 physical row coordinate；logical k32 要再套 bitreverse5() 還原。",
     "logical_k32": "由 k32_bitrev_order 經 bitreverse5() 還原出的 logical 32-point frequency index。",
     "logical_j": "Good-Thomas logical output index，CRT(k3, logical_k32)。",
     "shuffle_need": "以目前 pack 來看這個 stage 是否需要 shuffle。",
@@ -567,6 +596,130 @@ VIEWER_TEMPLATE = """<!doctype html>
     .matrix-cell {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       color: #0f172a;
+    }
+    .ntt32-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .ntt32-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .ntt32-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .ntt32-selects {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+    .ntt32-selects label {
+      margin: 0 0 4px;
+    }
+    .ntt32-selects select {
+      width: 150px;
+    }
+    .q-band {
+      margin: 12px 0 16px;
+    }
+    .q-band-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px 8px 0 0;
+      background: #f8fafc;
+      font-weight: 800;
+    }
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(260px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 8px 8px;
+      background: #fbfcfe;
+    }
+    .q-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+    }
+    .q-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 9px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fafc;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+    }
+    .q-load {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .lane-list {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .lane-row {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 8px;
+      padding: 7px 9px;
+      border-bottom: 1px solid #edf1f5;
+    }
+    .lane-row:last-child {
+      border-bottom: 0;
+    }
+    .lane-row.highlight {
+      background: var(--accent-soft);
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+    .lane-id {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+    }
+    .lane-main {
+      min-width: 0;
+    }
+    .lane-value {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lane-source {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    @media (max-width: 1380px) {
+      .q-grid { grid-template-columns: repeat(2, minmax(260px, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .q-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 980px) {
       main { grid-template-columns: 1fr; }
@@ -998,6 +1151,137 @@ DFT3_MATRIX_SCRIPT = """
 """
 
 
+NTT32_INPUT_PANEL = """
+      <div class="ntt32-panel" id="ntt32InputPanel">
+        <div class="ntt32-head">
+          <div>
+            <div class="ntt32-title">Phase3 -> NTT32 Q Register View</div>
+            <div class="subtle" id="ntt32Summary"></div>
+          </div>
+          <div class="ntt32-selects">
+            <div>
+              <label for="ntt32RowSelect">Row</label>
+              <select id="ntt32RowSelect"></select>
+            </div>
+            <div>
+              <label for="ntt32LaneSelect">Highlight</label>
+              <select id="ntt32LaneSelect"></select>
+            </div>
+          </div>
+        </div>
+        <div id="ntt32QGrid"></div>
+      </div>
+"""
+
+
+NTT32_INPUT_SCRIPT = """
+    function initNtt32InputView() {
+      const panel = document.getElementById("ntt32InputPanel");
+      if (!panel) return;
+
+      const rowSelect = document.getElementById("ntt32RowSelect");
+      const laneSelect = document.getElementById("ntt32LaneSelect");
+      const grid = document.getElementById("ntt32QGrid");
+      const summary = document.getElementById("ntt32Summary");
+
+      function sortedUnique(values, numeric = false) {
+        const items = Array.from(new Set(values));
+        if (numeric) return items.sort((a, b) => Number(a) - Number(b));
+        return items.sort();
+      }
+
+      const rowIds = sortedUnique(rows.map(r => r.phase3_row_k3), true);
+      const lanes = sortedUnique(rows.map(r => r.gt_matrix_lane), true);
+
+      rowSelect.innerHTML = rowIds.map(k3 => {
+        const sample = rows.find(r => String(r.phase3_row_k3) === String(k3)) || {};
+        return `<option value="${htmlEscape(k3)}">${htmlEscape(sample.phase3_value || ("Y" + k3))} / k3=${htmlEscape(k3)}</option>`;
+      }).join("");
+      laneSelect.innerHTML = lanes.map(lane => {
+        const sample = rows.find(r => String(r.gt_matrix_lane) === String(lane)) || {};
+        return `<option value="${htmlEscape(lane)}">${htmlEscape(sample.gt_matrix || ("lane " + lane))} / h[${htmlEscape(lane)}]</option>`;
+      }).join("");
+      rowSelect.value = "0";
+      laneSelect.value = "0";
+
+      rowSelect.addEventListener("input", renderNtt32InputView);
+      laneSelect.addEventListener("input", renderNtt32InputView);
+
+      function rowsFor(k3, k32) {
+        return rows
+          .filter(r => String(r.phase3_row_k3) === String(k3) &&
+                       Number(r.phase3_col_k32) === k32)
+          .sort((a, b) => Number(a.gt_matrix_lane) - Number(b.gt_matrix_lane));
+      }
+
+      function laneCell(row, selectedLane) {
+        if (!row) {
+          return `<div class="lane-row"><div class="lane-id">h[?]</div><div class="lane-main"></div></div>`;
+        }
+        const isHot = String(row.gt_matrix_lane) === String(selectedLane);
+        const source = `${row.x0_source}; ${row.x1_source}; ${row.x2_source}`;
+        return `
+          <div class="lane-row ${isHot ? "highlight" : ""}">
+            <div class="lane-id">h[${htmlEscape(row.gt_matrix_lane)}]</div>
+            <div class="lane-main">
+              <div class="lane-value">${htmlEscape(row.gt_matrix)}_${htmlEscape(row.phase3_value)}[${htmlEscape(row.phase3_col_k32)}]</div>
+              <div class="lane-source" title="${htmlEscape(source)}">mem[${htmlEscape(row.phase3_memory_index)}] = ${htmlEscape(row.operation)}</div>
+              <div class="lane-source" title="${htmlEscape(source)}">${htmlEscape(source)}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function qCard(k3, k32, selectedLane) {
+        const qRows = rowsFor(k3, k32);
+        const sample = qRows[0] || {};
+        const laneRows = Array.from({ length: 8 }, (_, lane) =>
+          laneCell(qRows.find(r => Number(r.gt_matrix_lane) === lane), selectedLane)
+        ).join("");
+        return `
+          <div class="q-card">
+            <div class="q-card-head">
+              <span>Q&lt;w${String(k32).padStart(2, "0")}_s0&gt;</span>
+              <span class="q-load">#${htmlEscape(sample.ntt32_load_byte_offset_from_row_base || (k32 * 16))}</span>
+            </div>
+            <div class="lane-list">${laneRows}</div>
+          </div>
+        `;
+      }
+
+      function bandTitle(start, end) {
+        return `coef${start}..${end}`;
+      }
+
+      function qBand(k3, start, selectedLane) {
+        const end = start + 7;
+        const cards = Array.from({ length: 8 }, (_, i) => qCard(k3, start + i, selectedLane)).join("");
+        return `
+          <div class="q-band">
+            <div class="q-band-title">
+              <span>${htmlEscape(bandTitle(start, end))}</span>
+              <span class="subtle">row_base + ${start * 16} .. ${end * 16}</span>
+            </div>
+            <div class="q-grid">${cards}</div>
+          </div>
+        `;
+      }
+
+      function renderNtt32InputView() {
+        const k3 = rowSelect.value;
+        const selectedLane = laneSelect.value;
+        const sample = rows.find(r => String(r.phase3_row_k3) === String(k3) &&
+                                      String(r.gt_matrix_lane) === String(selectedLane)) || {};
+        summary.innerHTML = `${htmlEscape(sample.phase3_formula || "")} · highlighted ${htmlEscape(sample.gt_matrix || ("lane " + selectedLane))}`;
+        grid.innerHTML = [0, 8, 16, 24].map(start => qBand(k3, start, selectedLane)).join("");
+      }
+
+      renderNtt32InputView();
+    }
+    initNtt32InputView();
+"""
+
+
 INDEX_TEMPLATE = """<!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -1067,6 +1351,15 @@ def page_title(csv_path):
 def write_viewer(csv_path, output_path, build_dir):
     columns, rows = read_rows(csv_path)
     is_dft3_plan = csv_path.name == "gt_stage_dft3_plan.csv"
+    is_ntt32_input_plan = csv_path.name == "gt_stage_ntt32_input_plan.csv"
+    special_panel = ""
+    special_script = ""
+    if is_dft3_plan:
+        special_panel = DFT3_MATRIX_PANEL
+        special_script = DFT3_MATRIX_SCRIPT
+    elif is_ntt32_input_plan:
+        special_panel = NTT32_INPUT_PANEL
+        special_script = NTT32_INPUT_SCRIPT
     payload = {
         "columns": columns,
         "rows": rows,
@@ -1081,8 +1374,8 @@ def write_viewer(csv_path, output_path, build_dir):
                                                        if csv_path.is_relative_to(build_dir.parent)
                                                        else csv_path)))
                 .replace("__DESCRIPTION__", html.escape(description))
-                .replace("__SPECIAL_PANEL__", DFT3_MATRIX_PANEL if is_dft3_plan else "")
-                .replace("__SPECIAL_SCRIPT__", DFT3_MATRIX_SCRIPT if is_dft3_plan else "")
+                .replace("__SPECIAL_PANEL__", special_panel)
+                .replace("__SPECIAL_SCRIPT__", special_script)
                 .replace("__PAYLOAD__", payload_json))
     output_path.write_text(document)
     return {
