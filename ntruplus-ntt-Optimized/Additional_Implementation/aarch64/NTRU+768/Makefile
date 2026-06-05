@@ -23,8 +23,9 @@ endif
 .PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 
 BUILD_DIR = build
-POLYNTT_ASM ?= asm/my_ntt.s
+POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
 POLYNTT_TEST_CFLAGS ?=
+POLYNTT_ASM_FLAGS ?=
 
 all: \
 	test \
@@ -48,7 +49,7 @@ test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/
 
 test_polyntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c $(POLYNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) -I. -o $(BUILD_DIR)/test_polyntt_asm gt_test/test_polyntt_asm.c ntt.c $(POLYNTT_ASM)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyntt_asm gt_test/test_polyntt_asm.c ntt.c $(POLYNTT_ASM)
 
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
 	@mkdir -p $(BUILD_DIR)

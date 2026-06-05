@@ -1,26 +1,24 @@
-.global poly_ntt
-.global _poly_ntt
-poly_ntt:
-_poly_ntt:
-    dst       .req x0
-    src       .req x1
-    zetas_ptr .req x2
-    twist_ptr .req x3
-    row0_ptr .req x4
-    row1_ptr .req x5
-    row2_ptr .req x6
-    counter   .req x8
-    
-    adr zetas_ptr, zetas
-    ldr q0, [zetas_ptr]
+.ifndef NTT32_FUSED_SCATTER
+    .equ NTT32_FUSED_SCATTER, 1
+.endif
 
-    adr twist_ptr, twist_table
-    mov row0_ptr, dst
-    add row1_ptr, dst, #512
-    add row2_ptr, dst, #1024
-    mov counter, #8
+.macro DFT3_STORE x0, x1, x2, off
+    sub      v6.8h, \x1\().8h, \x2\().8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  \x0\().8h, \x1\().8h
+    add      v9.8h,  v9.8h,  \x2\().8h
+    sub      v10.8h, \x0\().8h, \x2\().8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, \x0\().8h, \x1\().8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [row0_ptr, #\off]
+    str q10, [row1_ptr, #\off]
+    str q11, [row2_ptr, #\off]
+.endm
 
-_loop_phase123:
+.macro PHASE123_ITER pattern
     #level 0
     // high side
     ldr q10, [src, #6*128]        // a384..a391
@@ -202,105 +200,136 @@ _loop_phase123:
     zip1 v4.2d, v9.2d, v15.2d
     zip2 v5.2d, v9.2d, v15.2d
 
-    # DFT3
-    // d = x1 - x2
-    sub      v6.8h, v30.8h, v26.8h
-
-    // t = omega3 * d mod q
-    sqrdmulh v7.8h, v6.8h, v0.h[3]   // pre = -6853
-    mul      v8.8h, v6.8h, v0.h[2]   // mul = -723
-    mls      v8.8h, v7.8h, v0.h[0]   // q = 3457
-
-    // y0 = x0 + x1 + x2
-    add      v9.8h,  v22.8h, v30.8h
-    add      v9.8h,  v9.8h,  v26.8h   // v9 = y0
-
-    // y1 = x0 - x2 + t
-    sub      v10.8h, v22.8h, v26.8h
-    add      v10.8h, v10.8h, v8.8h    // v10 = y1
-
-    // y2 = x0 - x1 - t
-    sub      v11.8h, v22.8h, v30.8h
-    sub      v11.8h, v11.8h, v8.8h    // v11 = y2
-
-    str q9,  [row0_ptr, #0]
-    str q10, [row1_ptr, #0]
-    str q11, [row2_ptr, #0]
-
-    // x0 = v27 = P(base + 33)
-    // x1 = v23 = P(base + 1)
-    // x2 = v31 = P(base + 65)
-
-    sub      v6.8h,  v23.8h, v31.8h   // d = x1 - x2
-    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
-    mul      v8.8h,  v6.8h,  v0.h[2]
-    mls      v8.8h,  v7.8h,  v0.h[0]  // t
-
-    add      v9.8h,  v27.8h, v23.8h
-    add      v9.8h,  v9.8h,  v31.8h  // y0
-
-    sub      v10.8h, v27.8h, v31.8h
-    add      v10.8h, v10.8h, v8.8h   // y1
-
-    sub      v11.8h, v27.8h, v23.8h
-    sub      v11.8h, v11.8h, v8.8h   // y2
-
-    str q9,  [row0_ptr, #16]
-    str q10, [row1_ptr, #16]
-    str q11, [row2_ptr, #16]
-
-    // x0 = v4  = P(base + 66)
-    // x1 = v28 = P(base + 34)
-    // x2 = v24 = P(base + 2)
-
-    sub      v6.8h,  v28.8h, v24.8h
-    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
-    mul      v8.8h,  v6.8h,  v0.h[2]
-    mls      v8.8h,  v7.8h,  v0.h[0]
-
-    add      v9.8h,  v4.8h,  v28.8h
-    add      v9.8h,  v9.8h,  v24.8h
-
-    sub      v10.8h, v4.8h,  v24.8h
-    add      v10.8h, v10.8h, v8.8h
-
-    sub      v11.8h, v4.8h,  v28.8h
-    sub      v11.8h, v11.8h, v8.8h
-
-    str q9,  [row0_ptr, #32]
-    str q10, [row1_ptr, #32]
-    str q11, [row2_ptr, #32]
-
-    // x0 = v25 = P(base + 3)
-    // x1 = v5  = P(base + 67)
-    // x2 = v29 = P(base + 35)
-
-    sub      v6.8h,  v5.8h,  v29.8h
-    sqrdmulh v7.8h,  v6.8h,  v0.h[3]
-    mul      v8.8h,  v6.8h,  v0.h[2]
-    mls      v8.8h,  v7.8h,  v0.h[0]
-
-    add      v9.8h,  v25.8h, v5.8h
-    add      v9.8h,  v9.8h,  v29.8h
-
-    sub      v10.8h, v25.8h, v29.8h
-    add      v10.8h, v10.8h, v8.8h
-
-    sub      v11.8h, v25.8h, v5.8h
-    sub      v11.8h, v11.8h, v8.8h
-
-    str q9,  [row0_ptr, #48]
-    str q10, [row1_ptr, #48]
-    str q11, [row2_ptr, #48]
+    # DFT3. The correct source order is known for each unrolled iteration.
+    #
+    # DFT3_STORE assumes its operands are logical (x0, x1, x2).  As src moves
+    # through the original polynomial, the three Good-Thomas coordinates land
+    # in a cyclically shifted register order.  This assembler-time pattern
+    # passes the registers to DFT3_STORE in the right logical order, so row1
+    # and row2 do not need a later omega/omega^2 phase correction.  This is not
+    # a runtime branch or state variable.
+    .if \pattern == 0
+        DFT3_STORE v22, v30, v26, 0
+        DFT3_STORE v27, v23, v31, 16
+        DFT3_STORE v4,  v28, v24, 32
+        DFT3_STORE v25, v5,  v29, 48
+    .elseif \pattern == 1
+        DFT3_STORE v26, v22, v30, 0
+        DFT3_STORE v31, v27, v23, 16
+        DFT3_STORE v24, v4,  v28, 32
+        DFT3_STORE v29, v25, v5,  48
+    .elseif \pattern == 2
+        DFT3_STORE v30, v26, v22, 0
+        DFT3_STORE v23, v31, v27, 16
+        DFT3_STORE v28, v24, v4,  32
+        DFT3_STORE v5,  v29, v25, 48
+    .else
+        .error "unknown PHASE123_ITER pattern"
+    .endif
 
     add src, src, #32
     add row0_ptr, row0_ptr, #64
     add row1_ptr, row1_ptr, #64
     add row2_ptr, row2_ptr, #64
-    subs counter, counter, #1
-    b.ne _loop_phase123
+.endm
+
+.global poly_ntt
+.global _poly_ntt
+poly_ntt:
+_poly_ntt:
+    dst       .req x0
+    src       .req x1
+    zetas_ptr .req x2
+    twist_ptr .req x3
+    row0_ptr .req x4
+    row1_ptr .req x5
+    row2_ptr .req x6
+    counter   .req x8
+
+    adr zetas_ptr, zetas
+    ldr q0, [zetas_ptr]
+
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #1568
+
+    adr twist_ptr, twist_table
+    add row0_ptr, sp, #32
+    add row1_ptr, sp, #544
+    add row2_ptr, sp, #1056
+
+    PHASE123_ITER 0
+    PHASE123_ITER 1
+    PHASE123_ITER 2
+    PHASE123_ITER 0
+    PHASE123_ITER 1
+    PHASE123_ITER 2
+    PHASE123_ITER 0
+    PHASE123_ITER 1
 
     # Phase 4 32-point NTT
+    adr zetas_ptr, zetas
+    ldr q0, [zetas_ptr]
+
+.if NTT32_FUSED_SCATTER
+    ldr dst, [sp, #1576]
+    add row0_ptr, sp, #32
+    mov x10, dst
+    bl _ntt32_8way
+
+    ldr dst, [sp, #1576]
+    add row0_ptr, sp, #544
+    add x10, dst, #256
+    bl _ntt32_8way
+
+    ldr dst, [sp, #1576]
+    add row0_ptr, sp, #1056
+    add x10, dst, #512
+    bl _ntt32_8way
+.else
+    add row0_ptr, sp, #32
+    bl _ntt32_8way
+
+    add row0_ptr, sp, #544
+    bl _ntt32_8way
+
+    add row0_ptr, sp, #1056
+    bl _ntt32_8way
+
+    add x9, sp, #32
+    ldr dst, [sp, #1576]
+    mov x10, dst
+    bl _scatter_ntt32_row
+
+    add x9, sp, #544
+    add x10, dst, #256
+    bl _scatter_ntt32_row
+
+    add x9, sp, #1056
+    add x10, dst, #512
+    bl _scatter_ntt32_row
+.endif
+
+    add sp, sp, #1568
+    ldp x30, x0, [sp], #16
+    ret
+
+_scatter_ntt32_row:
+    // _ntt32_8way has already reduced each Q output; this loop only scatters.
+    add x14, dst, #768
+    mov counter, #32
+_scatter_ntt32_row_loop:
+    ldr q16, [x9], #16
+    ext v17.16b, v16.16b, v16.16b, #8
+    add x11, x10, #768
+    str d16, [x10]
+    str d17, [x11]
+    add x10, x10, #24
+    cmp x10, x14
+    b.lo _scatter_ntt32_row_no_wrap
+    sub x10, x10, #768
+_scatter_ntt32_row_no_wrap:
+    subs counter, counter, #1
+    b.ne _scatter_ntt32_row_loop
     ret
 
 .align 4
