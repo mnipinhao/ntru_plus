@@ -256,6 +256,88 @@ static int check_impulses(void)
 	return 1;
 }
 
+static void schoolbook_mul_reference(poly *r, const poly *a, const poly *b)
+{
+	int64_t tmp[2*NTRUPLUS_N - 1];
+
+	for (int i = 0; i < 2*NTRUPLUS_N - 1; i++)
+	{
+		tmp[i] = 0;
+	}
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		for (int j = 0; j < NTRUPLUS_N; j++)
+		{
+			tmp[i + j] += (int64_t)a->coeffs[i] * b->coeffs[j];
+		}
+	}
+
+	/* NTRU+768 works modulo X^768 - X^384 + 1, so X^768 = X^384 - 1. */
+	for (int i = 2*NTRUPLUS_N - 2; i >= NTRUPLUS_N; i--)
+	{
+		const int64_t c = tmp[i];
+
+		tmp[i - NTRUPLUS_N/2] += c;
+		tmp[i - NTRUPLUS_N] -= c;
+	}
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		r->coeffs[i] = (int16_t)modq(tmp[i]);
+	}
+}
+
+static void rowbitrev_basemul_reference(poly *r, const poly *a, const poly *b)
+{
+	for (int branch = 0; branch < 2; branch++)
+	{
+		const int branch_start = branch * (NTRUPLUS_N / 2);
+
+		for (int physical_j = 0; physical_j < 96; physical_j++)
+		{
+			const int pos = branch_start + 4*physical_j;
+
+			basemul(r->coeffs + pos, a->coeffs + pos, b->coeffs + pos,
+			        gt_rowbitrev_lambda[branch][physical_j]);
+		}
+	}
+}
+
+static int check_multiplication_roundtrip(void)
+{
+	poly a;
+	poly b;
+	poly schoolbook;
+	poly ntt_a;
+	poly ntt_b;
+	poly ntt_c;
+	poly got;
+
+	for (int t = 0; t < 8; t++)
+	{
+		char label[96];
+
+		fill_pattern(&a, "random", 0x10203040u + (uint32_t)t);
+		fill_pattern(&b, "random", 0x90807060u + (uint32_t)t);
+
+		schoolbook_mul_reference(&schoolbook, &a, &b);
+		poly_ntt(&ntt_a, &a);
+		poly_ntt(&ntt_b, &b);
+		rowbitrev_basemul_reference(&ntt_c, &ntt_a, &ntt_b);
+		poly_invntt(&got, &ntt_c);
+
+		snprintf(label, sizeof(label), "multiplication roundtrip %d", t);
+		if (!compare_poly(label, &got, &schoolbook))
+		{
+			return 0;
+		}
+	}
+
+	printf("ntt/basemul/invntt multiplication tests ok\n");
+	return 1;
+}
+
 int main(void)
 {
 	if (!check_direct_inverse_compare())
@@ -269,6 +351,11 @@ int main(void)
 	}
 
 	if (!check_impulses())
+	{
+		return 1;
+	}
+
+	if (!check_multiplication_roundtrip())
 	{
 		return 1;
 	}

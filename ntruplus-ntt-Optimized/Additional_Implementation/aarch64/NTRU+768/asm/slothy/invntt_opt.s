@@ -1,7 +1,8 @@
 /*
  * Generated AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by asm/my_ntt.s.  Source-of-truth symbolic sketch:
- * asm/slothy/invntt_clean.slothy.s
+ * layout produced by asm/my_ntt.s.  The retained clean Slothy component
+ * sources are invntt32_fixed_clean.slothy.s and
+ * invntt_post_fused_clean.slothy.s.
  *
  * Constant tables here are normal centered multipliers plus sqrdmulh
  * precompute constants.  They are not Montgomery-form tables.
@@ -13,8 +14,119 @@
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
 .endm
 
-.macro POST_STORE xvec
-    ldrh    w6, [x4], #2
+.macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
+    sqrdmulh \tmp\().8h, \in\().8h, \pre\().h[\prelane]
+    mul      \out\().8h, \in\().8h, \tw\().h[\twlane]
+    mls      \out\().8h, \tmp\().8h, v0.h[0]
+.endm
+
+.macro INV_BUTTERFLY_LANE lo, hi, tw, twlane, pre, prelane, prod, tmp
+    FQMUL_LANE \prod, \hi, \tw, \twlane, \pre, \prelane, \tmp
+    mov      \tmp\().16b, \lo\().16b
+    add      \lo\().8h, \lo\().8h, \prod\().8h
+    sub      \hi\().8h, \tmp\().8h, \prod\().8h
+    BARRETT_REDUCE \lo, \tmp
+    BARRETT_REDUCE \hi, \tmp
+.endm
+
+.macro INVNTT32_STAGE123_BLOCK base
+    ldr q3,  [x2, #(\base + 0)]
+    ldr q4,  [x2, #(\base + 16)]
+    ldr q5,  [x2, #(\base + 32)]
+    ldr q6,  [x2, #(\base + 48)]
+    ldr q7,  [x2, #(\base + 64)]
+    ldr q8,  [x2, #(\base + 80)]
+    ldr q9,  [x2, #(\base + 96)]
+    ldr q10, [x2, #(\base + 112)]
+
+    /* len=2 */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+    /* len=4 */
+    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+    /* len=8 */
+    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+    str q3,  [x2, #(\base + 0)]
+    str q4,  [x2, #(\base + 16)]
+    str q5,  [x2, #(\base + 32)]
+    str q6,  [x2, #(\base + 48)]
+    str q7,  [x2, #(\base + 64)]
+    str q8,  [x2, #(\base + 80)]
+    str q9,  [x2, #(\base + 96)]
+    str q10, [x2, #(\base + 112)]
+.endm
+
+.macro INVNTT32_STAGE45_STRIPE j
+    ldr q1, [x3], #16
+    ldr q2, [x3], #16
+
+    ldr q3, [x2, #(16 * \j)]
+    ldr q4, [x2, #(16 * (\j + 8))]
+    ldr q5, [x2, #(16 * (\j + 16))]
+    ldr q6, [x2, #(16 * (\j + 24))]
+
+    /* len=16 for the lower and upper halves, then len=32. */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v3, v5, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 2, v2, 2, v11, v12
+
+    str q3, [x2, #(16 * \j)]
+    str q4, [x2, #(16 * (\j + 8))]
+    str q5, [x2, #(16 * (\j + 16))]
+    str q6, [x2, #(16 * (\j + 24))]
+.endm
+
+.macro DIRECT_LOAD_VEC dstidx, srcoff
+    ldr d1, [x3, #\srcoff]
+    ldr d2, [x4, #\srcoff]
+    mov v1.d[1], v2.d[0]
+    str q1, [x2, #(16 * \dstidx)]
+.endm
+
+.macro DIRECT_LOAD_ROW0
+    /* k3=0 physical bytes: 0,24,48,...,744 */
+    .irp i,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+        DIRECT_LOAD_VEC \i, (24 * \i)
+    .endr
+.endm
+
+.macro DIRECT_LOAD_ROW1
+    /* k3=1 physical bytes: 256,280,...,760 then 16,40,...,232 */
+    .irp i,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
+        DIRECT_LOAD_VEC \i, (256 + 24 * \i)
+    .endr
+    .irp i,22,23,24,25,26,27,28,29,30,31
+        DIRECT_LOAD_VEC \i, (16 + 24 * (\i - 22))
+    .endr
+.endm
+
+.macro DIRECT_LOAD_ROW2
+    /* k3=2 physical bytes: 512,536,...,752 then 8,32,...,488 */
+    .irp i,0,1,2,3,4,5,6,7,8,9,10
+        DIRECT_LOAD_VEC \i, (512 + 24 * \i)
+    .endr
+    .irp i,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+        DIRECT_LOAD_VEC \i, (8 + 24 * (\i - 11))
+    .endr
+.endm
+
+.macro RUN_INVNTT32_ROW
+    bl _invntt32_8way_fixed
+.endm
+
+.macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
     ldr     q10, [x3], #16
     ldr     q11, [x3], #16
     sqrdmulh v12.8h, \xvec\().8h, v11.8h
@@ -38,56 +150,11 @@
     mul      v23.8h, v18.8h, v15.h[0]
     mls      v23.8h, v22.8h, v0.h[0]
 
-    add      x6, x0, x6
-    str      d21, [x6]
-    add      x7, x6, #768
-    str      d23, [x7]
+    str      d21, [\ptr, #\off_lo]
+    str      d23, [\ptr, #\off_hi]
 .endm
 
-.global poly_invntt
-.global _poly_invntt
-poly_invntt:
-_poly_invntt:
-    stp x30, x0, [sp, #-16]!
-    sub sp, sp, #1568
-
-    adr x3, inv_consts
-    ldr q0, [x3]
-
-    /* Step 1: physical_j -> (k3, k32_br) gather. */
-    add x2, sp, #32
-    adr x3, inv_gather_offsets
-    add x4, x1, #768
-    mov x5, #96
-1:
-    ldrh w6, [x3], #2
-    add x7, x2, x6
-    ldr d1, [x1], #8
-    ldr d2, [x4], #8
-    mov v1.d[1], v2.d[0]
-    str q1, [x7]
-    subs x5, x5, #1
-    b.ne 1b
-
-    /* Step 2: inverse row NTT32, bit-reversed k32 input -> natural k32 output. */
-    add x2, sp, #32
-    bl _invntt32_8way_table
-    add x2, sp, #544
-    bl _invntt32_8way_table
-    add x2, sp, #1056
-    bl _invntt32_8way_table
-
-    /* Steps 3-5: inverse DFT3, untwist F_b^k, remove scale 96 in merge. */
-    adr x3, inv_consts
-    ldr q15, [x3, #16]
-    ldr x0, [sp, #1576]
-    add x8, sp, #32
-    add x9, sp, #544
-    add x10, sp, #1056
-    adr x3, inv_untwist_vecs
-    adr x4, inv_post_offsets
-    mov x5, #32
-2:
+.macro FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
     ldr q1, [x8], #16
     ldr q2, [x9], #16
     ldr q3, [x10], #16
@@ -109,49 +176,138 @@ _poly_invntt:
     sub      v9.8h, v9.8h, v6.8h
     BARRETT_REDUCE v9, v24
 
-    POST_STORE v7
-    POST_STORE v8
-    POST_STORE v9
+    POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
+    POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
+    POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
+.endm
 
+.global poly_invntt
+.global _poly_invntt
+poly_invntt:
+_poly_invntt:
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #1568
+
+    adr x3, inv_consts
+    ldr q0, [x3]
+
+    /*
+     * Step 1/2 row input path.
+     *
+     * Direct path:
+     *   physical_j(k3,k32_br) = (32*k3 + 3*k32_br) mod 96
+     *   branch0 byte = src + 8*physical_j
+     *   branch1 byte = src + 768 + 8*physical_j
+     *
+     * Each direct load builds lanes
+     *   [branch0 q0..q3, branch1 q0..q3]
+     * in row-bitrev k32 order, then immediately runs the existing inverse
+     * row NTT32.  This avoids materializing all three input rows before the
+     * row NTT while keeping the fixed row kernel and post-row pipeline intact.
+     */
+.ifdef INVNTT_USE_OLD_GATHER
+    add x2, sp, #32
+    adr x3, inv_gather_offsets
+    add x4, x1, #768
+    mov x5, #96
+1:
+    ldrh w6, [x3], #2
+    add x7, x2, x6
+    ldr d1, [x1], #8
+    ldr d2, [x4], #8
+    mov v1.d[1], v2.d[0]
+    str q1, [x7]
     subs x5, x5, #1
-    b.ne 2b
+    b.ne 1b
+
+    /* Step 2: inverse row NTT32, bit-reversed k32 input -> natural k32 output. */
+    add x2, sp, #32
+    RUN_INVNTT32_ROW
+    add x2, sp, #544
+    RUN_INVNTT32_ROW
+    add x2, sp, #1056
+    RUN_INVNTT32_ROW
+.else
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #32
+    DIRECT_LOAD_ROW0
+    RUN_INVNTT32_ROW
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #544
+    DIRECT_LOAD_ROW1
+    RUN_INVNTT32_ROW
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #1056
+    DIRECT_LOAD_ROW2
+    RUN_INVNTT32_ROW
+.endif
+
+    /* Steps 3-5: inverse DFT3, untwist F_b^k, remove scale 96 in merge. */
+    adr x3, inv_consts
+    ldr q15, [x3, #16]
+    ldr x0, [sp, #1576]
+    add x8, sp, #32
+    add x9, sp, #544
+    add x10, sp, #1056
+    adr x3, inv_untwist_vecs
+
+    /*
+     * Fixed/generated natural-output store pattern.  For natural k32:
+     *   k32 mod 3 == 0: v7->A, v8->B, v9->C
+     *   k32 mod 3 == 1: v7->C+8, v8->A+8, v9->B+8
+     *   k32 mod 3 == 2: v7->B+16, v8->C+16, v9->A+16
+     * where A=x0+k32_group*24, B=x0+512+k32_group*24,
+     * C=x0+256+k32_group*24.  The branch1 half is stored +768.
+     */
+    add x11, x0, #0
+    add x12, x0, #512
+    add x13, x0, #256
+    mov x5, #10
+slothy_start_invntt_post_fused:
+4:
+    FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
+    add x11, x11, #24
+    add x12, x12, #24
+    add x13, x13, #24
+    subs x5, x5, #1
+    b.ne 4b
+    FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+slothy_end_invntt_post_fused:
 
     add sp, sp, #1568
     ldp x30, x0, [sp], #16
     ret
 
-_invntt32_8way_table:
-slothy_start_invntt32:
-    adr x3, invntt32_butterflies
-    mov x5, #80
-3:
-    ldrh  w6, [x3], #2
-    ldrh  w7, [x3], #2
-    ldrsh w10, [x3], #2
-    ldrsh w11, [x3], #2
-    add x8, x2, x6
-    add x9, x2, x7
-    /* Slothy no-spill scheduled body from invntt_slothy_row.opt.s. */
-    ldr q19, [x9]
-    dup v24.8h, w11
-    dup v15.8h, w10
-    sqrdmulh v18.8h, v19.8h, v24.8h
-    mul v3.8h, v19.8h, v15.8h
-    ldr q14, [x8]
-    mls v3.8h, v18.8h, v0.h[0]
-    add v28.8h, v14.8h, v3.8h
-    sub v3.8h, v14.8h, v3.8h
-    sqdmulh v11.8h, v28.8h, v0.h[1]
-    sqdmulh v20.8h, v3.8h, v0.h[1]
-    srshr v10.8h, v11.8h, #11
-    srshr v1.8h, v20.8h, #11
-    mls v28.8h, v10.8h, v0.h[0]
-    mls v3.8h, v1.8h, v0.h[0]
-    str q28, [x8]
-    str q3, [x9]
-    subs x5, x5, #1
-    b.ne 3b
-slothy_end_invntt32:
+_invntt32_8way_fixed:
+slothy_start_invntt32_fixed_stage123:
+    adr x3, invntt32_stage123_consts
+    ldr q1, [x3]
+    ldr q2, [x3, #16]
+    INVNTT32_STAGE123_BLOCK 0
+    INVNTT32_STAGE123_BLOCK 128
+    INVNTT32_STAGE123_BLOCK 256
+    INVNTT32_STAGE123_BLOCK 384
+slothy_end_invntt32_fixed_stage123:
+
+slothy_start_invntt32_fixed_stage45:
+    adr x3, invntt32_stage45_consts
+    INVNTT32_STAGE45_STRIPE 0
+    INVNTT32_STAGE45_STRIPE 1
+    INVNTT32_STAGE45_STRIPE 2
+    INVNTT32_STAGE45_STRIPE 3
+    INVNTT32_STAGE45_STRIPE 4
+    INVNTT32_STAGE45_STRIPE 5
+    INVNTT32_STAGE45_STRIPE 6
+    INVNTT32_STAGE45_STRIPE 7
+slothy_end_invntt32_fixed_stage45:
     ret
 
 .align 4
@@ -175,102 +331,36 @@ inv_gather_offsets:
     .hword   1152,    816,    480,   1168,    832,    496,   1184,    848
 
 .align 4
-invntt32_butterflies:
-    .hword      0,     16,      1,      9
-    .hword     32,     48,      1,      9
-    .hword     64,     80,      1,      9
-    .hword     96,    112,      1,      9
-    .hword    128,    144,      1,      9
-    .hword    160,    176,      1,      9
-    .hword    192,    208,      1,      9
-    .hword    224,    240,      1,      9
-    .hword    256,    272,      1,      9
-    .hword    288,    304,      1,      9
-    .hword    320,    336,      1,      9
-    .hword    352,    368,      1,      9
-    .hword    384,    400,      1,      9
-    .hword    416,    432,      1,      9
-    .hword    448,    464,      1,      9
-    .hword    480,    496,      1,      9
-    .hword      0,     32,      1,      9
-    .hword     16,     48,    708,   6711
-    .hword     64,     96,      1,      9
-    .hword     80,    112,    708,   6711
-    .hword    128,    160,      1,      9
-    .hword    144,    176,    708,   6711
-    .hword    192,    224,      1,      9
-    .hword    208,    240,    708,   6711
-    .hword    256,    288,      1,      9
-    .hword    272,    304,    708,   6711
-    .hword    320,    352,      1,      9
-    .hword    336,    368,    708,   6711
-    .hword    384,    416,      1,      9
-    .hword    400,    432,    708,   6711
-    .hword    448,    480,      1,      9
-    .hword    464,    496,    708,   6711
-    .hword      0,     64,      1,      9
-    .hword     16,     80,   1521,  14417
-    .hword     32,     96,    708,   6711
-    .hword     48,    112,  -1716, -16266
-    .hword    128,    192,      1,      9
-    .hword    144,    208,   1521,  14417
-    .hword    160,    224,    708,   6711
-    .hword    176,    240,  -1716, -16266
-    .hword    256,    320,      1,      9
-    .hword    272,    336,   1521,  14417
-    .hword    288,    352,    708,   6711
-    .hword    304,    368,  -1716, -16266
-    .hword    384,    448,      1,      9
-    .hword    400,    464,   1521,  14417
-    .hword    416,    480,    708,   6711
-    .hword    432,    496,  -1716, -16266
-    .hword      0,    128,      1,      9
-    .hword     16,    144,    -39,   -370
-    .hword     32,    160,   1521,  14417
-    .hword     48,    176,   -550,  -5213
-    .hword     64,    192,    708,   6711
-    .hword     80,    208,     44,    417
-    .hword     96,    224,  -1716, -16266
-    .hword    112,    240,   1241,  11763
-    .hword    256,    384,      1,      9
-    .hword    272,    400,    -39,   -370
-    .hword    288,    416,   1521,  14417
-    .hword    304,    432,   -550,  -5213
-    .hword    320,    448,    708,   6711
-    .hword    336,    464,     44,    417
-    .hword    352,    480,  -1716, -16266
-    .hword    368,    496,   1241,  11763
-    .hword      0,    256,      1,      9
-    .hword     16,    272,   -436,  -4133
-    .hword     32,    288,    -39,   -370
-    .hword     48,    304,   -281,  -2664
-    .hword     64,    320,   1521,  14417
-    .hword     80,    336,    588,   5573
-    .hword     96,    352,   -550,  -5213
-    .hword    112,    368,   1267,  12010
-    .hword    128,    384,    708,   6711
-    .hword    144,    400,  -1015,  -9621
-    .hword    160,    416,     44,    417
-    .hword    176,    432,   1558,  14768
-    .hword    192,    448,  -1716, -16266
-    .hword    208,    464,   1464,  13877
-    .hword    224,    480,   1241,  11763
-    .hword    240,    496,   1673,  15858
+invntt32_stage123_consts:
+    .hword      1,    708,   1521,    708,  -1716,      0,      0,      0
+    .hword      9,   6711,  14417,   6711, -16266,      0,      0,      0
 
 .align 4
-inv_post_offsets:
-    .hword      0,    512,    256,    264,      8,    520,    528,    272
-    .hword     16,     24,    536,    280,    288,     32,    544,    552
-    .hword    296,     40,     48,    560,    304,    312,     56,    568
-    .hword    576,    320,     64,     72,    584,    328,    336,     80
-    .hword    592,    600,    344,     88,     96,    608,    352,    360
-    .hword    104,    616,    624,    368,    112,    120,    632,    376
-    .hword    384,    128,    640,    648,    392,    136,    144,    656
-    .hword    400,    408,    152,    664,    672,    416,    160,    168
-    .hword    680,    424,    432,    176,    688,    696,    440,    184
-    .hword    192,    704,    448,    456,    200,    712,    720,    464
-    .hword    208,    216,    728,    472,    480,    224,    736,    744
-    .hword    488,    232,    240,    752,    496,    504,    248,    760
+invntt32_stage45_consts:
+    // j=0: len16[j], len32[j], len32[j+8] normal multipliers and precompute
+    .hword      1,      1,    708,      0,      0,      0,      0,      0
+    .hword      9,      9,   6711,      0,      0,      0,      0,      0
+    // j=1
+    .hword    -39,   -436,  -1015,      0,      0,      0,      0,      0
+    .hword   -370,  -4133,  -9621,      0,      0,      0,      0,      0
+    // j=2
+    .hword   1521,    -39,     44,      0,      0,      0,      0,      0
+    .hword  14417,   -370,    417,      0,      0,      0,      0,      0
+    // j=3
+    .hword   -550,   -281,   1558,      0,      0,      0,      0,      0
+    .hword  -5213,  -2664,  14768,      0,      0,      0,      0,      0
+    // j=4
+    .hword    708,   1521,  -1716,      0,      0,      0,      0,      0
+    .hword   6711,  14417, -16266,      0,      0,      0,      0,      0
+    // j=5
+    .hword     44,    588,   1464,      0,      0,      0,      0,      0
+    .hword    417,   5573,  13877,      0,      0,      0,      0,      0
+    // j=6
+    .hword  -1716,   -550,   1241,      0,      0,      0,      0,      0
+    .hword -16266,  -5213,  11763,      0,      0,      0,      0,      0
+    // j=7
+    .hword   1241,   1267,   1673,      0,      0,      0,      0,      0
+    .hword  11763,  12010,  15858,      0,      0,      0,      0,      0
 
 .align 4
 inv_untwist_vecs:
@@ -564,4 +654,14 @@ inv_untwist_vecs:
     .hword -12957, -12957, -12957, -12957,   8626,   8626,   8626,   8626
 
 .purgem BARRETT_REDUCE
-.purgem POST_STORE
+.purgem FQMUL_LANE
+.purgem INV_BUTTERFLY_LANE
+.purgem INVNTT32_STAGE123_BLOCK
+.purgem INVNTT32_STAGE45_STRIPE
+.purgem DIRECT_LOAD_VEC
+.purgem DIRECT_LOAD_ROW0
+.purgem DIRECT_LOAD_ROW1
+.purgem DIRECT_LOAD_ROW2
+.purgem RUN_INVNTT32_ROW
+.purgem POST_STORE_PTR
+.purgem FUSED_POST_STRIPE

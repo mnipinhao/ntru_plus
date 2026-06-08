@@ -46,10 +46,24 @@ def load_target(name: str):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="invntt_clean.slothy.s")
-    parser.add_argument("--output", default="invntt_slothy_row.opt.s")
+    parser.add_argument("--input", default="invntt32_fixed_clean.slothy.s")
+    parser.add_argument("--output", default="invntt_generated.opt.s")
     parser.add_argument("--target", default=os.environ.get("SLOTHY_TARGET", "a55"))
+    parser.add_argument(
+        "--region",
+        action="append",
+        help="Slothy region as START:END. Defaults to the two fixed inverse NTT32 regions.",
+    )
+    parser.add_argument(
+        "--reserved",
+        action="append",
+        default=[],
+        help="Additional reserved registers. May be repeated or comma-separated.",
+    )
     parser.add_argument("--allow-spills", action="store_true")
+    parser.add_argument("--functional-only", action="store_true")
+    parser.add_argument("--no-reorder", action="store_true")
+    parser.add_argument("--stalls", type=int, default=96)
     args = parser.parse_args()
 
     add_slothy_path()
@@ -68,10 +82,26 @@ def main() -> None:
     slothy.config.inputs_are_outputs = True
     slothy.config.selftest = False
     slothy.config.constraints.allow_spills = args.allow_spills
-    slothy.config.constraints.stalls_first_attempt = 96
-    slothy.config.reserved_regs = ["x8", "x9", "x10", "x11", "x30", "sp", "v0", "v31"]
+    slothy.config.constraints.stalls_first_attempt = args.stalls
+    if args.functional_only:
+        slothy.config.constraints.functional_only = True
+    if args.no_reorder:
+        slothy.config.constraints.allow_reordering = False
+    reserved_regs = ["x8", "x9", "x10", "x11", "x30", "sp", "v0", "v31"]
+    for item in args.reserved:
+        reserved_regs.extend(reg.strip() for reg in item.split(",") if reg.strip())
+    slothy.config.reserved_regs = sorted(set(reserved_regs), key=reserved_regs.index)
 
-    slothy.optimize(start="slothy_start_invntt32", end="slothy_end_invntt32")
+    regions = args.region or [
+        "slothy_start_invntt32_fixed_stage123:slothy_end_invntt32_fixed_stage123",
+        "slothy_start_invntt32_fixed_stage45:slothy_end_invntt32_fixed_stage45",
+    ]
+    for region in regions:
+        try:
+            start, end = region.split(":", 1)
+        except ValueError as exc:
+            raise SystemExit(f"invalid region {region!r}, expected START:END") from exc
+        slothy.optimize(start=start, end=end)
     slothy.write_source_to_file(str(output))
 
 

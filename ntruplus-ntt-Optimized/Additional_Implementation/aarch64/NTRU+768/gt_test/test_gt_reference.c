@@ -129,6 +129,168 @@ static int coeff32_match_count(const int16_t a[32], const int16_t b[32])
 	return count;
 }
 
+static void old_gather_invntt_rows(int16_t rows[3][32][8],
+                                   const int16_t in[NTRUPLUS_N])
+{
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			for (int lane = 0; lane < 8; lane++)
+			{
+				rows[k3][k32][lane] = 0;
+			}
+		}
+	}
+
+	for (int physical_j = 0; physical_j < 96; physical_j++)
+	{
+		const int k3 = (2 * physical_j) % 3;
+		const int k32_br = (11 * physical_j) & 31;
+
+		for (int lane = 0; lane < 4; lane++)
+		{
+			rows[k3][k32_br][lane] = in[4*physical_j + lane];
+			rows[k3][k32_br][4 + lane] =
+				in[NTRUPLUS_N/2 + 4*physical_j + lane];
+		}
+	}
+}
+
+static void direct_load_invntt_rows(int16_t rows[3][32][8],
+                                    const int16_t in[NTRUPLUS_N])
+{
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32_br = 0; k32_br < 32; k32_br++)
+		{
+			const int physical_j = (32*k3 + 3*k32_br) % 96;
+
+			for (int lane = 0; lane < 4; lane++)
+			{
+				rows[k3][k32_br][lane] = in[4*physical_j + lane];
+				rows[k3][k32_br][4 + lane] =
+					in[NTRUPLUS_N/2 + 4*physical_j + lane];
+			}
+		}
+	}
+}
+
+static void invntt32_rows_exact(int16_t out[3][32][8],
+                                const int16_t in[3][32][8])
+{
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int lane = 0; lane < 8; lane++)
+		{
+			int16_t row_in[32];
+			int16_t row_out[32];
+
+			for (int k32 = 0; k32 < 32; k32++)
+			{
+				row_in[k32] = in[k3][k32][lane];
+			}
+
+			intt32_radix2_dit(row_out, row_in);
+
+			for (int k32 = 0; k32 < 32; k32++)
+			{
+				out[k3][k32][lane] = row_out[k32];
+			}
+		}
+	}
+}
+
+static int compare_rows_exact(const char *label,
+                              const int16_t got[3][32][8],
+                              const int16_t want[3][32][8])
+{
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			for (int lane = 0; lane < 8; lane++)
+			{
+				if (got[k3][k32][lane] != want[k3][k32][lane])
+				{
+					printf("%s exact mismatch: k3=%d k32=%d lane=%d got=%d want=%d\n",
+					       label, k3, k32, lane,
+					       got[k3][k32][lane], want[k3][k32][lane]);
+					return 0;
+				}
+			}
+		}
+	}
+
+	return 1;
+}
+
+static void fill_exact_edge_input(int16_t a[NTRUPLUS_N])
+{
+	static const int vals[] = {
+		0, 1, -1, NTRUPLUS_Q - 1, -(NTRUPLUS_Q - 1),
+		2 * (NTRUPLUS_Q - 1), -2 * (NTRUPLUS_Q - 1),
+		4 * (NTRUPLUS_Q - 1), -4 * (NTRUPLUS_Q - 1),
+		32767, -32768
+	};
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		a[i] = (int16_t)vals[i % (int)(sizeof(vals) / sizeof(vals[0]))];
+	}
+}
+
+static int check_invntt_direct_load_row_mapping(void)
+{
+	int16_t in[NTRUPLUS_N];
+	int16_t old_rows[3][32][8];
+	int16_t direct_rows[3][32][8];
+	int16_t old_row_ntt[3][32][8];
+	int16_t direct_row_ntt[3][32][8];
+
+	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
+	{
+		fill_input(in, seed + 0x5500u);
+		old_gather_invntt_rows(old_rows, in);
+		direct_load_invntt_rows(direct_rows, in);
+
+		if (!compare_rows_exact("direct-load row input", direct_rows, old_rows))
+		{
+			return 0;
+		}
+
+		invntt32_rows_exact(old_row_ntt, old_rows);
+		invntt32_rows_exact(direct_row_ntt, direct_rows);
+
+		if (!compare_rows_exact("direct-load row NTT32 output",
+		                        direct_row_ntt, old_row_ntt))
+		{
+			return 0;
+		}
+	}
+
+	fill_exact_edge_input(in);
+	old_gather_invntt_rows(old_rows, in);
+	direct_load_invntt_rows(direct_rows, in);
+
+	if (!compare_rows_exact("direct-load edge row input", direct_rows, old_rows))
+	{
+		return 0;
+	}
+
+	invntt32_rows_exact(old_row_ntt, old_rows);
+	invntt32_rows_exact(direct_row_ntt, direct_rows);
+
+	if (!compare_rows_exact("direct-load edge row NTT32 output",
+	                        direct_row_ntt, old_row_ntt))
+	{
+		return 0;
+	}
+
+	printf("invntt direct-load row mapping exact check: ok\n");
+	return 1;
+}
+
 static int check_inverse_scaling_constants(void)
 {
 	int ok = 1;
@@ -963,6 +1125,7 @@ int main(void)
 	ok &= check_intt32_radix2_dit();
 	ok &= check_invntt96_goodthomas();
 	ok &= check_invntt96_goodthomas_rowfirst();
+	ok &= check_invntt_direct_load_row_mapping();
 	ok &= check_full_ntt_gt_rowbitrev_direct(branch_factors);
 	ok &= check_invntt_gt_rowbitrevlayout_roundtrip();
 	ok &= check_invntt_gt_rowbitrevlayout_impulses();
