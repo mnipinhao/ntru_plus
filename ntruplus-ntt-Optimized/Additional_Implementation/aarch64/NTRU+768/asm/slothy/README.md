@@ -30,9 +30,10 @@ Suggested generated file names after running Slothy:
 - `ntt32_8way.fused_scatter.alloc.s` for RA-only output
 - `ntt32_8way.fused_scatter.opt.s` for scheduled output used by `asm/my_ntt.s`
 
-The older `my_32ntt.alloc.s` and `my_32ntt.opt.s` names are previous generated
-outputs.  Treat them as disposable Slothy artifacts, not as the source of
-truth unless you intentionally overwrite them with the fused-scatter version.
+The older `my_32ntt.opt.s` name is a previous generated output kept because the
+current Makefile still wires it into `poly_ntt`.  Treat it as a disposable
+Slothy artifact, not as the source of truth unless you intentionally overwrite
+it with the fused-scatter version.
 
 `asm/my_ntt.s` is currently wired for the fused-scatter `_ntt32_8way` by setting
 the assembler-time `NTT32_FUSED_SCATTER` constant to `1`.  If you intentionally

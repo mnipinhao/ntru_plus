@@ -59,6 +59,17 @@ static int compare_poly(const char *label, const poly *got, const poly *want)
 
 			return 0;
 		}
+
+#ifdef INVNTT_EXPECT_CENTERED_OUTPUT
+		if (got->coeffs[i] < -(NTRUPLUS_Q / 2) ||
+		    got->coeffs[i] > (NTRUPLUS_Q / 2))
+		{
+			fprintf(stderr,
+			        "%s non-centered output at %d: got %d\n",
+			        label, i, got->coeffs[i]);
+			return 0;
+		}
+#endif
 	}
 
 	return 1;

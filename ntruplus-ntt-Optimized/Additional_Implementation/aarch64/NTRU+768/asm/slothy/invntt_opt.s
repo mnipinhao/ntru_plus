@@ -14,6 +14,15 @@
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
 .endm
 
+.macro CENTER_NORMALIZE_Q reg, qvec, hi, lo, mask
+    cmgt \mask\().8h, \reg\().8h, \hi\().8h
+    and  \mask\().16b, \mask\().16b, \qvec\().16b
+    sub  \reg\().8h, \reg\().8h, \mask\().8h
+    cmgt \mask\().8h, \lo\().8h, \reg\().8h
+    and  \mask\().16b, \mask\().16b, \qvec\().16b
+    add  \reg\().8h, \reg\().8h, \mask\().8h
+.endm
+
 .macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
     sqrdmulh \tmp\().8h, \in\().8h, \pre\().h[\prelane]
     mul      \out\().8h, \in\().8h, \tw\().h[\twlane]
@@ -177,6 +186,24 @@
     mul      v23.8h, v18.8h, v15.h[0]
     mls      v23.8h, v22.8h, v0.h[0]
 
+.ifdef INVNTT_POST_FINAL_NORMALIZE
+    /*
+     * Optional postlazy scheme-safety variant.
+     *
+     * INVNTT_POST_DFT3_NO_REDUCE removes the 96 standalone DFT3 Barrett
+     * reductions and leaves final outputs in a lazy mod-q representative range
+     * of about [-1916,1915].  This opt-in pass normalizes only the final stored
+     * coefficients into centered canonical [-1728,1728], so representative-
+     * sensitive callers such as poly_crepmod3 can consume the output without
+     * restoring the DFT3 reductions.
+     */
+    dup      v25.8h, v0.h[0]
+    dup      v26.8h, v15.h[2]
+    dup      v27.8h, v15.h[3]
+    CENTER_NORMALIZE_Q v21, v25, v26, v27, v28
+    CENTER_NORMALIZE_Q v23, v25, v26, v27, v28
+.endif
+
     str      d21, [\ptr, #\off_lo]
     str      d23, [\ptr, #\off_hi]
 .endm
@@ -191,17 +218,36 @@
     mul      v6.8h, v4.8h, v0.h[2]
     mls      v6.8h, v5.8h, v0.h[0]
 
+    /*
+     * Production reduces the three inverse DFT3 outputs before untwist.
+     * INVNTT_POST_DFT3_NO_REDUCE is an opt-in benchmark variant that delays
+     * these reductions into the later untwist/merge fqmul chain.  The post
+     * range analyzer found it mod-q equivalent with no int16 wraps, but not
+     * exact-representative identical, so it is intentionally not default.
+     *
+     * This matters for scheme integration: q = 3457 == 1 (mod 3), and
+     * poly_crepmod3 reduces the raw signed representative modulo 3.  A final
+     * postlazy value alone does not identify whether it should be corrected by
+     * 0, +q, or -q relative to rowlazy, so a final-value-only crepmod3 fix is
+     * not mathematically equivalent.
+     */
     add      v7.8h, v1.8h, v2.8h
     add      v7.8h, v7.8h, v3.8h
+.ifndef INVNTT_POST_DFT3_NO_REDUCE
     BARRETT_REDUCE v7, v24
+.endif
 
     sub      v8.8h, v1.8h, v2.8h
     add      v8.8h, v8.8h, v6.8h
+.ifndef INVNTT_POST_DFT3_NO_REDUCE
     BARRETT_REDUCE v8, v24
+.endif
 
     sub      v9.8h, v1.8h, v3.8h
     sub      v9.8h, v9.8h, v6.8h
+.ifndef INVNTT_POST_DFT3_NO_REDUCE
     BARRETT_REDUCE v9, v24
+.endif
 
     POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
     POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
@@ -343,7 +389,7 @@ slothy_end_invntt32_fixed_stage45:
 .align 4
 inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171
-    .hword -36, -341, 0, 0, 0, 0, 0, 0
+    .hword -36, -341, 1728, -1728, 0, 0, 0, 0
 
 .align 4
 inv_gather_offsets:
