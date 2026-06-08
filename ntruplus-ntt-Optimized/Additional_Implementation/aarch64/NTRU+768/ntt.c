@@ -450,6 +450,7 @@ static void dft3_inverse(int16_t *a0, int16_t *a1, int16_t *a2)
 	*a2 = x2;
 }
 
+#ifdef NTRUPLUS_NTT_REFERENCE_TEST
 static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 {
 	int16_t mat[3][32];
@@ -479,6 +480,67 @@ static void invntt96_goodthomas(int16_t out[96], const int16_t in[96])
 		{
 			mat[n3][n32] = row[n32];
 		}
+	}
+
+	for (int n3 = 0; n3 < 3; n3++)
+	{
+		for (int n32 = 0; n32 < 32; n32++)
+		{
+			const int n = (64*n3 + 33*n32) % 96;
+			out[n] = mat[n3][n32];
+		}
+	}
+}
+#endif
+
+static void invntt96_goodthomas_rowfirst(int16_t out[96], const int16_t in[96])
+{
+	int16_t mat[3][32];
+
+	/*
+	 * Exact inverse gather for the forward row-bitrev physical layout.
+	 *
+	 * Physical block j is the CRT output coordinate that the forward path
+	 * stores directly:
+	 *   k3     = 2*j mod 3
+	 *   k32_br = 11*j mod 32
+	 *
+	 * The row kernel consumes k32_br order directly.  That order is the
+	 * complete bit-reversed output of the forward 32-point CT row NTT.
+	 */
+	for (int physical_j = 0; physical_j < 96; physical_j++)
+	{
+		const int k3 = (2 * physical_j) % 3;
+		const int k32_br = (11 * physical_j) & 31;
+
+		mat[k3][k32_br] = barrett_reduce(in[physical_j]);
+	}
+
+	/*
+	 * Inverse 32-point rows:
+	 *   input order  = bit-reversed k32 order
+	 *   output order = natural k32 order
+	 *   scaling      = 32
+	 */
+	for (int k3 = 0; k3 < 3; k3++)
+	{
+		int16_t row[32];
+
+		intt32_radix2_dit(row, mat[k3]);
+
+		for (int k32 = 0; k32 < 32; k32++)
+		{
+			mat[k3][k32] = row[k32];
+		}
+	}
+
+	/*
+	 * Inverse DFT3 across the k3 dimension.  It is also unnormalized, so the
+	 * row outputs become scaled by 32*3 = 96.
+	 */
+	for (int k32 = 0; k32 < 32; k32++)
+	{
+		dft3_inverse(&mat[0][k32], &mat[1][k32], &mat[2][k32]);
 	}
 
 	for (int n3 = 0; n3 < 3; n3++)
@@ -625,7 +687,7 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 }
 
 /*************************************************
-* Name:        invntt_gt_rowbitrevlayout
+* Name:        invntt_gt_rowbitrevlayout_exact
 *
 * Description: Inverse for the complete row-bitrev NTT-domain layout.  Each
 *              32-point row is stored in complete CT bit-reversed order, and
@@ -637,7 +699,7 @@ void ntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 *
 * Returns:     none.
 **************************************************/
-void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+void invntt_gt_rowbitrevlayout_exact(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
 {
 	int16_t branches[NTRUPLUS_N];
 	int16_t t1, t2;
@@ -652,23 +714,24 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 			int16_t rowbitrev_freq[96];
 			int16_t coeffs[96];
 
-			/*
-			 * Complete row-bitrev frequency layout: physical block j
-			 * is gathered directly.  This is not GT-natural order; the
-			 * physical order is chosen to match the 32-point CT output
-			 * and the physical-order lambda table.
-			 */
 			for (int j = 0; j < 96; j++)
 			{
 				rowbitrev_freq[j] = a[branch_start + 4*j + lane];
 			}
 
-			/* The inverse is intentionally unnormalized.  Its output is
-			 * 96 times the twisted branch coefficients.
+			/*
+			 * The exact inverse row path consumes physical row-bitrev
+			 * blocks, performs inverse NTT32 first, then inverse DFT3.
+			 * Its output is 96 times the twisted branch coefficients.
 			 */
-			invntt96_goodthomas(coeffs, rowbitrev_freq);
+			invntt96_goodthomas_rowfirst(coeffs, rowbitrev_freq);
 
-			/* Forward used F_b^{-k}; multiply by F_b^k to untwist. */
+			/*
+			 * Forward used F_b^{-k}; multiply by F_b^k to untwist.
+			 * These C tables are Montgomery-form and are used through
+			 * fqmul().  The ASM sqrdmulh/mul/mls tables must instead use
+			 * normal centered multipliers plus precompute constants.
+			 */
 			for (int i = 0; i < 96; i++)
 			{
 				branches[branch_start + 4*i + lane] =
@@ -677,9 +740,12 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 		}
 	}
 
-	/* Merge the two 384-coefficient branches.  At this point each branch is
-	 * scaled by 96, so the original final constants NINV=1/192 and
-	 * 2NINV=1/96 recover the coefficient representation.
+	/*
+	 * Merge the two 384-coefficient branches.  At this point each branch is
+	 * scaled by 96, so the final Montgomery constants fold in that scaling:
+	 *   NTRUPLUS_NINV   = 1/192 * R mod q  (normal -18)
+	 *   NTRUPLUS_2NINV  = 1/96  * R mod q  (normal -36)
+	 *   ZMINUSZ5INV     = 1634 * R mod q
 	 */
 	for (int i = 0; i < NTRUPLUS_N/2; i++)
 	{
@@ -689,6 +755,11 @@ void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N
 		r[i               ] = fqmul(NTRUPLUS_NINV, t1 - t2);
 		r[i + NTRUPLUS_N/2] = fqmul(NTRUPLUS_2NINV, t2);
 	}
+}
+
+void invntt_gt_rowbitrevlayout(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])
+{
+	invntt_gt_rowbitrevlayout_exact(r, a);
 }
 
 void invntt(int16_t r[NTRUPLUS_N], const int16_t a[NTRUPLUS_N])

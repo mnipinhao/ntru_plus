@@ -20,10 +20,11 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm test_polyinvntt_asm dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
+POLYINVNTT_ASM ?= asm/inv_my_ntt.s
 POLYNTT_TEST_CFLAGS ?=
 POLYNTT_ASM_FLAGS ?=
 
@@ -50,6 +51,10 @@ test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/
 test_polyntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c $(POLYNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyntt_asm gt_test/test_polyntt_asm.c ntt.c $(POLYNTT_ASM)
+
+test_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_asm gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
 	@mkdir -p $(BUILD_DIR)

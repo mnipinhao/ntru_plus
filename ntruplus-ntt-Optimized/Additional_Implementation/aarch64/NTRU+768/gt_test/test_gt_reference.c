@@ -76,6 +76,18 @@ static int normal_from_mont(int16_t a)
 	return modq(montgomery_reduce(a));
 }
 
+static int centered_normal_from_mont(int16_t a)
+{
+	int r = normal_from_mont(a);
+
+	if (r > NTRUPLUS_Q / 2)
+	{
+		r -= NTRUPLUS_Q;
+	}
+
+	return r;
+}
+
 static int equal_modq(int16_t a, int16_t b)
 {
 	return modq(a - b) == 0;
@@ -115,6 +127,28 @@ static int coeff32_match_count(const int16_t a[32], const int16_t b[32])
 	}
 
 	return count;
+}
+
+static int check_inverse_scaling_constants(void)
+{
+	int ok = 1;
+
+	ok &= centered_normal_from_mont(NTRUPLUS_NINV) == -18;
+	ok &= centered_normal_from_mont(NTRUPLUS_2NINV) == -36;
+	ok &= centered_normal_from_mont(NTRUPLUS_ZMINUSZ5INV) == 1634;
+
+	if (!ok)
+	{
+		printf("inverse scaling constant check failed: "
+		       "1/192=%d 1/96=%d zminusz5inv=%d\n",
+		       centered_normal_from_mont(NTRUPLUS_NINV),
+		       centered_normal_from_mont(NTRUPLUS_2NINV),
+		       centered_normal_from_mont(NTRUPLUS_ZMINUSZ5INV));
+		return 0;
+	}
+
+	printf("inverse scaling constants: ok (1/192=-18, 1/96=-36, zminusz5inv=1634)\n");
+	return 1;
 }
 
 static void split_layer_reference(int16_t r[NTRUPLUS_N],
@@ -441,6 +475,63 @@ static int check_invntt96_goodthomas(void)
 	return min_matches == 96;
 }
 
+static int check_invntt96_goodthomas_rowfirst(void)
+{
+	int min_scaled_matches = 96;
+	int min_legacy_matches = 96;
+	int16_t in[96];
+	int16_t freq[96];
+	int16_t legacy[96];
+	int16_t rowfirst[96];
+
+	for (uint32_t seed = 0; seed < TEST_VECTORS; seed++)
+	{
+		uint32_t s = 0x85ebca6bu ^ seed;
+		int scaled_matches = 0;
+		int legacy_matches = 0;
+		int unscaled_matches = 0;
+		int scaled192_matches = 0;
+
+		for (int i = 0; i < 96; i++)
+		{
+			s = s * 1664525u + 1013904223u;
+			in[i] = (int16_t)((int)(s % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+		}
+
+		ntt96_goodthomas(freq, in);
+		invntt96_goodthomas(legacy, freq);
+		invntt96_goodthomas_rowfirst(rowfirst, freq);
+
+		for (int i = 0; i < 96; i++)
+		{
+			scaled_matches += equal_modq(rowfirst[i], field_mul(in[i], 96));
+			legacy_matches += equal_modq(rowfirst[i], legacy[i]);
+			unscaled_matches += equal_modq(rowfirst[i], in[i]);
+			scaled192_matches += equal_modq(rowfirst[i], field_mul(in[i], 192));
+		}
+
+		if (scaled_matches < min_scaled_matches)
+		{
+			min_scaled_matches = scaled_matches;
+		}
+		if (legacy_matches < min_legacy_matches)
+		{
+			min_legacy_matches = legacy_matches;
+		}
+		if (unscaled_matches == 96 || scaled192_matches == 96)
+		{
+			printf("invntt96 row-first scaling regression: seed=%u "
+			       "unscaled=%d scaled192=%d\n",
+			       seed, unscaled_matches, scaled192_matches);
+			return 0;
+		}
+	}
+
+	printf("invntt96 row-first check: scaled %d/96, legacy-equivalent %d/96\n",
+	       min_scaled_matches, min_legacy_matches);
+	return min_scaled_matches == 96 && min_legacy_matches == 96;
+}
+
 static int check_full_ntt_gt_rowbitrev_direct(const int factors[2])
 {
 	int min_vs_direct = NTRUPLUS_N;
@@ -509,6 +600,109 @@ static int check_invntt_gt_rowbitrevlayout_roundtrip(void)
 	printf("invntt_gt_rowbitrevlayout roundtrip: direct %d/768, public ntt/invntt %d/768\n",
 	       min_gt, min_public);
 	return min_gt == NTRUPLUS_N && min_public == NTRUPLUS_N;
+}
+
+static int check_invntt_gt_rowbitrevlayout_impulses(void)
+{
+	int16_t a[NTRUPLUS_N];
+	int16_t freq[NTRUPLUS_N];
+	int16_t round[NTRUPLUS_N];
+
+	for (int pos = 0; pos < NTRUPLUS_N; pos++)
+	{
+		for (int i = 0; i < NTRUPLUS_N; i++)
+		{
+			a[i] = 0;
+		}
+		a[pos] = 1;
+
+		ntt_gt_rowbitrevlayout(freq, a);
+		invntt_gt_rowbitrevlayout_exact(round, freq);
+
+		const int matches = coeff_match_count(a, round);
+		if (matches != NTRUPLUS_N)
+		{
+			printf("invntt exact impulse roundtrip mismatch: pos=%d matches=%d/768\n",
+			       pos, matches);
+			return 0;
+		}
+		if (equal_modq(round[pos], 96) || equal_modq(round[pos], 192))
+		{
+			printf("invntt exact impulse scaling regression: pos=%d value=%d\n",
+			       pos, round[pos]);
+			return 0;
+		}
+	}
+
+	printf("invntt exact impulse roundtrip: ok (768/768 positions)\n");
+	return 1;
+}
+
+static int check_invntt_gt_rowbitrevlayout_random_extended(void)
+{
+	int min_matches = NTRUPLUS_N;
+	int16_t a[NTRUPLUS_N];
+	int16_t freq[NTRUPLUS_N];
+	int16_t round[NTRUPLUS_N];
+
+	for (uint32_t seed = 0; seed < 32; seed++)
+	{
+		fill_input(a, 0x7f4a7c15u ^ seed);
+		ntt_gt_rowbitrevlayout(freq, a);
+		invntt_gt_rowbitrevlayout_exact(round, freq);
+
+		const int matches = coeff_match_count(a, round);
+		if (matches < min_matches)
+		{
+			min_matches = matches;
+		}
+	}
+
+	printf("invntt exact random roundtrip: %d/768 minimum coefficient match\n",
+	       min_matches);
+	return min_matches == NTRUPLUS_N;
+}
+
+static void fill_lazy_edge_input(int16_t a[NTRUPLUS_N], int pattern)
+{
+	static const int16_t values[] = {
+		NTRUPLUS_Q - 1,
+		-(NTRUPLUS_Q - 1),
+		3 * (NTRUPLUS_Q - 1),
+		-3 * (NTRUPLUS_Q - 1),
+		4 * (NTRUPLUS_Q - 1),
+		-4 * (NTRUPLUS_Q - 1),
+	};
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		a[i] = values[(i + pattern) % (int)(sizeof(values) / sizeof(values[0]))];
+	}
+}
+
+static int check_invntt_gt_rowbitrevlayout_lazy_edges(void)
+{
+	int min_matches = NTRUPLUS_N;
+	int16_t a[NTRUPLUS_N];
+	int16_t freq[NTRUPLUS_N];
+	int16_t round[NTRUPLUS_N];
+
+	for (int pattern = 0; pattern < 6; pattern++)
+	{
+		fill_lazy_edge_input(a, pattern);
+		ntt_gt_rowbitrevlayout(freq, a);
+		invntt_gt_rowbitrevlayout_exact(round, freq);
+
+		const int matches = coeff_match_count(a, round);
+		if (matches < min_matches)
+		{
+			min_matches = matches;
+		}
+	}
+
+	printf("invntt exact lazy-edge roundtrip: %d/768 minimum coefficient match\n",
+	       min_matches);
+	return min_matches == NTRUPLUS_N;
 }
 
 static void schoolbook_mul_reference(int16_t r[NTRUPLUS_N],
@@ -761,14 +955,19 @@ int main(void)
 	const int branch_factors[2] = {f0, f1};
 	int ok = 1;
 
+	ok &= check_inverse_scaling_constants();
 	ok &= check_twist_tables();
 	ok &= check_gt_rowbitrev_lambda_table(branch_factors);
 	ok &= check_ntt32_radix2_ct_bitrev();
 	ok &= check_ntt96_goodthomas();
 	ok &= check_intt32_radix2_dit();
 	ok &= check_invntt96_goodthomas();
+	ok &= check_invntt96_goodthomas_rowfirst();
 	ok &= check_full_ntt_gt_rowbitrev_direct(branch_factors);
 	ok &= check_invntt_gt_rowbitrevlayout_roundtrip();
+	ok &= check_invntt_gt_rowbitrevlayout_impulses();
+	ok &= check_invntt_gt_rowbitrevlayout_random_extended();
+	ok &= check_invntt_gt_rowbitrevlayout_lazy_edges();
 	ok &= check_gt_rowbitrev_multiplication();
 	ok &= check_gt_rowbitrev_basemul_add();
 	ok &= check_gt_rowbitrev_baseinv();
