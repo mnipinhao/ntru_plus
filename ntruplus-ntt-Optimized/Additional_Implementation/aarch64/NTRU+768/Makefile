@@ -20,7 +20,7 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm test_polyinvntt_asm bench_polyinvntt_asm bench_polyinvntt_oldgather bench_polyinvntt_kpqc_final bench_polyinvntt_compare dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
+.PHONY: all PQCgenKAT_kem test test_gt_reference test_polyntt_harness test_polyntt_asm test_polyinvntt_asm analyze_invntt32_ranges bench_polyinvntt_asm bench_polyinvntt_oldgather bench_polyinvntt_eagerrow bench_polyinvntt_kpqc_final bench_polyinvntt_compare dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
@@ -56,20 +56,29 @@ test_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLY
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_asm gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
+analyze_invntt32_ranges: $(HEADERS) ntt.h ntt.c gt_test/analyze_invntt32_ranges.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/analyze_invntt32_ranges gt_test/analyze_invntt32_ranges.c
+
 bench_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_directload\" -I. -o $(BUILD_DIR)/bench_polyinvntt_asm gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_rowlazy\" -I. -o $(BUILD_DIR)/bench_polyinvntt_asm gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
 bench_polyinvntt_oldgather: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_oldgather.s asm/slothy/invntt_opt.s
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_oldgather\" -I. -o $(BUILD_DIR)/bench_polyinvntt_oldgather gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_oldgather.s
 
+bench_polyinvntt_eagerrow: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_eagerrow.s asm/slothy/invntt_opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_eagerrow\" -I. -o $(BUILD_DIR)/bench_polyinvntt_eagerrow gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_eagerrow.s
+
 bench_polyinvntt_kpqc_final: $(HEADERS) gt_test/bench_polyinvntt_asm.c asm/ntt.s
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"kpqc_final_invntt\" -I. -o $(BUILD_DIR)/bench_polyinvntt_kpqc_final gt_test/bench_polyinvntt_asm.c asm/ntt.s
 
-bench_polyinvntt_compare: bench_polyinvntt_asm bench_polyinvntt_kpqc_final
+bench_polyinvntt_compare: bench_polyinvntt_asm bench_polyinvntt_eagerrow bench_polyinvntt_kpqc_final
 	./$(BUILD_DIR)/bench_polyinvntt_asm
+	./$(BUILD_DIR)/bench_polyinvntt_eagerrow
 	./$(BUILD_DIR)/bench_polyinvntt_kpqc_final
 
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c

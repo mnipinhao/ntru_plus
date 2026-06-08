@@ -25,8 +25,35 @@
     mov      \tmp\().16b, \lo\().16b
     add      \lo\().8h, \lo\().8h, \prod\().8h
     sub      \hi\().8h, \tmp\().8h, \prod\().8h
+.ifdef INVNTT_ROW_REDUCE_EAGER
     BARRETT_REDUCE \lo, \tmp
     BARRETT_REDUCE \hi, \tmp
+.endif
+.endm
+
+.macro REDUCE_ROW_VEC off
+    ldr q3, [x2, #\off]
+    BARRETT_REDUCE v3, v12
+    str q3, [x2, #\off]
+.endm
+
+.macro REDUCE_ROW_ALL
+    /*
+     * Default inverse row lazy-reduction policy.
+     *
+     * The inverse row NTT32 leaves all five stages lazy, then reduces the
+     * 32 natural-order row vectors once before the post-row DFT3/untwist/merge
+     * pipeline consumes them.  The range analyzer models valid row inputs from
+     * the production forward contract and observes a maximum pre-reduction
+     * absolute value of about 9766 with no signed int16 add/sub wrap.  This
+     * final row reduction restores the expected centered range for post-row.
+     *
+     * Define INVNTT_ROW_REDUCE_EAGER to restore the old regression fallback:
+     * reduce both outputs after every inverse row butterfly and skip this pass.
+     */
+    .irp i,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+        REDUCE_ROW_VEC (16 * \i)
+    .endr
 .endm
 
 .macro INVNTT32_STAGE123_BLOCK base
@@ -307,6 +334,9 @@ slothy_start_invntt32_fixed_stage45:
     INVNTT32_STAGE45_STRIPE 5
     INVNTT32_STAGE45_STRIPE 6
     INVNTT32_STAGE45_STRIPE 7
+.ifndef INVNTT_ROW_REDUCE_EAGER
+    REDUCE_ROW_ALL
+.endif
 slothy_end_invntt32_fixed_stage45:
     ret
 
@@ -656,6 +686,8 @@ inv_untwist_vecs:
 .purgem BARRETT_REDUCE
 .purgem FQMUL_LANE
 .purgem INV_BUTTERFLY_LANE
+.purgem REDUCE_ROW_VEC
+.purgem REDUCE_ROW_ALL
 .purgem INVNTT32_STAGE123_BLOCK
 .purgem INVNTT32_STAGE45_STRIPE
 .purgem DIRECT_LOAD_VEC
