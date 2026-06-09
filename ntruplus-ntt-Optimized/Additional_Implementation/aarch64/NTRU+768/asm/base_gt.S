@@ -1,6 +1,18 @@
 .text
 .align 2
 
+#ifdef __APPLE__
+#define C_SYM(sym) _##sym
+#define LOAD_ADDR(reg, sym) \
+	adrp reg, C_SYM(sym)@PAGE; \
+	add reg, reg, C_SYM(sym)@PAGEOFF
+#else
+#define C_SYM(sym) sym
+#define LOAD_ADDR(reg, sym) \
+	adrp reg, C_SYM(sym); \
+	add reg, reg, :lo12:C_SYM(sym)
+#endif
+
 /*
  * GT row-bitrev optimized poly_basemul.
  *
@@ -32,8 +44,7 @@ _poly_basemul:
 	adr const_ptr, Lgt_base_consts
 	ld1 {v0.8h}, [const_ptr]
 
-	adrp lambda, _gt_rowbitrev_lambda@PAGE
-	add lambda, lambda, _gt_rowbitrev_lambda@PAGEOFF
+	LOAD_ADDR(lambda, gt_rowbitrev_lambda)
 
 	mov counter, #24
 
@@ -195,8 +206,7 @@ _poly_basemul_add:
 	adr const_ptr, Lgt_base_consts
 	ld1 {v0.8h}, [const_ptr]
 
-	adrp lambda, _gt_rowbitrev_lambda@PAGE
-	add lambda, lambda, _gt_rowbitrev_lambda@PAGEOFF
+	LOAD_ADDR(lambda, gt_rowbitrev_lambda)
 
 	mov counter, #24
 

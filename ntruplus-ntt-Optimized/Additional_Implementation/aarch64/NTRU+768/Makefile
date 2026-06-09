@@ -20,12 +20,14 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_polyinvntt_asm bench_polyinvntt_oldgather bench_polyinvntt_eagerrow bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
+.PHONY: all PQCgenKAT_kem test test_stock_base_opt test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_gt_base_opt test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt bench_base_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt bench_baseadd_compare bench_ntt_pipeline_stock bench_ntt_pipeline_gt bench_ntt_pipeline_stock_opt bench_ntt_pipeline_gt_opt bench_ntt_pipeline_compare bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt bench_ntt_pipeline_add_stock_opt bench_ntt_pipeline_add_gt_opt bench_ntt_pipeline_add_compare bench_polyinvntt_asm bench_polyinvntt_oldgather bench_polyinvntt_eagerrow bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final bench_kem_dec_gt bench_kem_dec_compare bench_pmu bench_pmu_base_compare bench_pmu_base_compare_stock_gt bench_pmu_base_compare_stockopt_gtopt bench_pmu_base_compare_stock_stockopt bench_pmu_base_compare_gt_gtopt bench_pmu_symbols dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
 POLYINVNTT_ASM ?= asm/inv_my_ntt.s
-BASE_GT_ASM ?= asm/base_gt.s
+STOCK_BASE_ASM ?= asm/base.s
+GT_BASE_ASM ?= asm/base_gt.S
+BASE_GT_ASM ?= $(GT_BASE_ASM)
 BASE_GT_BENCH_LABEL ?= gt_basemul_asm
 KEM_NTT_ASM ?= asm/ntt.s
 KEM_INVNTT_ASM ?=
@@ -34,6 +36,29 @@ KEM_CREPMOD3_ASM ?= asm/crepmod3.s
 # gt_test/poly_gt_base_ref.c ntt.c or ntt.c asm/base_gt_ref.s.
 KEM_BASE_SOURCES ?= poly.c asm/base.s
 KEM_BENCH_LABEL ?= kpqc_final_kem_dec
+PMU_MODE ?= basemul
+PMU_LABEL ?= $(PMU_MODE)
+PMU_CALLS ?= 1024
+PMU_WARMUP ?= 16
+PMU_SUBTRACT_EMPTY ?= 0
+PMU_FIXED_ONLY ?= 0
+PMU_ROUNDS ?= 11
+PMU_DISCARD_FIRST ?= 1
+PMU_CFLAGS ?=
+PMU_COMPARE_MODE ?= base_compare
+PMU_COMPARE_LABEL ?= stock_vs_gt_base
+PMU_COMPARE_LEFT_ASM ?= asm/base.s
+PMU_COMPARE_RIGHT_ASM ?= asm/base_gt.S
+PMU_COMPARE_LEFT_LABEL ?= stock_base
+PMU_COMPARE_RIGHT_LABEL ?= gt_base
+# Defaults build the stock AArch64 implementation.  For GT diagnostics use:
+#   PMU_BASE_SOURCES='gt_test/poly_gt_base_ref.c asm/base_gt.S'
+#   PMU_CFLAGS='-DGT_BASE_REF_ONLY_BASEINV_ABI'
+#   PMU_NTT_SOURCES='asm/my_ntt.s asm/slothy/my_32ntt.opt.s'
+#   PMU_INVNTT_SOURCES=asm/inv_my_ntt.s
+PMU_BASE_SOURCES ?= poly.c asm/base.s
+PMU_NTT_SOURCES ?= asm/ntt.s
+PMU_INVNTT_SOURCES ?=
 POLYNTT_TEST_CFLAGS ?=
 POLYNTT_ASM_FLAGS ?=
 
@@ -48,6 +73,10 @@ PQCgenKAT_kem: $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) kat/PQCgenKAT_kem.c kat
 test: $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test randombytes.c test/test.c $(SOURCES)
+
+test_stock_base_opt: $(HEADERS) randombytes.h randombytes.c test/test.c kem.c symmetric.c poly.c asm/add.s asm/ntt.s asm/base.opt.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_stock_base_opt randombytes.c test/test.c kem.c symmetric.c poly.c asm/add.s asm/ntt.s asm/base.opt.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S
 
 test_gt_reference: $(HEADERS) ntt.h ntt.c gt_test/test_gt_reference.c
 	@mkdir -p $(BUILD_DIR)
@@ -64,6 +93,10 @@ test_gt_base_asm: $(HEADERS) ntt.h ntt.c gt_test/test_gt_base_ref.c asm/base_gt_
 test_gt_basemul_asm: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/test_gt_basemul_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(BASE_GT_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_basemul_asm gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(BASE_GT_ASM)
+
+test_gt_base_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/test_gt_basemul_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_base_opt gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
 
 test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c
 	@mkdir -p $(BUILD_DIR)
@@ -113,31 +146,115 @@ bench_gt_basemul_asm: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"$(BASE_GT_BENCH_LABEL)\" -I. -o $(BUILD_DIR)/bench_gt_basemul_asm gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c $(BASE_GT_ASM)
 
-bench_gt_basemul_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.s
+bench_gt_basemul_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c $(STOCK_BASE_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"stock_basemul_raw\" -I. -o $(BUILD_DIR)/bench_gt_basemul_stock gt_test/bench_gt_basemul.c ntt.c asm/base.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"stock_basemul_raw\" -I. -o $(BUILD_DIR)/bench_gt_basemul_stock gt_test/bench_gt_basemul.c ntt.c $(STOCK_BASE_ASM)
 
 bench_gt_basemul_compare: bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock
 	./$(BUILD_DIR)/bench_gt_basemul_ref
 	./$(BUILD_DIR)/bench_gt_basemul_asm
 	./$(BUILD_DIR)/bench_gt_basemul_stock
 
+bench_base_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"stock_base\" -I. -o $(BUILD_DIR)/bench_base_stock gt_test/bench_gt_basemul.c ntt.c asm/base.s
+
+bench_base_stock_opt: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"stock_base_opt\" -I. -o $(BUILD_DIR)/bench_base_stock_opt gt_test/bench_gt_basemul.c ntt.c asm/base.opt.s
+
+bench_base_gt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"gt_base\" -I. -o $(BUILD_DIR)/bench_base_gt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.S
+
+bench_base_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"gt_base_opt\" -I. -o $(BUILD_DIR)/bench_base_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.opt.s
+
+bench_base_compare: bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt
+	./$(BUILD_DIR)/bench_base_stock
+	./$(BUILD_DIR)/bench_base_stock_opt
+	./$(BUILD_DIR)/bench_base_gt
+	./$(BUILD_DIR)/bench_base_gt_opt
+
 bench_gt_basemuladd_ref: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt_ref.s
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_basemuladd_scalar_ref\" -I. -o $(BUILD_DIR)/bench_gt_basemuladd_ref gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt_ref.s
 
-bench_gt_basemuladd_asm: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.s
+bench_gt_basemuladd_asm: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c $(BASE_GT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_basemuladd_asm\" -I. -o $(BUILD_DIR)/bench_gt_basemuladd_asm gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_basemuladd_asm\" -I. -o $(BUILD_DIR)/bench_gt_basemuladd_asm gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c $(BASE_GT_ASM)
 
-bench_gt_basemuladd_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.s
+bench_gt_basemuladd_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c $(STOCK_BASE_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"stock_basemuladd_raw\" -I. -o $(BUILD_DIR)/bench_gt_basemuladd_stock gt_test/bench_gt_basemul.c ntt.c asm/base.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"stock_basemuladd_raw\" -I. -o $(BUILD_DIR)/bench_gt_basemuladd_stock gt_test/bench_gt_basemul.c ntt.c $(STOCK_BASE_ASM)
 
 bench_gt_basemuladd_compare: bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock
 	./$(BUILD_DIR)/bench_gt_basemuladd_ref
 	./$(BUILD_DIR)/bench_gt_basemuladd_asm
 	./$(BUILD_DIR)/bench_gt_basemuladd_stock
+
+bench_baseadd_stock: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"stock_baseadd\" -I. -o $(BUILD_DIR)/bench_baseadd_stock gt_test/bench_gt_basemul.c ntt.c asm/base.s
+
+bench_baseadd_stock_opt: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul.c asm/base.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"stock_baseadd_opt\" -I. -o $(BUILD_DIR)/bench_baseadd_stock_opt gt_test/bench_gt_basemul.c ntt.c asm/base.opt.s
+
+bench_baseadd_gt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseadd\" -I. -o $(BUILD_DIR)/bench_baseadd_gt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.S
+
+bench_baseadd_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseadd_opt\" -I. -o $(BUILD_DIR)/bench_baseadd_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.opt.s
+
+bench_baseadd_compare: bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt
+	./$(BUILD_DIR)/bench_baseadd_stock
+	./$(BUILD_DIR)/bench_baseadd_stock_opt
+	./$(BUILD_DIR)/bench_baseadd_gt
+	./$(BUILD_DIR)/bench_baseadd_gt_opt
+
+bench_ntt_pipeline_stock: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"kpqc_final_ntt_mul_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_stock gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+
+bench_ntt_pipeline_gt: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_current_ntt_mul_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_gt gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.S
+
+bench_ntt_pipeline_stock_opt: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"kpqc_baseopt_ntt_mul_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_stock_opt gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.opt.s
+
+bench_ntt_pipeline_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_baseopt_ntt_mul_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_gt_opt gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+
+bench_ntt_pipeline_compare: bench_ntt_pipeline_stock bench_ntt_pipeline_gt
+	./$(BUILD_DIR)/bench_ntt_pipeline_stock
+	./$(BUILD_DIR)/bench_ntt_pipeline_gt
+
+bench_ntt_pipeline_add_stock: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"kpqc_final_ntt_basemul_add_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_stock gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+
+bench_ntt_pipeline_add_gt: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_current_ntt_basemul_add_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_gt gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.S
+
+bench_ntt_pipeline_add_stock_opt: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"kpqc_baseopt_ntt_basemul_add_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_stock_opt gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.opt.s
+
+bench_ntt_pipeline_add_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseopt_ntt_basemul_add_pipeline\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+
+bench_ntt_pipeline_add_compare: bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt
+	./$(BUILD_DIR)/bench_ntt_pipeline_add_stock
+	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt
 
 bench_kem_dec: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
@@ -146,6 +263,39 @@ bench_kem_dec: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c ke
 bench_kem_dec_kpqc_final: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c poly.c asm/add.s asm/base.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S asm/ntt.s
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"kpqc_final_kem_dec\" -I. -o $(BUILD_DIR)/bench_kem_dec_kpqc_final gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c poly.c asm/add.s asm/base.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S asm/ntt.s
+
+bench_kem_dec_gt: $(HEADERS) randombytes.h ntt.h ntt.c gt_test/bench_kem_dec.c gt_test/poly_gt_base_ref.c randombytes.c kem.c symmetric.c asm/base_gt.S asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_ONLY_BASEINV_ABI -DBENCH_LABEL=\"gt_current_kem_dec\" -I. -o $(BUILD_DIR)/bench_kem_dec_gt gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.S asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+
+bench_kem_dec_compare: bench_kem_dec_kpqc_final bench_kem_dec_gt
+	./$(BUILD_DIR)/bench_kem_dec_kpqc_final
+	./$(BUILD_DIR)/bench_kem_dec_gt
+
+bench_pmu: $(HEADERS) randombytes.h gt_test/bench_pmu.c randombytes.c kem.c symmetric.c ntt.c $(PMU_BASE_SOURCES) asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(PMU_NTT_SOURCES) $(PMU_INVNTT_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(PMU_CFLAGS) -DPMU_BENCH_MODE=\"$(PMU_MODE)\" -DPMU_BENCH_LABEL=\"$(PMU_LABEL)\" -DPMU_BENCH_CALLS=$(PMU_CALLS) -DPMU_BENCH_WARMUP=$(PMU_WARMUP) -DPMU_SUBTRACT_EMPTY=$(PMU_SUBTRACT_EMPTY) -DPMU_FIXED_ONLY=$(PMU_FIXED_ONLY) -DPMU_ROUNDS=$(PMU_ROUNDS) -DPMU_DISCARD_FIRST=$(PMU_DISCARD_FIRST) -I. -o $(BUILD_DIR)/bench_pmu gt_test/bench_pmu.c randombytes.c kem.c symmetric.c ntt.c $(PMU_BASE_SOURCES) asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(PMU_NTT_SOURCES) $(PMU_INVNTT_SOURCES)
+
+bench_pmu_base_compare: $(HEADERS) randombytes.h gt_test/bench_pmu.c gt_test/bench_pmu_stock_base_renamed.S gt_test/bench_pmu_gt_base_renamed.S randombytes.c kem.c symmetric.c ntt.c poly.c asm/base.s $(PMU_COMPARE_LEFT_ASM) $(PMU_COMPARE_RIGHT_ASM) asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S asm/ntt.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(PMU_CFLAGS) -DPMU_BASE_COMPARE=1 -DPMU_BENCH_MODE=\"$(PMU_COMPARE_MODE)\" -DPMU_BENCH_LABEL=\"$(PMU_COMPARE_LABEL)\" -DPMU_BENCH_CALLS=$(PMU_CALLS) -DPMU_BENCH_WARMUP=$(PMU_WARMUP) -DPMU_SUBTRACT_EMPTY=$(PMU_SUBTRACT_EMPTY) -DPMU_FIXED_ONLY=$(PMU_FIXED_ONLY) -DPMU_ROUNDS=$(PMU_ROUNDS) -DPMU_DISCARD_FIRST=$(PMU_DISCARD_FIRST) -DPMU_COMPARE_LEFT_LABEL=\"$(PMU_COMPARE_LEFT_LABEL)\" -DPMU_COMPARE_RIGHT_LABEL=\"$(PMU_COMPARE_RIGHT_LABEL)\" -DBENCH_PMU_STOCK_BASE_INCLUDE=\"$(abspath $(PMU_COMPARE_LEFT_ASM))\" -DBENCH_PMU_GT_BASE_INCLUDE=\"$(abspath $(PMU_COMPARE_RIGHT_ASM))\" -I. -o $(BUILD_DIR)/bench_pmu_base_compare gt_test/bench_pmu.c randombytes.c kem.c symmetric.c ntt.c poly.c asm/base.s asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S asm/ntt.s gt_test/bench_pmu_stock_base_renamed.S gt_test/bench_pmu_gt_base_renamed.S
+
+bench_pmu_base_compare_stock_gt:
+	$(MAKE) bench_pmu_base_compare PMU_COMPARE_LABEL=stock_vs_gt_base PMU_COMPARE_LEFT_ASM=asm/base.s PMU_COMPARE_RIGHT_ASM=asm/base_gt.S PMU_COMPARE_LEFT_LABEL=stock_base PMU_COMPARE_RIGHT_LABEL=gt_base
+
+bench_pmu_base_compare_stockopt_gtopt:
+	$(MAKE) bench_pmu_base_compare PMU_COMPARE_LABEL=stockopt_vs_gtopt_base PMU_COMPARE_LEFT_ASM=asm/base.opt.s PMU_COMPARE_RIGHT_ASM=asm/base_gt.opt.s PMU_COMPARE_LEFT_LABEL=stock_base_opt PMU_COMPARE_RIGHT_LABEL=gt_base_opt
+
+bench_pmu_base_compare_stock_stockopt:
+	$(MAKE) bench_pmu_base_compare PMU_COMPARE_LABEL=stock_base_vs_stock_base_opt PMU_COMPARE_LEFT_ASM=asm/base.s PMU_COMPARE_RIGHT_ASM=asm/base.opt.s PMU_COMPARE_LEFT_LABEL=stock_base PMU_COMPARE_RIGHT_LABEL=stock_base_opt
+
+bench_pmu_base_compare_gt_gtopt:
+	$(MAKE) bench_pmu_base_compare PMU_COMPARE_LABEL=gt_base_vs_gt_base_opt PMU_COMPARE_LEFT_ASM=asm/base_gt.S PMU_COMPARE_RIGHT_ASM=asm/base_gt.opt.s PMU_COMPARE_LEFT_LABEL=gt_base PMU_COMPARE_RIGHT_LABEL=gt_base_opt
+
+bench_pmu_symbols: $(HEADERS) randombytes.h gt_test/bench_pmu.c randombytes.c kem.c symmetric.c ntt.c $(PMU_BASE_SOURCES) asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(PMU_NTT_SOURCES) $(PMU_INVNTT_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(PMU_CFLAGS) -DPMU_SYMBOLS_ONLY=1 -DPMU_BENCH_MODE=\"empty\" -DPMU_BENCH_LABEL=\"pmu_symbols\" -DPMU_BENCH_CALLS=1 -DPMU_BENCH_WARMUP=0 -DPMU_SUBTRACT_EMPTY=0 -DPMU_FIXED_ONLY=1 -DPMU_ROUNDS=1 -DPMU_DISCARD_FIRST=0 -I. -o $(BUILD_DIR)/bench_pmu_symbols gt_test/bench_pmu.c randombytes.c kem.c symmetric.c ntt.c $(PMU_BASE_SOURCES) asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(PMU_NTT_SOURCES) $(PMU_INVNTT_SOURCES)
+	./$(BUILD_DIR)/bench_pmu_symbols
 
 dump_forward_mapping: $(HEADERS) ntt.h ntt.c gt_test/dump_forward_mapping.c
 	@mkdir -p $(BUILD_DIR)
