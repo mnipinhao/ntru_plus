@@ -701,6 +701,101 @@ still benchmark before drawing full-scheme conclusions:
   kem_dec.
 ```
 
+## Pi 5 sync and default verification
+
+If `VARIANT=gt BENCH_MODE=invntt` reports about 4559 cycles, the Pi checkout is
+still using the previous no-DFT3-reduce default or an equivalent stale
+`asm/inv_my_ntt.s`.  The latest default must contain these gates:
+
+```asm
+.equ INVNTT_POST_DFT3_NO_REDUCE, 1
+.equ INVNTT_USE_POST_BRANCHFOLD, 1
+.equ INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, 1
+```
+
+Verify on the Pi from the benchmark directory:
+
+```sh
+cd ~/ntruplus-ntt-Optimized/aarch64-bench
+grep -n "INVNTT_USE_POST_BRANCHFOLD" ntruplus/asm/inv_my_ntt.s
+grep -n "INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS" ntruplus/asm/inv_my_ntt.s
+```
+
+If either grep is empty, update the checkout and rebuild:
+
+```sh
+cd ~/ntruplus-ntt-Optimized
+git pull
+cd aarch64-bench
+
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt
+sudo taskset -c 3 ./bench
+```
+
+To bypass default-wrapper ambiguity, benchmark the promoted wrapper explicitly:
+
+```sh
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt \
+  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_branchfold_reduce.s
+sudo taskset -c 3 ./bench
+```
+
+The explicit promoted wrapper should be around 4044 cycles on the measured Pi
+5 setup.  If the explicit wrapper is around 4044 but default is around 4559,
+the local `ntruplus/asm/inv_my_ntt.s` is stale.
+
+## KPQC final comparison
+
+Recent Pi 5 measurements:
+
+```text
+invntt:
+  KPQC final stock:        3961 cycles
+  GT stale noDFT default:  4559 cycles   (+15.1% vs stock)
+  GT branchfold expected:  4044 cycles   (+2.1% vs stock)
+
+ntt_mul_pipeline:
+  KPQC final stock:       13685 cycles
+  GT stale noDFT default: 13126 cycles   (-4.1% vs stock)
+```
+
+The standalone GT inverse is still slower than stock, but the full NTT
+multiplication pipeline is already faster because the GT forward NTT gain
+outweighs the inverse/base overhead.  After the Pi default is synced to
+branchfold-reduce, rerun `ntt_mul_pipeline`; the expected direction is another
+roughly 500-cycle improvement over the stale noDFT default, subject to pipeline
+noise and cache effects.
+
+## Remaining inverse NTT optimization candidates
+
+The remaining standalone gap against KPQC final is no longer a 1000-cycle
+layout problem once branchfold-reduce is active.  If GT branchfold is about
+4044 cycles and stock is about 3961 cycles, the gap is roughly 83 cycles.  The
+highest-value next steps are:
+
+1. Schedule the branchfold post-row path for Cortex-A76/Pi 5.
+   The current branchfold macro is correct and fast, but not a dedicated A76
+   Slothy schedule.  This is the most plausible remaining low-risk source of
+   tens to a few hundred cycles.
+
+2. Analyze branchfold output-reduction placement.
+   Branchfold removes final-merge fqmul work but adds two final Barrett
+   reductions per output vector.  A representative-exact analyzer should test
+   whether both reductions are always necessary, or whether selected vectors can
+   use a lighter correction while still matching production representatives.
+
+3. Reduce branchfold constant load pressure.
+   Branchfold loads low/high normal/precompute constants for each output vector.
+   A generated stripe schedule may hide some load latency, but a more compact
+   table layout or grouped loads could reduce pressure if it does not increase
+   shuffles.
+
+4. Re-check full-pipeline attribution after Pi sync.
+   If `ntt_mul_pipeline` improves as expected, inverse NTT is no longer the
+   dominant full-pipeline issue.  The next global target may become GT
+   basemul/base_add or forward unscheduled regions rather than more inverse
+   micro-optimization.
+
 ## Useful test targets
 
 ```sh
