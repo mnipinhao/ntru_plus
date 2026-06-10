@@ -9,7 +9,11 @@ SOURCES= kem.c symmetric.c poly.c asm/add.s asm/ntt.s asm/base.s asm/crepmod3.s 
 HEADERS= api.h params.h poly.h symmetric.h
 
 
-HAS_SHAKE256_ASM := 1
+# CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
+# Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
+# portable C SHAKE fallback as the default.  Explicitly set HAS_SHAKE256_ASM=1
+# only on systems where both assembler and CPU support +sha3.
+HAS_SHAKE256_ASM ?= 0
 
 ifeq ($(HAS_SHAKE256_ASM), 1)
 	SOURCES+=CE/fips202.c CE/f1600.S
@@ -20,11 +24,14 @@ else
 	HEADERS+=NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test test_stock_base_opt test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_gt_base_opt test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt bench_base_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt bench_baseadd_compare bench_ntt_pipeline_stock bench_ntt_pipeline_gt bench_ntt_pipeline_stock_opt bench_ntt_pipeline_gt_opt bench_ntt_pipeline_compare bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt bench_ntt_pipeline_add_stock_opt bench_ntt_pipeline_add_gt_opt bench_ntt_pipeline_add_compare bench_polyinvntt_asm bench_polyinvntt_oldgather bench_polyinvntt_eagerrow bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final bench_kem_dec_gt bench_kem_dec_compare bench_pmu bench_pmu_base_compare bench_pmu_base_compare_stock_gt bench_pmu_base_compare_stockopt_gtopt bench_pmu_base_compare_stock_stockopt bench_pmu_base_compare_gt_gtopt bench_pmu_symbols dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
+.PHONY: all PQCgenKAT_kem test test_stock_base_opt test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_gt_base_opt test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt bench_base_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt bench_baseadd_compare bench_ntt_pipeline_stock bench_ntt_pipeline_gt bench_ntt_pipeline_stock_opt bench_ntt_pipeline_gt_opt bench_ntt_pipeline_compare bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt bench_ntt_pipeline_add_stock_opt bench_ntt_pipeline_add_gt_opt bench_ntt_pipeline_add_compare bench_polyinvntt_asm bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final bench_kem_dec_gt bench_kem_dec_compare bench_pmu bench_pmu_base_compare bench_pmu_base_compare_stock_gt bench_pmu_base_compare_stockopt_gtopt bench_pmu_base_compare_stock_stockopt bench_pmu_base_compare_gt_gtopt bench_pmu_symbols dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
+.PHONY: verify_invntt_constants verify_invntt_layout verify_invntt_contracts test_invntt_representatives
+.PHONY: test_polyinvntt_rowlazy_baseline bench_polyinvntt_rowlazy_baseline
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
 POLYINVNTT_ASM ?= asm/inv_my_ntt.s
+POLYINVNTT_ROWLAZY_BASELINE_ASM ?= asm/inv_my_ntt_rowlazy_baseline.s
 STOCK_BASE_ASM ?= asm/base.s
 GT_BASE_ASM ?= asm/base_gt.S
 BASE_GT_ASM ?= $(GT_BASE_ASM)
@@ -61,6 +68,22 @@ PMU_NTT_SOURCES ?= asm/ntt.s
 PMU_INVNTT_SOURCES ?=
 POLYNTT_TEST_CFLAGS ?=
 POLYNTT_ASM_FLAGS ?=
+AARCH64_BENCH_DIR ?= ../../../aarch64-bench
+
+ifneq ($(BENCH_MODE),)
+.DEFAULT_GOAL := aarch64_bench_redirect
+.PHONY: aarch64_bench_redirect
+aarch64_bench_redirect:
+	@if [ ! -f "$(AARCH64_BENCH_DIR)/Makefile" ]; then \
+		echo "BENCH_MODE=$(BENCH_MODE) is for aarch64-bench, but $(AARCH64_BENCH_DIR) was not found."; \
+		echo "Run from ntruplus-ntt-Optimized/aarch64-bench, or keep this relative checkout layout."; \
+		exit 1; \
+	fi
+	@echo "BENCH_MODE=$(BENCH_MODE): forwarding this build to $(AARCH64_BENCH_DIR)"
+	$(MAKE) -C $(AARCH64_BENCH_DIR) clean
+	$(MAKE) -C $(AARCH64_BENCH_DIR)
+	ln -sf $(AARCH64_BENCH_DIR)/bench bench
+endif
 
 all: \
 	test \
@@ -110,9 +133,27 @@ test_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLY
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_asm gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
+test_polyinvntt_rowlazy_baseline: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_rowlazy_baseline gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
+
+test_invntt_representatives: $(HEADERS) ntt.h ntt.c gt_test/test_invntt_representatives.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_invntt_representatives gt_test/test_invntt_representatives.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+
 test_kem_invntt_contract: $(HEADERS) randombytes.h gt_test/test_kem_invntt_contract.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_kem_invntt_contract gt_test/test_kem_invntt_contract.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
+
+verify_invntt_constants: scripts/verify_invntt_constants.py asm/slothy/invntt_opt.s
+	$(PYTHON) scripts/verify_invntt_constants.py
+
+verify_invntt_layout: scripts/verify_invntt_layout.py
+	$(PYTHON) scripts/verify_invntt_layout.py
+
+verify_invntt_contracts: verify_invntt_constants verify_invntt_layout analyze_invntt32_ranges test_invntt_representatives
+	./$(BUILD_DIR)/analyze_invntt32_ranges
+	./$(BUILD_DIR)/test_invntt_representatives
 
 analyze_invntt32_ranges: $(HEADERS) ntt.h ntt.c gt_test/analyze_invntt32_ranges.c
 	@mkdir -p $(BUILD_DIR)
@@ -120,15 +161,11 @@ analyze_invntt32_ranges: $(HEADERS) ntt.h ntt.c gt_test/analyze_invntt32_ranges.
 
 bench_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_rowlazy\" -I. -o $(BUILD_DIR)/bench_polyinvntt_asm gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_default\" -I. -o $(BUILD_DIR)/bench_polyinvntt_asm gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
-bench_polyinvntt_oldgather: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_oldgather.s asm/slothy/invntt_opt.s
+bench_polyinvntt_rowlazy_baseline: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_oldgather\" -I. -o $(BUILD_DIR)/bench_polyinvntt_oldgather gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_oldgather.s
-
-bench_polyinvntt_eagerrow: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_eagerrow.s asm/slothy/invntt_opt.s
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_eagerrow\" -I. -o $(BUILD_DIR)/bench_polyinvntt_eagerrow gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) asm/inv_my_ntt_eagerrow.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_rowlazy_baseline\" -I. -o $(BUILD_DIR)/bench_polyinvntt_rowlazy_baseline gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
 
 bench_polyinvntt_kpqc_final: $(HEADERS) gt_test/bench_polyinvntt_asm.c asm/ntt.s
 	@mkdir -p $(BUILD_DIR)
@@ -311,4 +348,5 @@ csv_viewers: dump_forward_mapping
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
+	$(RM) bench
 	$(RM) -r $(BUILD_DIR)

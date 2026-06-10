@@ -1,8 +1,9 @@
 /*
  * Generated AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
  * layout produced by asm/my_ntt.s.  The retained clean Slothy component
- * sources are invntt32_fixed_clean.slothy.s and
- * invntt_post_fused_clean.slothy.s.
+ * sources for the promoted scheduled regions are
+ * invntt32_stage45_reduce_fused_clean.slothy.s and
+ * invntt_post_fused_dstore_clean.slothy.s.
  *
  * Constant tables here are normal centered multipliers plus sqrdmulh
  * precompute constants.  They are not Montgomery-form tables.
@@ -12,15 +13,6 @@
     sqdmulh \tmp\().8h, \reg\().8h, v0.h[1]
     srshr   \tmp\().8h, \tmp\().8h, #11
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
-.endm
-
-.macro CENTER_NORMALIZE_Q reg, qvec, hi, lo, mask
-    cmgt \mask\().8h, \reg\().8h, \hi\().8h
-    and  \mask\().16b, \mask\().16b, \qvec\().16b
-    sub  \reg\().8h, \reg\().8h, \mask\().8h
-    cmgt \mask\().8h, \lo\().8h, \reg\().8h
-    and  \mask\().16b, \mask\().16b, \qvec\().16b
-    add  \reg\().8h, \reg\().8h, \mask\().8h
 .endm
 
 .macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
@@ -48,17 +40,21 @@
 
 .macro REDUCE_ROW_ALL
     /*
-     * Default inverse row lazy-reduction policy.
-     *
-     * The inverse row NTT32 leaves all five stages lazy, then reduces the
-     * 32 natural-order row vectors once before the post-row DFT3/untwist/merge
-     * pipeline consumes them.  The range analyzer models valid row inputs from
-     * the production forward contract and observes a maximum pre-reduction
-     * absolute value of about 9766 with no signed int16 add/sub wrap.  This
-     * final row reduction restores the expected centered range for post-row.
-     *
-     * Define INVNTT_ROW_REDUCE_EAGER to restore the old regression fallback:
-     * reduce both outputs after every inverse row butterfly and skip this pass.
+	 * Default inverse row lazy-reduction policy.
+	 *
+	 * The inverse row NTT32 leaves all five stages lazy, then reduces the
+	 * 32 natural-order row vectors once before the post-row DFT3/untwist/merge
+	 * pipeline consumes them.  The range analyzer models valid row inputs from
+	 * the production forward contract and observes a maximum pre-reduction
+	 * absolute value of about 9766 with no signed int16 add/sub wrap.  This
+	 * final row reduction restores the expected centered range for post-row.
+	 *
+	 * Contract: rowlazy is production-correct for forward-produced GT
+	 * row-bitrev inputs with the expected coefficient bounds.  It is not a
+	 * general-purpose inverse NTT for arbitrary int16 representatives.
+	 *
+	 * Define INVNTT_ROW_REDUCE_EAGER to restore the old regression fallback:
+	 * reduce both outputs after every inverse row butterfly and skip this pass.
      */
     .irp i,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
         REDUCE_ROW_VEC (16 * \i)
@@ -118,10 +114,73 @@
     INV_BUTTERFLY_LANE v3, v5, v1, 1, v2, 1, v11, v12
     INV_BUTTERFLY_LANE v4, v6, v1, 2, v2, 2, v11, v12
 
+.ifdef INVNTT_USE_STAGE45_REDUCE_FUSION
+    /*
+     * Opt-in experiment: fuse the production row-end Barrett reduction into
+     * stage45.  This is algebraically the same REDUCE_ROW_ALL operation, but
+     * avoids storing lazy stage45 outputs only to reload them for reduction.
+     */
+    BARRETT_REDUCE v3, v12
+    BARRETT_REDUCE v4, v12
+    BARRETT_REDUCE v5, v12
+    BARRETT_REDUCE v6, v12
+.endif
+
     str q3, [x2, #(16 * \j)]
     str q4, [x2, #(16 * (\j + 8))]
     str q5, [x2, #(16 * (\j + 16))]
     str q6, [x2, #(16 * (\j + 24))]
+.endm
+
+.macro INVNTT32_STAGE45_STRIPE_SLOTHY j
+    /*
+     * A72 Slothy schedule for INVNTT_USE_STAGE45_REDUCE_FUSION.  Source:
+     * asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s, generated as
+     * asm/slothy/invntt32_stage45_reduce_fused.opt.s with allow_spills=false.
+     */
+    ldr q11, [x2, #(16 * (\j + 24))]
+    ldr q7, [x3, #16]
+    ldr q30, [x2, #(16 * (\j + 16))]
+    ldr q5, [x3]
+    ldr q26, [x2, #(16 * (\j + 8))]
+    ldr q17, [x2, #(16 * \j)]
+    sqrdmulh v29.8h, v11.8h, v7.h[0]
+    mul v23.8h, v11.8h, v5.h[0]
+    mls v23.8h, v29.8h, v0.h[0]
+    sqrdmulh v20.8h, v26.8h, v7.h[0]
+    mul v10.8h, v26.8h, v5.h[0]
+    add v19.8h, v30.8h, v23.8h
+    sub v21.8h, v30.8h, v23.8h
+    mls v10.8h, v20.8h, v0.h[0]
+    sqrdmulh v6.8h, v19.8h, v7.h[1]
+    sqrdmulh v22.8h, v21.8h, v7.h[2]
+    mul v25.8h, v19.8h, v5.h[1]
+    mls v25.8h, v6.8h, v0.h[0]
+    add v9.8h, v17.8h, v10.8h
+    mul v14.8h, v21.8h, v5.h[2]
+    sub v7.8h, v17.8h, v10.8h
+    mls v14.8h, v22.8h, v0.h[0]
+    sub v29.8h, v9.8h, v25.8h
+    add v17.8h, v9.8h, v25.8h
+    sqdmulh v8.8h, v29.8h, v0.h[1]
+    sub v23.8h, v7.8h, v14.8h
+    sqdmulh v22.8h, v17.8h, v0.h[1]
+    add v10.8h, v7.8h, v14.8h
+    sqdmulh v3.8h, v23.8h, v0.h[1]
+    srshr v13.8h, v8.8h, #11
+    sqdmulh v28.8h, v10.8h, v0.h[1]
+    srshr v9.8h, v22.8h, #11
+    mls v29.8h, v13.8h, v0.h[0]
+    srshr v18.8h, v3.8h, #11
+    mls v17.8h, v9.8h, v0.h[0]
+    srshr v27.8h, v28.8h, #11
+    mls v23.8h, v18.8h, v0.h[0]
+    mls v10.8h, v27.8h, v0.h[0]
+    str q17, [x2, #(16 * \j)]
+    str q23, [x2, #(16 * (\j + 24))]
+    str q29, [x2, #(16 * (\j + 16))]
+    str q10, [x2, #(16 * (\j + 8))]
+    add x3, x3, #32
 .endm
 
 .macro DIRECT_LOAD_VEC dstidx, srcoff
@@ -129,6 +188,88 @@
     ldr d2, [x4, #\srcoff]
     mov v1.d[1], v2.d[0]
     str q1, [x2, #(16 * \dstidx)]
+.endm
+
+.macro DIRECT_STAGE123_VEC dst, srcoff
+    ldr d\dst, [x3, #\srcoff]
+    ldr d12, [x4, #\srcoff]
+    mov v\dst\().d[1], v12.d[0]
+.endm
+
+.macro DIRECT_STAGE123_BLOCK base, off0, off1, off2, off3, off4, off5, off6, off7
+    DIRECT_STAGE123_VEC 3, \off0
+    DIRECT_STAGE123_VEC 4, \off1
+    DIRECT_STAGE123_VEC 5, \off2
+    DIRECT_STAGE123_VEC 6, \off3
+    DIRECT_STAGE123_VEC 7, \off4
+    DIRECT_STAGE123_VEC 8, \off5
+    DIRECT_STAGE123_VEC 9, \off6
+    DIRECT_STAGE123_VEC 10, \off7
+
+    /* len=2 */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+    /* len=4 */
+    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+    /* len=8 */
+    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+    str q3,  [x2, #(\base + 0)]
+    str q4,  [x2, #(\base + 16)]
+    str q5,  [x2, #(\base + 32)]
+    str q6,  [x2, #(\base + 48)]
+    str q7,  [x2, #(\base + 64)]
+    str q8,  [x2, #(\base + 80)]
+    str q9,  [x2, #(\base + 96)]
+    str q10, [x2, #(\base + 112)]
+.endm
+
+.macro DIRECT_STAGE123_CONSTS
+    adr x7, invntt32_stage123_consts
+    ldr q1, [x7]
+    ldr q2, [x7, #16]
+.endm
+
+.macro DIRECT_STAGE123_ROW0
+    /*
+     * Fused direct physical load -> inverse row stage123 for k3=0.
+     * This skips the temporary row-bitrev input row materialization:
+     *   old path: direct d/d loads -> str q row -> stage123 ldr q
+     *   this path: direct d/d loads -> stage123 -> str q stage123 output
+     */
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK 0,   0,  24,  48,  72,  96, 120, 144, 168
+    DIRECT_STAGE123_BLOCK 128, 192, 216, 240, 264, 288, 312, 336, 360
+    DIRECT_STAGE123_BLOCK 256, 384, 408, 432, 456, 480, 504, 528, 552
+    DIRECT_STAGE123_BLOCK 384, 576, 600, 624, 648, 672, 696, 720, 744
+.endm
+
+.macro DIRECT_STAGE123_ROW1
+    /* k3=1 physical bytes: 256,280,...,760 then 16,40,...,232 */
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK 0,   256, 280, 304, 328, 352, 376, 400, 424
+    DIRECT_STAGE123_BLOCK 128, 448, 472, 496, 520, 544, 568, 592, 616
+    DIRECT_STAGE123_BLOCK 256, 640, 664, 688, 712, 736, 760,  16,  40
+    DIRECT_STAGE123_BLOCK 384,  64,  88, 112, 136, 160, 184, 208, 232
+.endm
+
+.macro DIRECT_STAGE123_ROW2
+    /* k3=2 physical bytes: 512,536,...,752 then 8,32,...,488 */
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK 0,   512, 536, 560, 584, 608, 632, 656, 680
+    DIRECT_STAGE123_BLOCK 128, 704, 728, 752,   8,  32,  56,  80, 104
+    DIRECT_STAGE123_BLOCK 256, 128, 152, 176, 200, 224, 248, 272, 296
+    DIRECT_STAGE123_BLOCK 384, 320, 344, 368, 392, 416, 440, 464, 488
 .endm
 
 .macro DIRECT_LOAD_ROW0
@@ -162,6 +303,10 @@
     bl _invntt32_8way_fixed
 .endm
 
+.macro RUN_INVNTT32_STAGE45_ROW
+    bl _invntt32_8way_stage45_only
+.endm
+
 .macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
     ldr     q10, [x3], #16
     ldr     q11, [x3], #16
@@ -186,24 +331,6 @@
     mul      v23.8h, v18.8h, v15.h[0]
     mls      v23.8h, v22.8h, v0.h[0]
 
-.ifdef INVNTT_POST_FINAL_NORMALIZE
-    /*
-     * Optional postlazy scheme-safety variant.
-     *
-     * INVNTT_POST_DFT3_NO_REDUCE removes the 96 standalone DFT3 Barrett
-     * reductions and leaves final outputs in a lazy mod-q representative range
-     * of about [-1916,1915].  This opt-in pass normalizes only the final stored
-     * coefficients into centered canonical [-1728,1728], so representative-
-     * sensitive callers such as poly_crepmod3 can consume the output without
-     * restoring the DFT3 reductions.
-     */
-    dup      v25.8h, v0.h[0]
-    dup      v26.8h, v15.h[2]
-    dup      v27.8h, v15.h[3]
-    CENTER_NORMALIZE_Q v21, v25, v26, v27, v28
-    CENTER_NORMALIZE_Q v23, v25, v26, v27, v28
-.endif
-
     str      d21, [\ptr, #\off_lo]
     str      d23, [\ptr, #\off_hi]
 .endm
@@ -219,18 +346,19 @@
     mls      v6.8h, v5.8h, v0.h[0]
 
     /*
-     * Production reduces the three inverse DFT3 outputs before untwist.
-     * INVNTT_POST_DFT3_NO_REDUCE is an opt-in benchmark variant that delays
-     * these reductions into the later untwist/merge fqmul chain.  The post
-     * range analyzer found it mod-q equivalent with no int16 wraps, but not
-     * exact-representative identical, so it is intentionally not default.
-     *
-     * This matters for scheme integration: q = 3457 == 1 (mod 3), and
-     * poly_crepmod3 reduces the raw signed representative modulo 3.  A final
-     * postlazy value alone does not identify whether it should be corrected by
-     * 0, +q, or -q relative to rowlazy, so a final-value-only crepmod3 fix is
-     * not mathematically equivalent.
-     */
+	 * Production reduces the three inverse DFT3 outputs before untwist.
+	 * INVNTT_POST_DFT3_NO_REDUCE is an opt-in benchmark variant that delays
+	 * these reductions into the later untwist/merge fqmul chain.  Postlazy can
+	 * be ring-correct modulo q, but it is not exact-representative identical,
+	 * so it is intentionally not default and must remain experimental.
+	 *
+	 * This matters for scheme integration: q = 3457 == 1 (mod 3), and
+	 * poly_crepmod3 reduces the raw signed representative modulo 3.  Two
+	 * representatives equal modulo q need not be equal modulo 3; x and x+q
+	 * differ by 1 modulo 3.  A final postlazy value alone does not identify
+	 * whether it should be corrected by 0, +q, or -q relative to rowlazy, so a
+	 * final-value-only crepmod3 fix is not mathematically equivalent.
+	 */
     add      v7.8h, v1.8h, v2.8h
     add      v7.8h, v7.8h, v3.8h
 .ifndef INVNTT_POST_DFT3_NO_REDUCE
@@ -254,10 +382,126 @@
     POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
 .endm
 
+.macro FUSED_POST_STRIPE_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    /*
+     * A72 Slothy schedule for one production-equivalent fused post-row stripe.
+     * Source: asm/slothy/invntt_post_fused_dstore_clean.slothy.s, generated as
+     * asm/slothy/invntt_post_fused_dstore.opt.s with allow_spills=false.
+     *
+     * The Slothy clean source uses q stores as live-out placeholders because
+     * this checkout's target model does not parse non-stack d stores.  The
+     * integrated path below keeps production's final d stores exactly.
+     */
+    ldr q7, [x9], #16
+    ldr q20, [x10], #16
+    ldr q17, [x8], #16
+    ldr q30, [x3], #16
+    ldr q11, [x3], #16
+    ldr q6, [x3], #16
+    ldr q29, [x3], #16
+    ldr q3, [x3], #16
+    sub v13.8h, v20.8h, v7.8h
+    ldr q2, [x3], #16
+    add v28.8h, v17.8h, v7.8h
+    sub v5.8h, v17.8h, v7.8h
+    sub v18.8h, v17.8h, v20.8h
+    sqrdmulh v24.8h, v13.8h, v0.h[3]
+    add v9.8h, v28.8h, v20.8h
+    mul v21.8h, v13.8h, v0.h[2]
+    sqdmulh v1.8h, v9.8h, v0.h[1]
+    mls v21.8h, v24.8h, v0.h[0]
+    srshr v13.8h, v1.8h, #11
+    add v20.8h, v5.8h, v21.8h
+    sub v21.8h, v18.8h, v21.8h
+    mls v9.8h, v13.8h, v0.h[0]
+    sqdmulh v13.8h, v20.8h, v0.h[1]
+    sqdmulh v1.8h, v21.8h, v0.h[1]
+    mul v17.8h, v9.8h, v30.8h
+    srshr v8.8h, v13.8h, #11
+    sqrdmulh v10.8h, v9.8h, v11.8h
+    srshr v23.8h, v1.8h, #11
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v23.8h, v0.h[0]
+    mls v17.8h, v10.8h, v0.h[0]
+    sqrdmulh v5.8h, v20.8h, v29.8h
+    mul v27.8h, v20.8h, v6.8h
+    ext v9.16b, v17.16b, v17.16b, #8
+    mul v16.8h, v21.8h, v3.8h
+    mls v27.8h, v5.8h, v0.h[0]
+    sub v26.8h, v17.8h, v9.8h
+    add v13.8h, v17.8h, v9.8h
+    sqrdmulh v9.8h, v21.8h, v2.8h
+    sqrdmulh v5.8h, v26.8h, v0.h[5]
+    ext v11.16b, v27.16b, v27.16b, #8
+    mul v20.8h, v26.8h, v0.h[4]
+    mls v16.8h, v9.8h, v0.h[0]
+    sub v28.8h, v27.8h, v11.8h
+    add v23.8h, v27.8h, v11.8h
+    mls v20.8h, v5.8h, v0.h[0]
+    mul v11.8h, v28.8h, v0.h[4]
+    ext v5.16b, v16.16b, v16.16b, #8
+    sqrdmulh v29.8h, v28.8h, v0.h[5]
+    sub v27.8h, v13.8h, v20.8h
+    sub v8.8h, v16.8h, v5.8h
+    sqrdmulh v30.8h, v20.8h, v15.h[1]
+    add v14.8h, v16.8h, v5.8h
+    sqrdmulh v18.8h, v27.8h, v0.h[7]
+    sqrdmulh v25.8h, v8.8h, v0.h[5]
+    mul v5.8h, v8.8h, v0.h[4]
+    mls v11.8h, v29.8h, v0.h[0]
+    mls v5.8h, v25.8h, v0.h[0]
+    mul v20.8h, v20.8h, v15.h[0]
+    sub v16.8h, v23.8h, v11.8h
+    sqrdmulh v1.8h, v11.8h, v15.h[1]
+    sub v4.8h, v14.8h, v5.8h
+    sqrdmulh v22.8h, v16.8h, v0.h[7]
+    sqrdmulh v19.8h, v4.8h, v0.h[7]
+    sqrdmulh v3.8h, v5.8h, v15.h[1]
+    mul v21.8h, v27.8h, v0.h[6]
+    mul v29.8h, v11.8h, v15.h[0]
+    mul v11.8h, v16.8h, v0.h[6]
+    mul v16.8h, v4.8h, v0.h[6]
+    mul v17.8h, v5.8h, v15.h[0]
+    mls v16.8h, v19.8h, v0.h[0]
+    mls v21.8h, v18.8h, v0.h[0]
+    mls v20.8h, v30.8h, v0.h[0]
+    str d16, [\ptr2, #\off2_lo]
+    mls v17.8h, v3.8h, v0.h[0]
+    str d21, [\ptr0, #\off0_lo]
+    mls v29.8h, v1.8h, v0.h[0]
+    str d20, [\ptr0, #\off0_hi]
+    mls v11.8h, v22.8h, v0.h[0]
+    str d17, [\ptr2, #\off2_hi]
+    str d29, [\ptr1, #\off1_hi]
+    str d11, [\ptr1, #\off1_lo]
+.endm
+
+.macro RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+.ifdef INVNTT_USE_POST_FUSED_SLOTHY
+    FUSED_POST_STRIPE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.else
+    FUSED_POST_STRIPE \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.endif
+.endm
+
+.ifdef INVNTT_COMPARE_OLD_SYMBOL
+.global poly_invntt_old
+.global _poly_invntt_old
+poly_invntt_old:
+_poly_invntt_old:
+.else
+.ifdef INVNTT_COMPARE_NEW_SYMBOL
+.global poly_invntt_new
+.global _poly_invntt_new
+poly_invntt_new:
+_poly_invntt_new:
+.else
 .global poly_invntt
 .global _poly_invntt
 poly_invntt:
 _poly_invntt:
+.endif
+.endif
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #1568
 
@@ -304,20 +548,35 @@ _poly_invntt:
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
+.ifdef INVNTT_USE_DIRECT_STAGE123
+    DIRECT_STAGE123_ROW0
+    RUN_INVNTT32_STAGE45_ROW
+.else
     DIRECT_LOAD_ROW0
     RUN_INVNTT32_ROW
+.endif
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #544
+.ifdef INVNTT_USE_DIRECT_STAGE123
+    DIRECT_STAGE123_ROW1
+    RUN_INVNTT32_STAGE45_ROW
+.else
     DIRECT_LOAD_ROW1
     RUN_INVNTT32_ROW
+.endif
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #1056
+.ifdef INVNTT_USE_DIRECT_STAGE123
+    DIRECT_STAGE123_ROW2
+    RUN_INVNTT32_STAGE45_ROW
+.else
     DIRECT_LOAD_ROW2
     RUN_INVNTT32_ROW
+.endif
 .endif
 
     /* Steps 3-5: inverse DFT3, untwist F_b^k, remove scale 96 in merge. */
@@ -336,23 +595,23 @@ _poly_invntt:
      *   k32 mod 3 == 2: v7->B+16, v8->C+16, v9->A+16
      * where A=x0+k32_group*24, B=x0+512+k32_group*24,
      * C=x0+256+k32_group*24.  The branch1 half is stored +768.
-     */
+    */
     add x11, x0, #0
     add x12, x0, #512
     add x13, x0, #256
     mov x5, #10
 slothy_start_invntt_post_fused:
 4:
-    FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
-    FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
-    FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
+    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    RUN_FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
     add x11, x11, #24
     add x12, x12, #24
     add x13, x13, #24
     subs x5, x5, #1
     b.ne 4b
-    FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
-    FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
 slothy_end_invntt_post_fused:
 
     add sp, sp, #1568
@@ -372,6 +631,16 @@ slothy_end_invntt32_fixed_stage123:
 
 slothy_start_invntt32_fixed_stage45:
     adr x3, invntt32_stage45_consts
+.ifdef INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY
+    INVNTT32_STAGE45_STRIPE_SLOTHY 0
+    INVNTT32_STAGE45_STRIPE_SLOTHY 1
+    INVNTT32_STAGE45_STRIPE_SLOTHY 2
+    INVNTT32_STAGE45_STRIPE_SLOTHY 3
+    INVNTT32_STAGE45_STRIPE_SLOTHY 4
+    INVNTT32_STAGE45_STRIPE_SLOTHY 5
+    INVNTT32_STAGE45_STRIPE_SLOTHY 6
+    INVNTT32_STAGE45_STRIPE_SLOTHY 7
+.else
     INVNTT32_STAGE45_STRIPE 0
     INVNTT32_STAGE45_STRIPE 1
     INVNTT32_STAGE45_STRIPE 2
@@ -380,10 +649,43 @@ slothy_start_invntt32_fixed_stage45:
     INVNTT32_STAGE45_STRIPE 5
     INVNTT32_STAGE45_STRIPE 6
     INVNTT32_STAGE45_STRIPE 7
+.endif
 .ifndef INVNTT_ROW_REDUCE_EAGER
+.ifndef INVNTT_USE_STAGE45_REDUCE_FUSION
     REDUCE_ROW_ALL
 .endif
+.endif
 slothy_end_invntt32_fixed_stage45:
+    ret
+
+_invntt32_8way_stage45_only:
+slothy_start_invntt32_stage45_only:
+    adr x3, invntt32_stage45_consts
+.ifdef INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY
+    INVNTT32_STAGE45_STRIPE_SLOTHY 0
+    INVNTT32_STAGE45_STRIPE_SLOTHY 1
+    INVNTT32_STAGE45_STRIPE_SLOTHY 2
+    INVNTT32_STAGE45_STRIPE_SLOTHY 3
+    INVNTT32_STAGE45_STRIPE_SLOTHY 4
+    INVNTT32_STAGE45_STRIPE_SLOTHY 5
+    INVNTT32_STAGE45_STRIPE_SLOTHY 6
+    INVNTT32_STAGE45_STRIPE_SLOTHY 7
+.else
+    INVNTT32_STAGE45_STRIPE 0
+    INVNTT32_STAGE45_STRIPE 1
+    INVNTT32_STAGE45_STRIPE 2
+    INVNTT32_STAGE45_STRIPE 3
+    INVNTT32_STAGE45_STRIPE 4
+    INVNTT32_STAGE45_STRIPE 5
+    INVNTT32_STAGE45_STRIPE 6
+    INVNTT32_STAGE45_STRIPE 7
+.endif
+.ifndef INVNTT_ROW_REDUCE_EAGER
+.ifndef INVNTT_USE_STAGE45_REDUCE_FUSION
+    REDUCE_ROW_ALL
+.endif
+.endif
+slothy_end_invntt32_stage45_only:
     ret
 
 .align 4
@@ -736,10 +1038,20 @@ inv_untwist_vecs:
 .purgem REDUCE_ROW_ALL
 .purgem INVNTT32_STAGE123_BLOCK
 .purgem INVNTT32_STAGE45_STRIPE
+.purgem INVNTT32_STAGE45_STRIPE_SLOTHY
 .purgem DIRECT_LOAD_VEC
+.purgem DIRECT_STAGE123_VEC
+.purgem DIRECT_STAGE123_BLOCK
+.purgem DIRECT_STAGE123_CONSTS
+.purgem DIRECT_STAGE123_ROW0
+.purgem DIRECT_STAGE123_ROW1
+.purgem DIRECT_STAGE123_ROW2
 .purgem DIRECT_LOAD_ROW0
 .purgem DIRECT_LOAD_ROW1
 .purgem DIRECT_LOAD_ROW2
 .purgem RUN_INVNTT32_ROW
+.purgem RUN_INVNTT32_STAGE45_ROW
 .purgem POST_STORE_PTR
 .purgem FUSED_POST_STRIPE
+.purgem FUSED_POST_STRIPE_SLOTHY
+.purgem RUN_FUSED_POST_STRIPE

@@ -44,3 +44,33 @@ The generated `my_32ntt.opt.s` has a small boundary post-process: it defines
 stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
 initial `scatter_ptr` before each stage345 block.  Keep that in mind if you
 regenerate the file from scratch.
+
+# Inverse NTT Files
+
+The active inverse NTT path is intentionally narrow:
+
+- `asm/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
+  directstage123 + Slothy stage45-reduce + Slothy post-row path through
+  assembler-time gates, then includes `asm/slothy/invntt_opt.s`.
+- `asm/inv_my_ntt_rowlazy_baseline.s` is the pre-promotion rowlazy baseline
+  wrapper for regression and benchmark comparison.
+- `asm/slothy/invntt_opt.s` is the current inverse implementation wired into
+  tests and benchmarks.
+- `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
+  `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
+  Slothy sources for the promoted scheduled regions.
+
+The old standalone `inv_my_ntt_*directstage123*.s`,
+`inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, and negative
+`postmerge_folded` wrappers were removed after promotion.  The only retained
+alternate wrapper is the rowlazy baseline above.
+
+Raspberry Pi 5 PERF medians motivating the promotion:
+
+- previous rowlazy/default GT `invntt`: about 5379 cycles
+- directstage123 only: about 5263 cycles
+- directstage123 + post-fused Slothy: 5109 cycles
+- directstage123 + stage45-reduce Slothy + post-fused Slothy: 5000 cycles
+- GT `ntt_mul_pipeline` with the promoted inverse: 13671 cycles
+- GT `ntt_basemul_add_pipeline` with the promoted inverse: 17071 cycles
+- GT `kem_dec` with the promoted inverse: 35218 cycles

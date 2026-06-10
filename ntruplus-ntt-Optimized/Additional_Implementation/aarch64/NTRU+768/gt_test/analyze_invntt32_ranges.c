@@ -621,5 +621,39 @@ int main(void)
 		printf("\n");
 	}
 
+	if (stats[VAR_ROW_END].rows == 0)
+	{
+		fprintf(stderr, "row_end_reduce_only analyzer did not process rows\n");
+		return 1;
+	}
+
+	if (stats[VAR_ROW_END].addsub_wraps != 0)
+	{
+		fprintf(stderr, "row_end_reduce_only observed signed int16 wraps: %d\n",
+		        stats[VAR_ROW_END].addsub_wraps);
+		return 1;
+	}
+
+	if (stats[VAR_ROW_END].mismatches != 0 ||
+	    stats[VAR_ROW_END].exact_mismatches != 0)
+	{
+		fprintf(stderr,
+		        "row_end_reduce_only mismatch: modq=%d exact=%d\n",
+		        stats[VAR_ROW_END].mismatches,
+		        stats[VAR_ROW_END].exact_mismatches);
+		return 1;
+	}
+
+	if (stats[VAR_ROW_END].max_abs_before_reduce > 10000)
+	{
+		fprintf(stderr,
+		        "row_end_reduce_only bound too high: max_abs_before_reduce=%d\n",
+		        stats[VAR_ROW_END].max_abs_before_reduce);
+		return 1;
+	}
+
+	printf("row_end_reduce_only contract check ok: max_abs_before_reduce=%d\n",
+	       stats[VAR_ROW_END].max_abs_before_reduce);
+
 	return 0;
 }

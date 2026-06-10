@@ -15,6 +15,7 @@ NITERATIONS ?= 300
 NWARMUP ?= 50
 
 NTRUPLUS = ntruplus
+GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
 
 ARITH_MODES = ntt invntt basemul basemul_add ntt_mul_pipeline ntt_basemul_add_pipeline
 KEM_MODES = kem_dec
@@ -48,7 +49,7 @@ GT_ARITH_SOURCES = \
 	$(NTRUPLUS)/asm/base_gt.S \
 	$(NTRUPLUS)/asm/my_ntt.s \
 	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(NTRUPLUS)/asm/inv_my_ntt.s
+	$(GT_INVNTT_ASM)
 
 STOCK_OPT_ARITH_SOURCES = \
 	$(NTRUPLUS)/asm/base.opt.s \
@@ -59,7 +60,7 @@ GT_OPT_ARITH_SOURCES = \
 	$(NTRUPLUS)/asm/base_gt.opt.s \
 	$(NTRUPLUS)/asm/my_ntt.s \
 	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(NTRUPLUS)/asm/inv_my_ntt.s
+	$(GT_INVNTT_ASM)
 
 STOCK_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
@@ -72,7 +73,7 @@ GT_KEM_SOURCES = \
 	$(NTRUPLUS)/asm/base_gt.S \
 	$(NTRUPLUS)/asm/my_ntt.s \
 	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(NTRUPLUS)/asm/inv_my_ntt.s
+	$(GT_INVNTT_ASM)
 
 STOCK_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
@@ -85,7 +86,7 @@ GT_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/asm/base_gt.opt.s \
 	$(NTRUPLUS)/asm/my_ntt.s \
 	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(NTRUPLUS)/asm/inv_my_ntt.s
+	$(GT_INVNTT_ASM)
 
 SOURCES = $(BENCH_SOURCES)
 BENCH_ENABLE_KEM = 0

@@ -46,13 +46,13 @@ def load_target(name: str):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="invntt32_fixed_clean.slothy.s")
-    parser.add_argument("--output", default="invntt_generated.opt.s")
+    parser.add_argument("--input", default="invntt32_stage45_reduce_fused_clean.slothy.s")
+    parser.add_argument("--output", default="invntt32_stage45_reduce_fused.opt.s")
     parser.add_argument("--target", default=os.environ.get("SLOTHY_TARGET", "a55"))
     parser.add_argument(
         "--region",
         action="append",
-        help="Slothy region as START:END. Defaults to the two fixed inverse NTT32 regions.",
+        help="Slothy region as START:END. Defaults to the promoted stage45-reduce region.",
     )
     parser.add_argument(
         "--reserved",
@@ -93,8 +93,7 @@ def main() -> None:
     slothy.config.reserved_regs = sorted(set(reserved_regs), key=reserved_regs.index)
 
     regions = args.region or [
-        "slothy_start_invntt32_fixed_stage123:slothy_end_invntt32_fixed_stage123",
-        "slothy_start_invntt32_fixed_stage45:slothy_end_invntt32_fixed_stage45",
+        "slothy_start_invntt32_stage45_reduce_fused:slothy_end_invntt32_stage45_reduce_fused",
     ]
     for region in regions:
         try:
