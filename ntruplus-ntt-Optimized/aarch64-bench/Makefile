@@ -15,13 +15,22 @@ NITERATIONS ?= 300
 NWARMUP ?= 50
 
 NTRUPLUS = ntruplus
-GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
 
-ARITH_MODES = ntt invntt basemul basemul_add ntt_mul_pipeline ntt_basemul_add_pipeline
+INVNTT_STAGE_MODES = invntt_rows invntt_row0 invntt_row1 invntt_row2 invntt_post \
+	invntt_post_dft3_raw invntt_post_dft3_reduce invntt_post_untwist \
+	invntt_post_finalmerge
+ARITH_MODES = ntt invntt basemul basemul_add ntt_mul_pipeline ntt_basemul_add_pipeline $(INVNTT_STAGE_MODES)
 KEM_MODES = kem_dec
 
 IS_ARITH_MODE = $(filter $(BENCH_MODE),$(ARITH_MODES))
 IS_KEM_MODE = $(filter $(BENCH_MODE),$(KEM_MODES))
+IS_INVNTT_STAGE_MODE = $(filter $(BENCH_MODE),$(INVNTT_STAGE_MODES))
+
+ifneq ($(IS_INVNTT_STAGE_MODE),)
+GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_benchstages.s
+else
+GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
+endif
 
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
@@ -90,7 +99,15 @@ GT_OPT_KEM_SOURCES = \
 
 SOURCES = $(BENCH_SOURCES)
 BENCH_ENABLE_KEM = 0
+BENCH_ENABLE_INVNTT_STAGES = 0
 SHAKE_CFLAGS =
+
+ifneq ($(IS_INVNTT_STAGE_MODE),)
+BENCH_ENABLE_INVNTT_STAGES = 1
+ifneq ($(filter $(VARIANT),gt gt_opt),$(VARIANT))
+$(error BENCH_MODE=$(BENCH_MODE) requires VARIANT=gt or VARIANT=gt_opt)
+endif
+endif
 
 ifneq ($(IS_KEM_MODE),)
 BENCH_ENABLE_KEM = 1
@@ -116,7 +133,7 @@ SOURCES += $(GT_KEM_SOURCES)
 else
 SOURCES += $(GT_ARITH_SOURCES)
 endif
-VARIANT_CFLAGS = -DGT_BASE_REF_ONLY_BASEINV_ABI
+VARIANT_CFLAGS = -DGT_BASE_REF_ONLY_BASEINV_ABI -DBENCH_VARIANT_GT=1
 else ifeq ($(VARIANT),stock_opt)
 ifneq ($(IS_KEM_MODE),)
 SOURCES += $(STOCK_OPT_KEM_SOURCES)
@@ -130,7 +147,7 @@ SOURCES += $(GT_OPT_KEM_SOURCES)
 else
 SOURCES += $(GT_OPT_ARITH_SOURCES)
 endif
-VARIANT_CFLAGS = -DGT_BASE_REF_ONLY_BASEINV_ABI
+VARIANT_CFLAGS = -DGT_BASE_REF_ONLY_BASEINV_ABI -DBENCH_VARIANT_GT=1
 else
 $(error unknown VARIANT=$(VARIANT); use stock, gt, stock_opt, or gt_opt)
 endif
@@ -158,6 +175,7 @@ CFLAGS := \
 	-DBENCH_MODE=\"$(BENCH_MODE)\" \
 	-DBENCH_NAME=\"$(VARIANT)_$(BENCH_MODE)\" \
 	-DBENCH_ENABLE_KEM=$(BENCH_ENABLE_KEM) \
+	-DBENCH_ENABLE_INVNTT_STAGES=$(BENCH_ENABLE_INVNTT_STAGES) \
 	-DNTESTS=$(NTESTS) \
 	-DNITERATIONS=$(NITERATIONS) \
 	-DNWARMUP=$(NWARMUP) \

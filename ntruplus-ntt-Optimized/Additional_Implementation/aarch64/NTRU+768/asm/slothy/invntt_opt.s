@@ -183,6 +183,86 @@
     add x3, x3, #32
 .endm
 
+.macro INVNTT32_STAGE45_STRIPE_SCRATCH j
+    ldr q1, [x3], #16
+    ldr q2, [x3], #16
+
+    ldr q3, [x14, #(64 * \j + 0)]
+    ldr q4, [x14, #(64 * \j + 16)]
+    ldr q5, [x14, #(64 * \j + 32)]
+    ldr q6, [x14, #(64 * \j + 48)]
+
+    /* len=16 for the lower and upper halves, then len=32. */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v3, v5, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 2, v2, 2, v11, v12
+
+.ifdef INVNTT_USE_STAGE45_REDUCE_FUSION
+    BARRETT_REDUCE v3, v12
+    BARRETT_REDUCE v4, v12
+    BARRETT_REDUCE v5, v12
+    BARRETT_REDUCE v6, v12
+.endif
+
+    str q3, [x2, #(16 * \j)]
+    str q4, [x2, #(16 * (\j + 8))]
+    str q5, [x2, #(16 * (\j + 16))]
+    str q6, [x2, #(16 * (\j + 24))]
+.endm
+
+.macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH j
+    /*
+     * Same A72 stage45+row-end-reduce schedule as
+     * INVNTT32_STAGE45_STRIPE_SLOTHY, but it reads the stage123 outputs from
+     * stripe-major scratch:
+     *   [j, j+8, j+16, j+24] at x14 + 64*j.
+     */
+    ldr q11, [x14, #(64 * \j + 48)]
+    ldr q7, [x3, #16]
+    ldr q30, [x14, #(64 * \j + 32)]
+    ldr q5, [x3]
+    ldr q26, [x14, #(64 * \j + 16)]
+    ldr q17, [x14, #(64 * \j + 0)]
+    sqrdmulh v29.8h, v11.8h, v7.h[0]
+    mul v23.8h, v11.8h, v5.h[0]
+    mls v23.8h, v29.8h, v0.h[0]
+    sqrdmulh v20.8h, v26.8h, v7.h[0]
+    mul v10.8h, v26.8h, v5.h[0]
+    add v19.8h, v30.8h, v23.8h
+    sub v21.8h, v30.8h, v23.8h
+    mls v10.8h, v20.8h, v0.h[0]
+    sqrdmulh v6.8h, v19.8h, v7.h[1]
+    sqrdmulh v22.8h, v21.8h, v7.h[2]
+    mul v25.8h, v19.8h, v5.h[1]
+    mls v25.8h, v6.8h, v0.h[0]
+    add v9.8h, v17.8h, v10.8h
+    mul v14.8h, v21.8h, v5.h[2]
+    sub v7.8h, v17.8h, v10.8h
+    mls v14.8h, v22.8h, v0.h[0]
+    sub v29.8h, v9.8h, v25.8h
+    add v17.8h, v9.8h, v25.8h
+    sqdmulh v8.8h, v29.8h, v0.h[1]
+    sub v23.8h, v7.8h, v14.8h
+    sqdmulh v22.8h, v17.8h, v0.h[1]
+    add v10.8h, v7.8h, v14.8h
+    sqdmulh v3.8h, v23.8h, v0.h[1]
+    srshr v13.8h, v8.8h, #11
+    sqdmulh v28.8h, v10.8h, v0.h[1]
+    srshr v9.8h, v22.8h, #11
+    mls v29.8h, v13.8h, v0.h[0]
+    srshr v18.8h, v3.8h, #11
+    mls v17.8h, v9.8h, v0.h[0]
+    srshr v27.8h, v28.8h, #11
+    mls v23.8h, v18.8h, v0.h[0]
+    mls v10.8h, v27.8h, v0.h[0]
+    str q17, [x2, #(16 * \j)]
+    str q23, [x2, #(16 * (\j + 24))]
+    str q29, [x2, #(16 * (\j + 16))]
+    str q10, [x2, #(16 * (\j + 8))]
+    add x3, x3, #32
+.endm
+
 .macro DIRECT_LOAD_VEC dstidx, srcoff
     ldr d1, [x3, #\srcoff]
     ldr d2, [x4, #\srcoff]
@@ -234,6 +314,59 @@
     str q10, [x2, #(\base + 112)]
 .endm
 
+.macro STORE_STAGE123_STRIPE_SCRATCH group
+    /*
+     * Store one 8-vector stage123 block in stage45 stripe-major order:
+     *   scratch[64*j + 16*group] = stage123_output[j + 8*group]
+     *
+     * stage45 consumes each stripe as four contiguous q-vectors
+     *   [j, j+8, j+16, j+24].
+     *
+     * This scratch cannot be overlaid with the final row buffer.  The final
+     * natural-order stage45 stores would otherwise clobber unconsumed scratch
+     * stripes in a cyclic dependency.
+     */
+    str q3,  [x14, #(64 * 0 + 16 * \group)]
+    str q4,  [x14, #(64 * 1 + 16 * \group)]
+    str q5,  [x14, #(64 * 2 + 16 * \group)]
+    str q6,  [x14, #(64 * 3 + 16 * \group)]
+    str q7,  [x14, #(64 * 4 + 16 * \group)]
+    str q8,  [x14, #(64 * 5 + 16 * \group)]
+    str q9,  [x14, #(64 * 6 + 16 * \group)]
+    str q10, [x14, #(64 * 7 + 16 * \group)]
+.endm
+
+.macro DIRECT_STAGE123_BLOCK_TO_SCRATCH group, off0, off1, off2, off3, off4, off5, off6, off7
+    DIRECT_STAGE123_VEC 3, \off0
+    DIRECT_STAGE123_VEC 4, \off1
+    DIRECT_STAGE123_VEC 5, \off2
+    DIRECT_STAGE123_VEC 6, \off3
+    DIRECT_STAGE123_VEC 7, \off4
+    DIRECT_STAGE123_VEC 8, \off5
+    DIRECT_STAGE123_VEC 9, \off6
+    DIRECT_STAGE123_VEC 10, \off7
+
+    /* len=2 */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+    /* len=4 */
+    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+    /* len=8 */
+    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+    STORE_STAGE123_STRIPE_SCRATCH \group
+.endm
+
 .macro DIRECT_STAGE123_CONSTS
     adr x7, invntt32_stage123_consts
     ldr q1, [x7]
@@ -272,6 +405,40 @@
     DIRECT_STAGE123_BLOCK 384, 320, 344, 368, 392, 416, 440, 464, 488
 .endm
 
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+    /*
+     * Opt-in experiment: direct physical load -> stage123 -> stripe-major
+     * scratch for stage45.  This keeps stage123 math unchanged but changes
+     * only the temporary stage123 layout consumed by the stage45 helper.
+     */
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0,   0,  24,  48,  72,  96, 120, 144, 168
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 192, 216, 240, 264, 288, 312, 336, 360
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 384, 408, 432, 456, 480, 504, 528, 552
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 576, 600, 624, 648, 672, 696, 720, 744
+.endm
+
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+    /* k3=1 physical bytes: 256,280,...,760 then 16,40,...,232 */
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 256, 280, 304, 328, 352, 376, 400, 424
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 448, 472, 496, 520, 544, 568, 592, 616
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 640, 664, 688, 712, 736, 760,  16,  40
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3,  64,  88, 112, 136, 160, 184, 208, 232
+.endm
+
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+    /* k3=2 physical bytes: 512,536,...,752 then 8,32,...,488 */
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 512, 536, 560, 584, 608, 632, 656, 680
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 704, 728, 752,   8,  32,  56,  80, 104
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 128, 152, 176, 200, 224, 248, 272, 296
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 320, 344, 368, 392, 416, 440, 464, 488
+.endm
+
 .macro DIRECT_LOAD_ROW0
     /* k3=0 physical bytes: 0,24,48,...,744 */
     .irp i,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
@@ -307,7 +474,17 @@
     bl _invntt32_8way_stage45_only
 .endm
 
+.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    bl _invntt32_8way_stage45_from_scratch
+.endm
+
 .macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
+.ifdef INVNTT_USE_POST_BRANCHFOLD
+    POST_STORE_PTR_BRANCHFOLD \xvec, \ptr, \off_lo, \off_hi
+.else
+.ifdef INVNTT_USE_POST_FASTSCALE
+    POST_STORE_PTR_FASTSCALE \xvec, \ptr, \off_lo, \off_hi
+.else
     ldr     q10, [x3], #16
     ldr     q11, [x3], #16
     sqrdmulh v12.8h, \xvec\().8h, v11.8h
@@ -317,6 +494,123 @@
     ext      v14.16b, v13.16b, v13.16b, #8
     add      v24.8h, v13.8h, v14.8h
     sub      v16.8h, v13.8h, v14.8h
+
+    sqrdmulh v17.8h, v16.8h, v0.h[5]
+    mul      v18.8h, v16.8h, v0.h[4]
+    mls      v18.8h, v17.8h, v0.h[0]
+
+    sub      v19.8h, v24.8h, v18.8h
+    sqrdmulh v20.8h, v19.8h, v0.h[7]
+    mul      v21.8h, v19.8h, v0.h[6]
+    mls      v21.8h, v20.8h, v0.h[0]
+
+    sqrdmulh v22.8h, v18.8h, v15.h[1]
+    mul      v23.8h, v18.8h, v15.h[0]
+    mls      v23.8h, v22.8h, v0.h[0]
+
+    str      d21, [\ptr, #\off_lo]
+    str      d23, [\ptr, #\off_hi]
+.endif
+.endif
+.endm
+
+.macro POST_STORE_PTR_BRANCHFOLD xvec, ptr, off_lo, off_hi
+    /*
+     * Branch-constant folded final merge:
+     *
+     *   out_low =
+     *     b0 * F0^k * (1 - ZMINUSZ5INV) / 192
+     *   + b1 * F1^k * (1 + ZMINUSZ5INV) / 192
+     *
+     *   out_high =
+     *     b0 * F0^k * ZMINUSZ5INV / 96
+     *   - b1 * F1^k * ZMINUSZ5INV / 96
+     *
+     * That folds untwist, branch merge, and final scaling into two fqmul
+     * operations plus cross-half adds.  The unreduced branchfold form changes
+     * representatives and is not safe for poly_crepmod3.  The production gate
+     * always pairs this with INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, which adds
+     * final Barrett reductions and matched the exact C-reference output for
+     * forward-produced GT inputs.
+     */
+    ldr     q10, [x3], #16    // low normal constants
+    ldr     q11, [x3], #16    // low sqrdmulh precompute
+    ldr     q12, [x3], #16    // high normal constants
+    ldr     q13, [x3], #16    // high sqrdmulh precompute
+
+    sqrdmulh v17.8h, \xvec\().8h, v11.8h
+    mul      v18.8h, \xvec\().8h, v10.8h
+    mls      v18.8h, v17.8h, v0.h[0]
+    ext      v19.16b, v18.16b, v18.16b, #8
+    add      v21.8h, v18.8h, v19.8h
+
+    sqrdmulh v20.8h, \xvec\().8h, v13.8h
+    mul      v23.8h, \xvec\().8h, v12.8h
+    mls      v23.8h, v20.8h, v0.h[0]
+    ext      v24.16b, v23.16b, v23.16b, #8
+    add      v23.8h, v23.8h, v24.8h
+
+.ifdef INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS
+    BARRETT_REDUCE v21, v20
+    BARRETT_REDUCE v23, v20
+.endif
+
+    str      d21, [\ptr, #\off_lo]
+    str      d23, [\ptr, #\off_hi]
+.endm
+
+.macro POST_STORE_PTR_FASTSCALE xvec, ptr, off_lo, off_hi
+    /*
+     * Experimental exactness probe:
+     *
+     * old:
+     *   t2       = fqmul(ZMINUSZ5INV, diff)
+     *   out_low  = fqmul(1/192, sum - t2)
+     *   out_high = fqmul(1/96,  t2)
+     *
+     * new:
+     *   t        = fqmul(ZMINUSZ5INV/192, diff)
+     *   s        = fqmul(1/192, sum)
+     *   out_low  = s - t
+     *   out_high = 2*t
+     *
+     * This saves one fqmul per output vector but changes reduction order, so
+     * exact representative tests decide whether it is usable.
+     */
+    ldr     q10, [x3], #16
+    ldr     q11, [x3], #16
+    sqrdmulh v12.8h, \xvec\().8h, v11.8h
+    mul      v13.8h, \xvec\().8h, v10.8h
+    mls      v13.8h, v12.8h, v0.h[0]
+
+    ext      v14.16b, v13.16b, v13.16b, #8
+    add      v24.8h, v13.8h, v14.8h
+    sub      v16.8h, v13.8h, v14.8h
+
+    sqrdmulh v17.8h, v16.8h, v15.h[3]
+    mul      v18.8h, v16.8h, v15.h[2]
+    mls      v18.8h, v17.8h, v0.h[0]
+
+    sqrdmulh v20.8h, v24.8h, v0.h[7]
+    mul      v21.8h, v24.8h, v0.h[6]
+    mls      v21.8h, v20.8h, v0.h[0]
+
+    sub      v21.8h, v21.8h, v18.8h
+    add      v23.8h, v18.8h, v18.8h
+
+.ifdef INVNTT_POST_FASTSCALE_REDUCE_OUTPUTS
+    BARRETT_REDUCE v21, v20
+    BARRETT_REDUCE v23, v20
+.endif
+
+    str      d21, [\ptr, #\off_lo]
+    str      d23, [\ptr, #\off_hi]
+.endm
+
+.macro POST_FINAL_STORE_PTR xvec, ptr, off_lo, off_hi
+    ext      v14.16b, \xvec\().16b, \xvec\().16b, #8
+    add      v24.8h, \xvec\().8h, v14.8h
+    sub      v16.8h, \xvec\().8h, v14.8h
 
     sqrdmulh v17.8h, v16.8h, v0.h[5]
     mul      v18.8h, v16.8h, v0.h[4]
@@ -380,6 +674,58 @@
     POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
     POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
     POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
+.endm
+
+.macro POST_DFT3_STRIPE reduce
+    ldr q1, [x8], #16
+    ldr q2, [x9], #16
+    ldr q3, [x10], #16
+
+    sub      v4.8h, v3.8h, v2.8h
+    sqrdmulh v5.8h, v4.8h, v0.h[3]
+    mul      v6.8h, v4.8h, v0.h[2]
+    mls      v6.8h, v5.8h, v0.h[0]
+
+    add      v7.8h, v1.8h, v2.8h
+    add      v7.8h, v7.8h, v3.8h
+.if \reduce
+    BARRETT_REDUCE v7, v24
+.endif
+
+    sub      v8.8h, v1.8h, v2.8h
+    add      v8.8h, v8.8h, v6.8h
+.if \reduce
+    BARRETT_REDUCE v8, v24
+.endif
+
+    sub      v9.8h, v1.8h, v3.8h
+    sub      v9.8h, v9.8h, v6.8h
+.if \reduce
+    BARRETT_REDUCE v9, v24
+.endif
+
+    str q7, [x2], #16
+    str q8, [x2], #16
+    str q9, [x2], #16
+.endm
+
+.macro POST_UNTWIST_STRIPE
+    ldr q7, [x1], #16
+    ldr q10, [x3], #16
+    ldr q11, [x3], #16
+    sqrdmulh v12.8h, v7.8h, v11.8h
+    mul      v13.8h, v7.8h, v10.8h
+    mls      v13.8h, v12.8h, v0.h[0]
+    str q13, [x2], #16
+.endm
+
+.macro POST_FINAL_MERGE_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    ldr q7, [x8], #16
+    ldr q8, [x8], #16
+    ldr q9, [x8], #16
+    POST_FINAL_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
+    POST_FINAL_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
+    POST_FINAL_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
 .endm
 
 .macro FUSED_POST_STRIPE_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
@@ -476,11 +822,191 @@
     str d11, [\ptr1, #\off1_lo]
 .endm
 
+.macro FUSED_POST_STRIPE_N1_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    /*
+     * Neoverse-N1 Slothy schedule used as a Cortex-A76-adjacent experiment
+     * for Raspberry Pi 5.  The generated stream is embedded here directly;
+     * the Slothy q-store live-out placeholders are converted back to the
+     * production d stores below.
+     */
+    ldr q3, [x9], #16
+    ldr q6, [x10], #16
+    ldr q17, [x8], #16
+    ldr q1, [x3], #16
+    ldr q23, [x3], #16
+    ldr q11, [x3], #16
+    ldr q10, [x3], #16
+    ldr q20, [x3], #16
+    sub v29.8h, v6.8h, v3.8h
+    ldr q28, [x3], #16
+    add v27.8h, v17.8h, v3.8h
+    sub v24.8h, v17.8h, v3.8h
+    sub v14.8h, v17.8h, v6.8h
+    add v8.8h, v27.8h, v6.8h
+    sqrdmulh v13.8h, v29.8h, v0.h[3]
+    sqdmulh v21.8h, v8.8h, v0.h[1]
+    mul v17.8h, v29.8h, v0.h[2]
+    mls v17.8h, v13.8h, v0.h[0]
+    srshr v25.8h, v21.8h, #11
+    add v21.8h, v24.8h, v17.8h
+    mls v8.8h, v25.8h, v0.h[0]
+    sub v13.8h, v14.8h, v17.8h
+    sqdmulh v24.8h, v21.8h, v0.h[1]
+    sqdmulh v26.8h, v13.8h, v0.h[1]
+    mul v17.8h, v8.8h, v1.8h
+    srshr v18.8h, v24.8h, #11
+    sqrdmulh v24.8h, v8.8h, v23.8h
+    srshr v19.8h, v26.8h, #11
+    mls v21.8h, v18.8h, v0.h[0]
+    mls v13.8h, v19.8h, v0.h[0]
+    mls v17.8h, v24.8h, v0.h[0]
+    mul v6.8h, v21.8h, v11.8h
+    sqrdmulh v8.8h, v21.8h, v10.8h
+    ext v16.16b, v17.16b, v17.16b, #8
+    mul v21.8h, v13.8h, v20.8h
+    sub v3.8h, v17.8h, v16.8h
+    sqrdmulh v24.8h, v13.8h, v28.8h
+    add v4.8h, v17.8h, v16.8h
+    mls v6.8h, v8.8h, v0.h[0]
+    sqrdmulh v28.8h, v3.8h, v0.h[5]
+    mul v8.8h, v3.8h, v0.h[4]
+    ext v17.16b, v6.16b, v6.16b, #8
+    mls v21.8h, v24.8h, v0.h[0]
+    sub v11.8h, v6.8h, v17.8h
+    add v5.8h, v6.8h, v17.8h
+    mls v8.8h, v28.8h, v0.h[0]
+    sqrdmulh v10.8h, v11.8h, v0.h[5]
+    ext v13.16b, v21.16b, v21.16b, #8
+    mul v9.8h, v11.8h, v0.h[4]
+    sub v28.8h, v21.8h, v13.8h
+    add v14.8h, v21.8h, v13.8h
+    sqrdmulh v20.8h, v8.8h, v15.h[1]
+    sub v12.8h, v4.8h, v8.8h
+    sqrdmulh v1.8h, v28.8h, v0.h[5]
+    mul v3.8h, v28.8h, v0.h[4]
+    mls v9.8h, v10.8h, v0.h[0]
+    mls v3.8h, v1.8h, v0.h[0]
+    sqrdmulh v6.8h, v12.8h, v0.h[7]
+    sub v19.8h, v5.8h, v9.8h
+    sqrdmulh v27.8h, v9.8h, v15.h[1]
+    sub v17.8h, v14.8h, v3.8h
+    sqrdmulh v23.8h, v3.8h, v15.h[1]
+    sqrdmulh v28.8h, v19.8h, v0.h[7]
+    sqrdmulh v29.8h, v17.8h, v0.h[7]
+    mul v21.8h, v12.8h, v0.h[6]
+    mul v24.8h, v3.8h, v15.h[0]
+    mul v25.8h, v19.8h, v0.h[6]
+    mul v3.8h, v8.8h, v15.h[0]
+    mul v17.8h, v17.8h, v0.h[6]
+    mul v14.8h, v9.8h, v15.h[0]
+    mls v3.8h, v20.8h, v0.h[0]
+    mls v17.8h, v29.8h, v0.h[0]
+    mls v25.8h, v28.8h, v0.h[0]
+    str d3, [\ptr0, #\off0_hi]
+    mls v14.8h, v27.8h, v0.h[0]
+    str d17, [\ptr2, #\off2_lo]
+    mls v21.8h, v6.8h, v0.h[0]
+    str d25, [\ptr1, #\off1_lo]
+    mls v24.8h, v23.8h, v0.h[0]
+    str d14, [\ptr1, #\off1_hi]
+    str d21, [\ptr0, #\off0_lo]
+    str d24, [\ptr2, #\off2_hi]
+.endm
+
+.macro FUSED_POST_STRIPE_N1_NODFTREDUCE_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    /*
+     * Neoverse-N1 Slothy schedule with the three post-DFT3 Barrett reductions
+     * removed.  The generated stream is embedded here directly; final q-store
+     * placeholders are converted back to production d stores.
+     */
+    ldr q9, [x9], #16
+    ldr q3, [x10], #16
+    ldr q12, [x3], #16
+    ldr q28, [x8], #16
+    ldr q16, [x3], #16
+    ldr q30, [x3], #16
+    ldr q18, [x3], #16
+    ldr q27, [x3], #16
+    ldr q13, [x3], #16
+    sub v24.8h, v3.8h, v9.8h
+    add v1.8h, v28.8h, v9.8h
+    sub v20.8h, v28.8h, v3.8h
+    sub v4.8h, v28.8h, v9.8h
+    sqrdmulh v11.8h, v24.8h, v0.h[3]
+    add v19.8h, v1.8h, v3.8h
+    mul v24.8h, v24.8h, v0.h[2]
+    sqrdmulh v28.8h, v19.8h, v16.8h
+    mls v24.8h, v11.8h, v0.h[0]
+    mul v12.8h, v19.8h, v12.8h
+    mls v12.8h, v28.8h, v0.h[0]
+    add v21.8h, v4.8h, v24.8h
+    mul v3.8h, v21.8h, v30.8h
+    sqrdmulh v28.8h, v21.8h, v18.8h
+    sub v23.8h, v20.8h, v24.8h
+    ext v19.16b, v12.16b, v12.16b, #8
+    mul v9.8h, v23.8h, v27.8h
+    add v29.8h, v12.8h, v19.8h
+    sub v21.8h, v12.8h, v19.8h
+    sqrdmulh v12.8h, v23.8h, v13.8h
+    mls v3.8h, v28.8h, v0.h[0]
+    sqrdmulh v5.8h, v21.8h, v0.h[5]
+    mls v9.8h, v12.8h, v0.h[0]
+    ext v12.16b, v3.16b, v3.16b, #8
+    mul v24.8h, v21.8h, v0.h[4]
+    sub v8.8h, v3.8h, v12.8h
+    add v10.8h, v3.8h, v12.8h
+    mls v24.8h, v5.8h, v0.h[0]
+    ext v26.16b, v9.16b, v9.16b, #8
+    sqrdmulh v27.8h, v8.8h, v0.h[5]
+    sub v3.8h, v9.8h, v26.8h
+    add v13.8h, v9.8h, v26.8h
+    mul v23.8h, v8.8h, v0.h[4]
+    sqrdmulh v8.8h, v3.8h, v0.h[5]
+    mul v12.8h, v3.8h, v0.h[4]
+    sub v2.8h, v29.8h, v24.8h
+    mls v23.8h, v27.8h, v0.h[0]
+    mls v12.8h, v8.8h, v0.h[0]
+    sqrdmulh v14.8h, v2.8h, v0.h[7]
+    sub v5.8h, v10.8h, v23.8h
+    sqrdmulh v9.8h, v24.8h, v15.h[1]
+    sub v13.8h, v13.8h, v12.8h
+    sqrdmulh v16.8h, v23.8h, v15.h[1]
+    sqrdmulh v6.8h, v5.8h, v0.h[7]
+    sqrdmulh v20.8h, v13.8h, v0.h[7]
+    sqrdmulh v1.8h, v12.8h, v15.h[1]
+    mul v11.8h, v2.8h, v0.h[6]
+    mul v3.8h, v13.8h, v0.h[6]
+    mul v12.8h, v12.8h, v15.h[0]
+    mul v13.8h, v23.8h, v15.h[0]
+    mul v24.8h, v24.8h, v15.h[0]
+    mul v19.8h, v5.8h, v0.h[6]
+    mls v3.8h, v20.8h, v0.h[0]
+    mls v12.8h, v1.8h, v0.h[0]
+    mls v19.8h, v6.8h, v0.h[0]
+    mls v24.8h, v9.8h, v0.h[0]
+    mls v13.8h, v16.8h, v0.h[0]
+    str d3, [\ptr2, #\off2_lo]
+    mls v11.8h, v14.8h, v0.h[0]
+    str d12, [\ptr2, #\off2_hi]
+    str d24, [\ptr0, #\off0_hi]
+    str d19, [\ptr1, #\off1_lo]
+    str d13, [\ptr1, #\off1_hi]
+    str d11, [\ptr0, #\off0_lo]
+.endm
+
 .macro RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+.ifdef INVNTT_USE_POST_FUSED_N1_NODFTREDUCE_SLOTHY
+    FUSED_POST_STRIPE_N1_NODFTREDUCE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.else
+.ifdef INVNTT_USE_POST_FUSED_N1_SLOTHY
+    FUSED_POST_STRIPE_N1_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.else
 .ifdef INVNTT_USE_POST_FUSED_SLOTHY
     FUSED_POST_STRIPE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
 .else
     FUSED_POST_STRIPE \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.endif
+.endif
 .endif
 .endm
 
@@ -502,8 +1028,15 @@ poly_invntt:
 _poly_invntt:
 .endif
 .endif
+.ifdef INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH
+.equ INVNTT_STACK_SIZE, 2080
+.equ INVNTT_SAVED_X0_OFFSET, 2088
+.else
+.equ INVNTT_STACK_SIZE, 1568
+.equ INVNTT_SAVED_X0_OFFSET, 1576
+.endif
     stp x30, x0, [sp, #-16]!
-    sub sp, sp, #1568
+    sub sp, sp, #INVNTT_STACK_SIZE
 
     adr x3, inv_consts
     ldr q0, [x3]
@@ -548,6 +1081,10 @@ _poly_invntt:
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
+.ifdef INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.else
 .ifdef INVNTT_USE_DIRECT_STAGE123
     DIRECT_STAGE123_ROW0
     RUN_INVNTT32_STAGE45_ROW
@@ -555,10 +1092,15 @@ _poly_invntt:
     DIRECT_LOAD_ROW0
     RUN_INVNTT32_ROW
 .endif
+.endif
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #544
+.ifdef INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.else
 .ifdef INVNTT_USE_DIRECT_STAGE123
     DIRECT_STAGE123_ROW1
     RUN_INVNTT32_STAGE45_ROW
@@ -566,10 +1108,15 @@ _poly_invntt:
     DIRECT_LOAD_ROW1
     RUN_INVNTT32_ROW
 .endif
+.endif
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #1056
+.ifdef INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.else
 .ifdef INVNTT_USE_DIRECT_STAGE123
     DIRECT_STAGE123_ROW2
     RUN_INVNTT32_STAGE45_ROW
@@ -578,15 +1125,20 @@ _poly_invntt:
     RUN_INVNTT32_ROW
 .endif
 .endif
+.endif
 
     /* Steps 3-5: inverse DFT3, untwist F_b^k, remove scale 96 in merge. */
     adr x3, inv_consts
     ldr q15, [x3, #16]
-    ldr x0, [sp, #1576]
+    ldr x0, [sp, #INVNTT_SAVED_X0_OFFSET]
     add x8, sp, #32
     add x9, sp, #544
     add x10, sp, #1056
+.ifdef INVNTT_USE_POST_BRANCHFOLD
+    adr x3, inv_branchfold_vecs
+.else
     adr x3, inv_untwist_vecs
+.endif
 
     /*
      * Fixed/generated natural-output store pattern.  For natural k32:
@@ -614,7 +1166,7 @@ slothy_start_invntt_post_fused:
     RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
 slothy_end_invntt_post_fused:
 
-    add sp, sp, #1568
+    add sp, sp, #INVNTT_STACK_SIZE
     ldp x30, x0, [sp], #16
     ret
 
@@ -688,10 +1240,224 @@ slothy_start_invntt32_stage45_only:
 slothy_end_invntt32_stage45_only:
     ret
 
+_invntt32_8way_stage45_from_scratch:
+slothy_start_invntt32_stage45_from_scratch:
+    adr x3, invntt32_stage45_consts
+.ifdef INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
+.else
+    INVNTT32_STAGE45_STRIPE_SCRATCH 0
+    INVNTT32_STAGE45_STRIPE_SCRATCH 1
+    INVNTT32_STAGE45_STRIPE_SCRATCH 2
+    INVNTT32_STAGE45_STRIPE_SCRATCH 3
+    INVNTT32_STAGE45_STRIPE_SCRATCH 4
+    INVNTT32_STAGE45_STRIPE_SCRATCH 5
+    INVNTT32_STAGE45_STRIPE_SCRATCH 6
+    INVNTT32_STAGE45_STRIPE_SCRATCH 7
+.endif
+.ifndef INVNTT_ROW_REDUCE_EAGER
+.ifndef INVNTT_USE_STAGE45_REDUCE_FUSION
+    REDUCE_ROW_ALL
+.endif
+.endif
+slothy_end_invntt32_stage45_from_scratch:
+    ret
+
+.ifdef INVNTT_BENCH_STAGES
+.global poly_invntt_bench_rows
+.global _poly_invntt_bench_rows
+poly_invntt_bench_rows:
+_poly_invntt_bench_rows:
+    stp x30, x0, [sp, #-16]!
+    adr x3, inv_consts
+    ldr q0, [x3]
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #0
+    DIRECT_STAGE123_ROW0
+    RUN_INVNTT32_STAGE45_ROW
+
+    ldr x0, [sp, #8]
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #512
+    DIRECT_STAGE123_ROW1
+    RUN_INVNTT32_STAGE45_ROW
+
+    ldr x0, [sp, #8]
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #1024
+    DIRECT_STAGE123_ROW2
+    RUN_INVNTT32_STAGE45_ROW
+
+    ldp x30, x0, [sp], #16
+    ret
+
+.global poly_invntt_bench_row0
+.global _poly_invntt_bench_row0
+poly_invntt_bench_row0:
+_poly_invntt_bench_row0:
+    stp x30, x0, [sp, #-16]!
+    adr x3, inv_consts
+    ldr q0, [x3]
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #0
+    DIRECT_STAGE123_ROW0
+    RUN_INVNTT32_STAGE45_ROW
+    ldp x30, x0, [sp], #16
+    ret
+
+.global poly_invntt_bench_row1
+.global _poly_invntt_bench_row1
+poly_invntt_bench_row1:
+_poly_invntt_bench_row1:
+    stp x30, x0, [sp, #-16]!
+    adr x3, inv_consts
+    ldr q0, [x3]
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #0
+    DIRECT_STAGE123_ROW1
+    RUN_INVNTT32_STAGE45_ROW
+    ldp x30, x0, [sp], #16
+    ret
+
+.global poly_invntt_bench_row2
+.global _poly_invntt_bench_row2
+poly_invntt_bench_row2:
+_poly_invntt_bench_row2:
+    stp x30, x0, [sp, #-16]!
+    adr x3, inv_consts
+    ldr q0, [x3]
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, x0, #0
+    DIRECT_STAGE123_ROW2
+    RUN_INVNTT32_STAGE45_ROW
+    ldp x30, x0, [sp], #16
+    ret
+
+.global poly_invntt_bench_post
+.global _poly_invntt_bench_post
+poly_invntt_bench_post:
+_poly_invntt_bench_post:
+    adr x3, inv_consts
+    ldr q0, [x3]
+    ldr q15, [x3, #16]
+    add x8, x1, #0
+    add x9, x1, #512
+    add x10, x1, #1024
+    adr x3, inv_untwist_vecs
+.ifdef INVNTT_USE_POST_FASTSCALE
+    // v15.h[2:3] contain ZMINUSZ5INV/192 and its precompute.
+.endif
+    add x11, x0, #0
+    add x12, x0, #512
+    add x13, x0, #256
+    mov x5, #10
+5:
+    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    RUN_FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
+    add x11, x11, #24
+    add x12, x12, #24
+    add x13, x13, #24
+    subs x5, x5, #1
+    b.ne 5b
+    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    ret
+
+.global poly_invntt_bench_post_dft3_raw
+.global _poly_invntt_bench_post_dft3_raw
+poly_invntt_bench_post_dft3_raw:
+_poly_invntt_bench_post_dft3_raw:
+    adr x3, inv_consts
+    ldr q0, [x3]
+    mov x2, x0
+    add x8, x1, #0
+    add x9, x1, #512
+    add x10, x1, #1024
+    mov x5, #32
+6:
+    POST_DFT3_STRIPE 0
+    subs x5, x5, #1
+    b.ne 6b
+    ret
+
+.global poly_invntt_bench_post_dft3_reduce
+.global _poly_invntt_bench_post_dft3_reduce
+poly_invntt_bench_post_dft3_reduce:
+_poly_invntt_bench_post_dft3_reduce:
+    adr x3, inv_consts
+    ldr q0, [x3]
+    mov x2, x0
+    add x8, x1, #0
+    add x9, x1, #512
+    add x10, x1, #1024
+    mov x5, #32
+7:
+    POST_DFT3_STRIPE 1
+    subs x5, x5, #1
+    b.ne 7b
+    ret
+
+.global poly_invntt_bench_post_untwist
+.global _poly_invntt_bench_post_untwist
+poly_invntt_bench_post_untwist:
+_poly_invntt_bench_post_untwist:
+    adr x3, inv_consts
+    ldr q0, [x3]
+    adr x3, inv_untwist_vecs
+    mov x2, x0
+    mov x5, #96
+8:
+    POST_UNTWIST_STRIPE
+    subs x5, x5, #1
+    b.ne 8b
+    ret
+
+.global poly_invntt_bench_post_finalmerge
+.global _poly_invntt_bench_post_finalmerge
+poly_invntt_bench_post_finalmerge:
+_poly_invntt_bench_post_finalmerge:
+    adr x3, inv_consts
+    ldr q0, [x3]
+    ldr q15, [x3, #16]
+    mov x8, x1
+    add x11, x0, #0
+    add x12, x0, #512
+    add x13, x0, #256
+    mov x5, #10
+9:
+    POST_FINAL_MERGE_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    POST_FINAL_MERGE_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    POST_FINAL_MERGE_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
+    add x11, x11, #24
+    add x12, x12, #24
+    add x13, x13, #24
+    subs x5, x5, #1
+    b.ne 9b
+    POST_FINAL_MERGE_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    POST_FINAL_MERGE_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    ret
+.endif
+
 .align 4
 inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171
-    .hword -36, -341, 1728, -1728, 0, 0, 0, 0
+    // h[2:3] are only used by opt-in INVNTT_USE_POST_FASTSCALE.
+    .hword -36, -341, 1701, 16123, 0, 0, 0, 0
 
 .align 4
 inv_gather_offsets:
@@ -1031,6 +1797,10 @@ inv_untwist_vecs:
     .hword  -1367,  -1367,  -1367,  -1367,    910,    910,    910,    910
     .hword -12957, -12957, -12957, -12957,   8626,   8626,   8626,   8626
 
+.align 4
+inv_branchfold_vecs:
+    .include "asm/slothy/invntt_branchfold_vecs.inc"
+
 .purgem BARRETT_REDUCE
 .purgem FQMUL_LANE
 .purgem INV_BUTTERFLY_LANE
@@ -1039,19 +1809,35 @@ inv_untwist_vecs:
 .purgem INVNTT32_STAGE123_BLOCK
 .purgem INVNTT32_STAGE45_STRIPE
 .purgem INVNTT32_STAGE45_STRIPE_SLOTHY
+.purgem INVNTT32_STAGE45_STRIPE_SCRATCH
+.purgem INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH
 .purgem DIRECT_LOAD_VEC
 .purgem DIRECT_STAGE123_VEC
 .purgem DIRECT_STAGE123_BLOCK
+.purgem STORE_STAGE123_STRIPE_SCRATCH
+.purgem DIRECT_STAGE123_BLOCK_TO_SCRATCH
 .purgem DIRECT_STAGE123_CONSTS
 .purgem DIRECT_STAGE123_ROW0
 .purgem DIRECT_STAGE123_ROW1
 .purgem DIRECT_STAGE123_ROW2
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
 .purgem DIRECT_LOAD_ROW0
 .purgem DIRECT_LOAD_ROW1
 .purgem DIRECT_LOAD_ROW2
 .purgem RUN_INVNTT32_ROW
 .purgem RUN_INVNTT32_STAGE45_ROW
+.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
 .purgem POST_STORE_PTR
+.purgem POST_STORE_PTR_BRANCHFOLD
+.purgem POST_STORE_PTR_FASTSCALE
+.purgem POST_FINAL_STORE_PTR
 .purgem FUSED_POST_STRIPE
+.purgem POST_DFT3_STRIPE
+.purgem POST_UNTWIST_STRIPE
+.purgem POST_FINAL_MERGE_STRIPE
 .purgem FUSED_POST_STRIPE_SLOTHY
+.purgem FUSED_POST_STRIPE_N1_SLOTHY
+.purgem FUSED_POST_STRIPE_N1_NODFTREDUCE_SLOTHY
 .purgem RUN_FUSED_POST_STRIPE

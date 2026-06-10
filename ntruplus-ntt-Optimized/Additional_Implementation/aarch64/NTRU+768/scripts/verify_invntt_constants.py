@@ -20,6 +20,7 @@ F1 = 22
 
 ROOT = Path(__file__).resolve().parents[1]
 ASM = ROOT / "asm" / "slothy" / "invntt_opt.s"
+BRANCHFOLD = ROOT / "asm" / "slothy" / "invntt_branchfold_vecs.inc"
 
 
 def centered(x: int) -> int:
@@ -112,8 +113,8 @@ def check_inv_consts(text: str) -> None:
         precompute(centered(inv_mod(192))),
         centered(inv_mod(96)),
         precompute(centered(inv_mod(96))),
-        1728,
-        -1728,
+        centered(1634 * centered(inv_mod(192))),
+        precompute(centered(1634 * centered(inv_mod(192)))),
         0,
         0,
         0,
@@ -210,12 +211,70 @@ def check_untwist(text: str) -> None:
     assert seen == expected_order, "untwist table order does not match inverse DFT3/store order"
 
 
+def check_branchfold(text: str) -> None:
+    table = BRANCHFOLD.read_text()
+    lines = table.splitlines()
+
+    low0 = centered((1 - 1634) * centered(inv_mod(192)))
+    low1 = centered((1 + 1634) * centered(inv_mod(192)))
+    high0 = centered(1634 * centered(inv_mod(96)))
+    high1 = centered(-1634 * centered(inv_mod(96)))
+
+    seen: list[int] = []
+    pending_k: int | None = None
+    vectors: list[list[int]] = []
+
+    for line in lines:
+        match = re.search(r"// k=(\d+):", line)
+        if match:
+            if pending_k is not None:
+                raise AssertionError(f"branchfold k={pending_k}: incomplete entry")
+            pending_k = int(match.group(1))
+            vectors = []
+            continue
+
+        if ".hword" not in line:
+            continue
+
+        vals = hwords_from(line)
+        assert len(vals) == 8, f"branchfold k={pending_k}: expected vector, got {vals}"
+        vectors.append(vals)
+
+        if len(vectors) != 4:
+            continue
+
+        assert pending_k is not None
+        f0 = centered(pow(F0, pending_k, Q))
+        f1 = centered(pow(F1, pending_k, Q))
+        low_normal = [centered(f0 * low0)] * 4 + [centered(f1 * low1)] * 4
+        low_pre = [precompute(x) for x in low_normal]
+        high_normal = [centered(f0 * high0)] * 4 + [centered(f1 * high1)] * 4
+        high_pre = [precompute(x) for x in high_normal]
+
+        want = [low_normal, low_pre, high_normal, high_pre]
+        assert vectors == want, (
+            f"branchfold k={pending_k} mismatch\n got={vectors}\nwant={want}"
+        )
+        seen.append(pending_k)
+        pending_k = None
+        vectors = []
+
+    assert len(seen) == 96, f"branchfold table has {len(seen)} entries"
+
+    expected_order: list[int] = []
+    for k32 in range(32):
+        base = (33 * k32) % 96
+        expected_order.extend([base, (base + 64) % 96, (base + 32) % 96])
+    assert seen == expected_order, "branchfold table order does not match post order"
+
+
 def main() -> int:
     text = ASM.read_text()
     check_inv_consts(text)
     check_stage123(text)
     check_stage45(text)
     check_untwist(text)
+    check_branchfold(text)
     print("inverse NTT constants verified: normal-form tables and precomputes ok")
     return 0
 

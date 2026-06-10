@@ -50,8 +50,15 @@ regenerate the file from scratch.
 The active inverse NTT path is intentionally narrow:
 
 - `asm/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
-  directstage123 + Slothy stage45-reduce + Slothy post-row path through
-  assembler-time gates, then includes `asm/slothy/invntt_opt.s`.
+  directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
+  branch-constant folded final merge path through assembler-time gates, then
+  includes `asm/slothy/invntt_opt.s`.
+- `asm/inv_my_ntt_post_n1_nodftreduce.s` is the previous production
+  reduction-movement wrapper kept for explicit benchmarking.  It removes the
+  three post-DFT3 Barrett reductions inside each fused post stripe, but it does
+  not use the branchfold final merge.
+- `asm/inv_my_ntt_post_dft3reduce_fallback.s` is the previous production
+  wrapper with the post-DFT3 Barrett reductions retained.
 - `asm/inv_my_ntt_rowlazy_baseline.s` is the pre-promotion rowlazy baseline
   wrapper for regression and benchmark comparison.
 - `asm/slothy/invntt_opt.s` is the current inverse implementation wired into
@@ -59,11 +66,20 @@ The active inverse NTT path is intentionally narrow:
 - `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
   `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
   Slothy sources for the promoted scheduled regions.
+- `asm/inv_my_ntt_post_branchfold_reduce.s` is the production-equivalent
+  branch-constant folded final-merge wrapper.  It folds untwist, branch merge,
+  and final scaling into per-k constants, reducing the final merge from four
+  fqmul-equivalent operations to two plus output reductions.
+- `asm/inv_my_ntt_benchstages.s` is benchmark-only.  It exports row and post
+  phase entry points used by `aarch64-bench` modes such as `invntt_rows`,
+  `invntt_post`, `invntt_post_dft3_raw`, `invntt_post_dft3_reduce`,
+  `invntt_post_untwist`, and `invntt_post_finalmerge`.
 
 The old standalone `inv_my_ntt_*directstage123*.s`,
-`inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, and negative
-`postmerge_folded` wrappers were removed after promotion.  The only retained
-alternate wrapper is the rowlazy baseline above.
+`inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
+branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
+were removed after promotion.  The retained alternate wrappers are the rowlazy
+baseline and the two production fallbacks above.
 
 Raspberry Pi 5 PERF medians motivating the promotion:
 
@@ -71,6 +87,9 @@ Raspberry Pi 5 PERF medians motivating the promotion:
 - directstage123 only: about 5263 cycles
 - directstage123 + post-fused Slothy: 5109 cycles
 - directstage123 + stage45-reduce Slothy + post-fused Slothy: 5000 cycles
-- GT `ntt_mul_pipeline` with the promoted inverse: 13671 cycles
-- GT `ntt_basemul_add_pipeline` with the promoted inverse: 17071 cycles
-- GT `kem_dec` with the promoted inverse: 35218 cycles
+- previous promoted post no-DFT3-reduce path: 4562 cycles
+- promoted branchfold-reduce path: 4044 cycles
+- GT `ntt_mul_pipeline` with the no-DFT3-reduce inverse: 13671 cycles
+- GT `ntt_basemul_add_pipeline` with the no-DFT3-reduce inverse: 17071 cycles
+- GT `kem_dec` with the no-DFT3-reduce inverse: 35218 cycles
+- removed no-DFT3-reduce + fastscale+reduce experiment: 4997 cycles

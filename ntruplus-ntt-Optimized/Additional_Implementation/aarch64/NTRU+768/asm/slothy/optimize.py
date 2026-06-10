@@ -28,14 +28,20 @@ def add_slothy_path() -> None:
 
 
 def load_target(name: str):
+    import slothy.targets.aarch64.aarch64_big_experimental as Target_Big
     import slothy.targets.aarch64.cortex_a55 as Target_CortexA55
     import slothy.targets.aarch64.cortex_a72_frontend as Target_CortexA72
+    import slothy.targets.aarch64.neoverse_n1_experimental as Target_NeoverseN1
 
     targets = {
         "a55": Target_CortexA55,
         "cortex-a55": Target_CortexA55,
         "a72": Target_CortexA72,
         "cortex-a72": Target_CortexA72,
+        "n1": Target_NeoverseN1,
+        "neoverse-n1": Target_NeoverseN1,
+        "big": Target_Big,
+        "aarch64-big": Target_Big,
     }
 
     try:

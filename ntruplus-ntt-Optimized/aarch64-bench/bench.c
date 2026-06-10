@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "hal.h"
+#include "ntt.h"
 #include "params.h"
 #include "poly.h"
 
@@ -45,6 +46,14 @@
 #define NTESTS 500
 #endif
 
+#ifndef BENCH_ENABLE_INVNTT_STAGES
+#define BENCH_ENABLE_INVNTT_STAGES 0
+#endif
+
+#ifndef BENCH_VARIANT_GT
+#define BENCH_VARIANT_GT 0
+#endif
+
 typedef void (*target_fn)(int idx);
 
 static poly g_a[NITERATIONS];
@@ -55,6 +64,23 @@ static poly g_ntt_b[NITERATIONS];
 static poly g_ntt_acc[NITERATIONS];
 static poly g_freq_out[NITERATIONS];
 static poly g_out[NITERATIONS];
+
+#if BENCH_ENABLE_INVNTT_STAGES
+#define INVNTT_ROW_WORDS (3 * 32 * 8)
+static int16_t g_invntt_rows[NITERATIONS][INVNTT_ROW_WORDS];
+static int16_t g_invntt_dft[NITERATIONS][INVNTT_ROW_WORDS];
+static int16_t g_invntt_untwist[NITERATIONS][INVNTT_ROW_WORDS];
+
+void poly_invntt_bench_rows(int16_t *rows, const poly *a);
+void poly_invntt_bench_row0(int16_t *row, const poly *a);
+void poly_invntt_bench_row1(int16_t *row, const poly *a);
+void poly_invntt_bench_row2(int16_t *row, const poly *a);
+void poly_invntt_bench_post(poly *r, const int16_t *rows);
+void poly_invntt_bench_post_dft3_raw(int16_t *dft, const int16_t *rows);
+void poly_invntt_bench_post_dft3_reduce(int16_t *dft, const int16_t *rows);
+void poly_invntt_bench_post_untwist(int16_t *untwisted, const int16_t *dft);
+void poly_invntt_bench_post_finalmerge(poly *r, const int16_t *untwisted);
+#endif
 
 #if BENCH_ENABLE_KEM
 static uint8_t g_pk[NTRUPLUS_PUBLICKEYBYTES];
@@ -118,8 +144,13 @@ static void fill_poly(poly *a, uint32_t seed)
 
   for (i = 0; i < NTRUPLUS_N; i++)
   {
-    a->coeffs[i] =
-        (int16_t)((int)(next_u32(&seed) % (2 * NTRUPLUS_Q)) - NTRUPLUS_Q);
+    /*
+     * Keep benchmark inputs in the scheme-like representative range.  Wider
+     * [-q,q) stress inputs are useful for tests, but they can intentionally
+     * exercise out-of-contract representative differences in GT invNTT and
+     * make benchmark checksum comparisons misleading.
+     */
+    a->coeffs[i] = (int16_t)((int)(next_u32(&seed) % 3) - 1);
   }
 }
 
@@ -199,6 +230,23 @@ static uint64_t checksum_poly(const poly *a)
   return acc;
 }
 
+#if BENCH_ENABLE_INVNTT_STAGES
+static uint64_t checksum_i16_words(const int16_t *a, size_t len)
+{
+  uint64_t acc = 0x510e527fade682d1ULL;
+  size_t i;
+
+  for (i = 0; i < len; i++)
+  {
+    acc ^= (uint16_t)a[i];
+    acc *= 0x100000001b3ULL;
+    acc ^= acc >> 29;
+  }
+
+  return acc;
+}
+#endif
+
 #if BENCH_ENABLE_KEM
 static uint64_t checksum_bytes(const uint8_t *a, size_t len)
 {
@@ -222,6 +270,11 @@ static void checksum_outputs(void)
   {
     g_sink ^= checksum_poly(&g_out[i]);
     g_sink = (g_sink << 7) ^ (g_sink >> 3) ^ checksum_poly(&g_freq_out[i]);
+#if BENCH_ENABLE_INVNTT_STAGES
+    g_sink ^= checksum_i16_words(g_invntt_rows[i], INVNTT_ROW_WORDS);
+    g_sink ^= checksum_i16_words(g_invntt_dft[i], INVNTT_ROW_WORDS);
+    g_sink ^= checksum_i16_words(g_invntt_untwist[i], INVNTT_ROW_WORDS);
+#endif
   }
 
 #if BENCH_ENABLE_KEM
@@ -247,6 +300,28 @@ static int compare_poly_modq(const char *label, const poly *got,
   return 1;
 }
 
+#if BENCH_VARIANT_GT
+static int compare_poly_exact(const char *label, const poly *got,
+                              const poly *want)
+{
+  int i;
+
+  for (i = 0; i < NTRUPLUS_N; i++)
+  {
+    if (got->coeffs[i] != want->coeffs[i])
+    {
+      fprintf(stderr,
+              "%s exact mismatch at %d: got=%d want=%d delta=%d\n",
+              label, i, got->coeffs[i], want->coeffs[i],
+              (int)got->coeffs[i] - (int)want->coeffs[i]);
+      return 0;
+    }
+  }
+
+  return 1;
+}
+#endif
+
 static void prepare_poly_inputs(void)
 {
   int i;
@@ -261,6 +336,11 @@ static void prepare_poly_inputs(void)
     poly_ntt(&g_ntt_acc[i], &g_acc[i]);
     poly_basemul(&g_freq_out[i], &g_ntt_a[i], &g_ntt_b[i]);
     poly_invntt(&g_out[i], &g_freq_out[i]);
+#if BENCH_ENABLE_INVNTT_STAGES
+    poly_invntt_bench_rows(g_invntt_rows[i], &g_ntt_a[i]);
+    poly_invntt_bench_post_dft3_reduce(g_invntt_dft[i], g_invntt_rows[i]);
+    poly_invntt_bench_post_untwist(g_invntt_untwist[i], g_invntt_dft[i]);
+#endif
   }
 }
 
@@ -294,6 +374,58 @@ static int check_ntt_roundtrip(void)
   poly_invntt(&got, &freq);
   return compare_poly_modq("ntt roundtrip", &got, &g_a[0]);
 }
+
+#if BENCH_VARIANT_GT
+static int check_gt_invntt_exact_one(const char *label, const poly *freq)
+{
+  poly got;
+  poly want;
+
+  poly_invntt(&got, freq);
+  invntt_gt_rowbitrevlayout_exact(want.coeffs, freq->coeffs);
+  return compare_poly_exact(label, &got, &want);
+}
+
+static int check_gt_invntt_exact(void)
+{
+  int i;
+
+  for (i = 0; i < NITERATIONS; i++)
+  {
+    if (!check_gt_invntt_exact_one("gt invntt exact ntt_a", &g_ntt_a[i]) ||
+        !check_gt_invntt_exact_one("gt invntt exact ntt_b", &g_ntt_b[i]) ||
+        !check_gt_invntt_exact_one("gt invntt exact ntt_acc", &g_ntt_acc[i]))
+    {
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+static int check_gt_invntt_measured_outputs_exact(const char *mode)
+{
+  poly want;
+  int i;
+
+  if (strcmp(mode, "invntt") != 0)
+  {
+    return 1;
+  }
+
+  for (i = 0; i < NITERATIONS; i++)
+  {
+    invntt_gt_rowbitrevlayout_exact(want.coeffs, g_ntt_a[i].coeffs);
+    if (!compare_poly_exact("gt invntt measured output exact", &g_out[i],
+                            &want))
+    {
+      return 0;
+    }
+  }
+
+  return 1;
+}
+#endif
 
 static int check_mul_pipeline(void)
 {
@@ -338,12 +470,54 @@ static int check_add_pipeline(void)
 
 static int check_correctness(const char *mode)
 {
+#if BENCH_ENABLE_INVNTT_STAGES
+  if (strcmp(mode, "invntt_rows") == 0 ||
+      strcmp(mode, "invntt_row0") == 0 ||
+      strcmp(mode, "invntt_row1") == 0 ||
+      strcmp(mode, "invntt_row2") == 0 ||
+      strcmp(mode, "invntt_post") == 0 ||
+      strcmp(mode, "invntt_post_dft3_raw") == 0 ||
+      strcmp(mode, "invntt_post_dft3_reduce") == 0 ||
+      strcmp(mode, "invntt_post_untwist") == 0 ||
+      strcmp(mode, "invntt_post_finalmerge") == 0)
+  {
+    poly got;
+    poly want;
+    int i;
+
+    for (i = 0; i < NITERATIONS; i++)
+    {
+      poly_invntt(&want, &g_ntt_a[i]);
+      poly_invntt_bench_post(&got, g_invntt_rows[i]);
+      if (!compare_poly_modq("invntt staged post", &got, &want))
+      {
+        return 0;
+      }
+#if BENCH_VARIANT_GT
+      invntt_gt_rowbitrevlayout_exact(want.coeffs, g_ntt_a[i].coeffs);
+      if (!compare_poly_exact("invntt staged post exact", &got, &want))
+      {
+        return 0;
+      }
+#endif
+    }
+
+    return 1;
+  }
+#endif
+
   if (strcmp(mode, "kem_dec") == 0)
   {
     return 1;
   }
   if (strcmp(mode, "ntt") == 0 || strcmp(mode, "invntt") == 0)
   {
+#if BENCH_VARIANT_GT
+    if (strcmp(mode, "invntt") == 0 && !check_gt_invntt_exact())
+    {
+      return 0;
+    }
+#endif
     return check_ntt_roundtrip();
   }
   if (strcmp(mode, "basemul") == 0 ||
@@ -403,6 +577,53 @@ static void target_add_pipeline(int idx)
   poly_invntt(&g_out[idx], &g_freq_out[idx]);
 }
 
+#if BENCH_ENABLE_INVNTT_STAGES
+static void target_invntt_rows(int idx)
+{
+  poly_invntt_bench_rows(g_invntt_rows[idx], &g_ntt_a[idx]);
+}
+
+static void target_invntt_row0(int idx)
+{
+  poly_invntt_bench_row0(g_invntt_rows[idx], &g_ntt_a[idx]);
+}
+
+static void target_invntt_row1(int idx)
+{
+  poly_invntt_bench_row1(g_invntt_rows[idx] + 256, &g_ntt_a[idx]);
+}
+
+static void target_invntt_row2(int idx)
+{
+  poly_invntt_bench_row2(g_invntt_rows[idx] + 512, &g_ntt_a[idx]);
+}
+
+static void target_invntt_post(int idx)
+{
+  poly_invntt_bench_post(&g_out[idx], g_invntt_rows[idx]);
+}
+
+static void target_invntt_post_dft3_raw(int idx)
+{
+  poly_invntt_bench_post_dft3_raw(g_invntt_dft[idx], g_invntt_rows[idx]);
+}
+
+static void target_invntt_post_dft3_reduce(int idx)
+{
+  poly_invntt_bench_post_dft3_reduce(g_invntt_dft[idx], g_invntt_rows[idx]);
+}
+
+static void target_invntt_post_untwist(int idx)
+{
+  poly_invntt_bench_post_untwist(g_invntt_untwist[idx], g_invntt_dft[idx]);
+}
+
+static void target_invntt_post_finalmerge(int idx)
+{
+  poly_invntt_bench_post_finalmerge(&g_out[idx], g_invntt_untwist[idx]);
+}
+#endif
+
 #if BENCH_ENABLE_KEM
 static void target_kem_dec(int idx)
 {
@@ -413,6 +634,45 @@ static void target_kem_dec(int idx)
 
 static target_fn select_target(const char *mode)
 {
+#if BENCH_ENABLE_INVNTT_STAGES
+  if (strcmp(mode, "invntt_rows") == 0)
+  {
+    return target_invntt_rows;
+  }
+  if (strcmp(mode, "invntt_row0") == 0)
+  {
+    return target_invntt_row0;
+  }
+  if (strcmp(mode, "invntt_row1") == 0)
+  {
+    return target_invntt_row1;
+  }
+  if (strcmp(mode, "invntt_row2") == 0)
+  {
+    return target_invntt_row2;
+  }
+  if (strcmp(mode, "invntt_post") == 0)
+  {
+    return target_invntt_post;
+  }
+  if (strcmp(mode, "invntt_post_dft3_raw") == 0)
+  {
+    return target_invntt_post_dft3_raw;
+  }
+  if (strcmp(mode, "invntt_post_dft3_reduce") == 0)
+  {
+    return target_invntt_post_dft3_reduce;
+  }
+  if (strcmp(mode, "invntt_post_untwist") == 0)
+  {
+    return target_invntt_post_untwist;
+  }
+  if (strcmp(mode, "invntt_post_finalmerge") == 0)
+  {
+    return target_invntt_post_finalmerge;
+  }
+#endif
+
   if (strcmp(mode, "ntt") == 0)
   {
     return target_ntt;
@@ -471,6 +731,13 @@ static int bench(const char *name, const char *mode, target_fn target)
   }
 
   qsort(cycles, NTESTS, sizeof(uint64_t), cmp_uint64_t);
+#if BENCH_VARIANT_GT
+  if (!check_gt_invntt_measured_outputs_exact(mode))
+  {
+    fprintf(stderr, "post-benchmark exact output check failed for %s\n", mode);
+    return 1;
+  }
+#endif
   checksum_outputs();
 
   printf("bench_name = %s\n", name);
@@ -503,7 +770,10 @@ int main(void)
     fprintf(stderr,
             "unknown BENCH_MODE=%s "
             "(use ntt, invntt, basemul, basemul_add, ntt_mul_pipeline, "
-            "ntt_basemul_add_pipeline, kem_dec)\n",
+            "ntt_basemul_add_pipeline, kem_dec, invntt_rows, invntt_row0, "
+            "invntt_row1, invntt_row2, invntt_post, invntt_post_dft3_raw, "
+            "invntt_post_dft3_reduce, invntt_post_untwist, "
+            "invntt_post_finalmerge)\n",
             mode);
     return 1;
   }

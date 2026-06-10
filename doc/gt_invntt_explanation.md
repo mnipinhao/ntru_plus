@@ -4,7 +4,11 @@ Target implementation:
 
 - Production wrapper: `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt.s`
 - Production body: `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.s`
-- Opt-in Pi 5 experiment: `asm/inv_my_ntt_directstage123.s`
+- Previous no-DFT3-reduce production fallback: `asm/inv_my_ntt_post_n1_nodftreduce.s`
+- Previous post-DFT3-reducing production fallback: `asm/inv_my_ntt_post_dft3reduce_fallback.s`
+- Regression fallback: `asm/inv_my_ntt_rowlazy_baseline.s`
+- Benchmark-only stage splitter: `asm/inv_my_ntt_benchstages.s`
+- Promoted Pi 5 path: `asm/inv_my_ntt_post_branchfold_reduce.s`
 - C reference: `ntt.c`, `invntt_gt_rowbitrevlayout_exact()`
 
 Current production path:
@@ -12,15 +16,55 @@ Current production path:
 ```text
 GT row-bitrev NTT input
   -> direct physical-layout row loads
-  -> inverse row NTT32, bitrev k32 input to natural k32 output
-  -> row-end lazy Barrett reduction
-  -> fused inverse DFT3 + untwist + final branch merge + scaling
+  -> direct stage123 inverse row NTT32
+  -> Slothy-scheduled stage45 + row-end Barrett reduction fusion
+  -> fused inverse DFT3 without post-DFT3 Barrett reductions
+  -> branch-constant folded untwist + final branch merge + scaling
+  -> final output Barrett reductions
   -> natural coefficient output
 ```
 
-The opt-in `directstage123` path keeps the same math and output contract, but fuses
-the direct physical loads with inverse row stages 1, 2, and 3.  It is not the
-default production source.
+The old "directstage123" optimization is no longer only an experiment: the
+production wrapper sets `INVNTT_USE_DIRECT_STAGE123`.  The remaining opt-in
+work is now focused on the post-row phase.
+
+Current production gates in `asm/inv_my_ntt.s`:
+
+```asm
+.equ INVNTT_USE_DIRECT_STAGE123, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY, 1
+.equ INVNTT_POST_DFT3_NO_REDUCE, 1
+.equ INVNTT_USE_POST_BRANCHFOLD, 1
+.equ INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, 1
+```
+
+The previous no-DFT3-reduce production fallback is:
+
+```asm
+.equ INVNTT_USE_DIRECT_STAGE123, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY, 1
+.equ INVNTT_USE_POST_FUSED_N1_NODFTREDUCE_SLOTHY, 1
+```
+
+The previous post-DFT3-reducing production fallback is:
+
+```asm
+.equ INVNTT_USE_DIRECT_STAGE123, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
+.equ INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY, 1
+.equ INVNTT_USE_POST_FUSED_SLOTHY, 1
+```
+
+The previous no-DFT3-reduce fallback uses a Neoverse-N1 Slothy schedule as the
+closest available A76-like model for Raspberry Pi 5.  The promoted production
+path keeps the same row optimizations, removes the three post-DFT3 Barrett
+reductions per fused stripe, and then uses branch-specific folded constants
+plus final output Barrett reductions.  This reduces the final merge from four
+fqmul-equivalent operations per output group to two while preserving exact
+representatives for forward-produced GT inputs checked by the updated Pi
+benchmark harness.
 
 Production precondition:
 
@@ -69,7 +113,7 @@ is natural `k32`.
 .align 4
 inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171
-    .hword  -36,  -341, 1728, -1728,    0,     0,   0,    0
+    .hword  -36,  -341, 1701, 16123,    0,     0,   0,    0
 ```
 
 Register use after loading:
@@ -89,8 +133,8 @@ v0.h[7] = 1/192 precompute              = -171
 
 v15.h[0] = 1/96 normal multiplier       = -36
 v15.h[1] = 1/96 precompute              = -341
-v15.h[2] = 1728
-v15.h[3] = -1728
+v15.h[2] = ZMINUSZ5INV/192 normal       = 1701
+v15.h[3] = ZMINUSZ5INV/192 precompute   = 16123
 ```
 
 Important domain note:
@@ -169,19 +213,10 @@ sp + 544   = row1, 32 q vectors
 sp + 1056  = row2, 32 q vectors
 ```
 
-### Opt-in directstage123
-
-`asm/inv_my_ntt_directstage123.s` sets:
-
-```asm
-.equ INVNTT_USE_DIRECT_STAGE123, 1
-.include "asm/slothy/invntt_opt.s"
-```
-
-That path changes only this part:
+### Direct stage123
 
 ```text
-default:
+older row materialization:
   direct d/d physical loads
   -> store q row input
   -> inverse row stage123 loads q row input
@@ -193,7 +228,7 @@ directstage123:
 ```
 
 Stage45, row-end reduction, post-row processing, scaling, and output
-representatives are unchanged.
+representatives are unchanged.  This is part of the current production path.
 
 ## Phase 2: inverse row NTT32
 
@@ -369,9 +404,12 @@ sub      v9.8h, v9.8h, v6.8h
 BARRETT_REDUCE v9, v24
 ```
 
-Production keeps these DFT3 reductions.  A postlazy experiment removed them and
-was ring-level correct modulo `q`, but not representative-safe for the full
-scheme.
+The older production fallback keeps these DFT3 reductions.  Current production
+removes them and uses branchfold final merge with final output reductions; that
+combination was separately checked for exact representatives on
+forward-produced GT inputs.  Earlier raw postlazy and unreduced folded
+postmerge experiments were ring-level correct modulo `q`, but not
+representative-safe for the full scheme.
 
 Reason:
 
@@ -382,6 +420,28 @@ x and x+q are equal modulo q, but differ by 1 modulo 3
 ```
 
 So raw postlazy output must not be promoted as `poly_invntt` default.
+
+Important current refinement:
+
+- `asm/inv_my_ntt_post_n1_nodftreduce.s` is not the old raw postlazy path.  It
+  removes only the three post-DFT3 Barrett reductions inside each fused post
+  stripe while keeping the original untwist, final branch merge, final scaling,
+  and production `d`-store pattern.
+- `asm/inv_my_ntt_post_branchfold_reduce.s` builds on the same no-DFT3-reduce
+  idea, but folds untwist, branch merge, and final scaling into per-k constants
+  and then applies final output Barrett reductions.
+- The updated `aarch64-bench` GT `invntt` mode checks exact representatives
+  against `invntt_gt_rowbitrevlayout_exact()` for forward-produced GT inputs,
+  and it checks measured `g_out[]` after the timed loop.
+- On Pi 5, `post_n1_nodftreduce` matched the default sink and passed the exact
+  representative harness while reducing `BENCH_MODE=invntt` from 5002 cycles
+  to 4562 cycles.
+- On Pi 5, `post_branchfold_reduce` matched the same sink and reduced
+  `BENCH_MODE=invntt` further to 4044 cycles.
+
+This made `post_branchfold_reduce` the promoted default for standalone GT
+inverse NTT.  Keep the no-DFT3-reduce and post-DFT3-reducing fallback wrappers
+for regression and comparisons.
 
 ## Phase 4: untwist by `F_b^k`
 
@@ -471,6 +531,7 @@ Constants:
 ZMINUSZ5INV normal = 1634
 1/192 normal       = -18 mod q
 1/96 normal        = -36 mod q
+ZMINUSZ5INV/192    = 1701 mod q
 ```
 
 Assembly shape:
@@ -499,6 +560,38 @@ Only the low four lanes are stored with `d` stores.  This is intentional:
 d21 = four natural output coefficients for the low half
 d23 = four natural output coefficients for the high half, stored +768 bytes
 ```
+
+### Removed fastscale final merge experiment
+
+The `POST_STORE_PTR_FASTSCALE` experiment rewrites the final branch
+merge/scale algebra:
+
+```text
+old:
+  t2       = fqmul(ZMINUSZ5INV, diff)
+  out_low  = fqmul(1/192, sum - t2)
+  out_high = fqmul(1/96,  t2)
+
+new:
+  t        = fqmul(ZMINUSZ5INV/192, diff)
+  s        = fqmul(1/192, sum)
+  out_low  = s - t
+  out_high = 2*t
+```
+
+Status:
+
+- the unreduced fastscale wrapper is not representative-safe; it fails with
+  examples like `got=3458, want=1`.
+- the reduced fastscale wrappers pass `test_polyinvntt_asm`, but Pi 5 measured
+  the no-DFT3-reduce + fastscale + reduce variant at about 4997 cycles.
+- `test_invntt_representatives` may report that out-of-contract centered-edge
+  stress did not expose a hazard for the reduced fastscale variants.  That is
+  not a contract-input mismatch; it means this wrapper changes the behavior of
+  the test's deliberate out-of-contract hazard probe.
+
+These variants were removed from the default tree because they are slower than
+the branchfold-reduce production path and add no useful fallback coverage.
 
 ## Natural output store pattern
 
@@ -557,34 +650,106 @@ representatives.
 Raspberry Pi 5 medians reported for `BENCH_MODE=invntt`:
 
 ```text
-GT default rowlazy:             about 5379 cycles
-GT directstage123 opt-in:       about 5261 cycles
-GT directstage123_postldp:      about 5261 cycles
+old rowlazy/default baseline:             about 5379 cycles
+directstage123 only:                      about 5261 cycles
+directstage123 + post fused Slothy:       about 5109 cycles
+previous production fallback:             5002 cycles
+post N1 reschedule only:                  5036 cycles
+previous production no-DFT3-reduce:       4562 cycles
+no-DFT3-reduce + fastscale+reduce:        4997 cycles
+current production branchfold+reduce:     4044 cycles
 ```
 
-Conclusion:
+Latest post-phase split medians on Pi 5:
 
-- `directstage123` is worth keeping as an opt-in experiment.
-- `postldp` gave no Pi 5 improvement and was removed from the active tree.
-- The next likely optimization target is the remaining stack round-trip between
-  stage123 output, stage45, and row-end reduction.
+```text
+invntt_post_dft3_raw:       314 cycles
+invntt_post_dft3_reduce:    628 cycles
+invntt_post_untwist:        580 cycles
+invntt_post_finalmerge:    1734 cycles
+```
+
+Interpretation:
+
+- The post phase dominates the remaining inverse NTT cost.
+- The three post-DFT3 Barrett reductions cost roughly 300 cycles in the split
+  benchmark.
+- Final merge/scale/store is still the largest post-row block.
+- `asm/inv_my_ntt_post_n1_nodftreduce.s` is the previous promoted default:
+  it saves about 440 cycles versus the post-DFT3-reducing fallback and matched
+  the exact-output benchmark harness for forward-produced GT inputs.
+- `asm/inv_my_ntt_post_branchfold_reduce.s` is now the promoted default.
+  It folds untwist, branch merge, and final scaling into per-k constants and
+  passes the full inverse test plus the `aarch64-bench` exact-output harness.
+  Pi 5 measured about 4044 cycles, saving about 518 cycles over the previous
+  no-DFT3-reduce default.
+- the old N1-only post schedule, fastscale wrappers, unreduced branchfold
+  wrapper, and stripe-scratch wrapper were removed after measuring no useful
+  production value.
+
+Promotion status for `post_branchfold_reduce`:
+
+```text
+promoted for default standalone GT inverse because:
+  exact representative checks pass for forward-produced GT inputs,
+  standalone invntt improves from the previous 4562-cycle default to 4044,
+  output representatives remain safe for poly_crepmod3.
+
+still benchmark before drawing full-scheme conclusions:
+  ntt_mul_pipeline,
+  ntt_basemul_add_pipeline,
+  kem_dec.
+```
 
 ## Useful test targets
 
 ```sh
 make analyze_invntt32_ranges && ./build/analyze_invntt32_ranges
 make test_polyinvntt_asm && ./build/test_polyinvntt_asm
-make test_polyinvntt_directstage123 && ./build/test_polyinvntt_directstage123
-make test_polyinvntt_directstage123_compare && ./build/test_polyinvntt_directstage123_compare
+make test_polyinvntt_asm POLYINVNTT_ASM=asm/inv_my_ntt_post_n1_nodftreduce.s
+./build/test_polyinvntt_asm
+make test_invntt_representatives POLYINVNTT_ASM=asm/inv_my_ntt_post_n1_nodftreduce.s
+./build/test_invntt_representatives
+make test_polyinvntt_asm POLYINVNTT_ASM=asm/inv_my_ntt_post_branchfold_reduce.s
+./build/test_polyinvntt_asm
 make test_gt_reference && ./build/test_gt_reference
 ```
 
-Pi 5 directstage benchmark:
+Pi 5 current production/default benchmark:
 
 ```sh
 cd aarch64-bench
-make clean
-make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt \
-  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_directstage123.s
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt
+sudo taskset -c 3 ./bench
+```
+
+Pi 5 previous no-DFT3-reduce fallback benchmark:
+
+```sh
+cd aarch64-bench
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt \
+  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_n1_nodftreduce.s
+sudo taskset -c 3 ./bench
+```
+
+Pi 5 post split benchmarks:
+
+```sh
+cd aarch64-bench
+for m in invntt_post_dft3_raw invntt_post_dft3_reduce \
+         invntt_post_untwist invntt_post_finalmerge; do
+  make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=$m
+  sudo taskset -c 3 ./bench
+done
+```
+
+Pi 5 pipeline checks after promotion:
+
+```sh
+cd aarch64-bench
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=ntt_mul_pipeline
+sudo taskset -c 3 ./bench
+
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=ntt_basemul_add_pipeline
 sudo taskset -c 3 ./bench
 ```
