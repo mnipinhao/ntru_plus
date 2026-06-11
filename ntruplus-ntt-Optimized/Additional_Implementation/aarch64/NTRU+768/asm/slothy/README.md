@@ -53,23 +53,11 @@ The active inverse NTT path is intentionally narrow:
   directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
   branch-constant folded final merge path through assembler-time gates, then
   includes `asm/slothy/invntt_opt.s`.
-- `asm/inv_my_ntt_post_n1_nodftreduce.s` is the previous production
-  reduction-movement wrapper kept for explicit benchmarking.  It removes the
-  three post-DFT3 Barrett reductions inside each fused post stripe, but it does
-  not use the branchfold final merge.
-- `asm/inv_my_ntt_post_dft3reduce_fallback.s` is the previous production
-  wrapper with the post-DFT3 Barrett reductions retained.
-- `asm/inv_my_ntt_rowlazy_baseline.s` is the pre-promotion rowlazy baseline
-  wrapper for regression and benchmark comparison.
 - `asm/slothy/invntt_opt.s` is the current inverse implementation wired into
   tests and benchmarks.
 - `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
   `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
   Slothy sources for the promoted scheduled regions.
-- `asm/inv_my_ntt_post_branchfold_reduce.s` is the production-equivalent
-  branch-constant folded final-merge wrapper.  It folds untwist, branch merge,
-  and final scaling into per-k constants, reducing the final merge from four
-  fqmul-equivalent operations to two plus output reductions.
 - `asm/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
   mathematical path, but it uses an A72 Slothy schedule for the branchfold
   fused post stripe.  It is not production default until Pi 5 measurements
@@ -85,12 +73,14 @@ The active inverse NTT path is intentionally narrow:
 The old standalone `inv_my_ntt_*directstage123*.s`,
 `inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
 branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
-were removed after promotion.  The retained alternate wrappers are the rowlazy
-baseline and the two production fallbacks above.
+were removed after promotion.  The duplicate branchfold wrapper was also
+removed because `asm/inv_my_ntt.s` is now that exact path.  The retained
+alternate wrappers are the no-DFT3-reduce fallback, the A72 branchfold schedule,
+and the stage benchmark wrapper above.
 
 Raspberry Pi 5 PERF medians motivating the promotion:
 
-- previous rowlazy/default GT `invntt`: about 5379 cycles
+- previous no-DFT3-reduce production baseline: about 5379 cycles
 - directstage123 only: about 5263 cycles
 - directstage123 + post-fused Slothy: 5109 cycles
 - directstage123 + stage45-reduce Slothy + post-fused Slothy: 5000 cycles

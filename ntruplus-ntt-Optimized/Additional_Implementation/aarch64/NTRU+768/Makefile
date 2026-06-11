@@ -26,13 +26,11 @@ endif
 
 .PHONY: all PQCgenKAT_kem test test_stock_base_opt test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_gt_base_opt test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt bench_base_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt bench_baseadd_compare bench_ntt_pipeline_stock bench_ntt_pipeline_gt bench_ntt_pipeline_stock_opt bench_ntt_pipeline_gt_opt bench_ntt_pipeline_compare bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt bench_ntt_pipeline_add_stock_opt bench_ntt_pipeline_add_gt_opt bench_ntt_pipeline_add_compare bench_polyinvntt_asm bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final bench_kem_dec_gt bench_kem_dec_compare bench_pmu bench_pmu_base_compare bench_pmu_base_compare_stock_gt bench_pmu_base_compare_stockopt_gtopt bench_pmu_base_compare_stock_stockopt bench_pmu_base_compare_gt_gtopt bench_pmu_symbols dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 .PHONY: verify_invntt_constants verify_invntt_layout verify_invntt_contracts test_invntt_representatives analyze_invntt_branchfold_reductions
-.PHONY: test_polyinvntt_rowlazy_baseline bench_polyinvntt_rowlazy_baseline
 .PHONY: test_polyinvntt_branchfold_a72 bench_polyinvntt_branchfold_a72
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
 POLYINVNTT_ASM ?= asm/inv_my_ntt.s
-POLYINVNTT_ROWLAZY_BASELINE_ASM ?= asm/inv_my_ntt_rowlazy_baseline.s
 POLYINVNTT_BRANCHFOLD_A72_ASM ?= asm/inv_my_ntt_post_branchfold_a72.s
 STOCK_BASE_ASM ?= asm/base.s
 GT_BASE_ASM ?= asm/base_gt.S
@@ -135,10 +133,6 @@ test_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLY
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_asm gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 
-test_polyinvntt_rowlazy_baseline: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_rowlazy_baseline gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
-
 test_polyinvntt_branchfold_a72: $(HEADERS) ntt.h ntt.c gt_test/test_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_BRANCHFOLD_A72_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -I. -o $(BUILD_DIR)/test_polyinvntt_branchfold_a72 gt_test/test_polyinvntt_asm.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_BRANCHFOLD_A72_ASM)
@@ -172,10 +166,6 @@ analyze_invntt_branchfold_reductions: $(HEADERS) ntt.h ntt.c gt_test/analyze_inv
 bench_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_default\" -I. -o $(BUILD_DIR)/bench_polyinvntt_asm gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
-
-bench_polyinvntt_rowlazy_baseline: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DBENCH_LABEL=\"gt_rowbitrev_invntt_rowlazy_baseline\" -I. -o $(BUILD_DIR)/bench_polyinvntt_rowlazy_baseline gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ROWLAZY_BASELINE_ASM)
 
 bench_polyinvntt_branchfold_a72: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_BRANCHFOLD_A72_ASM)
 	@mkdir -p $(BUILD_DIR)

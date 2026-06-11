@@ -4,11 +4,8 @@ Target implementation:
 
 - Production wrapper: `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt.s`
 - Production body: `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.s`
-- Previous no-DFT3-reduce production fallback: `asm/inv_my_ntt_post_n1_nodftreduce.s`
-- Previous post-DFT3-reducing production fallback: `asm/inv_my_ntt_post_dft3reduce_fallback.s`
-- Regression fallback: `asm/inv_my_ntt_rowlazy_baseline.s`
 - Benchmark-only stage splitter: `asm/inv_my_ntt_benchstages.s`
-- Promoted Pi 5 path: `asm/inv_my_ntt_post_branchfold_reduce.s`
+- Opt-in A72 post-row schedule: `asm/inv_my_ntt_post_branchfold_a72.s`
 - C reference: `ntt.c`, `invntt_gt_rowbitrevlayout_exact()`
 
 Current production path:
@@ -423,25 +420,21 @@ So raw postlazy output must not be promoted as `poly_invntt` default.
 
 Important current refinement:
 
-- `asm/inv_my_ntt_post_n1_nodftreduce.s` is not the old raw postlazy path.  It
-  removes only the three post-DFT3 Barrett reductions inside each fused post
-  stripe while keeping the original untwist, final branch merge, final scaling,
-  and production `d`-store pattern.
-- `asm/inv_my_ntt_post_branchfold_reduce.s` builds on the same no-DFT3-reduce
-  idea, but folds untwist, branch merge, and final scaling into per-k constants
-  and then applies final output Barrett reductions.
+- `asm/inv_my_ntt.s` keeps the no-DFT3-reduce post structure and folds untwist,
+  branch merge, scaling, and final output reductions into the default production
+  path.
+- Production `asm/inv_my_ntt.s` builds on the same no-DFT3-reduce idea, but
+  folds untwist, branch merge, and final scaling into per-k constants and then
+  applies final output Barrett reductions.
 - The updated `aarch64-bench` GT `invntt` mode checks exact representatives
   against `invntt_gt_rowbitrevlayout_exact()` for forward-produced GT inputs,
   and it checks measured `g_out[]` after the timed loop.
-- On Pi 5, `post_n1_nodftreduce` matched the default sink and passed the exact
-  representative harness while reducing `BENCH_MODE=invntt` from 5002 cycles
-  to 4562 cycles.
-- On Pi 5, `post_branchfold_reduce` matched the same sink and reduced
-  `BENCH_MODE=invntt` further to 4044 cycles.
+- On Pi 5, the branchfold-reduce path matched the same sink and reduced
+  `BENCH_MODE=invntt` to about 4044 cycles.
 
-This made `post_branchfold_reduce` the promoted default for standalone GT
-inverse NTT.  Keep the no-DFT3-reduce and post-DFT3-reducing fallback wrappers
-for regression and comparisons.
+This made the branchfold-reduce path the promoted default for standalone GT
+inverse NTT.  The duplicate `post_branchfold_reduce` wrapper and the older
+post-DFT3-reducing fallback wrapper were removed.
 
 ## Phase 4: untwist by `F_b^k`
 
@@ -650,7 +643,7 @@ representatives.
 Raspberry Pi 5 medians reported for `BENCH_MODE=invntt`:
 
 ```text
-old rowlazy/default baseline:             about 5379 cycles
+previous no-DFT3-reduce baseline:        about 5379 cycles
 directstage123 only:                      about 5261 cycles
 directstage123 + post fused Slothy:       about 5109 cycles
 previous production fallback:             5002 cycles
@@ -675,19 +668,18 @@ Interpretation:
 - The three post-DFT3 Barrett reductions cost roughly 300 cycles in the split
   benchmark.
 - Final merge/scale/store is still the largest post-row block.
-- `asm/inv_my_ntt_post_n1_nodftreduce.s` is the previous promoted default:
-  it saves about 440 cycles versus the post-DFT3-reducing fallback and matched
-  the exact-output benchmark harness for forward-produced GT inputs.
-- `asm/inv_my_ntt_post_branchfold_reduce.s` is now the promoted default.
-  It folds untwist, branch merge, and final scaling into per-k constants and
-  passes the full inverse test plus the `aarch64-bench` exact-output harness.
-  Pi 5 measured about 4044 cycles, saving about 518 cycles over the previous
-  no-DFT3-reduce default.
+- The previous no-DFT3-reduce production baseline is no longer maintained as a
+  standalone file and was superseded by branchfold default path in `inv_my_ntt.s`.
+- `asm/inv_my_ntt.s` is now the promoted branchfold default.  It folds untwist,
+  branch merge, and final scaling into per-k constants and passes the full
+  inverse test plus the `aarch64-bench` exact-output harness.  Pi 5 measured
+  about 4044 cycles, saving about 518 cycles over the previous no-DFT3-reduce
+  default.
 - the old N1-only post schedule, fastscale wrappers, unreduced branchfold
   wrapper, and stripe-scratch wrapper were removed after measuring no useful
   production value.
 
-Promotion status for `post_branchfold_reduce`:
+Promotion status for branchfold-reduce:
 
 ```text
 promoted for default standalone GT inverse because:
@@ -732,17 +724,9 @@ make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt
 sudo taskset -c 3 ./bench
 ```
 
-To bypass default-wrapper ambiguity, benchmark the promoted wrapper explicitly:
-
-```sh
-make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt \
-  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_branchfold_reduce.s
-sudo taskset -c 3 ./bench
-```
-
-The explicit promoted wrapper should be around 4044 cycles on the measured Pi
-5 setup.  If the explicit wrapper is around 4044 but default is around 4559,
-the local `ntruplus/asm/inv_my_ntt.s` is stale.
+The default `ntruplus/asm/inv_my_ntt.s` should be around 4044 cycles on the
+measured Pi 5 setup.  If it is around 4559, the local checkout is stale or the
+benchmark binary is still linking the previous no-DFT3-reduce wrapper.
 
 ## KPQC final comparison
 
@@ -775,14 +759,20 @@ highest-value next steps are:
 
 1. Schedule the branchfold post-row path for Cortex-A76/Pi 5.
    The current branchfold macro is correct and fast, but not a dedicated A76
-   Slothy schedule.  This is the most plausible remaining low-risk source of
-   tens to a few hundred cycles.
+   Slothy schedule.  As a first approximation, the tree has an opt-in A72
+   Slothy wrapper:
+   `asm/inv_my_ntt_post_branchfold_a72.s`.
 
 2. Analyze branchfold output-reduction placement.
    Branchfold removes final-merge fqmul work but adds two final Barrett
-   reductions per output vector.  A representative-exact analyzer should test
-   whether both reductions are always necessary, or whether selected vectors can
-   use a lighter correction while still matching production representatives.
+   reductions per output vector.  `analyze_invntt_branchfold_reductions`
+   compares skip-low, skip-high, and skip-both variants against the
+   reduce-both branchfold baseline.  On the current test set, skipping either
+   output reduction creates thousands of exact-representative and mod-3
+   mismatches, all modulo-q equivalent by +/-q.  Since `poly_crepmod3` is
+   representative-sensitive and q = 3457 == 1 mod 3, these reductions should
+   remain in place unless a stronger representative-correction strategy is
+   proven.
 
 3. Reduce branchfold constant load pressure.
    Branchfold loads low/high normal/precompute constants for each output vector.
@@ -801,12 +791,8 @@ highest-value next steps are:
 ```sh
 make analyze_invntt32_ranges && ./build/analyze_invntt32_ranges
 make test_polyinvntt_asm && ./build/test_polyinvntt_asm
-make test_polyinvntt_asm POLYINVNTT_ASM=asm/inv_my_ntt_post_n1_nodftreduce.s
-./build/test_polyinvntt_asm
-make test_invntt_representatives POLYINVNTT_ASM=asm/inv_my_ntt_post_n1_nodftreduce.s
+make test_polyinvntt_asm
 ./build/test_invntt_representatives
-make test_polyinvntt_asm POLYINVNTT_ASM=asm/inv_my_ntt_post_branchfold_reduce.s
-./build/test_polyinvntt_asm
 make test_gt_reference && ./build/test_gt_reference
 ```
 
@@ -818,12 +804,16 @@ make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt
 sudo taskset -c 3 ./bench
 ```
 
-Pi 5 previous no-DFT3-reduce fallback benchmark:
+Pi 5 opt-in A72 branchfold schedule benchmark:
 
 ```sh
 cd aarch64-bench
 make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=invntt \
-  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_n1_nodftreduce.s
+  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_branchfold_a72.s
+sudo taskset -c 3 ./bench
+
+make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=ntt_mul_pipeline \
+  GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_branchfold_a72.s
 sudo taskset -c 3 ./bench
 ```
 
