@@ -994,7 +994,100 @@
     str d11, [\ptr0, #\off0_lo]
 .endm
 
+.macro FUSED_POST_STRIPE_BRANCHFOLD_A72_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    /*
+     * Cortex-A72 Slothy schedule for one promoted branchfold-reduce stripe.
+     * Source of truth:
+     * asm/slothy/invntt_post_branchfold_reduce_clean.slothy.s, generated as
+     * asm/slothy/invntt_post_branchfold_reduce_a72.opt.s with
+     * allow_spills=false.  The clean q-store placeholders are converted back
+     * to production d stores below.
+     */
+    ldr q20, [x9], #16
+    ldr q21, [x10], #16
+    ldr q18, [x8], #16
+    ldr q26, [x3], #16
+    ldr q22, [x3], #16
+    ldr q6, [x3], #16
+    ldr q30, [x3], #16
+    ldr q7, [x3], #16
+    ldr q15, [x3], #16
+    sub v3.8h, v21.8h, v20.8h
+    ldr q23, [x3], #16
+    add v1.8h, v18.8h, v20.8h
+    sub v28.8h, v18.8h, v20.8h
+    ldr q10, [x3], #16
+    sub v18.8h, v18.8h, v21.8h
+    ldr q8, [x3], #16
+    ldr q11, [x3], #16
+    ldr q4, [x3], #16
+    sqrdmulh v24.8h, v3.8h, v0.h[3]
+    ldr q9, [x3], #16
+    add v2.8h, v1.8h, v21.8h
+    mul v12.8h, v3.8h, v0.h[2]
+    mul v26.8h, v2.8h, v26.8h
+    sqrdmulh v19.8h, v2.8h, v22.8h
+    mls v12.8h, v24.8h, v0.h[0]
+    mul v3.8h, v2.8h, v6.8h
+    sqrdmulh v13.8h, v2.8h, v30.8h
+    add v24.8h, v28.8h, v12.8h
+    sub v22.8h, v18.8h, v12.8h
+    mls v26.8h, v19.8h, v0.h[0]
+    mul v18.8h, v24.8h, v7.8h
+    sqrdmulh v7.8h, v24.8h, v15.8h
+    ext v30.16b, v26.16b, v26.16b, #8
+    mul v19.8h, v24.8h, v23.8h
+    sqrdmulh v17.8h, v24.8h, v10.8h
+    add v21.8h, v26.8h, v30.8h
+    mul v26.8h, v22.8h, v8.8h
+    sqrdmulh v14.8h, v22.8h, v11.8h
+    mul v30.8h, v22.8h, v4.8h
+    sqrdmulh v9.8h, v22.8h, v9.8h
+    mls v3.8h, v13.8h, v0.h[0]
+    mls v18.8h, v7.8h, v0.h[0]
+    mls v19.8h, v17.8h, v0.h[0]
+    ext v28.16b, v3.16b, v3.16b, #8
+    mls v26.8h, v14.8h, v0.h[0]
+    ext v1.16b, v18.16b, v18.16b, #8
+    add v16.8h, v3.8h, v28.8h
+    sqdmulh v8.8h, v21.8h, v0.h[1]
+    ext v7.16b, v19.16b, v19.16b, #8
+    mls v30.8h, v9.8h, v0.h[0]
+    add v18.8h, v18.8h, v1.8h
+    ext v20.16b, v26.16b, v26.16b, #8
+    add v11.8h, v19.8h, v7.8h
+    sqdmulh v17.8h, v16.8h, v0.h[1]
+    srshr v1.8h, v8.8h, #11
+    add v26.8h, v26.8h, v20.8h
+    sqdmulh v7.8h, v18.8h, v0.h[1]
+    ext v10.16b, v30.16b, v30.16b, #8
+    sqdmulh v22.8h, v11.8h, v0.h[1]
+    srshr v9.8h, v17.8h, #11
+    add v3.8h, v30.8h, v10.8h
+    sqdmulh v12.8h, v26.8h, v0.h[1]
+    srshr v25.8h, v7.8h, #11
+    mls v16.8h, v9.8h, v0.h[0]
+    srshr v20.8h, v22.8h, #11
+    sqdmulh v13.8h, v3.8h, v0.h[1]
+    srshr v10.8h, v12.8h, #11
+    mls v11.8h, v20.8h, v0.h[0]
+    str d16, [\ptr0, #\off0_hi]
+    mls v18.8h, v25.8h, v0.h[0]
+    srshr v2.8h, v13.8h, #11
+    mls v26.8h, v10.8h, v0.h[0]
+    str d11, [\ptr1, #\off1_hi]
+    mls v3.8h, v2.8h, v0.h[0]
+    str d18, [\ptr1, #\off1_lo]
+    mls v21.8h, v1.8h, v0.h[0]
+    str d26, [\ptr2, #\off2_lo]
+    str d3, [\ptr2, #\off2_hi]
+    str d21, [\ptr0, #\off0_lo]
+.endm
+
 .macro RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+.ifdef INVNTT_USE_POST_BRANCHFOLD_A72_SLOTHY
+    FUSED_POST_STRIPE_BRANCHFOLD_A72_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.else
 .ifdef INVNTT_USE_POST_FUSED_N1_NODFTREDUCE_SLOTHY
     FUSED_POST_STRIPE_N1_NODFTREDUCE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
 .else
@@ -1005,6 +1098,7 @@
     FUSED_POST_STRIPE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
 .else
     FUSED_POST_STRIPE \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.endif
 .endif
 .endif
 .endif
@@ -1840,4 +1934,5 @@ inv_branchfold_vecs:
 .purgem FUSED_POST_STRIPE_SLOTHY
 .purgem FUSED_POST_STRIPE_N1_SLOTHY
 .purgem FUSED_POST_STRIPE_N1_NODFTREDUCE_SLOTHY
+.purgem FUSED_POST_STRIPE_BRANCHFOLD_A72_SLOTHY
 .purgem RUN_FUSED_POST_STRIPE

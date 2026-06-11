@@ -70,6 +70,13 @@ The active inverse NTT path is intentionally narrow:
   branch-constant folded final-merge wrapper.  It folds untwist, branch merge,
   and final scaling into per-k constants, reducing the final merge from four
   fqmul-equivalent operations to two plus output reductions.
+- `asm/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
+  mathematical path, but it uses an A72 Slothy schedule for the branchfold
+  fused post stripe.  It is not production default until Pi 5 measurements
+  show a clear win.
+- `asm/slothy/invntt_post_branchfold_reduce_clean.slothy.s` and
+  `asm/slothy/invntt_post_branchfold_reduce_a72.opt.s` are the clean and
+  generated sources for that opt-in branchfold schedule.
 - `asm/inv_my_ntt_benchstages.s` is benchmark-only.  It exports row and post
   phase entry points used by `aarch64-bench` modes such as `invntt_rows`,
   `invntt_post`, `invntt_post_dft3_raw`, `invntt_post_dft3_reduce`,
