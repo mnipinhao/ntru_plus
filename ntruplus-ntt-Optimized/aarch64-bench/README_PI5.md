@@ -52,6 +52,54 @@ make clean && make CYCLES=PERF VARIANT=gt BENCH_MODE=ntt_mul_pipeline
 sudo taskset -c 3 ./bench
 ```
 
+For the full stock/GT/Slothy matrix, prefer the runner:
+
+```sh
+python3 scripts/run_pi5_matrix.py --runs 3
+```
+
+It covers `stock`, `stock_opt`, `gt`, and `gt_opt` across the main arithmetic
+and `kem_dec` modes, saves full logs, and writes `summary_runs.csv` plus
+`summary_cases.csv` under `logs/pi5-matrix-*`.
+
+The runner accepts extra Make variables for candidate assembly files.  For
+example:
+
+```sh
+python3 scripts/run_pi5_matrix.py --runs 3 \
+  --variants gt_opt \
+  --modes basemul,basemul_add \
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/base_gt.n1.opt.s
+```
+
+Inverse stage modes use `GT_INVNTT_STAGE_ASM`, while full `invntt`, pipeline,
+and `kem_dec` modes use `GT_INVNTT_ASM`.  When measuring a candidate with
+`--include-invntt-stages`, pass both variables so the full and stage benches
+refer to the same inverse path:
+
+```sh
+python3 scripts/run_pi5_matrix.py --runs 3 \
+  --variants gt_opt \
+  --modes invntt \
+  --include-invntt-stages \
+  --make-var GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_stage123_stripescratch.s \
+  --make-var GT_INVNTT_STAGE_ASM=ntruplus/asm/inv_my_ntt_stage123_stripescratch_benchstages.s
+```
+
+For the GT candidate sweep prepared for Pi 5:
+
+```sh
+RUNS=3 scripts/run_pi5_gt_candidate_matrix.sh
+```
+
+After the first sweep, use the focused follow-up matrix:
+
+```sh
+RUNS=5 scripts/run_pi5_gt_refined_matrix.sh
+```
+
+Use `INCLUDE_INVNTT_STAGES=1` to include inverse stage modes in these sweeps.
+
 Arithmetic-only modes (`ntt`, `invntt`, `basemul`, `basemul_add`,
 `ntt_mul_pipeline`, and `ntt_basemul_add_pipeline`) intentionally do not link
 KEM, randombytes, pack, CBD, crepmod3, or SHAKE sources.
@@ -197,6 +245,13 @@ sudo taskset -c 3 ./bench
 
 The `.opt.s` base files are experiment-only.  Do not use them as the default
 unless Raspberry Pi 5 results show they are consistently faster.
+
+`stock_opt` only swaps `asm/base.opt.s` into the KPQC final path; forward and
+inverse NTT still come from `asm/ntt.s`.  `gt` already includes the current GT
+forward NTT and inverse NTT Slothy artifacts, while `gt_opt` additionally swaps
+in `asm/base_gt.opt.s`.  See
+`../Additional_Implementation/aarch64/NTRU+768/docs/slothy_pi5_bench_matrix.md`
+for the interpretation matrix.
 
 ## Output
 

@@ -36,6 +36,7 @@ STOCK_BASE_ASM ?= asm/base.s
 GT_BASE_ASM ?= asm/base_gt.S
 BASE_GT_ASM ?= $(GT_BASE_ASM)
 BASE_GT_BENCH_LABEL ?= gt_basemul_asm
+GT_BASE_OPT_ASM ?= asm/base_gt.opt.s
 KEM_NTT_ASM ?= asm/ntt.s
 KEM_INVNTT_ASM ?=
 KEM_CREPMOD3_ASM ?= asm/crepmod3.s
@@ -117,9 +118,9 @@ test_gt_basemul_asm: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/t
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_basemul_asm gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(BASE_GT_ASM)
 
-test_gt_base_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/test_gt_basemul_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+test_gt_base_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/test_gt_basemul_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_base_opt gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) asm/base_gt.opt.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_base_opt gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
 
 test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c
 	@mkdir -p $(BUILD_DIR)
@@ -208,9 +209,9 @@ bench_base_gt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_g
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"gt_base\" -I. -o $(BUILD_DIR)/bench_base_gt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.S
 
-bench_base_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.opt.s
+bench_base_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c $(GT_BASE_OPT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"gt_base_opt\" -I. -o $(BUILD_DIR)/bench_base_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.opt.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_LABEL=\"gt_base_opt\" -I. -o $(BUILD_DIR)/bench_base_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c $(GT_BASE_OPT_ASM)
 
 bench_base_compare: bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt
 	./$(BUILD_DIR)/bench_base_stock
@@ -247,9 +248,9 @@ bench_baseadd_gt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/benc
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseadd\" -I. -o $(BUILD_DIR)/bench_baseadd_gt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.S
 
-bench_baseadd_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt.opt.s
+bench_baseadd_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c $(GT_BASE_OPT_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseadd_opt\" -I. -o $(BUILD_DIR)/bench_baseadd_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c asm/base_gt.opt.s
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -DBENCH_EXPECT_GT -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseadd_opt\" -I. -o $(BUILD_DIR)/bench_baseadd_gt_opt gt_test/bench_gt_basemul.c gt_test/poly_gt_base_ref.c ntt.c $(GT_BASE_OPT_ASM)
 
 bench_baseadd_compare: bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt
 	./$(BUILD_DIR)/bench_baseadd_stock

@@ -257,6 +257,7 @@ _poly_ntt:
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
+slothy_start_ntt_phase123:
     PHASE123_ITER 0
     PHASE123_ITER 1
     PHASE123_ITER 2
@@ -265,6 +266,7 @@ _poly_ntt:
     PHASE123_ITER 2
     PHASE123_ITER 0
     PHASE123_ITER 1
+slothy_end_ntt_phase123:
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas

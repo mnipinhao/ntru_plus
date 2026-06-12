@@ -87,6 +87,7 @@ def main() -> None:
     slothy.config.variable_size = True
     slothy.config.inputs_are_outputs = True
     slothy.config.selftest = False
+    slothy.config.allow_useless_instructions = True
     slothy.config.constraints.allow_spills = args.allow_spills
     slothy.config.constraints.stalls_first_attempt = args.stalls
     if args.functional_only:

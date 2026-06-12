@@ -69,6 +69,12 @@ The active inverse NTT path is intentionally narrow:
   phase entry points used by `aarch64-bench` modes such as `invntt_rows`,
   `invntt_post`, `invntt_post_dft3_raw`, `invntt_post_dft3_reduce`,
   `invntt_post_untwist`, and `invntt_post_finalmerge`.
+- `asm/inv_my_ntt_stage123_stripescratch_benchstages.s` is the matching
+  benchmark-only wrapper for the stage123 stripe-scratch candidate.  Use it
+  through `GT_INVNTT_STAGE_ASM` when comparing inverse stage breakdowns.
+- `asm/base_gt.n1.opt.s` and `asm/inv_my_ntt_stage123_stripescratch.s` are the
+  current Pi 5 fastest candidate pair.  The current result summary and rerun
+  commands live in `docs/slothy_pi5_bench_matrix.md`.
 
 The old standalone `inv_my_ntt_*directstage123*.s`,
 `inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced

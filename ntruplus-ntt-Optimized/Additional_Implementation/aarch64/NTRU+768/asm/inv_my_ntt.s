@@ -2,17 +2,19 @@
  * Production GT inverse NTT.
  *
  * This promotes the Pi 5 validated path:
- *   direct physical loads fused with row stage123
+ *   direct physical loads routed through the stage123 stripe-scratch layout
  *   + Slothy-scheduled stage45 row-end reduction fusion
  *   + post-row inverse DFT3 with post-DFT3 reductions removed
  *   + branch-constant folded untwist/final merge with final output reductions.
  *     Exact representative checks pass for forward-produced GT inputs, and
- *     Pi 5 BENCH_MODE=invntt improves from about 5002 to 4044 cycles.
+ *     the current Pi 5 median is about 4039 cycles in the base-N1 combined
+ *     matrix, with the best observed pipeline/KEM medians.
  *
- * The earlier no-DFT3-reduce production path remains in git history for
- * historical comparison, but is no longer a maintained fallback path.
+ * The previous direct-stage123 branchfold wrapper is kept as
+ * asm/inv_my_ntt_directstage123_branchfold.s for regression and PMU
+ * attribution only.
  */
-.equ INVNTT_USE_DIRECT_STAGE123, 1
+.equ INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY, 1
 .equ INVNTT_POST_DFT3_NO_REDUCE, 1

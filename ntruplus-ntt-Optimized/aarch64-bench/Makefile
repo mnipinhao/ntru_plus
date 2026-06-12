@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix
 
 TARGET = bench
 CC ?= gcc
 LD := $(CC)
 RM ?= rm -f
+PYTHON ?= python3
 
 VARIANT ?= gt
 BENCH_MODE ?= ntt_mul_pipeline
@@ -26,11 +27,17 @@ IS_ARITH_MODE = $(filter $(BENCH_MODE),$(ARITH_MODES))
 IS_KEM_MODE = $(filter $(BENCH_MODE),$(KEM_MODES))
 IS_INVNTT_STAGE_MODE = $(filter $(BENCH_MODE),$(INVNTT_STAGE_MODES))
 
-ifneq ($(IS_INVNTT_STAGE_MODE),)
-GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_benchstages.s
-else
 GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
+GT_INVNTT_STAGE_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_benchstages.s
+
+ifneq ($(IS_INVNTT_STAGE_MODE),)
+GT_INVNTT_SOURCE = $(GT_INVNTT_STAGE_ASM)
+else
+GT_INVNTT_SOURCE = $(GT_INVNTT_ASM)
 endif
+GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/base_gt.opt.s
+GT_NTT_ASM ?= $(NTRUPLUS)/asm/my_ntt.s
+GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
 
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
@@ -56,9 +63,9 @@ STOCK_ARITH_SOURCES = \
 GT_ARITH_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/asm/base_gt.S \
-	$(NTRUPLUS)/asm/my_ntt.s \
-	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(GT_INVNTT_ASM)
+	$(GT_NTT_ASM) \
+	$(GT_NTT32_ASM) \
+	$(GT_INVNTT_SOURCE)
 
 STOCK_OPT_ARITH_SOURCES = \
 	$(NTRUPLUS)/asm/base.opt.s \
@@ -66,10 +73,10 @@ STOCK_OPT_ARITH_SOURCES = \
 
 GT_OPT_ARITH_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
-	$(NTRUPLUS)/asm/base_gt.opt.s \
-	$(NTRUPLUS)/asm/my_ntt.s \
-	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(GT_INVNTT_ASM)
+	$(GT_BASE_OPT_ASM) \
+	$(GT_NTT_ASM) \
+	$(GT_NTT32_ASM) \
+	$(GT_INVNTT_SOURCE)
 
 STOCK_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
@@ -80,9 +87,9 @@ GT_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
 	$(NTRUPLUS)/asm/base_gt.S \
-	$(NTRUPLUS)/asm/my_ntt.s \
-	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(GT_INVNTT_ASM)
+	$(GT_NTT_ASM) \
+	$(GT_NTT32_ASM) \
+	$(GT_INVNTT_SOURCE)
 
 STOCK_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
@@ -92,10 +99,10 @@ STOCK_OPT_KEM_SOURCES = \
 GT_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
-	$(NTRUPLUS)/asm/base_gt.opt.s \
-	$(NTRUPLUS)/asm/my_ntt.s \
-	$(NTRUPLUS)/asm/slothy/my_32ntt.opt.s \
-	$(GT_INVNTT_ASM)
+	$(GT_BASE_OPT_ASM) \
+	$(GT_NTT_ASM) \
+	$(GT_NTT32_ASM) \
+	$(GT_INVNTT_SOURCE)
 
 SOURCES = $(BENCH_SOURCES)
 BENCH_ENABLE_KEM = 0
@@ -224,6 +231,9 @@ bench-all:
 	$(MAKE) clean
 	$(MAKE) CYCLES=PERF VARIANT=gt BENCH_MODE=kem_dec
 	sudo taskset -c 3 ./$(TARGET)
+
+bench-matrix:
+	$(PYTHON) scripts/run_pi5_matrix.py
 
 clean:
 	-$(RM) $(TARGET) *.d hal/*.d
