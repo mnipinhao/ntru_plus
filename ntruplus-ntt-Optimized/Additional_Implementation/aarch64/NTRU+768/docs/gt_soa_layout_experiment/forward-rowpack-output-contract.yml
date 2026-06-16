@@ -336,3 +336,35 @@ forward_stage345_layout_search:
     24-permute/block lower bound for an 8x8 16-bit transpose.  The next useful
     candidate is v3b: rewrite stage345 arithmetic/register order so rowpack
     plane vectors are naturally live-out, then use plain vector stores.
+
+forward_v3b_stage345_contract:
+  status: contract_scaffold_no_candidate
+  command: "make test_gt_rowpack_forward_v3b_stage345_contract"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_v3b_stage345/"
+  artifacts:
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - README.md
+    - "../check_forward_v3b_stage345_contract.py"
+  intended_symbolic_source: "asm/slothy/ntt32_v3b_rowpack_stage345_symbolic.s"
+  intended_optimized_output: "asm/slothy/ntt32_8way.rowpack_v3b.n1.opt.s"
+  mode: new_symbolic_kernel
+  candidate_status: investigate
+  store_policy:
+    allowed:
+      - "str qN, [public_offset]"
+      - "st1 {vN.8h}, [public_offset]"
+    forbidden:
+      - st4
+      - lane_store
+      - scalar_scatter
+      - scalar_GT_to_rowpack_conversion
+  future_targets:
+    - make bench_gt_rowpack_forward_v3b_stage345_cycles
+    - make bench_gt_rowpack_lazy_asm_v3b_forward_fullchain_compare
+  benchmark_status: "blocked until the v3b optimized ASM candidate exists"
+  conclusion: >
+    Gate 9 starts the v3b path without generating candidate assembly.  The next
+    step is symbolic stage345 arithmetic/layout authoring that produces rowpack
+    plane vectors as natural live-outs.  Slothy should only schedule that chosen
+    DAG after the symbolic candidate exists and passes static checks.

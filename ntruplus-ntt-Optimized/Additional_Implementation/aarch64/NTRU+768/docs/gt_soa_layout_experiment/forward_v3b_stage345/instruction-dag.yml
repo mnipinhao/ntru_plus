@@ -1,0 +1,110 @@
+dag:
+  id: gt_rowpack_forward_v3b_stage345_liveout_dag
+  kernel_contract: kernel-contract.yml
+  description: "Stage345 rewrite plan that moves rowpack layout formation into arithmetic/register order and keeps final stores as plain vector stores."
+
+inputs:
+  - id: row_base_q
+    description: "32 Q vectors from stage12 for one Good-Thomas row"
+  - id: twiddle_vectors
+    description: "public ntt32_twiddle_vecs consumed by stages 3, 4, and 5"
+  - id: rowpack_store_bases
+    description: "x10 and x11 branch rowpack output bases"
+
+constants:
+  - id: q
+    value: 3457
+  - id: barrett
+    value: "v0.h[1]"
+
+nodes:
+  - id: stage3_layout_seed
+    op: ct_stage3_butterflies_with_rowpack_grouping
+    inputs:
+      - row_base_q
+      - twiddle_vectors
+      - q
+      - barrett
+    outputs:
+      - stage3_grouped_vectors
+    instruction_shape: "same mathematical stage3 as rowpack v2; register grouping starts tracking future rowpack planes"
+    tied_operands: []
+    range_before: "stage12 signed int16 caller contract"
+    range_after: "rowpack v2 stage3 lazy range"
+    may_reorder_with:
+      - stage4_grouped_butterflies
+    must_precede:
+      - stage5_plane_liveout_reduce
+  - id: stage4_grouped_butterflies
+    op: ct_stage4_butterflies_preserving_plane_grouping
+    inputs:
+      - stage3_grouped_vectors
+      - twiddle_vectors
+      - q
+      - barrett
+    outputs:
+      - stage4_grouped_vectors
+    instruction_shape: "same mathematical stage4 as rowpack v2; avoid producing a final 8-source transpose shape"
+    tied_operands: []
+    range_before: "rowpack v2 stage3 lazy range"
+    range_after: "rowpack v2 stage4 lazy range"
+    may_reorder_with:
+      - stage3_layout_seed
+      - stage5_plane_liveout_reduce
+    must_precede:
+      - stage5_plane_liveout_reduce
+  - id: stage5_plane_liveout_reduce
+    op: ct_stage5_butterflies_and_final_reduce_to_rowpack_planes
+    inputs:
+      - stage4_grouped_vectors
+      - twiddle_vectors
+      - q
+      - barrett
+    outputs:
+      - rowpack_plane_vectors
+    instruction_shape: "final stage arithmetic and reduction produce eight plane vectors per k32 block"
+    tied_operands: []
+    range_before: "rowpack v2 stage4 lazy range"
+    range_after: "rowpack v2 final reduced output range"
+    may_reorder_with:
+      - plain_vector_store_planes
+    must_precede:
+      - plain_vector_store_planes
+  - id: plain_vector_store_planes
+    op: store_rowpack_planes_with_vector_stores
+    inputs:
+      - rowpack_plane_vectors
+      - rowpack_store_bases
+    outputs:
+      - rowpack_output_memory
+    instruction_shape: "str qN or st1 {vN.8h}; no st4, lane store, or scalar scatter"
+    tied_operands: []
+    range_before: "rowpack v2 final reduced output range"
+    range_after: "unchanged coefficients in rowpack memory"
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads:
+    - "row_base Q vectors at public stage345 offsets"
+    - "twiddle vectors at public stage345 offsets"
+  stores:
+    - "rowpack_index(branch,row,lane,k32) for all branch/lane/k32 using public vector-store offsets"
+  ordering_constraints:
+    - "each plane vector must be fully produced and reduced before its store"
+    - "stores may be ordered by public rowpack offsets"
+
+outputs:
+  - rowpack_output_memory
+live_out:
+  - rowpack_output_memory
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
+  forbidden_store_forms:
+    - st4
+    - lane_store
+    - scalar_scatter

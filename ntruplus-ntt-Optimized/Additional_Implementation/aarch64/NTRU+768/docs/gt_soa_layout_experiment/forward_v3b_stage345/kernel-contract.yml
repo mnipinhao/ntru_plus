@@ -1,0 +1,134 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt_rowpack_forward_v3b_stage345_liveout
+  name: NTRU+768 rowpack Forward NTT v3b stage345 live-out rewrite
+  source: asm/slothy/ntt32_v3b_rowpack_stage345_symbolic.s
+  scheme: NTRU+768
+  operation: Forward NTT rowpack output stage345 rewrite
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+
+slothy:
+  workflow: new-symbolic-kernel-after-layout-search
+  driver: asm/slothy/optimize_gt_kernels.py
+  expected_outputs:
+    - asm/slothy/ntt32_8way.rowpack_v3b.n1.alloc.s
+    - asm/slothy/ntt32_8way.rowpack_v3b.n1.opt.s
+  allow_spills: false
+
+region:
+  start_label: _ntt32_v3b_stage345_block0_slothy_start
+  end_label: _ntt32_v3b_stage345_block3_slothy_end
+  expected_instruction_count_goal: "stage345 arithmetic plus plain vector stores; avoid final 24-trn-per-block transpose"
+  live_in:
+    - x4 row_base with stage12 outputs
+    - x10 rowpack branch0 row base
+    - x11 rowpack branch1 row base
+    - x12 public twiddle pointer
+    - v0.h[0] modulus q
+    - v0.h[1] Barrett constant
+  live_out:
+    - rowpack output memory for one Good-Thomas row
+
+abi:
+  inputs:
+    - x4 row_base
+    - x10 scatter_ptr branch0 rowpack row base
+    - x11 scatter_hi branch1 rowpack row base
+    - x12 public scratch/twiddle pointer
+    - v0.h[0] q
+    - v0.h[1] Barrett constant
+  outputs:
+    - rowpack output memory
+  clobbers:
+    - x12
+    - caller-saved Neon vector registers except v0
+  concrete_gprs_allowed:
+    - x4
+    - x10
+    - x11
+    - x12
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: "Rewrite stage345 arithmetic/register order so rowpack plane vectors are naturally live-out before plain vector stores."
+
+layout:
+  input_representation: "row_base Q[k32].h[0..3]=branch0 lanes, Q[k32].h[4..7]=branch1 lanes after stage12"
+  output_representation: "gt_rowpack_soa rowpack_index(branch,row,lane,k32)"
+  vector_lanes: "8 x int16"
+  liveout_contract: docs/gt_soa_layout_experiment/forward_stage345_layout_search/target_rowpack_planes.json
+  packing: "for each k32 block, eight live-out plane vectors store with plain vector stores to branch,row,lane planes"
+
+memory_contract:
+  loads:
+    - "same public row_base and twiddle loads as rowpack v2 stage345"
+  stores:
+    - "plain vector stores only: str qN or st1 {vN.8h} to public rowpack offsets"
+  aliasing: "row_base scratch and rowpack output do not alias in active harness"
+  alignment: "row_base and rowpack output are 16-byte aligned in the active harness"
+  public_offsets_only: true
+  forbidden_store_forms:
+    - st4
+    - lane_store
+    - scalar_scatter
+    - scalar_GT_to_rowpack_conversion
+
+constant_contract:
+  constants:
+    - ntt32_twiddle_vecs
+    - "v0.h[0] = 3457"
+    - "v0.h[1] = Barrett constant"
+  modulus: 3457
+  representation: "signed int16 Montgomery/Barrett-reduced output"
+  reduction_method: "same final Barrett reduction convention as rowpack v2 unless a later range contract explicitly changes it"
+
+range_contract:
+  input_ranges:
+    - "same stage12 row_base range as rowpack v2"
+  intermediate_ranges:
+    - "same stage345 lazy CT range as rowpack v2 unless later proof records a changed arithmetic order"
+  output_ranges:
+    - "same rowpack v2 final reduced range"
+  narrowing_points:
+    - "final stage345 Barrett reduction before stores, or equivalent proven rowpack-plane live-out reduction"
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient values in row_base
+  public_inputs:
+    - row index
+    - k32 block index
+    - twiddle offsets
+    - rowpack output offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_gt_rowpack_forward_v3b_stage345_contract
+  test_command: make test_gt_rowpack_forward_v3b_stage345_contract
+  full_path_benchmark_command: make bench_gt_rowpack_lazy_asm_v3b_forward_fullchain_compare
+  benchmark_metric: cycles
+  lower_is_better: true

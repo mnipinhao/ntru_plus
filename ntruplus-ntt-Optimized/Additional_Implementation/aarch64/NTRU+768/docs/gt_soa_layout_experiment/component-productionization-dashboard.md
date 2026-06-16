@@ -272,6 +272,38 @@ Neon interleave model.  The next useful candidate is v3b: rewrite stage345
 arithmetic/register order so rowpack plane vectors are naturally live-out, then
 use plain vector stores.
 
+## Gate 9 v3b Stage345 Contract Scaffold
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_v3b_stage345_contract
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v3b_stage345/kernel-contract.yml
+docs/gt_soa_layout_experiment/forward_v3b_stage345/instruction-dag.yml
+docs/gt_soa_layout_experiment/forward_v3b_stage345/README.md
+docs/gt_soa_layout_experiment/check_forward_v3b_stage345_contract.py
+```
+
+Result:
+
+| item | result |
+| --- | --- |
+| kernel contract | pass |
+| instruction DAG scaffold | pass |
+| forbidden store checker | pass |
+| candidate `.S` or `.opt.s` | not generated |
+| benchmark targets | blocked until `asm/slothy/ntt32_8way.rowpack_v3b.n1.opt.s` exists |
+
+Decision: proceed only to symbolic v3b stage345 arithmetic/layout authoring.
+Do not ask Slothy to schedule the rejected structured-store DAG, and do not
+benchmark until the v3b candidate exists and passes the forbidden-store static
+checker.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:
