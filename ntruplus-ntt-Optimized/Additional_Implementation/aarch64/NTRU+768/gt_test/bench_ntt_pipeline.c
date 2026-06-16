@@ -1,7 +1,19 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
+#if defined(BENCH_USE_PERF_CYCLES)
+#if !defined(__linux__)
+#error "BENCH_USE_PERF_CYCLES requires Linux perf_event_open"
+#endif
+#include <errno.h>
+#include <linux/perf_event.h>
+#include <sys/ioctl.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+#endif
 
 #include "params.h"
 #include "poly.h"
@@ -34,6 +46,95 @@ static poly g_freq_out;
 static poly g_out;
 static volatile uint64_t g_sink;
 
+#if defined(BENCH_USE_PERF_CYCLES)
+static int g_perf_cycles_fd = -1;
+
+static long perf_event_open(struct perf_event_attr *hw_event,
+                            pid_t pid, int cpu, int group_fd,
+                            unsigned long flags)
+{
+	return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
+}
+
+static int init_cycle_counter(void)
+{
+	struct perf_event_attr pe;
+
+	memset(&pe, 0, sizeof(pe));
+	pe.type = PERF_TYPE_HARDWARE;
+	pe.size = sizeof(pe);
+	pe.config = PERF_COUNT_HW_CPU_CYCLES;
+	pe.disabled = 1;
+	pe.exclude_kernel = 1;
+	pe.exclude_hv = 1;
+
+	g_perf_cycles_fd = (int)perf_event_open(&pe, 0, -1, -1, 0);
+	if (g_perf_cycles_fd < 0)
+	{
+		fprintf(stderr,
+		        "bench_ntt_pipeline: perf_event_open(cycles) failed: %s\n",
+		        strerror(errno));
+		fprintf(stderr,
+		        "bench_ntt_pipeline: try lowering perf_event_paranoid or run "
+		        "with appropriate perf permissions.\n");
+		return 0;
+	}
+	return 1;
+}
+
+static void close_cycle_counter(void)
+{
+	if (g_perf_cycles_fd >= 0)
+	{
+		close(g_perf_cycles_fd);
+		g_perf_cycles_fd = -1;
+	}
+}
+
+static uint64_t read_perf_cycles(void)
+{
+	uint64_t cycles = 0;
+	const ssize_t got = read(g_perf_cycles_fd, &cycles, sizeof(cycles));
+
+	if (got != (ssize_t)sizeof(cycles))
+	{
+		fprintf(stderr,
+		        "bench_ntt_pipeline: read(cycles) failed: %s\n",
+		        got < 0 ? strerror(errno) : "short read");
+		return 0;
+	}
+	return cycles;
+}
+
+static uint64_t measure_counter_delta(bench_fn target, uint64_t calls)
+{
+	if (ioctl(g_perf_cycles_fd, PERF_EVENT_IOC_RESET, 0) != 0 ||
+	    ioctl(g_perf_cycles_fd, PERF_EVENT_IOC_ENABLE, 0) != 0)
+	{
+		fprintf(stderr,
+		        "bench_ntt_pipeline: enabling cycle counter failed: %s\n",
+		        strerror(errno));
+		return 0;
+	}
+	target(calls);
+	if (ioctl(g_perf_cycles_fd, PERF_EVENT_IOC_DISABLE, 0) != 0)
+	{
+		fprintf(stderr,
+		        "bench_ntt_pipeline: disabling cycle counter failed: %s\n",
+		        strerror(errno));
+		return 0;
+	}
+	return read_perf_cycles();
+}
+
+static inline uint64_t read_counter_freq(void)
+{
+	return 0;
+}
+
+#define BENCH_COUNTER_NAME "cycles"
+
+#else
 static inline uint64_t read_counter(void)
 {
 	uint64_t t;
@@ -55,6 +156,28 @@ static inline uint64_t read_counter_freq(void)
 	__asm__ volatile("mrs %0, cntfrq_el0" : "=r"(t));
 	return t;
 }
+
+static uint64_t measure_counter_delta(bench_fn target, uint64_t calls)
+{
+	const uint64_t start = read_counter();
+	uint64_t end;
+
+	target(calls);
+	end = read_counter();
+	return end >= start ? end - start : 0;
+}
+
+static int init_cycle_counter(void)
+{
+	return 1;
+}
+
+static void close_cycle_counter(void)
+{
+}
+
+#define BENCH_COUNTER_NAME "cntvct_ticks"
+#endif
 
 static uint64_t read_wall_ns(void)
 {
@@ -287,9 +410,11 @@ __attribute__((noinline)) static void target_pipeline(uint64_t calls)
 static void run_measure(const char *metric, bench_fn target)
 {
 	static uint64_t samples[BENCH_ITERS];
-	uint64_t total = 0;
 	uint64_t wall_start;
 	uint64_t wall_end;
+	int trim_lo;
+	int trim_hi;
+	long double trimmed_total = 0.0;
 
 	target(BENCH_WARMUP);
 	consume_outputs();
@@ -297,25 +422,35 @@ static void run_measure(const char *metric, bench_fn target)
 	wall_start = read_wall_ns();
 	for (int i = 0; i < BENCH_ITERS; i++)
 	{
-		const uint64_t start = read_counter();
-
-		target(BENCH_BATCH);
-
-		samples[i] = read_counter() - start;
-		total += samples[i];
+		samples[i] = measure_counter_delta(target, BENCH_BATCH);
 	}
 	wall_end = read_wall_ns();
 	consume_outputs();
 
 	qsort(samples, BENCH_ITERS, sizeof(samples[0]), cmp_u64);
+	trim_lo = BENCH_ITERS / 100;
+	trim_hi = BENCH_ITERS - trim_lo;
+	if (trim_hi <= trim_lo)
+	{
+		trim_lo = 0;
+		trim_hi = BENCH_ITERS;
+	}
+	for (int i = trim_lo; i < trim_hi; i++)
+	{
+		trimmed_total += (long double)samples[i];
+	}
 
-	printf("%s_ticks/call min=%.3f median=%.3f avg=%.3f p90=%.3f p99=%.3f\n",
+	printf("%s_%s/call min=%.3f median=%.3f trimmed_avg=%.3f "
+	       "p90=%.3f p99=%.3f max=%.3f\n",
 	       metric,
+	       BENCH_COUNTER_NAME,
 	       (double)samples[0] / (double)BENCH_BATCH,
 	       (double)samples[BENCH_ITERS / 2] / (double)BENCH_BATCH,
-	       ((double)total / (double)BENCH_ITERS) / (double)BENCH_BATCH,
+	       (double)(trimmed_total / (long double)(trim_hi - trim_lo) /
+	                (long double)BENCH_BATCH),
 	       (double)samples[(BENCH_ITERS * 90) / 100] / (double)BENCH_BATCH,
-	       (double)samples[(BENCH_ITERS * 99) / 100] / (double)BENCH_BATCH);
+	       (double)samples[(BENCH_ITERS * 99) / 100] / (double)BENCH_BATCH,
+	       (double)samples[BENCH_ITERS - 1] / (double)BENCH_BATCH);
 	printf("%s_wall_ns/call avg=%.2f\n",
 	       metric,
 	       (double)(wall_end - wall_start) /
@@ -329,9 +464,13 @@ int main(void)
 	{
 		return 1;
 	}
+	if (!init_cycle_counter())
+	{
+		return 1;
+	}
 
-	printf("bench=%s op=%s iters=%d warmup=%d batch=%d cntfrq=%llu "
-	       "correctness=ok\n",
+	printf("bench=%s op=%s iters=%d warmup=%d batch=%d counter=%s "
+	       "cntfrq=%llu correctness=ok\n",
 	       BENCH_LABEL,
 #ifdef BENCH_OP_ADD
 	       "basemul_add",
@@ -341,6 +480,7 @@ int main(void)
 	       BENCH_ITERS,
 	       BENCH_WARMUP,
 	       BENCH_BATCH,
+	       BENCH_COUNTER_NAME,
 	       (unsigned long long)read_counter_freq());
 
 	run_measure("poly_ntt", target_ntt);
@@ -357,5 +497,6 @@ int main(void)
 #endif
 
 	printf("sink=%llu\n", (unsigned long long)g_sink);
+	close_cycle_counter();
 	return 0;
 }

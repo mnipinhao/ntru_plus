@@ -26,7 +26,23 @@ endif
 
 .PHONY: all PQCgenKAT_kem test test_stock_base_opt test_gt_reference test_gt_base_ref test_gt_base_asm test_gt_basemul_asm test_gt_base_opt test_polyntt_harness test_polyntt_asm test_polyinvntt_asm test_kem_invntt_contract analyze_invntt32_ranges bench_gt_basemul_ref bench_gt_basemul_asm bench_gt_basemul_stock bench_gt_basemul_compare bench_base_stock bench_base_stock_opt bench_base_gt bench_base_gt_opt bench_base_compare bench_gt_basemuladd_ref bench_gt_basemuladd_asm bench_gt_basemuladd_stock bench_gt_basemuladd_compare bench_baseadd_stock bench_baseadd_stock_opt bench_baseadd_gt bench_baseadd_gt_opt bench_baseadd_compare bench_ntt_pipeline_stock bench_ntt_pipeline_gt bench_ntt_pipeline_stock_opt bench_ntt_pipeline_gt_opt bench_ntt_pipeline_compare bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt bench_ntt_pipeline_add_stock_opt bench_ntt_pipeline_add_gt_opt bench_ntt_pipeline_add_compare bench_polyinvntt_asm bench_polyinvntt_kpqc_final bench_polyinvntt_compare bench_kem_dec bench_kem_dec_kpqc_final bench_kem_dec_gt bench_kem_dec_compare bench_pmu bench_pmu_base_compare bench_pmu_base_compare_stock_gt bench_pmu_base_compare_stockopt_gtopt bench_pmu_base_compare_stock_stockopt bench_pmu_base_compare_gt_gtopt bench_pmu_symbols dump_forward_mapping gt_phase123_flow_viewer csv_viewers clean
 .PHONY: verify_invntt_constants verify_invntt_layout verify_invntt_contracts test_invntt_representatives analyze_invntt_branchfold_reductions
+.PHONY: test_invntt32_rowpack_kernel_model test_invntt32_rowpack_slothy_opt test_gt_forward_rowpack_output_contract test_gt_rowpack_soa_invntt32_fullpath test_gt_rowpack_soa_invntt32_fullpath_canonical test_gt_rowpack_soa_invntt32_fullpath_nativebasemul
+.PHONY: test_gt_forward_rowpack_v2_asm test_gt_rowpack_soa_invntt32_fullpath_forward_v2 test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_mul2 test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_chunked
 .PHONY: test_polyinvntt_branchfold_a72 bench_polyinvntt_branchfold_a72
+.PHONY: test_gt_rowpack_soa_oracle test_gt_rowvec_layout_contract test_gt_rowpack_no_entry_no_end_range_contract bench_gt_basemul_soa bench_gt_basemul_soa_run bench_gt_basemul_rowvec bench_gt_basemul_rowvec_cycles analyze_gt_rowpack_basemul_output_ranges
+.PHONY: bench_gt_rowpack_pipeline_fused bench_gt_rowpack_pipeline_canonical bench_gt_rowpack_pipeline_compare
+.PHONY: bench_gt_rowpack_pipeline_add_fused bench_gt_rowpack_pipeline_add_canonical bench_gt_rowpack_pipeline_add_compare
+.PHONY: bench_gt_rowpack_pipeline_cycles_fused bench_gt_rowpack_pipeline_cycles_canonical bench_gt_rowpack_pipeline_cycles_compare
+.PHONY: bench_gt_rowpack_pipeline_add_cycles_fused bench_gt_rowpack_pipeline_add_cycles_canonical bench_gt_rowpack_pipeline_add_cycles_compare
+.PHONY: bench_gt_rowpack_pipeline_nativebasemul_cycles_fused bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused
+.PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_compare bench_gt_rowpack_invntt_isolate_cycles
+.PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_compare bench_gt_rowpack_invntt_nativepost_isolate_cycles
+.PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_compare bench_gt_rowpack_invntt_nativepost_mul2_isolate_cycles
+.PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_compare
+.PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_compare bench_gt_rowpack_invntt_nativepost_chunked_isolate_cycles bench_gt_rowpack_invntt_stage_cycles bench_gt_rowpack_invntt_rowkernel_audit bench_gt_rowpack_rowkernel_arith_breakdown bench_gt_rowpack_rowkernel_reduction_probe
+.PHONY: test_gt_rowpack_no_entry_no_end_fullpath bench_gt_rowpack_no_entry_no_end_fullpath_cycles bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles bench_gt_rowpack_no_entry_no_end_fullpath_cycles_compare
+.PHONY: test_gt_rowpack_lazy_postmerge_asm_fullpath bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
+.PHONY: bench_ntt_pipeline_gt_opt_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_vs_production_cycles_compare bench_gt_rowpack_component_cycles_dashboard
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
@@ -69,6 +85,19 @@ PMU_NTT_SOURCES ?= asm/ntt.s
 PMU_INVNTT_SOURCES ?=
 POLYNTT_TEST_CFLAGS ?=
 POLYNTT_ASM_FLAGS ?=
+NTT_PIPELINE_CYCLE_CFLAGS ?= -DBENCH_USE_PERF_CYCLES
+ROWPACK_INVNTT32_SLOTHY_OPT_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.opt.S
+ROWPACK_INVNTT32_ALLOC_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.alloc.S
+ROWPACK_INVNTT32_SYMBOLIC_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S
+ROWPACK_INVNTT32_NOINRED_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_noinred.opt.S
+ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_no_entry_no_end.S
+ROWPACK_INVNTT_POSTMERGE_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_postmerge_branchfold.S
+ROWPACK_FORWARD_NTT_V2_ASM ?= asm/my_ntt.s asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s
+# This full-path oracle includes scalar ntt.c reference code with intentional
+# signed 16-bit wraparound assumptions; build it conservatively.
+ROWPACK_FULLPATH_CFLAGS ?= -O0 -fno-strict-aliasing
+ROWPACK_PIPELINE_CFLAGS ?= -O3 -fwrapv -fno-strict-aliasing
+ROWPACK_PIPELINE_CYCLE_CFLAGS ?= $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_USE_PERF_CYCLES
 AARCH64_BENCH_DIR ?= ../../../aarch64-bench
 
 ifneq ($(BENCH_MODE),)
@@ -122,6 +151,26 @@ test_gt_base_opt: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/test
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) -DGT_BASE_REF_NO_ABI_WRAPPERS -I. -o $(BUILD_DIR)/test_gt_base_opt gt_test/test_gt_basemul_asm.c gt_test/poly_gt_base_ref.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
 
+test_gt_rowpack_soa_oracle: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_oracle.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_oracle gt_test/test_gt_rowpack_soa_oracle.c
+	./$(BUILD_DIR)/test_gt_rowpack_soa_oracle
+
+test_gt_forward_rowpack_output_contract: $(HEADERS) ntt.h ntt.c gt_test/test_gt_forward_rowpack_output_contract.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_forward_rowpack_output_contract gt_test/test_gt_forward_rowpack_output_contract.c
+	./$(BUILD_DIR)/test_gt_forward_rowpack_output_contract
+
+test_gt_rowvec_layout_contract: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowvec_layout_contract.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowvec_layout_contract gt_test/test_gt_rowvec_layout_contract.c
+	./$(BUILD_DIR)/test_gt_rowvec_layout_contract
+
+test_gt_forward_rowpack_v2_asm: $(HEADERS) ntt.h ntt.c gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -DTEST_GT_FORWARD_ROWPACK_V2_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_forward_rowpack_v2_asm gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_forward_rowpack_v2_asm
+
 test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) -I. -o $(BUILD_DIR)/test_polyntt_harness gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c ntt.c
@@ -163,6 +212,297 @@ analyze_invntt32_ranges: $(HEADERS) ntt.h ntt.c gt_test/analyze_invntt32_ranges.
 analyze_invntt_branchfold_reductions: $(HEADERS) ntt.h ntt.c gt_test/analyze_invntt_branchfold_reductions.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/analyze_invntt_branchfold_reductions gt_test/analyze_invntt_branchfold_reductions.c
+
+test_invntt32_rowpack_kernel_model: $(HEADERS) gt_test/test_invntt32_rowpack_kernel_model.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test_invntt32_rowpack_kernel_model gt_test/test_invntt32_rowpack_kernel_model.c
+	./$(BUILD_DIR)/test_invntt32_rowpack_kernel_model
+
+test_invntt32_rowpack_slothy_opt: $(HEADERS) gt_test/test_invntt32_rowpack_kernel_model.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -DTEST_ROWPACK_INVNTT32_ASM -I. -o $(BUILD_DIR)/test_invntt32_rowpack_slothy_opt gt_test/test_invntt32_rowpack_kernel_model.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	./$(BUILD_DIR)/test_invntt32_rowpack_slothy_opt
+
+test_gt_rowpack_soa_invntt32_fullpath: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath
+
+test_gt_rowpack_soa_invntt32_fullpath_canonical: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_CANONICAL_BASEMUL -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_canonical gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_canonical
+
+test_gt_rowpack_soa_invntt32_fullpath_nativebasemul: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_NATIVE_BASEMUL -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_nativebasemul gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_nativebasemul
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2 gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_mul2: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_mul2 gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_mul2
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_chunked: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_chunked gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost_chunked
+
+test_gt_rowpack_no_entry_no_end_fullpath: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_no_entry_no_end_fullpath gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_no_entry_no_end_fullpath
+
+bench_gt_rowpack_pipeline_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_LABEL=\"gt_rowpack_fused_ntt_mul_pipeline\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_canonical: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_CANONICAL_BASEMUL -DBENCH_LABEL=\"gt_rowpack_canonical_ntt_mul_pipeline\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_canonical gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+
+bench_gt_rowpack_pipeline_compare: bench_gt_rowpack_pipeline_fused bench_gt_rowpack_pipeline_canonical
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_canonical
+
+bench_gt_rowpack_pipeline_add_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_fused_ntt_basemul_add_pipeline\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_add_canonical: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_OP_ADD -DROWPACK_CANONICAL_BASEMUL -DBENCH_LABEL=\"gt_rowpack_canonical_ntt_basemul_add_pipeline\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_canonical gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+
+bench_gt_rowpack_pipeline_add_compare: bench_gt_rowpack_pipeline_add_fused bench_gt_rowpack_pipeline_add_canonical
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_canonical
+
+bench_gt_rowpack_pipeline_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_LABEL=\"gt_rowpack_fused_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_cycles_canonical: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_CANONICAL_BASEMUL -DBENCH_LABEL=\"gt_rowpack_canonical_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_cycles_canonical gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+
+bench_gt_rowpack_pipeline_cycles_compare: bench_gt_rowpack_pipeline_cycles_fused bench_gt_rowpack_pipeline_cycles_canonical
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_cycles_canonical
+
+bench_gt_rowpack_pipeline_add_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_fused_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_add_cycles_canonical: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DBENCH_OP_ADD -DROWPACK_CANONICAL_BASEMUL -DBENCH_LABEL=\"gt_rowpack_canonical_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_cycles_canonical gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NOINRED_ASM)
+
+bench_gt_rowpack_pipeline_add_cycles_compare: bench_gt_rowpack_pipeline_add_cycles_fused bench_gt_rowpack_pipeline_add_cycles_canonical
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_cycles_canonical
+
+bench_gt_rowpack_pipeline_nativebasemul_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_NATIVE_BASEMUL -DBENCH_LABEL=\"gt_rowpack_fused_nativebasemul_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_nativebasemul_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_NATIVE_BASEMUL -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_fused_nativebasemul_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_compare: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_cycles_fused
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_compare: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_cycles_fused
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_mul2_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_mul2_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_compare: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_cycles_fused
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -DROWPACK_PIPELINE_INVNTT_INPLACE -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_mul2_inplace_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -DROWPACK_PIPELINE_INVNTT_INPLACE -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_mul2_inplace_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_compare: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_mul2_inplace_cycles_fused
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_PIPELINE_INVNTT_INPLACE -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_chunked_inplace_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_PIPELINE_INVNTT_INPLACE -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_forward_v2_nativebasemul_nativepost_chunked_inplace_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_compare: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused
+
+bench_gt_rowpack_no_entry_no_end_fullpath_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -DBENCH_LABEL=\"gt_rowpack_no_entry_no_end_forward_v2_nativebasemul_nativepost_chunked_inplace_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_no_entry_no_end_forward_v2_nativebasemul_nativepost_chunked_inplace_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_no_entry_no_end_fullpath_cycles_compare: bench_ntt_pipeline_gt_opt_cycles bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_no_entry_no_end_fullpath_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles
+	./$(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_cycles
+	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles
+
+test_gt_rowpack_lazy_postmerge_asm_fullpath: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_NATIVE_POSTMERGE_ASM -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_lazy_postmerge_asm_fullpath gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_lazy_postmerge_asm_fullpath
+
+bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_INVNTT_STAGE_SPLIT -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_NATIVE_POSTMERGE_ASM -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -DBENCH_LABEL=\"gt_rowpack_lazy_postmerge_asm_isolate_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles
+
+bench_gt_rowpack_lazy_postmerge_asm_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_NATIVE_POSTMERGE_ASM -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -DBENCH_LABEL=\"gt_rowpack_lazy_postmerge_asm_ntt_mul_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_lazy_postmerge_asm_add_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_NATIVE_POSTMERGE_ASM -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_rowpack_lazy_postmerge_asm_ntt_basemul_add_pipeline_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_add_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+
+bench_gt_rowpack_lazy_postmerge_asm_cycles_compare: bench_ntt_pipeline_gt_opt_cycles bench_gt_rowpack_no_entry_no_end_fullpath_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles
+	./$(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_cycles
+	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_add_cycles
+
+bench_gt_rowpack_invntt_isolate_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DBENCH_LABEL=\"gt_rowpack_invntt_isolate_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_invntt_isolate_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_invntt_isolate_cycles
+
+bench_gt_rowpack_invntt_nativepost_isolate_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DBENCH_LABEL=\"gt_rowpack_invntt_nativepost_isolate_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_isolate_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_isolate_cycles
+
+bench_gt_rowpack_invntt_nativepost_mul2_isolate_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_MUL2 -DBENCH_LABEL=\"gt_rowpack_invntt_nativepost_mul2_isolate_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_mul2_isolate_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_mul2_isolate_cycles
+
+bench_gt_rowpack_invntt_nativepost_chunked_isolate_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DBENCH_LABEL=\"gt_rowpack_invntt_nativepost_chunked_isolate_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_chunked_isolate_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_invntt_nativepost_chunked_isolate_cycles
+
+bench_gt_rowpack_invntt_stage_cycles: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CYCLE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_INVNTT_STAGE_SPLIT -DBENCH_LABEL=\"gt_rowpack_invntt_stage_cycles\" -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_rowpack_invntt_stage_cycles gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_rowpack_invntt_stage_cycles
+
+bench_gt_rowpack_invntt_rowkernel_audit: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c docs/gt_soa_layout_experiment/audit_rowpack_invntt.py $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_INVNTT32_SYMBOLIC_ASM) asm/slothy/invntt_opt.s
+	@mkdir -p $(BUILD_DIR)/rowpack_invntt_audit
+	$(CC) $(CFLAGS) $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_PIPELINE_BENCH -DROWPACK_INVNTT_ISOLATE -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_INVNTT_AUDIT_SYMBOLS -S -Wno-unused-function -I. -o $(BUILD_DIR)/rowpack_invntt_audit/postmerge_audit.s gt_test/test_gt_rowpack_soa_invntt32_fullpath.c
+	python3 docs/gt_soa_layout_experiment/audit_rowpack_invntt.py --row-kernel $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) --row-symbolic $(ROWPACK_INVNTT32_SYMBOLIC_ASM) --postmerge-asm $(BUILD_DIR)/rowpack_invntt_audit/postmerge_audit.s --production-asm asm/slothy/invntt_opt.s --generate-dir $(BUILD_DIR)/rowpack_invntt_audit
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_current\" -I. -o $(BUILD_DIR)/bench_rowkernel_current gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_arithmetic_skeleton\" -I. -o $(BUILD_DIR)/bench_rowkernel_arithmetic_skeleton gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.arithmetic_skeleton.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_shuffle_skeleton\" -I. -o $(BUILD_DIR)/bench_rowkernel_shuffle_skeleton gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.shuffle_skeleton.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_arithmetic_nop_skeleton\" -I. -o $(BUILD_DIR)/bench_rowkernel_arithmetic_nop_skeleton gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.arithmetic_nop_skeleton.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_shuffle_nop_skeleton\" -I. -o $(BUILD_DIR)/bench_rowkernel_shuffle_nop_skeleton gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.shuffle_nop_skeleton.S
+	./$(BUILD_DIR)/bench_rowkernel_current
+	./$(BUILD_DIR)/bench_rowkernel_arithmetic_skeleton
+	./$(BUILD_DIR)/bench_rowkernel_shuffle_skeleton
+	./$(BUILD_DIR)/bench_rowkernel_arithmetic_nop_skeleton
+	./$(BUILD_DIR)/bench_rowkernel_shuffle_nop_skeleton
+
+bench_gt_rowpack_rowkernel_arith_breakdown: $(HEADERS) gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c docs/gt_soa_layout_experiment/audit_rowpack_invntt.py $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_INVNTT32_SYMBOLIC_ASM) asm/slothy/invntt_opt.s
+	@mkdir -p $(BUILD_DIR)/rowpack_invntt_audit
+	python3 docs/gt_soa_layout_experiment/audit_rowpack_invntt.py --row-kernel $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) --row-symbolic $(ROWPACK_INVNTT32_SYMBOLIC_ASM) --production-asm asm/slothy/invntt_opt.s --generate-dir $(BUILD_DIR)/rowpack_invntt_audit
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"rowkernel_hotloop_24\" -I. -o $(BUILD_DIR)/bench_rowkernel_hotloop_24 gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_ROWKERNEL_CALLS=1 -DBENCH_LABEL=\"rowkernel_single_hotloop\" -I. -o $(BUILD_DIR)/bench_rowkernel_single_hotloop gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	./$(BUILD_DIR)/bench_rowkernel_hotloop_24
+	./$(BUILD_DIR)/bench_rowkernel_single_hotloop
+
+bench_gt_rowpack_rowkernel_reduction_probe: $(HEADERS) gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c docs/gt_soa_layout_experiment/audit_rowpack_invntt.py $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_INVNTT32_ALLOC_ASM) $(ROWPACK_INVNTT32_SYMBOLIC_ASM)
+	@mkdir -p $(BUILD_DIR)/rowpack_invntt_audit
+	python3 docs/gt_soa_layout_experiment/audit_rowpack_invntt.py --row-kernel $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) --row-symbolic $(ROWPACK_INVNTT32_SYMBOLIC_ASM) --generate-dir $(BUILD_DIR)/rowpack_invntt_audit --reduction-probe-source $(ROWPACK_INVNTT32_ALLOC_ASM)
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_opt_current\" -I. -o $(BUILD_DIR)/bench_reduction_probe_opt_current gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM)
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_alloc_current\" -I. -o $(BUILD_DIR)/bench_reduction_probe_alloc_current gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(ROWPACK_INVNTT32_ALLOC_ASM)
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_no_entry\" -I. -o $(BUILD_DIR)/bench_reduction_probe_no_entry gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.no_entry.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_no_row_end\" -I. -o $(BUILD_DIR)/bench_reduction_probe_no_row_end gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.no_row_end.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_no_entry_no_end\" -I. -o $(BUILD_DIR)/bench_reduction_probe_no_entry_no_end gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.no_entry_no_end.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_stage23_select_copy\" -I. -o $(BUILD_DIR)/bench_reduction_probe_stage23_select_copy gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.stage23_select_copy.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_no_entry_no_end_stage23_select_copy\" -I. -o $(BUILD_DIR)/bench_reduction_probe_no_entry_no_end_stage23_select_copy gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.no_entry_no_end_stage23_select_copy.S
+	$(CC) $(CFLAGS) -O3 -fomit-frame-pointer -DBENCH_USE_PERF_CYCLES -DBENCH_LABEL=\"reduction_probe_fully_lazy_lower_bound\" -I. -o $(BUILD_DIR)/bench_reduction_probe_fully_lazy_lower_bound gt_test/bench_gt_rowpack_rowkernel_variant_cycles.c $(BUILD_DIR)/rowpack_invntt_audit/ntruplus768_invntt32_rowpack_soa_row.fully_lazy_lower_bound.S
+	./$(BUILD_DIR)/bench_reduction_probe_opt_current
+	./$(BUILD_DIR)/bench_reduction_probe_alloc_current
+	./$(BUILD_DIR)/bench_reduction_probe_no_entry
+	./$(BUILD_DIR)/bench_reduction_probe_no_row_end
+	./$(BUILD_DIR)/bench_reduction_probe_no_entry_no_end
+	./$(BUILD_DIR)/bench_reduction_probe_stage23_select_copy
+	./$(BUILD_DIR)/bench_reduction_probe_no_entry_no_end_stage23_select_copy
+	./$(BUILD_DIR)/bench_reduction_probe_fully_lazy_lower_bound
+
+analyze_gt_rowpack_basemul_output_ranges: $(HEADERS) gt_test/analyze_gt_rowpack_basemul_output_ranges.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/analyze_gt_rowpack_basemul_output_ranges gt_test/analyze_gt_rowpack_basemul_output_ranges.c
+	./$(BUILD_DIR)/analyze_gt_rowpack_basemul_output_ranges
+
+test_gt_rowpack_no_entry_no_end_range_contract: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_no_entry_no_end_range_contract.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_no_entry_no_end_range_contract gt_test/test_gt_rowpack_no_entry_no_end_range_contract.c
+	./$(BUILD_DIR)/test_gt_rowpack_no_entry_no_end_range_contract
 
 bench_polyinvntt_asm: $(HEADERS) ntt.h ntt.c gt_test/bench_polyinvntt_asm.c $(POLYNTT_ASM) $(POLYINVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
@@ -218,6 +558,20 @@ bench_base_compare: bench_base_stock bench_base_stock_opt bench_base_gt bench_ba
 	./$(BUILD_DIR)/bench_base_stock_opt
 	./$(BUILD_DIR)/bench_base_gt
 	./$(BUILD_DIR)/bench_base_gt_opt
+
+bench_gt_basemul_soa: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul_soa.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) -I. -o $(BUILD_DIR)/bench_gt_basemul_soa gt_test/bench_gt_basemul_soa.c ntt.c
+
+bench_gt_basemul_soa_run: bench_gt_basemul_soa
+	./$(BUILD_DIR)/bench_gt_basemul_soa
+
+bench_gt_basemul_rowvec: bench_gt_basemul_soa_run
+
+bench_gt_basemul_rowvec_cycles: $(HEADERS) ntt.h ntt.c gt_test/bench_gt_basemul_soa.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) -DBENCH_USE_PERF_CYCLES -I. -o $(BUILD_DIR)/bench_gt_basemul_rowvec_cycles gt_test/bench_gt_basemul_soa.c ntt.c
+	./$(BUILD_DIR)/bench_gt_basemul_rowvec_cycles
 
 bench_gt_basemuladd_ref: $(HEADERS) ntt.h ntt.c gt_test/poly_gt_base_ref.c gt_test/bench_gt_basemul.c asm/base_gt_ref.s
 	@mkdir -p $(BUILD_DIR)
@@ -297,6 +651,24 @@ bench_ntt_pipeline_add_gt_opt: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline
 bench_ntt_pipeline_add_compare: bench_ntt_pipeline_add_stock bench_ntt_pipeline_add_gt
 	./$(BUILD_DIR)/bench_ntt_pipeline_add_stock
 	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt
+
+bench_ntt_pipeline_gt_opt_cycles: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(NTT_PIPELINE_CYCLE_CFLAGS) -DBENCH_LABEL=\"gt_baseopt_ntt_mul_pipeline_cycles\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
+
+bench_ntt_pipeline_add_gt_opt_cycles: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(NTT_PIPELINE_CYCLE_CFLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"gt_baseopt_ntt_basemul_add_pipeline_cycles\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt_cycles gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
+
+bench_gt_rowpack_vs_production_cycles_compare: bench_ntt_pipeline_gt_opt_cycles bench_gt_rowpack_pipeline_cycles_fused bench_gt_rowpack_pipeline_nativebasemul_cycles_fused bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_pipeline_add_cycles_fused bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused
+	./$(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_nativebasemul_cycles_fused
+	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt_cycles
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_cycles_fused
+	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused
+
+bench_gt_rowpack_component_cycles_dashboard: bench_gt_rowpack_vs_production_cycles_compare
 
 bench_kem_dec: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)

@@ -1,0 +1,301 @@
+kernel:
+  id: ntruplus768_invntt32_rowpack_soa_row
+  name: NTRU+768 GT rowpack SoA InvNTT32 row micro-kernel
+  scheme: NTRU+768
+  mode: new_rowpack_microkernel_contract
+  symbolic_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S
+  allocated_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.alloc.S
+  candidate_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.opt.S
+  target_arch: aarch64_neon
+  target_microarchitecture: neoverse_n1
+  workflow: ra-then-window-opt
+  candidate_generation_allowed: true
+
+slothy_run:
+  status: generated
+  command: "/Users/chenpinhao/slothy/venv/bin/python docs/gt_soa_layout_experiment/optimize_ntruplus768_invntt32_rowpack_soa_row.py --target neoverse-n1"
+  target: neoverse-n1
+  allocated_expected_cycles: 41
+  optimized_expected_cycles: 40
+  generated_instruction_count: 162
+  selfcheck: RA-only selfcheck OK; llvm-mca selftest disabled because LLVM tools were not found
+  local_parser_patches:
+    - rev32/rev64 use same input/output arrangement datatype in this kernel
+    - bit is modeled as a Neon logical in/out instruction
+  local_assembler_compat:
+    - generated files keep ELF .type/.size under non-Apple guards
+    - generated files expose underscored aliases for Mach-O local tests
+
+variants:
+  fused_entry_normalization:
+    status: generated
+    symbolic_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S
+    allocated_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.alloc.S
+    optimized_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.opt.S
+    generated_instruction_count: 162
+    allocated_expected_cycles: 41
+    optimized_expected_cycles: 40
+    input_convention: raw rowpack basemul/add output accepted
+    reason: row-input Barrett normalization is fused into the row kernel entry
+  no_entry_normalization:
+    status: generated
+    symbolic_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_noinred.sym.S
+    allocated_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_noinred.alloc.S
+    optimized_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_noinred.opt.S
+    generated_instruction_count: 150
+    allocated_expected_cycles: 38
+    optimized_expected_cycles: 37
+    input_convention: canonical rowpack basemul/add output in [-1728,1728]
+    required_gate: make test_gt_rowpack_soa_invntt32_fullpath_canonical
+    warning: current raw basemul/add output can emit lanes outside the canonical range
+
+region:
+  start_label: slothy_start_ntruplus768_invntt32_rowpack_soa_row
+  end_label: slothy_end_ntruplus768_invntt32_rowpack_soa_row
+  expected_instruction_count:
+    min: 122
+    max: 170
+  live_in:
+    - x0: in_out_row_plane_pointer
+    - x1: constant_table_pointer
+  live_out:
+    - memory: row_plane[0..31]
+  split_policy:
+    preferred: single_medium_region
+    fallback: split_after_stage3
+    reason: stages1_to3 have only per-vector dependencies; stages4_to5 introduce cross-vector dependencies.
+
+abi:
+  prototype: void invntt32_rowpack_soa_row(int16_t *row_plane, const int16_t *consts)
+  inputs:
+    x0: pointer to 32 int16_t coefficients for one (branch,row,lane) rowpack plane
+    x1: pointer to aligned constant table described in constant_contract
+  outputs:
+    x0: same pointer, updated in place
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - sp
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+  fixed_vector_registers: []
+  vector_register_policy:
+    source: use symbolic vector registers only inside the Slothy region
+    generated_output: physical vector registers are allowed only after Slothy allocation
+
+layout_contract:
+  transformed_layout: rowpack_soa
+  dimensions:
+    branches: 2
+    rows: 3
+    quartic_lanes: 4
+    k32_per_row: 32
+  mapping:
+    physical_j_from_row_k32: "(32 * row + 3 * k32) mod 96"
+    row_from_physical_j: "(2 * (physical_j mod 3)) mod 3"
+    rowpack_index: "branch*384 + row*128 + lane*32 + k32"
+  kernel_scope:
+    branch: fixed by caller
+    row: fixed by caller
+    lane: fixed by caller
+    k32: 0..31
+  vector_lanes:
+    q0: k32 0..7
+    q1: k32 8..15
+    q2: k32 16..23
+    q3: k32 24..31
+
+operation:
+  description: >
+    Compute the InvNTT32 row-end kernel for one contiguous rowpack SoA plane.
+    This is the native rowpack replacement for the current row-vector shape
+    that packs [branch0 lane0..lane3, branch1 lane0..lane3].
+  arithmetic_model:
+    modulus: 3457
+    lane_type: signed 16-bit
+    add_sub: wrapping signed 16-bit Neon add/sub semantics
+    fqmul: "vqrdmulhq_s16(x, pre); vmulq_s16(x, tw); vmlsq_n_s16(prod, qhat, 3457)"
+    barrett: "vqdmulhq_n_s16(x, 19412); vrshrq_n_s16(t, 11); vmlsq_n_s16(x, t, 3457)"
+  instruction_sequence_summary:
+    - load q0..q3 from row_plane offsets 0, 16, 32, 48 bytes
+    - apply row-input Barrett normalization to q0..q3
+    - stage1 distance-1 in-vector butterflies using rev32/add/sub/bsl shape
+    - stage2 distance-2 in-vector butterflies using rev64.4s, stage2 twiddle vector, and bsl masks
+    - stage3 distance-4 in-vector butterflies using ext #4, stage3 twiddle vector, and bsl masks
+    - stage4 cross-vector butterflies q0/q1 and q2/q3 with stage45 column 0 twiddle vectors
+    - stage5 cross-vector butterflies q0/q2 with stage45 column 1 and q1/q3 with stage45 column 2
+    - apply row-end Barrett reduction to q0..q3
+    - store q0..q3 back to row_plane offsets 0, 16, 32, 48 bytes
+  dependency_dag:
+    q0_load: []
+    q1_load: []
+    q2_load: []
+    q3_load: []
+    q0_input_reduce: [q0_load]
+    q1_input_reduce: [q1_load]
+    q2_input_reduce: [q2_load]
+    q3_input_reduce: [q3_load]
+    q0_stage1: [q0_input_reduce]
+    q1_stage1: [q1_input_reduce]
+    q2_stage1: [q2_input_reduce]
+    q3_stage1: [q3_input_reduce]
+    q0_stage2: [q0_stage1, stage2_twiddles, stage2_pre, high2_mask]
+    q1_stage2: [q1_stage1, stage2_twiddles, stage2_pre, high2_mask]
+    q2_stage2: [q2_stage1, stage2_twiddles, stage2_pre, high2_mask]
+    q3_stage2: [q3_stage1, stage2_twiddles, stage2_pre, high2_mask]
+    q0_stage3: [q0_stage2, stage3_twiddles, stage3_pre, high4_mask]
+    q1_stage3: [q1_stage2, stage3_twiddles, stage3_pre, high4_mask]
+    q2_stage3: [q2_stage2, stage3_twiddles, stage3_pre, high4_mask]
+    q3_stage3: [q3_stage2, stage3_twiddles, stage3_pre, high4_mask]
+    q0_stage4: [q0_stage3, q1_stage3, stage45_twiddles_col0, stage45_pre_col0]
+    q1_stage4: [q0_stage3, q1_stage3, stage45_twiddles_col0, stage45_pre_col0]
+    q2_stage4: [q2_stage3, q3_stage3, stage45_twiddles_col0, stage45_pre_col0]
+    q3_stage4: [q2_stage3, q3_stage3, stage45_twiddles_col0, stage45_pre_col0]
+    q0_stage5: [q0_stage4, q2_stage4, stage45_twiddles_col1, stage45_pre_col1]
+    q2_stage5: [q0_stage4, q2_stage4, stage45_twiddles_col1, stage45_pre_col1]
+    q1_stage5: [q1_stage4, q3_stage4, stage45_twiddles_col2, stage45_pre_col2]
+    q3_stage5: [q1_stage4, q3_stage4, stage45_twiddles_col2, stage45_pre_col2]
+    q0_reduce: [q0_stage5]
+    q1_reduce: [q1_stage5]
+    q2_reduce: [q2_stage5]
+    q3_reduce: [q3_stage5]
+    stores: [q0_reduce, q1_reduce, q2_reduce, q3_reduce]
+
+memory_contract:
+  loads:
+    - {base: x0, offset: 0, size: 16, value: q0_input}
+    - {base: x0, offset: 16, size: 16, value: q1_input}
+    - {base: x0, offset: 32, size: 16, value: q2_input}
+    - {base: x0, offset: 48, size: 16, value: q3_input}
+  stores:
+    - {base: x0, offset: 0, size: 16, value: q0_output}
+    - {base: x0, offset: 16, size: 16, value: q1_output}
+    - {base: x0, offset: 32, size: 16, value: q2_output}
+    - {base: x0, offset: 48, size: 16, value: q3_output}
+  constant_loads:
+    - {base: x1, offset: 0, size: 16, value: odd_lane_mask}
+    - {base: x1, offset: 16, size: 16, value: high2_lane_mask}
+    - {base: x1, offset: 32, size: 16, value: high4_lane_mask}
+    - {base: x1, offset: 48, size: 16, value: stage2_twiddles}
+    - {base: x1, offset: 64, size: 16, value: stage2_pre}
+    - {base: x1, offset: 80, size: 16, value: stage3_twiddles}
+    - {base: x1, offset: 96, size: 16, value: stage3_pre}
+    - {base: x1, offset: 112, size: 16, value: stage45_twiddles_col0}
+    - {base: x1, offset: 128, size: 16, value: stage45_twiddles_col1}
+    - {base: x1, offset: 144, size: 16, value: stage45_twiddles_col2}
+    - {base: x1, offset: 160, size: 16, value: stage45_pre_col0}
+    - {base: x1, offset: 176, size: 16, value: stage45_pre_col1}
+    - {base: x1, offset: 192, size: 16, value: stage45_pre_col2}
+    - {base: x1, offset: 208, size: 16, value: q_barrett_constants}
+  aliasing:
+    row_plane_in_place: true
+    constants_alias_row_plane: false
+    all_row_plane_loads_before_any_row_plane_store: true
+  alignment:
+    row_plane: 16-byte preferred; unaligned ld1/st1 semantics are acceptable if caller cannot guarantee alignment
+    constants: 16-byte aligned
+  public_offsets_only: true
+
+constant_contract:
+  representation: signed int16 vectors, little-endian lane order
+  tables:
+    odd_lane_mask: [0, 65535, 0, 65535, 0, 65535, 0, 65535]
+    high2_lane_mask: [0, 0, 65535, 65535, 0, 0, 65535, 65535]
+    high4_lane_mask: [0, 0, 0, 0, 65535, 65535, 65535, 65535]
+    stage2_twiddles: [1, 708, 1, 708, 1, 708, 1, 708]
+    stage2_pre: [9, 6711, 9, 6711, 9, 6711, 9, 6711]
+    stage3_twiddles: [1, 1521, 708, -1716, 1, 1521, 708, -1716]
+    stage3_pre: [9, 14417, 6711, -16266, 9, 14417, 6711, -16266]
+    stage45_twiddles_col0: [1, -39, 1521, -550, 708, 44, -1716, 1241]
+    stage45_twiddles_col1: [1, -436, -39, -281, 1521, 588, -550, 1267]
+    stage45_twiddles_col2: [708, -1015, 44, 1558, -1716, 1464, 1241, 1673]
+    stage45_pre_col0: [9, -370, 14417, -5213, 6711, 417, -16266, 11763]
+    stage45_pre_col1: [9, -4133, -370, -2664, 14417, 5573, -5213, 12010]
+    stage45_pre_col2: [6711, -9621, 417, 14768, -16266, 13877, 11763, 15858]
+    q_barrett_constants: [3457, 19412, 0, 0, 0, 0, 0, 0]
+  scalar_constants:
+    q: 3457
+    barrett_multiplier: 19412
+    barrett_shift: 11
+
+range_contract:
+  input_ranges:
+    - source: rowpack InvNTT row input
+      bound: signed int16 values accepted by row-input Barrett normalization
+  normalized_input_range:
+    - source: row-input Barrett normalization
+      bound: centered representatives modulo 3457 before first lazy butterfly
+  intermediate_ranges:
+    - operations intentionally use wrapping 16-bit add/sub and Neon high-half multiply semantics
+    - no widening arithmetic is introduced inside the row kernel except implicit high-half multiply paths
+  output_range:
+    - row-end Barrett-reduced signed int16 values matching test_invntt32_rowpack_kernel_model
+  narrowing_points:
+    - wrapping add/sub after each butterfly
+    - wrapping vmulq_s16 product inside fqmul
+    - final vmlsq_n_s16 in fqmul and Barrett
+
+constant_time_contract:
+  secret_inputs:
+    - row_plane coefficients
+  public_inputs:
+    - row
+    - lane
+    - branch
+    - constant table base
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+  public_memory_schedule:
+    - fixed constant vector loads
+    - four fixed input vector loads
+    - fixed row-input Barrett normalization
+    - four fixed output vector stores
+
+source_of_truth:
+  executable_model:
+    - gt_test/test_invntt32_rowpack_kernel_model.c
+    - gt_test/test_gt_rowpack_soa_invntt32_fullpath.c
+  layout_oracle:
+    - gt_test/test_gt_rowpack_soa_oracle.c
+  range_proof:
+    - docs/gt_soa_layout_experiment/rowpack-basemul-output-range-proof.md
+    - gt_test/analyze_gt_rowpack_basemul_output_ranges.c
+  plan:
+    - docs/gt_soa_layout_experiment/rowpack-soa-invntt-plan.md
+
+post_slothy_validation:
+  assemble_command: make test_invntt32_rowpack_slothy_opt
+  reference_tests:
+    - make test_gt_rowpack_soa_oracle
+    - make test_invntt32_rowpack_kernel_model
+    - make test_invntt32_rowpack_slothy_opt
+    - make test_gt_rowpack_soa_invntt32_fullpath
+    - make test_gt_rowpack_soa_invntt32_fullpath_canonical
+    - make analyze_gt_rowpack_basemul_output_ranges
+    - make test_invntt32_rowpack_slothy_opt ROWPACK_INVNTT32_SLOTHY_OPT_ASM=docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.alloc.S
+    - make test_gt_rowpack_soa_invntt32_fullpath ROWPACK_INVNTT32_SLOTHY_OPT_ASM=docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row.alloc.S
+    - make test_gt_rowpack_soa_invntt32_fullpath_canonical ROWPACK_INVNTT32_NOINRED_ASM=docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_noinred.alloc.S
+    - make bench_gt_rowpack_pipeline_compare
+    - make bench_gt_rowpack_pipeline_add_compare
+  benchmark_command:
+    - make bench_gt_basemul_soa
+    - ./build/bench_gt_basemul_soa
+    - make bench_gt_rowpack_pipeline_compare
+    - make bench_gt_rowpack_pipeline_add_compare
+  promotion_gate:
+    - review generated .alloc.S and .opt.S before any production integration
+    - review rowpack-basemul output range proof before considering a no-input-normalization kernel variant
+    - do not replace production InvNTT until production caller layout exists
+    - do not change Forward NTT output layout until basemul/add and rowpack InvNTT both show clear benefit

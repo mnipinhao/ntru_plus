@@ -1,0 +1,111 @@
+artifact: gt-forward-rowpack-output-contract
+version: 1
+scope:
+  scheme: NTRU+768
+  operation: Forward NTT output layout prototype and candidate validation
+  production_symbols:
+    - poly_ntt
+    - _poly_ntt
+  source_files:
+    reference: ntt.c
+    production_frontend: asm/my_ntt.s
+    ntt32_kernel: asm/slothy/my_32ntt.opt.s
+    rowpack_symbolic_source: asm/slothy/ntt32_v2_symbolic.s
+    rowpack_candidate: asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s
+  non_goals:
+    - Do not promote the v2 candidate into production poly_ntt by default.
+    - Do not change arithmetic, twiddle order, or reduction schedule.
+    - Do not use rowpack oracle full-path cycles as production evidence.
+
+current_layout:
+  name: gt_rowbitrev_block_major
+  description: >
+    Current promoted GT Forward NTT output.  For each branch, physical block j
+    stores four quartic lanes contiguously.
+  index_formula: "block_index(branch, physical_j, lane) = branch*384 + 4*physical_j + lane"
+  physical_j_domain: "0 <= physical_j < 96"
+  lane_domain: "0 <= lane < 4"
+  branch_domain: "0 <= branch < 2"
+  basemul_lambda: "gt_rowbitrev_lambda[branch][physical_j]"
+
+rowpack_target_layout:
+  name: gt_rowpack_soa
+  description: >
+    Target transformed-domain layout for the rowpack basemul and InvNTT row
+    kernel.  Each branch,row,lane plane stores k32=0..31 contiguously.
+  physical_j_from_row_k32: "physical_j(row, k32) = (32*row + 3*k32) mod 96"
+  row_from_physical_j: "row(physical_j) = 2*(physical_j mod 3) mod 3"
+  index_formula: "rowpack_index(branch,row,lane,k32) = branch*384 + row*128 + lane*32 + k32"
+  equivalence: "rowpack[rowpack_index(branch,row,lane,k32)] == block[block_index(branch,physical_j(row,k32),lane)]"
+
+current_asm_boundary:
+  producer: _ntt32_8way
+  row_count: 3
+  vectors_per_row: 32
+  vector_lanes: 8
+  row_vector_semantics: >
+    After one row NTT32, vector q[k32] contains branch0 quartic lanes 0..3 in
+    the low D half and branch1 quartic lanes 0..3 in the high D half for the
+    same row,k32.
+  current_scatter:
+    implementations:
+      - "default NTT32_FUSED_SCATTER=1: fused stores inside asm/slothy/my_32ntt.opt.s stage345 blocks"
+      - "NTT32_FUSED_SCATTER=0: separate asm/my_ntt.s _scatter_ntt32_row loop"
+    stores:
+      - "low D -> block_index(0, physical_j(row,k32), lane 0..3)"
+      - "high D -> block_index(1, physical_j(row,k32), lane 0..3)"
+    per_full_poly_store_model:
+      d_stores: 192
+      high_half_extracts: "96 conceptual extracts; fused stage345 may schedule them with live outputs"
+      unfused_extra_q_loads: 96
+      fused_extra_q_loads: 0
+      note: "This describes the block-major store shape, not a fixed instruction sequence."
+
+target_scatter_contract:
+  input_semantics: "same row_vector_semantics as current_asm_boundary"
+  output_stores:
+    - "low half lane l -> rowpack_index(0,row,l,k32)"
+    - "high half lane l -> rowpack_index(1,row,l,k32)"
+  implication: >
+    A production rowpack Forward NTT output path can start as a scatter
+    replacement at the existing NTT32 row boundary.  It will need to transpose
+    the 32 fixed-k32 vectors into branch,row,lane planes, so the first asm
+    prototype should measure only this output packing before rewriting the
+    arithmetic.
+  symbolic_v2:
+    source: asm/slothy/ntt32_v2_symbolic.s
+    arithmetic: "same stage12 and stage345 arithmetic as asm/slothy/ntt32_symbolic.s"
+    packing: "per stage345 block, transpose 8 reduced Q vectors into 8 rowpack plane Q stores"
+    store_offsets:
+      block_b: "byte chunk offset = 16*b"
+      branch0_lane_l: "[scatter_ptr + 64*l + 16*b]"
+      branch1_lane_l: "[scatter_ptr + 768 + 64*l + 16*b]"
+
+validation:
+  portable_gate: test_gt_forward_rowpack_output_contract
+  asm_gate: test_gt_forward_rowpack_v2_asm
+  fullpath_gates:
+    - test_gt_rowpack_soa_invntt32_fullpath_forward_v2
+    - test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
+  checks:
+    - "row/physical_j/k32 mapping is bijective over all 768 coefficients"
+    - "current row-vector scatter converted through block_to_rowpack equals direct rowpack scatter"
+    - "v2 transpose-block scatter model equals current row-vector scatter converted through block_to_rowpack"
+    - "direct rowpack Forward NTT equals block-major ntt_gt_rowbitrevlayout followed by block_to_rowpack"
+    - "linked asm/my_ntt.s plus ntt32_8way.rowpack_v2.n1.opt.s emits rowpack output matching the same oracle"
+    - "rowpack Forward NTT v2 composes with the rowpack InvNTT32 kernel and rowpack basemul/add harness"
+  patterns:
+    - zero
+    - one
+    - alternating +/-1
+    - alternating +/-q/2
+    - deterministic random
+
+next_candidate_gate:
+  name: pi5_forward_v2_native_rowpack_cycle_benchmark
+  prerequisite: "test_gt_forward_rowpack_v2_asm and fullpath forward_v2 gates pass"
+  commands:
+    - make bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_compare
+  benchmark_rule: >
+    Compare only production-equivalent call boundaries using Linux hardware
+    cycle counters.  Keep rowpack oracle full-path numbers diagnostic only.

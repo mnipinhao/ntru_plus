@@ -45,6 +45,57 @@ stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
 initial `scatter_ptr` before each stage345 block.  Keep that in mind if you
 regenerate the file from scratch.
 
+## NTT32 Rowpack Output v2
+
+`ntt32_v2_symbolic.s` is an experimental symbolic source for the Forward NTT
+rowpack-output path.  It keeps the same stage12 and stage345 arithmetic as
+`ntt32_symbolic.s`, but changes the final stage345 output packing:
+
+- each stage345 block reduces eight Q vectors;
+- the eight vectors are transposed with `trn1/trn2`;
+- branch/lane planes are stored as contiguous rowpack SoA Q vectors;
+- output layout matches
+  `rowpack_index(branch,row,lane,k32) = branch*384 + row*128 + lane*32 + k32`.
+
+The caller ABI is intentionally still `_ntt32_8way(x0=dst, x4=row_base,
+x10=dst+256*row)`, so this source can be generated and tested behind the same
+`asm/my_ntt.s` row calls once a wrapper is added for the rowpack public
+`poly_ntt` output convention.  It is not wired into production.
+
+Run the portable contract gate before generating or testing a candidate:
+
+```sh
+make test_gt_forward_rowpack_output_contract
+```
+
+Suggested Slothy direction for Pi 5 / Cortex-A76-class testing is the
+Neoverse-N1 model, not A72.  The stage345 v2 regions are medium sized, so use
+RA-first/window optimization or split heuristics rather than treating the whole
+NTT32 as one region.
+
+Suggested generated file names:
+
+- `ntt32_8way.rowpack_v2.n1.alloc.s`
+- `ntt32_8way.rowpack_v2.n1.opt.s`
+
+Current opt-in candidate:
+
+- `ntt32_8way.rowpack_v2.n1.opt.s`
+
+Correctness gates:
+
+```sh
+make test_gt_forward_rowpack_v2_asm
+make test_gt_rowpack_soa_invntt32_fullpath_forward_v2
+make test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
+```
+
+Pi 5 cycle targets:
+
+```sh
+make bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_compare
+```
+
 # Inverse NTT Files
 
 The active inverse NTT path is intentionally narrow:
@@ -65,24 +116,16 @@ The active inverse NTT path is intentionally narrow:
 - `asm/slothy/invntt_post_branchfold_reduce_clean.slothy.s` and
   `asm/slothy/invntt_post_branchfold_reduce_a72.opt.s` are the clean and
   generated sources for that opt-in branchfold schedule.
-- `asm/inv_my_ntt_benchstages.s` is benchmark-only.  It exports row and post
-  phase entry points used by `aarch64-bench` modes such as `invntt_rows`,
-  `invntt_post`, `invntt_post_dft3_raw`, `invntt_post_dft3_reduce`,
-  `invntt_post_untwist`, and `invntt_post_finalmerge`.
-- `asm/inv_my_ntt_stage123_stripescratch_benchstages.s` is the matching
-  benchmark-only wrapper for the stage123 stripe-scratch candidate.  Use it
-  through `GT_INVNTT_STAGE_ASM` when comparing inverse stage breakdowns.
-- `asm/base_gt.n1.opt.s` and `asm/inv_my_ntt_stage123_stripescratch.s` are the
-  current Pi 5 fastest candidate pair.  The current result summary and rerun
-  commands live in `docs/slothy_pi5_bench_matrix.md`.
+- `asm/base_gt.opt.s` and `asm/inv_my_ntt.s` are the current Pi 5 promoted
+  pair.  The current result summary and rerun commands live in
+  `docs/slothy_pi5_bench_matrix.md`.
 
 The old standalone `inv_my_ntt_*directstage123*.s`,
 `inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
 branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
 were removed after promotion.  The duplicate branchfold wrapper was also
 removed because `asm/inv_my_ntt.s` is now that exact path.  The retained
-alternate wrappers are the no-DFT3-reduce fallback, the A72 branchfold schedule,
-and the stage benchmark wrapper above.
+alternate wrapper is the A72 branchfold schedule.
 
 Raspberry Pi 5 PERF medians motivating the promotion:
 
