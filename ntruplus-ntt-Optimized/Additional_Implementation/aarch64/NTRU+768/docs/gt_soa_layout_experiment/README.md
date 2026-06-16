@@ -24,10 +24,16 @@ It is selected by the `ROWPACK_FORWARD_NTT_ASM`,
 Latest Pi5 evidence says this is a strong experimental continue path, not a
 production replacement yet:
 
-- product pipeline gap: about `+111` cycles versus promoted GT;
-- product-add pipeline gap: about `+569` cycles versus promoted GT;
+- product pipeline gap: about `+94` to `+111` cycles versus promoted GT across
+  the latest compare/accounting runs;
+- product-add pipeline gap: about `+560` to `+624` cycles versus promoted GT
+  across the latest compare/accounting runs;
 - lazy rowpack InvNTT is about `4.04k` cycles, essentially matching promoted
   GT InvNTT on the latest run;
+- the product-add gap is accounted by visible component costs, not hidden glue:
+  Forward NTT x3 is about `+1040` cycles versus promoted GT, while native
+  basemul_add recovers about `-337` cycles and unaccounted glue is about
+  `-98` cycles in rowpack's favor;
 - production GT path is still the promoted default.
 
 ## Read Order
@@ -120,6 +126,7 @@ Pi5 cycle comparison:
 ```sh
 make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
 make bench_gt_rowpack_lazy_asm_vs_kpqc_final
+make bench_gt_rowpack_lazy_asm_fullchain_stage_compare
 ```
 
 Focused InvNTT/postmerge isolation:

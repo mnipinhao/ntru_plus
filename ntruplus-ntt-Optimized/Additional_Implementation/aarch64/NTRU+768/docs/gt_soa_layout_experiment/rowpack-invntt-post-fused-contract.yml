@@ -702,6 +702,74 @@ cost_model:
       especially product-add, so this remains experimental.  The next justified
       local gate is rowkernel-to-postmerge fusion or full-chain hardening under
       the same rowpack ABI, not a rowvec/public-layout rewrite.
+  pi5_lazy_asm_fullchain_stage_accounting_evidence:
+    command: "make bench_gt_rowpack_lazy_asm_fullchain_stage_compare"
+    purpose:
+      - "explain the remaining lazy ASM rowpack gap against production GT"
+      - "separate accounted component deltas from unaccounted pipeline glue"
+      - "test whether product-add is blocked by hidden glue/layout overhead"
+    product:
+      production_gt:
+        forward_ntt_single: 2701.250
+        forward_ntt_x2: 5402.500
+        basemul: 2812.172
+        invntt: 4018.375
+        accounted_component_sum: 12233.047
+        pipeline_product_total: 12251.469
+        unaccounted_glue: 18.422
+      lazy_asm_rowpack:
+        forward_ntt_single: 3021.609
+        forward_ntt_x2: 6043.218
+        basemul: 2393.422
+        invntt: 4042.328
+        accounted_component_sum: 12478.968
+        pipeline_product_total: 12345.484
+        unaccounted_glue: -133.484
+      delta_lazy_minus_gt:
+        forward_ntt_single: 320.359
+        forward_ntt_x2: 640.718
+        basemul: -418.750
+        invntt: 23.953
+        accounted_component_sum: 245.921
+        pipeline_product_total: 94.015
+        unaccounted_glue: -151.906
+    product_add:
+      production_gt:
+        forward_ntt_single: 2699.062
+        forward_ntt_x3: 8097.186
+        basemul_add: 2907.344
+        invntt: 4021.891
+        accounted_component_sum: 15026.421
+        pipeline_add_total: 14985.094
+        unaccounted_glue: -41.327
+      lazy_asm_rowpack:
+        forward_ntt_single: 3045.812
+        forward_ntt_x3: 9137.436
+        basemul_add: 2570.203
+        invntt: 4040.891
+        accounted_component_sum: 15748.530
+        pipeline_add_total: 15608.906
+        unaccounted_glue: -139.624
+      delta_lazy_minus_gt:
+        forward_ntt_single: 346.750
+        forward_ntt_x3: 1040.250
+        basemul_add: -337.141
+        invntt: 19.000
+        accounted_component_sum: 722.109
+        pipeline_add_total: 623.812
+        unaccounted_glue: -98.297
+    formulas:
+      product_unaccounted_glue_delta: "pipeline product delta - accounted component delta = -151.906 cycles"
+      product_add_unaccounted_glue_delta: "pipeline add delta - accounted component delta = -98.297 cycles"
+    conclusion: >
+      The remaining product-add gap is not hidden pipeline glue: lazy ASM
+      rowpack unaccounted glue is about 98 cycles cheaper than production GT in
+      this run.  The gap is accounted by visible component costs, dominated by
+      rowpack Forward NTT being about 346.75 cycles slower per transform and
+      therefore about 1040 cycles slower across the three Forward calls in the
+      product-add pipeline.  Native rowpack basemul_add recovers about 337
+      cycles and InvNTT is near parity.  The next blocker is Forward/add
+      full-chain component cost, not layout glue.
 
 validation:
   correctness_gates:
@@ -722,6 +790,7 @@ validation:
     - make bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles
     - make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
     - make bench_gt_rowpack_lazy_asm_vs_kpqc_final
+    - make bench_gt_rowpack_lazy_asm_fullchain_stage_compare
     - make bench_gt_basemul_rowvec_cycles
     - make bench_gt_rowpack_invntt_stage_cycles
   compare_against:

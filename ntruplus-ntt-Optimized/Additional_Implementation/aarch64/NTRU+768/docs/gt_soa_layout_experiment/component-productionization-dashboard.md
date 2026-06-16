@@ -13,7 +13,9 @@ postmerge keeps the lazy InvNTT path near the promoted GT inverse cost.
 Do not promote rowpack yet.  The best product fullpath is now close, but it is
 still slower than the promoted GT pipeline, product-add still has a larger gap,
 and production should remain on the current GT path while rowpack focuses on
-the remaining Forward/add-path/fusion gap.
+the remaining Forward/add-path/fusion gap.  The fullchain stage accounting gate
+shows the product-add gap is accounted by component costs, especially the
+rowpack Forward NTT cost repeated three times, not by hidden glue overhead.
 
 Do not reopen the public rowvec ABI or row-output-only rewrite based on current
 evidence.  The rowvec direct postmerge win is too small.  The active direction
@@ -838,6 +840,59 @@ Interpretation:
 - KEM is not wired for rowpack in this gate, so no KEM conclusion should be
   drawn from this table.
 
+## Gate 2: Lazy ASM Rowpack Fullchain Stage Accounting
+
+Purpose:
+
+- explain the remaining production-GT gap after Gate 1;
+- separate accounted component deltas from unaccounted pipeline glue;
+- decide whether product-add is blocked by hidden layout/glue overhead or by
+  visible component costs.
+
+Command:
+
+```sh
+make bench_gt_rowpack_lazy_asm_fullchain_stage_compare
+```
+
+Latest Pi5 product accounting:
+
+| stage / component | production GT | lazy ASM rowpack | delta |
+| --- | ---: | ---: | ---: |
+| forward ntt (single) | 2701.250 | 3021.609 | +320.359 |
+| forward ntt x2 | 5402.500 | 6043.218 | +640.718 |
+| basemul | 2812.172 | 2393.422 | -418.750 |
+| invntt | 4018.375 | 4042.328 | +23.953 |
+| accounted component sum | 12233.047 | 12478.968 | +245.921 |
+| pipeline product total | 12251.469 | 12345.484 | +94.015 |
+| unaccounted glue | 18.422 | -133.484 | -151.906 |
+
+Latest Pi5 product-add accounting:
+
+| stage / component | production GT | lazy ASM rowpack | delta |
+| --- | ---: | ---: | ---: |
+| forward ntt (single) | 2699.062 | 3045.812 | +346.750 |
+| forward ntt x3 | 8097.186 | 9137.436 | +1040.250 |
+| basemul_add | 2907.344 | 2570.203 | -337.141 |
+| invntt | 4021.891 | 4040.891 | +19.000 |
+| accounted component sum | 15026.421 | 15748.530 | +722.109 |
+| pipeline add total | 14985.094 | 15608.906 | +623.812 |
+| unaccounted glue | -41.327 | -139.624 | -98.297 |
+
+Interpretation:
+
+- product-add's remaining gap is not hidden glue: the unaccounted glue delta is
+  `-98.297` cycles, so rowpack pipeline glue is cheaper than GT in this run;
+- the product-add gap is mostly visible component accounting:
+  Forward NTT x3 costs `+1040.250` cycles, basemul_add recovers only
+  `-337.141` cycles, and InvNTT is near parity at `+19.000` cycles;
+- product follows the same pattern at smaller scale: Forward NTT x2 costs
+  `+640.718` cycles, basemul recovers `-418.750`, InvNTT is near parity, and
+  rowpack glue is again cheaper;
+- the next blocker is therefore Forward NTT rowpack-v2 cost and any safe
+  full-chain scheduling/fusion that reduces repeated Forward boundary cost.
+  It is not an add-path glue/layout artifact.
+
 ## Interpretation
 
 The `182k` and `260k` rowpack full-pipeline medians should be read as oracle
@@ -877,6 +932,11 @@ which pieces are not productionized:
   about 4.04k cycles and reduces the latest product pipeline gap to about
   +111 cycles and product-add gap to about +569 cycles.  This passes the
   strong continue gate, but still remains opt-in experimental rowpack work.
+- Fullchain stage accounting shows the product-add gap is accounted, not hidden:
+  rowpack unaccounted glue is about 98 cycles better than production GT, while
+  rowpack Forward NTT x3 is about 1040 cycles slower and the native basemul_add
+  win recovers about 337 cycles.  The next blocker is Forward/add full-chain
+  component cost, not pipeline glue.
 - Rowvec is correctness-clean as a layout contract, and direct rowvec postmerge
   is slightly faster than rowpack chunked postmerge, but the measured postmerge
   win is only about 0.21k cycles.  That is not enough evidence to begin a
@@ -922,6 +982,8 @@ real blocker:
    `make test_gt_rowpack_lazy_postmerge_asm_fullpath`,
    `make bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles`, and
    `make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare`.
+   Fullchain stage accounting:
+   `make bench_gt_rowpack_lazy_asm_fullchain_stage_compare`.
    Legacy C-post diagnostics are still available through
    `make bench_gt_rowpack_invntt_isolate_cycles`, but they are no longer the
    promotion baseline.
