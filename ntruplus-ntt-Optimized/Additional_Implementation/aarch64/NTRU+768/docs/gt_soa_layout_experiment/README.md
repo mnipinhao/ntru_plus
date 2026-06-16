@@ -74,6 +74,11 @@ production replacement yet:
   replace vector-wise butterflies with horizontal lane work.  No Forward v4 ASM
   should be written yet; the only remaining research path is a tagged-index
   transform-DAG search for a new decomposition;
+- Gate 13 completes the bounded tagged-index transform-DAG search.  No proved
+  DAG clears the `150 cycles/NTT` continue gate.  The only modeled class with
+  enough headroom is full algebraic absorption of all three rowpack mixing
+  levels, but no concrete transform or twiddle remap has been found, so Forward
+  v4 ASM remains blocked;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
@@ -153,6 +158,7 @@ InvNTT postmerge:
 | Rowpack Forward NTT v3c stage12+stage345 layout search | `docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/`, `docs/gt_soa_layout_experiment/search_forward_v3c_stage12_stage345_layout.py` | Layout feasibility only, no `.S` generated | Gate 10 checks whether changing the stage12 scratch/live-out contract can remove the transpose instead of moving it earlier. |
 | Rowpack Forward NTT v4 topology decision | `docs/gt_soa_layout_experiment/forward_topology_decision/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_topology_decision.py` | Decision report only, no `.S` generated | Gate 11 keeps rowpack experimental and requires a topology model before any larger Forward v4 ASM rewrite. |
 | Rowpack Forward NTT v4 topology model | `docs/gt_soa_layout_experiment/forward_v4_topology_model/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_v4_topology_model.py` | Static topology model only, no `.S` generated | Gate 12 rejects concrete pretranspose/horizontal and scratch-absorb variants; next possible work is tagged-index transform-DAG search. |
+| Rowpack Forward NTT v4 transform-DAG search | `docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/`, `docs/gt_soa_layout_experiment/search_forward_v4_transform_dag.py` | Tagged-index model only, no `.S` generated | Gate 13 finds no proved DAG above the 150 cycles/NTT gate; next possible work is a numeric tagged-index oracle for full algebraic absorption. |
 | Production InvNTT | `asm/slothy/invntt_opt.s` | Slothy-scheduled production artifact | Included by `asm/inv_my_ntt.s`; production default remains here. |
 | Production GT basemul/add | `asm/base_gt.opt.s` | Slothy-scheduled artifact | Promoted GT pointwise baseline. |
 | Rowpack InvNTT32 original rowkernel | `kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S`, `.alloc.S`, `.opt.S` | Slothy-generated symbolic/RA/opt set | Diagnostic baseline, no longer best rowpack candidate. |
@@ -193,6 +199,7 @@ make test_gt_rowpack_forward_v3b_symbolic_candidate
 make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
 make report_gt_rowpack_forward_topology_decision
 make report_gt_rowpack_forward_v4_topology_model
+make test_gt_rowpack_forward_v4_transform_dag_search
 ```
 
 Focused InvNTT/postmerge isolation:

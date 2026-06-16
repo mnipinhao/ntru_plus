@@ -558,3 +558,64 @@ forward_v4_topology_model:
     a research-only rowpack-native transform decomposition; it needs a
     tagged-index transform DAG, twiddle remap, and range proof before ASM or
     Slothy should be used.
+
+forward_v4_transform_dag_search:
+  status: complete_bounded_search_no_asm_candidate
+  command: "make test_gt_rowpack_forward_v4_transform_dag_search"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/"
+  artifacts:
+    - reference-transform-dag.yml
+    - rowpack-output-tags.yml
+    - candidate-transform-dags.yml
+    - twiddle-remap-obligations.yml
+    - transform-dag-search-report.md
+  cost_model:
+    current_tail_permutes_per_block: 24
+    current_scatter_cycles_per_ntt: 319.328
+    store_ready_cycles_per_ntt: 109.359
+    recoverable_window_cycles_per_ntt: 209.969
+    minimum_continue_cycles_per_ntt: 150.0
+    strong_continue_cycles_per_ntt: 200.0
+  candidate_summary:
+    A_current_ct_stage12_k32_major:
+      total_lane_mixing_permutes_per_block: 24
+      expected_cycles_saved_per_ntt: 0.0
+      proof_status: proved_by_existing_gates
+      gate_status: no_headroom
+    B_layout_moved_before_stage345:
+      total_lane_mixing_permutes_per_block: 72
+      expected_cycles_saved_per_ntt: -419.938
+      proof_status: structural_only
+      gate_status: reject_static_model
+    D_six_step_4x8_or_8x4_decomposition:
+      total_lane_mixing_permutes_per_block: 48
+      expected_cycles_saved_per_ntt: -209.969
+      proof_status: requires_twiddle_factorization_proof
+      gate_status: reject_static_model
+    F_algebraic_absorb_one_mixing_level:
+      total_lane_mixing_permutes_per_block: 16
+      expected_cycles_saved_per_ntt: 69.99
+      proof_status: not_found_in_bounded_search
+      gate_status: below_gate_and_unproved
+    G_algebraic_absorb_two_mixing_levels:
+      total_lane_mixing_permutes_per_block: 8
+      expected_cycles_saved_per_ntt: 139.979
+      proof_status: not_found_in_bounded_search
+      gate_status: below_gate_and_unproved
+    H_algebraic_absorb_three_mixing_levels:
+      total_lane_mixing_permutes_per_block: 0
+      expected_cycles_saved_per_ntt: 209.969
+      proof_status: not_found_in_bounded_search
+      gate_status: blocked_pending_transform_proof
+  decision:
+    continue_to_forward_v4_asm: false
+    best_proved_candidate: A_current_ct_stage12_k32_major
+    best_proved_expected_cycles_saved_per_ntt: 0.0
+    only_candidate_with_strong_static_headroom: H_algebraic_absorb_three_mixing_levels
+    next_gate_if_continuing: "numeric tagged-index transform oracle for H_algebraic_absorb_three_mixing_levels, still not ASM"
+  conclusion: >
+    Gate 13 completes the bounded tagged-index Forward v4 transform-DAG
+    search.  No proved DAG clears the 150 cycles/NTT continue gate.  The only
+    modeled class with enough headroom is full algebraic absorption of all
+    three rowpack mixing levels, but no concrete tagged transform or twiddle
+    remap was found for it.  Forward v4 ASM and Slothy remain blocked.

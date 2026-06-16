@@ -1,0 +1,1035 @@
+gate: "Gate 13: reference tagged Forward NTT32 transform DAG"
+status: "model_only"
+tag_semantics:
+  input: "x0..x31 are tagged scalar coefficients inside one Good-Thomas NTT32 row"
+  output: "y0..y31 are the current Forward NTT32 row outputs before rowpack output packing"
+  twiddle_labels: "symbolic zeta_stage_pair labels; numeric table remap is a proof obligation"
+current_stage_split:
+  stage12:
+    - "stage1"
+    - "stage2"
+  stage345:
+    - "stage3"
+    - "stage4"
+    - "stage5"
+  stage12_boundary_layout: "k32-major scratch vectors"
+  stage345_property: "lane-preserving under the current vector-wise Neon topology"
+stages:
+  -
+    stage: "stage1"
+    distance: 16
+    butterflies:
+      -
+        pair:
+          - 0
+          - 16
+        inputs:
+          - "x0"
+          - "x16"
+        twiddle: "zeta_stage1_0"
+        outputs:
+          stage1_y0: "x0 + zeta_stage1_0*x16"
+          stage1_y16: "x0 - zeta_stage1_0*x16"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 1
+          - 17
+        inputs:
+          - "x1"
+          - "x17"
+        twiddle: "zeta_stage1_1"
+        outputs:
+          stage1_y1: "x1 + zeta_stage1_1*x17"
+          stage1_y17: "x1 - zeta_stage1_1*x17"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 2
+          - 18
+        inputs:
+          - "x2"
+          - "x18"
+        twiddle: "zeta_stage1_2"
+        outputs:
+          stage1_y2: "x2 + zeta_stage1_2*x18"
+          stage1_y18: "x2 - zeta_stage1_2*x18"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 3
+          - 19
+        inputs:
+          - "x3"
+          - "x19"
+        twiddle: "zeta_stage1_3"
+        outputs:
+          stage1_y3: "x3 + zeta_stage1_3*x19"
+          stage1_y19: "x3 - zeta_stage1_3*x19"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 4
+          - 20
+        inputs:
+          - "x4"
+          - "x20"
+        twiddle: "zeta_stage1_4"
+        outputs:
+          stage1_y4: "x4 + zeta_stage1_4*x20"
+          stage1_y20: "x4 - zeta_stage1_4*x20"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 5
+          - 21
+        inputs:
+          - "x5"
+          - "x21"
+        twiddle: "zeta_stage1_5"
+        outputs:
+          stage1_y5: "x5 + zeta_stage1_5*x21"
+          stage1_y21: "x5 - zeta_stage1_5*x21"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 6
+          - 22
+        inputs:
+          - "x6"
+          - "x22"
+        twiddle: "zeta_stage1_6"
+        outputs:
+          stage1_y6: "x6 + zeta_stage1_6*x22"
+          stage1_y22: "x6 - zeta_stage1_6*x22"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 7
+          - 23
+        inputs:
+          - "x7"
+          - "x23"
+        twiddle: "zeta_stage1_7"
+        outputs:
+          stage1_y7: "x7 + zeta_stage1_7*x23"
+          stage1_y23: "x7 - zeta_stage1_7*x23"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 8
+          - 24
+        inputs:
+          - "x8"
+          - "x24"
+        twiddle: "zeta_stage1_8"
+        outputs:
+          stage1_y8: "x8 + zeta_stage1_8*x24"
+          stage1_y24: "x8 - zeta_stage1_8*x24"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 9
+          - 25
+        inputs:
+          - "x9"
+          - "x25"
+        twiddle: "zeta_stage1_9"
+        outputs:
+          stage1_y9: "x9 + zeta_stage1_9*x25"
+          stage1_y25: "x9 - zeta_stage1_9*x25"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 10
+          - 26
+        inputs:
+          - "x10"
+          - "x26"
+        twiddle: "zeta_stage1_10"
+        outputs:
+          stage1_y10: "x10 + zeta_stage1_10*x26"
+          stage1_y26: "x10 - zeta_stage1_10*x26"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 11
+          - 27
+        inputs:
+          - "x11"
+          - "x27"
+        twiddle: "zeta_stage1_11"
+        outputs:
+          stage1_y11: "x11 + zeta_stage1_11*x27"
+          stage1_y27: "x11 - zeta_stage1_11*x27"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 12
+          - 28
+        inputs:
+          - "x12"
+          - "x28"
+        twiddle: "zeta_stage1_12"
+        outputs:
+          stage1_y12: "x12 + zeta_stage1_12*x28"
+          stage1_y28: "x12 - zeta_stage1_12*x28"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 13
+          - 29
+        inputs:
+          - "x13"
+          - "x29"
+        twiddle: "zeta_stage1_13"
+        outputs:
+          stage1_y13: "x13 + zeta_stage1_13*x29"
+          stage1_y29: "x13 - zeta_stage1_13*x29"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 14
+          - 30
+        inputs:
+          - "x14"
+          - "x30"
+        twiddle: "zeta_stage1_14"
+        outputs:
+          stage1_y14: "x14 + zeta_stage1_14*x30"
+          stage1_y30: "x14 - zeta_stage1_14*x30"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 15
+          - 31
+        inputs:
+          - "x15"
+          - "x31"
+        twiddle: "zeta_stage1_15"
+        outputs:
+          stage1_y15: "x15 + zeta_stage1_15*x31"
+          stage1_y31: "x15 - zeta_stage1_15*x31"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+    stage_boundary: "stage345_or_final"
+  -
+    stage: "stage2"
+    distance: 8
+    butterflies:
+      -
+        pair:
+          - 0
+          - 8
+        inputs:
+          - "stage1_y0"
+          - "stage1_y8"
+        twiddle: "zeta_stage2_0"
+        outputs:
+          stage2_y0: "stage1_y0 + zeta_stage2_0*stage1_y8"
+          stage2_y8: "stage1_y0 - zeta_stage2_0*stage1_y8"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 1
+          - 9
+        inputs:
+          - "stage1_y1"
+          - "stage1_y9"
+        twiddle: "zeta_stage2_1"
+        outputs:
+          stage2_y1: "stage1_y1 + zeta_stage2_1*stage1_y9"
+          stage2_y9: "stage1_y1 - zeta_stage2_1*stage1_y9"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 2
+          - 10
+        inputs:
+          - "stage1_y2"
+          - "stage1_y10"
+        twiddle: "zeta_stage2_2"
+        outputs:
+          stage2_y2: "stage1_y2 + zeta_stage2_2*stage1_y10"
+          stage2_y10: "stage1_y2 - zeta_stage2_2*stage1_y10"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 3
+          - 11
+        inputs:
+          - "stage1_y3"
+          - "stage1_y11"
+        twiddle: "zeta_stage2_3"
+        outputs:
+          stage2_y3: "stage1_y3 + zeta_stage2_3*stage1_y11"
+          stage2_y11: "stage1_y3 - zeta_stage2_3*stage1_y11"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 4
+          - 12
+        inputs:
+          - "stage1_y4"
+          - "stage1_y12"
+        twiddle: "zeta_stage2_4"
+        outputs:
+          stage2_y4: "stage1_y4 + zeta_stage2_4*stage1_y12"
+          stage2_y12: "stage1_y4 - zeta_stage2_4*stage1_y12"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 5
+          - 13
+        inputs:
+          - "stage1_y5"
+          - "stage1_y13"
+        twiddle: "zeta_stage2_5"
+        outputs:
+          stage2_y5: "stage1_y5 + zeta_stage2_5*stage1_y13"
+          stage2_y13: "stage1_y5 - zeta_stage2_5*stage1_y13"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 6
+          - 14
+        inputs:
+          - "stage1_y6"
+          - "stage1_y14"
+        twiddle: "zeta_stage2_6"
+        outputs:
+          stage2_y6: "stage1_y6 + zeta_stage2_6*stage1_y14"
+          stage2_y14: "stage1_y6 - zeta_stage2_6*stage1_y14"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 7
+          - 15
+        inputs:
+          - "stage1_y7"
+          - "stage1_y15"
+        twiddle: "zeta_stage2_7"
+        outputs:
+          stage2_y7: "stage1_y7 + zeta_stage2_7*stage1_y15"
+          stage2_y15: "stage1_y7 - zeta_stage2_7*stage1_y15"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 16
+          - 24
+        inputs:
+          - "stage1_y16"
+          - "stage1_y24"
+        twiddle: "zeta_stage2_8"
+        outputs:
+          stage2_y16: "stage1_y16 + zeta_stage2_8*stage1_y24"
+          stage2_y24: "stage1_y16 - zeta_stage2_8*stage1_y24"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 17
+          - 25
+        inputs:
+          - "stage1_y17"
+          - "stage1_y25"
+        twiddle: "zeta_stage2_9"
+        outputs:
+          stage2_y17: "stage1_y17 + zeta_stage2_9*stage1_y25"
+          stage2_y25: "stage1_y17 - zeta_stage2_9*stage1_y25"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 18
+          - 26
+        inputs:
+          - "stage1_y18"
+          - "stage1_y26"
+        twiddle: "zeta_stage2_10"
+        outputs:
+          stage2_y18: "stage1_y18 + zeta_stage2_10*stage1_y26"
+          stage2_y26: "stage1_y18 - zeta_stage2_10*stage1_y26"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 19
+          - 27
+        inputs:
+          - "stage1_y19"
+          - "stage1_y27"
+        twiddle: "zeta_stage2_11"
+        outputs:
+          stage2_y19: "stage1_y19 + zeta_stage2_11*stage1_y27"
+          stage2_y27: "stage1_y19 - zeta_stage2_11*stage1_y27"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 20
+          - 28
+        inputs:
+          - "stage1_y20"
+          - "stage1_y28"
+        twiddle: "zeta_stage2_12"
+        outputs:
+          stage2_y20: "stage1_y20 + zeta_stage2_12*stage1_y28"
+          stage2_y28: "stage1_y20 - zeta_stage2_12*stage1_y28"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 21
+          - 29
+        inputs:
+          - "stage1_y21"
+          - "stage1_y29"
+        twiddle: "zeta_stage2_13"
+        outputs:
+          stage2_y21: "stage1_y21 + zeta_stage2_13*stage1_y29"
+          stage2_y29: "stage1_y21 - zeta_stage2_13*stage1_y29"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 22
+          - 30
+        inputs:
+          - "stage1_y22"
+          - "stage1_y30"
+        twiddle: "zeta_stage2_14"
+        outputs:
+          stage2_y22: "stage1_y22 + zeta_stage2_14*stage1_y30"
+          stage2_y30: "stage1_y22 - zeta_stage2_14*stage1_y30"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 23
+          - 31
+        inputs:
+          - "stage1_y23"
+          - "stage1_y31"
+        twiddle: "zeta_stage2_15"
+        outputs:
+          stage2_y23: "stage1_y23 + zeta_stage2_15*stage1_y31"
+          stage2_y31: "stage1_y23 - zeta_stage2_15*stage1_y31"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+    stage_boundary: "stage12_scratch"
+  -
+    stage: "stage3"
+    distance: 4
+    butterflies:
+      -
+        pair:
+          - 0
+          - 4
+        inputs:
+          - "stage2_y0"
+          - "stage2_y4"
+        twiddle: "zeta_stage3_0"
+        outputs:
+          stage3_y0: "stage2_y0 + zeta_stage3_0*stage2_y4"
+          stage3_y4: "stage2_y0 - zeta_stage3_0*stage2_y4"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 1
+          - 5
+        inputs:
+          - "stage2_y1"
+          - "stage2_y5"
+        twiddle: "zeta_stage3_1"
+        outputs:
+          stage3_y1: "stage2_y1 + zeta_stage3_1*stage2_y5"
+          stage3_y5: "stage2_y1 - zeta_stage3_1*stage2_y5"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 2
+          - 6
+        inputs:
+          - "stage2_y2"
+          - "stage2_y6"
+        twiddle: "zeta_stage3_2"
+        outputs:
+          stage3_y2: "stage2_y2 + zeta_stage3_2*stage2_y6"
+          stage3_y6: "stage2_y2 - zeta_stage3_2*stage2_y6"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 3
+          - 7
+        inputs:
+          - "stage2_y3"
+          - "stage2_y7"
+        twiddle: "zeta_stage3_3"
+        outputs:
+          stage3_y3: "stage2_y3 + zeta_stage3_3*stage2_y7"
+          stage3_y7: "stage2_y3 - zeta_stage3_3*stage2_y7"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 8
+          - 12
+        inputs:
+          - "stage2_y8"
+          - "stage2_y12"
+        twiddle: "zeta_stage3_4"
+        outputs:
+          stage3_y8: "stage2_y8 + zeta_stage3_4*stage2_y12"
+          stage3_y12: "stage2_y8 - zeta_stage3_4*stage2_y12"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 9
+          - 13
+        inputs:
+          - "stage2_y9"
+          - "stage2_y13"
+        twiddle: "zeta_stage3_5"
+        outputs:
+          stage3_y9: "stage2_y9 + zeta_stage3_5*stage2_y13"
+          stage3_y13: "stage2_y9 - zeta_stage3_5*stage2_y13"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 10
+          - 14
+        inputs:
+          - "stage2_y10"
+          - "stage2_y14"
+        twiddle: "zeta_stage3_6"
+        outputs:
+          stage3_y10: "stage2_y10 + zeta_stage3_6*stage2_y14"
+          stage3_y14: "stage2_y10 - zeta_stage3_6*stage2_y14"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 11
+          - 15
+        inputs:
+          - "stage2_y11"
+          - "stage2_y15"
+        twiddle: "zeta_stage3_7"
+        outputs:
+          stage3_y11: "stage2_y11 + zeta_stage3_7*stage2_y15"
+          stage3_y15: "stage2_y11 - zeta_stage3_7*stage2_y15"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 16
+          - 20
+        inputs:
+          - "stage2_y16"
+          - "stage2_y20"
+        twiddle: "zeta_stage3_8"
+        outputs:
+          stage3_y16: "stage2_y16 + zeta_stage3_8*stage2_y20"
+          stage3_y20: "stage2_y16 - zeta_stage3_8*stage2_y20"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 17
+          - 21
+        inputs:
+          - "stage2_y17"
+          - "stage2_y21"
+        twiddle: "zeta_stage3_9"
+        outputs:
+          stage3_y17: "stage2_y17 + zeta_stage3_9*stage2_y21"
+          stage3_y21: "stage2_y17 - zeta_stage3_9*stage2_y21"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 18
+          - 22
+        inputs:
+          - "stage2_y18"
+          - "stage2_y22"
+        twiddle: "zeta_stage3_10"
+        outputs:
+          stage3_y18: "stage2_y18 + zeta_stage3_10*stage2_y22"
+          stage3_y22: "stage2_y18 - zeta_stage3_10*stage2_y22"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 19
+          - 23
+        inputs:
+          - "stage2_y19"
+          - "stage2_y23"
+        twiddle: "zeta_stage3_11"
+        outputs:
+          stage3_y19: "stage2_y19 + zeta_stage3_11*stage2_y23"
+          stage3_y23: "stage2_y19 - zeta_stage3_11*stage2_y23"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 24
+          - 28
+        inputs:
+          - "stage2_y24"
+          - "stage2_y28"
+        twiddle: "zeta_stage3_12"
+        outputs:
+          stage3_y24: "stage2_y24 + zeta_stage3_12*stage2_y28"
+          stage3_y28: "stage2_y24 - zeta_stage3_12*stage2_y28"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 25
+          - 29
+        inputs:
+          - "stage2_y25"
+          - "stage2_y29"
+        twiddle: "zeta_stage3_13"
+        outputs:
+          stage3_y25: "stage2_y25 + zeta_stage3_13*stage2_y29"
+          stage3_y29: "stage2_y25 - zeta_stage3_13*stage2_y29"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 26
+          - 30
+        inputs:
+          - "stage2_y26"
+          - "stage2_y30"
+        twiddle: "zeta_stage3_14"
+        outputs:
+          stage3_y26: "stage2_y26 + zeta_stage3_14*stage2_y30"
+          stage3_y30: "stage2_y26 - zeta_stage3_14*stage2_y30"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 27
+          - 31
+        inputs:
+          - "stage2_y27"
+          - "stage2_y31"
+        twiddle: "zeta_stage3_15"
+        outputs:
+          stage3_y27: "stage2_y27 + zeta_stage3_15*stage2_y31"
+          stage3_y31: "stage2_y27 - zeta_stage3_15*stage2_y31"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+    stage_boundary: "stage345_or_final"
+  -
+    stage: "stage4"
+    distance: 2
+    butterflies:
+      -
+        pair:
+          - 0
+          - 2
+        inputs:
+          - "stage3_y0"
+          - "stage3_y2"
+        twiddle: "zeta_stage4_0"
+        outputs:
+          stage4_y0: "stage3_y0 + zeta_stage4_0*stage3_y2"
+          stage4_y2: "stage3_y0 - zeta_stage4_0*stage3_y2"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 1
+          - 3
+        inputs:
+          - "stage3_y1"
+          - "stage3_y3"
+        twiddle: "zeta_stage4_1"
+        outputs:
+          stage4_y1: "stage3_y1 + zeta_stage4_1*stage3_y3"
+          stage4_y3: "stage3_y1 - zeta_stage4_1*stage3_y3"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 4
+          - 6
+        inputs:
+          - "stage3_y4"
+          - "stage3_y6"
+        twiddle: "zeta_stage4_2"
+        outputs:
+          stage4_y4: "stage3_y4 + zeta_stage4_2*stage3_y6"
+          stage4_y6: "stage3_y4 - zeta_stage4_2*stage3_y6"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 5
+          - 7
+        inputs:
+          - "stage3_y5"
+          - "stage3_y7"
+        twiddle: "zeta_stage4_3"
+        outputs:
+          stage4_y5: "stage3_y5 + zeta_stage4_3*stage3_y7"
+          stage4_y7: "stage3_y5 - zeta_stage4_3*stage3_y7"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 8
+          - 10
+        inputs:
+          - "stage3_y8"
+          - "stage3_y10"
+        twiddle: "zeta_stage4_4"
+        outputs:
+          stage4_y8: "stage3_y8 + zeta_stage4_4*stage3_y10"
+          stage4_y10: "stage3_y8 - zeta_stage4_4*stage3_y10"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 9
+          - 11
+        inputs:
+          - "stage3_y9"
+          - "stage3_y11"
+        twiddle: "zeta_stage4_5"
+        outputs:
+          stage4_y9: "stage3_y9 + zeta_stage4_5*stage3_y11"
+          stage4_y11: "stage3_y9 - zeta_stage4_5*stage3_y11"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 12
+          - 14
+        inputs:
+          - "stage3_y12"
+          - "stage3_y14"
+        twiddle: "zeta_stage4_6"
+        outputs:
+          stage4_y12: "stage3_y12 + zeta_stage4_6*stage3_y14"
+          stage4_y14: "stage3_y12 - zeta_stage4_6*stage3_y14"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 13
+          - 15
+        inputs:
+          - "stage3_y13"
+          - "stage3_y15"
+        twiddle: "zeta_stage4_7"
+        outputs:
+          stage4_y13: "stage3_y13 + zeta_stage4_7*stage3_y15"
+          stage4_y15: "stage3_y13 - zeta_stage4_7*stage3_y15"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 16
+          - 18
+        inputs:
+          - "stage3_y16"
+          - "stage3_y18"
+        twiddle: "zeta_stage4_8"
+        outputs:
+          stage4_y16: "stage3_y16 + zeta_stage4_8*stage3_y18"
+          stage4_y18: "stage3_y16 - zeta_stage4_8*stage3_y18"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 17
+          - 19
+        inputs:
+          - "stage3_y17"
+          - "stage3_y19"
+        twiddle: "zeta_stage4_9"
+        outputs:
+          stage4_y17: "stage3_y17 + zeta_stage4_9*stage3_y19"
+          stage4_y19: "stage3_y17 - zeta_stage4_9*stage3_y19"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 20
+          - 22
+        inputs:
+          - "stage3_y20"
+          - "stage3_y22"
+        twiddle: "zeta_stage4_10"
+        outputs:
+          stage4_y20: "stage3_y20 + zeta_stage4_10*stage3_y22"
+          stage4_y22: "stage3_y20 - zeta_stage4_10*stage3_y22"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 21
+          - 23
+        inputs:
+          - "stage3_y21"
+          - "stage3_y23"
+        twiddle: "zeta_stage4_11"
+        outputs:
+          stage4_y21: "stage3_y21 + zeta_stage4_11*stage3_y23"
+          stage4_y23: "stage3_y21 - zeta_stage4_11*stage3_y23"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 24
+          - 26
+        inputs:
+          - "stage3_y24"
+          - "stage3_y26"
+        twiddle: "zeta_stage4_12"
+        outputs:
+          stage4_y24: "stage3_y24 + zeta_stage4_12*stage3_y26"
+          stage4_y26: "stage3_y24 - zeta_stage4_12*stage3_y26"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 25
+          - 27
+        inputs:
+          - "stage3_y25"
+          - "stage3_y27"
+        twiddle: "zeta_stage4_13"
+        outputs:
+          stage4_y25: "stage3_y25 + zeta_stage4_13*stage3_y27"
+          stage4_y27: "stage3_y25 - zeta_stage4_13*stage3_y27"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 28
+          - 30
+        inputs:
+          - "stage3_y28"
+          - "stage3_y30"
+        twiddle: "zeta_stage4_14"
+        outputs:
+          stage4_y28: "stage3_y28 + zeta_stage4_14*stage3_y30"
+          stage4_y30: "stage3_y28 - zeta_stage4_14*stage3_y30"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 29
+          - 31
+        inputs:
+          - "stage3_y29"
+          - "stage3_y31"
+        twiddle: "zeta_stage4_15"
+        outputs:
+          stage4_y29: "stage3_y29 + zeta_stage4_15*stage3_y31"
+          stage4_y31: "stage3_y29 - zeta_stage4_15*stage3_y31"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+    stage_boundary: "stage345_or_final"
+  -
+    stage: "stage5"
+    distance: 1
+    butterflies:
+      -
+        pair:
+          - 0
+          - 1
+        inputs:
+          - "stage4_y0"
+          - "stage4_y1"
+        twiddle: "zeta_stage5_0"
+        outputs:
+          stage5_y0: "stage4_y0 + zeta_stage5_0*stage4_y1"
+          stage5_y1: "stage4_y0 - zeta_stage5_0*stage4_y1"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 2
+          - 3
+        inputs:
+          - "stage4_y2"
+          - "stage4_y3"
+        twiddle: "zeta_stage5_1"
+        outputs:
+          stage5_y2: "stage4_y2 + zeta_stage5_1*stage4_y3"
+          stage5_y3: "stage4_y2 - zeta_stage5_1*stage4_y3"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 4
+          - 5
+        inputs:
+          - "stage4_y4"
+          - "stage4_y5"
+        twiddle: "zeta_stage5_2"
+        outputs:
+          stage5_y4: "stage4_y4 + zeta_stage5_2*stage4_y5"
+          stage5_y5: "stage4_y4 - zeta_stage5_2*stage4_y5"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 6
+          - 7
+        inputs:
+          - "stage4_y6"
+          - "stage4_y7"
+        twiddle: "zeta_stage5_3"
+        outputs:
+          stage5_y6: "stage4_y6 + zeta_stage5_3*stage4_y7"
+          stage5_y7: "stage4_y6 - zeta_stage5_3*stage4_y7"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 8
+          - 9
+        inputs:
+          - "stage4_y8"
+          - "stage4_y9"
+        twiddle: "zeta_stage5_4"
+        outputs:
+          stage5_y8: "stage4_y8 + zeta_stage5_4*stage4_y9"
+          stage5_y9: "stage4_y8 - zeta_stage5_4*stage4_y9"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 10
+          - 11
+        inputs:
+          - "stage4_y10"
+          - "stage4_y11"
+        twiddle: "zeta_stage5_5"
+        outputs:
+          stage5_y10: "stage4_y10 + zeta_stage5_5*stage4_y11"
+          stage5_y11: "stage4_y10 - zeta_stage5_5*stage4_y11"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 12
+          - 13
+        inputs:
+          - "stage4_y12"
+          - "stage4_y13"
+        twiddle: "zeta_stage5_6"
+        outputs:
+          stage5_y12: "stage4_y12 + zeta_stage5_6*stage4_y13"
+          stage5_y13: "stage4_y12 - zeta_stage5_6*stage4_y13"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 14
+          - 15
+        inputs:
+          - "stage4_y14"
+          - "stage4_y15"
+        twiddle: "zeta_stage5_7"
+        outputs:
+          stage5_y14: "stage4_y14 + zeta_stage5_7*stage4_y15"
+          stage5_y15: "stage4_y14 - zeta_stage5_7*stage4_y15"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 16
+          - 17
+        inputs:
+          - "stage4_y16"
+          - "stage4_y17"
+        twiddle: "zeta_stage5_8"
+        outputs:
+          stage5_y16: "stage4_y16 + zeta_stage5_8*stage4_y17"
+          stage5_y17: "stage4_y16 - zeta_stage5_8*stage4_y17"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 18
+          - 19
+        inputs:
+          - "stage4_y18"
+          - "stage4_y19"
+        twiddle: "zeta_stage5_9"
+        outputs:
+          stage5_y18: "stage4_y18 + zeta_stage5_9*stage4_y19"
+          stage5_y19: "stage4_y18 - zeta_stage5_9*stage4_y19"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 20
+          - 21
+        inputs:
+          - "stage4_y20"
+          - "stage4_y21"
+        twiddle: "zeta_stage5_10"
+        outputs:
+          stage5_y20: "stage4_y20 + zeta_stage5_10*stage4_y21"
+          stage5_y21: "stage4_y20 - zeta_stage5_10*stage4_y21"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 22
+          - 23
+        inputs:
+          - "stage4_y22"
+          - "stage4_y23"
+        twiddle: "zeta_stage5_11"
+        outputs:
+          stage5_y22: "stage4_y22 + zeta_stage5_11*stage4_y23"
+          stage5_y23: "stage4_y22 - zeta_stage5_11*stage4_y23"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 24
+          - 25
+        inputs:
+          - "stage4_y24"
+          - "stage4_y25"
+        twiddle: "zeta_stage5_12"
+        outputs:
+          stage5_y24: "stage4_y24 + zeta_stage5_12*stage4_y25"
+          stage5_y25: "stage4_y24 - zeta_stage5_12*stage4_y25"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 26
+          - 27
+        inputs:
+          - "stage4_y26"
+          - "stage4_y27"
+        twiddle: "zeta_stage5_13"
+        outputs:
+          stage5_y26: "stage4_y26 + zeta_stage5_13*stage4_y27"
+          stage5_y27: "stage4_y26 - zeta_stage5_13*stage4_y27"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 28
+          - 29
+        inputs:
+          - "stage4_y28"
+          - "stage4_y29"
+        twiddle: "zeta_stage5_14"
+        outputs:
+          stage5_y28: "stage4_y28 + zeta_stage5_14*stage4_y29"
+          stage5_y29: "stage4_y28 - zeta_stage5_14*stage4_y29"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+      -
+        pair:
+          - 30
+          - 31
+        inputs:
+          - "stage4_y30"
+          - "stage4_y31"
+        twiddle: "zeta_stage5_15"
+        outputs:
+          stage5_y30: "stage4_y30 + zeta_stage5_15*stage4_y31"
+          stage5_y31: "stage4_y30 - zeta_stage5_15*stage4_y31"
+        layout_requirement_for_vectorwise_neon: "inputs must be in corresponding lanes of two vectors, or already be lane-local within one vector"
+    stage_boundary: "stage345_or_final"
+final_live_tags:
+  y0: "stage5_y0"
+  y1: "stage5_y1"
+  y2: "stage5_y2"
+  y3: "stage5_y3"
+  y4: "stage5_y4"
+  y5: "stage5_y5"
+  y6: "stage5_y6"
+  y7: "stage5_y7"
+  y8: "stage5_y8"
+  y9: "stage5_y9"
+  y10: "stage5_y10"
+  y11: "stage5_y11"
+  y12: "stage5_y12"
+  y13: "stage5_y13"
+  y14: "stage5_y14"
+  y15: "stage5_y15"
+  y16: "stage5_y16"
+  y17: "stage5_y17"
+  y18: "stage5_y18"
+  y19: "stage5_y19"
+  y20: "stage5_y20"
+  y21: "stage5_y21"
+  y22: "stage5_y22"
+  y23: "stage5_y23"
+  y24: "stage5_y24"
+  y25: "stage5_y25"
+  y26: "stage5_y26"
+  y27: "stage5_y27"
+  y28: "stage5_y28"
+  y29: "stage5_y29"
+  y30: "stage5_y30"
+  y31: "stage5_y31"

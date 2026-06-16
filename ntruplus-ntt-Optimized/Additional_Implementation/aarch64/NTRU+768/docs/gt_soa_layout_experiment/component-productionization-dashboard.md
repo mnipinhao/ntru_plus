@@ -443,6 +443,45 @@ rowpack-native decomposition with twiddle remap and range proof.  Slothy and
 ASM remain blocked until that transform DAG predicts at least
 `150 cycles/NTT` recoverable, preferably near `200 cycles/NTT`.
 
+## Gate 13 Forward v4 Transform-DAG Search
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_v4_transform_dag_search
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/reference-transform-dag.yml
+docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/rowpack-output-tags.yml
+docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/candidate-transform-dags.yml
+docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/twiddle-remap-obligations.yml
+docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/transform-dag-search-report.md
+```
+
+Result:
+
+| candidate | modeled permutes/block | expected saved cycles/NTT | proof | decision |
+| --- | ---: | ---: | --- | --- |
+| current CT stage12 k32-major | 24 | 0 | proved by existing gates | no headroom |
+| layout moved before stage345 | 72 | -419.938 | structural only | reject |
+| layout moved into stage12 one level | 24 | 0 | structural only | no headroom |
+| six-step 4x8 or 8x4 decomposition | 48 | -209.969 | needs twiddle proof | reject |
+| rowpack from entry horizontal NTT32 | 80 | -489.928 | structural only | reject |
+| algebraic absorb one mixing level | 16 | +69.990 | not found | below gate |
+| algebraic absorb two mixing levels | 8 | +139.979 | not found | below gate |
+| algebraic absorb three mixing levels | 0 | +209.969 | not found | blocked pending proof |
+
+Decision: no proved Forward v4 transform DAG clears the `150 cycles/NTT`
+continue gate.  The only modeled class with strong enough headroom is full
+algebraic absorption of all three rowpack mixing levels, but the bounded search
+does not find a concrete tagged transform or twiddle remap for it.  Forward v4
+ASM and Slothy remain blocked.  If this line continues, the next artifact
+should be a numeric tagged-index transform oracle for the full-absorption
+candidate using the actual NTRU+768 Forward NTT tables, still not ASM.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

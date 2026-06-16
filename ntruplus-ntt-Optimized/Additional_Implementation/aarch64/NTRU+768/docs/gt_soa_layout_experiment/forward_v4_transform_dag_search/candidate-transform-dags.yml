@@ -1,0 +1,154 @@
+gate: "Gate 13: Forward v4 tagged-index transform-DAG search"
+status: "complete_bounded_search_no_asm_candidate"
+cost_model:
+  current_tail_permutes_per_block: 24
+  blocks_per_ntt32: 4
+  current_scatter_cycles_per_ntt: 319.328
+  store_ready_cycles_per_ntt: 109.359
+  recoverable_window_cycles_per_ntt: 209.969
+  estimated_cycles_per_removed_permute: 2.187
+  minimum_continue_cycles_per_ntt: 150.0
+  strong_continue_cycles_per_ntt: 200.0
+search_constraints:
+  isa: "AArch64 Neon"
+  vector_lanes: 8
+  candidate_must_use:
+    - "fixed 128-bit Neon vectors"
+    - "plain vector stores for rowpack output"
+    - "public stage/table schedule"
+  forbidden:
+    - "SVE/SVE2/SME"
+    - "st4 or lane stores as the output fix"
+    - "scalar scatter"
+    - "scalar GT-to-rowpack conversion"
+    - "ASM or Slothy before a proved transform DAG"
+candidates:
+  -
+    name: "A_current_ct_stage12_k32_major"
+    description: "Current vector-wise radix-2 CT stage split with final rowpack transpose."
+    absorbed_lane_mixing_levels: 0
+    explicit_lane_mixing_levels: 3
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 24
+    proof_status: "proved_by_existing_gates"
+    twiddle_remap: "none"
+    interpretation: "baseline rowpack v2 Forward topology"
+    delta_permutes_per_block_vs_current: 0
+    expected_cycles_saved_per_ntt: 0.0
+    gate_status: "no_headroom"
+  -
+    name: "B_layout_moved_before_stage345"
+    description: "Move the full rowpack 8x8 mixing before stage345, then keep stage345 lane-local only if arithmetic is changed to horizontal lane butterflies."
+    absorbed_lane_mixing_levels: 0
+    explicit_lane_mixing_levels: 3
+    horizontal_butterfly_stages: 3
+    total_lane_mixing_permutes_per_block: 72
+    proof_status: "structural_only"
+    twiddle_remap: "required for horizontal stage345"
+    interpretation: "same as Gate 12 pretranspose/horizontal stage345; reject"
+    delta_permutes_per_block_vs_current: 48
+    expected_cycles_saved_per_ntt: -419.938
+    gate_status: "reject_static_model"
+  -
+    name: "C_layout_moved_into_stage12_one_level"
+    description: "Move one 8-vector mixing level into stage12 without changing the algebraic transform."
+    absorbed_lane_mixing_levels: 0
+    explicit_lane_mixing_levels: 3
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 24
+    proof_status: "structural_only"
+    twiddle_remap: "none if pure layout move"
+    interpretation: "no net lane-mixing reduction"
+    delta_permutes_per_block_vs_current: 0
+    expected_cycles_saved_per_ntt: 0.0
+    gate_status: "no_headroom"
+  -
+    name: "D_six_step_4x8_or_8x4_decomposition"
+    description: "Two-dimensional NTT32 factorization with rowpack-friendly planes and corner turns."
+    absorbed_lane_mixing_levels: 0
+    explicit_lane_mixing_levels: 6
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 48
+    proof_status: "requires_twiddle_factorization_proof"
+    twiddle_remap: "required"
+    interpretation: "corner turns alone exceed current lane-mixing cost before arithmetic pressure"
+    delta_permutes_per_block_vs_current: 24
+    expected_cycles_saved_per_ntt: -209.969
+    gate_status: "reject_static_model"
+  -
+    name: "E_rowpack_from_entry_horizontal_ntt32"
+    description: "Keep rowpack plane vectors from NTT32 entry and run all five stages horizontally inside lanes."
+    absorbed_lane_mixing_levels: 0
+    explicit_lane_mixing_levels: 0
+    horizontal_butterfly_stages: 5
+    total_lane_mixing_permutes_per_block: 80
+    proof_status: "structural_only"
+    twiddle_remap: "required"
+    interpretation: "destroys the current vector-wise butterfly advantage"
+    delta_permutes_per_block_vs_current: 56
+    expected_cycles_saved_per_ntt: -489.928
+    gate_status: "reject_static_model"
+  -
+    name: "F_algebraic_absorb_one_mixing_level"
+    description: "Hypothetical transform remap that absorbs one of three rowpack lane-mixing levels into earlier butterflies."
+    absorbed_lane_mixing_levels: 1
+    explicit_lane_mixing_levels: 2
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 16
+    proof_status: "not_found_in_bounded_search"
+    twiddle_remap: "required"
+    interpretation: "would save too little to justify ASM even if proved"
+    delta_permutes_per_block_vs_current: -8
+    expected_cycles_saved_per_ntt: 69.99
+    gate_status: "below_gate_and_unproved"
+  -
+    name: "G_algebraic_absorb_two_mixing_levels"
+    description: "Hypothetical transform remap that absorbs two of three rowpack lane-mixing levels into earlier butterflies."
+    absorbed_lane_mixing_levels: 2
+    explicit_lane_mixing_levels: 1
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 8
+    proof_status: "not_found_in_bounded_search"
+    twiddle_remap: "required"
+    interpretation: "near the continue threshold but still below the 150 cycles/NTT gate in this cost model"
+    delta_permutes_per_block_vs_current: -16
+    expected_cycles_saved_per_ntt: 139.979
+    gate_status: "below_gate_and_unproved"
+  -
+    name: "H_algebraic_absorb_three_mixing_levels"
+    description: "Hypothetical rowpack-native transform DAG that absorbs the full rowpack 8x8 mixing into the Forward arithmetic."
+    absorbed_lane_mixing_levels: 3
+    explicit_lane_mixing_levels: 0
+    horizontal_butterfly_stages: 0
+    total_lane_mixing_permutes_per_block: 0
+    proof_status: "not_found_in_bounded_search"
+    twiddle_remap: "required"
+    interpretation: "only class with enough modeled headroom, but no concrete tagged transform was found"
+    delta_permutes_per_block_vs_current: -24
+    expected_cycles_saved_per_ntt: 209.969
+    gate_status: "blocked_pending_transform_proof"
+  -
+    name: "I_non_radix2_new_decomposition"
+    description: "Open-ended non-current decomposition that changes root/twiddle assignment before stage12."
+    absorbed_lane_mixing_levels: null
+    explicit_lane_mixing_levels: null
+    horizontal_butterfly_stages: null
+    total_lane_mixing_permutes_per_block: null
+    proof_status: "research_only"
+    twiddle_remap: "required"
+    interpretation: "outside bounded search; requires a separate mathematical transform derivation"
+    expected_cycles_saved_per_ntt: null
+    gate_status: "unquantified_research"
+best_proved_candidate:
+  name: "A_current_ct_stage12_k32_major"
+  expected_cycles_saved_per_ntt: 0.0
+  gate_status: "no_headroom"
+best_unproved_candidate:
+  name: "H_algebraic_absorb_three_mixing_levels"
+  expected_cycles_saved_per_ntt: 209.969
+  gate_status: "blocked_pending_transform_proof"
+  proof_status: "not_found_in_bounded_search"
+decision:
+  continue_to_forward_v4_asm: false
+  reason: "The bounded tagged-index search found no proved transform DAG with at least 150 cycles/NTT expected recovery.  The only modeled class with strong enough headroom is full algebraic absorption of all three rowpack mixing levels, and no concrete tagged transform or twiddle remap was found for it."
+  next_gate_if_continuing: "derive and test a numeric tagged-index transform oracle for H_algebraic_absorb_three_mixing_levels using the actual NTRU+768 Forward NTT tables; still no ASM"
