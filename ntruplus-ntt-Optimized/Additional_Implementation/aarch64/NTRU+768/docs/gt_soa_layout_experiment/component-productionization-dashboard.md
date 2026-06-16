@@ -407,6 +407,42 @@ glue.  A Forward v4 rewrite is only justified after a topology model, earlier
 than the stage12 scratch boundary, predicts at least `150 cycles/NTT`
 recoverable, preferably near `200 cycles/NTT`.
 
+## Gate 12 Forward v4 Topology Model
+
+Command:
+
+```sh
+make report_gt_rowpack_forward_v4_topology_model
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v4_topology_model/topology-model.yml
+docs/gt_soa_layout_experiment/forward_v4_topology_model/candidate-matrix.yml
+docs/gt_soa_layout_experiment/forward_v4_topology_model/topology-report.md
+```
+
+Result:
+
+| candidate | modeled lane-mixing permutes/block | expected saved cycles/NTT | decision |
+| --- | ---: | ---: | --- |
+| current v2 k32-major | 24 | 0 | baseline |
+| pretranspose then horizontal stage345 | 72 | -419.938 | reject |
+| absorb one mixing stage into stage12 | 24 | 0 | no headroom |
+| absorb two mixing stages into stage12 | 24 | 0 | no headroom |
+| rowpack from entry horizontal NTT32 | 80 | -489.928 | reject |
+| new rowpack-native decomposition | unknown | unknown | research only |
+
+Decision: do not start Forward v4 ASM from the concrete topology classes
+modeled here.  The concrete variants either tie the existing
+`24 permutes/block` barrier, move that barrier earlier, or replace the current
+vector-wise butterflies with more expensive horizontal lane work.  The only
+remaining v4 path is a tagged-index transform-DAG search for a new
+rowpack-native decomposition with twiddle remap and range proof.  Slothy and
+ASM remain blocked until that transform DAG predicts at least
+`150 cycles/NTT` recoverable, preferably near `200 cycles/NTT`.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

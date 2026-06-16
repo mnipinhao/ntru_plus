@@ -69,6 +69,11 @@ production replacement yet:
   opt-in experimental backend, do not promote it over production GT, and do
   not start Forward v4 ASM until a topology model predicts at least
   `150 cycles/NTT` recoverable, preferably near `200 cycles/NTT`;
+- Gate 12 completes the Forward v4 static topology model.  Concrete variants
+  either tie the existing `24 permutes/block` barrier or are worse because they
+  replace vector-wise butterflies with horizontal lane work.  No Forward v4 ASM
+  should be written yet; the only remaining research path is a tagged-index
+  transform-DAG search for a new decomposition;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
@@ -147,6 +152,7 @@ InvNTT postmerge:
 | Rowpack Forward NTT v3b stage345 live-out | `docs/gt_soa_layout_experiment/forward_v3b_stage345/`, `docs/gt_soa_layout_experiment/check_forward_v3b_stage345_contract.py` | Contract/DAG/checker only, no `.S` generated | Gate 9 feasibility rejects current-boundary stage345-only: current stage12 scratch is k32-major and stage345 is lane-preserving, so it still needs a 24-permute/block network. |
 | Rowpack Forward NTT v3c stage12+stage345 layout search | `docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/`, `docs/gt_soa_layout_experiment/search_forward_v3c_stage12_stage345_layout.py` | Layout feasibility only, no `.S` generated | Gate 10 checks whether changing the stage12 scratch/live-out contract can remove the transpose instead of moving it earlier. |
 | Rowpack Forward NTT v4 topology decision | `docs/gt_soa_layout_experiment/forward_topology_decision/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_topology_decision.py` | Decision report only, no `.S` generated | Gate 11 keeps rowpack experimental and requires a topology model before any larger Forward v4 ASM rewrite. |
+| Rowpack Forward NTT v4 topology model | `docs/gt_soa_layout_experiment/forward_v4_topology_model/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_v4_topology_model.py` | Static topology model only, no `.S` generated | Gate 12 rejects concrete pretranspose/horizontal and scratch-absorb variants; next possible work is tagged-index transform-DAG search. |
 | Production InvNTT | `asm/slothy/invntt_opt.s` | Slothy-scheduled production artifact | Included by `asm/inv_my_ntt.s`; production default remains here. |
 | Production GT basemul/add | `asm/base_gt.opt.s` | Slothy-scheduled artifact | Promoted GT pointwise baseline. |
 | Rowpack InvNTT32 original rowkernel | `kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S`, `.alloc.S`, `.opt.S` | Slothy-generated symbolic/RA/opt set | Diagnostic baseline, no longer best rowpack candidate. |
@@ -186,6 +192,7 @@ make test_gt_rowpack_forward_v3b_stage345_contract
 make test_gt_rowpack_forward_v3b_symbolic_candidate
 make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
 make report_gt_rowpack_forward_topology_decision
+make report_gt_rowpack_forward_v4_topology_model
 ```
 
 Focused InvNTT/postmerge isolation:

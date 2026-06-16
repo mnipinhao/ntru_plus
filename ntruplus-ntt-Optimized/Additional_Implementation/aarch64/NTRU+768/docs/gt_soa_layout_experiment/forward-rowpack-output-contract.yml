@@ -500,3 +500,61 @@ forward_topology_decision_gate:
     it first needs a topology model that absorbs lane mixing into earlier
     Forward arithmetic and predicts at least 150 cycles/NTT recoverable,
     preferably close to 200 cycles/NTT.
+
+forward_v4_topology_model:
+  status: complete_static_model_no_asm_candidate
+  command: "make report_gt_rowpack_forward_v4_topology_model"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_v4_topology_model/"
+  artifacts:
+    - topology-model.yml
+    - candidate-matrix.yml
+    - topology-report.md
+  cost_model:
+    current_tail_permutes_per_block: 24
+    current_scatter_cycles_per_ntt: 319.328
+    store_ready_cycles_per_ntt: 109.359
+    recoverable_window_cycles_per_ntt: 209.969
+    estimated_cycles_per_removed_permute: 2.187
+    minimum_continue_cycles_per_ntt: 150.0
+    strong_continue_cycles_per_ntt: 200.0
+  candidate_summary:
+    A_current_v2_k32_major:
+      total_lane_mixing_permutes_per_block: 24
+      expected_cycles_saved_per_ntt: 0.0
+      gate_status: no_headroom
+    B_pretranspose_then_horizontal_stage345:
+      total_lane_mixing_permutes_per_block: 72
+      expected_cycles_saved_per_ntt: -419.938
+      gate_status: reject_static_model
+    C_absorb_one_mixing_stage_into_stage12:
+      total_lane_mixing_permutes_per_block: 24
+      expected_cycles_saved_per_ntt: 0.0
+      gate_status: no_headroom
+    D_absorb_two_mixing_stages_into_stage12:
+      total_lane_mixing_permutes_per_block: 24
+      expected_cycles_saved_per_ntt: 0.0
+      gate_status: no_headroom
+    E_rowpack_from_entry_horizontal_ntt32:
+      total_lane_mixing_permutes_per_block: 80
+      expected_cycles_saved_per_ntt: -489.928
+      gate_status: reject_static_model
+    F_new_forward_decomposition_rowpack_native:
+      total_lane_mixing_permutes_per_block: null
+      expected_cycles_saved_per_ntt: null
+      gate_status: research_only_no_static_cycle_claim
+  decision:
+    continue_to_v4_asm: false
+    next_gate_if_continuing: "tagged-index Forward v4 transform-DAG search, not ASM"
+    forbidden_after_model:
+      - "do not write Forward v4 ASM from the rejected concrete topology classes"
+      - "do not run Slothy before a concrete transform DAG predicts enough cycle headroom"
+      - "do not use st4, lane stores, scalar scatter, or scalar GT-to-rowpack conversion as the fix"
+  conclusion: >
+    Gate 12 completes the requested Forward v4 topology model.  No concrete
+    topology in this model predicts the required 150 cycles/NTT recoverable
+    headroom.  The modeled concrete paths either tie the existing
+    24-permute/block barrier, move it earlier, or replace vector-wise
+    butterflies with more horizontal lane work.  The only remaining v4 path is
+    a research-only rowpack-native transform decomposition; it needs a
+    tagged-index transform DAG, twiddle remap, and range proof before ASM or
+    Slothy should be used.
