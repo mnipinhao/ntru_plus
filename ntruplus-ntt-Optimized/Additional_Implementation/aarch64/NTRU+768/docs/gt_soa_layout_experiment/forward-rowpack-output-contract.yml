@@ -12,6 +12,7 @@ scope:
     ntt32_kernel: asm/slothy/my_32ntt.opt.s
     rowpack_symbolic_source: asm/slothy/ntt32_v2_symbolic.s
     rowpack_candidate: asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s
+    rowpack_v3_symbolic_handoff: asm/slothy/ntt32_v3_rowpack_stage345_symbolic.s
   non_goals:
     - Do not promote the v2 candidate into production poly_ntt by default.
     - Do not change arithmetic, twiddle order, or reduction schedule.
@@ -84,6 +85,7 @@ target_scatter_contract:
 validation:
   portable_gate: test_gt_forward_rowpack_output_contract
   asm_gate: test_gt_forward_rowpack_v2_asm
+  v3_register_order_gate: test_gt_rowpack_forward_v3_register_order_contract
   fullpath_gates:
     - test_gt_rowpack_soa_invntt32_fullpath_forward_v2
     - test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
@@ -201,3 +203,28 @@ pi5_forward_scatter_lower_bound_evidence:
     cycles slower than current scatter/transpose.  The next candidate should
     change stage345/register layout rather than replacing transpose with lane
     stores.
+
+forward_v3_register_order_gate:
+  status: contract_only_no_opt_s_candidate
+  commands:
+    - make test_gt_rowpack_forward_v3_register_order_contract
+    - make bench_gt_rowpack_forward_v3_register_order_lower_bound
+    - make bench_gt_rowpack_forward_v3_register_order_cycles
+  oracle_source: "gt_test/test_gt_rowpack_forward_v3_register_order_contract.c"
+  symbolic_handoff: "asm/slothy/ntt32_v3_rowpack_stage345_symbolic.s"
+  non_goals:
+    - "Do not change the Forward NTT arithmetic, twiddle order, or reduction schedule."
+    - "Do not replace the vector-store path with lane stores."
+    - "Do not treat the symbolic handoff stub as a generated .opt.s candidate."
+  required_liveout: >
+    For each Good-Thomas row and each k32 block b, stage345 should make eight
+    rowpack-ready plane vectors live before store.  Plane p has p/4 as branch,
+    p%4 as quartic lane, and vector lane v as k32=8*b+v.  Storing those vectors
+    directly must produce rowpack_index(branch,row,lane,k32).
+  cycle_gate: >
+    Until a real v3 assembly candidate exists, the lower-bound target reuses
+    the Gate 4 probes and prints a note that no v3 candidate is implemented.
+    The shorter cycles target is currently an alias for that lower-bound gate.
+    A weak candidate should recover at least about 100 cycles/NTT from the
+    current rowpack v2 Forward path; a strong candidate should recover about
+    200 cycles/NTT, approaching the measured store-ready floor.

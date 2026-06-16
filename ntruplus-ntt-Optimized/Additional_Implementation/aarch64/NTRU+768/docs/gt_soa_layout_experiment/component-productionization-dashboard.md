@@ -13,14 +13,16 @@ postmerge keeps the lazy InvNTT path near the promoted GT inverse cost.
 Do not promote rowpack yet.  The best product fullpath is now close, but it is
 still slower than the promoted GT pipeline, product-add still has a larger gap,
 and production should remain on the current GT path while rowpack focuses on
-the remaining Forward/add-path/fusion gap.  The fullchain stage accounting gate
+the remaining Forward output-register-order gap.  The fullchain stage accounting gate
 shows the product-add gap is accounted by component costs, especially the
 rowpack Forward NTT cost repeated three times, not by hidden glue overhead.
 
 Do not reopen the public rowvec ABI or row-output-only rewrite based on current
 evidence.  The rowvec direct postmerge win is too small.  The active direction
 is the existing rowpack ABI with lazy rowkernel reduction, dedicated postmerge
-assembly, and possibly rowkernel-to-postmerge fusion.
+assembly, and a Forward v3 stage345/register-order candidate.  Gate 5 has only
+the register-order contract and lower-bound cycle target so far; no v3 `.opt.s`
+candidate exists yet.
 
 ## Pi5 Cycle Snapshot
 
@@ -95,6 +97,54 @@ product-add, so Forward v2 consumes most or all of the pointwise gain before
 InvNTT is considered.  The remaining full-pipeline gap is dominated by rowpack
 InvNTT: about 17155-17182 cycles versus about 4022-4036 cycles for the promoted
 GT inverse.
+
+## Forward v3 Register-Order Gate
+
+Gate 3 and Gate 4 now identify Forward output packing as the remaining large
+rowpack cost:
+
+| probe | median cycles | interpretation |
+| --- | ---: | --- |
+| current rowpack Forward v2 | 3015.828 | full rowpack-v2 Forward output path |
+| promoted GT Forward | 2696.594 | current production baseline |
+| current scatter/transpose-only | 319.328 | output packing cost in v2 shape |
+| store-ready load+store | 109.359 | vector store/address floor with rowpack-ready plane vectors |
+| zero-store lower bound | 96.828 | fixed-vector store/address floor |
+| transpose-only no-store | 266.703 | permutation cost without rowpack stores |
+| lane-store candidate | 1986.516 | rejected store-order candidate |
+
+Decision:
+
+- continue to Forward v3 register-order/stage345 layout candidate;
+- keep the arithmetic, twiddle order, and reduction schedule unchanged;
+- make stage345 emit rowpack plane vectors directly before store;
+- do not pursue lane stores, scalar GT-to-rowpack conversion, rowvec ABI,
+  InvNTT fusion, or add glue as the next step.
+
+New gates:
+
+```sh
+make test_gt_rowpack_forward_v3_register_order_contract
+make bench_gt_rowpack_forward_v3_register_order_lower_bound
+make bench_gt_rowpack_forward_v3_register_order_cycles
+```
+
+The lower-bound cycle gate currently reruns the Gate 4 probes and prints an
+explicit notice that no v3 assembly candidate exists yet.  The shorter
+`bench_gt_rowpack_forward_v3_register_order_cycles` target is currently an
+alias for that lower-bound gate.  The contract gate uses tagged indices to
+prove the required v3 live-out vector shape:
+
+```text
+plane[row][k32_block][branch_lane].h[vlane]
+  -> rowpack_index(branch,row,lane,k32_block*8+vlane)
+```
+
+Acceptance target for a future v3 `.opt.s` candidate:
+
+- weak continue: recover at least about `100` cycles/NTT versus rowpack v2;
+- strong continue: recover about `200` cycles/NTT, approaching the measured
+  store-ready floor.
 
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
