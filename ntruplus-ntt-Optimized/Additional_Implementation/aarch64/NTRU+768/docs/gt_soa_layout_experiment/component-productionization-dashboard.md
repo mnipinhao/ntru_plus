@@ -369,6 +369,44 @@ total permutation cost or ties the same 24-permute/block lower bound.  The
 remaining open scope is a larger stage12 arithmetic topology rewrite or an
 earlier forward contract change, not a scratch-layout-only candidate.
 
+## Gate 11 Rowpack Promotion / Forward Topology Decision
+
+Command:
+
+```sh
+make report_gt_rowpack_forward_topology_decision
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_topology_decision/decision.yml
+docs/gt_soa_layout_experiment/forward_topology_decision/decision-report.md
+```
+
+Decision:
+
+```text
+C_keep_rowpack_research_path_not_production
+```
+
+Result:
+
+| option | decision | reason |
+| --- | --- | --- |
+| A continue to Forward topology rewrite | not now | no v4 topology model currently predicts >=150 cycles/NTT recoverable |
+| B archive rowpack entirely | too strong | rowpack clearly beats KPQC final and remains valuable as a research baseline |
+| C keep rowpack research path, not production | selected | backend is strong, but production GT remains faster and simple Forward layout fixes are closed |
+
+Gate 11 freezes the current promotion decision.  Lazy ASM rowpack stays as an
+opt-in experimental backend: it clearly beats KPQC final, but still trails
+production GT by about `+100` cycles on product and `+560` cycles on
+product-add.  The remaining blocker is the Forward NTT rowpack output ABI
+cost under the current topology, not basemul, basemul_add, InvNTT, or hidden
+glue.  A Forward v4 rewrite is only justified after a topology model, earlier
+than the stage12 scratch boundary, predicts at least `150 cycles/NTT`
+recoverable, preferably near `200 cycles/NTT`.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

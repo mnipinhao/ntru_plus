@@ -453,3 +453,50 @@ forward_v3c_stage12_stage345_layout_search:
     scratch store/load and register pressure.  The remaining open scope is a
     larger stage12 arithmetic topology rewrite or an earlier forward contract
     change.
+
+forward_topology_decision_gate:
+  status: decision_report_no_benchmark_no_asm
+  command: "make report_gt_rowpack_forward_topology_decision"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_topology_decision/"
+  artifacts:
+    - decision.yml
+    - decision-report.md
+  selected_option: C_keep_rowpack_research_path_not_production
+  decision:
+    promote_rowpack_to_production: false
+    start_forward_v4_asm_now: false
+    keep_rowpack_as_experimental_backend: true
+  evidence:
+    lazy_asm_rowpack_vs_kpqc_final:
+      product_pipeline_cycles: -1110.015
+      product_add_pipeline_cycles: -1286.844
+    lazy_asm_rowpack_vs_production_gt:
+      product_pipeline_cycles: 108.438
+      product_add_pipeline_cycles: 560.172
+    component_blocker:
+      forward_ntt: "rowpack output ABI costs about 315-347 cycles/NTT"
+      basemul: "rowpack faster than production GT"
+      basemul_add: "rowpack faster than production GT"
+      invntt: "lazy ASM rowpack production-near"
+      glue: "not blocker; latest accounting has rowpack glue cheaper"
+    closed_paths:
+      - "v3 structured-store / st4"
+      - "v3a final-only permutation"
+      - "v3b stage345-only live-out rewrite"
+      - "v3c scratch-layout-only rewrite"
+  forward_v4_conditions:
+    scope: "rowpack-native arithmetic topology earlier than the stage12 scratch boundary"
+    minimum_continue_gate_cycles_per_ntt: 150
+    preferred_continue_gate_cycles_per_ntt: 200
+    next_allowed_work: "static Forward v4 topology model only"
+    forbidden_before_model:
+      - "do not write v4 ASM"
+      - "do not rerun Slothy on rejected v3 DAGs"
+      - "do not use st4, lane stores, scalar scatter, or scalar GT-to-rowpack conversion as the fix"
+  conclusion: >
+    Gate 11 is the current rowpack stop point.  Rowpack remains a strong
+    experimental backend and an external-baseline win over KPQC final, but it
+    is not promoted over production GT.  Forward v4 is not started as assembly;
+    it first needs a topology model that absorbs lane mixing into earlier
+    Forward arithmetic and predicts at least 150 cycles/NTT recoverable,
+    preferably close to 200 cycles/NTT.
