@@ -296,3 +296,43 @@ forward_stage345_liveout_audit:
     Slothy should schedule and register-allocate a selected good symbolic DAG.
     It should not choose the transformed layout, and it should not promote
     structured stores, lane stores, or scalar scatter as the output primitive.
+
+forward_stage345_layout_search:
+  status: complete_static_search_no_candidate
+  command: "make test_gt_rowpack_forward_stage345_layout_search"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_stage345_layout_search/"
+  artifacts:
+    - current_liveout.json
+    - target_rowpack_planes.json
+    - required_permutation.json
+    - candidate_sequences.json
+    - layout_search_summary.md
+  allowed_ops:
+    - trn1
+    - trn2
+    - zip1
+    - zip2
+    - uzp1
+    - uzp2
+    - ext
+    - rev64
+    - mov
+    - orr
+    - plain_vector_store
+  forbidden_ops:
+    - st4
+    - lane_store
+    - scalar_scatter
+    - scalar_GT_to_rowpack_conversion
+  result:
+    current_v2_final_tail_permutes_per_block: 24
+    two_input_interleave_lower_bound_permutes_per_block: 24
+    best_final_only_permutes_per_block: 24
+    uses_only_allowed_ops: true
+    requires_forbidden_store_or_scatter: false
+  conclusion: >
+    Final-only v3a has no instruction-count headroom under the allowed Neon
+    two-input interleave model.  The current v2 final tail already matches the
+    24-permute/block lower bound for an 8x8 16-bit transpose.  The next useful
+    candidate is v3b: rewrite stage345 arithmetic/register order so rowpack
+    plane vectors are naturally live-out, then use plain vector stores.

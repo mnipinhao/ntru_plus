@@ -239,6 +239,39 @@ Decision:
 Gate 7 does not create a new `.S` or `.opt.s` candidate.  It is the handoff
 surface for the next real v3 candidate.
 
+## Gate 8 Stage345 Layout Search
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_stage345_layout_search
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_stage345_layout_search/current_liveout.json
+docs/gt_soa_layout_experiment/forward_stage345_layout_search/target_rowpack_planes.json
+docs/gt_soa_layout_experiment/forward_stage345_layout_search/required_permutation.json
+docs/gt_soa_layout_experiment/forward_stage345_layout_search/candidate_sequences.json
+docs/gt_soa_layout_experiment/forward_stage345_layout_search/layout_search_summary.md
+```
+
+Result:
+
+| item | result |
+| --- | --- |
+| current v2 final tail | 24 permutes/block |
+| two-input interleave lower bound | 24 permutes/block |
+| best final-only legal sequence | 24 permutes/block |
+| forbidden store/scatter needed | no |
+| `.S` or `.opt.s` generated | no |
+
+Decision: final-only v3a has no instruction-count headroom under the allowed
+Neon interleave model.  The next useful candidate is v3b: rewrite stage345
+arithmetic/register order so rowpack plane vectors are naturally live-out, then
+use plain vector stores.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

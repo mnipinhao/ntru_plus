@@ -1,0 +1,970 @@
+{
+  "allowed_ops": [
+    "trn1",
+    "trn2",
+    "zip1",
+    "zip2",
+    "uzp1",
+    "uzp2",
+    "ext",
+    "rev64",
+    "mov",
+    "orr",
+    "plain_vector_store"
+  ],
+  "blocks": [
+    {
+      "best_final_only_found": {
+        "allowed_ops_only": true,
+        "estimated_extra_temp_vectors": 16,
+        "estimated_recovery_vs_v2": 0,
+        "permute_instructions": 24,
+        "sequence": [
+          {
+            "dst": "b0_s0_0",
+            "op": "trn1.8h",
+            "src": [
+              "v17",
+              "v30"
+            ]
+          },
+          {
+            "dst": "b0_s0_1",
+            "op": "trn2.8h",
+            "src": [
+              "v17",
+              "v30"
+            ]
+          },
+          {
+            "dst": "b0_s0_2",
+            "op": "trn1.8h",
+            "src": [
+              "v13",
+              "v5"
+            ]
+          },
+          {
+            "dst": "b0_s0_3",
+            "op": "trn2.8h",
+            "src": [
+              "v13",
+              "v5"
+            ]
+          },
+          {
+            "dst": "b0_s0_4",
+            "op": "trn1.8h",
+            "src": [
+              "v21",
+              "v9"
+            ]
+          },
+          {
+            "dst": "b0_s0_5",
+            "op": "trn2.8h",
+            "src": [
+              "v21",
+              "v9"
+            ]
+          },
+          {
+            "dst": "b0_s0_6",
+            "op": "trn1.8h",
+            "src": [
+              "v14",
+              "v7"
+            ]
+          },
+          {
+            "dst": "b0_s0_7",
+            "op": "trn2.8h",
+            "src": [
+              "v14",
+              "v7"
+            ]
+          },
+          {
+            "dst": "b0_s1_0",
+            "op": "trn1.4s",
+            "src": [
+              "b0_s0_0",
+              "b0_s0_2"
+            ]
+          },
+          {
+            "dst": "b0_s1_2",
+            "op": "trn2.4s",
+            "src": [
+              "b0_s0_0",
+              "b0_s0_2"
+            ]
+          },
+          {
+            "dst": "b0_s1_1",
+            "op": "trn1.4s",
+            "src": [
+              "b0_s0_1",
+              "b0_s0_3"
+            ]
+          },
+          {
+            "dst": "b0_s1_3",
+            "op": "trn2.4s",
+            "src": [
+              "b0_s0_1",
+              "b0_s0_3"
+            ]
+          },
+          {
+            "dst": "b0_s1_4",
+            "op": "trn1.4s",
+            "src": [
+              "b0_s0_4",
+              "b0_s0_6"
+            ]
+          },
+          {
+            "dst": "b0_s1_6",
+            "op": "trn2.4s",
+            "src": [
+              "b0_s0_4",
+              "b0_s0_6"
+            ]
+          },
+          {
+            "dst": "b0_s1_5",
+            "op": "trn1.4s",
+            "src": [
+              "b0_s0_5",
+              "b0_s0_7"
+            ]
+          },
+          {
+            "dst": "b0_s1_7",
+            "op": "trn2.4s",
+            "src": [
+              "b0_s0_5",
+              "b0_s0_7"
+            ]
+          },
+          {
+            "dst": "b0_out_0",
+            "op": "trn1.2d",
+            "src": [
+              "b0_s1_0",
+              "b0_s1_4"
+            ]
+          },
+          {
+            "dst": "b0_out_4",
+            "op": "trn2.2d",
+            "src": [
+              "b0_s1_0",
+              "b0_s1_4"
+            ]
+          },
+          {
+            "dst": "b0_out_1",
+            "op": "trn1.2d",
+            "src": [
+              "b0_s1_1",
+              "b0_s1_5"
+            ]
+          },
+          {
+            "dst": "b0_out_5",
+            "op": "trn2.2d",
+            "src": [
+              "b0_s1_1",
+              "b0_s1_5"
+            ]
+          },
+          {
+            "dst": "b0_out_2",
+            "op": "trn1.2d",
+            "src": [
+              "b0_s1_2",
+              "b0_s1_6"
+            ]
+          },
+          {
+            "dst": "b0_out_6",
+            "op": "trn2.2d",
+            "src": [
+              "b0_s1_2",
+              "b0_s1_6"
+            ]
+          },
+          {
+            "dst": "b0_out_3",
+            "op": "trn1.2d",
+            "src": [
+              "b0_s1_3",
+              "b0_s1_7"
+            ]
+          },
+          {
+            "dst": "b0_out_7",
+            "op": "trn2.2d",
+            "src": [
+              "b0_s1_3",
+              "b0_s1_7"
+            ]
+          }
+        ],
+        "source_order": [
+          "v17",
+          "v30",
+          "v13",
+          "v5",
+          "v21",
+          "v9",
+          "v14",
+          "v7"
+        ],
+        "status": "no_better_than_v2",
+        "uses_forbidden_store_form": false,
+        "vector_stores": 8
+      },
+      "block": 0,
+      "current_v2_reference": {
+        "allowed_ops_only": true,
+        "performance_status": "baseline",
+        "permute_instructions": 24,
+        "source_order": [
+          "v21",
+          "v9",
+          "v13",
+          "v5",
+          "v17",
+          "v30",
+          "v14",
+          "v7"
+        ],
+        "vector_stores": 8
+      },
+      "k32_base": 0
+    },
+    {
+      "best_final_only_found": {
+        "allowed_ops_only": true,
+        "estimated_extra_temp_vectors": 16,
+        "estimated_recovery_vs_v2": 0,
+        "permute_instructions": 24,
+        "sequence": [
+          {
+            "dst": "b1_s0_0",
+            "op": "trn1.8h",
+            "src": [
+              "v2",
+              "v10"
+            ]
+          },
+          {
+            "dst": "b1_s0_1",
+            "op": "trn2.8h",
+            "src": [
+              "v2",
+              "v10"
+            ]
+          },
+          {
+            "dst": "b1_s0_2",
+            "op": "trn1.8h",
+            "src": [
+              "v19",
+              "v30"
+            ]
+          },
+          {
+            "dst": "b1_s0_3",
+            "op": "trn2.8h",
+            "src": [
+              "v19",
+              "v30"
+            ]
+          },
+          {
+            "dst": "b1_s0_4",
+            "op": "trn1.8h",
+            "src": [
+              "v3",
+              "v12"
+            ]
+          },
+          {
+            "dst": "b1_s0_5",
+            "op": "trn2.8h",
+            "src": [
+              "v3",
+              "v12"
+            ]
+          },
+          {
+            "dst": "b1_s0_6",
+            "op": "trn1.8h",
+            "src": [
+              "v28",
+              "v8"
+            ]
+          },
+          {
+            "dst": "b1_s0_7",
+            "op": "trn2.8h",
+            "src": [
+              "v28",
+              "v8"
+            ]
+          },
+          {
+            "dst": "b1_s1_0",
+            "op": "trn1.4s",
+            "src": [
+              "b1_s0_0",
+              "b1_s0_2"
+            ]
+          },
+          {
+            "dst": "b1_s1_2",
+            "op": "trn2.4s",
+            "src": [
+              "b1_s0_0",
+              "b1_s0_2"
+            ]
+          },
+          {
+            "dst": "b1_s1_1",
+            "op": "trn1.4s",
+            "src": [
+              "b1_s0_1",
+              "b1_s0_3"
+            ]
+          },
+          {
+            "dst": "b1_s1_3",
+            "op": "trn2.4s",
+            "src": [
+              "b1_s0_1",
+              "b1_s0_3"
+            ]
+          },
+          {
+            "dst": "b1_s1_4",
+            "op": "trn1.4s",
+            "src": [
+              "b1_s0_4",
+              "b1_s0_6"
+            ]
+          },
+          {
+            "dst": "b1_s1_6",
+            "op": "trn2.4s",
+            "src": [
+              "b1_s0_4",
+              "b1_s0_6"
+            ]
+          },
+          {
+            "dst": "b1_s1_5",
+            "op": "trn1.4s",
+            "src": [
+              "b1_s0_5",
+              "b1_s0_7"
+            ]
+          },
+          {
+            "dst": "b1_s1_7",
+            "op": "trn2.4s",
+            "src": [
+              "b1_s0_5",
+              "b1_s0_7"
+            ]
+          },
+          {
+            "dst": "b1_out_0",
+            "op": "trn1.2d",
+            "src": [
+              "b1_s1_0",
+              "b1_s1_4"
+            ]
+          },
+          {
+            "dst": "b1_out_4",
+            "op": "trn2.2d",
+            "src": [
+              "b1_s1_0",
+              "b1_s1_4"
+            ]
+          },
+          {
+            "dst": "b1_out_1",
+            "op": "trn1.2d",
+            "src": [
+              "b1_s1_1",
+              "b1_s1_5"
+            ]
+          },
+          {
+            "dst": "b1_out_5",
+            "op": "trn2.2d",
+            "src": [
+              "b1_s1_1",
+              "b1_s1_5"
+            ]
+          },
+          {
+            "dst": "b1_out_2",
+            "op": "trn1.2d",
+            "src": [
+              "b1_s1_2",
+              "b1_s1_6"
+            ]
+          },
+          {
+            "dst": "b1_out_6",
+            "op": "trn2.2d",
+            "src": [
+              "b1_s1_2",
+              "b1_s1_6"
+            ]
+          },
+          {
+            "dst": "b1_out_3",
+            "op": "trn1.2d",
+            "src": [
+              "b1_s1_3",
+              "b1_s1_7"
+            ]
+          },
+          {
+            "dst": "b1_out_7",
+            "op": "trn2.2d",
+            "src": [
+              "b1_s1_3",
+              "b1_s1_7"
+            ]
+          }
+        ],
+        "source_order": [
+          "v2",
+          "v10",
+          "v19",
+          "v30",
+          "v3",
+          "v12",
+          "v28",
+          "v8"
+        ],
+        "status": "no_better_than_v2",
+        "uses_forbidden_store_form": false,
+        "vector_stores": 8
+      },
+      "block": 1,
+      "current_v2_reference": {
+        "allowed_ops_only": true,
+        "performance_status": "baseline",
+        "permute_instructions": 24,
+        "source_order": [
+          "v28",
+          "v8",
+          "v2",
+          "v10",
+          "v19",
+          "v30",
+          "v3",
+          "v12"
+        ],
+        "vector_stores": 8
+      },
+      "k32_base": 8
+    },
+    {
+      "best_final_only_found": {
+        "allowed_ops_only": true,
+        "estimated_extra_temp_vectors": 16,
+        "estimated_recovery_vs_v2": 0,
+        "permute_instructions": 24,
+        "sequence": [
+          {
+            "dst": "b2_s0_0",
+            "op": "trn1.8h",
+            "src": [
+              "v21",
+              "v8"
+            ]
+          },
+          {
+            "dst": "b2_s0_1",
+            "op": "trn2.8h",
+            "src": [
+              "v21",
+              "v8"
+            ]
+          },
+          {
+            "dst": "b2_s0_2",
+            "op": "trn1.8h",
+            "src": [
+              "v2",
+              "v25"
+            ]
+          },
+          {
+            "dst": "b2_s0_3",
+            "op": "trn2.8h",
+            "src": [
+              "v2",
+              "v25"
+            ]
+          },
+          {
+            "dst": "b2_s0_4",
+            "op": "trn1.8h",
+            "src": [
+              "v6",
+              "v28"
+            ]
+          },
+          {
+            "dst": "b2_s0_5",
+            "op": "trn2.8h",
+            "src": [
+              "v6",
+              "v28"
+            ]
+          },
+          {
+            "dst": "b2_s0_6",
+            "op": "trn1.8h",
+            "src": [
+              "v12",
+              "v7"
+            ]
+          },
+          {
+            "dst": "b2_s0_7",
+            "op": "trn2.8h",
+            "src": [
+              "v12",
+              "v7"
+            ]
+          },
+          {
+            "dst": "b2_s1_0",
+            "op": "trn1.4s",
+            "src": [
+              "b2_s0_0",
+              "b2_s0_2"
+            ]
+          },
+          {
+            "dst": "b2_s1_2",
+            "op": "trn2.4s",
+            "src": [
+              "b2_s0_0",
+              "b2_s0_2"
+            ]
+          },
+          {
+            "dst": "b2_s1_1",
+            "op": "trn1.4s",
+            "src": [
+              "b2_s0_1",
+              "b2_s0_3"
+            ]
+          },
+          {
+            "dst": "b2_s1_3",
+            "op": "trn2.4s",
+            "src": [
+              "b2_s0_1",
+              "b2_s0_3"
+            ]
+          },
+          {
+            "dst": "b2_s1_4",
+            "op": "trn1.4s",
+            "src": [
+              "b2_s0_4",
+              "b2_s0_6"
+            ]
+          },
+          {
+            "dst": "b2_s1_6",
+            "op": "trn2.4s",
+            "src": [
+              "b2_s0_4",
+              "b2_s0_6"
+            ]
+          },
+          {
+            "dst": "b2_s1_5",
+            "op": "trn1.4s",
+            "src": [
+              "b2_s0_5",
+              "b2_s0_7"
+            ]
+          },
+          {
+            "dst": "b2_s1_7",
+            "op": "trn2.4s",
+            "src": [
+              "b2_s0_5",
+              "b2_s0_7"
+            ]
+          },
+          {
+            "dst": "b2_out_0",
+            "op": "trn1.2d",
+            "src": [
+              "b2_s1_0",
+              "b2_s1_4"
+            ]
+          },
+          {
+            "dst": "b2_out_4",
+            "op": "trn2.2d",
+            "src": [
+              "b2_s1_0",
+              "b2_s1_4"
+            ]
+          },
+          {
+            "dst": "b2_out_1",
+            "op": "trn1.2d",
+            "src": [
+              "b2_s1_1",
+              "b2_s1_5"
+            ]
+          },
+          {
+            "dst": "b2_out_5",
+            "op": "trn2.2d",
+            "src": [
+              "b2_s1_1",
+              "b2_s1_5"
+            ]
+          },
+          {
+            "dst": "b2_out_2",
+            "op": "trn1.2d",
+            "src": [
+              "b2_s1_2",
+              "b2_s1_6"
+            ]
+          },
+          {
+            "dst": "b2_out_6",
+            "op": "trn2.2d",
+            "src": [
+              "b2_s1_2",
+              "b2_s1_6"
+            ]
+          },
+          {
+            "dst": "b2_out_3",
+            "op": "trn1.2d",
+            "src": [
+              "b2_s1_3",
+              "b2_s1_7"
+            ]
+          },
+          {
+            "dst": "b2_out_7",
+            "op": "trn2.2d",
+            "src": [
+              "b2_s1_3",
+              "b2_s1_7"
+            ]
+          }
+        ],
+        "source_order": [
+          "v21",
+          "v8",
+          "v2",
+          "v25",
+          "v6",
+          "v28",
+          "v12",
+          "v7"
+        ],
+        "status": "no_better_than_v2",
+        "uses_forbidden_store_form": false,
+        "vector_stores": 8
+      },
+      "block": 2,
+      "current_v2_reference": {
+        "allowed_ops_only": true,
+        "performance_status": "baseline",
+        "permute_instructions": 24,
+        "source_order": [
+          "v12",
+          "v7",
+          "v2",
+          "v25",
+          "v6",
+          "v28",
+          "v21",
+          "v8"
+        ],
+        "vector_stores": 8
+      },
+      "k32_base": 16
+    },
+    {
+      "best_final_only_found": {
+        "allowed_ops_only": true,
+        "estimated_extra_temp_vectors": 16,
+        "estimated_recovery_vs_v2": 0,
+        "permute_instructions": 24,
+        "sequence": [
+          {
+            "dst": "b3_s0_0",
+            "op": "trn1.8h",
+            "src": [
+              "v7",
+              "v29"
+            ]
+          },
+          {
+            "dst": "b3_s0_1",
+            "op": "trn2.8h",
+            "src": [
+              "v7",
+              "v29"
+            ]
+          },
+          {
+            "dst": "b3_s0_2",
+            "op": "trn1.8h",
+            "src": [
+              "v12",
+              "v27"
+            ]
+          },
+          {
+            "dst": "b3_s0_3",
+            "op": "trn2.8h",
+            "src": [
+              "v12",
+              "v27"
+            ]
+          },
+          {
+            "dst": "b3_s0_4",
+            "op": "trn1.8h",
+            "src": [
+              "v24",
+              "v14"
+            ]
+          },
+          {
+            "dst": "b3_s0_5",
+            "op": "trn2.8h",
+            "src": [
+              "v24",
+              "v14"
+            ]
+          },
+          {
+            "dst": "b3_s0_6",
+            "op": "trn1.8h",
+            "src": [
+              "v18",
+              "v9"
+            ]
+          },
+          {
+            "dst": "b3_s0_7",
+            "op": "trn2.8h",
+            "src": [
+              "v18",
+              "v9"
+            ]
+          },
+          {
+            "dst": "b3_s1_0",
+            "op": "trn1.4s",
+            "src": [
+              "b3_s0_0",
+              "b3_s0_2"
+            ]
+          },
+          {
+            "dst": "b3_s1_2",
+            "op": "trn2.4s",
+            "src": [
+              "b3_s0_0",
+              "b3_s0_2"
+            ]
+          },
+          {
+            "dst": "b3_s1_1",
+            "op": "trn1.4s",
+            "src": [
+              "b3_s0_1",
+              "b3_s0_3"
+            ]
+          },
+          {
+            "dst": "b3_s1_3",
+            "op": "trn2.4s",
+            "src": [
+              "b3_s0_1",
+              "b3_s0_3"
+            ]
+          },
+          {
+            "dst": "b3_s1_4",
+            "op": "trn1.4s",
+            "src": [
+              "b3_s0_4",
+              "b3_s0_6"
+            ]
+          },
+          {
+            "dst": "b3_s1_6",
+            "op": "trn2.4s",
+            "src": [
+              "b3_s0_4",
+              "b3_s0_6"
+            ]
+          },
+          {
+            "dst": "b3_s1_5",
+            "op": "trn1.4s",
+            "src": [
+              "b3_s0_5",
+              "b3_s0_7"
+            ]
+          },
+          {
+            "dst": "b3_s1_7",
+            "op": "trn2.4s",
+            "src": [
+              "b3_s0_5",
+              "b3_s0_7"
+            ]
+          },
+          {
+            "dst": "b3_out_0",
+            "op": "trn1.2d",
+            "src": [
+              "b3_s1_0",
+              "b3_s1_4"
+            ]
+          },
+          {
+            "dst": "b3_out_4",
+            "op": "trn2.2d",
+            "src": [
+              "b3_s1_0",
+              "b3_s1_4"
+            ]
+          },
+          {
+            "dst": "b3_out_1",
+            "op": "trn1.2d",
+            "src": [
+              "b3_s1_1",
+              "b3_s1_5"
+            ]
+          },
+          {
+            "dst": "b3_out_5",
+            "op": "trn2.2d",
+            "src": [
+              "b3_s1_1",
+              "b3_s1_5"
+            ]
+          },
+          {
+            "dst": "b3_out_2",
+            "op": "trn1.2d",
+            "src": [
+              "b3_s1_2",
+              "b3_s1_6"
+            ]
+          },
+          {
+            "dst": "b3_out_6",
+            "op": "trn2.2d",
+            "src": [
+              "b3_s1_2",
+              "b3_s1_6"
+            ]
+          },
+          {
+            "dst": "b3_out_3",
+            "op": "trn1.2d",
+            "src": [
+              "b3_s1_3",
+              "b3_s1_7"
+            ]
+          },
+          {
+            "dst": "b3_out_7",
+            "op": "trn2.2d",
+            "src": [
+              "b3_s1_3",
+              "b3_s1_7"
+            ]
+          }
+        ],
+        "source_order": [
+          "v7",
+          "v29",
+          "v12",
+          "v27",
+          "v24",
+          "v14",
+          "v18",
+          "v9"
+        ],
+        "status": "no_better_than_v2",
+        "uses_forbidden_store_form": false,
+        "vector_stores": 8
+      },
+      "block": 3,
+      "current_v2_reference": {
+        "allowed_ops_only": true,
+        "performance_status": "baseline",
+        "permute_instructions": 24,
+        "source_order": [
+          "v12",
+          "v27",
+          "v7",
+          "v29",
+          "v18",
+          "v9",
+          "v24",
+          "v14"
+        ],
+        "vector_stores": 8
+      },
+      "k32_base": 24
+    }
+  ],
+  "forbidden_ops": [
+    "st4",
+    "lane_store",
+    "scalar_scatter",
+    "scalar_GT_to_rowpack_conversion"
+  ],
+  "gate": "Gate 8: rowpack Forward stage345 layout search",
+  "lower_bound": {
+    "current_v2_permute_instructions_per_block": 24,
+    "model": "8x8 16-bit transpose using two-input Neon lane interleaves",
+    "permute_instruction_lower_bound_per_block": 24,
+    "reason": "Each target plane contains one 16-bit lane from each of eight source vectors. A two-input interleave can at most double source-register fan-in per vector, so three mixing stages are required.  Preserving all 64 lanes needs eight vector results per stage, giving a 24-instruction lower bound."
+  },
+  "summary": {
+    "best_final_only_sequence_length": 24,
+    "current_v2_sequence_length": 24,
+    "estimated_temp_register_pressure": "moderate/high; no better than current transpose tail",
+    "recommendation": "skip v3a unless a non-interleave identity is discovered; proceed to v3b stage345 live-out rewrite",
+    "requires_st4_lane_or_scalar": false,
+    "uses_only_allowed_ops": true
+  }
+}

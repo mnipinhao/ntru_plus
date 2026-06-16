@@ -50,6 +50,10 @@ production replacement yet:
   final live-out shape, the rowpack-ready target plane vectors, and the next
   store policy: vector stores only, no `st4`, no lane stores, no scalar
   scatter;
+- Gate 8 layout search is complete.  Under the allowed two-input Neon
+  interleave model, the best final-only sequence is still `24 permutes/block`,
+  matching current v2, so v3a has no instruction-count headroom and the next
+  useful candidate is v3b stage345 live-out rewrite;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:

@@ -759,6 +759,7 @@ audit_gt_rowpack_forward_stage345_liveout:
 	$(PYTHON) docs/gt_soa_layout_experiment/audit_forward_stage345_liveout.py
 
 test_gt_rowpack_forward_stage345_layout_search: audit_gt_rowpack_forward_stage345_liveout
+	$(PYTHON) docs/gt_soa_layout_experiment/search_forward_stage345_layout.py
 
 bench_kem_dec: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)
