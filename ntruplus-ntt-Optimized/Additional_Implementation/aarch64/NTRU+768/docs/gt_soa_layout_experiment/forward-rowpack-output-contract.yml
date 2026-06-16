@@ -251,3 +251,48 @@ forward_v3_structured_store_candidate:
     next useful v3 attempt must change stage345 register order/arithmetic so
     rowpack plane vectors are naturally live before store, not merely change
     the final store instruction form.
+
+forward_stage345_liveout_audit:
+  status: audit_only_no_candidate
+  command: "make audit_gt_rowpack_forward_stage345_liveout"
+  artifact: "docs/gt_soa_layout_experiment/audit_forward_stage345_liveout.py"
+  purpose: >
+    Freeze the Gate 7 handoff after the Gate 6 structured-store rejection.
+    The audit records the current rowpack-v2 stage345 live-out registers, the
+    v2 final transpose source order, and the rowpack-ready target plane vectors
+    that a future v3 candidate should make live before plain vector stores.
+  store_policy:
+    allowed:
+      - "str qN, [public_offset]"
+      - "st1 {vN.8h}, [public_offset]"
+    forbidden:
+      - "st4 structured stores"
+      - "lane stores"
+      - "scalar strh scatter"
+      - "scalar GT-to-rowpack conversion"
+  cost_model:
+    v2_final_permute_per_block:
+      trn: 24
+      vector_stores: 8
+    v2_final_permute_full_ntt32_row:
+      trn: 96
+      vector_stores: 32
+    gate6_structured_store_per_block:
+      mov: 8
+      address_add: 8
+      st4_lane_store: 16
+  next_candidates:
+    v3a_final_permute_only: >
+      Optional weak candidate.  Try to reduce the 24-trn-per-block final tail,
+      but keep vector stores only.  Weak pass should recover at least about
+      50 cycles/NTT versus rowpack v2; strong pass should recover at least
+      about 100 cycles/NTT.
+    v3b_true_stage345_liveout_rewrite: >
+      Preferred candidate.  Change stage345 arithmetic/register order so the
+      rowpack plane vectors are naturally live-out.  Weak pass should recover
+      at least about 100 cycles/NTT; strong pass should recover about
+      200 cycles/NTT, approaching the measured store-ready floor.
+  slothy_role: >
+    Slothy should schedule and register-allocate a selected good symbolic DAG.
+    It should not choose the transformed layout, and it should not promote
+    structured stores, lane stores, or scalar scatter as the output primitive.

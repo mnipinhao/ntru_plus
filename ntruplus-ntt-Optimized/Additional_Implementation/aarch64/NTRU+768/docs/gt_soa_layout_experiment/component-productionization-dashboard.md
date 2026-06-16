@@ -20,9 +20,10 @@ rowpack Forward NTT cost repeated three times, not by hidden glue overhead.
 Do not reopen the public rowvec ABI or row-output-only rewrite based on current
 evidence.  The rowvec direct postmerge win is too small.  The active direction
 is the existing rowpack ABI with lazy rowkernel reduction, dedicated postmerge
-assembly, and a Forward v3 stage345/register-order candidate.  Gate 5 has only
-the register-order contract and lower-bound cycle target so far; no v3 `.opt.s`
-candidate exists yet.
+assembly, and a Forward v3 stage345/register-order candidate.  Gate 6 rejects
+the structured/lane-store micro-candidate only; it does not reject the v3
+register-order direction.  Gate 7 now audits the current stage345 live-out
+shape before another ASM candidate is generated.
 
 ## Pi5 Cycle Snapshot
 
@@ -190,6 +191,53 @@ layout contract but are slower than the v2 transpose plus vector-store path.
 This closes the "replace transpose with structured/lane stores" branch.  The
 next candidate must change the stage345 register/order arithmetic itself so
 rowpack plane vectors are naturally live before store.
+
+## Gate 7 Stage345 Live-Out Audit
+
+Command:
+
+```sh
+make audit_gt_rowpack_forward_stage345_liveout
+```
+
+This is a static contract/audit gate, not a performance candidate.  It records:
+
+- the current rowpack-v2 stage345 arithmetic live-out registers for each
+  `k32` block;
+- the source order consumed by the existing v2 final transpose tail;
+- the target rowpack plane vectors needed for plain vector stores;
+- the store policy for the next candidate.
+
+Store policy for the next Forward v3 attempt:
+
+| store form | status |
+| --- | --- |
+| `str qN, [public_offset]` | allowed |
+| `st1 {vN.8h}, [public_offset]` | allowed |
+| `st4` structured stores | forbidden |
+| lane stores | forbidden |
+| scalar `strh` scatter | forbidden |
+| scalar GT-to-rowpack conversion | forbidden |
+
+The audit keeps the current cost model explicit:
+
+| path | per-block shape |
+| --- | --- |
+| rowpack v2 final tail | 24 `trn` plus 8 vector stores |
+| rowpack v2 full row | 96 `trn` plus 32 vector stores |
+| Gate 6 structured-store tail | 8 moves, 8 address adds, 16 structured lane stores |
+
+Decision:
+
+- v3a may try a final-permute-only candidate, but it must reduce the v2
+  `24 trn/block` tail while keeping vector stores only;
+- v3b is preferred: change stage345 arithmetic/register layout so the target
+  rowpack plane vectors are naturally live-out;
+- Slothy should schedule and register-allocate a chosen good DAG.  It should
+  not be used to discover the public layout or choose `st4`/lane-store forms.
+
+Gate 7 does not create a new `.S` or `.opt.s` candidate.  It is the handoff
+surface for the next real v3 candidate.
 
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
