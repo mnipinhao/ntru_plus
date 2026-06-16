@@ -316,7 +316,7 @@ Artifacts:
 
 ```text
 docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility-summary.md
-docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility.json
+docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility.yml
 ```
 
 Result:
@@ -333,6 +333,41 @@ Decision: do not author a current-boundary stage345-only v3b symbolic
 candidate.  It would only move the transpose-equivalent cost into stage345.
 The next viable scope is a wider stage12+stage345 rewrite, or an explicit
 change to the stage12 scratch/live-out contract.
+
+## Gate 10 v3c Stage12+Stage345 Layout Search
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/current_stage12_liveout.yml
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/candidate_stage12_liveout.yml
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/stage345_input_contract.yml
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/stage345_output_contract.yml
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/layout_search_summary.md
+```
+
+Result:
+
+| contract | stage12 extra | stage345 extra | final tail | total | decision |
+| --- | ---: | ---: | ---: | ---: | --- |
+| A current k32-major | 0 | 0 | 24 | 24 | baseline |
+| B partial rowpack-friendly scratch | 8 | 8 | 16 | 32 | reject |
+| C fully rowpack-friendly scratch, layout-only | 24 | 0 | 0 | 24 | no headroom |
+
+Decision: do not build a v3c candidate that only changes stage12 scratch
+layout.  Forward output overhead is caused by a layout mismatch already fixed
+at the stage12 scratch boundary: once stage12 emits k32-major vectors,
+lane-preserving stage345 arithmetic cannot naturally produce rowpack plane
+vectors.  Moving the lane-mixing network to stage12 scratch either worsens the
+total permutation cost or ties the same 24-permute/block lower bound.  The
+remaining open scope is a larger stage12 arithmetic topology rewrite or an
+earlier forward contract change, not a scratch-layout-only candidate.
 
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 

@@ -10,13 +10,47 @@ vectors without reintroducing a full 8x8 lane-mixing network.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
+from typing import Any
 
 
 OUTDIR = Path("docs/gt_soa_layout_experiment/forward_v3b_stage345")
 SUMMARY = OUTDIR / "feasibility-summary.md"
-JSON_OUT = OUTDIR / "feasibility.json"
+YML_OUT = OUTDIR / "feasibility.yml"
+
+
+def yaml_scalar(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if value is None:
+        return "null"
+    if isinstance(value, (int, float)):
+        return str(value)
+    text = str(value).replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{text}"'
+
+
+def yaml_dump(data: Any, indent: int = 0) -> str:
+    pad = " " * indent
+    if isinstance(data, dict):
+        lines: list[str] = []
+        for key, value in data.items():
+            if isinstance(value, (dict, list)):
+                lines.append(f"{pad}{key}:")
+                lines.append(yaml_dump(value, indent + 2))
+            else:
+                lines.append(f"{pad}{key}: {yaml_scalar(value)}")
+        return "\n".join(lines)
+    if isinstance(data, list):
+        lines = []
+        for item in data:
+            if isinstance(item, (dict, list)):
+                lines.append(f"{pad}-")
+                lines.append(yaml_dump(item, indent + 2))
+            else:
+                lines.append(f"{pad}- {yaml_scalar(item)}")
+        return "\n".join(lines)
+    return f"{pad}{yaml_scalar(data)}"
 
 
 def build_report() -> dict[str, object]:
@@ -99,9 +133,10 @@ def summary_markdown(report: dict[str, object]) -> str:
 def main() -> int:
     OUTDIR.mkdir(parents=True, exist_ok=True)
     report = build_report()
-    JSON_OUT.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    YML_OUT.write_text(yaml_dump(report) + "\n")
     SUMMARY.write_text(summary_markdown(report))
     print(f"wrote {SUMMARY}")
+    print(f"wrote {YML_OUT}")
     print("decision: do not author current-boundary stage345-only v3b candidate")
     return 0
 

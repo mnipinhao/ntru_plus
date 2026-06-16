@@ -25,6 +25,21 @@ Commands:
 ```sh
 make test_gt_rowpack_forward_v3b_stage345_contract
 make test_gt_rowpack_forward_v3b_symbolic_candidate
+make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
+```
+
+Gate 9 step 2 writes:
+
+```text
+docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility-summary.md
+docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility.yml
+```
+
+Gate 10 widens the search boundary to stage12+stage345 and writes YML plus
+markdown artifacts under:
+
+```text
+docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/
 ```
 
 Future commands after candidate assembly exists:

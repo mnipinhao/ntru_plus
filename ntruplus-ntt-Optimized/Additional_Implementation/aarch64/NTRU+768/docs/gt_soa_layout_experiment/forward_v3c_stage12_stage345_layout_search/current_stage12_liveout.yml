@@ -1,0 +1,228 @@
+gate: "Gate 10: current stage12 live-out contract"
+status: "baseline"
+description: "Current rowpack Forward v2 fixes the layout boundary at stage12: stage345 receives k32-major scratch vectors.  Because stage345 is lane-preserving, rowpack plane vectors are only produced by the final transpose tail."
+blocks:
+  -
+    block: 0
+    k32_range: "0..7"
+    stage12_scratch_contract: "k32-major"
+    scratch_vectors:
+      -
+        k32: 0
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 1
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 2
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 3
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 4
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 5
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 6
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 7
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+    stage345_liveout_semantic_order:
+      - "v17"
+      - "v30"
+      - "v13"
+      - "v5"
+      - "v21"
+      - "v9"
+      - "v14"
+      - "v7"
+    v2_tail_source_order:
+      - "v21"
+      - "v9"
+      - "v13"
+      - "v5"
+      - "v17"
+      - "v30"
+      - "v14"
+      - "v7"
+    source_to_target_lane_permutation:
+      - 4
+      - 5
+      - 2
+      - 3
+      - 0
+      - 1
+      - 6
+      - 7
+  -
+    block: 1
+    k32_range: "8..15"
+    stage12_scratch_contract: "k32-major"
+    scratch_vectors:
+      -
+        k32: 8
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 9
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 10
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 11
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 12
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 13
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 14
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 15
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+    stage345_liveout_semantic_order:
+      - "v2"
+      - "v10"
+      - "v19"
+      - "v30"
+      - "v3"
+      - "v12"
+      - "v28"
+      - "v8"
+    v2_tail_source_order:
+      - "v28"
+      - "v8"
+      - "v2"
+      - "v10"
+      - "v19"
+      - "v30"
+      - "v3"
+      - "v12"
+    source_to_target_lane_permutation:
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 0
+      - 1
+  -
+    block: 2
+    k32_range: "16..23"
+    stage12_scratch_contract: "k32-major"
+    scratch_vectors:
+      -
+        k32: 16
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 17
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 18
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 19
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 20
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 21
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 22
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 23
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+    stage345_liveout_semantic_order:
+      - "v21"
+      - "v8"
+      - "v2"
+      - "v25"
+      - "v6"
+      - "v28"
+      - "v12"
+      - "v7"
+    v2_tail_source_order:
+      - "v12"
+      - "v7"
+      - "v2"
+      - "v25"
+      - "v6"
+      - "v28"
+      - "v21"
+      - "v8"
+    source_to_target_lane_permutation:
+      - 6
+      - 7
+      - 2
+      - 3
+      - 4
+      - 5
+      - 0
+      - 1
+  -
+    block: 3
+    k32_range: "24..31"
+    stage12_scratch_contract: "k32-major"
+    scratch_vectors:
+      -
+        k32: 24
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 25
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 26
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 27
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 28
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 29
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 30
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+      -
+        k32: 31
+        shape: "fixed k32 with h[0..3]=branch0 lanes and h[4..7]=branch1 lanes"
+    stage345_liveout_semantic_order:
+      - "v7"
+      - "v29"
+      - "v12"
+      - "v27"
+      - "v24"
+      - "v14"
+      - "v18"
+      - "v9"
+    v2_tail_source_order:
+      - "v12"
+      - "v27"
+      - "v7"
+      - "v29"
+      - "v18"
+      - "v9"
+      - "v24"
+      - "v14"
+    source_to_target_lane_permutation:
+      - 2
+      - 3
+      - 0
+      - 1
+      - 6
+      - 7
+      - 4
+      - 5

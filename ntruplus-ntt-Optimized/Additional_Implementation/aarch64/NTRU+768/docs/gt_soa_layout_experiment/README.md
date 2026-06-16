@@ -137,7 +137,8 @@ InvNTT postmerge:
 | Rowpack Forward NTT v2 | `asm/slothy/ntt32_v2_symbolic.s`, `asm/slothy/ntt32_8way.rowpack_v2.n1.alloc.s`, `asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s` | Slothy-generated RA/opt candidate | Opt-in rowpack Forward candidate; latest rowpack candidate uses `.opt.s`. |
 | Rowpack Forward NTT v3 register-order | `asm/slothy/ntt32_v3_rowpack_stage345_symbolic.s`, `gt_test/test_gt_rowpack_forward_v3_register_order_contract.c`, `docs/gt_soa_layout_experiment/audit_forward_stage345_liveout.py` | Contract/handoff/audit only, no accepted `.opt.s` yet | Gate 5/7 target: make stage345 live-out rowpack plane vectors directly and remove most final transpose cost. |
 | Rowpack Forward NTT v3 structured-store | `asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s`, `docs/gt_soa_layout_experiment/forward_v3_candidate_gate6/` | Manual ASM candidate, rejected | Correctness passes, but structured `st4` lane stores are slower than v2 transpose plus vector stores on Pi5. |
-| Rowpack Forward NTT v3b stage345 live-out | `docs/gt_soa_layout_experiment/forward_v3b_stage345/`, `docs/gt_soa_layout_experiment/check_forward_v3b_stage345_contract.py` | Contract/DAG/checker only, no `.S` yet | Gate 9 target: rewrite stage345 arithmetic/register order before any Slothy run. |
+| Rowpack Forward NTT v3b stage345 live-out | `docs/gt_soa_layout_experiment/forward_v3b_stage345/`, `docs/gt_soa_layout_experiment/check_forward_v3b_stage345_contract.py` | Contract/DAG/checker only, no `.S` generated | Gate 9 feasibility rejects current-boundary stage345-only: current stage12 scratch is k32-major and stage345 is lane-preserving, so it still needs a 24-permute/block network. |
+| Rowpack Forward NTT v3c stage12+stage345 layout search | `docs/gt_soa_layout_experiment/forward_v3c_stage12_stage345_layout_search/`, `docs/gt_soa_layout_experiment/search_forward_v3c_stage12_stage345_layout.py` | Layout feasibility only, no `.S` generated | Gate 10 checks whether changing the stage12 scratch/live-out contract can remove the transpose instead of moving it earlier. |
 | Production InvNTT | `asm/slothy/invntt_opt.s` | Slothy-scheduled production artifact | Included by `asm/inv_my_ntt.s`; production default remains here. |
 | Production GT basemul/add | `asm/base_gt.opt.s` | Slothy-scheduled artifact | Promoted GT pointwise baseline. |
 | Rowpack InvNTT32 original rowkernel | `kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S`, `.alloc.S`, `.opt.S` | Slothy-generated symbolic/RA/opt set | Diagnostic baseline, no longer best rowpack candidate. |
@@ -175,6 +176,7 @@ make audit_gt_rowpack_forward_stage345_liveout
 make test_gt_rowpack_forward_stage345_layout_search
 make test_gt_rowpack_forward_v3b_stage345_contract
 make test_gt_rowpack_forward_v3b_symbolic_candidate
+make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
 ```
 
 Focused InvNTT/postmerge isolation:
