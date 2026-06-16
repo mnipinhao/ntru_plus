@@ -42,7 +42,7 @@ endif
 .PHONY: bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_pipeline_add_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_fused bench_gt_rowpack_pipeline_forward_v2_nativebasemul_nativepost_chunked_inplace_cycles_compare bench_gt_rowpack_invntt_nativepost_chunked_isolate_cycles bench_gt_rowpack_invntt_stage_cycles bench_gt_rowpack_invntt_rowkernel_audit bench_gt_rowpack_rowkernel_arith_breakdown bench_gt_rowpack_rowkernel_reduction_probe
 .PHONY: test_gt_rowpack_no_entry_no_end_fullpath bench_gt_rowpack_no_entry_no_end_fullpath_cycles bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles bench_gt_rowpack_no_entry_no_end_fullpath_cycles_compare
 .PHONY: test_gt_rowpack_lazy_postmerge_asm_fullpath bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
-.PHONY: bench_ntt_pipeline_gt_opt_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_vs_production_cycles_compare bench_gt_rowpack_component_cycles_dashboard
+.PHONY: bench_ntt_pipeline_stock_cycles bench_ntt_pipeline_add_stock_cycles bench_ntt_pipeline_gt_opt_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_vs_production_cycles_compare bench_gt_rowpack_component_cycles_dashboard bench_gt_rowpack_lazy_asm_vs_kpqc_final
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
@@ -652,6 +652,14 @@ bench_ntt_pipeline_add_compare: bench_ntt_pipeline_add_stock bench_ntt_pipeline_
 	./$(BUILD_DIR)/bench_ntt_pipeline_add_stock
 	./$(BUILD_DIR)/bench_ntt_pipeline_add_gt
 
+bench_ntt_pipeline_stock_cycles: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(NTT_PIPELINE_CYCLE_CFLAGS) -DBENCH_LABEL=\"kpqc_final_ntt_mul_pipeline_cycles\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_stock_cycles gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+
+bench_ntt_pipeline_add_stock_cycles: $(HEADERS) gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(NTT_PIPELINE_CYCLE_CFLAGS) -DBENCH_OP_ADD -DBENCH_LABEL=\"kpqc_final_ntt_basemul_add_pipeline_cycles\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_add_stock_cycles gt_test/bench_ntt_pipeline.c asm/ntt.s asm/base.s
+
 bench_ntt_pipeline_gt_opt_cycles: $(HEADERS) ntt.h ntt.c gt_test/bench_ntt_pipeline.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) $(POLYNTT_ASM_FLAGS) $(NTT_PIPELINE_CYCLE_CFLAGS) -DBENCH_LABEL=\"gt_baseopt_ntt_mul_pipeline_cycles\" -I. -o $(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles gt_test/bench_ntt_pipeline.c ntt.c $(POLYNTT_ASM) $(POLYINVNTT_ASM) $(GT_BASE_OPT_ASM)
@@ -669,6 +677,15 @@ bench_gt_rowpack_vs_production_cycles_compare: bench_ntt_pipeline_gt_opt_cycles 
 	./$(BUILD_DIR)/bench_gt_rowpack_pipeline_add_nativebasemul_cycles_fused
 
 bench_gt_rowpack_component_cycles_dashboard: bench_gt_rowpack_vs_production_cycles_compare
+
+bench_gt_rowpack_lazy_asm_vs_kpqc_final: bench_ntt_pipeline_stock_cycles bench_ntt_pipeline_gt_opt_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_ntt_pipeline_add_stock_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles
+	$(PYTHON) docs/gt_soa_layout_experiment/compare_lazy_rowpack_vs_kpqc.py \
+		--kpqc-product ./$(BUILD_DIR)/bench_ntt_pipeline_stock_cycles \
+		--gt-product ./$(BUILD_DIR)/bench_ntt_pipeline_gt_opt_cycles \
+		--rowpack-product ./$(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_cycles \
+		--kpqc-add ./$(BUILD_DIR)/bench_ntt_pipeline_add_stock_cycles \
+		--gt-add ./$(BUILD_DIR)/bench_ntt_pipeline_add_gt_opt_cycles \
+		--rowpack-add ./$(BUILD_DIR)/bench_gt_rowpack_lazy_postmerge_asm_add_cycles
 
 bench_kem_dec: $(HEADERS) randombytes.h gt_test/bench_kem_dec.c randombytes.c kem.c symmetric.c $(KEM_BASE_SOURCES) asm/add.s $(KEM_CREPMOD3_ASM) asm/pack.s asm/cbd.s CE/fips202.c CE/f1600.S $(KEM_NTT_ASM) $(KEM_INVNTT_ASM)
 	@mkdir -p $(BUILD_DIR)

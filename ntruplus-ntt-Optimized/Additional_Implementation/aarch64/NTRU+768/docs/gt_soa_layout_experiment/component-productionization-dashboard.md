@@ -799,6 +799,45 @@ Interpretation:
   interface pressure, or full-chain hardening around Forward NTT and add-path
   pipeline overhead before any production promotion discussion.
 
+## Gate 1: KPQC Final / Production GT / Lazy ASM Rowpack
+
+Purpose:
+
+- compare lazy ASM rowpack against the external KPQC final baseline and the
+  current promoted production GT path in the same cycle-counter harness;
+- decide whether rowpack has an external performance story even before it
+  beats production GT;
+- keep KEM out of scope until a rowpack KEM path is wired.
+
+Command:
+
+```sh
+make bench_gt_rowpack_lazy_asm_vs_kpqc_final
+```
+
+Latest Pi5 cycle table:
+
+| path | KPQC final | production GT | lazy ASM rowpack | rowpack vs KPQC | rowpack vs GT |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ntt | 3458.781 | 2700.500 | 3023.422 | -435.359 | +322.922 |
+| basemul | 2642.047 | 2812.172 | 2393.516 | -248.531 | -418.656 |
+| basemul_add | 2570.281 | 2907.250 | 2570.250 | -0.031 | -337.000 |
+| product pipeline | 13473.203 | 12254.750 | 12363.188 | -1110.015 | +108.438 |
+| product-add pipeline | 16843.469 | 14996.453 | 15556.625 | -1286.844 | +560.172 |
+| kem_dec | n/a | n/a | n/a | n/a | n/a |
+
+Interpretation:
+
+- lazy ASM rowpack has a clear external baseline story: product pipeline is
+  about 1.11k cycles faster than KPQC final while only about 108 cycles behind
+  production GT on this run;
+- product-add pipeline is also about 1.29k cycles faster than KPQC final, but
+  still about 560 cycles behind production GT;
+- the remaining promotion blocker is GT-internal, especially add-path/full-chain
+  overhead.  It is no longer an argument that rowpack lacks external value.
+- KEM is not wired for rowpack in this gate, so no KEM conclusion should be
+  drawn from this table.
+
 ## Interpretation
 
 The `182k` and `260k` rowpack full-pipeline medians should be read as oracle

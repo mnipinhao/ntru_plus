@@ -119,6 +119,7 @@ Pi5 cycle comparison:
 
 ```sh
 make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
+make bench_gt_rowpack_lazy_asm_vs_kpqc_final
 ```
 
 Focused InvNTT/postmerge isolation:
