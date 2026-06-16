@@ -57,6 +57,11 @@ production replacement yet:
 - Gate 9 has started v3b with a kernel contract, instruction DAG, and static
   forbidden-store checker.  It does not generate a `.S` or `.opt.s` candidate
   yet;
+- Gate 9 step 2 blocks the current-boundary stage345-only candidate.  With
+  stage12 still producing k32-major vectors, stage345 arithmetic is
+  lane-preserving and rowpack plane live-out still needs a transpose-equivalent
+  `24 permutes/block` network.  The next viable scope must widen to
+  stage12+stage345 or change the stage12 scratch/live-out contract;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
@@ -169,6 +174,7 @@ make bench_gt_rowpack_lazy_asm_v3_forward_fullchain_compare
 make audit_gt_rowpack_forward_stage345_liveout
 make test_gt_rowpack_forward_stage345_layout_search
 make test_gt_rowpack_forward_v3b_stage345_contract
+make test_gt_rowpack_forward_v3b_symbolic_candidate
 ```
 
 Focused InvNTT/postmerge isolation:

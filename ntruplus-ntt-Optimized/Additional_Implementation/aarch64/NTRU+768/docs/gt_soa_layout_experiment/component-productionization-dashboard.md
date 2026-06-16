@@ -304,6 +304,36 @@ Do not ask Slothy to schedule the rejected structured-store DAG, and do not
 benchmark until the v3b candidate exists and passes the forbidden-store static
 checker.
 
+## Gate 9 Step 2 Stage345-Only Feasibility
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_v3b_symbolic_candidate
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility-summary.md
+docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility.json
+```
+
+Result:
+
+| item | result |
+| --- | --- |
+| current stage12 boundary | k32-major vectors |
+| stage345 arithmetic | lane-preserving |
+| rowpack plane live-out need | one lane from each of 8 k32-major vectors |
+| required lane-mixing lower bound | 24 permutes/block |
+| matches Gate 8 final-only lower bound | yes |
+
+Decision: do not author a current-boundary stage345-only v3b symbolic
+candidate.  It would only move the transpose-equivalent cost into stage345.
+The next viable scope is a wider stage12+stage345 rewrite, or an explicit
+change to the stage12 scratch/live-out contract.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

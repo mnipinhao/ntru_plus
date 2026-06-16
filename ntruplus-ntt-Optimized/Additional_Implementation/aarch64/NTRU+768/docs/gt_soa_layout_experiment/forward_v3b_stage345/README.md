@@ -1,6 +1,6 @@
 # Forward v3b Stage345 Live-Out Rewrite
 
-Status: `contract_scaffold_no_candidate`
+Status: `blocked_current_stage12_boundary`
 
 Gate 8 closed the final-only v3a path: the current rowpack-v2 tail already
 matches the 24-permute/block lower bound for an 8x8 16-bit transpose under the
@@ -10,13 +10,21 @@ Gate 9 starts v3b.  The purpose is to rewrite stage3/4/5 arithmetic and
 register order so rowpack plane vectors are naturally live-out, then store them
 with plain vector stores.
 
+Gate 9 step 2 shows that this is not possible under the current stage12 scratch
+boundary alone.  The existing stage12 output is k32-major, and the stage345
+arithmetic instructions preserve lane indices.  A rowpack plane live-out still
+requires a transpose-equivalent 24-permute/block lane-mixing network.
+
 This directory intentionally does not contain a `.S` or `.opt.s` candidate.
-Candidate assembly is gated on this contract and instruction DAG.
+Do not author a current-boundary stage345-only candidate unless the contract is
+changed.  The next viable scope is stage12+stage345 or a changed stage12
+scratch/live-out contract.
 
 Commands:
 
 ```sh
 make test_gt_rowpack_forward_v3b_stage345_contract
+make test_gt_rowpack_forward_v3b_symbolic_candidate
 ```
 
 Future commands after candidate assembly exists:

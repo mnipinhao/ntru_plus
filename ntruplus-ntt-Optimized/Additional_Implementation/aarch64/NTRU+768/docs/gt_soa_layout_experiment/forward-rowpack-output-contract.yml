@@ -368,3 +368,24 @@ forward_v3b_stage345_contract:
     step is symbolic stage345 arithmetic/layout authoring that produces rowpack
     plane vectors as natural live-outs.  Slothy should only schedule that chosen
     DAG after the symbolic candidate exists and passes static checks.
+
+forward_v3b_stage345_feasibility:
+  status: blocked_current_stage12_boundary
+  command: "make test_gt_rowpack_forward_v3b_symbolic_candidate"
+  artifacts:
+    - "docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility-summary.md"
+    - "docs/gt_soa_layout_experiment/forward_v3b_stage345/feasibility.json"
+  boundary:
+    input_shape: "k32-major vectors from current stage12 scratch"
+    desired_output_shape: "rowpack plane vectors"
+  result:
+    stage345_arithmetic_lane_preserving: true
+    required_lane_mixing_lower_bound_permutes_per_block: 24
+    matches_gate8_final_only_lower_bound: true
+  conclusion: >
+    Do not author a current-boundary stage345-only v3b symbolic candidate.
+    Starting from the existing k32-major stage12 scratch, stage345 arithmetic
+    preserves lane indices.  Rowpack plane live-out still needs a
+    transpose-equivalent 24-permute/block lane-mixing network, so this would
+    move the Gate 8 cost rather than remove it.  The next viable scope must
+    widen to stage12+stage345 or change the stage12 scratch/live-out contract.
