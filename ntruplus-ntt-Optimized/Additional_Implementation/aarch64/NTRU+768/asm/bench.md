@@ -4,22 +4,15 @@
 
 ### Promotion status
 
-Step 2 is applied: `asm/base_gt.opt.s` now contains the N1 schedule from
-`asm/base_gt.n1.opt.s`.  The `.n1` file is kept as a named benchmark alias for
-older scripts and log provenance.
+Step 2 is applied: `asm/base_gt.opt.s` now contains the promoted N1 schedule.
+The older named benchmark alias has been removed; use `asm/base_gt.opt.s` for
+both current builds and reruns.
 
-Step 5 is applied from the existing Pi 5 matrix: `asm/inv_my_ntt.s` and
-`asm/inv_my_ntt_benchstages.s` now select
-`INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH`.  The previous direct-stage123
-branchfold path is preserved as:
-
-- `asm/inv_my_ntt_directstage123_branchfold.s`
-- `asm/inv_my_ntt_directstage123_branchfold_benchstages.s`
-
-These wrappers are for regression and PMU attribution, not promotion.
+Step 5 is applied from the existing Pi 5 matrix: `asm/inv_my_ntt.s` now selects
+`INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH`.  The older regression-only
+wrappers have been removed from the source tree.
 `scripts/run_pi5_gt_post_branchfold_matrix.sh` now treats the no-override
-`gt_opt` case as `gt_promoted_default` and uses the legacy wrapper for the
-pre-promotion direct-stage123 baseline.
+`gt_opt` case as `gt_promoted_default`.
 
 Step 6 is encoded as a reproducible Pi 5 PMU runner:
 
@@ -32,9 +25,9 @@ It writes `logs/pi5-gt-pmu-*/summary_pmu.csv` plus per-case `perf stat` logs
 for these comparisons:
 
 - `gt_promoted_default`
-- `gt_legacy_directstage123_branchfold`
-- `gt_post_branchfold_constgrp3`
-- `gt_post_branchfold_consthalf`
+- historical direct-stage123 baseline
+- post-branchfold constant-group prototype
+- post-branchfold half-constant prototype
 
 The default event groups are:
 
@@ -226,7 +219,7 @@ Interpretation:
 
 Completed in this workspace:
 
-- `asm/base_gt.opt.s` is byte-for-byte equal to `asm/base_gt.n1.opt.s`.
+- `asm/base_gt.opt.s` contains the promoted N1 schedule.
 - `bash -n scripts/run_pi5_gt_pmu_attribution.sh` passes.
 - `bash -n scripts/run_pi5_gt_pipeline_pmu_attribution.sh` passes.
 - PMU runner dry-run passes with
@@ -255,7 +248,7 @@ Observed on Pi:
 Blocked locally:
 
 - `make test_gt_base_opt` does not assemble on macOS after the N1 promotion
-  because `base_gt.n1.opt.s` uses Linux/GNU AArch64 relocations:
+  because `base_gt.opt.s` uses Linux/GNU AArch64 relocations:
   `adrp lambda, gt_rowbitrev_lambda` plus
   `add lambda, lambda, :lo12:gt_rowbitrev_lambda`.  This needs final build and
   correctness confirmation on the Pi/Linux target where the benchmark was

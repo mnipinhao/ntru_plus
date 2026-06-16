@@ -9,10 +9,6 @@
  *     Exact representative checks pass for forward-produced GT inputs, and
  *     the current Pi 5 median is about 4039 cycles in the base-N1 combined
  *     matrix, with the best observed pipeline/KEM medians.
- *
- * The previous direct-stage123 branchfold wrapper is kept as
- * asm/inv_my_ntt_directstage123_branchfold.s for regression and PMU
- * attribution only.
  */
 .equ INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
