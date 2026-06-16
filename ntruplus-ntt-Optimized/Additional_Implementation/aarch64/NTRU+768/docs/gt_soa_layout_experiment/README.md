@@ -38,6 +38,11 @@ production replacement yet:
   scatter/transpose: direct scatter-only probe is about `319` cycles, while
   the rowpack compute-only estimate is within about `2` cycles of production
   GT Forward;
+- Forward output store lower bound is about `97-109` cycles, leaving roughly
+  `210-223` cycles/NTT recoverable if a register-order candidate can emit
+  rowpack plane vectors directly;
+- the lane-store scatter candidate is rejected: it is about `1.67k` cycles
+  slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
   the scalar conversion probe is about `3363` cycles;
 - production GT path is still the promoted default.
@@ -134,6 +139,7 @@ make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
 make bench_gt_rowpack_lazy_asm_vs_kpqc_final
 make bench_gt_rowpack_lazy_asm_fullchain_stage_compare
 make bench_gt_rowpack_forward_v2_overhead_breakdown
+make bench_gt_rowpack_forward_scatter_lower_bound
 ```
 
 Focused InvNTT/postmerge isolation:

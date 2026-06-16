@@ -152,3 +152,52 @@ pi5_forward_v2_overhead_evidence:
     than current rowpack v2.  The next candidate should target rowpack Forward
     output scatter/register order, not InvNTT fusion, add-path glue, or a
     scalar conversion bridge.
+
+pi5_forward_scatter_lower_bound_evidence:
+  command: "make bench_gt_rowpack_forward_scatter_lower_bound"
+  direct_medians_cycles:
+    production_gt_forward_ntt: 2696.594
+    current_rowpack_forward_v2: 3015.828
+    rowpack_scatter_transpose_only: 319.328
+    rowpack_lane_store_candidate: 1986.516
+    rowpack_store_ready_load_store: 109.359
+    rowpack_zero_store_lower_bound: 96.828
+    rowpack_transpose_only_no_store: 266.703
+    gt_to_rowpack_scalar_conversion: 3471.812
+  derived_medians_cycles:
+    rowpack_overhead_per_ntt: 319.234
+    rowpack_compute_only_estimate: 2696.500
+    rowpack_compute_only_estimate_vs_gt: -0.094
+    scatter_minus_zero_store_lower_bound: 222.500
+    scatter_minus_store_ready_load_store: 209.969
+    lane_store_candidate_vs_current_scatter: 1667.188
+    production_gt_plus_scalar_conversion: 6168.406
+    production_gt_plus_scalar_conversion_vs_rowpack_v2: 3152.578
+  probe_contracts:
+    rowpack_store_ready_load_store: >
+      Loads rowpack-ready plane vectors from memory and stores them to the
+      rowpack output addresses.  This excludes the 8x8 transpose but includes
+      source-vector loads, rowpack stores, and address generation.
+    rowpack_zero_store_lower_bound: >
+      Stores fixed vectors to the same rowpack output addresses without
+      source-vector loads.  This is the lower bound for store/address traffic
+      in this C/Neon probe.
+    rowpack_transpose_only_no_store: >
+      Loads the current row-vector shape and runs the same 8x8 halfword
+      transpose, accumulating into a small sink instead of writing rowpack
+      output planes.
+    rowpack_lane_store_candidate: >
+      Loads current row-vector outputs and writes rowpack planes directly with
+      Neon lane stores, avoiding the 8x8 transpose but replacing vector stores
+      with many scalar lane stores.
+  conclusion: >
+    The current rowpack Forward output cost is dominated by the permutation
+    network, not by stores alone.  Store/address lower bounds are about
+    97-109 cycles per Forward NTT, while current scatter/transpose is about
+    319 cycles and transpose-only/no-store costs about 267 cycles.  This leaves
+    roughly 210-223 cycles per NTT as a plausible recoverable region if a
+    register-order candidate can produce rowpack plane vectors directly.  The
+    lane-store store-order candidate is rejected because it is about 1.67k
+    cycles slower than current scatter/transpose.  The next candidate should
+    change stage345/register layout rather than replacing transpose with lane
+    stores.

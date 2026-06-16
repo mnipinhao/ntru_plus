@@ -45,9 +45,12 @@ typedef void (*bench_fn)(uint64_t calls);
 
 static int16_t g_stage_rows[GT_ROWS][GT_ROW_N][GT_VEC_LANES]
     __attribute__((aligned(16)));
+static int16_t g_store_planes[GT_ROWS][GT_ROW_N / 8][GT_VEC_LANES][GT_VEC_LANES]
+    __attribute__((aligned(16)));
 static int16_t g_rowpack[NTRUPLUS_N] __attribute__((aligned(16)));
 static int16_t g_rowpack_ref[NTRUPLUS_N] __attribute__((aligned(16)));
 static int16_t g_block[NTRUPLUS_N] __attribute__((aligned(16)));
+static int16_t g_transpose_sink[GT_VEC_LANES] __attribute__((aligned(16)));
 static volatile uint64_t g_sink;
 
 #if defined(ROWPACK_USE_PERF_CYCLES) || defined(BENCH_USE_PERF_CYCLES)
@@ -226,6 +229,17 @@ static void fill_inputs(void)
 				g_stage_rows[row][k32][lane] = (int16_t)v;
 			}
 		}
+		for (int block = 0; block < GT_ROW_N / 8; block++)
+		{
+			for (int plane = 0; plane < GT_VEC_LANES; plane++)
+			{
+				for (int k = 0; k < 8; k++)
+				{
+					g_store_planes[row][block][plane][k] =
+					    g_stage_rows[row][8 * block + k][plane];
+				}
+			}
+		}
 	}
 
 	for (int i = 0; i < NTRUPLUS_N; i++)
@@ -233,6 +247,10 @@ static void fill_inputs(void)
 		g_block[i] = (int16_t)(i - 384);
 		g_rowpack[i] = 0;
 		g_rowpack_ref[i] = 0;
+	}
+	for (int i = 0; i < GT_VEC_LANES; i++)
+	{
+		g_transpose_sink[i] = 0;
 	}
 }
 
@@ -243,6 +261,10 @@ static void consume_outputs(void)
 	for (int i = 0; i < NTRUPLUS_N; i += 31)
 	{
 		acc = acc * 1315423911u + (uint16_t)g_rowpack[i];
+	}
+	for (int i = 0; i < GT_VEC_LANES; i++)
+	{
+		acc = acc * 1315423911u + (uint16_t)g_transpose_sink[i];
 	}
 	g_sink = acc;
 }
@@ -368,12 +390,198 @@ __attribute__((noinline)) static void rowpack_scatter_all_neon(
 	}
 }
 
+#define STORE_Q_LANES(Q, I)                                                    \
+	do                                                                     \
+	{                                                                      \
+		vst1q_lane_s16(&b0_l0[(I)], (Q), 0);                            \
+		vst1q_lane_s16(&b0_l1[(I)], (Q), 1);                            \
+		vst1q_lane_s16(&b0_l2[(I)], (Q), 2);                            \
+		vst1q_lane_s16(&b0_l3[(I)], (Q), 3);                            \
+		vst1q_lane_s16(&b1_l0[(I)], (Q), 4);                            \
+		vst1q_lane_s16(&b1_l1[(I)], (Q), 5);                            \
+		vst1q_lane_s16(&b1_l2[(I)], (Q), 6);                            \
+		vst1q_lane_s16(&b1_l3[(I)], (Q), 7);                            \
+	} while (0)
+
+__attribute__((noinline)) static void rowpack_lane_store_block_neon(
+	int16_t dst[NTRUPLUS_N], int16_t row_base[GT_ROW_N][GT_VEC_LANES],
+	int row, int block)
+{
+	const int k = 8 * block;
+	int16_t *b0_l0 = &dst[rowpack_index(0, row, 0, k)];
+	int16_t *b0_l1 = &dst[rowpack_index(0, row, 1, k)];
+	int16_t *b0_l2 = &dst[rowpack_index(0, row, 2, k)];
+	int16_t *b0_l3 = &dst[rowpack_index(0, row, 3, k)];
+	int16_t *b1_l0 = &dst[rowpack_index(1, row, 0, k)];
+	int16_t *b1_l1 = &dst[rowpack_index(1, row, 1, k)];
+	int16_t *b1_l2 = &dst[rowpack_index(1, row, 2, k)];
+	int16_t *b1_l3 = &dst[rowpack_index(1, row, 3, k)];
+
+	const int16x8_t q0 = vld1q_s16(row_base[k + 0]);
+	const int16x8_t q1 = vld1q_s16(row_base[k + 1]);
+	const int16x8_t q2 = vld1q_s16(row_base[k + 2]);
+	const int16x8_t q3 = vld1q_s16(row_base[k + 3]);
+	const int16x8_t q4 = vld1q_s16(row_base[k + 4]);
+	const int16x8_t q5 = vld1q_s16(row_base[k + 5]);
+	const int16x8_t q6 = vld1q_s16(row_base[k + 6]);
+	const int16x8_t q7 = vld1q_s16(row_base[k + 7]);
+
+	STORE_Q_LANES(q0, 0);
+	STORE_Q_LANES(q1, 1);
+	STORE_Q_LANES(q2, 2);
+	STORE_Q_LANES(q3, 3);
+	STORE_Q_LANES(q4, 4);
+	STORE_Q_LANES(q5, 5);
+	STORE_Q_LANES(q6, 6);
+	STORE_Q_LANES(q7, 7);
+}
+
+#undef STORE_Q_LANES
+
+__attribute__((noinline)) static void rowpack_lane_store_all_neon(
+	int16_t dst[NTRUPLUS_N],
+	int16_t rows[GT_ROWS][GT_ROW_N][GT_VEC_LANES])
+{
+	for (int row = 0; row < GT_ROWS; row++)
+	{
+		for (int block = 0; block < GT_ROW_N / 8; block++)
+		{
+			rowpack_lane_store_block_neon(dst, rows[row], row, block);
+		}
+	}
+}
+
+__attribute__((noinline)) static void rowpack_store_ready_all_neon(
+	int16_t dst[NTRUPLUS_N],
+	int16_t planes[GT_ROWS][GT_ROW_N / 8][GT_VEC_LANES][GT_VEC_LANES])
+{
+	for (int row = 0; row < GT_ROWS; row++)
+	{
+		for (int block = 0; block < GT_ROW_N / 8; block++)
+		{
+			const int k = 8 * block;
+
+			for (int lane = 0; lane < GT_QUARTIC_LANES; lane++)
+			{
+				vst1q_s16(&dst[rowpack_index(0, row, lane, k)],
+				          vld1q_s16(planes[row][block][lane]));
+				vst1q_s16(&dst[rowpack_index(1, row, lane, k)],
+				          vld1q_s16(planes[row][block]
+				                          [GT_QUARTIC_LANES + lane]));
+			}
+		}
+	}
+}
+
+__attribute__((noinline)) static void rowpack_zero_store_all_neon(
+	int16_t dst[NTRUPLUS_N])
+{
+	const int16x8_t z0 = vdupq_n_s16(0);
+	const int16x8_t z1 = vdupq_n_s16(1);
+	const int16x8_t z2 = vdupq_n_s16(2);
+	const int16x8_t z3 = vdupq_n_s16(3);
+	const int16x8_t z4 = vdupq_n_s16(4);
+	const int16x8_t z5 = vdupq_n_s16(5);
+	const int16x8_t z6 = vdupq_n_s16(6);
+	const int16x8_t z7 = vdupq_n_s16(7);
+
+	for (int row = 0; row < GT_ROWS; row++)
+	{
+		for (int block = 0; block < GT_ROW_N / 8; block++)
+		{
+			const int k = 8 * block;
+
+			vst1q_s16(&dst[rowpack_index(0, row, 0, k)], z0);
+			vst1q_s16(&dst[rowpack_index(0, row, 1, k)], z1);
+			vst1q_s16(&dst[rowpack_index(0, row, 2, k)], z2);
+			vst1q_s16(&dst[rowpack_index(0, row, 3, k)], z3);
+			vst1q_s16(&dst[rowpack_index(1, row, 0, k)], z4);
+			vst1q_s16(&dst[rowpack_index(1, row, 1, k)], z5);
+			vst1q_s16(&dst[rowpack_index(1, row, 2, k)], z6);
+			vst1q_s16(&dst[rowpack_index(1, row, 3, k)], z7);
+		}
+	}
+}
+
+__attribute__((noinline)) static void rowpack_transpose_all_no_store(
+	int16_t rows[GT_ROWS][GT_ROW_N][GT_VEC_LANES])
+{
+	int16x8_t acc = vdupq_n_s16(0);
+
+	for (int row = 0; row < GT_ROWS; row++)
+	{
+		for (int block = 0; block < GT_ROW_N / 8; block++)
+		{
+			int16x8_t out[GT_VEC_LANES];
+			const int k = 8 * block;
+
+			transpose8x8_s16(vld1q_s16(rows[row][k + 0]),
+			                 vld1q_s16(rows[row][k + 1]),
+			                 vld1q_s16(rows[row][k + 2]),
+			                 vld1q_s16(rows[row][k + 3]),
+			                 vld1q_s16(rows[row][k + 4]),
+			                 vld1q_s16(rows[row][k + 5]),
+			                 vld1q_s16(rows[row][k + 6]),
+			                 vld1q_s16(rows[row][k + 7]),
+			                 out);
+			for (int lane = 0; lane < GT_VEC_LANES; lane++)
+			{
+				acc = veorq_s16(acc, out[lane]);
+			}
+		}
+	}
+
+	vst1q_s16(g_transpose_sink, acc);
+}
+
 __attribute__((noinline)) static void target_rowpack_scatter_only(uint64_t calls)
 {
 	for (uint64_t i = 0; i < calls; i++)
 	{
 		__asm__ volatile("" ::: "memory");
 		rowpack_scatter_all_neon(g_rowpack, g_stage_rows);
+		__asm__ volatile("" ::: "memory");
+	}
+}
+
+__attribute__((noinline)) static void target_rowpack_lane_store_candidate(
+	uint64_t calls)
+{
+	for (uint64_t i = 0; i < calls; i++)
+	{
+		__asm__ volatile("" ::: "memory");
+		rowpack_lane_store_all_neon(g_rowpack, g_stage_rows);
+		__asm__ volatile("" ::: "memory");
+	}
+}
+
+__attribute__((noinline)) static void target_rowpack_store_ready(uint64_t calls)
+{
+	for (uint64_t i = 0; i < calls; i++)
+	{
+		__asm__ volatile("" ::: "memory");
+		rowpack_store_ready_all_neon(g_rowpack, g_store_planes);
+		__asm__ volatile("" ::: "memory");
+	}
+}
+
+__attribute__((noinline)) static void target_rowpack_zero_store(uint64_t calls)
+{
+	for (uint64_t i = 0; i < calls; i++)
+	{
+		__asm__ volatile("" ::: "memory");
+		rowpack_zero_store_all_neon(g_rowpack);
+		__asm__ volatile("" ::: "memory");
+	}
+}
+
+__attribute__((noinline)) static void target_rowpack_transpose_no_store(
+	uint64_t calls)
+{
+	for (uint64_t i = 0; i < calls; i++)
+	{
+		__asm__ volatile("" ::: "memory");
+		rowpack_transpose_all_no_store(g_stage_rows);
 		__asm__ volatile("" ::: "memory");
 	}
 }
@@ -395,6 +603,22 @@ static int check_helpers(void)
 	if (memcmp(g_rowpack, g_rowpack_ref, sizeof(g_rowpack)) != 0)
 	{
 		fprintf(stderr, "rowpack scatter Neon probe mismatch\n");
+		return 0;
+	}
+
+	memset(g_rowpack, 0, sizeof(g_rowpack));
+	rowpack_lane_store_all_neon(g_rowpack, g_stage_rows);
+	if (memcmp(g_rowpack, g_rowpack_ref, sizeof(g_rowpack)) != 0)
+	{
+		fprintf(stderr, "rowpack lane-store candidate mismatch\n");
+		return 0;
+	}
+
+	memset(g_rowpack, 0, sizeof(g_rowpack));
+	rowpack_store_ready_all_neon(g_rowpack, g_store_planes);
+	if (memcmp(g_rowpack, g_rowpack_ref, sizeof(g_rowpack)) != 0)
+	{
+		fprintf(stderr, "rowpack store-ready probe mismatch\n");
 		return 0;
 	}
 
@@ -504,6 +728,12 @@ int main(void)
 	       (unsigned long long)read_counter_freq());
 
 	run_measure("rowpack_forward_scatter_only", target_rowpack_scatter_only);
+	run_measure("rowpack_forward_lane_store_candidate",
+	            target_rowpack_lane_store_candidate);
+	run_measure("rowpack_forward_store_ready", target_rowpack_store_ready);
+	run_measure("rowpack_forward_zero_store", target_rowpack_zero_store);
+	run_measure("rowpack_forward_transpose_no_store",
+	            target_rowpack_transpose_no_store);
 	run_measure("gt_to_rowpack_scalar_convert", target_gt_to_rowpack_scalar);
 
 	close_cycle_counter();

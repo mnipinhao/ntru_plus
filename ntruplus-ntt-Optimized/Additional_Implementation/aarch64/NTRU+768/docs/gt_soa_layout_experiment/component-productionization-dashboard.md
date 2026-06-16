@@ -941,6 +941,50 @@ Interpretation:
   hand-ASM/Slothy scatter variant.  Do not spend the next step on InvNTT
   fusion or add-path glue.
 
+## Gate 4: Rowpack Forward Scatter Lower Bound
+
+Purpose:
+
+- split current rowpack Forward output scatter/transpose into store lower bound
+  versus permutation cost;
+- test the simple store-order candidate that replaces the 8x8 transpose with
+  lane stores;
+- decide whether the next Forward candidate should target store scheduling or
+  final register order.
+
+Command:
+
+```sh
+make bench_gt_rowpack_forward_scatter_lower_bound
+```
+
+Latest Pi5 table:
+
+| path / component | median cycles | delta / interpretation |
+| --- | ---: | --- |
+| production GT Forward NTT | 2696.594 | baseline |
+| current rowpack Forward v2 | 3015.828 | +319.234 vs production GT |
+| rowpack scatter/transpose-only | 319.328 | direct Neon probe; excludes NTT arithmetic/reduction |
+| rowpack lane-store candidate | 1986.516 | +1667.188 vs current scatter/transpose |
+| rowpack store-ready load+store | 109.359 | input already in rowpack plane order |
+| rowpack zero-store lower bound | 96.828 | no source-vector loads |
+| rowpack transpose-only no-store | 266.703 | no rowpack output stores |
+| rowpack compute-only estimate | 2696.500 | -0.094 vs production GT; rowpack_full - scatter_only |
+| GT-to-rowpack scalar conversion | 3471.812 | direct scalar hybrid conversion probe |
+| production GT + scalar conversion | 6168.406 | +3152.578 vs current rowpack v2 |
+
+Interpretation:
+
+- the store/address lower bound is about 97-109 cycles per Forward NTT;
+- current scatter/transpose is about 319 cycles, so the recoverable region is
+  roughly 210-223 cycles per NTT, passing the strong continue gate;
+- transpose-only no-store is about 267 cycles, confirming the permutation
+  network dominates the output cost;
+- lane-store scatter is rejected: avoiding transpose with scalar lane stores is
+  about 1.67k cycles slower than the current transpose-plus-vector-store path;
+- the next candidate should be a stage345/register-order design that emits
+  rowpack plane vectors naturally, not a lane-store store-order rewrite.
+
 ## Interpretation
 
 The `182k` and `260k` rowpack full-pipeline medians should be read as oracle
@@ -989,6 +1033,9 @@ which pieces are not productionized:
   at production GT parity; the overhead is the output scatter/transpose.  A
   scalar production-GT-output to rowpack conversion is much too expensive to be
   a useful hybrid path.
+- Forward scatter lower-bound accounting shows the output path has a plausible
+  210-223 cycles/NTT recoverable region if a register-order candidate can emit
+  rowpack plane vectors directly.  A lane-store rewrite is not viable.
 - Rowvec is correctness-clean as a layout contract, and direct rowvec postmerge
   is slightly faster than rowpack chunked postmerge, but the measured postmerge
   win is only about 0.21k cycles.  That is not enough evidence to begin a
@@ -1038,6 +1085,8 @@ real blocker:
    `make bench_gt_rowpack_lazy_asm_fullchain_stage_compare`.
    Forward overhead accounting:
    `make bench_gt_rowpack_forward_v2_overhead_breakdown`.
+   Forward scatter lower bound:
+   `make bench_gt_rowpack_forward_scatter_lower_bound`.
    Legacy C-post diagnostics are still available through
    `make bench_gt_rowpack_invntt_isolate_cycles`, but they are no longer the
    promotion baseline.

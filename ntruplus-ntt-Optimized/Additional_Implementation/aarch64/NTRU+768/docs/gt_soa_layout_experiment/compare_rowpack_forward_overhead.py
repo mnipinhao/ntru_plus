@@ -89,6 +89,22 @@ def main() -> int:
     scatter = require(
         probes, "rowpack_forward_scatter_only", "rowpack_forward_overhead_probes"
     )
+    lane_store = require(
+        probes,
+        "rowpack_forward_lane_store_candidate",
+        "rowpack_forward_overhead_probes",
+    )
+    store_ready = require(
+        probes, "rowpack_forward_store_ready", "rowpack_forward_overhead_probes"
+    )
+    zero_store = require(
+        probes, "rowpack_forward_zero_store", "rowpack_forward_overhead_probes"
+    )
+    transpose_no_store = require(
+        probes,
+        "rowpack_forward_transpose_no_store",
+        "rowpack_forward_overhead_probes",
+    )
     convert = require(
         probes, "gt_to_rowpack_scalar_convert", "rowpack_forward_overhead_probes"
     )
@@ -98,6 +114,9 @@ def main() -> int:
     compute_estimate_delta = compute_estimate - gt_ntt
     hybrid_scalar = gt_ntt + convert
     hybrid_scalar_delta_vs_rowpack = hybrid_scalar - rowpack_ntt
+    lane_store_delta = lane_store - scatter
+    scatter_minus_zero_store = scatter - zero_store
+    scatter_minus_store_ready = scatter - store_ready
 
     print("\n## Forward NTT Overhead Breakdown")
     print_table(
@@ -112,6 +131,26 @@ def main() -> int:
                 "rowpack scatter/transpose-only",
                 scatter,
                 "direct Neon probe; excludes NTT arithmetic/reduction",
+            ),
+            (
+                "rowpack lane-store candidate",
+                lane_store,
+                f"{lane_store_delta:+.3f} vs current scatter/transpose",
+            ),
+            (
+                "rowpack store-ready load+store",
+                store_ready,
+                "direct lower-bound probe; input already in rowpack plane order",
+            ),
+            (
+                "rowpack zero-store lower bound",
+                zero_store,
+                "direct lower-bound probe; no source-vector loads",
+            ),
+            (
+                "rowpack transpose-only no-store",
+                transpose_no_store,
+                "direct lower-bound probe; no rowpack output stores",
             ),
             (
                 "rowpack compute-only estimate",
@@ -137,6 +176,22 @@ def main() -> int:
     print(
         "scatter/transpose-only probe covers "
         f"{scatter:.3f} cycles of rowpack Forward v2"
+    )
+    print(
+        "scatter minus zero-store lower bound = "
+        f"{scatter_minus_zero_store:+.3f} cycles"
+    )
+    print(
+        "lane-store candidate delta vs current scatter = "
+        f"{lane_store_delta:+.3f} cycles"
+    )
+    print(
+        "scatter minus store-ready load+store = "
+        f"{scatter_minus_store_ready:+.3f} cycles"
+    )
+    print(
+        "transpose-only no-store = "
+        f"{transpose_no_store:.3f} cycles"
     )
     print(
         "compute-only estimate leaves "
