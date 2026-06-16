@@ -1,0 +1,128 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+
+kernel:
+  id: gt_rowpack_forward_v3_structured_store
+  name: NTRU+768 rowpack Forward NTT v3 structured-store candidate
+  source: asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s
+  scheme: NTRU+768
+  operation: Forward NTT rowpack output candidate
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+
+slothy:
+  workflow: manual-structured-store-candidate-before-full-slothy
+  driver: asm/slothy/optimize_gt_kernels.py
+  expected_outputs:
+    - asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s
+  allow_spills: false
+
+region:
+  start_label: _ntt32_stage345_block0_slothy_start
+  end_label: _ntt32_stage345_block3_slothy_end
+  expected_instruction_count: 545
+  live_in:
+    - x4 row_base with stage12 outputs
+    - x10 rowpack branch0 row base
+    - x11 rowpack branch1 row base
+    - v0.h[0] modulus q
+    - v0.h[1] Barrett constant
+  live_out:
+    - rowpack output memory for one Good-Thomas row
+
+abi:
+  inputs:
+    - x4 row_base
+    - x10 scatter_ptr branch0 rowpack row base
+    - x11 scatter_hi branch1 rowpack row base
+    - x12 public scratch/twiddle pointer
+    - v0.h[0] q
+    - v0.h[1] Barrett constant
+  outputs:
+    - rowpack output memory
+  clobbers:
+    - x12
+    - caller-saved Neon vector registers except v0
+  concrete_gprs_allowed:
+    - x4
+    - x10
+    - x11
+    - x12
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: "Preserve rowpack v2 stage345 arithmetic; replace final 8x8 transpose stores with consecutive-register st4 lane-store groups."
+
+layout:
+  input_representation: "row_base Q[k32].h[0..3]=branch0 lanes, Q[k32].h[4..7]=branch1 lanes"
+  output_representation: "gt_rowpack_soa rowpack_index(branch,row,lane,k32)"
+  vector_lanes: "8 x int16"
+  packing: "structured st4 lane stores write q0..q7 lane p into the matching rowpack plane"
+
+memory_contract:
+  loads:
+    - "same row_base and twiddle loads as rowpack v2"
+  stores:
+    - "same rowpack output bytes as v2, written by public-offset st4 lane stores"
+  aliasing: "row_base scratch and rowpack output do not alias in active harness"
+  alignment: "row_base and rowpack output are 16-byte aligned; st4 lane stores use public halfword offsets"
+  public_offsets_only: true
+  pointer_updates:
+    - "x12 is reused as a public store-address scratch after twiddle use ends"
+
+constant_contract:
+  constants:
+    - "ntt32_twiddle_vecs"
+    - "v0.h[0] = 3457"
+    - "v0.h[1] = Barrett constant"
+  modulus: 3457
+  representation: "signed int16 Montgomery/Barrett-reduced output"
+  reduction_method: "same final Barrett reduction as rowpack v2"
+
+range_contract:
+  input_ranges:
+    - "same stage12 row_base range as rowpack v2"
+  intermediate_ranges:
+    - "same stage345 lazy CT range as rowpack v2"
+  output_ranges:
+    - "same rowpack v2 final reduced range"
+  narrowing_points:
+    - "unchanged final stage345 Barrett reduction before stores"
+
+constant_time_contract:
+  secret_inputs:
+    - "coefficient values in row_base"
+  public_inputs:
+    - "row index"
+    - "k32 block index"
+    - "twiddle offsets"
+    - "rowpack output offsets"
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_gt_rowpack_forward_v3_candidate
+  test_command: make test_gt_rowpack_forward_v3_candidate
+  full_path_benchmark_command: make bench_gt_rowpack_lazy_asm_v3_forward_fullchain_compare
+  benchmark_metric: cycles
+  lower_is_better: true

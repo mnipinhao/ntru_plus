@@ -73,6 +73,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--gt-forward", required=True)
     parser.add_argument("--rowpack-forward", required=True)
+    parser.add_argument("--rowpack-label", default="current rowpack Forward v2")
     parser.add_argument("--probes", required=True)
     parser.add_argument("--verbose", action="store_true")
     return parser.parse_args()
@@ -123,7 +124,7 @@ def main() -> int:
         [
             ("production GT Forward NTT", gt_ntt, "baseline"),
             (
-                "current rowpack Forward v2",
+                args.rowpack_label,
                 rowpack_ntt,
                 f"{rowpack_delta:+.3f} vs production GT",
             ),
@@ -175,7 +176,7 @@ def main() -> int:
     print(f"rowpack Forward overhead per NTT = {rowpack_delta:+.3f} cycles")
     print(
         "scatter/transpose-only probe covers "
-        f"{scatter:.3f} cycles of rowpack Forward v2"
+        f"{scatter:.3f} cycles of the Gate 4 rowpack Forward v2 probe"
     )
     print(
         "scatter minus zero-store lower bound = "

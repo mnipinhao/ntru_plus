@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM)
+#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM) || \
+	defined(TEST_GT_FORWARD_ROWPACK_V3_ASM)
 #include "poly.h"
 #endif
 
@@ -132,7 +133,8 @@ static void ntt_gt_rowpack_soa_layout(int16_t r[NTRUPLUS_N],
 static void ntt_gt_rowpack_soa_active(int16_t r[NTRUPLUS_N],
                                       const int16_t a[NTRUPLUS_N])
 {
-#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM)
+#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM) || \
+	defined(TEST_GT_FORWARD_ROWPACK_V3_ASM)
 	poly in;
 	poly out;
 
@@ -276,7 +278,7 @@ static int check_mapping_inverse(void)
 
 static void scatter_current_row_vectors_to_block(
 	int16_t block[NTRUPLUS_N],
-	const int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
+	int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
 {
 	memset(block, 0, NTRUPLUS_N * sizeof(block[0]));
 
@@ -299,7 +301,7 @@ static void scatter_current_row_vectors_to_block(
 
 static void scatter_row_vectors_to_rowpack(
 	int16_t rowpack[NTRUPLUS_N],
-	const int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
+	int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
 {
 	memset(rowpack, 0, NTRUPLUS_N * sizeof(rowpack[0]));
 
@@ -320,7 +322,7 @@ static void scatter_row_vectors_to_rowpack(
 
 static void scatter_v2_transpose_blocks_to_rowpack(
 	int16_t rowpack[NTRUPLUS_N],
-	const int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
+	int16_t row_vectors[GT_ROWS][GT_ROW_N][GT_VECTOR_LANES])
 {
 	memset(rowpack, 0, NTRUPLUS_N * sizeof(rowpack[0]));
 
@@ -408,7 +410,8 @@ static int check_forward_rowpack_direct(unsigned pattern, uint32_t seed)
 	block_to_rowpack(want, gt_block);
 	ntt_gt_rowpack_soa_active(got, natural);
 
-#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM)
+#if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM) || \
+	defined(TEST_GT_FORWARD_ROWPACK_V3_ASM)
 	return compare_modq("ASM Forward NTT rowpack output", got, want);
 #else
 	return compare_modq("direct Forward NTT rowpack output", got, want);

@@ -1,0 +1,70 @@
+dag:
+  id: gt_rowpack_forward_v3_structured_store_dag
+  kernel_contract: kernel-contract.yml
+  description: "Stage345 arithmetic is inherited from rowpack v2; only final output packing changes from 8x8 transpose plus vector stores to structured lane-store groups."
+
+inputs:
+  - id: row_base_q
+    description: "32 Q vectors from stage12 for one Good-Thomas row"
+  - id: twiddle_vectors
+    description: "public ntt32_twiddle_vecs"
+  - id: rowpack_base
+    description: "x10/x11 branch rowpack output bases"
+
+constants:
+  - id: q
+    value: 3457
+  - id: barrett
+    value: "v0.h[1]"
+
+nodes:
+  - id: stage345_arithmetic
+    op: ct_stage345_and_final_reduce
+    inputs:
+      - row_base_q
+      - twiddle_vectors
+      - q
+      - barrett
+    outputs:
+      - "reduced_q0_to_q7_per_block"
+    instruction_shape: "same rowpack v2 vector arithmetic and final reduction"
+    tied_operands: []
+    range_before: "stage12 signed int16 caller contract"
+    range_after: "rowpack v2 reduced output range"
+    may_reorder_with:
+      - structured_store_packing
+    must_precede:
+      - structured_store_packing
+  - id: structured_store_packing
+    op: move_to_consecutive_registers_and_st4_lane_store
+    inputs:
+      - "reduced_q0_to_q7_per_block"
+      - rowpack_base
+    outputs:
+      - rowpack_output_memory
+    instruction_shape: "mov/orr to consecutive Neon groups; st4 {vA.h-vD.h}[lane]"
+    tied_operands:
+      - "x12 post-index address scratch"
+    range_before: "reduced stage345 q vectors"
+    range_after: "unchanged coefficients in rowpack memory"
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads:
+    - "same row_base and twiddle loads as rowpack v2"
+  stores:
+    - "rowpack_index(branch,row,lane,k32) for all branch/lane/k32 using public offsets"
+  ordering_constraints:
+    - "all arithmetic producing q[k32] must precede stores for that q block"
+
+outputs:
+  - rowpack_output_memory
+live_out:
+  - rowpack_output_memory
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

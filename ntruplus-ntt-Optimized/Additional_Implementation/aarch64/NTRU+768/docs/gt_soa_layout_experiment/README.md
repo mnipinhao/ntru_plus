@@ -43,6 +43,9 @@ production replacement yet:
   rowpack plane vectors directly;
 - Gate 5 has started with a v3 register-order contract and symbolic handoff
   stub; there is not yet a generated v3 `.opt.s` candidate;
+- Gate 6 produced a first real v3 structured-store ASM candidate, but it is
+  rejected: correctness passes, while Pi5 Forward NTT regresses to about
+  `3152` cycles;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
@@ -117,6 +120,7 @@ InvNTT postmerge:
 | Production Forward NTT32 | `asm/slothy/ntt32_symbolic.s`, `asm/slothy/my_32ntt.opt.s` | Slothy-generated scheduled artifact | Wired through `asm/my_ntt.s` for promoted GT production path. |
 | Rowpack Forward NTT v2 | `asm/slothy/ntt32_v2_symbolic.s`, `asm/slothy/ntt32_8way.rowpack_v2.n1.alloc.s`, `asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s` | Slothy-generated RA/opt candidate | Opt-in rowpack Forward candidate; latest rowpack candidate uses `.opt.s`. |
 | Rowpack Forward NTT v3 register-order | `asm/slothy/ntt32_v3_rowpack_stage345_symbolic.s`, `gt_test/test_gt_rowpack_forward_v3_register_order_contract.c` | Contract/handoff only, no `.opt.s` yet | Gate 5 target: make stage345 live-out rowpack plane vectors directly and remove most final transpose cost. |
+| Rowpack Forward NTT v3 structured-store | `asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s`, `docs/gt_soa_layout_experiment/forward_v3_candidate_gate6/` | Manual ASM candidate, rejected | Correctness passes, but structured `st4` lane stores are slower than v2 transpose plus vector stores on Pi5. |
 | Production InvNTT | `asm/slothy/invntt_opt.s` | Slothy-scheduled production artifact | Included by `asm/inv_my_ntt.s`; production default remains here. |
 | Production GT basemul/add | `asm/base_gt.opt.s` | Slothy-scheduled artifact | Promoted GT pointwise baseline. |
 | Rowpack InvNTT32 original rowkernel | `kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S`, `.alloc.S`, `.opt.S` | Slothy-generated symbolic/RA/opt set | Diagnostic baseline, no longer best rowpack candidate. |
@@ -147,6 +151,9 @@ make bench_gt_rowpack_forward_scatter_lower_bound
 make test_gt_rowpack_forward_v3_register_order_contract
 make bench_gt_rowpack_forward_v3_register_order_lower_bound
 make bench_gt_rowpack_forward_v3_register_order_cycles
+make test_gt_rowpack_forward_v3_candidate
+make bench_gt_rowpack_forward_v3_candidate_cycles
+make bench_gt_rowpack_lazy_asm_v3_forward_fullchain_compare
 ```
 
 Focused InvNTT/postmerge isolation:

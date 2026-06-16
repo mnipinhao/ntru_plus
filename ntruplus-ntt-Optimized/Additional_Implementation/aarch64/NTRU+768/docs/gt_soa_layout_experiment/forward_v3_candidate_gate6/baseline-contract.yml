@@ -1,0 +1,105 @@
+mode: new_kernel_baseline_then_iterate
+baseline_status: extracted
+
+baseline:
+  id: gt_rowpack_forward_v2
+  source: asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s
+  extracted_region: asm/slothy/ntt32_8way.rowpack_v2.n1.opt.s
+  function: _ntt32_8way
+  start_label: _ntt32_stage345_block0_slothy_start
+  end_label: _ntt32_stage345_block3_slothy_end
+  source_commit: 017a4a3
+
+region:
+  instruction_count: 513
+  live_in:
+    - x4 row_base with stage12 outputs
+    - x10 rowpack branch0 row base
+    - x11 rowpack branch1 row base
+    - v0.h[0] modulus q
+    - v0.h[1] Barrett constant
+  live_out:
+    - rowpack output memory for one Good-Thomas row
+  clobbers:
+    - caller-saved AArch64 GPRs used by _ntt32_8way
+    - caller-saved Neon vector registers except fixed v0 constants
+
+abi:
+  inputs:
+    - x4 row_base
+    - x10 scatter_ptr branch0 rowpack row base
+    - x11 scatter_hi branch1 rowpack row base
+    - x12 twiddle pointer inside stage345 blocks
+    - v0.h[0] q
+    - v0.h[1] Barrett constant
+  outputs:
+    - rowpack output memory
+  concrete_gprs_allowed:
+    - x4
+    - x10
+    - x11
+    - x12
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+memory_contract:
+  loads:
+    - "32 row_base Q loads per _ntt32_8way row across stage345 blocks"
+    - "public twiddle vector loads from ntt32_twiddle_vecs"
+  stores:
+    - "96 rowpack output Q stores per full polynomial, 32 per row"
+  aliasing: "row_base scratch and rowpack output do not alias in active harness"
+  alignment: "row_base and rowpack output are 16-byte aligned for Q/vector stores"
+  public_offsets_only: true
+  pointer_updates:
+    - "x12 twiddle pointer is public and reset before each stage345 block"
+
+constant_contract:
+  constants:
+    - "ntt32_twiddle_vecs"
+    - "v0.h[0] = 3457"
+    - "v0.h[1] = Barrett constant"
+  modulus: 3457
+  representation: "signed int16 Montgomery/Barrett-reduced output"
+  reduction_method: "same final Barrett reduction as rowpack v2"
+
+range_contract:
+  input_ranges:
+    - "stage12 row_base values stay within signed int16 range under Phase123 caller contract"
+  intermediate_ranges:
+    - "same lazy CT stage345 ranges as rowpack v2"
+  output_ranges:
+    - "same rowpack v2 final reduced range"
+  narrowing_points:
+    - "final stage345 Barrett reduction before rowpack output stores"
+
+constant_time_contract:
+  secret_inputs:
+    - "coefficient values in row_base"
+  public_inputs:
+    - "row index"
+    - "k32 block index"
+    - "twiddle offsets"
+    - "rowpack output offsets"
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 513
+  slothy_expected_cycles: "stage345 blocks report about 122-131 expected cycles each in generated comments"
+  full_path_benchmark: "rowpack Forward v2 about 3021 cycles/NTT on Pi5 Gate 5 lower-bound run"
+  benchmark_command: make bench_gt_rowpack_forward_v2_overhead_breakdown

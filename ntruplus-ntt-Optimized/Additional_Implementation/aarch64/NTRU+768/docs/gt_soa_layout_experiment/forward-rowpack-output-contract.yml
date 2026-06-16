@@ -228,3 +228,26 @@ forward_v3_register_order_gate:
     A weak candidate should recover at least about 100 cycles/NTT from the
     current rowpack v2 Forward path; a strong candidate should recover about
     200 cycles/NTT, approaching the measured store-ready floor.
+
+forward_v3_structured_store_candidate:
+  status: reject
+  candidate: "asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s"
+  gate_artifacts: "docs/gt_soa_layout_experiment/forward_v3_candidate_gate6/"
+  commands:
+    - make test_gt_rowpack_forward_v3_candidate
+    - make bench_gt_rowpack_forward_v3_candidate_cycles
+    - make bench_gt_rowpack_lazy_asm_v3_forward_fullchain_compare
+  pi5_results:
+    correctness: pass
+    production_gt_forward_ntt: 2701.109
+    v3_structured_store_forward_ntt: 3151.984
+    v3_delta_vs_gt: 450.875
+    product_pipeline_delta_vs_gt: 386.703
+    product_add_pipeline_delta_vs_gt: 968.078
+  conclusion: >
+    Reject this first v3 micro-candidate.  The layout contract is preserved,
+    but replacing the final transpose network with structured lane stores is
+    slower than the current v2 transpose plus vector-store path on Pi5.  The
+    next useful v3 attempt must change stage345 register order/arithmetic so
+    rowpack plane vectors are naturally live before store, not merely change
+    the final store instruction form.

@@ -146,6 +146,51 @@ Acceptance target for a future v3 `.opt.s` candidate:
 - strong continue: recover about `200` cycles/NTT, approaching the measured
   store-ready floor.
 
+## Gate 6 v3 Structured-Store Candidate
+
+First actual v3 ASM candidate:
+
+```text
+asm/slothy/ntt32_8way.rowpack_v3.n1.opt.s
+```
+
+This candidate keeps rowpack v2 stage345 arithmetic and final reduction, but
+replaces each final 8x8 transpose plus vector-store sequence with:
+
+```text
+move reduced q vectors into consecutive temporary groups
+st4 {vA.h-vD.h}[lane] public-offset structured lane stores
+```
+
+Correctness:
+
+```sh
+make test_gt_rowpack_forward_v3_candidate
+```
+
+Result: `pass`.
+
+Pi5 cycle result:
+
+| component | median cycles | delta |
+| --- | ---: | ---: |
+| production GT Forward | 2701.109 | baseline |
+| rowpack Forward v3 structured-store | 3151.984 | +450.875 vs GT |
+| implied delta vs rowpack v2 estimate | | about +130 cycles |
+
+Fullchain result:
+
+| pipeline | production GT | v3 structured-store rowpack | delta |
+| --- | ---: | ---: | ---: |
+| product | 12251.672 | 12638.375 | +386.703 |
+| product-add | 14984.938 | 15953.016 | +968.078 |
+
+Decision: reject this micro-candidate.  Structured lane stores preserve the
+layout contract but are slower than the v2 transpose plus vector-store path.
+This closes the "replace transpose with structured/lane stores" branch.  The
+next candidate must change the stage345 register/order arithmetic itself so
+rowpack plane vectors are naturally live before store.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:
