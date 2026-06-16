@@ -482,6 +482,45 @@ ASM and Slothy remain blocked.  If this line continues, the next artifact
 should be a numeric tagged-index transform oracle for the full-absorption
 candidate using the actual NTRU+768 Forward NTT tables, still not ASM.
 
+## Gate 14 Forward v4 Numeric Oracle
+
+Command:
+
+```sh
+make test_gt_rowpack_forward_v4_numeric_oracle
+```
+
+Artifacts:
+
+```text
+docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/numeric-source-facts.yml
+docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/ntt32-matrix-fingerprints.yml
+docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/rowpack-target-equivalence.yml
+docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/candidate-oracle-result.yml
+docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/numeric-oracle-report.md
+```
+
+Result:
+
+| check | result |
+| --- | --- |
+| source constants | parsed from `params.h` and `ntt.c` |
+| `NTRUPLUS_Q` | 3457 |
+| `gt96_omega32_powers` entries | 32 |
+| NTT32 matrix verification | pass over 11 deterministic/random cases |
+| distinct proportional NTT32 row pairs | 0 |
+| rowpack blocks with lane-preserving match | 0 / 4 |
+| H full-absorption numeric equivalence | not found |
+
+Decision: the Gate 13 full-absorption candidate is now blocked by numeric
+evidence under the bounded no-lane-mixing model.  Each rowpack target vector
+contains eight distinct NTT32 output matrix rows for one branch/lane plane.
+A lane-preserving plain-vector store can only expose one NTT32 output row
+across lanes, even with per-lane diagonal twiddle scaling.  The actual table
+rows are not proportional within any rowpack k32 block.  Forward v4 ASM and
+Slothy remain blocked; continuing would require a broader mathematical
+Forward decomposition, not another layout or scheduling attempt.
+
 ## Rowpack InvNTT Isolation Pi5 Snapshot
 
 Command:

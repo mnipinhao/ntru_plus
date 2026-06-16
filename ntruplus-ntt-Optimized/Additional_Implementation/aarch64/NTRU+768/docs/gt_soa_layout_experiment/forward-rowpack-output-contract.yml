@@ -619,3 +619,43 @@ forward_v4_transform_dag_search:
     modeled class with enough headroom is full algebraic absorption of all
     three rowpack mixing levels, but no concrete tagged transform or twiddle
     remap was found for it.  Forward v4 ASM and Slothy remain blocked.
+
+forward_v4_numeric_oracle:
+  status: complete_numeric_oracle_no_asm_candidate
+  command: "make test_gt_rowpack_forward_v4_numeric_oracle"
+  artifact_dir: "docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/"
+  artifacts:
+    - numeric-source-facts.yml
+    - ntt32-matrix-fingerprints.yml
+    - rowpack-target-equivalence.yml
+    - candidate-oracle-result.yml
+    - numeric-oracle-report.md
+  source_facts:
+    params_source: params.h
+    ntt_source: ntt.c
+    n: 768
+    q: 3457
+    omega32_table: gt96_omega32_powers
+    omega32_table_entries: 32
+  checks:
+    matrix_verification:
+      status: pass
+      cases: 11
+    pairwise_proportional_distinct_ntt32_rows: 0
+    rowpack_blocks_with_lane_preserving_match: 0
+    rowpack_blocks_total: 4
+  candidate_under_test:
+    name: H_algebraic_absorb_three_mixing_levels
+    row_plane_relabel_only: fail
+    per_lane_diagonal_scaling: fail
+    full_absorption_transform_found: false
+  decision:
+    continue_to_forward_v4_asm: false
+    next_gate_if_continuing: "broader mathematical Forward decomposition; still no ASM or Slothy until a numeric oracle passes and clears the cycle gate"
+  conclusion: >
+    Gate 14 tests the only Gate 13 class with enough modeled headroom against
+    the actual NTRU+768 Forward NTT32 table.  The NTT32 matrix oracle passes,
+    but rowpack target vectors contain eight distinct, non-proportional NTT32
+    output rows.  A lane-preserving no-transpose store cannot produce that
+    shape by row/plane relabeling or per-lane diagonal twiddle scaling.
+    Forward v4 ASM and Slothy remain blocked.

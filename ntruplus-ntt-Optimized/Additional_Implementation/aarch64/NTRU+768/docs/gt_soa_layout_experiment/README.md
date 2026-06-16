@@ -79,6 +79,11 @@ production replacement yet:
   enough headroom is full algebraic absorption of all three rowpack mixing
   levels, but no concrete transform or twiddle remap has been found, so Forward
   v4 ASM remains blocked;
+- Gate 14 tests that full-absorption class with a numeric oracle built from the
+  actual `NTRUPLUS_Q` and `gt96_omega32_powers` source tables.  The NTT32
+  matrix check passes, but no rowpack k32 block has a lane-preserving match
+  under row/plane relabeling or per-lane diagonal scaling.  Forward v4 ASM
+  remains blocked;
 - the lane-store scatter candidate is rejected: it is about `1.67k` cycles
   slower than the current transpose-plus-vector-store path;
 - production GT Forward plus scalar GT-to-rowpack conversion is not viable:
@@ -159,6 +164,7 @@ InvNTT postmerge:
 | Rowpack Forward NTT v4 topology decision | `docs/gt_soa_layout_experiment/forward_topology_decision/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_topology_decision.py` | Decision report only, no `.S` generated | Gate 11 keeps rowpack experimental and requires a topology model before any larger Forward v4 ASM rewrite. |
 | Rowpack Forward NTT v4 topology model | `docs/gt_soa_layout_experiment/forward_v4_topology_model/`, `docs/gt_soa_layout_experiment/report_gt_rowpack_forward_v4_topology_model.py` | Static topology model only, no `.S` generated | Gate 12 rejects concrete pretranspose/horizontal and scratch-absorb variants; next possible work is tagged-index transform-DAG search. |
 | Rowpack Forward NTT v4 transform-DAG search | `docs/gt_soa_layout_experiment/forward_v4_transform_dag_search/`, `docs/gt_soa_layout_experiment/search_forward_v4_transform_dag.py` | Tagged-index model only, no `.S` generated | Gate 13 finds no proved DAG above the 150 cycles/NTT gate; next possible work is a numeric tagged-index oracle for full algebraic absorption. |
+| Rowpack Forward NTT v4 numeric oracle | `docs/gt_soa_layout_experiment/forward_v4_numeric_oracle/`, `docs/gt_soa_layout_experiment/search_forward_v4_numeric_oracle.py` | Numeric oracle only, no `.S` generated | Gate 14 uses the actual NTRU+768 NTT32 table and finds no bounded no-lane-mixing equivalence for the full-absorption candidate. |
 | Production InvNTT | `asm/slothy/invntt_opt.s` | Slothy-scheduled production artifact | Included by `asm/inv_my_ntt.s`; production default remains here. |
 | Production GT basemul/add | `asm/base_gt.opt.s` | Slothy-scheduled artifact | Promoted GT pointwise baseline. |
 | Rowpack InvNTT32 original rowkernel | `kernels/ntruplus768_invntt32_rowpack_soa_row.sym.S`, `.alloc.S`, `.opt.S` | Slothy-generated symbolic/RA/opt set | Diagnostic baseline, no longer best rowpack candidate. |
@@ -200,6 +206,7 @@ make test_gt_rowpack_forward_v3c_stage12_stage345_layout_search
 make report_gt_rowpack_forward_topology_decision
 make report_gt_rowpack_forward_v4_topology_model
 make test_gt_rowpack_forward_v4_transform_dag_search
+make test_gt_rowpack_forward_v4_numeric_oracle
 ```
 
 Focused InvNTT/postmerge isolation:
