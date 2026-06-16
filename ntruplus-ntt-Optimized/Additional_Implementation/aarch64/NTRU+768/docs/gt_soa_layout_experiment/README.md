@@ -34,6 +34,12 @@ production replacement yet:
   Forward NTT x3 is about `+1040` cycles versus promoted GT, while native
   basemul_add recovers about `-337` cycles and unaccounted glue is about
   `-98` cycles in rowpack's favor;
+- the rowpack Forward NTT overhead is currently explained by output
+  scatter/transpose: direct scatter-only probe is about `319` cycles, while
+  the rowpack compute-only estimate is within about `2` cycles of production
+  GT Forward;
+- production GT Forward plus scalar GT-to-rowpack conversion is not viable:
+  the scalar conversion probe is about `3363` cycles;
 - production GT path is still the promoted default.
 
 ## Read Order
@@ -127,6 +133,7 @@ Pi5 cycle comparison:
 make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare
 make bench_gt_rowpack_lazy_asm_vs_kpqc_final
 make bench_gt_rowpack_lazy_asm_fullchain_stage_compare
+make bench_gt_rowpack_forward_v2_overhead_breakdown
 ```
 
 Focused InvNTT/postmerge isolation:

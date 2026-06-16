@@ -781,7 +781,7 @@ Pi5 cycle comparison from one run:
 
 | product-add pipeline component | promoted GT median cycles | lazy C-post rowpack median cycles | lazy ASM-post rowpack median cycles | ASM vs C-post | ASM vs GT |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Forward NTT | 2701.500 | 3015.828 | 3017.672 | +1.844 | +316.172 |
+| Forward NTT | 2701.500 | 3015.812 | 3017.672 | +1.844 | +316.172 |
 | basemul_add | 2907.359 | 2570.203 | 2570.484 | +0.281 | -336.875 |
 | InvNTT | 4022.125 | 4621.172 | 4040.734 | -580.438 | +18.609 |
 | full pipeline | 14985.234 | 16140.625 | 15554.094 | -586.531 | +568.860 |
@@ -893,6 +893,54 @@ Interpretation:
   full-chain scheduling/fusion that reduces repeated Forward boundary cost.
   It is not an add-path glue/layout artifact.
 
+## Gate 3: Rowpack Forward V2 Overhead Breakdown
+
+Purpose:
+
+- explain the `~+0.32k` to `~+0.35k` cycle overhead per rowpack Forward NTT;
+- separate rowpack Forward arithmetic from output layout scatter/transpose;
+- test the hybrid option of production GT Forward output followed by a
+  GT-to-rowpack conversion.
+
+Command:
+
+```sh
+make bench_gt_rowpack_forward_v2_overhead_breakdown
+```
+
+Alias:
+
+```sh
+make bench_gt_rowpack_forward_output_overhead
+```
+
+Latest Pi5 table:
+
+| path / component | median cycles | delta / interpretation |
+| --- | ---: | --- |
+| production GT Forward NTT | 2701.172 | baseline |
+| current rowpack Forward v2 | 3015.812 | +314.640 vs production GT |
+| rowpack scatter/transpose-only | 319.297 | direct Neon probe; excludes NTT arithmetic/reduction |
+| rowpack compute-only estimate | 2696.515 | -4.657 vs production GT; rowpack_full - scatter_only |
+| GT-to-rowpack scalar conversion | 3361.156 | direct scalar hybrid conversion probe |
+| production GT + scalar conversion | 6062.328 | +3046.516 vs current rowpack v2 |
+
+Interpretation:
+
+- rowpack Forward arithmetic is not the blocker in this first gate:
+  subtracting the direct scatter/transpose probe leaves a compute-only estimate
+  within about 2 cycles of production GT Forward;
+- the visible `+314.640` cycles per Forward NTT are explained by the rowpack
+  output scatter/transpose shape, whose direct probe costs `319.297` cycles;
+- this passes the strong continue gate for Forward-output work because the
+  recoverable region is above 200 cycles per NTT;
+- the scalar hybrid path is not viable: production GT Forward plus scalar
+  GT-to-rowpack conversion is about 3046 cycles slower than current rowpack v2;
+- the next local target should be a better rowpack Forward output scatter,
+  likely by changing stage345 output register order or adding a dedicated
+  hand-ASM/Slothy scatter variant.  Do not spend the next step on InvNTT
+  fusion or add-path glue.
+
 ## Interpretation
 
 The `182k` and `260k` rowpack full-pipeline medians should be read as oracle
@@ -937,6 +985,10 @@ which pieces are not productionized:
   rowpack Forward NTT x3 is about 1040 cycles slower and the native basemul_add
   win recovers about 337 cycles.  The next blocker is Forward/add full-chain
   component cost, not pipeline glue.
+- Forward v2 overhead accounting shows rowpack Forward arithmetic is effectively
+  at production GT parity; the overhead is the output scatter/transpose.  A
+  scalar production-GT-output to rowpack conversion is much too expensive to be
+  a useful hybrid path.
 - Rowvec is correctness-clean as a layout contract, and direct rowvec postmerge
   is slightly faster than rowpack chunked postmerge, but the measured postmerge
   win is only about 0.21k cycles.  That is not enough evidence to begin a
@@ -984,6 +1036,8 @@ real blocker:
    `make bench_gt_rowpack_lazy_postmerge_asm_cycles_compare`.
    Fullchain stage accounting:
    `make bench_gt_rowpack_lazy_asm_fullchain_stage_compare`.
+   Forward overhead accounting:
+   `make bench_gt_rowpack_forward_v2_overhead_breakdown`.
    Legacy C-post diagnostics are still available through
    `make bench_gt_rowpack_invntt_isolate_cycles`, but they are no longer the
    promotion baseline.

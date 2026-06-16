@@ -109,3 +109,46 @@ next_candidate_gate:
   benchmark_rule: >
     Compare only production-equivalent call boundaries using Linux hardware
     cycle counters.  Keep rowpack oracle full-path numbers diagnostic only.
+
+pi5_forward_v2_overhead_evidence:
+  command: "make bench_gt_rowpack_forward_v2_overhead_breakdown"
+  alias: "make bench_gt_rowpack_forward_output_overhead"
+  probe_source: "gt_test/bench_gt_rowpack_forward_overhead.c"
+  compare_script: "docs/gt_soa_layout_experiment/compare_rowpack_forward_overhead.py"
+  direct_medians_cycles:
+    production_gt_forward_ntt: 2701.172
+    current_rowpack_forward_v2: 3015.812
+    rowpack_scatter_transpose_only: 319.297
+    gt_to_rowpack_scalar_conversion: 3361.156
+  derived_medians_cycles:
+    rowpack_overhead_per_ntt: 314.640
+    rowpack_compute_only_estimate: 2696.515
+    rowpack_compute_only_estimate_vs_gt: -4.657
+    production_gt_plus_scalar_conversion: 6062.328
+    production_gt_plus_scalar_conversion_vs_rowpack_v2: 3046.516
+  probe_contracts:
+    rowpack_scatter_transpose_only: >
+      Loads prepared row-vector memory with the same eight-lane semantics as
+      _ntt32_8way output, applies a Neon 8x8 halfword transpose per 8-k32
+      block, and stores rowpack branch/row/lane planes.  It excludes NTT
+      arithmetic and final reduction.
+    rowpack_compute_only_estimate: >
+      Derived as current_rowpack_forward_v2 - rowpack_scatter_transpose_only.
+      This is not a standalone correctness kernel because v2 currently fuses
+      stage345 arithmetic, final reduction, transpose, and rowpack stores in
+      one Slothy block.
+    gt_to_rowpack_scalar_conversion: >
+      Direct scalar conversion from production GT block-major output to
+      rowpack SoA layout.  It tests the first hybrid baseline, not a tuned
+      conversion.
+  conclusion: >
+    The rowpack Forward v2 overhead is explained by output scatter/transpose,
+    not by the NTT arithmetic schedule: the direct scatter/transpose probe is
+    about 319 cycles, while the compute-only estimate is within about 2 cycles
+    of production GT Forward.  This passes the strong continue gate for a
+    Forward-output optimization because the recoverable region is above 200
+    cycles per NTT.  The scalar hybrid path is not viable: production GT
+    Forward plus scalar GT-to-rowpack conversion is about 3046 cycles slower
+    than current rowpack v2.  The next candidate should target rowpack Forward
+    output scatter/register order, not InvNTT fusion, add-path glue, or a
+    scalar conversion bridge.
