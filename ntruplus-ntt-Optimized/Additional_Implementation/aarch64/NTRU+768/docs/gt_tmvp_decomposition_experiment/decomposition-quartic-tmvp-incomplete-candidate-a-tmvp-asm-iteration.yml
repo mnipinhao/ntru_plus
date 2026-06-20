@@ -1,0 +1,42 @@
+iteration:
+  id: candidate-a-tmvp-asm-skeleton-001
+  mode: new_kernel_baseline_then_iterate
+  current_state: full_path_benchmark
+  hypothesis: fixed_tmvp_asm_boundary_allows_replacing_c_adapter_without_changing_stage2_to5_or_postmerge_contracts
+  changed_artifacts:
+    - gt_tmvp_quartic_tmvp_experimental.h
+    - gt_test/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c.c
+    - docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_skeleton.S
+    - docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-kernel-contract.yml
+    - docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-instruction-dag.yml
+  earliest_state_to_revisit: instruction_dag
+
+artifacts:
+  kernel_contract: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-kernel-contract.yml
+  baseline_contract: not_required_for_initial_skeleton
+  instruction_dag: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-instruction-dag.yml
+  symbolic_source: not_authored
+  slothy_driver: not_authored
+  slothy_log: not_available
+  candidate_contract: not_authored
+  candidate_score: not_scored
+  promotion_report: not_promoted
+
+gates:
+  repo_probe: complete
+  baseline_contract: not_required_for_initial_skeleton
+  kernel_contract: complete
+  instruction_dag: scaffold
+  symbolic_asm: pending
+  static_checks: pending
+  Slothy_run_by_user: pending
+  parse_slothy_result: pending
+  oracle_correctness: skeleton_pass_required
+  full_path_benchmark: skeleton_baseline_required
+  score_candidate: pending
+  promotion_decision: pending
+  iteration_or_promote: investigate
+
+notes:
+  - The skeleton assembly file is an AAPCS trampoline to the C adapter, not an optimized TMVP candidate.
+  - The benchmark rows are valid only as scaffold/baseline rows until symbolic TMVP assembly replaces the trampoline.

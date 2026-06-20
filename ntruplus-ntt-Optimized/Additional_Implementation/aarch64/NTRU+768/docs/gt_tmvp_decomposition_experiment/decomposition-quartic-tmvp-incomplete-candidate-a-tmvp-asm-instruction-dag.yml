@@ -1,0 +1,49 @@
+instruction_dag_status: scaffold
+kernel: ntruplus768_gt_tmvp_incomplete_candidate_a_tmvp
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+inputs:
+  - a_stage4_even_odd_pairs_rowpack
+  - b_stage4_even_odd_pairs_rowpack
+  - c_stage4_even_odd_pairs_rowpack_for_add_variant
+  - stage5_ct_twiddle_per_even_k32
+  - gt_rowbitrev_lambda_per_branch_physical_j
+outputs:
+  - invntt_stage1_state_even_ce_plus_co_odd_ce_minus_co
+public_loop_order:
+  - branch_0_to_1
+  - row_0_to_2
+  - pair_0_to_15
+  - lane_0_to_3_or_vector_batch
+dependencies:
+  - id: load_stage4_pair
+    reads: [a_even, a_odd, b_even, b_odd, c_even, c_odd]
+    writes: [pair_inputs]
+  - id: materialize_stage5_even_leaf
+    reads: [a_even, a_odd, b_even, b_odd, c_even, c_odd, stage5_ct_twiddle]
+    writes: [a_even_leaf, b_even_leaf, c_even_leaf]
+  - id: materialize_stage5_odd_leaf
+    reads: [a_even, a_odd, b_even, b_odd, c_even, c_odd, stage5_ct_twiddle]
+    writes: [a_odd_leaf, b_odd_leaf, c_odd_leaf]
+  - id: quartic_leaf_even
+    reads: [a_even_leaf, b_even_leaf, c_even_leaf, gt_rowbitrev_lambda_even]
+    writes: [ce]
+  - id: quartic_leaf_odd
+    reads: [a_odd_leaf, b_odd_leaf, c_odd_leaf, gt_rowbitrev_lambda_odd]
+    writes: [co]
+  - id: stage1_output_adapter
+    reads: [ce, co]
+    writes: [rowpack_even_ce_plus_co, rowpack_odd_ce_minus_co]
+range_contract:
+  input_stage4: [-1728, 1728]
+  materialized_stage5_observed: [-3435, 3435]
+  output_adapter_observed: [-3435, 3435]
+constant_time_policy:
+  public_offsets_only: true
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+promotion_blockers:
+  - symbolic_asm_not_authored
+  - slothy_result_missing
+  - optimized_tmvp_asm_correctness_missing
+  - optimized_tmvp_fullpath_benchmark_missing

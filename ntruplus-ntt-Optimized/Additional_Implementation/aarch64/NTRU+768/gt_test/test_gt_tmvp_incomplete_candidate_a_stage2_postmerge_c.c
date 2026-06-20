@@ -5,6 +5,11 @@
 #include "gt_tmvp_quartic_tmvp_experimental.h"
 #include "params.h"
 
+#ifdef CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH
+#define TEST_LOOP_COUNT 1000
+#include "../test/counter.h"
+#endif
+
 #define NTRUPLUS_NTT_REFERENCE_TEST
 #include "../ntt.c"
 
@@ -22,12 +27,26 @@
 #error "CANDIDATE_A_TRUE_FORWARD_STAGE4 requires CANDIDATE_A_FULLPATH_ASM"
 #endif
 
+#if defined(CANDIDATE_A_TMVP_ASM_SKELETON) && \
+	!defined(CANDIDATE_A_FULLPATH_ASM)
+#error "CANDIDATE_A_TMVP_ASM_SKELETON requires CANDIDATE_A_FULLPATH_ASM"
+#endif
+
+#if defined(CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH) && \
+	!defined(CANDIDATE_A_TMVP_ASM_SKELETON)
+#error "CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH requires CANDIDATE_A_TMVP_ASM_SKELETON"
+#endif
+
 #if defined(CANDIDATE_A_FULLPATH_ASM) && \
 	!defined(CANDIDATE_A_STAGE2_TO5_ASM)
 #error "CANDIDATE_A_FULLPATH_ASM requires CANDIDATE_A_STAGE2_TO5_ASM"
 #endif
 
-#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#define REPORT_PATH                                                           \
+	"docs/gt_tmvp_decomposition_experiment/"                              \
+	"decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-skeleton-fullpath-report.yml"
+#elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
 #define REPORT_PATH                                                           \
 	"docs/gt_tmvp_decomposition_experiment/"                              \
 	"decomposition-quartic-tmvp-incomplete-candidate-a-true-forward-stage4-fullpath-asm-report.yml"
@@ -71,6 +90,10 @@ struct mismatch_counts
 	int postmerge_asm_regular;
 	int postmerge_asm_bounded;
 	int final_schoolbook;
+	int tmvp_asm;
+	int tmvp_asm_rowkernel;
+	int tmvp_asm_postmerge_regular;
+	int tmvp_asm_postmerge_bounded;
 };
 
 struct range_observation
@@ -90,6 +113,10 @@ struct range_stats
 	int asm_postmerge_max_abs;
 	int regular_postmerge_asm_max_abs;
 	int bounded_postmerge_asm_max_abs;
+	int tmvp_asm_max_abs;
+	int tmvp_asm_rows_max_abs;
+	int tmvp_asm_regular_postmerge_max_abs;
+	int tmvp_asm_bounded_postmerge_max_abs;
 	struct range_observation stage4_input;
 	struct range_observation natural_input;
 	struct range_observation materialized_stage5_input;
@@ -100,6 +127,10 @@ struct range_stats
 	struct range_observation schoolbook_final_output;
 	struct range_observation regular_postmerge_asm_output;
 	struct range_observation bounded_postmerge_asm_output;
+	struct range_observation tmvp_asm_output;
+	struct range_observation tmvp_asm_rows_output;
+	struct range_observation tmvp_asm_regular_postmerge_output;
+	struct range_observation tmvp_asm_bounded_postmerge_output;
 };
 
 static const int16_t row_stage123_mul[5] = {
@@ -193,6 +224,10 @@ static void range_stats_init(struct range_stats *ranges)
 	range_observation_init(&ranges->schoolbook_final_output);
 	range_observation_init(&ranges->regular_postmerge_asm_output);
 	range_observation_init(&ranges->bounded_postmerge_asm_output);
+	range_observation_init(&ranges->tmvp_asm_output);
+	range_observation_init(&ranges->tmvp_asm_rows_output);
+	range_observation_init(&ranges->tmvp_asm_regular_postmerge_output);
+	range_observation_init(&ranges->tmvp_asm_bounded_postmerge_output);
 }
 
 static void update_range_observation(struct range_observation *r,
@@ -826,6 +861,12 @@ static int check_one_case(int which, int is_add,
 	int16_t candidate_postmerge_regular_asm[NTRUPLUS_N];
 	int16_t candidate_postmerge_bounded_asm[NTRUPLUS_N];
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	int16_t candidate_tmvp_asm[NTRUPLUS_N];
+	int16_t candidate_tmvp_asm_rows[NTRUPLUS_N];
+	int16_t candidate_tmvp_postmerge_regular_asm[NTRUPLUS_N];
+	int16_t candidate_tmvp_postmerge_bounded_asm[NTRUPLUS_N];
+#endif
 	int status;
 	int ok = 1;
 
@@ -920,6 +961,26 @@ static int check_one_case(int which, int is_add,
 	}
 	update_range_observation(&ranges->candidate_adapter, candidate_adapter);
 
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	if (is_add)
+	{
+		status = gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm(
+			candidate_tmvp_asm, a_stage4, b_stage4, c_stage4);
+	}
+	else
+	{
+		status = gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm(
+			candidate_tmvp_asm, a_stage4, b_stage4);
+	}
+	if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+	{
+		fprintf(stderr, "Candidate A TMVP ASM boundary returned %s\n",
+		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
+		return 0;
+	}
+	update_range_observation(&ranges->tmvp_asm_output, candidate_tmvp_asm);
+#endif
+
 	apply_rowkernel_stage1_only(full_stage1, full_tmvp);
 	apply_rowkernel_stage1_to5(full_rows, full_tmvp);
 	apply_rowkernel_stage2_to5(candidate_rows, candidate_adapter);
@@ -943,6 +1004,22 @@ static int check_one_case(int which, int is_add,
 	update_range_observation(&ranges->bounded_postmerge_asm_output,
 	                         candidate_postmerge_bounded_asm);
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	apply_rowkernel_stage2_to5_asm(candidate_tmvp_asm_rows,
+	                               candidate_tmvp_asm);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		candidate_tmvp_postmerge_regular_asm, candidate_tmvp_asm_rows,
+		&g_postfold_low_mont[0][0], &g_postfold_high_mont[0][0]);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded_asm(
+		candidate_tmvp_postmerge_bounded_asm, candidate_tmvp_asm_rows,
+		&g_postfold_low_mont[0][0], &g_postfold_high_mont[0][0]);
+	update_range_observation(&ranges->tmvp_asm_rows_output,
+	                         candidate_tmvp_asm_rows);
+	update_range_observation(&ranges->tmvp_asm_regular_postmerge_output,
+	                         candidate_tmvp_postmerge_regular_asm);
+	update_range_observation(&ranges->tmvp_asm_bounded_postmerge_output,
+	                         candidate_tmvp_postmerge_bounded_asm);
+#endif
 
 	update_max_abs(&ranges->adapter_max_abs, candidate_adapter);
 	update_max_abs(&ranges->full_rows_max_abs, full_rows);
@@ -957,6 +1034,15 @@ static int check_one_case(int which, int is_add,
 	               candidate_postmerge_regular_asm);
 	update_max_abs(&ranges->bounded_postmerge_asm_max_abs,
 	               candidate_postmerge_bounded_asm);
+#endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	update_max_abs(&ranges->tmvp_asm_max_abs, candidate_tmvp_asm);
+	update_max_abs(&ranges->tmvp_asm_rows_max_abs,
+	               candidate_tmvp_asm_rows);
+	update_max_abs(&ranges->tmvp_asm_regular_postmerge_max_abs,
+	               candidate_tmvp_postmerge_regular_asm);
+	update_max_abs(&ranges->tmvp_asm_bounded_postmerge_max_abs,
+	               candidate_tmvp_postmerge_bounded_asm);
 #endif
 
 	if (!compare_modq_count(is_add ? "add adapter state" : "product adapter state",
@@ -1009,6 +1095,35 @@ static int check_one_case(int which, int is_add,
 		ok = 0;
 	}
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	if (!compare_modq_count(is_add ? "add tmvp asm boundary" :
+	                                 "product tmvp asm boundary",
+	                        candidate_tmvp_asm, candidate_adapter))
+	{
+		mismatches->tmvp_asm++;
+		ok = 0;
+	}
+	if (!compare_modq_count(is_add ? "add tmvp asm rowkernel" :
+	                                 "product tmvp asm rowkernel",
+	                        candidate_tmvp_asm_rows, candidate_rows))
+	{
+		mismatches->tmvp_asm_rowkernel++;
+		ok = 0;
+	}
+	if (!compare_modq_count(is_add ? "add tmvp asm regular postmerge" :
+	                                 "product tmvp asm regular postmerge",
+	                        candidate_tmvp_postmerge_regular_asm, full_out))
+	{
+		mismatches->tmvp_asm_postmerge_regular++;
+	}
+	if (!compare_modq_count(is_add ? "add tmvp asm bounded postmerge" :
+	                                 "product tmvp asm bounded postmerge",
+	                        candidate_tmvp_postmerge_bounded_asm, full_out))
+	{
+		mismatches->tmvp_asm_postmerge_bounded++;
+		ok = 0;
+	}
+#endif
 #ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
 	if (!compare_modq_count(is_add ? "add true-forward stage4 final" :
 	                                 "product true-forward stage4 final",
@@ -1042,6 +1157,20 @@ static int write_report(int product_cases, int add_cases,
 
 	total_mismatches += selected_postmerge_asm_mismatches;
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	const int selected_tmvp_asm_postmerge_mismatches =
+		mismatches->tmvp_asm_postmerge_regular == 0 ?
+			0 : mismatches->tmvp_asm_postmerge_bounded;
+	const char *selected_tmvp_asm_postmerge =
+		mismatches->tmvp_asm_postmerge_regular == 0 ?
+			"regular_asm" :
+			(mismatches->tmvp_asm_postmerge_bounded == 0 ?
+			 "bounded_asm" : "none");
+
+	total_mismatches += mismatches->tmvp_asm +
+	                    mismatches->tmvp_asm_rowkernel +
+	                    selected_tmvp_asm_postmerge_mismatches;
+#endif
 #ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
 	total_mismatches += mismatches->final_schoolbook;
 #endif
@@ -1053,7 +1182,10 @@ static int write_report(int product_cases, int add_cases,
 		return 0;
 	}
 
-#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "candidate_a_tmvp_asm_skeleton_fullpath_status: %s\n",
+	        total_mismatches == 0 ? "pass" : "fail");
+#elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
 	fprintf(f, "candidate_a_true_forward_stage4_fullpath_asm_status: %s\n",
 	        total_mismatches == 0 ? "pass" : "fail");
 #elif defined(CANDIDATE_A_FULLPATH_ASM)
@@ -1083,6 +1215,14 @@ static int write_report(int product_cases, int add_cases,
 #else
 	fprintf(f, "final_compare: complete_stage5_quartic_tmvp_scalar_invntt_scalar_postmerge_scalar\n");
 #endif
+#endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "tmvp_asm_boundary_checked: true\n");
+	fprintf(f, "tmvp_asm_symbol: gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm\n");
+	fprintf(f, "tmvp_add_asm_symbol: gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm\n");
+	fprintf(f, "tmvp_asm_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_skeleton.S\n");
+	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: true\n");
+	fprintf(f, "tmvp_asm_contract: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-kernel-contract.yml\n");
 #endif
 	fprintf(f, "tmvp_boundary: materialized_stage5_current_quartic_leaf\n");
 	fprintf(f, "candidate_input_state: invntt_rowkernel_after_stage1_adapter\n");
@@ -1120,6 +1260,19 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "selected_postmerge_asm_mismatches: %d\n",
 	        selected_postmerge_asm_mismatches);
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "tmvp_asm_mismatches: %d\n", mismatches->tmvp_asm);
+	fprintf(f, "tmvp_asm_rowkernel_mismatches: %d\n",
+	        mismatches->tmvp_asm_rowkernel);
+	fprintf(f, "tmvp_asm_regular_postmerge_mismatches: %d\n",
+	        mismatches->tmvp_asm_postmerge_regular);
+	fprintf(f, "tmvp_asm_bounded_postmerge_mismatches: %d\n",
+	        mismatches->tmvp_asm_postmerge_bounded);
+	fprintf(f, "selected_tmvp_asm_postmerge: %s\n",
+	        selected_tmvp_asm_postmerge);
+	fprintf(f, "selected_tmvp_asm_postmerge_mismatches: %d\n",
+	        selected_tmvp_asm_postmerge_mismatches);
+#endif
 #ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
 	fprintf(f, "final_schoolbook_mismatches: %d\n",
 	        mismatches->final_schoolbook);
@@ -1141,6 +1294,16 @@ static int write_report(int product_cases, int add_cases,
 	        ranges->regular_postmerge_asm_max_abs);
 	fprintf(f, "bounded_postmerge_asm_output_max_abs_observed: %d\n",
 	        ranges->bounded_postmerge_asm_max_abs);
+#endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "tmvp_asm_output_max_abs_observed: %d\n",
+	        ranges->tmvp_asm_max_abs);
+	fprintf(f, "tmvp_asm_rows_max_abs_observed: %d\n",
+	        ranges->tmvp_asm_rows_max_abs);
+	fprintf(f, "tmvp_asm_regular_postmerge_max_abs_observed: %d\n",
+	        ranges->tmvp_asm_regular_postmerge_max_abs);
+	fprintf(f, "tmvp_asm_bounded_postmerge_max_abs_observed: %d\n",
+	        ranges->tmvp_asm_bounded_postmerge_max_abs);
 #endif
 	fprintf(f, "asm_implemented: true\n");
 	fprintf(f, "slothy_generated_opt_asm_used: true\n");
@@ -1187,11 +1350,35 @@ static int write_report(int product_cases, int add_cases,
 	        ranges->bounded_postmerge_asm_output.min,
 	        ranges->bounded_postmerge_asm_output.max,
 	        ranges->bounded_postmerge_asm_output.max_abs);
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "  tmvp_asm_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->tmvp_asm_output.min, ranges->tmvp_asm_output.max,
+	        ranges->tmvp_asm_output.max_abs);
+	fprintf(f, "  tmvp_asm_rows_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->tmvp_asm_rows_output.min,
+	        ranges->tmvp_asm_rows_output.max,
+	        ranges->tmvp_asm_rows_output.max_abs);
+	fprintf(f, "  tmvp_asm_regular_postmerge_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->tmvp_asm_regular_postmerge_output.min,
+	        ranges->tmvp_asm_regular_postmerge_output.max,
+	        ranges->tmvp_asm_regular_postmerge_output.max_abs);
+	fprintf(f, "  tmvp_asm_bounded_postmerge_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->tmvp_asm_bounded_postmerge_output.min,
+	        ranges->tmvp_asm_bounded_postmerge_output.max,
+	        ranges->tmvp_asm_bounded_postmerge_output.max_abs);
+#endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
 	fprintf(f, "tmvp_asm_implemented: false\n");
+	fprintf(f, "tmvp_asm_boundary_skeleton: true\n");
+#else
+	fprintf(f, "tmvp_asm_implemented: false\n");
+#endif
 	fprintf(f, "postmerge_asm_used_for_selected_path: true\n");
 	fprintf(f, "full_pipeline_replaced: false\n");
 	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
-#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	fprintf(f, "recommended_next_gate: replace_tmvp_skeleton_with_symbolic_candidate_a_tmvp_asm\n");
+#elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
 	fprintf(f, "recommended_next_gate: forward_stage4_asm_export_or_candidate_a_tmvp_asm_benchmark\n");
 #else
 	fprintf(f, "recommended_next_gate: true_forward_stage4_source_or_candidate_a_tmvp_asm_benchmark\n");
@@ -1208,6 +1395,337 @@ static int write_report(int product_cases, int add_cases,
 	fclose(f);
 	return 1;
 }
+
+#ifdef CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH
+
+#ifndef CANDIDATE_A_TMVP_BENCH_SAMPLES
+#define CANDIDATE_A_TMVP_BENCH_SAMPLES 101
+#endif
+
+#ifndef CANDIDATE_A_TMVP_BENCH_INNER
+#define CANDIDATE_A_TMVP_BENCH_INNER 16
+#endif
+
+static volatile uint32_t bench_sink;
+
+typedef void (*bench_target)(int16_t r[NTRUPLUS_N],
+                             const int16_t a[NTRUPLUS_N],
+                             const int16_t b[NTRUPLUS_N],
+                             const int16_t c[NTRUPLUS_N]);
+
+struct bench_result
+{
+	const char *name;
+	uint64_t min_ticks;
+	uint64_t median_ticks;
+	uint64_t mean_ticks;
+};
+
+static int16_t bench_tmvp_work[NTRUPLUS_N];
+static int16_t bench_row_work[NTRUPLUS_N];
+
+static void bench_prepare_stage4_inputs(int16_t a_stage4[NTRUPLUS_N],
+                                        int16_t b_stage4[NTRUPLUS_N],
+                                        int16_t c_stage4[NTRUPLUS_N])
+{
+	int16_t a_natural[NTRUPLUS_N];
+	int16_t b_natural[NTRUPLUS_N];
+	int16_t c_natural[NTRUPLUS_N];
+
+	fill_natural_case(a_natural, 9, 0x243f6a88u);
+	fill_natural_case(b_natural, 12, 0x85a308d3u);
+	fill_natural_case(c_natural, 14, 0x13198a2eu);
+	ntt_gt_rowpack_soa_stage4_source(a_stage4, a_natural);
+	ntt_gt_rowpack_soa_stage4_source(b_stage4, b_natural);
+	ntt_gt_rowpack_soa_stage4_source(c_stage4, c_natural);
+}
+
+static void bench_sort_u64(uint64_t *v, int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		const uint64_t x = v[i];
+		int j = i - 1;
+
+		while (j >= 0 && v[j] > x)
+		{
+			v[j + 1] = v[j];
+			j--;
+		}
+		v[j + 1] = x;
+	}
+}
+
+static void target_tmvp_adapter_c_mul(int16_t r[NTRUPLUS_N],
+                                      const int16_t a[NTRUPLUS_N],
+                                      const int16_t b[NTRUPLUS_N],
+                                      const int16_t c[NTRUPLUS_N])
+{
+	(void)c;
+	(void)gt_tmvp_quartic_tmvp_incomplete_materialized_stage5_adapter_c(
+		r, a, b);
+}
+
+static void target_tmvp_adapter_c_add(int16_t r[NTRUPLUS_N],
+                                      const int16_t a[NTRUPLUS_N],
+                                      const int16_t b[NTRUPLUS_N],
+                                      const int16_t c[NTRUPLUS_N])
+{
+	(void)gt_tmvp_quartic_tmvp_add_incomplete_materialized_stage5_adapter_c(
+		r, a, b, c);
+}
+
+static void target_tmvp_asm_skeleton_mul(int16_t r[NTRUPLUS_N],
+                                         const int16_t a[NTRUPLUS_N],
+                                         const int16_t b[NTRUPLUS_N],
+                                         const int16_t c[NTRUPLUS_N])
+{
+	(void)c;
+	(void)gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm(r, a, b);
+}
+
+static void target_tmvp_asm_skeleton_add(int16_t r[NTRUPLUS_N],
+                                         const int16_t a[NTRUPLUS_N],
+                                         const int16_t b[NTRUPLUS_N],
+                                         const int16_t c[NTRUPLUS_N])
+{
+	(void)gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm(r, a, b, c);
+}
+
+static void target_tmvp_asm_skeleton_fullpath_mul(
+	int16_t r[NTRUPLUS_N],
+	const int16_t a[NTRUPLUS_N],
+	const int16_t b[NTRUPLUS_N],
+	const int16_t c[NTRUPLUS_N])
+{
+	(void)c;
+	(void)gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm(
+		bench_tmvp_work, a, b);
+	apply_rowkernel_stage2_to5_asm(bench_row_work, bench_tmvp_work);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		r, bench_row_work, &g_postfold_low_mont[0][0],
+		&g_postfold_high_mont[0][0]);
+}
+
+static void target_tmvp_asm_skeleton_fullpath_add(
+	int16_t r[NTRUPLUS_N],
+	const int16_t a[NTRUPLUS_N],
+	const int16_t b[NTRUPLUS_N],
+	const int16_t c[NTRUPLUS_N])
+{
+	(void)gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm(
+		bench_tmvp_work, a, b, c);
+	apply_rowkernel_stage2_to5_asm(bench_row_work, bench_tmvp_work);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		r, bench_row_work, &g_postfold_low_mont[0][0],
+		&g_postfold_high_mont[0][0]);
+}
+
+static int bench_check_targets(const int16_t a[NTRUPLUS_N],
+                               const int16_t b[NTRUPLUS_N],
+                               const int16_t c[NTRUPLUS_N])
+{
+	int16_t got[NTRUPLUS_N];
+	int16_t want[NTRUPLUS_N];
+	int16_t want_rows[NTRUPLUS_N];
+
+	target_tmvp_asm_skeleton_mul(got, a, b, c);
+	target_tmvp_adapter_c_mul(want, a, b, c);
+	if (!compare_modq_count("bench tmvp asm skeleton mul", got, want))
+	{
+		return 0;
+	}
+
+	target_tmvp_asm_skeleton_add(got, a, b, c);
+	target_tmvp_adapter_c_add(want, a, b, c);
+	if (!compare_modq_count("bench tmvp asm skeleton add", got, want))
+	{
+		return 0;
+	}
+
+	target_tmvp_asm_skeleton_fullpath_mul(got, a, b, c);
+	target_tmvp_adapter_c_mul(bench_tmvp_work, a, b, c);
+	apply_rowkernel_stage2_to5_asm(want_rows, bench_tmvp_work);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		want, want_rows, &g_postfold_low_mont[0][0],
+		&g_postfold_high_mont[0][0]);
+	if (!compare_modq_count("bench tmvp asm skeleton fullpath mul",
+	                        got, want))
+	{
+		return 0;
+	}
+
+	target_tmvp_asm_skeleton_fullpath_add(got, a, b, c);
+	target_tmvp_adapter_c_add(bench_tmvp_work, a, b, c);
+	apply_rowkernel_stage2_to5_asm(want_rows, bench_tmvp_work);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		want, want_rows, &g_postfold_low_mont[0][0],
+		&g_postfold_high_mont[0][0]);
+	if (!compare_modq_count("bench tmvp asm skeleton fullpath add",
+	                        got, want))
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+static struct bench_result bench_run_one(const char *name,
+                                         bench_target target,
+                                         const int16_t a[NTRUPLUS_N],
+                                         const int16_t b[NTRUPLUS_N],
+                                         const int16_t c[NTRUPLUS_N])
+{
+	int16_t r[NTRUPLUS_N];
+	uint64_t samples[CANDIDATE_A_TMVP_BENCH_SAMPLES];
+	uint64_t total = 0;
+
+	for (int i = 0; i < CANDIDATE_A_TMVP_BENCH_SAMPLES; i++)
+	{
+		int tap = i;
+		const uint64_t begin = counter();
+		for (int j = 0; j < CANDIDATE_A_TMVP_BENCH_INNER; j++)
+		{
+			target(r, a, b, c);
+			bench_sink +=
+				(uint32_t)(uint16_t)r[tap] + (uint32_t)(j + 1);
+			tap += 29;
+			if (tap >= NTRUPLUS_N)
+			{
+				tap -= NTRUPLUS_N;
+			}
+		}
+		const uint64_t end = counter();
+		uint64_t elapsed = end - begin;
+
+		if (elapsed > countergap)
+		{
+			elapsed -= countergap;
+		}
+		samples[i] = elapsed / CANDIDATE_A_TMVP_BENCH_INNER;
+		total += samples[i];
+	}
+
+	bench_sort_u64(samples, CANDIDATE_A_TMVP_BENCH_SAMPLES);
+
+	{
+		struct bench_result result;
+		result.name = name;
+		result.min_ticks = samples[0];
+		result.median_ticks =
+			samples[CANDIDATE_A_TMVP_BENCH_SAMPLES / 2];
+		result.mean_ticks = total / CANDIDATE_A_TMVP_BENCH_SAMPLES;
+		return result;
+	}
+}
+
+static int bench_write_report(const struct bench_result *results, int nresults)
+{
+	FILE *f = fopen("docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-skeleton-bench-report.yml",
+	                "w");
+
+	if (!f)
+	{
+		perror("open Candidate A TMVP ASM skeleton bench report");
+		return 0;
+	}
+
+	fprintf(f, "candidate_a_tmvp_asm_skeleton_bench_status: done\n");
+	fprintf(f, "selected_path: incomplete_stage4_candidate_a_tmvp_asm_skeleton_to_invntt_stage2_to_postmerge\n");
+	fprintf(f, "clock_source: cntvct_el0\n");
+	fprintf(f, "metric_unit: cntvct_ticks_per_call\n");
+	fprintf(f, "samples: %d\n", CANDIDATE_A_TMVP_BENCH_SAMPLES);
+	fprintf(f, "inner_iterations_per_sample: %d\n",
+	        CANDIDATE_A_TMVP_BENCH_INNER);
+	fprintf(f, "countergap_ticks: %llu\n",
+	        (unsigned long long)countergap);
+	fprintf(f, "sink_after_run: %u\n", bench_sink);
+	fprintf(f, "stage4_input_source: true_forward_stage4_c_reference\n");
+	fprintf(f, "tmvp_asm_boundary_checked: true\n");
+	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: true\n");
+	fprintf(f, "tmvp_asm_implemented: false\n");
+	fprintf(f, "rowkernel_stage2_to5_asm_used: true\n");
+	fprintf(f, "postmerge_regular_asm_used: true\n");
+	fprintf(f, "postmerge_bounded_asm_used: false\n");
+	fprintf(f, "benchmark_or_cycle_claim_made: true\n");
+	fprintf(f, "correctness_precheck: pass\n");
+	fprintf(f, "results:\n");
+	for (int i = 0; i < nresults; i++)
+	{
+		fprintf(f, "  - name: %s\n", results[i].name);
+		fprintf(f, "    min_ticks: %llu\n",
+		        (unsigned long long)results[i].min_ticks);
+		fprintf(f, "    median_ticks: %llu\n",
+		        (unsigned long long)results[i].median_ticks);
+		fprintf(f, "    mean_ticks: %llu\n",
+		        (unsigned long long)results[i].mean_ticks);
+	}
+	fprintf(f, "notes:\n");
+	fprintf(f, "  - TMVP ASM skeleton rows are AAPCS trampolines to the Candidate A C adapter.\n");
+	fprintf(f, "  - Fullpath rows include TMVP boundary, stage2_to5 rowkernel ASM, and regular postmerge ASM.\n");
+	fprintf(f, "  - These numbers are scaffolding/baseline numbers, not optimized redesigned TMVP ASM numbers.\n");
+	fprintf(f, "recommended_next_gate: replace_tmvp_skeleton_with_symbolic_candidate_a_tmvp_asm\n");
+	fclose(f);
+	return 1;
+}
+
+int main(void)
+{
+	int16_t a_stage4[NTRUPLUS_N];
+	int16_t b_stage4[NTRUPLUS_N];
+	int16_t c_stage4[NTRUPLUS_N];
+	struct bench_result results[6];
+	int nresults = 0;
+
+	init_rowpack_postfold_consts();
+	bench_prepare_stage4_inputs(a_stage4, b_stage4, c_stage4);
+	if (!bench_check_targets(a_stage4, b_stage4, c_stage4))
+	{
+		return 1;
+	}
+
+	setup_counter();
+	results[nresults++] = bench_run_one("tmvp_adapter_c_mul",
+	                                    target_tmvp_adapter_c_mul,
+	                                    a_stage4, b_stage4, c_stage4);
+	results[nresults++] = bench_run_one("tmvp_asm_skeleton_mul",
+	                                    target_tmvp_asm_skeleton_mul,
+	                                    a_stage4, b_stage4, c_stage4);
+	results[nresults++] = bench_run_one("tmvp_adapter_c_add",
+	                                    target_tmvp_adapter_c_add,
+	                                    a_stage4, b_stage4, c_stage4);
+	results[nresults++] = bench_run_one("tmvp_asm_skeleton_add",
+	                                    target_tmvp_asm_skeleton_add,
+	                                    a_stage4, b_stage4, c_stage4);
+	results[nresults++] = bench_run_one("tmvp_asm_skeleton_fullpath_mul",
+	                                    target_tmvp_asm_skeleton_fullpath_mul,
+	                                    a_stage4, b_stage4, c_stage4);
+	results[nresults++] = bench_run_one("tmvp_asm_skeleton_fullpath_add",
+	                                    target_tmvp_asm_skeleton_fullpath_add,
+	                                    a_stage4, b_stage4, c_stage4);
+
+	if (!bench_write_report(results, nresults))
+	{
+		return 1;
+	}
+
+	printf("Candidate A TMVP ASM skeleton benchmark summary:\n");
+	printf("  samples: %d\n", CANDIDATE_A_TMVP_BENCH_SAMPLES);
+	printf("  inner iterations/sample: %d\n", CANDIDATE_A_TMVP_BENCH_INNER);
+	printf("  countergap ticks: %llu\n", (unsigned long long)countergap);
+	for (int i = 0; i < nresults; i++)
+	{
+		printf("  %-36s min=%llu median=%llu mean=%llu cntvct_ticks/call\n",
+		       results[i].name,
+		       (unsigned long long)results[i].min_ticks,
+		       (unsigned long long)results[i].median_ticks,
+		       (unsigned long long)results[i].mean_ticks);
+	}
+	printf("  sink: %u\n", bench_sink);
+	return 0;
+}
+
+#else
 
 int main(void)
 {
@@ -1239,21 +1757,51 @@ int main(void)
 	const int selected_postmerge_ok =
 		mismatches.postmerge_asm_regular == 0 ||
 		mismatches.postmerge_asm_bounded == 0;
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	const int selected_tmvp_asm_postmerge_ok =
+		mismatches.tmvp_asm_postmerge_regular == 0 ||
+		mismatches.tmvp_asm_postmerge_bounded == 0;
+#endif
 	const int ok =
 		mismatches.adapter == 0 && mismatches.rowkernel == 0 &&
 		mismatches.postmerge == 0 && mismatches.asm_rowkernel == 0 &&
 		mismatches.asm_postmerge == 0 && selected_postmerge_ok
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+		&& mismatches.tmvp_asm == 0 &&
+		mismatches.tmvp_asm_rowkernel == 0 &&
+		selected_tmvp_asm_postmerge_ok
+#endif
 #ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
 		&& mismatches.final_schoolbook == 0
 #endif
 		;
 
-#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	printf("Candidate A TMVP ASM skeleton fullpath probe: %s\n",
+	       ok ? "ok" : "failed");
+#elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
 	printf("Candidate A true-forward stage4 fullpath ASM probe: %s\n",
 	       ok ? "ok" : "failed");
 #else
 	printf("Candidate A fullpath ASM probe: %s\n", ok ? "ok" : "failed");
 #endif
+#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+	printf("product_cases=%d product_add_cases=%d adapter_mismatches=%d rowkernel_mismatches=%d postmerge_mismatches=%d asm_rowkernel_mismatches=%d asm_postmerge_mismatches=%d regular_postmerge_asm_mismatches=%d bounded_postmerge_asm_mismatches=%d tmvp_asm_mismatches=%d tmvp_asm_rowkernel_mismatches=%d tmvp_asm_regular_postmerge_mismatches=%d tmvp_asm_bounded_postmerge_mismatches=%d final_schoolbook_mismatches=%d selected_postmerge_asm=%s\n",
+	       product_cases, add_cases, mismatches.adapter,
+	       mismatches.rowkernel, mismatches.postmerge,
+	       mismatches.asm_rowkernel, mismatches.asm_postmerge,
+	       mismatches.postmerge_asm_regular,
+	       mismatches.postmerge_asm_bounded,
+	       mismatches.tmvp_asm,
+	       mismatches.tmvp_asm_rowkernel,
+	       mismatches.tmvp_asm_postmerge_regular,
+	       mismatches.tmvp_asm_postmerge_bounded,
+	       mismatches.final_schoolbook,
+	       mismatches.postmerge_asm_regular == 0 ?
+		       "regular_asm" :
+		       (mismatches.postmerge_asm_bounded == 0 ?
+		        "bounded_asm" : "none"));
+#else
 	printf("product_cases=%d product_add_cases=%d adapter_mismatches=%d rowkernel_mismatches=%d postmerge_mismatches=%d asm_rowkernel_mismatches=%d asm_postmerge_mismatches=%d regular_postmerge_asm_mismatches=%d bounded_postmerge_asm_mismatches=%d final_schoolbook_mismatches=%d selected_postmerge_asm=%s\n",
 	       product_cases, add_cases, mismatches.adapter,
 	       mismatches.rowkernel, mismatches.postmerge,
@@ -1265,6 +1813,7 @@ int main(void)
 		       "regular_asm" :
 		       (mismatches.postmerge_asm_bounded == 0 ?
 		        "bounded_asm" : "none"));
+#endif
 	printf("range_audit stage4=[%d,%d] max_abs=%d adapter=[%d,%d] max_abs=%d rows_asm=[%d,%d] max_abs=%d final_scalar=[%d,%d] max_abs=%d regular_postmerge_asm=[%d,%d] max_abs=%d bounded_postmerge_asm=[%d,%d] max_abs=%d\n",
 	       ranges.stage4_input.min, ranges.stage4_input.max,
 	       ranges.stage4_input.max_abs,
@@ -1307,3 +1856,5 @@ int main(void)
 	        mismatches.postmerge == 0) ? 0 : 1;
 #endif
 }
+
+#endif
