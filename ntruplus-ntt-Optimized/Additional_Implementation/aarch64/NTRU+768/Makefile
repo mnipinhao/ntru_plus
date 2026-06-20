@@ -43,7 +43,7 @@ endif
 .PHONY: test_gt_rowpack_no_entry_no_end_fullpath bench_gt_rowpack_no_entry_no_end_fullpath_cycles bench_gt_rowpack_no_entry_no_end_fullpath_add_cycles
 .PHONY: test_gt_rowpack_lazy_postmerge_asm_fullpath bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles bench_gt_rowpack_lazy_postmerge_asm_v3_forward_cycles bench_gt_rowpack_lazy_postmerge_asm_v3_forward_add_cycles
 .PHONY: audit_gt_rowpack_forward_stage345_liveout test_gt_rowpack_forward_stage345_layout_search test_gt_rowpack_forward_v3c_stage12_stage345_layout_search report_gt_rowpack_forward_topology_decision report_gt_rowpack_forward_v4_topology_model test_gt_rowpack_forward_v4_transform_dag_search test_gt_rowpack_forward_v4_numeric_oracle
-.PHONY: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_c_harness test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_fullpath_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_true_forward_stage4_fullpath_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath bench_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath
+.PHONY: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_c_harness test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_fullpath_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_true_forward_stage4_fullpath_asm test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_batch8_symbolic_contract test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath bench_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath
 .PHONY: test_gt_forward_rowpack_v2_lazyout_asm bench_gt_forward_rowpack_v2_ntt_only bench_gt_forward_rowpack_v2_lazyout_ntt_only
 .PHONY: test_gt_tmvp_quartic_tmvp_experimental_c test_gt_tmvp_quartic_tmvp_experimental_asm test_gt_tmvp_quartic_tmvp_full_asm_smoke
 .PHONY: test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_c test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_asm
@@ -113,6 +113,11 @@ ROWPACK_INVNTT_POSTMERGE_BOUNDED_ASM ?= docs/gt_soa_layout_experiment/kernels/nt
 ROWPACK_INVNTT32_STAGE2_TO5_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end.opt.S
 CANDIDATE_A_TMVP_ASM_SKELETON ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_skeleton.S
 CANDIDATE_A_TMVP_ASM_CONTRACT ?= docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-kernel-contract.yml
+CANDIDATE_A_TMVP_BATCH8_SYMBOLIC_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.sym.S
+CANDIDATE_A_TMVP_BATCH8_KERNEL_CONTRACT ?= docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-symbolic-kernel-contract.yml
+CANDIDATE_A_TMVP_BATCH8_CANDIDATE_CONTRACT ?= docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-candidate-contract.yml
+CANDIDATE_A_TMVP_BATCH8_DAG ?= docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-instruction-dag.yml
+CANDIDATE_A_TMVP_BATCH8_SLOTHY_DRIVER ?= docs/gt_soa_layout_experiment/optimize_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.py
 
 ifneq ($(BENCH_MODE),)
 .DEFAULT_GOAL := aarch64_bench_redirect
@@ -294,6 +299,23 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_true_forward_stage4_fullpath_as
 	$(RG) -n "^selected_postmerge_asm: regular_asm|^postmerge_asm_used_for_selected_path: true|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-true-forward-stage4-fullpath-asm-report.yml
 	$(RG) -n "^recommended_next_gate: forward_stage4_asm_export_or_candidate_a_tmvp_asm_benchmark" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-true-forward-stage4-fullpath-asm-report.yml
 	@printf "Candidate A true-forward stage4 fullpath ASM summary: forward_stage4_c_reference=ok, tmvp_c_adapter=true, rowkernel_stage2_to5_asm=ok, postmerge_asm=ok, final_schoolbook=ok, next=forward_stage4_asm_export_or_candidate_a_tmvp_asm_benchmark\n"
+
+test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_batch8_symbolic_contract: $(CANDIDATE_A_TMVP_BATCH8_SYMBOLIC_ASM) $(CANDIDATE_A_TMVP_BATCH8_KERNEL_CONTRACT) $(CANDIDATE_A_TMVP_BATCH8_CANDIDATE_CONTRACT) $(CANDIDATE_A_TMVP_BATCH8_DAG) $(CANDIDATE_A_TMVP_BATCH8_SLOTHY_DRIVER)
+	@mkdir -p $(BUILD_DIR)
+	test -f "$(SLOTHY_CONTRACT_CHECK)"
+	test -f "$(SLOTHY_CONTRACT_SKILL_DIR)/scripts/check-symbolic-asm.py"
+	test -f "$(SLOTHY_CONTRACT_SKILL_DIR)/scripts/check-physical-reg-leaks.py"
+	$(PYTHON) $(SLOTHY_CONTRACT_CHECK) $(CANDIDATE_A_TMVP_BATCH8_KERNEL_CONTRACT) --kind kernel --mode new_symbolic_kernel > $(BUILD_DIR)/candidate_a_tmvp_batch8_check_kernel_contract.log
+	$(PYTHON) $(SLOTHY_CONTRACT_CHECK) $(CANDIDATE_A_TMVP_BATCH8_CANDIDATE_CONTRACT) --kind candidate > $(BUILD_DIR)/candidate_a_tmvp_batch8_check_candidate_contract.log
+	$(PYTHON) $(SLOTHY_CONTRACT_SKILL_DIR)/scripts/check-symbolic-asm.py --candidate --kernel-contract $(CANDIDATE_A_TMVP_BATCH8_KERNEL_CONTRACT) $(CANDIDATE_A_TMVP_BATCH8_SYMBOLIC_ASM) > $(BUILD_DIR)/candidate_a_tmvp_batch8_check_symbolic_asm.log
+	$(PYTHON) $(SLOTHY_CONTRACT_SKILL_DIR)/scripts/check-physical-reg-leaks.py --contract $(CANDIDATE_A_TMVP_BATCH8_KERNEL_CONTRACT) $(CANDIDATE_A_TMVP_BATCH8_SYMBOLIC_ASM) > $(BUILD_DIR)/candidate_a_tmvp_batch8_check_physical_regs.log
+	$(RG) -n "check-kernel-contract: kernel contract passed" $(BUILD_DIR)/candidate_a_tmvp_batch8_check_kernel_contract.log
+	$(RG) -n "check-kernel-contract: candidate contract passed" $(BUILD_DIR)/candidate_a_tmvp_batch8_check_candidate_contract.log
+	$(RG) -n "check-symbolic-asm: passed" $(BUILD_DIR)/candidate_a_tmvp_batch8_check_symbolic_asm.log
+	$(RG) -n "check-physical-reg-leaks: passed" $(BUILD_DIR)/candidate_a_tmvp_batch8_check_physical_regs.log
+	$(RG) -n "^kernel: ntruplus768_gt_tmvp_candidate_a_tmvp_batch8|^instruction_dag_status: symbolic_batch_core|^  operation: product_only" $(CANDIDATE_A_TMVP_BATCH8_DAG)
+	$(RG) -n "^  scope: product_core_for_one_public_batch_not_full_tmvp_api|^  add_variant: not_yet_implemented|^  wrapper_for_all_branches_rows_kpairs: not_yet_implemented" $(CANDIDATE_A_TMVP_BATCH8_CANDIDATE_CONTRACT)
+	@printf "Candidate A TMVP batch8 symbolic summary: product_core=ready_for_slothy_handoff, wrapper=false, add_variant=false, benchmark=false\n"
 
 test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c.c $(CANDIDATE_A_TMVP_ASM_SKELETON) $(CANDIDATE_A_TMVP_ASM_CONTRACT) $(ROWPACK_INVNTT32_STAGE2_TO5_ASM) $(ROWPACK_INVNTT_POSTMERGE_ASM) $(ROWPACK_INVNTT_POSTMERGE_BOUNDED_ASM)
 	@mkdir -p $(BUILD_DIR)
