@@ -13,10 +13,19 @@
 #define GT_ROWS 3
 #define GT_ROW_N 32
 #define GT_QUARTIC_LANES 4
+#define GT_VECTOR_LANES 8
 #define VECTOR_CASES 16
 #define STAGE4_BOUND 1728
 
-#ifdef CANDIDATE_A_STAGE2_TO5_ASM
+#if defined(CANDIDATE_A_FULLPATH_ASM) && !defined(CANDIDATE_A_STAGE2_TO5_ASM)
+#error "CANDIDATE_A_FULLPATH_ASM requires CANDIDATE_A_STAGE2_TO5_ASM"
+#endif
+
+#ifdef CANDIDATE_A_FULLPATH_ASM
+#define REPORT_PATH                                                           \
+	"docs/gt_tmvp_decomposition_experiment/"                              \
+	"decomposition-quartic-tmvp-incomplete-candidate-a-fullpath-asm-report.yml"
+#elif defined(CANDIDATE_A_STAGE2_TO5_ASM)
 #define REPORT_PATH                                                           \
 	"docs/gt_tmvp_decomposition_experiment/"                              \
 	"decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml"
@@ -33,6 +42,15 @@ extern const int16_t
 	ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end_consts[];
 #endif
 
+#ifdef CANDIDATE_A_FULLPATH_ASM
+void ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+	int16_t *r, const int16_t *work, const int16_t *low_mont,
+	const int16_t *high_mont);
+void ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded_asm(
+	int16_t *r, const int16_t *work, const int16_t *low_mont,
+	const int16_t *high_mont);
+#endif
+
 struct mismatch_counts
 {
 	int adapter;
@@ -40,6 +58,15 @@ struct mismatch_counts
 	int postmerge;
 	int asm_rowkernel;
 	int asm_postmerge;
+	int postmerge_asm_regular;
+	int postmerge_asm_bounded;
+};
+
+struct range_observation
+{
+	int min;
+	int max;
+	int max_abs;
 };
 
 struct range_stats
@@ -50,6 +77,16 @@ struct range_stats
 	int postmerge_max_abs;
 	int asm_rows_max_abs;
 	int asm_postmerge_max_abs;
+	int regular_postmerge_asm_max_abs;
+	int bounded_postmerge_asm_max_abs;
+	struct range_observation stage4_input;
+	struct range_observation materialized_stage5_input;
+	struct range_observation full_tmvp_output;
+	struct range_observation candidate_adapter;
+	struct range_observation candidate_rows_asm;
+	struct range_observation scalar_final_output;
+	struct range_observation regular_postmerge_asm_output;
+	struct range_observation bounded_postmerge_asm_output;
 };
 
 static const int16_t row_stage123_mul[5] = {
@@ -119,6 +156,49 @@ static void update_max_abs(int *max_abs, const int16_t a[NTRUPLUS_N])
 		if (abs_v > *max_abs)
 		{
 			*max_abs = abs_v;
+		}
+	}
+}
+
+static void range_observation_init(struct range_observation *r)
+{
+	r->min = INT16_MAX;
+	r->max = INT16_MIN;
+	r->max_abs = 0;
+}
+
+static void range_stats_init(struct range_stats *ranges)
+{
+	memset(ranges, 0, sizeof(*ranges));
+	range_observation_init(&ranges->stage4_input);
+	range_observation_init(&ranges->materialized_stage5_input);
+	range_observation_init(&ranges->full_tmvp_output);
+	range_observation_init(&ranges->candidate_adapter);
+	range_observation_init(&ranges->candidate_rows_asm);
+	range_observation_init(&ranges->scalar_final_output);
+	range_observation_init(&ranges->regular_postmerge_asm_output);
+	range_observation_init(&ranges->bounded_postmerge_asm_output);
+}
+
+static void update_range_observation(struct range_observation *r,
+                                     const int16_t a[NTRUPLUS_N])
+{
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		const int v = a[i];
+		const int abs_v = harness_abs_i(v);
+
+		if (v < r->min)
+		{
+			r->min = v;
+		}
+		if (v > r->max)
+		{
+			r->max = v;
+		}
+		if (abs_v > r->max_abs)
+		{
+			r->max_abs = abs_v;
 		}
 	}
 }
@@ -457,6 +537,73 @@ static void invntt_rowpack_postmerge_from_rows(
 	invntt_rowpack_branch_combine(r, branches);
 }
 
+#ifdef CANDIDATE_A_FULLPATH_ASM
+static int16_t g_postfold_low_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
+                                  __attribute__((aligned(16)));
+static int16_t g_postfold_high_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
+                                   __attribute__((aligned(16)));
+static int g_postfold_consts_ready;
+
+static int centered_modq(int64_t a)
+{
+	int r = harness_modq(a);
+
+	if (r > NTRUPLUS_Q / 2)
+	{
+		r -= NTRUPLUS_Q;
+	}
+
+	return r;
+}
+
+static int normal_from_mont_centered(int16_t a)
+{
+	return centered_modq(montgomery_reduce(a));
+}
+
+static int16_t mont_from_normal_centered(int normal)
+{
+	return (int16_t)centered_modq(fqmul((int16_t)centered_modq(normal),
+	                                    NTRUPLUS_RSQ));
+}
+
+static void init_rowpack_postfold_consts(void)
+{
+	const int z = normal_from_mont_centered(NTRUPLUS_ZMINUSZ5INV);
+	const int inv192 = normal_from_mont_centered(NTRUPLUS_NINV);
+	const int inv96 = normal_from_mont_centered(NTRUPLUS_2NINV);
+
+	if (g_postfold_consts_ready)
+	{
+		return;
+	}
+
+	for (int n = 0; n < GT_ROWS * GT_ROW_N; n++)
+	{
+		const int f0 = normal_from_mont_centered(untwist_branch0[n]);
+		const int f1 = normal_from_mont_centered(untwist_branch1[n]);
+		const int low0 = centered_modq((int64_t)f0 * (1 - z) * inv192);
+		const int low1 = centered_modq((int64_t)f1 * (1 + z) * inv192);
+		const int high0 = centered_modq((int64_t)f0 * z * inv96);
+		const int high1 = centered_modq(-(int64_t)f1 * z * inv96);
+
+		for (int lane = 0; lane < GT_QUARTIC_LANES; lane++)
+		{
+			g_postfold_low_mont[n][lane] =
+				mont_from_normal_centered(low0);
+			g_postfold_low_mont[n][GT_QUARTIC_LANES + lane] =
+				mont_from_normal_centered(low1);
+			g_postfold_high_mont[n][lane] =
+				mont_from_normal_centered(high0);
+			g_postfold_high_mont[n][GT_QUARTIC_LANES + lane] =
+				mont_from_normal_centered(high1);
+		}
+	}
+
+	g_postfold_consts_ready = 1;
+}
+#endif
+
 static int compare_modq_count(const char *label,
                               const int16_t got[NTRUPLUS_N],
                               const int16_t want[NTRUPLUS_N])
@@ -495,6 +642,10 @@ static int check_one_case(int which, int is_add,
 	int16_t candidate_rows_asm[NTRUPLUS_N];
 	int16_t candidate_out_asm[NTRUPLUS_N];
 #endif
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	int16_t candidate_postmerge_regular_asm[NTRUPLUS_N];
+	int16_t candidate_postmerge_bounded_asm[NTRUPLUS_N];
+#endif
 	int status;
 	int ok = 1;
 
@@ -502,9 +653,24 @@ static int check_one_case(int which, int is_add,
 	fill_stage4_case(b_stage4, which + 3, 0x85a308d3u + (uint32_t)which);
 	fill_stage4_case(c_stage4, which + 5, 0x13198a2eu + (uint32_t)which);
 
+	update_range_observation(&ranges->stage4_input, a_stage4);
+	update_range_observation(&ranges->stage4_input, b_stage4);
+	if (is_add)
+	{
+		update_range_observation(&ranges->stage4_input, c_stage4);
+	}
+
 	materialize_complete_stage5(a_complete, a_stage4);
 	materialize_complete_stage5(b_complete, b_stage4);
 	materialize_complete_stage5(c_complete, c_stage4);
+
+	update_range_observation(&ranges->materialized_stage5_input, a_complete);
+	update_range_observation(&ranges->materialized_stage5_input, b_complete);
+	if (is_add)
+	{
+		update_range_observation(&ranges->materialized_stage5_input,
+		                         c_complete);
+	}
 
 	if (is_add)
 	{
@@ -522,6 +688,7 @@ static int check_one_case(int which, int is_add,
 		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
 		return 0;
 	}
+	update_range_observation(&ranges->full_tmvp_output, full_tmvp);
 
 	if (is_add)
 	{
@@ -541,15 +708,30 @@ static int check_one_case(int which, int is_add,
 		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
 		return 0;
 	}
+	update_range_observation(&ranges->candidate_adapter, candidate_adapter);
 
 	apply_rowkernel_stage1_only(full_stage1, full_tmvp);
 	apply_rowkernel_stage1_to5(full_rows, full_tmvp);
 	apply_rowkernel_stage2_to5(candidate_rows, candidate_adapter);
 	invntt_rowpack_postmerge_from_rows(full_out, full_rows);
 	invntt_rowpack_postmerge_from_rows(candidate_out, candidate_rows);
+	update_range_observation(&ranges->scalar_final_output, full_out);
 #ifdef CANDIDATE_A_STAGE2_TO5_ASM
 	apply_rowkernel_stage2_to5_asm(candidate_rows_asm, candidate_adapter);
 	invntt_rowpack_postmerge_from_rows(candidate_out_asm, candidate_rows_asm);
+	update_range_observation(&ranges->candidate_rows_asm, candidate_rows_asm);
+#endif
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
+		candidate_postmerge_regular_asm, candidate_rows_asm,
+		&g_postfold_low_mont[0][0], &g_postfold_high_mont[0][0]);
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded_asm(
+		candidate_postmerge_bounded_asm, candidate_rows_asm,
+		&g_postfold_low_mont[0][0], &g_postfold_high_mont[0][0]);
+	update_range_observation(&ranges->regular_postmerge_asm_output,
+	                         candidate_postmerge_regular_asm);
+	update_range_observation(&ranges->bounded_postmerge_asm_output,
+	                         candidate_postmerge_bounded_asm);
 #endif
 
 	update_max_abs(&ranges->adapter_max_abs, candidate_adapter);
@@ -559,6 +741,12 @@ static int check_one_case(int which, int is_add,
 #ifdef CANDIDATE_A_STAGE2_TO5_ASM
 	update_max_abs(&ranges->asm_rows_max_abs, candidate_rows_asm);
 	update_max_abs(&ranges->asm_postmerge_max_abs, candidate_out_asm);
+#endif
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	update_max_abs(&ranges->regular_postmerge_asm_max_abs,
+	               candidate_postmerge_regular_asm);
+	update_max_abs(&ranges->bounded_postmerge_asm_max_abs,
+	               candidate_postmerge_bounded_asm);
 #endif
 
 	if (!compare_modq_count(is_add ? "add adapter state" : "product adapter state",
@@ -596,6 +784,21 @@ static int check_one_case(int which, int is_add,
 		ok = 0;
 	}
 #endif
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	if (!compare_modq_count(is_add ? "add regular postmerge ASM fullpath" :
+	                                 "product regular postmerge ASM fullpath",
+	                        candidate_postmerge_regular_asm, full_out))
+	{
+		mismatches->postmerge_asm_regular++;
+	}
+	if (!compare_modq_count(is_add ? "add bounded postmerge ASM fullpath" :
+	                                 "product bounded postmerge ASM fullpath",
+	                        candidate_postmerge_bounded_asm, full_out))
+	{
+		mismatches->postmerge_asm_bounded++;
+		ok = 0;
+	}
+#endif
 
 	return ok;
 }
@@ -604,10 +807,22 @@ static int write_report(int product_cases, int add_cases,
                         const struct mismatch_counts *mismatches,
                         const struct range_stats *ranges)
 {
-	const int total_mismatches =
+	int total_mismatches =
 		mismatches->adapter + mismatches->rowkernel +
 		mismatches->postmerge + mismatches->asm_rowkernel +
 		mismatches->asm_postmerge;
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	const int selected_postmerge_asm_mismatches =
+		mismatches->postmerge_asm_regular == 0 ?
+			0 : mismatches->postmerge_asm_bounded;
+	const char *selected_postmerge_asm =
+		mismatches->postmerge_asm_regular == 0 ?
+			"regular_asm" :
+			(mismatches->postmerge_asm_bounded == 0 ?
+			 "bounded_asm" : "none");
+
+	total_mismatches += selected_postmerge_asm_mismatches;
+#endif
 	FILE *f = fopen(REPORT_PATH, "w");
 
 	if (!f)
@@ -616,7 +831,10 @@ static int write_report(int product_cases, int add_cases,
 		return 0;
 	}
 
-#ifdef CANDIDATE_A_STAGE2_TO5_ASM
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "candidate_a_fullpath_asm_status: %s\n",
+	        total_mismatches == 0 ? "pass" : "fail");
+#elif defined(CANDIDATE_A_STAGE2_TO5_ASM)
 	fprintf(f, "candidate_a_stage2_to5_asm_contract_status: %s\n",
 	        total_mismatches == 0 ? "pass" : "fail");
 #else
@@ -624,6 +842,12 @@ static int write_report(int product_cases, int add_cases,
 	        total_mismatches == 0 ? "pass" : "fail");
 #endif
 	fprintf(f, "selected_path: incomplete_stage4_candidate_a_tmvp_to_invntt_stage2_to_postmerge\n");
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "probe_scope: stage4_boundary_to_final_poly\n");
+	fprintf(f, "stage4_input_source: harness_generated_stage4_boundary\n");
+	fprintf(f, "true_forward_incomplete_asm_used: false\n");
+	fprintf(f, "final_compare: complete_stage5_quartic_tmvp_scalar_invntt_scalar_postmerge_scalar\n");
+#endif
 	fprintf(f, "tmvp_boundary: materialized_stage5_current_quartic_leaf\n");
 	fprintf(f, "candidate_input_state: invntt_rowkernel_after_stage1_adapter\n");
 	fprintf(f, "rowkernel_stage1_skipped: true\n");
@@ -638,6 +862,11 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "candidate_rowkernel: scalar_no_entry_no_end_stage2_to5\n");
 #endif
 	fprintf(f, "postmerge_reference: scalar_rowpack_postmerge_from_rows\n");
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "postmerge_regular_asm_checked: true\n");
+	fprintf(f, "postmerge_bounded_asm_checked: true\n");
+	fprintf(f, "selected_postmerge_asm: %s\n", selected_postmerge_asm);
+#endif
 	fprintf(f, "adapter_even_slot: ce_plus_co\n");
 	fprintf(f, "adapter_odd_slot: ce_minus_co\n");
 	fprintf(f, "product_cases_run: %d\n", product_cases);
@@ -647,6 +876,14 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "postmerge_mismatches: %d\n", mismatches->postmerge);
 	fprintf(f, "asm_rowkernel_mismatches: %d\n", mismatches->asm_rowkernel);
 	fprintf(f, "asm_postmerge_mismatches: %d\n", mismatches->asm_postmerge);
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "regular_postmerge_asm_mismatches: %d\n",
+	        mismatches->postmerge_asm_regular);
+	fprintf(f, "bounded_postmerge_asm_mismatches: %d\n",
+	        mismatches->postmerge_asm_bounded);
+	fprintf(f, "selected_postmerge_asm_mismatches: %d\n",
+	        selected_postmerge_asm_mismatches);
+#endif
 	fprintf(f, "total_mismatches: %d\n", total_mismatches);
 	fprintf(f, "adapter_max_abs_observed: %d\n", ranges->adapter_max_abs);
 	fprintf(f, "full_rows_max_abs_observed: %d\n", ranges->full_rows_max_abs);
@@ -659,17 +896,59 @@ static int write_report(int product_cases, int add_cases,
 	        ranges->asm_rows_max_abs);
 	fprintf(f, "asm_postmerge_output_max_abs_observed: %d\n",
 	        ranges->asm_postmerge_max_abs);
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "regular_postmerge_asm_output_max_abs_observed: %d\n",
+	        ranges->regular_postmerge_asm_max_abs);
+	fprintf(f, "bounded_postmerge_asm_output_max_abs_observed: %d\n",
+	        ranges->bounded_postmerge_asm_max_abs);
+#endif
 	fprintf(f, "asm_implemented: true\n");
 	fprintf(f, "slothy_generated_opt_asm_used: true\n");
 #else
 	fprintf(f, "asm_implemented: false\n");
 #endif
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	fprintf(f, "range_audit:\n");
+	fprintf(f, "  stage4_input: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->stage4_input.min, ranges->stage4_input.max,
+	        ranges->stage4_input.max_abs);
+	fprintf(f, "  materialized_stage5_input: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->materialized_stage5_input.min,
+	        ranges->materialized_stage5_input.max,
+	        ranges->materialized_stage5_input.max_abs);
+	fprintf(f, "  full_tmvp_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->full_tmvp_output.min, ranges->full_tmvp_output.max,
+	        ranges->full_tmvp_output.max_abs);
+	fprintf(f, "  candidate_adapter: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->candidate_adapter.min, ranges->candidate_adapter.max,
+	        ranges->candidate_adapter.max_abs);
+	fprintf(f, "  candidate_rows_asm: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->candidate_rows_asm.min, ranges->candidate_rows_asm.max,
+	        ranges->candidate_rows_asm.max_abs);
+	fprintf(f, "  scalar_final_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->scalar_final_output.min, ranges->scalar_final_output.max,
+	        ranges->scalar_final_output.max_abs);
+	fprintf(f, "  regular_postmerge_asm_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->regular_postmerge_asm_output.min,
+	        ranges->regular_postmerge_asm_output.max,
+	        ranges->regular_postmerge_asm_output.max_abs);
+	fprintf(f, "  bounded_postmerge_asm_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->bounded_postmerge_asm_output.min,
+	        ranges->bounded_postmerge_asm_output.max,
+	        ranges->bounded_postmerge_asm_output.max_abs);
+	fprintf(f, "tmvp_asm_implemented: false\n");
+	fprintf(f, "postmerge_asm_used_for_selected_path: true\n");
+	fprintf(f, "full_pipeline_replaced: false\n");
+	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
+	fprintf(f, "recommended_next_gate: true_forward_stage4_source_or_candidate_a_tmvp_asm_benchmark\n");
+#else
 	fprintf(f, "full_pipeline_replaced: false\n");
 	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
 #ifdef CANDIDATE_A_STAGE2_TO5_ASM
 	fprintf(f, "recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_benchmark_or_fullpath_probe\n");
 #else
 	fprintf(f, "recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_contract\n");
+#endif
 #endif
 	fclose(f);
 	return 1;
@@ -678,9 +957,14 @@ static int write_report(int product_cases, int add_cases,
 int main(void)
 {
 	struct mismatch_counts mismatches = { 0 };
-	struct range_stats ranges = { 0 };
+	struct range_stats ranges;
 	int product_cases = 0;
 	int add_cases = 0;
+
+	range_stats_init(&ranges);
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	init_rowpack_postfold_consts();
+#endif
 
 	for (int t = 0; t < VECTOR_CASES; t++)
 	{
@@ -696,7 +980,44 @@ int main(void)
 		return 1;
 	}
 
-#ifdef CANDIDATE_A_STAGE2_TO5_ASM
+#ifdef CANDIDATE_A_FULLPATH_ASM
+	const int selected_postmerge_ok =
+		mismatches.postmerge_asm_regular == 0 ||
+		mismatches.postmerge_asm_bounded == 0;
+	const int ok =
+		mismatches.adapter == 0 && mismatches.rowkernel == 0 &&
+		mismatches.postmerge == 0 && mismatches.asm_rowkernel == 0 &&
+		mismatches.asm_postmerge == 0 && selected_postmerge_ok;
+
+	printf("Candidate A fullpath ASM probe: %s\n", ok ? "ok" : "failed");
+	printf("product_cases=%d product_add_cases=%d adapter_mismatches=%d rowkernel_mismatches=%d postmerge_mismatches=%d asm_rowkernel_mismatches=%d asm_postmerge_mismatches=%d regular_postmerge_asm_mismatches=%d bounded_postmerge_asm_mismatches=%d selected_postmerge_asm=%s\n",
+	       product_cases, add_cases, mismatches.adapter,
+	       mismatches.rowkernel, mismatches.postmerge,
+	       mismatches.asm_rowkernel, mismatches.asm_postmerge,
+	       mismatches.postmerge_asm_regular,
+	       mismatches.postmerge_asm_bounded,
+	       mismatches.postmerge_asm_regular == 0 ?
+		       "regular_asm" :
+		       (mismatches.postmerge_asm_bounded == 0 ?
+		        "bounded_asm" : "none"));
+	printf("range_audit stage4=[%d,%d] max_abs=%d adapter=[%d,%d] max_abs=%d rows_asm=[%d,%d] max_abs=%d final_scalar=[%d,%d] max_abs=%d regular_postmerge_asm=[%d,%d] max_abs=%d bounded_postmerge_asm=[%d,%d] max_abs=%d\n",
+	       ranges.stage4_input.min, ranges.stage4_input.max,
+	       ranges.stage4_input.max_abs,
+	       ranges.candidate_adapter.min, ranges.candidate_adapter.max,
+	       ranges.candidate_adapter.max_abs,
+	       ranges.candidate_rows_asm.min, ranges.candidate_rows_asm.max,
+	       ranges.candidate_rows_asm.max_abs,
+	       ranges.scalar_final_output.min, ranges.scalar_final_output.max,
+	       ranges.scalar_final_output.max_abs,
+	       ranges.regular_postmerge_asm_output.min,
+	       ranges.regular_postmerge_asm_output.max,
+	       ranges.regular_postmerge_asm_output.max_abs,
+	       ranges.bounded_postmerge_asm_output.min,
+	       ranges.bounded_postmerge_asm_output.max,
+	       ranges.bounded_postmerge_asm_output.max_abs);
+
+	return ok ? 0 : 1;
+#elif defined(CANDIDATE_A_STAGE2_TO5_ASM)
 	printf("Candidate A stage2-to5 ASM contract: %s\n",
 	       (mismatches.adapter == 0 && mismatches.rowkernel == 0 &&
 	        mismatches.postmerge == 0 && mismatches.asm_rowkernel == 0 &&
