@@ -206,6 +206,35 @@ slothy_start_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8:
     uzp2     V<er2>.8h, V<e_r2_l>.8h, V<e_r2_h>.8h
     uzp2     V<er3>.8h, V<e_r3_l>.8h, V<e_r3_h>.8h
 
+    smull    V<er0_rsq_l>.4s, V<er0>.4h, V<c_base>.h[3]
+    smull2   V<er0_rsq_h>.4s, V<er0>.8h, V<c_base>.h[3]
+    smull    V<er1_rsq_l>.4s, V<er1>.4h, V<c_base>.h[3]
+    smull2   V<er1_rsq_h>.4s, V<er1>.8h, V<c_base>.h[3]
+    smull    V<er2_rsq_l>.4s, V<er2>.4h, V<c_base>.h[3]
+    smull2   V<er2_rsq_h>.4s, V<er2>.8h, V<c_base>.h[3]
+    smull    V<er3_rsq_l>.4s, V<er3>.4h, V<c_base>.h[3]
+    smull2   V<er3_rsq_h>.4s, V<er3>.8h, V<c_base>.h[3]
+    uzp1     V<er0_rsq_q>.8h, V<er0_rsq_l>.8h, V<er0_rsq_h>.8h
+    uzp1     V<er1_rsq_q>.8h, V<er1_rsq_l>.8h, V<er1_rsq_h>.8h
+    uzp1     V<er2_rsq_q>.8h, V<er2_rsq_l>.8h, V<er2_rsq_h>.8h
+    uzp1     V<er3_rsq_q>.8h, V<er3_rsq_l>.8h, V<er3_rsq_h>.8h
+    mul      V<er0_rsq_q>.8h, V<er0_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<er1_rsq_q>.8h, V<er1_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<er2_rsq_q>.8h, V<er2_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<er3_rsq_q>.8h, V<er3_rsq_q>.8h, V<c_base>.h[2]
+    smlal    V<er0_rsq_l>.4s, V<er0_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<er0_rsq_h>.4s, V<er0_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<er1_rsq_l>.4s, V<er1_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<er1_rsq_h>.4s, V<er1_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<er2_rsq_l>.4s, V<er2_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<er2_rsq_h>.4s, V<er2_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<er3_rsq_l>.4s, V<er3_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<er3_rsq_h>.4s, V<er3_rsq_q>.8h, V<c_base>.h[0]
+    uzp2     V<er0n>.8h, V<er0_rsq_l>.8h, V<er0_rsq_h>.8h
+    uzp2     V<er1n>.8h, V<er1_rsq_l>.8h, V<er1_rsq_h>.8h
+    uzp2     V<er2n>.8h, V<er2_rsq_l>.8h, V<er2_rsq_h>.8h
+    uzp2     V<er3n>.8h, V<er3_rsq_l>.8h, V<er3_rsq_h>.8h
+
     smull    V<o_acc0_l>.4s, V<ao1>.4h, V<bo3>.4h
     smull2   V<o_acc0_h>.4s, V<ao1>.8h, V<bo3>.8h
     smlal    V<o_acc0_l>.4s, V<ao2>.4h, V<bo2>.4h
@@ -288,14 +317,43 @@ slothy_start_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8:
     uzp2     V<or2>.8h, V<o_r2_l>.8h, V<o_r2_h>.8h
     uzp2     V<or3>.8h, V<o_r3_l>.8h, V<o_r3_h>.8h
 
-    add      V<out0_even>.8h, V<er0>.8h, V<or0>.8h
-    sub      V<out0_odd>.8h,  V<er0>.8h, V<or0>.8h
-    add      V<out1_even>.8h, V<er1>.8h, V<or1>.8h
-    sub      V<out1_odd>.8h,  V<er1>.8h, V<or1>.8h
-    add      V<out2_even>.8h, V<er2>.8h, V<or2>.8h
-    sub      V<out2_odd>.8h,  V<er2>.8h, V<or2>.8h
-    add      V<out3_even>.8h, V<er3>.8h, V<or3>.8h
-    sub      V<out3_odd>.8h,  V<er3>.8h, V<or3>.8h
+    smull    V<or0_rsq_l>.4s, V<or0>.4h, V<c_base>.h[3]
+    smull2   V<or0_rsq_h>.4s, V<or0>.8h, V<c_base>.h[3]
+    smull    V<or1_rsq_l>.4s, V<or1>.4h, V<c_base>.h[3]
+    smull2   V<or1_rsq_h>.4s, V<or1>.8h, V<c_base>.h[3]
+    smull    V<or2_rsq_l>.4s, V<or2>.4h, V<c_base>.h[3]
+    smull2   V<or2_rsq_h>.4s, V<or2>.8h, V<c_base>.h[3]
+    smull    V<or3_rsq_l>.4s, V<or3>.4h, V<c_base>.h[3]
+    smull2   V<or3_rsq_h>.4s, V<or3>.8h, V<c_base>.h[3]
+    uzp1     V<or0_rsq_q>.8h, V<or0_rsq_l>.8h, V<or0_rsq_h>.8h
+    uzp1     V<or1_rsq_q>.8h, V<or1_rsq_l>.8h, V<or1_rsq_h>.8h
+    uzp1     V<or2_rsq_q>.8h, V<or2_rsq_l>.8h, V<or2_rsq_h>.8h
+    uzp1     V<or3_rsq_q>.8h, V<or3_rsq_l>.8h, V<or3_rsq_h>.8h
+    mul      V<or0_rsq_q>.8h, V<or0_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<or1_rsq_q>.8h, V<or1_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<or2_rsq_q>.8h, V<or2_rsq_q>.8h, V<c_base>.h[2]
+    mul      V<or3_rsq_q>.8h, V<or3_rsq_q>.8h, V<c_base>.h[2]
+    smlal    V<or0_rsq_l>.4s, V<or0_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<or0_rsq_h>.4s, V<or0_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<or1_rsq_l>.4s, V<or1_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<or1_rsq_h>.4s, V<or1_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<or2_rsq_l>.4s, V<or2_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<or2_rsq_h>.4s, V<or2_rsq_q>.8h, V<c_base>.h[0]
+    smlal    V<or3_rsq_l>.4s, V<or3_rsq_q>.4h, V<c_base>.h[0]
+    smlal2   V<or3_rsq_h>.4s, V<or3_rsq_q>.8h, V<c_base>.h[0]
+    uzp2     V<or0n>.8h, V<or0_rsq_l>.8h, V<or0_rsq_h>.8h
+    uzp2     V<or1n>.8h, V<or1_rsq_l>.8h, V<or1_rsq_h>.8h
+    uzp2     V<or2n>.8h, V<or2_rsq_l>.8h, V<or2_rsq_h>.8h
+    uzp2     V<or3n>.8h, V<or3_rsq_l>.8h, V<or3_rsq_h>.8h
+
+    add      V<out0_even>.8h, V<er0n>.8h, V<or0n>.8h
+    sub      V<out0_odd>.8h,  V<er0n>.8h, V<or0n>.8h
+    add      V<out1_even>.8h, V<er1n>.8h, V<or1n>.8h
+    sub      V<out1_odd>.8h,  V<er1n>.8h, V<or1n>.8h
+    add      V<out2_even>.8h, V<er2n>.8h, V<or2n>.8h
+    sub      V<out2_odd>.8h,  V<er2n>.8h, V<or2n>.8h
+    add      V<out3_even>.8h, V<er3n>.8h, V<or3n>.8h
+    sub      V<out3_odd>.8h,  V<er3n>.8h, V<or3n>.8h
 
     zip1     V<out0_lo>.8h, V<out0_even>.8h, V<out0_odd>.8h
     zip2     V<out0_hi>.8h, V<out0_even>.8h, V<out0_odd>.8h

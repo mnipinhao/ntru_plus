@@ -3,11 +3,13 @@ candidate:
   status: investigate
   kernel_contract: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-symbolic-kernel-contract.yml
   symbolic_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.sym.S
+  opt_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.opt.S
+  wrapper_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8_wrapper.c
   slothy_driver: docs/gt_soa_layout_experiment/optimize_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.py
 
 contract_preservation:
   preserved: true
-  approved_changes: no_public_pipeline_contract_change_batch_core_only
+  approved_changes: public_candidate_a_product_api_preserved_add_api_falls_back_to_c
 
 region:
   start_label: slothy_start_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
@@ -29,6 +31,8 @@ constant_time_contract:
   no_secret_dependent_memory_access: true
 
 notes:
-  scope: product_core_for_one_public_batch_not_full_tmvp_api
-  add_variant: not_yet_implemented
-  wrapper_for_all_branches_rows_kpairs: not_yet_implemented
+  scope: product_core_for_one_public_batch_plus_c_wrapper_for_public_product_api
+  add_variant: c_adapter_fallback
+  wrapper_for_all_branches_rows_kpairs: implemented_in_c
+  fullpath_gate: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_batch8_asm_fullpath
+  bench_gate: bench_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_batch8_asm_fullpath

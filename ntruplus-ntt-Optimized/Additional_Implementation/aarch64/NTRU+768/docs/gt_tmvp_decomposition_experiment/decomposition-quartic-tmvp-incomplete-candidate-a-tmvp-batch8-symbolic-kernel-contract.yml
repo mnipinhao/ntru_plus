@@ -23,7 +23,7 @@ slothy:
 region:
   start_label: slothy_start_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
   end_label: slothy_end_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
-  expected_instruction_count: 280
+  expected_instruction_count: 303
   live_in: [x0_output_batch_base, x1_a_stage4_batch_base, x2_b_stage4_batch_base, x3_candidate_a_batch_constants]
   live_out: [memory_at_x0_offsets_0_16_64_80_128_144_192_208]
 
@@ -54,10 +54,10 @@ memory_contract:
   pointer_updates: [none_escape_abi]
 
 constant_contract:
-  constants: [ntruplus_q_3457, montgomery_qinv_12929, stage5_twiddle, stage5_twiddle_pre, lambda_even, lambda_odd]
+  constants: [ntruplus_q_3457, montgomery_qinv_minus12929, ntruplus_rsq_867, stage5_twiddle, stage5_twiddle_pre, lambda_even, lambda_odd]
   modulus: 3457
   representation: signed_i16_montgomery_for_products_with_centered_modq_equivalence
-  reduction_method: montgomery_reduce_after_stage5_twiddle_products_and_quartic_products
+  reduction_method: montgomery_reduce_after_stage5_twiddle_products_quartic_products_and_final_rsq_normalization
 
 range_contract:
   input_ranges: [stage4_inputs_observed_and_required_within_minus1728_to_1728]

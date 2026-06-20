@@ -32,6 +32,11 @@
 #error "CANDIDATE_A_TMVP_ASM_SKELETON requires CANDIDATE_A_FULLPATH_ASM"
 #endif
 
+#if defined(CANDIDATE_A_TMVP_BATCH8_ASM) && \
+	!defined(CANDIDATE_A_TMVP_ASM_SKELETON)
+#error "CANDIDATE_A_TMVP_BATCH8_ASM requires CANDIDATE_A_TMVP_ASM_SKELETON"
+#endif
+
 #if defined(CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH) && \
 	!defined(CANDIDATE_A_TMVP_ASM_SKELETON)
 #error "CANDIDATE_A_BENCH_TMVP_ASM_FULLPATH requires CANDIDATE_A_TMVP_ASM_SKELETON"
@@ -42,7 +47,11 @@
 #error "CANDIDATE_A_FULLPATH_ASM requires CANDIDATE_A_STAGE2_TO5_ASM"
 #endif
 
-#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+#define REPORT_PATH                                                           \
+	"docs/gt_tmvp_decomposition_experiment/"                              \
+	"decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-asm-fullpath-report.yml"
+#elif defined(CANDIDATE_A_TMVP_ASM_SKELETON)
 #define REPORT_PATH                                                           \
 	"docs/gt_tmvp_decomposition_experiment/"                              \
 	"decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-skeleton-fullpath-report.yml"
@@ -1182,7 +1191,10 @@ static int write_report(int product_cases, int add_cases,
 		return 0;
 	}
 
-#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "candidate_a_tmvp_batch8_asm_fullpath_status: %s\n",
+	        total_mismatches == 0 ? "pass" : "fail");
+#elif defined(CANDIDATE_A_TMVP_ASM_SKELETON)
 	fprintf(f, "candidate_a_tmvp_asm_skeleton_fullpath_status: %s\n",
 	        total_mismatches == 0 ? "pass" : "fail");
 #elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
@@ -1220,9 +1232,18 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "tmvp_asm_boundary_checked: true\n");
 	fprintf(f, "tmvp_asm_symbol: gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm\n");
 	fprintf(f, "tmvp_add_asm_symbol: gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm\n");
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "tmvp_asm_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.opt.S\n");
+	fprintf(f, "tmvp_asm_wrapper_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8_wrapper.c\n");
+	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: false\n");
+	fprintf(f, "tmvp_asm_batch8_core_used: true\n");
+	fprintf(f, "tmvp_add_asm_fallback_to_c: true\n");
+	fprintf(f, "tmvp_asm_contract: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-symbolic-kernel-contract.yml\n");
+#else
 	fprintf(f, "tmvp_asm_source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_skeleton.S\n");
 	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: true\n");
 	fprintf(f, "tmvp_asm_contract: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-kernel-contract.yml\n");
+#endif
 #endif
 	fprintf(f, "tmvp_boundary: materialized_stage5_current_quartic_leaf\n");
 	fprintf(f, "candidate_input_state: invntt_rowkernel_after_stage1_adapter\n");
@@ -1368,15 +1389,24 @@ static int write_report(int product_cases, int add_cases,
 	        ranges->tmvp_asm_bounded_postmerge_output.max_abs);
 #endif
 #ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "tmvp_asm_implemented: true\n");
+	fprintf(f, "tmvp_asm_boundary_skeleton: false\n");
+	fprintf(f, "tmvp_asm_batch8_core_used: true\n");
+	fprintf(f, "tmvp_add_asm_fallback_to_c: true\n");
+#else
 	fprintf(f, "tmvp_asm_implemented: false\n");
 	fprintf(f, "tmvp_asm_boundary_skeleton: true\n");
+#endif
 #else
 	fprintf(f, "tmvp_asm_implemented: false\n");
 #endif
 	fprintf(f, "postmerge_asm_used_for_selected_path: true\n");
 	fprintf(f, "full_pipeline_replaced: false\n");
 	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
-#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "recommended_next_gate: candidate_a_batch8_tmvp_benchmark_or_add_variant\n");
+#elif defined(CANDIDATE_A_TMVP_ASM_SKELETON)
 	fprintf(f, "recommended_next_gate: replace_tmvp_skeleton_with_symbolic_candidate_a_tmvp_asm\n");
 #elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
 	fprintf(f, "recommended_next_gate: forward_stage4_asm_export_or_candidate_a_tmvp_asm_benchmark\n");
@@ -1621,17 +1651,31 @@ static struct bench_result bench_run_one(const char *name,
 
 static int bench_write_report(const struct bench_result *results, int nresults)
 {
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	FILE *f = fopen("docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-asm-bench-report.yml",
+	                "w");
+#else
 	FILE *f = fopen("docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-asm-skeleton-bench-report.yml",
 	                "w");
+#endif
 
 	if (!f)
 	{
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+		perror("open Candidate A TMVP batch8 ASM bench report");
+#else
 		perror("open Candidate A TMVP ASM skeleton bench report");
+#endif
 		return 0;
 	}
 
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "candidate_a_tmvp_batch8_asm_bench_status: done\n");
+	fprintf(f, "selected_path: incomplete_stage4_candidate_a_tmvp_batch8_asm_to_invntt_stage2_to_postmerge\n");
+#else
 	fprintf(f, "candidate_a_tmvp_asm_skeleton_bench_status: done\n");
 	fprintf(f, "selected_path: incomplete_stage4_candidate_a_tmvp_asm_skeleton_to_invntt_stage2_to_postmerge\n");
+#endif
 	fprintf(f, "clock_source: cntvct_el0\n");
 	fprintf(f, "metric_unit: cntvct_ticks_per_call\n");
 	fprintf(f, "samples: %d\n", CANDIDATE_A_TMVP_BENCH_SAMPLES);
@@ -1642,8 +1686,15 @@ static int bench_write_report(const struct bench_result *results, int nresults)
 	fprintf(f, "sink_after_run: %u\n", bench_sink);
 	fprintf(f, "stage4_input_source: true_forward_stage4_c_reference\n");
 	fprintf(f, "tmvp_asm_boundary_checked: true\n");
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: false\n");
+	fprintf(f, "tmvp_asm_batch8_core_used: true\n");
+	fprintf(f, "tmvp_add_asm_fallback_to_c: true\n");
+	fprintf(f, "tmvp_asm_implemented: true\n");
+#else
 	fprintf(f, "tmvp_asm_skeleton_trampoline_to_c: true\n");
 	fprintf(f, "tmvp_asm_implemented: false\n");
+#endif
 	fprintf(f, "rowkernel_stage2_to5_asm_used: true\n");
 	fprintf(f, "postmerge_regular_asm_used: true\n");
 	fprintf(f, "postmerge_bounded_asm_used: false\n");
@@ -1661,10 +1712,17 @@ static int bench_write_report(const struct bench_result *results, int nresults)
 		        (unsigned long long)results[i].mean_ticks);
 	}
 	fprintf(f, "notes:\n");
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	fprintf(f, "  - TMVP batch8 ASM rows use the Slothy-generated product core through a C wrapper.\n");
+	fprintf(f, "  - Product rows include real batch8 TMVP ASM; product-add rows still use the Candidate A C add adapter.\n");
+	fprintf(f, "  - Fullpath rows include TMVP boundary, stage2_to5 rowkernel ASM, and regular postmerge ASM.\n");
+	fprintf(f, "recommended_next_gate: candidate_a_batch8_tmvp_add_variant_or_full_wrapper_asm\n");
+#else
 	fprintf(f, "  - TMVP ASM skeleton rows are AAPCS trampolines to the Candidate A C adapter.\n");
 	fprintf(f, "  - Fullpath rows include TMVP boundary, stage2_to5 rowkernel ASM, and regular postmerge ASM.\n");
 	fprintf(f, "  - These numbers are scaffolding/baseline numbers, not optimized redesigned TMVP ASM numbers.\n");
 	fprintf(f, "recommended_next_gate: replace_tmvp_skeleton_with_symbolic_candidate_a_tmvp_asm\n");
+#endif
 	fclose(f);
 	return 1;
 }
@@ -1688,28 +1746,56 @@ int main(void)
 	results[nresults++] = bench_run_one("tmvp_adapter_c_mul",
 	                                    target_tmvp_adapter_c_mul,
 	                                    a_stage4, b_stage4, c_stage4);
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	results[nresults++] = bench_run_one("tmvp_batch8_asm_mul",
+	                                    target_tmvp_asm_skeleton_mul,
+	                                    a_stage4, b_stage4, c_stage4);
+#else
 	results[nresults++] = bench_run_one("tmvp_asm_skeleton_mul",
 	                                    target_tmvp_asm_skeleton_mul,
 	                                    a_stage4, b_stage4, c_stage4);
+#endif
 	results[nresults++] = bench_run_one("tmvp_adapter_c_add",
 	                                    target_tmvp_adapter_c_add,
 	                                    a_stage4, b_stage4, c_stage4);
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	results[nresults++] = bench_run_one("tmvp_batch8_asm_add_c_fallback",
+	                                    target_tmvp_asm_skeleton_add,
+	                                    a_stage4, b_stage4, c_stage4);
+#else
 	results[nresults++] = bench_run_one("tmvp_asm_skeleton_add",
 	                                    target_tmvp_asm_skeleton_add,
 	                                    a_stage4, b_stage4, c_stage4);
+#endif
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	results[nresults++] = bench_run_one("tmvp_batch8_asm_fullpath_mul",
+	                                    target_tmvp_asm_skeleton_fullpath_mul,
+	                                    a_stage4, b_stage4, c_stage4);
+#else
 	results[nresults++] = bench_run_one("tmvp_asm_skeleton_fullpath_mul",
 	                                    target_tmvp_asm_skeleton_fullpath_mul,
 	                                    a_stage4, b_stage4, c_stage4);
+#endif
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	results[nresults++] = bench_run_one("tmvp_batch8_asm_fullpath_add_c_fallback",
+	                                    target_tmvp_asm_skeleton_fullpath_add,
+	                                    a_stage4, b_stage4, c_stage4);
+#else
 	results[nresults++] = bench_run_one("tmvp_asm_skeleton_fullpath_add",
 	                                    target_tmvp_asm_skeleton_fullpath_add,
 	                                    a_stage4, b_stage4, c_stage4);
+#endif
 
 	if (!bench_write_report(results, nresults))
 	{
 		return 1;
 	}
 
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	printf("Candidate A TMVP batch8 ASM benchmark summary:\n");
+#else
 	printf("Candidate A TMVP ASM skeleton benchmark summary:\n");
+#endif
 	printf("  samples: %d\n", CANDIDATE_A_TMVP_BENCH_SAMPLES);
 	printf("  inner iterations/sample: %d\n", CANDIDATE_A_TMVP_BENCH_INNER);
 	printf("  countergap ticks: %llu\n", (unsigned long long)countergap);
@@ -1776,7 +1862,10 @@ int main(void)
 #endif
 		;
 
-#ifdef CANDIDATE_A_TMVP_ASM_SKELETON
+#ifdef CANDIDATE_A_TMVP_BATCH8_ASM
+	printf("Candidate A TMVP batch8 ASM fullpath probe: %s\n",
+	       ok ? "ok" : "failed");
+#elif defined(CANDIDATE_A_TMVP_ASM_SKELETON)
 	printf("Candidate A TMVP ASM skeleton fullpath probe: %s\n",
 	       ok ? "ok" : "failed");
 #elif defined(CANDIDATE_A_TRUE_FORWARD_STAGE4)
