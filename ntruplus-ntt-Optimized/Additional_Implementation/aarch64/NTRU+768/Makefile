@@ -4,6 +4,7 @@ CFLAGS += -Wall -Wextra -Wpedantic -Wmissing-prototypes -Wredundant-decls \
   -Wshadow -Wpointer-arith -O3 -fomit-frame-pointer
 NISTFLAGS += -Wno-unused-result -O3 -fomit-frame-pointer
 RM = /bin/rm -f
+RG ?= grep -E
 
 SOURCES= kem.c symmetric.c poly.c asm/add.s asm/ntt.s asm/base.s asm/crepmod3.s asm/pack.s asm/cbd.s
 HEADERS= api.h params.h poly.h symmetric.h
@@ -215,12 +216,12 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_c_harness:
 	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_c ntt.c gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_incomplete_candidate_a_c.c
 	./$(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_c
 	test -f docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^candidate_a_c_harness_status: incomplete_materialized_stage5_tmvp_c_harness_pass|^selected_path: incomplete_stage4_materialized_stage5_quartic_pair_to_invntt_stage2" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^candidate: fused_stage5_plus_current_quartic_leaves|^stage4_input_layout: rowpack_k_even_u_k_odd_v|^current_quartic_leaf_reused: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^direct_naive_octic_asm_used: false|^product_count_delta_vs_current: 0|^stage5_materialized_inside_tmvp_c: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^output_adapter_even_slot: ce_plus_co|^output_adapter_odd_slot: ce_minus_co|^direct_invntt_stage1_adapter_checked: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^asm_implemented: false|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
-	rg -n "^recommended_next_gate: candidate_a_stage2_to_postmerge_c_or_asm_contract" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^candidate_a_c_harness_status: incomplete_materialized_stage5_tmvp_c_harness_pass|^selected_path: incomplete_stage4_materialized_stage5_quartic_pair_to_invntt_stage2" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^candidate: fused_stage5_plus_current_quartic_leaves|^stage4_input_layout: rowpack_k_even_u_k_odd_v|^current_quartic_leaf_reused: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^direct_naive_octic_asm_used: false|^product_count_delta_vs_current: 0|^stage5_materialized_inside_tmvp_c: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^output_adapter_even_slot: ce_plus_co|^output_adapter_odd_slot: ce_minus_co|^direct_invntt_stage1_adapter_checked: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^asm_implemented: false|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
+	$(RG) -n "^recommended_next_gate: candidate_a_stage2_to_postmerge_c_or_asm_contract" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-c-harness-report.yml
 	@printf "Candidate A C harness summary: fused_stage5_load=true, current_quartic_leaf_reused=true, output=[ce+co,ce-co], product_count_delta=0, next=candidate_a_stage2_to_postmerge_c_or_asm_contract\n"
 
 test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_c_harness
@@ -228,12 +229,12 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c: test_gt_tmv
 	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c.c
 	./$(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c
 	test -f docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^candidate_a_stage2_postmerge_c_status: pass|^selected_path: incomplete_stage4_candidate_a_tmvp_to_invntt_stage2_to_postmerge" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^candidate_input_state: invntt_rowkernel_after_stage1_adapter|^rowkernel_stage1_skipped: true|^candidate_rowkernel: scalar_no_entry_no_end_stage2_to5" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^adapter_mismatches: 0|^rowkernel_mismatches: 0|^postmerge_mismatches: 0|^total_mismatches: 0" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^adapter_even_slot: ce_plus_co|^adapter_odd_slot: ce_minus_co|^postmerge_reference: scalar_rowpack_postmerge_from_rows" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^asm_implemented: false|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
-	rg -n "^recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_contract" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^candidate_a_stage2_postmerge_c_status: pass|^selected_path: incomplete_stage4_candidate_a_tmvp_to_invntt_stage2_to_postmerge" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^candidate_input_state: invntt_rowkernel_after_stage1_adapter|^rowkernel_stage1_skipped: true|^candidate_rowkernel: scalar_no_entry_no_end_stage2_to5" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^adapter_mismatches: 0|^rowkernel_mismatches: 0|^postmerge_mismatches: 0|^total_mismatches: 0" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^adapter_even_slot: ce_plus_co|^adapter_odd_slot: ce_minus_co|^postmerge_reference: scalar_rowpack_postmerge_from_rows" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^asm_implemented: false|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
+	$(RG) -n "^recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_contract" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-postmerge-c-report.yml
 	@printf "Candidate A stage2-to-postmerge C summary: adapter=ok, rowkernel_stage2_to5=ok, postmerge=ok, next=candidate_a_stage2_to5_rowkernel_asm_contract\n"
 
 test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c
@@ -242,16 +243,16 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract: t
 	$(PYTHON) $(SLOTHY_SYMBOLIC_SKILL_DIR)/scripts/check-symbolic-asm.py docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end.sym.S > $(BUILD_DIR)/candidate_a_stage2_to5_check_symbolic_asm.log
 	$(PYTHON) $(SLOTHY_SYMBOLIC_SKILL_DIR)/scripts/check-slothy-region-size.py docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end.sym.S > $(BUILD_DIR)/candidate_a_stage2_to5_check_region_size.log
 	$(PYTHON) $(SLOTHY_SYMBOLIC_SKILL_DIR)/scripts/check-physical-reg-leaks.py docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end.sym.S --allow-reg x0 --allow-reg x1 > $(BUILD_DIR)/candidate_a_stage2_to5_check_physical_regs.log
-	rg -n "check-symbolic-asm:" $(BUILD_DIR)/candidate_a_stage2_to5_check_symbolic_asm.log
-	rg -n "REGION002|check-slothy-region-size:" $(BUILD_DIR)/candidate_a_stage2_to5_check_region_size.log
-	rg -n "check-physical-reg-leaks: no warnings emitted" $(BUILD_DIR)/candidate_a_stage2_to5_check_physical_regs.log
+	$(RG) -n "check-symbolic-asm:" $(BUILD_DIR)/candidate_a_stage2_to5_check_symbolic_asm.log
+	$(RG) -n "REGION002|check-slothy-region-size:" $(BUILD_DIR)/candidate_a_stage2_to5_check_region_size.log
+	$(RG) -n "check-physical-reg-leaks: no warnings emitted" $(BUILD_DIR)/candidate_a_stage2_to5_check_physical_regs.log
 	test -f docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
 	test -f docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.md
-	rg -n "^candidate_a_stage2_to5_symbolic_contract_status: pass|^source_kind: slothy_symbolic_asm|^slothy_workflow: ra_then_window_opt" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
-	rg -n "^input_state: invntt_rowkernel_after_stage1_adapter|^rowkernel_stage1_skipped: true|^candidate_rowkernel: symbolic_no_entry_no_end_stage2_to5" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
-	rg -n "^stage1_instructions_removed: true|^stage1_mask_constant_not_loaded: true|^stage2_present: true|^stage3_present: true|^stage4_present: true|^stage5_present: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
-	rg -n "^slothy_run_claimed: false|^allocated_or_optimized_asm_generated: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
-	rg -n "^recommended_next_gate: run_slothy_ra_then_window_generate_stage2_to5_asm_then_test" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
+	$(RG) -n "^candidate_a_stage2_to5_symbolic_contract_status: pass|^source_kind: slothy_symbolic_asm|^slothy_workflow: ra_then_window_opt" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
+	$(RG) -n "^input_state: invntt_rowkernel_after_stage1_adapter|^rowkernel_stage1_skipped: true|^candidate_rowkernel: symbolic_no_entry_no_end_stage2_to5" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
+	$(RG) -n "^stage1_instructions_removed: true|^stage1_mask_constant_not_loaded: true|^stage2_present: true|^stage3_present: true|^stage4_present: true|^stage5_present: true" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
+	$(RG) -n "^slothy_run_claimed: false|^allocated_or_optimized_asm_generated: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
+	$(RG) -n "^recommended_next_gate: run_slothy_ra_then_window_generate_stage2_to5_asm_then_test" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-symbolic-contract.yml
 	@printf "Candidate A stage2-to5 symbolic contract summary: slothy_symbolic_source=ready, stage1_skipped=true, workflow=ra_then_window_opt, next=run_slothy_and_test_generated_asm\n"
 
 test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract
@@ -259,10 +260,10 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm: test_gt_tmvp_qu
 	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -DCANDIDATE_A_STAGE2_TO5_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_stage2_to5_asm gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c.c docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_soa_row_stage2_to5_no_entry_no_end.opt.S
 	./$(BUILD_DIR)/test_gt_tmvp_incomplete_candidate_a_stage2_to5_asm
 	test -f docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
-	rg -n "^candidate_a_stage2_to5_asm_contract_status: pass|^candidate_rowkernel: slothy_opt_no_entry_no_end_stage2_to5|^asm_compared_against: scalar_no_entry_no_end_stage2_to5_then_postmerge" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
-	rg -n "^asm_rowkernel_mismatches: 0|^asm_postmerge_mismatches: 0|^total_mismatches: 0" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
-	rg -n "^asm_implemented: true|^slothy_generated_opt_asm_used: true|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
-	rg -n "^recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_benchmark_or_fullpath_probe" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
+	$(RG) -n "^candidate_a_stage2_to5_asm_contract_status: pass|^candidate_rowkernel: slothy_opt_no_entry_no_end_stage2_to5|^asm_compared_against: scalar_no_entry_no_end_stage2_to5_then_postmerge" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
+	$(RG) -n "^asm_rowkernel_mismatches: 0|^asm_postmerge_mismatches: 0|^total_mismatches: 0" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
+	$(RG) -n "^asm_implemented: true|^slothy_generated_opt_asm_used: true|^full_pipeline_replaced: false|^benchmark_or_cycle_claim_made: false" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
+	$(RG) -n "^recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_benchmark_or_fullpath_probe" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
 	@printf "Candidate A stage2-to5 ASM summary: slothy_opt_asm=ok, rowkernel_stage2_to5=ok, postmerge_after_asm=ok, next=benchmark_or_fullpath_probe\n"
 
 test_gt_tmvp_quartic_tmvp_experimental_c: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_quartic_tmvp_experimental_c.c
