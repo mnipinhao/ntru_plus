@@ -16,7 +16,13 @@
 #define GT_ROW_N 32
 #define GT_QUARTIC_LANES 4
 #define GT_VECTOR_LANES 8
+#ifndef RANDOM_TESTS
 #define RANDOM_TESTS 16
+#endif
+
+static int observed_min = INT16_MAX;
+static int observed_max = INT16_MIN;
+static unsigned observed_samples;
 
 static int block_index(int branch, int physical_j, int lane)
 {
@@ -217,6 +223,22 @@ static int compare_modq(const char *label, const int16_t got[NTRUPLUS_N],
 	return 1;
 }
 
+static void record_output_range(const int16_t a[NTRUPLUS_N])
+{
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		if (a[i] < observed_min)
+		{
+			observed_min = a[i];
+		}
+		if (a[i] > observed_max)
+		{
+			observed_max = a[i];
+		}
+	}
+	observed_samples++;
+}
+
 static int check_mapping_inverse(void)
 {
 	int seen[NTRUPLUS_N];
@@ -409,6 +431,7 @@ static int check_forward_rowpack_direct(unsigned pattern, uint32_t seed)
 	ntt_gt_rowbitrevlayout(gt_block, natural);
 	block_to_rowpack(want, gt_block);
 	ntt_gt_rowpack_soa_active(got, natural);
+	record_output_range(got);
 
 #if defined(TEST_GT_FORWARD_ROWPACK_V2_ASM) || \
 	defined(TEST_GT_FORWARD_ROWPACK_V3_ASM)
@@ -455,6 +478,11 @@ int main(void)
 	}
 
 	print_mapping_samples();
+	printf("GT Forward NTT rowpack observed output range: samples=%u min=%d max=%d max_abs=%d\n",
+	       observed_samples,
+	       observed_min,
+	       observed_max,
+	       observed_min < -observed_max ? -observed_min : observed_max);
 	printf("GT Forward NTT rowpack output contract: ok\n");
 	return 0;
 }

@@ -9,6 +9,7 @@
 // Live-in: x0 = in/out row_plane[32], x1 = constant table.
 // Live-out: memory at x0 offsets 0, 16, 32, 48.
 // Reserved physical registers: x18-x30 are reserved by the driver; no fixed vector registers.
+// ABI: preserves d8-d15 because this standalone ASM entry is called from C.
 
 // This is symbolic source for Slothy.  It is not a production assembly
 // candidate.  The instruction selection follows rowpack-invntt32-kernel-contract.yml.
@@ -26,6 +27,10 @@ _ntruplus768_invntt32_rowpack_soa_row:
     // ABI:
     // x0 = int16_t row_plane[32], in place
     // x1 = ntruplus768_invntt32_rowpack_soa_row_consts
+    stp d8, d9, [sp, #-64]!
+    stp d10, d11, [sp, #16]
+    stp d12, d13, [sp, #32]
+    stp d14, d15, [sp, #48]
 
         slothy_start_ntruplus768_invntt32_rowpack_soa_row:
         // no-entry/no-end candidate: row-input Barrett and row-end Barrett removed by range contract.
@@ -346,6 +351,10 @@ _ntruplus768_invntt32_rowpack_soa_row:
 
         slothy_end_ntruplus768_invntt32_rowpack_soa_row:
 
+    ldp d14, d15, [sp, #48]
+    ldp d12, d13, [sp, #32]
+    ldp d10, d11, [sp, #16]
+    ldp d8, d9, [sp], #64
     ret
 
 #ifndef __APPLE__

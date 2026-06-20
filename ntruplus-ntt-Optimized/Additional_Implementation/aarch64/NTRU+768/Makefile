@@ -44,6 +44,10 @@ endif
 .PHONY: test_gt_rowpack_lazy_postmerge_asm_fullpath bench_gt_rowpack_lazy_postmerge_asm_isolate_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles bench_gt_rowpack_lazy_postmerge_asm_add_cycles bench_gt_rowpack_lazy_postmerge_asm_cycles_compare bench_gt_rowpack_lazy_postmerge_asm_v3_forward_cycles bench_gt_rowpack_lazy_postmerge_asm_v3_forward_add_cycles
 .PHONY: bench_ntt_pipeline_stock_cycles bench_ntt_pipeline_add_stock_cycles bench_ntt_pipeline_gt_opt_cycles bench_ntt_pipeline_add_gt_opt_cycles bench_gt_rowpack_vs_production_cycles_compare bench_gt_rowpack_component_cycles_dashboard bench_gt_rowpack_lazy_asm_vs_kpqc_final bench_gt_rowpack_lazy_asm_fullchain_stage_compare bench_gt_rowpack_forward_overhead_probes bench_gt_rowpack_forward_v2_overhead_breakdown bench_gt_rowpack_forward_output_overhead bench_gt_rowpack_forward_scatter_lower_bound bench_gt_rowpack_forward_v3_register_order_lower_bound bench_gt_rowpack_forward_v3_register_order_cycles bench_gt_rowpack_forward_v3_candidate_cycles bench_gt_rowpack_forward_v3b_stage345_cycles bench_gt_rowpack_lazy_asm_v3_forward_fullchain_compare bench_gt_rowpack_lazy_asm_v3b_forward_fullchain_compare audit_gt_rowpack_forward_stage345_liveout test_gt_rowpack_forward_stage345_layout_search test_gt_rowpack_forward_v3c_stage12_stage345_layout_search report_gt_rowpack_forward_topology_decision report_gt_rowpack_forward_v4_topology_model test_gt_rowpack_forward_v4_transform_dag_search test_gt_rowpack_forward_v4_numeric_oracle
 .PHONY: test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_c_harness test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_postmerge_c test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_symbolic_contract test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm
+.PHONY: test_gt_forward_rowpack_v2_lazyout_asm bench_gt_forward_rowpack_v2_ntt_only bench_gt_forward_rowpack_v2_lazyout_ntt_only
+.PHONY: test_gt_tmvp_quartic_tmvp_experimental_c test_gt_tmvp_quartic_tmvp_experimental_asm test_gt_tmvp_quartic_tmvp_full_asm_smoke
+.PHONY: test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_c test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_asm
+.PHONY: test_gt_rowpack_bounded_postmerge_asm_fullpath
 
 BUILD_DIR = build
 POLYNTT_ASM ?= asm/my_ntt.s asm/slothy/my_32ntt.opt.s
@@ -107,6 +111,8 @@ ROWPACK_PIPELINE_CFLAGS ?= -O3 -fwrapv -fno-strict-aliasing
 ROWPACK_PIPELINE_CYCLE_CFLAGS ?= $(ROWPACK_PIPELINE_CFLAGS) -DROWPACK_USE_PERF_CYCLES
 AARCH64_BENCH_DIR ?= ../../../aarch64-bench
 SLOTHY_SYMBOLIC_SKILL_DIR ?= ../../../../.agents/skills/slothy-symbolic-asm-authoring
+ROWPACK_FORWARD_NTT_V2_LAZYOUT_ASM ?= asm/my_ntt.s asm/slothy/ntt32_8way.rowpack_v2.lazyout.n1.opt.S
+ROWPACK_INVNTT_POSTMERGE_BOUNDED_ASM ?= docs/gt_soa_layout_experiment/kernels/ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded.S
 
 ifneq ($(BENCH_MODE),)
 .DEFAULT_GOAL := aarch64_bench_redirect
@@ -183,6 +189,21 @@ test_gt_forward_rowpack_v2_asm: $(HEADERS) ntt.h ntt.c gt_test/test_gt_forward_r
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -DTEST_GT_FORWARD_ROWPACK_V2_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_forward_rowpack_v2_asm gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V2_ASM)
 	./$(BUILD_DIR)/test_gt_forward_rowpack_v2_asm
+
+test_gt_forward_rowpack_v2_lazyout_asm: $(HEADERS) ntt.h ntt.c gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V2_LAZYOUT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -DTEST_GT_FORWARD_ROWPACK_V2_ASM -DRANDOM_TESTS=1024 -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_forward_rowpack_v2_lazyout_asm gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V2_LAZYOUT_ASM)
+	./$(BUILD_DIR)/test_gt_forward_rowpack_v2_lazyout_asm
+
+bench_gt_forward_rowpack_v2_ntt_only: $(HEADERS) gt_test/bench_gt_forward_rowpack_ntt_only.c $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_forward_rowpack_v2_ntt_only gt_test/bench_gt_forward_rowpack_ntt_only.c $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/bench_gt_forward_rowpack_v2_ntt_only
+
+bench_gt_forward_rowpack_v2_lazyout_ntt_only: $(HEADERS) gt_test/bench_gt_forward_rowpack_ntt_only.c $(ROWPACK_FORWARD_NTT_V2_LAZYOUT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/bench_gt_forward_rowpack_v2_lazyout_ntt_only gt_test/bench_gt_forward_rowpack_ntt_only.c $(ROWPACK_FORWARD_NTT_V2_LAZYOUT_ASM)
+	./$(BUILD_DIR)/bench_gt_forward_rowpack_v2_lazyout_ntt_only
 
 test_gt_rowpack_forward_v3_candidate: $(HEADERS) ntt.h ntt.c gt_test/test_gt_forward_rowpack_output_contract.c $(ROWPACK_FORWARD_NTT_V3_ASM)
 	@mkdir -p $(BUILD_DIR)
@@ -270,6 +291,21 @@ test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_stage2_to5_asm: test_gt_tmvp_qu
 	rg -n "^recommended_next_gate: candidate_a_stage2_to5_rowkernel_asm_benchmark_or_fullpath_probe" docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-stage2-to5-asm-report.yml
 	@printf "Candidate A stage2-to5 ASM summary: slothy_opt_asm=ok, rowkernel_stage2_to5=ok, postmerge_after_asm=ok, next=benchmark_or_fullpath_probe\n"
 
+test_gt_tmvp_quartic_tmvp_experimental_c: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_quartic_tmvp_experimental_c.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_experimental_c ntt.c gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_tmvp_quartic_tmvp_experimental_c.c
+	./$(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_experimental_c
+
+test_gt_tmvp_quartic_tmvp_experimental_asm: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S gt_test/test_gt_tmvp_quartic_tmvp_experimental_asm.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_experimental_asm ntt.c gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S gt_test/test_gt_tmvp_quartic_tmvp_experimental_asm.c
+	./$(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_experimental_asm
+
+test_gt_tmvp_quartic_tmvp_full_asm_smoke: $(HEADERS) randombytes.h gt_tmvp_quartic_tmvp_experimental.h gt_test/test_gt_tmvp_quartic_tmvp_full_c_kem.c poly_gt_tmvp_experimental_c.c gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S randombytes.c kem.c symmetric.c ntt.c NO_CE/fips202.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_full_asm_kem randombytes.c gt_test/test_gt_tmvp_quartic_tmvp_full_c_kem.c kem.c symmetric.c poly_gt_tmvp_experimental_c.c ntt.c gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S NO_CE/fips202.c
+	./$(BUILD_DIR)/test_gt_tmvp_quartic_tmvp_full_asm_kem
+
 test_polyntt_harness: $(HEADERS) ntt.h ntt.c gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(POLYNTT_TEST_CFLAGS) -I. -o $(BUILD_DIR)/test_polyntt_harness gt_test/test_polyntt_asm.c gt_test/polyntt_reference_shim.c ntt.c
@@ -346,6 +382,21 @@ test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul: $(HEADERS) ntt.h
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
 	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_c: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_TMVP_BASEMUL -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c gt_tmvp_quartic_tmvp_experimental.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_c
+
+test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_asm: $(HEADERS) ntt.h ntt.c gt_tmvp_quartic_tmvp_experimental.h gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_TMVP_BASEMUL_ASM -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_asm gt_test/test_gt_rowpack_soa_invntt32_fullpath.c gt_tmvp_quartic_tmvp_experimental.c asm/gt_tmvp_quartic_tmvp_experimental_asm.S $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_soa_invntt32_fullpath_forward_v2_tmvp_asm
+
+test_gt_rowpack_bounded_postmerge_asm_fullpath: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_BOUNDED_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(ROWPACK_FULLPATH_CFLAGS) -DROWPACK_FORWARD_NTT_ASM -DROWPACK_NATIVE_BASEMUL -DROWPACK_NATIVE_POSTMERGE -DROWPACK_NATIVE_POSTMERGE_CHUNKED_GATHER -DROWPACK_NATIVE_POSTMERGE_ASM -DROWPACK_NATIVE_POSTMERGE_BOUNDED_ASM -DROWPACK_PIPELINE_INVNTT_INPLACE -DROWPACK_CHECK_FINAL_BOUNDED -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_rowpack_bounded_postmerge_asm_fullpath gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_NO_ENTRY_NO_END_ASM) $(ROWPACK_INVNTT_POSTMERGE_BOUNDED_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
+	./$(BUILD_DIR)/test_gt_rowpack_bounded_postmerge_asm_fullpath
 
 test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul_nativepost: $(HEADERS) ntt.h ntt.c gt_test/test_gt_rowpack_soa_invntt32_fullpath.c $(ROWPACK_INVNTT32_SLOTHY_OPT_ASM) $(ROWPACK_FORWARD_NTT_V2_ASM)
 	@mkdir -p $(BUILD_DIR)

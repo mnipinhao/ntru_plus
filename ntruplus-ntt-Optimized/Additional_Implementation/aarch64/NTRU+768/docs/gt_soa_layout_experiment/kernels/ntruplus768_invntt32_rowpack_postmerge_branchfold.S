@@ -9,22 +9,28 @@
 //   x1 = const int16_t work[768]
 //   x2 = const int16_t low_mont[96][8]
 //   x3 = const int16_t high_mont[96][8]
-// Clobbers: x4-x7, v0-v31.
+// Clobbers: x4-x7, v0-v7, v16-v31, and the upper halves of v8-v15.
+// ABI: preserves d8-d15 because this standalone ASM entry is called from C.
 
 .text
 .align 4
-.global ntruplus768_invntt32_rowpack_postmerge_branchfold_asm
-.global _ntruplus768_invntt32_rowpack_postmerge_branchfold_asm
+#ifndef ROWPACK_NATIVE_POSTMERGE_ASM_NAME
+#define ROWPACK_NATIVE_POSTMERGE_ASM_NAME ntruplus768_invntt32_rowpack_postmerge_branchfold_asm
+#endif
+#ifndef ROWPACK_NATIVE_POSTMERGE_ASM_APPLE_NAME
+#define ROWPACK_NATIVE_POSTMERGE_ASM_APPLE_NAME _ntruplus768_invntt32_rowpack_postmerge_branchfold_asm
+#endif
+
+.global ROWPACK_NATIVE_POSTMERGE_ASM_NAME
+.global ROWPACK_NATIVE_POSTMERGE_ASM_APPLE_NAME
 #ifndef __APPLE__
-.type ntruplus768_invntt32_rowpack_postmerge_branchfold_asm, %function
+.type ROWPACK_NATIVE_POSTMERGE_ASM_NAME, %function
 #endif
 
 .macro load_postmerge_consts
-        adrp    x4, .Lpostmerge_con
-        add     x4, x4, :lo12:.Lpostmerge_con
+        adr     x4, Lpostmerge_con
         ldr     q14, [x4]
-        adrp    x4, .Lpostmerge_omega3
-        add     x4, x4, :lo12:.Lpostmerge_omega3
+        adr     x4, Lpostmerge_omega3
         ldr     q31, [x4]
 .endm
 
@@ -41,6 +47,12 @@
         mul     v\tmp\().8h, v\tmp\().8h, v14.h[2]
         smlal   v\acc\().4s, v\tmp\().4h, v14.h[0]
         uzp2    v\out\().8h, v\acc\().8h, v\acc\().8h
+.endm
+
+.macro barrett_reduce8_inplace xreg, tmp
+        sqdmulh v\tmp\().8h, v\xreg\().8h, v14.h[1]
+        srshr   v\tmp\().8h, v\tmp\().8h, #11
+        mls     v\xreg\().8h, v\tmp\().8h, v14.h[0]
 .endm
 
 .macro fqmul_omega out, in
@@ -64,6 +76,10 @@
 .endm
 
 .macro process_lane y0, y1, y2, n0, n1, n2
+#if defined(ROWPACK_NATIVE_POSTMERGE_BOUND_Y1Y2)
+        barrett_reduce8_inplace \y1, 24
+        barrett_reduce8_inplace \y2, 24
+#endif
         sub     v25.8h, v\y2\().8h, v\y1\().8h
         fqmul_omega 25, 25
         orr     v27.16b, v\y0\().16b, v\y0\().16b
@@ -169,8 +185,8 @@
 .endif
 .endm
 
-ntruplus768_invntt32_rowpack_postmerge_branchfold_asm:
-_ntruplus768_invntt32_rowpack_postmerge_branchfold_asm:
+ROWPACK_NATIVE_POSTMERGE_ASM_NAME:
+ROWPACK_NATIVE_POSTMERGE_ASM_APPLE_NAME:
         stp     d8, d9, [sp, #-128]!
         stp     d10, d11, [sp, #16]
         stp     d12, d13, [sp, #32]
@@ -186,12 +202,11 @@ _ntruplus768_invntt32_rowpack_postmerge_branchfold_asm:
         ret
 
 #ifndef __APPLE__
-.size ntruplus768_invntt32_rowpack_postmerge_branchfold_asm, .-ntruplus768_invntt32_rowpack_postmerge_branchfold_asm
+.size ROWPACK_NATIVE_POSTMERGE_ASM_NAME, .-ROWPACK_NATIVE_POSTMERGE_ASM_NAME
 #endif
 
-.section .rodata
 .align 4
-.Lpostmerge_con:
+Lpostmerge_con:
         .hword 3457, 19412, -12929, -147, -1393, -1571, -14891, 0
-.Lpostmerge_omega3:
+Lpostmerge_omega3:
         .hword -886, -886, -886, -886, -886, -886, -886, -886

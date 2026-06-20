@@ -249,6 +249,12 @@ _poly_ntt:
     adr zetas_ptr, zetas
     ldr q0, [zetas_ptr]
 
+    // Preserve callee-saved SIMD lanes for the C ABI; _ntt32_8way is only
+    // called under this wrapper in the rowpack-v2 experiment.
+    stp d8, d9, [sp, #-64]!
+    stp d10, d11, [sp, #16]
+    stp d12, d13, [sp, #32]
+    stp d14, d15, [sp, #48]
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #1568
 
@@ -313,10 +319,15 @@ slothy_end_ntt_phase123:
 
     add sp, sp, #1568
     ldp x30, x0, [sp], #16
+    ldp d14, d15, [sp, #48]
+    ldp d12, d13, [sp, #32]
+    ldp d10, d11, [sp, #16]
+    ldp d8, d9, [sp], #64
     ret
 
 _scatter_ntt32_row:
-    // _ntt32_8way has already reduced each Q output; this loop only scatters.
+    // _ntt32_8way owns the Q output representative contract; this loop only
+    // scatters the row-buffer fallback layout.
     add x14, dst, #768
     mov counter, #32
 _scatter_ntt32_row_loop:

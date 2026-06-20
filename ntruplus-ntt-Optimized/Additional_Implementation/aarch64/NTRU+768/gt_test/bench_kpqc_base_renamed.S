@@ -1,0 +1,8 @@
+#define poly_basemul bench_kpqc_final_poly_basemul
+#define _poly_basemul _bench_kpqc_final_poly_basemul
+#define poly_basemul_add bench_kpqc_final_poly_basemul_add
+#define _poly_basemul_add _bench_kpqc_final_poly_basemul_add
+#define poly_baseinv_1 bench_kpqc_final_poly_baseinv_1
+#define _poly_baseinv_1 _bench_kpqc_final_poly_baseinv_1
+
+#include "../asm/base.s"

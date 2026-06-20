@@ -4,6 +4,10 @@
 #include <string.h>
 #include <time.h>
 
+#if defined(ROWPACK_TMVP_BASEMUL) || defined(ROWPACK_TMVP_BASEMUL_ASM)
+#include "gt_tmvp_quartic_tmvp_experimental.h"
+#endif
+
 #if defined(ROWPACK_FORWARD_NTT_ASM)
 #include "poly.h"
 #endif
@@ -28,6 +32,28 @@
 #error "ROWPACK_NATIVE_BASEMUL currently supports only fused normalization ABI"
 #endif
 #include <arm_neon.h>
+#endif
+
+#if defined(ROWPACK_TMVP_BASEMUL) && !defined(GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C)
+#error "ROWPACK_TMVP_BASEMUL requires GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C"
+#endif
+
+#if defined(ROWPACK_TMVP_BASEMUL_ASM) && !defined(GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM)
+#error "ROWPACK_TMVP_BASEMUL_ASM requires GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM"
+#endif
+
+#if defined(ROWPACK_TMVP_BASEMUL) && defined(ROWPACK_TMVP_BASEMUL_ASM)
+#error "ROWPACK_TMVP_BASEMUL and ROWPACK_TMVP_BASEMUL_ASM are mutually exclusive"
+#endif
+
+#if (defined(ROWPACK_TMVP_BASEMUL) || defined(ROWPACK_TMVP_BASEMUL_ASM)) && \
+	defined(ROWPACK_NATIVE_BASEMUL)
+#error "ROWPACK TMVP basemul and ROWPACK_NATIVE_BASEMUL are mutually exclusive"
+#endif
+
+#if (defined(ROWPACK_TMVP_BASEMUL) || defined(ROWPACK_TMVP_BASEMUL_ASM)) && \
+	defined(ROWPACK_CANONICAL_BASEMUL)
+#error "ROWPACK TMVP basemul uses the production basemul bounded-output ABI"
 #endif
 
 #if defined(ROWPACK_INVNTT_AUDIT_SYMBOLS)
@@ -77,9 +103,14 @@ static int centered_modq(int64_t a);
 void ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
 	int16_t *r, const int16_t *work, const int16_t *low_mont,
 	const int16_t *high_mont);
+#if defined(ROWPACK_NATIVE_POSTMERGE_BOUNDED_ASM)
+void ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded_asm(
+	int16_t *r, const int16_t *work, const int16_t *low_mont,
+	const int16_t *high_mont);
+#endif
 #endif
 
-#if defined(ROWPACK_NATIVE_BASEMUL)
+#if defined(ROWPACK_NATIVE_BASEMUL) || defined(ROWPACK_NATIVE_POSTMERGE)
 static const int16_t gt_base_consts[8] __attribute__((aligned(16))) = {
 	3457, 19412, -12929, -147,
 	-1393, -1571, -14891, 0,
@@ -194,7 +225,7 @@ static void rowpack_rows_to_rowvec(int16_t rowvec[NTRUPLUS_N],
 	}
 }
 
-#if defined(ROWPACK_NATIVE_BASEMUL)
+#if defined(ROWPACK_NATIVE_BASEMUL) || defined(ROWPACK_NATIVE_POSTMERGE)
 static void init_lambda_rowpack(void)
 {
 	for (int branch = 0; branch < GT_BRANCHES; branch++)
@@ -636,7 +667,25 @@ static void basemul_rowpack_active(int16_t r[NTRUPLUS_N],
                                    const int16_t a[NTRUPLUS_N],
                                    const int16_t b[NTRUPLUS_N])
 {
-#if defined(ROWPACK_NATIVE_BASEMUL)
+#if defined(ROWPACK_TMVP_BASEMUL_ASM)
+	const int status = gt_tmvp_quartic_tmvp_experimental_asm_fast(r, a, b);
+
+	if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+	{
+		fprintf(stderr, "rowpack TMVP ASM basemul returned %s\n",
+		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
+		abort();
+	}
+#elif defined(ROWPACK_TMVP_BASEMUL)
+	const int status = gt_tmvp_quartic_tmvp_experimental_c(r, a, b);
+
+	if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+	{
+		fprintf(stderr, "rowpack TMVP basemul returned %s\n",
+		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
+		abort();
+	}
+#elif defined(ROWPACK_NATIVE_BASEMUL)
 	basemul_rowpack_neon(r, a, b);
 #else
 	basemul_rowpack_scalar(r, a, b);
@@ -648,7 +697,25 @@ static void basemul_add_rowpack_active(int16_t r[NTRUPLUS_N],
                                        const int16_t b[NTRUPLUS_N],
                                        const int16_t c[NTRUPLUS_N])
 {
-#if defined(ROWPACK_NATIVE_BASEMUL)
+#if defined(ROWPACK_TMVP_BASEMUL_ASM)
+	const int status = gt_tmvp_quartic_tmvp_add_experimental_asm_fast(r, a, b, c);
+
+	if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+	{
+		fprintf(stderr, "rowpack TMVP ASM basemul_add returned %s\n",
+		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
+		abort();
+	}
+#elif defined(ROWPACK_TMVP_BASEMUL)
+	const int status = gt_tmvp_quartic_tmvp_add_experimental_c(r, a, b, c);
+
+	if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+	{
+		fprintf(stderr, "rowpack TMVP basemul_add returned %s\n",
+		        gt_tmvp_quartic_tmvp_experimental_status_name(status));
+		abort();
+	}
+#elif defined(ROWPACK_NATIVE_BASEMUL)
 	basemul_add_rowpack_neon(r, a, b, c);
 #else
 	basemul_add_rowpack_scalar(r, a, b, c);
@@ -656,10 +723,6 @@ static void basemul_add_rowpack_active(int16_t r[NTRUPLUS_N],
 }
 
 #if defined(ROWPACK_NATIVE_POSTMERGE)
-#if !defined(ROWPACK_NATIVE_BASEMUL)
-#error "ROWPACK_NATIVE_POSTMERGE currently reuses ROWPACK_NATIVE_BASEMUL Neon helpers"
-#endif
-
 static int16_t g_postfold_low_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
                                   __attribute__((aligned(16)));
 static int16_t g_postfold_high_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
@@ -875,9 +938,15 @@ ROWPACK_AUDIT_NOINLINE static void invntt_rowpack_postmerge_branchfold_neon(
 	int16_t r[NTRUPLUS_N], const int16_t work[NTRUPLUS_N])
 {
 #if defined(ROWPACK_NATIVE_POSTMERGE_ASM)
+#if defined(ROWPACK_NATIVE_POSTMERGE_BOUNDED_ASM)
+	ntruplus768_invntt32_rowpack_postmerge_branchfold_bounded_asm(
+		r, work, &g_postfold_low_mont[0][0],
+		&g_postfold_high_mont[0][0]);
+#else
 	ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
 		r, work, &g_postfold_low_mont[0][0],
 		&g_postfold_high_mont[0][0]);
+#endif
 #else
 	const int16x8_t con = vld1q_s16(gt_base_consts);
 	const int16x8_t omega3 = vdupq_n_s16(GT96_OMEGA3);

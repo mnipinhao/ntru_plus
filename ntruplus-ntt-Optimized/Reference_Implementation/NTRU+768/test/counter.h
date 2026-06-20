@@ -2,7 +2,9 @@
 #define COUNTER_H
 
 unsigned long long countergap;
+#ifndef TEST_LOOP_COUNT
 #define TEST_LOOP_COUNT 100000
+#endif
 
 #if defined(__aarch64__)
 #include <stdint.h>

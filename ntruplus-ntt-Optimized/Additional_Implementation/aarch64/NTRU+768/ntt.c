@@ -259,6 +259,11 @@ static unsigned ntt32_ct_twiddle_power(unsigned stage, unsigned lo)
 	return bitreverse_limited(lo >> (6 - stage), stage - 1) << (5 - stage);
 }
 
+int16_t gt_ntt32_ct_twiddle(unsigned stage, unsigned lo)
+{
+	return gt96_omega32_powers[ntt32_ct_twiddle_power(stage, lo)];
+}
+
 static void ntt32_radix2_ct_bitrev(int16_t out[32], const int16_t in[32])
 {
 	/*
