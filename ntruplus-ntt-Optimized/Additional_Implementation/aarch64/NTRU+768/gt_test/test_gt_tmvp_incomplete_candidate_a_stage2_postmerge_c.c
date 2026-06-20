@@ -17,11 +17,21 @@
 #define VECTOR_CASES 16
 #define STAGE4_BOUND 1728
 
-#if defined(CANDIDATE_A_FULLPATH_ASM) && !defined(CANDIDATE_A_STAGE2_TO5_ASM)
+#if defined(CANDIDATE_A_TRUE_FORWARD_STAGE4) && \
+	!defined(CANDIDATE_A_FULLPATH_ASM)
+#error "CANDIDATE_A_TRUE_FORWARD_STAGE4 requires CANDIDATE_A_FULLPATH_ASM"
+#endif
+
+#if defined(CANDIDATE_A_FULLPATH_ASM) && \
+	!defined(CANDIDATE_A_STAGE2_TO5_ASM)
 #error "CANDIDATE_A_FULLPATH_ASM requires CANDIDATE_A_STAGE2_TO5_ASM"
 #endif
 
-#ifdef CANDIDATE_A_FULLPATH_ASM
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+#define REPORT_PATH                                                           \
+	"docs/gt_tmvp_decomposition_experiment/"                              \
+	"decomposition-quartic-tmvp-incomplete-candidate-a-true-forward-stage4-fullpath-asm-report.yml"
+#elif defined(CANDIDATE_A_FULLPATH_ASM)
 #define REPORT_PATH                                                           \
 	"docs/gt_tmvp_decomposition_experiment/"                              \
 	"decomposition-quartic-tmvp-incomplete-candidate-a-fullpath-asm-report.yml"
@@ -60,6 +70,7 @@ struct mismatch_counts
 	int asm_postmerge;
 	int postmerge_asm_regular;
 	int postmerge_asm_bounded;
+	int final_schoolbook;
 };
 
 struct range_observation
@@ -80,11 +91,13 @@ struct range_stats
 	int regular_postmerge_asm_max_abs;
 	int bounded_postmerge_asm_max_abs;
 	struct range_observation stage4_input;
+	struct range_observation natural_input;
 	struct range_observation materialized_stage5_input;
 	struct range_observation full_tmvp_output;
 	struct range_observation candidate_adapter;
 	struct range_observation candidate_rows_asm;
 	struct range_observation scalar_final_output;
+	struct range_observation schoolbook_final_output;
 	struct range_observation regular_postmerge_asm_output;
 	struct range_observation bounded_postmerge_asm_output;
 };
@@ -171,11 +184,13 @@ static void range_stats_init(struct range_stats *ranges)
 {
 	memset(ranges, 0, sizeof(*ranges));
 	range_observation_init(&ranges->stage4_input);
+	range_observation_init(&ranges->natural_input);
 	range_observation_init(&ranges->materialized_stage5_input);
 	range_observation_init(&ranges->full_tmvp_output);
 	range_observation_init(&ranges->candidate_adapter);
 	range_observation_init(&ranges->candidate_rows_asm);
 	range_observation_init(&ranges->scalar_final_output);
+	range_observation_init(&ranges->schoolbook_final_output);
 	range_observation_init(&ranges->regular_postmerge_asm_output);
 	range_observation_init(&ranges->bounded_postmerge_asm_output);
 }
@@ -236,6 +251,177 @@ static void fill_stage4_case(int16_t v[NTRUPLUS_N], int which, uint32_t seed)
 		default:
 			v[i] = bounded_stage4_sample(&seed);
 			break;
+		}
+	}
+}
+
+static void fill_natural_case(int16_t v[NTRUPLUS_N], int which,
+                              uint32_t seed)
+{
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		switch (which & 7)
+		{
+		case 0:
+			v[i] = 0;
+			break;
+		case 1:
+			v[i] = 1;
+			break;
+		case 2:
+			v[i] = (i & 1) ? -1 : 1;
+			break;
+		case 3:
+			v[i] = (i & 1) ? -(NTRUPLUS_Q / 2) : (NTRUPLUS_Q / 2);
+			break;
+		default:
+			v[i] =
+				(int16_t)((int)(next_u32(&seed) % (2 * NTRUPLUS_Q)) -
+				          NTRUPLUS_Q);
+			break;
+		}
+	}
+}
+
+static int centered_modq(int64_t a)
+{
+	int r = harness_modq(a);
+
+	if (r > NTRUPLUS_Q / 2)
+	{
+		r -= NTRUPLUS_Q;
+	}
+
+	return r;
+}
+
+static void schoolbook_mul_reference(int16_t r[NTRUPLUS_N],
+                                     const int16_t a[NTRUPLUS_N],
+                                     const int16_t b[NTRUPLUS_N])
+{
+	int64_t tmp[2 * NTRUPLUS_N - 1];
+
+	memset(tmp, 0, sizeof(tmp));
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		for (int j = 0; j < NTRUPLUS_N; j++)
+		{
+			tmp[i + j] += (int64_t)a[i] * b[j];
+		}
+	}
+
+	for (int i = 2 * NTRUPLUS_N - 2; i >= NTRUPLUS_N; i--)
+	{
+		const int64_t c = tmp[i];
+
+		tmp[i - NTRUPLUS_N / 2] += c;
+		tmp[i - NTRUPLUS_N] -= c;
+	}
+
+	for (int i = 0; i < NTRUPLUS_N; i++)
+	{
+		r[i] = (int16_t)centered_modq(tmp[i]);
+	}
+}
+
+static void ntt32_radix2_ct_bitrev_stage4(int16_t out[GT_ROW_N],
+                                          const int16_t in[GT_ROW_N])
+{
+	for (unsigned i = 0; i < GT_ROW_N; i++)
+	{
+		out[i] = barrett_reduce(in[i]);
+	}
+
+	for (unsigned stage = 1; stage <= 4; stage++)
+	{
+		const unsigned distance = 1U << (5 - stage);
+
+		for (unsigned lo = 0; lo < GT_ROW_N; lo++)
+		{
+			if ((lo & distance) != 0)
+			{
+				continue;
+			}
+
+			const unsigned hi = lo + distance;
+			const unsigned power = ntt32_ct_twiddle_power(stage, lo);
+			const int16_t u = out[lo];
+			const int16_t t = fqmul(out[hi], gt96_omega32_powers[power]);
+
+			out[lo] = barrett_reduce(u + t);
+			out[hi] = barrett_reduce(u - t);
+		}
+	}
+}
+
+static void ntt_gt_rowpack_soa_stage4_source(
+	int16_t r[NTRUPLUS_N],
+	const int16_t a[NTRUPLUS_N])
+{
+	int16_t work[NTRUPLUS_N];
+
+	for (int i = 0; i < NTRUPLUS_N / 2; i++)
+	{
+		const int16_t t1 =
+			fqmul(NTRUPLUS_ZETA_TOP_SPLIT, a[i + NTRUPLUS_N / 2]);
+
+		work[i + NTRUPLUS_N / 2] =
+			a[i] + a[i + NTRUPLUS_N / 2] - t1;
+		work[i] = a[i] + t1;
+	}
+
+	for (int branch = 0; branch < GT_BRANCHES; branch++)
+	{
+		const int branch_start = branch * GT_BRANCH_N;
+		const int16_t *twist =
+			branch == 0 ? twist_branch0 : twist_branch1;
+
+		for (int i = 0; i < GT_ROWS * GT_ROW_N; i++)
+		{
+			for (int lane = 0; lane < GT_QUARTIC_LANES; lane++)
+			{
+				work[branch_start + GT_QUARTIC_LANES * i + lane] =
+					fqmul(work[branch_start + GT_QUARTIC_LANES * i + lane],
+					      twist[i]);
+			}
+		}
+
+		for (int lane = 0; lane < GT_QUARTIC_LANES; lane++)
+		{
+			int16_t mat[GT_ROWS][GT_ROW_N];
+
+			for (int n3 = 0; n3 < GT_ROWS; n3++)
+			{
+				for (int n32 = 0; n32 < GT_ROW_N; n32++)
+				{
+					const int n =
+						(64 * n3 + 33 * n32) %
+						(GT_ROWS * GT_ROW_N);
+
+					mat[n3][n32] =
+						work[branch_start +
+						     GT_QUARTIC_LANES * n + lane];
+				}
+			}
+
+			for (int n32 = 0; n32 < GT_ROW_N; n32++)
+			{
+				dft3_forward(&mat[0][n32], &mat[1][n32],
+				             &mat[2][n32]);
+			}
+
+			for (int row = 0; row < GT_ROWS; row++)
+			{
+				int16_t row_stage4[GT_ROW_N];
+
+				ntt32_radix2_ct_bitrev_stage4(row_stage4, mat[row]);
+				for (int k32 = 0; k32 < GT_ROW_N; k32++)
+				{
+					r[rowpack_index(branch, row, lane, k32)] =
+						row_stage4[k32];
+				}
+			}
 		}
 	}
 }
@@ -544,18 +730,6 @@ static int16_t g_postfold_high_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
                                    __attribute__((aligned(16)));
 static int g_postfold_consts_ready;
 
-static int centered_modq(int64_t a)
-{
-	int r = harness_modq(a);
-
-	if (r > NTRUPLUS_Q / 2)
-	{
-		r -= NTRUPLUS_Q;
-	}
-
-	return r;
-}
-
 static int normal_from_mont_centered(int16_t a)
 {
 	return centered_modq(montgomery_reduce(a));
@@ -625,6 +799,12 @@ static int check_one_case(int which, int is_add,
                           struct mismatch_counts *mismatches,
                           struct range_stats *ranges)
 {
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	int16_t a_natural[NTRUPLUS_N];
+	int16_t b_natural[NTRUPLUS_N];
+	int16_t c_natural[NTRUPLUS_N];
+	int16_t schoolbook_want[NTRUPLUS_N];
+#endif
 	int16_t a_stage4[NTRUPLUS_N];
 	int16_t b_stage4[NTRUPLUS_N];
 	int16_t c_stage4[NTRUPLUS_N];
@@ -649,9 +829,39 @@ static int check_one_case(int which, int is_add,
 	int status;
 	int ok = 1;
 
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fill_natural_case(a_natural, which, 0x243f6a88u + (uint32_t)which);
+	fill_natural_case(b_natural, which + 3, 0x85a308d3u + (uint32_t)which);
+	fill_natural_case(c_natural, which + 5, 0x13198a2eu + (uint32_t)which);
+
+	update_range_observation(&ranges->natural_input, a_natural);
+	update_range_observation(&ranges->natural_input, b_natural);
+	if (is_add)
+	{
+		update_range_observation(&ranges->natural_input, c_natural);
+	}
+
+	ntt_gt_rowpack_soa_stage4_source(a_stage4, a_natural);
+	ntt_gt_rowpack_soa_stage4_source(b_stage4, b_natural);
+	ntt_gt_rowpack_soa_stage4_source(c_stage4, c_natural);
+
+	schoolbook_mul_reference(schoolbook_want, a_natural, b_natural);
+	if (is_add)
+	{
+		for (int i = 0; i < NTRUPLUS_N; i++)
+		{
+			schoolbook_want[i] =
+				(int16_t)centered_modq((int64_t)schoolbook_want[i] +
+				                       c_natural[i]);
+		}
+	}
+	update_range_observation(&ranges->schoolbook_final_output,
+	                         schoolbook_want);
+#else
 	fill_stage4_case(a_stage4, which, 0x243f6a88u + (uint32_t)which);
 	fill_stage4_case(b_stage4, which + 3, 0x85a308d3u + (uint32_t)which);
 	fill_stage4_case(c_stage4, which + 5, 0x13198a2eu + (uint32_t)which);
+#endif
 
 	update_range_observation(&ranges->stage4_input, a_stage4);
 	update_range_observation(&ranges->stage4_input, b_stage4);
@@ -799,6 +1009,15 @@ static int check_one_case(int which, int is_add,
 		ok = 0;
 	}
 #endif
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	if (!compare_modq_count(is_add ? "add true-forward stage4 final" :
+	                                 "product true-forward stage4 final",
+	                        full_out, schoolbook_want))
+	{
+		mismatches->final_schoolbook++;
+		ok = 0;
+	}
+#endif
 
 	return ok;
 }
@@ -823,6 +1042,9 @@ static int write_report(int product_cases, int add_cases,
 
 	total_mismatches += selected_postmerge_asm_mismatches;
 #endif
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	total_mismatches += mismatches->final_schoolbook;
+#endif
 	FILE *f = fopen(REPORT_PATH, "w");
 
 	if (!f)
@@ -831,7 +1053,10 @@ static int write_report(int product_cases, int add_cases,
 		return 0;
 	}
 
-#ifdef CANDIDATE_A_FULLPATH_ASM
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "candidate_a_true_forward_stage4_fullpath_asm_status: %s\n",
+	        total_mismatches == 0 ? "pass" : "fail");
+#elif defined(CANDIDATE_A_FULLPATH_ASM)
 	fprintf(f, "candidate_a_fullpath_asm_status: %s\n",
 	        total_mismatches == 0 ? "pass" : "fail");
 #elif defined(CANDIDATE_A_STAGE2_TO5_ASM)
@@ -844,9 +1069,20 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "selected_path: incomplete_stage4_candidate_a_tmvp_to_invntt_stage2_to_postmerge\n");
 #ifdef CANDIDATE_A_FULLPATH_ASM
 	fprintf(f, "probe_scope: stage4_boundary_to_final_poly\n");
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "stage4_input_source: true_forward_stage4_c_reference\n");
+	fprintf(f, "true_forward_stage4_source_used: true\n");
+	fprintf(f, "forward_stage4_source_kind: c_reference_top_split_twist_dft3_ntt32_stage1_to4\n");
+#else
 	fprintf(f, "stage4_input_source: harness_generated_stage4_boundary\n");
+	fprintf(f, "true_forward_stage4_source_used: false\n");
+#endif
 	fprintf(f, "true_forward_incomplete_asm_used: false\n");
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "final_compare: schoolbook_product_or_product_add\n");
+#else
 	fprintf(f, "final_compare: complete_stage5_quartic_tmvp_scalar_invntt_scalar_postmerge_scalar\n");
+#endif
 #endif
 	fprintf(f, "tmvp_boundary: materialized_stage5_current_quartic_leaf\n");
 	fprintf(f, "candidate_input_state: invntt_rowkernel_after_stage1_adapter\n");
@@ -884,6 +1120,10 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "selected_postmerge_asm_mismatches: %d\n",
 	        selected_postmerge_asm_mismatches);
 #endif
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "final_schoolbook_mismatches: %d\n",
+	        mismatches->final_schoolbook);
+#endif
 	fprintf(f, "total_mismatches: %d\n", total_mismatches);
 	fprintf(f, "adapter_max_abs_observed: %d\n", ranges->adapter_max_abs);
 	fprintf(f, "full_rows_max_abs_observed: %d\n", ranges->full_rows_max_abs);
@@ -909,6 +1149,11 @@ static int write_report(int product_cases, int add_cases,
 #endif
 #ifdef CANDIDATE_A_FULLPATH_ASM
 	fprintf(f, "range_audit:\n");
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "  natural_input: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->natural_input.min, ranges->natural_input.max,
+	        ranges->natural_input.max_abs);
+#endif
 	fprintf(f, "  stage4_input: {min: %d, max: %d, max_abs: %d}\n",
 	        ranges->stage4_input.min, ranges->stage4_input.max,
 	        ranges->stage4_input.max_abs);
@@ -928,6 +1173,12 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "  scalar_final_output: {min: %d, max: %d, max_abs: %d}\n",
 	        ranges->scalar_final_output.min, ranges->scalar_final_output.max,
 	        ranges->scalar_final_output.max_abs);
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "  schoolbook_final_output: {min: %d, max: %d, max_abs: %d}\n",
+	        ranges->schoolbook_final_output.min,
+	        ranges->schoolbook_final_output.max,
+	        ranges->schoolbook_final_output.max_abs);
+#endif
 	fprintf(f, "  regular_postmerge_asm_output: {min: %d, max: %d, max_abs: %d}\n",
 	        ranges->regular_postmerge_asm_output.min,
 	        ranges->regular_postmerge_asm_output.max,
@@ -940,7 +1191,11 @@ static int write_report(int product_cases, int add_cases,
 	fprintf(f, "postmerge_asm_used_for_selected_path: true\n");
 	fprintf(f, "full_pipeline_replaced: false\n");
 	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	fprintf(f, "recommended_next_gate: forward_stage4_asm_export_or_candidate_a_tmvp_asm_benchmark\n");
+#else
 	fprintf(f, "recommended_next_gate: true_forward_stage4_source_or_candidate_a_tmvp_asm_benchmark\n");
+#endif
 #else
 	fprintf(f, "full_pipeline_replaced: false\n");
 	fprintf(f, "benchmark_or_cycle_claim_made: false\n");
@@ -987,15 +1242,25 @@ int main(void)
 	const int ok =
 		mismatches.adapter == 0 && mismatches.rowkernel == 0 &&
 		mismatches.postmerge == 0 && mismatches.asm_rowkernel == 0 &&
-		mismatches.asm_postmerge == 0 && selected_postmerge_ok;
+		mismatches.asm_postmerge == 0 && selected_postmerge_ok
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+		&& mismatches.final_schoolbook == 0
+#endif
+		;
 
+#ifdef CANDIDATE_A_TRUE_FORWARD_STAGE4
+	printf("Candidate A true-forward stage4 fullpath ASM probe: %s\n",
+	       ok ? "ok" : "failed");
+#else
 	printf("Candidate A fullpath ASM probe: %s\n", ok ? "ok" : "failed");
-	printf("product_cases=%d product_add_cases=%d adapter_mismatches=%d rowkernel_mismatches=%d postmerge_mismatches=%d asm_rowkernel_mismatches=%d asm_postmerge_mismatches=%d regular_postmerge_asm_mismatches=%d bounded_postmerge_asm_mismatches=%d selected_postmerge_asm=%s\n",
+#endif
+	printf("product_cases=%d product_add_cases=%d adapter_mismatches=%d rowkernel_mismatches=%d postmerge_mismatches=%d asm_rowkernel_mismatches=%d asm_postmerge_mismatches=%d regular_postmerge_asm_mismatches=%d bounded_postmerge_asm_mismatches=%d final_schoolbook_mismatches=%d selected_postmerge_asm=%s\n",
 	       product_cases, add_cases, mismatches.adapter,
 	       mismatches.rowkernel, mismatches.postmerge,
 	       mismatches.asm_rowkernel, mismatches.asm_postmerge,
 	       mismatches.postmerge_asm_regular,
 	       mismatches.postmerge_asm_bounded,
+	       mismatches.final_schoolbook,
 	       mismatches.postmerge_asm_regular == 0 ?
 		       "regular_asm" :
 		       (mismatches.postmerge_asm_bounded == 0 ?
