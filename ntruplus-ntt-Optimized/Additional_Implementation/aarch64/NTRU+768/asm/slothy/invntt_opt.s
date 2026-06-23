@@ -2403,10 +2403,14 @@ _poly_invntt_old:
 poly_invntt_new:
 _poly_invntt_new:
 .else
-.global poly_invntt
-.global _poly_invntt
+.weak poly_invntt
+.weak _poly_invntt
+.global gt_block_major_poly_invntt
+.global _gt_block_major_poly_invntt
 poly_invntt:
 _poly_invntt:
+gt_block_major_poly_invntt:
+_gt_block_major_poly_invntt:
 .endif
 .endif
 .ifdef INVNTT_USE_ROWSTAGE45_POST_COMBINED_V6_PROTO

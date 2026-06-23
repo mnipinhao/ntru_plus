@@ -3,7 +3,12 @@
 .endif
 
 .macro CALL_NTT32_8WAY
+.ifdef MY_NTT_DIRECT_TUPLE
+    add x11, x10, #768
+    bl _ntt32_8way_to_tuple
+.else
     bl _ntt32_8way
+.endif
 .endm
 
     .equ MY_NTT_FRAME_SIZE, 1568
@@ -28,14 +33,13 @@
 .macro PHASE123_ITER pattern
     #level 0
     // high side
-    ldr q10, [src, #6*128]        // a384..a391
-    ldr q11, [src, #6*128 + 16]   // a392..a399
+    ldp q10, q11, [src, #6*128]
 
-    ldr q12, [src, #8*128]        // a512..a519
-    ldr q13, [src, #8*128 + 16]   // a520..a527
+    ldr q12, [src, #8*128]
+    ldr q13, [src, #8*128 + 16]
 
-    ldr q14, [src, #10*128]       // a640..a647
-    ldr q15, [src, #10*128 + 16]  // a648..a655
+    ldr q14, [src, #10*128]
+    ldr q15, [src, #10*128 + 16]
 
     mul v16.8h, v10.8h, v0.h[4]
     mul v17.8h, v11.8h, v0.h[4]
@@ -67,12 +71,9 @@
     sub v15.8h, v15.8h, v21.8h
 
     #load low side
-    ldr q4,  [src, #0*128]        // a0..a7
-    ldr q5,  [src, #0*128 + 16]   // a8..a15
-    ldr q6,  [src, #2*128]        // a128..a135
-    ldr q7,  [src, #2*128 + 16]   // a136..a143
-    ldr q8,  [src, #4*128]        // a256..a263
-    ldr q9,  [src, #4*128 + 16]   // a264..a271
+    ldp q4, q5, [src, #0*128]
+    ldp q6, q7, [src, #2*128]
+    ldp q8, q9, [src, #4*128]
 
     #update 2
     add v10.8h, v10.8h, v4.8h
@@ -91,32 +92,28 @@
 
     #Twist
     # load twist table
-    ldr q1, [twist_ptr], #16   // multiplier vector
-    ldr q2, [twist_ptr], #16   // precompute vector
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v10.8h, v2.8h
     mul      v10.8h, v10.8h, v1.8h
     mls      v10.8h, v3.8h, v0.h[0]
 
     // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldr q1, [twist_ptr], #16      // [50,50,50,50,-312,-312,-312,-312]
-    ldr q2, [twist_ptr], #16      // [474,474,474,474,-2957,-2957,-2957,-2957]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v11.8h, v2.8h
     mul      v11.8h, v11.8h, v1.8h
     mls      v11.8h, v3.8h, v0.h[0]
 
     // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldr q1, [twist_ptr], #16      // [867,867,867,867,-432,-432,-432,-432]
-    ldr q2, [twist_ptr], #16      // [8218,8218,8218,8218,-4095,-4095,-4095,-4095]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v12.8h, v2.8h
     mul      v12.8h, v12.8h, v1.8h
     mls      v12.8h, v3.8h, v0.h[0]
 
     // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldr q1, [twist_ptr], #16      // [-1591,-1591,-1591,-1591,-858,-858,-858,-858]
-    ldr q2, [twist_ptr], #16      // [-15081,-15081,-15081,-15081,-8133,-8133,-8133,-8133]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v13.8h, v2.8h
     mul      v13.8h, v13.8h, v1.8h
@@ -124,8 +121,7 @@
 
 
     // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldr q1, [twist_ptr], #16      // [1520,1520,1520,1520,-1188,-1188,-1188,-1188]
-    ldr q2, [twist_ptr], #16      // [14408,14408,14408,14408,-11261,-11261,-11261,-11261]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v14.8h, v2.8h
     mul      v14.8h, v14.8h, v1.8h
@@ -133,56 +129,49 @@
 
 
     // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldr q1, [twist_ptr], #16      // [-54,-54,-54,-54,-631,-631,-631,-631]
-    ldr q2, [twist_ptr], #16      // [-512,-512,-512,-512,-5981,-5981,-5981,-5981]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v15.8h, v2.8h
     mul      v15.8h, v15.8h, v1.8h
     mls      v15.8h, v3.8h, v0.h[0]
 
     // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldr q1, [twist_ptr], #16      // [1,1,1,1,-1728,-1728,-1728,-1728]
-    ldr q2, [twist_ptr], #16      // [9,9,9,9,-16379,-16379,-16379,-16379]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v4.8h, v2.8h
     mul      v4.8h, v4.8h, v1.8h
     mls      v4.8h, v3.8h, v0.h[0]
 
     // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldr q1, [twist_ptr], #16      // [-864,-864,-864,-864,-432,-432,-432,-432]
-    ldr q2, [twist_ptr], #16      // [-8190,-8190,-8190,-8190,-4095,-4095,-4095,-4095]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v5.8h, v2.8h
     mul      v5.8h, v5.8h, v1.8h
     mls      v5.8h, v3.8h, v0.h[0]
 
     // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldr q1, [twist_ptr], #16      // [-1571,-1571,-1571,-1571,943,943,943,943]
-    ldr q2, [twist_ptr], #16      // [-14891,-14891,-14891,-14891,8938,8938,8938,8938]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v6.8h, v2.8h
     mul      v6.8h, v6.8h, v1.8h
     mls      v6.8h, v3.8h, v0.h[0]
 
     // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldr q1, [twist_ptr], #16      // [-1257,-1257,-1257,-1257,1100,1100,1100,1100]
-    ldr q2, [twist_ptr], #16      // [-11915,-11915,-11915,-11915,10427,10427,10427,10427]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v7.8h, v2.8h
     mul      v7.8h, v7.8h, v1.8h
     mls      v7.8h, v3.8h, v0.h[0]
 
     // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldr q1, [twist_ptr], #16      // [-257,-257,-257,-257,1600,1600,1600,1600]
-    ldr q2, [twist_ptr], #16      // [-2436,-2436,-2436,-2436,15166,15166,15166,15166]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v8.8h, v2.8h
     mul      v8.8h, v8.8h, v1.8h
     mls      v8.8h, v3.8h, v0.h[0]
 
     // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldr q1, [twist_ptr], #16      // [800,800,800,800,400,400,400,400]
-    ldr q2, [twist_ptr], #16      // [7583,7583,7583,7583,3791,3791,3791,3791]
+    ldp q1, q2, [twist_ptr], #32
 
     sqrdmulh v3.8h, v9.8h, v2.8h
     mul      v9.8h, v9.8h, v1.8h
@@ -240,10 +229,23 @@
     add row2_ptr, row2_ptr, #64
 .endm
 
-.global poly_ntt
-.global _poly_ntt
+.weak poly_ntt
+.weak _poly_ntt
+.ifdef MY_NTT_DIRECT_TUPLE
+.global gt_candidate_a_direct_tuple_poly_ntt
+.global _gt_candidate_a_direct_tuple_poly_ntt
 poly_ntt:
 _poly_ntt:
+gt_candidate_a_direct_tuple_poly_ntt:
+_gt_candidate_a_direct_tuple_poly_ntt:
+.else
+.global gt_block_major_poly_ntt
+.global _gt_block_major_poly_ntt
+poly_ntt:
+_poly_ntt:
+gt_block_major_poly_ntt:
+_gt_block_major_poly_ntt:
+.endif
     dst       .req x0
     src       .req x1
     zetas_ptr .req x2
@@ -270,6 +272,9 @@ _poly_ntt:
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
+.ifdef MY_NTT_USE_PHASE123_N1
+    .include "asm/slothy/my_ntt_phase123.n1.opt.s"
+.else
 slothy_start_ntt_phase123:
     PHASE123_ITER 0
     PHASE123_ITER 1
@@ -280,6 +285,7 @@ slothy_start_ntt_phase123:
     PHASE123_ITER 0
     PHASE123_ITER 1
 slothy_end_ntt_phase123:
+.endif
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas

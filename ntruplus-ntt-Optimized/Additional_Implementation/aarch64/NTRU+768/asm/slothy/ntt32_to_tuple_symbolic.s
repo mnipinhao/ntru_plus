@@ -1,12 +1,12 @@
 /*
- * Symbolic Slothy source for NTRU+768 Phase 4 8-way parallel 32-point NTT.
+ * Symbolic Slothy source for NTRU+768 Phase 4 8-way parallel 32-point NTT, direct tuple output.
  *
  * This is not a production assembly file yet.  It is the source of truth for
  * Slothy register allocation and scheduling experiments.
  *
  * Forward kernel contract:
  *
- *   natural input -> complete bit-reversed output scattered to final dst
+ *   natural input -> complete NTT-domain output stored in Candidate A direct-tuple layout
  *   input comes only from my_ntt.s Phase123 row buffers
  *   radix-2 Cooley-Tukey butterfly:
  *     t  = fqmul(high, twiddle)
@@ -16,8 +16,8 @@
  * This source intentionally does not reduce the 32 loaded input vectors.
  * Phase123 feeds raw 3-point DFT outputs bounded by 3*(q-1).  The five lazy
  * CT stages stay below signed int16 range.  The final stage345 stores reduce
- * to canonical range, split each output Q into low/high D halves, and scatter
- * directly to the final poly_ntt output layout.  Do not use this kernel as a
+ * to canonical range, split each output Q into low/high D halves, and store
+ * directly to Candidate A direct-tuple layout.  Do not use this kernel as a
  * standalone arbitrary-int16 NTT32 without restoring input normalization or
  * tightening the caller contract.
  *
@@ -38,7 +38,7 @@
  *      stage 2 for one stripe, then store the stage-2 values back to row_base.
  *   2. stage345_block0..3 each load one 8-vector block of stage-2 values,
  *      finish stage 3/4/5 inside that block, then reduce and scatter the
- *      bit-reversed output directly to the final output polynomial.
+ *      direct tuple output directly to the final output polynomial.
  *
  * Every Slothy label boundary is also a memory boundary.  This avoids carrying
  * 32 symbolic work vectors across regions and lets each region be allocated
@@ -47,11 +47,11 @@
  * Register contract for these symbolic regions:
  *   dst           = x0 points at the final poly_ntt output.
  *   row_base      = x4 points at the 32-Q staged input/output block.
- *   scatter_ptr   = x10 starts at dst + row_offset, where row_offset is
- *                   0, 256, or 512 for the three Good-Thomas rows.
+ *   scatter_ptr   = x10 starts at branch0 tuple row base:
+ *                   dst + 256*row.
+ *   scatter_hi    = x11 starts at branch1 tuple row base:
+ *                   dst + 768 + 256*row.
  *   tw_ptr        = x12 is reset before each region that loads twiddle vectors.
- *   scatter_next  = x13, scatter_bound = x14, scatter_wrap = x15 are concrete
- *                   GPR temporaries used by the branchless scatter wrap.
  *   v0.h[0]       = q = 3457 and must be reserved in Slothy config.
  *   v0.h[1]       = Barrett reduce constant used by final output reduction.
  */
@@ -61,19 +61,16 @@ row_base      .req x4
 tw_ptr        .req x12
 scatter_ptr   .req x10
 scatter_hi    .req x11
-scatter_next  .req x13
-scatter_bound .req x14
-scatter_wrap  .req x15
 
 /*
  * Stage 1/2 stripes.  Stripe s touches work[s], work[s+8], work[s+16],
  * and work[s+24].  The store at the end is the handoff to stage345 blocks.
  */
 
-    .global ntt32_8way
-    .global _ntt32_8way
-ntt32_8way:
-_ntt32_8way:
+    .global ntt32_8way_to_tuple
+    .global _ntt32_8way_to_tuple
+ntt32_8way_to_tuple:
+_ntt32_8way_to_tuple:
     adr tw_ptr, ntt32_twiddle_vecs
 _ntt32_stage12_stripe0_slothy_start:
     // Stage 1/2 stripe 0: work[0], work[8], work[16], work[24].
@@ -360,7 +357,6 @@ _ntt32_stage12_stripe7_slothy_end:
  * block3 = work[24..31].
  */
 
-    add scatter_bound, dst, #768
     adr tw_ptr, ntt32_twiddle_stage3
 _ntt32_stage345_block0_slothy_start:
     // Stage 3/4/5 block 0: work[0..7].
@@ -442,90 +438,50 @@ _ntt32_stage345_block0_slothy_start:
     srshr V<red00_s5_b0>.8h, V<red00_s5_b0>.8h, #11
     mls V<w00_s5_b0>.8h, V<red00_s5_b0>.8h, v0.h[0]
     ext V<hi00_s5_b0>.16b, V<w00_s5_b0>.16b, V<w00_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w00_s5_b0>, [scatter_ptr]
-    str D<hi00_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w00_s5_b0>, [scatter_ptr, #0]
+    str D<hi00_s5_b0>, [scatter_hi, #0]
     sqdmulh V<red01_s5_b0>.8h, V<w01_s5_b0>.8h, v0.h[1]
     srshr V<red01_s5_b0>.8h, V<red01_s5_b0>.8h, #11
     mls V<w01_s5_b0>.8h, V<red01_s5_b0>.8h, v0.h[0]
     ext V<hi01_s5_b0>.16b, V<w01_s5_b0>.16b, V<w01_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w01_s5_b0>, [scatter_ptr]
-    str D<hi01_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w01_s5_b0>, [scatter_ptr, #8]
+    str D<hi01_s5_b0>, [scatter_hi, #8]
     sqdmulh V<red02_s5_b0>.8h, V<w02_s5_b0>.8h, v0.h[1]
     srshr V<red02_s5_b0>.8h, V<red02_s5_b0>.8h, #11
     mls V<w02_s5_b0>.8h, V<red02_s5_b0>.8h, v0.h[0]
     ext V<hi02_s5_b0>.16b, V<w02_s5_b0>.16b, V<w02_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w02_s5_b0>, [scatter_ptr]
-    str D<hi02_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w02_s5_b0>, [scatter_ptr, #16]
+    str D<hi02_s5_b0>, [scatter_hi, #16]
     sqdmulh V<red03_s5_b0>.8h, V<w03_s5_b0>.8h, v0.h[1]
     srshr V<red03_s5_b0>.8h, V<red03_s5_b0>.8h, #11
     mls V<w03_s5_b0>.8h, V<red03_s5_b0>.8h, v0.h[0]
     ext V<hi03_s5_b0>.16b, V<w03_s5_b0>.16b, V<w03_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w03_s5_b0>, [scatter_ptr]
-    str D<hi03_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w03_s5_b0>, [scatter_ptr, #24]
+    str D<hi03_s5_b0>, [scatter_hi, #24]
     sqdmulh V<red04_s5_b0>.8h, V<w04_s5_b0>.8h, v0.h[1]
     srshr V<red04_s5_b0>.8h, V<red04_s5_b0>.8h, #11
     mls V<w04_s5_b0>.8h, V<red04_s5_b0>.8h, v0.h[0]
     ext V<hi04_s5_b0>.16b, V<w04_s5_b0>.16b, V<w04_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w04_s5_b0>, [scatter_ptr]
-    str D<hi04_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w04_s5_b0>, [scatter_ptr, #32]
+    str D<hi04_s5_b0>, [scatter_hi, #32]
     sqdmulh V<red05_s5_b0>.8h, V<w05_s5_b0>.8h, v0.h[1]
     srshr V<red05_s5_b0>.8h, V<red05_s5_b0>.8h, #11
     mls V<w05_s5_b0>.8h, V<red05_s5_b0>.8h, v0.h[0]
     ext V<hi05_s5_b0>.16b, V<w05_s5_b0>.16b, V<w05_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w05_s5_b0>, [scatter_ptr]
-    str D<hi05_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w05_s5_b0>, [scatter_ptr, #40]
+    str D<hi05_s5_b0>, [scatter_hi, #40]
     sqdmulh V<red06_s5_b0>.8h, V<w06_s5_b0>.8h, v0.h[1]
     srshr V<red06_s5_b0>.8h, V<red06_s5_b0>.8h, #11
     mls V<w06_s5_b0>.8h, V<red06_s5_b0>.8h, v0.h[0]
     ext V<hi06_s5_b0>.16b, V<w06_s5_b0>.16b, V<w06_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w06_s5_b0>, [scatter_ptr]
-    str D<hi06_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w06_s5_b0>, [scatter_ptr, #48]
+    str D<hi06_s5_b0>, [scatter_hi, #48]
     sqdmulh V<red07_s5_b0>.8h, V<w07_s5_b0>.8h, v0.h[1]
     srshr V<red07_s5_b0>.8h, V<red07_s5_b0>.8h, #11
     mls V<w07_s5_b0>.8h, V<red07_s5_b0>.8h, v0.h[0]
     ext V<hi07_s5_b0>.16b, V<w07_s5_b0>.16b, V<w07_s5_b0>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w07_s5_b0>, [scatter_ptr]
-    str D<hi07_s5_b0>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w07_s5_b0>, [scatter_ptr, #56]
+    str D<hi07_s5_b0>, [scatter_hi, #56]
 _ntt32_stage345_block0_slothy_end:
 
     adr tw_ptr, ntt32_twiddle_stage3
@@ -616,90 +572,50 @@ _ntt32_stage345_block1_slothy_start:
     srshr V<red08_s5_b1>.8h, V<red08_s5_b1>.8h, #11
     mls V<w08_s5_b1>.8h, V<red08_s5_b1>.8h, v0.h[0]
     ext V<hi08_s5_b1>.16b, V<w08_s5_b1>.16b, V<w08_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w08_s5_b1>, [scatter_ptr]
-    str D<hi08_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w08_s5_b1>, [scatter_ptr, #64]
+    str D<hi08_s5_b1>, [scatter_hi, #64]
     sqdmulh V<red09_s5_b1>.8h, V<w09_s5_b1>.8h, v0.h[1]
     srshr V<red09_s5_b1>.8h, V<red09_s5_b1>.8h, #11
     mls V<w09_s5_b1>.8h, V<red09_s5_b1>.8h, v0.h[0]
     ext V<hi09_s5_b1>.16b, V<w09_s5_b1>.16b, V<w09_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w09_s5_b1>, [scatter_ptr]
-    str D<hi09_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w09_s5_b1>, [scatter_ptr, #72]
+    str D<hi09_s5_b1>, [scatter_hi, #72]
     sqdmulh V<red10_s5_b1>.8h, V<w10_s5_b1>.8h, v0.h[1]
     srshr V<red10_s5_b1>.8h, V<red10_s5_b1>.8h, #11
     mls V<w10_s5_b1>.8h, V<red10_s5_b1>.8h, v0.h[0]
     ext V<hi10_s5_b1>.16b, V<w10_s5_b1>.16b, V<w10_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w10_s5_b1>, [scatter_ptr]
-    str D<hi10_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w10_s5_b1>, [scatter_ptr, #80]
+    str D<hi10_s5_b1>, [scatter_hi, #80]
     sqdmulh V<red11_s5_b1>.8h, V<w11_s5_b1>.8h, v0.h[1]
     srshr V<red11_s5_b1>.8h, V<red11_s5_b1>.8h, #11
     mls V<w11_s5_b1>.8h, V<red11_s5_b1>.8h, v0.h[0]
     ext V<hi11_s5_b1>.16b, V<w11_s5_b1>.16b, V<w11_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w11_s5_b1>, [scatter_ptr]
-    str D<hi11_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w11_s5_b1>, [scatter_ptr, #88]
+    str D<hi11_s5_b1>, [scatter_hi, #88]
     sqdmulh V<red12_s5_b1>.8h, V<w12_s5_b1>.8h, v0.h[1]
     srshr V<red12_s5_b1>.8h, V<red12_s5_b1>.8h, #11
     mls V<w12_s5_b1>.8h, V<red12_s5_b1>.8h, v0.h[0]
     ext V<hi12_s5_b1>.16b, V<w12_s5_b1>.16b, V<w12_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w12_s5_b1>, [scatter_ptr]
-    str D<hi12_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w12_s5_b1>, [scatter_ptr, #96]
+    str D<hi12_s5_b1>, [scatter_hi, #96]
     sqdmulh V<red13_s5_b1>.8h, V<w13_s5_b1>.8h, v0.h[1]
     srshr V<red13_s5_b1>.8h, V<red13_s5_b1>.8h, #11
     mls V<w13_s5_b1>.8h, V<red13_s5_b1>.8h, v0.h[0]
     ext V<hi13_s5_b1>.16b, V<w13_s5_b1>.16b, V<w13_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w13_s5_b1>, [scatter_ptr]
-    str D<hi13_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w13_s5_b1>, [scatter_ptr, #104]
+    str D<hi13_s5_b1>, [scatter_hi, #104]
     sqdmulh V<red14_s5_b1>.8h, V<w14_s5_b1>.8h, v0.h[1]
     srshr V<red14_s5_b1>.8h, V<red14_s5_b1>.8h, #11
     mls V<w14_s5_b1>.8h, V<red14_s5_b1>.8h, v0.h[0]
     ext V<hi14_s5_b1>.16b, V<w14_s5_b1>.16b, V<w14_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w14_s5_b1>, [scatter_ptr]
-    str D<hi14_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w14_s5_b1>, [scatter_ptr, #112]
+    str D<hi14_s5_b1>, [scatter_hi, #112]
     sqdmulh V<red15_s5_b1>.8h, V<w15_s5_b1>.8h, v0.h[1]
     srshr V<red15_s5_b1>.8h, V<red15_s5_b1>.8h, #11
     mls V<w15_s5_b1>.8h, V<red15_s5_b1>.8h, v0.h[0]
     ext V<hi15_s5_b1>.16b, V<w15_s5_b1>.16b, V<w15_s5_b1>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w15_s5_b1>, [scatter_ptr]
-    str D<hi15_s5_b1>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w15_s5_b1>, [scatter_ptr, #120]
+    str D<hi15_s5_b1>, [scatter_hi, #120]
 _ntt32_stage345_block1_slothy_end:
 
     adr tw_ptr, ntt32_twiddle_stage3
@@ -792,90 +708,50 @@ _ntt32_stage345_block2_slothy_start:
     srshr V<red16_s5_b2>.8h, V<red16_s5_b2>.8h, #11
     mls V<w16_s5_b2>.8h, V<red16_s5_b2>.8h, v0.h[0]
     ext V<hi16_s5_b2>.16b, V<w16_s5_b2>.16b, V<w16_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w16_s5_b2>, [scatter_ptr]
-    str D<hi16_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w16_s5_b2>, [scatter_ptr, #128]
+    str D<hi16_s5_b2>, [scatter_hi, #128]
     sqdmulh V<red17_s5_b2>.8h, V<w17_s5_b2>.8h, v0.h[1]
     srshr V<red17_s5_b2>.8h, V<red17_s5_b2>.8h, #11
     mls V<w17_s5_b2>.8h, V<red17_s5_b2>.8h, v0.h[0]
     ext V<hi17_s5_b2>.16b, V<w17_s5_b2>.16b, V<w17_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w17_s5_b2>, [scatter_ptr]
-    str D<hi17_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w17_s5_b2>, [scatter_ptr, #136]
+    str D<hi17_s5_b2>, [scatter_hi, #136]
     sqdmulh V<red18_s5_b2>.8h, V<w18_s5_b2>.8h, v0.h[1]
     srshr V<red18_s5_b2>.8h, V<red18_s5_b2>.8h, #11
     mls V<w18_s5_b2>.8h, V<red18_s5_b2>.8h, v0.h[0]
     ext V<hi18_s5_b2>.16b, V<w18_s5_b2>.16b, V<w18_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w18_s5_b2>, [scatter_ptr]
-    str D<hi18_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w18_s5_b2>, [scatter_ptr, #144]
+    str D<hi18_s5_b2>, [scatter_hi, #144]
     sqdmulh V<red19_s5_b2>.8h, V<w19_s5_b2>.8h, v0.h[1]
     srshr V<red19_s5_b2>.8h, V<red19_s5_b2>.8h, #11
     mls V<w19_s5_b2>.8h, V<red19_s5_b2>.8h, v0.h[0]
     ext V<hi19_s5_b2>.16b, V<w19_s5_b2>.16b, V<w19_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w19_s5_b2>, [scatter_ptr]
-    str D<hi19_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w19_s5_b2>, [scatter_ptr, #152]
+    str D<hi19_s5_b2>, [scatter_hi, #152]
     sqdmulh V<red20_s5_b2>.8h, V<w20_s5_b2>.8h, v0.h[1]
     srshr V<red20_s5_b2>.8h, V<red20_s5_b2>.8h, #11
     mls V<w20_s5_b2>.8h, V<red20_s5_b2>.8h, v0.h[0]
     ext V<hi20_s5_b2>.16b, V<w20_s5_b2>.16b, V<w20_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w20_s5_b2>, [scatter_ptr]
-    str D<hi20_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w20_s5_b2>, [scatter_ptr, #160]
+    str D<hi20_s5_b2>, [scatter_hi, #160]
     sqdmulh V<red21_s5_b2>.8h, V<w21_s5_b2>.8h, v0.h[1]
     srshr V<red21_s5_b2>.8h, V<red21_s5_b2>.8h, #11
     mls V<w21_s5_b2>.8h, V<red21_s5_b2>.8h, v0.h[0]
     ext V<hi21_s5_b2>.16b, V<w21_s5_b2>.16b, V<w21_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w21_s5_b2>, [scatter_ptr]
-    str D<hi21_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w21_s5_b2>, [scatter_ptr, #168]
+    str D<hi21_s5_b2>, [scatter_hi, #168]
     sqdmulh V<red22_s5_b2>.8h, V<w22_s5_b2>.8h, v0.h[1]
     srshr V<red22_s5_b2>.8h, V<red22_s5_b2>.8h, #11
     mls V<w22_s5_b2>.8h, V<red22_s5_b2>.8h, v0.h[0]
     ext V<hi22_s5_b2>.16b, V<w22_s5_b2>.16b, V<w22_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w22_s5_b2>, [scatter_ptr]
-    str D<hi22_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w22_s5_b2>, [scatter_ptr, #176]
+    str D<hi22_s5_b2>, [scatter_hi, #176]
     sqdmulh V<red23_s5_b2>.8h, V<w23_s5_b2>.8h, v0.h[1]
     srshr V<red23_s5_b2>.8h, V<red23_s5_b2>.8h, #11
     mls V<w23_s5_b2>.8h, V<red23_s5_b2>.8h, v0.h[0]
     ext V<hi23_s5_b2>.16b, V<w23_s5_b2>.16b, V<w23_s5_b2>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w23_s5_b2>, [scatter_ptr]
-    str D<hi23_s5_b2>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w23_s5_b2>, [scatter_ptr, #184]
+    str D<hi23_s5_b2>, [scatter_hi, #184]
 _ntt32_stage345_block2_slothy_end:
 
     adr tw_ptr, ntt32_twiddle_stage3
@@ -968,90 +844,50 @@ _ntt32_stage345_block3_slothy_start:
     srshr V<red24_s5_b3>.8h, V<red24_s5_b3>.8h, #11
     mls V<w24_s5_b3>.8h, V<red24_s5_b3>.8h, v0.h[0]
     ext V<hi24_s5_b3>.16b, V<w24_s5_b3>.16b, V<w24_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w24_s5_b3>, [scatter_ptr]
-    str D<hi24_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w24_s5_b3>, [scatter_ptr, #192]
+    str D<hi24_s5_b3>, [scatter_hi, #192]
     sqdmulh V<red25_s5_b3>.8h, V<w25_s5_b3>.8h, v0.h[1]
     srshr V<red25_s5_b3>.8h, V<red25_s5_b3>.8h, #11
     mls V<w25_s5_b3>.8h, V<red25_s5_b3>.8h, v0.h[0]
     ext V<hi25_s5_b3>.16b, V<w25_s5_b3>.16b, V<w25_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w25_s5_b3>, [scatter_ptr]
-    str D<hi25_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w25_s5_b3>, [scatter_ptr, #200]
+    str D<hi25_s5_b3>, [scatter_hi, #200]
     sqdmulh V<red26_s5_b3>.8h, V<w26_s5_b3>.8h, v0.h[1]
     srshr V<red26_s5_b3>.8h, V<red26_s5_b3>.8h, #11
     mls V<w26_s5_b3>.8h, V<red26_s5_b3>.8h, v0.h[0]
     ext V<hi26_s5_b3>.16b, V<w26_s5_b3>.16b, V<w26_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w26_s5_b3>, [scatter_ptr]
-    str D<hi26_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w26_s5_b3>, [scatter_ptr, #208]
+    str D<hi26_s5_b3>, [scatter_hi, #208]
     sqdmulh V<red27_s5_b3>.8h, V<w27_s5_b3>.8h, v0.h[1]
     srshr V<red27_s5_b3>.8h, V<red27_s5_b3>.8h, #11
     mls V<w27_s5_b3>.8h, V<red27_s5_b3>.8h, v0.h[0]
     ext V<hi27_s5_b3>.16b, V<w27_s5_b3>.16b, V<w27_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w27_s5_b3>, [scatter_ptr]
-    str D<hi27_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w27_s5_b3>, [scatter_ptr, #216]
+    str D<hi27_s5_b3>, [scatter_hi, #216]
     sqdmulh V<red28_s5_b3>.8h, V<w28_s5_b3>.8h, v0.h[1]
     srshr V<red28_s5_b3>.8h, V<red28_s5_b3>.8h, #11
     mls V<w28_s5_b3>.8h, V<red28_s5_b3>.8h, v0.h[0]
     ext V<hi28_s5_b3>.16b, V<w28_s5_b3>.16b, V<w28_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w28_s5_b3>, [scatter_ptr]
-    str D<hi28_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w28_s5_b3>, [scatter_ptr, #224]
+    str D<hi28_s5_b3>, [scatter_hi, #224]
     sqdmulh V<red29_s5_b3>.8h, V<w29_s5_b3>.8h, v0.h[1]
     srshr V<red29_s5_b3>.8h, V<red29_s5_b3>.8h, #11
     mls V<w29_s5_b3>.8h, V<red29_s5_b3>.8h, v0.h[0]
     ext V<hi29_s5_b3>.16b, V<w29_s5_b3>.16b, V<w29_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w29_s5_b3>, [scatter_ptr]
-    str D<hi29_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w29_s5_b3>, [scatter_ptr, #232]
+    str D<hi29_s5_b3>, [scatter_hi, #232]
     sqdmulh V<red30_s5_b3>.8h, V<w30_s5_b3>.8h, v0.h[1]
     srshr V<red30_s5_b3>.8h, V<red30_s5_b3>.8h, #11
     mls V<w30_s5_b3>.8h, V<red30_s5_b3>.8h, v0.h[0]
     ext V<hi30_s5_b3>.16b, V<w30_s5_b3>.16b, V<w30_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w30_s5_b3>, [scatter_ptr]
-    str D<hi30_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w30_s5_b3>, [scatter_ptr, #240]
+    str D<hi30_s5_b3>, [scatter_hi, #240]
     sqdmulh V<red31_s5_b3>.8h, V<w31_s5_b3>.8h, v0.h[1]
     srshr V<red31_s5_b3>.8h, V<red31_s5_b3>.8h, #11
     mls V<w31_s5_b3>.8h, V<red31_s5_b3>.8h, v0.h[0]
     ext V<hi31_s5_b3>.16b, V<w31_s5_b3>.16b, V<w31_s5_b3>.16b, #8
-    add scatter_hi, scatter_ptr, #768
-    str D<w31_s5_b3>, [scatter_ptr]
-    str D<hi31_s5_b3>, [scatter_hi]
-    add scatter_next, scatter_ptr, #24
-    sub scatter_wrap, scatter_next, #768
-    cmp scatter_next, scatter_bound
-    csel scatter_ptr, scatter_wrap, scatter_next, hs
+    str D<w31_s5_b3>, [scatter_ptr, #248]
+    str D<hi31_s5_b3>, [scatter_hi, #248]
 _ntt32_stage345_block3_slothy_end:
 
     ret
@@ -1088,6 +924,3 @@ ntt32_twiddle_stage5_high:
     .unreq tw_ptr
     .unreq scatter_ptr
     .unreq scatter_hi
-    .unreq scatter_next
-    .unreq scatter_bound
-    .unreq scatter_wrap

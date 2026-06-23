@@ -69,6 +69,10 @@ def main() -> None:
     parser.add_argument("--allow-spills", action="store_true")
     parser.add_argument("--functional-only", action="store_true")
     parser.add_argument("--no-reorder", action="store_true")
+    parser.add_argument("--split-heuristic", action="store_true")
+    parser.add_argument("--split-stepsize", type=float, default=0.05)
+    parser.add_argument("--split-factor", type=float, default=8.0)
+    parser.add_argument("--split-repeat", type=int, default=1)
     parser.add_argument("--stalls", type=int, default=96)
     args = parser.parse_args()
 
@@ -90,6 +94,12 @@ def main() -> None:
     slothy.config.allow_useless_instructions = True
     slothy.config.constraints.allow_spills = args.allow_spills
     slothy.config.constraints.stalls_first_attempt = args.stalls
+    if args.split_heuristic:
+        slothy.config.split_heuristic = True
+        slothy.config.split_heuristic_stepsize = args.split_stepsize
+        slothy.config.split_heuristic_factor = args.split_factor
+        slothy.config.split_heuristic_repeat = args.split_repeat
+        slothy.config.split_heuristic_estimate_performance = False
     if args.functional_only:
         slothy.config.constraints.functional_only = True
     if args.no_reorder:

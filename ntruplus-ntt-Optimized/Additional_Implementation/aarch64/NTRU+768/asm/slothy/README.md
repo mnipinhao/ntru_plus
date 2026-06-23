@@ -45,6 +45,63 @@ stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
 initial `scatter_ptr` before each stage345 block.  Keep that in mind if you
 regenerate the file from scratch.
 
+## Forward Phase123 N1 Schedule
+
+The first half of `asm/my_ntt.s`, from `slothy_start_ntt_phase123` to
+`slothy_end_ntt_phase123`, has an N1 Slothy-scheduled variant:
+
+- unscheduled source of truth: `asm/my_ntt.s`
+- scheduled wrapper used by the default GT KEM builds:
+  `asm/my_ntt_phase123_n1.s`
+- scheduled region included by the wrapper:
+  `asm/slothy/my_ntt_phase123.n1.opt.s`
+- flat symbolic source used to run Slothy:
+  `asm/slothy/my_ntt_phase123_flat.sym.s`
+- local driver used for the split-heuristic run:
+  `asm/slothy/optimize_phase123_split.py`
+
+`asm/my_ntt.s` keeps the original macro-expanded Phase123 block behind the
+default path.  Defining `MY_NTT_USE_PHASE123_N1` includes the scheduled region
+instead; `asm/my_ntt_phase123_n1.s` is just that define plus an include of
+`asm/my_ntt.s`.
+
+The default Makefile path uses:
+
+```sh
+GT_NTT_ASM = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+```
+
+To compare against the unscheduled Phase123 block without editing files:
+
+```sh
+make -B test_kem_gt_production_opt \
+  GT_NTT_ASM='asm/my_ntt.s asm/slothy/my_32ntt.opt.s'
+```
+
+Slothy cannot directly parse the original `PHASE123_ITER` GAS macro because of
+the `.if \pattern == ...` branch.  The flat symbolic file expands the eight
+iterations explicitly and then optimizes each
+`slothy_start_ntt_phase123_iterN:slothy_end_ntt_phase123_iterN` region with the
+N1 target and split heuristic.
+
+Rerun command:
+
+```sh
+SLOTHY_PATH=/path/to/slothy python3 optimize_phase123_split.py \
+  --input my_ntt_phase123_flat.sym.s \
+  --output my_ntt_phase123.n1.opt.s \
+  --target n1 \
+  --region slothy_start_ntt_phase123_iter0:slothy_end_ntt_phase123_iter0 \
+  --region slothy_start_ntt_phase123_iter1:slothy_end_ntt_phase123_iter1 \
+  --region slothy_start_ntt_phase123_iter2:slothy_end_ntt_phase123_iter2 \
+  --region slothy_start_ntt_phase123_iter3:slothy_end_ntt_phase123_iter3 \
+  --region slothy_start_ntt_phase123_iter4:slothy_end_ntt_phase123_iter4 \
+  --region slothy_start_ntt_phase123_iter5:slothy_end_ntt_phase123_iter5 \
+  --region slothy_start_ntt_phase123_iter6:slothy_end_ntt_phase123_iter6 \
+  --region slothy_start_ntt_phase123_iter7:slothy_end_ntt_phase123_iter7 \
+  --stalls 192
+```
+
 ## NTT32 Rowpack Output v2
 
 `ntt32_v2_symbolic.s` is an experimental symbolic source for the Forward NTT

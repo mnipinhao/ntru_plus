@@ -14,10 +14,13 @@ STOCK_BASE_ASM = asm/base.s
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
 GT_BASE_ASM = asm/base_gt.S
 GT_BASE_OPT_ASM = asm/base_gt.opt.s
-GT_NTT_ASM = asm/my_ntt.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM_ORIGINAL = asm/my_ntt.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM_PHASE123_N1 = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
 GT_INVNTT_ASM = asm/inv_my_ntt.s
 GT_TMVP_C = poly_gt_tmvp_experimental_c.c gt_tmvp_quartic_tmvp_experimental.c
 GT_TMVP_ASM = asm/gt_tmvp_quartic_tmvp_experimental_asm.S
+GT_TMVP_CORE_C = gt_tmvp_quartic_tmvp_experimental.c
 
 # CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
 # Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
@@ -71,6 +74,35 @@ GT_TMVP_ASM_GTNTT_KEM_SOURCES = \
 	$(GT_NTT_ASM) \
 	$(GT_INVNTT_ASM)
 
+CANDIDATE_A_EVALPACK_KEM_POLY_C = poly_gt_tmvp_candidate_a_evalpack_kem.c
+CANDIDATE_A_EVALPACK_KEM_C_SOURCES = \
+	$(KEM_COMMON_C) \
+	ntt.c \
+	$(CANDIDATE_A_EVALPACK_KEM_POLY_C) \
+	$(GT_TMVP_CORE_C) \
+	$(SHAKE_SOURCES)
+CANDIDATE_A_EVALPACK_KEM_ASM_SOURCES = \
+	$(CANDIDATE_A_EVALPACK_KEM_C_SOURCES) \
+	$(GT_NTT_ASM) \
+	$(GT_INVNTT_ASM) \
+	$(GT_TMVP_ASM)
+
+CANDIDATE_A_DIRECT_TUPLE_KEM_POLY_C = poly_gt_tmvp_candidate_a_direct_tuple_kem.c
+CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM = asm/candidate_a_direct_tuple_basemul.S
+CANDIDATE_A_DIRECT_TUPLE_NTT_ASM = \
+	asm/my_ntt_candidate_a_direct_tuple.s \
+	asm/slothy/ntt32_8way.to_tuple.n1.opt.s
+CANDIDATE_A_DIRECT_TUPLE_KEM_C_SOURCES = \
+	$(KEM_COMMON_C) \
+	ntt.c \
+	$(CANDIDATE_A_DIRECT_TUPLE_KEM_POLY_C) \
+	$(SHAKE_SOURCES)
+CANDIDATE_A_DIRECT_TUPLE_KEM_ASM_SOURCES = \
+	$(CANDIDATE_A_DIRECT_TUPLE_KEM_C_SOURCES) \
+	$(CANDIDATE_A_DIRECT_TUPLE_NTT_ASM) \
+	$(GT_INVNTT_ASM) \
+	$(CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM)
+
 CANDIDATE_A_BATCH8_KEM_POLY_C = poly_gt_tmvp_candidate_a_batch8_kem.c
 CANDIDATE_A_BATCH8_HARNESS = gt_test/test_gt_tmvp_incomplete_candidate_a_stage2_postmerge_c.c
 CANDIDATE_A_BATCH8_WRAPPER = docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8_wrapper.c
@@ -107,6 +139,9 @@ CANDIDATE_A_BATCH8_KEM_SOURCES = \
 .PHONY: test_kem_stock
 .PHONY: test_kem_gt_production test_kem_gt_production_opt
 .PHONY: test_kem_gt_tmvp_asm_gtntt
+.PHONY: test_kem_gt_tmvp_candidate_a test_kem_gt_tmvp_candidate_a_evalpack_c
+.PHONY: test_kem_gt_tmvp_candidate_a_direct_tuple test_kem_gt_tmvp_candidate_a_direct_tuple_c
+.PHONY: test_candidate_a_direct_tuple_ntt_contract
 .PHONY: test_kem_gt_tmvp_candidate_a_batch8
 .PHONY: test_gt_tmvp_quartic_tmvp_experimental_c
 .PHONY: test_gt_tmvp_quartic_tmvp_experimental_asm
@@ -143,6 +178,27 @@ test_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombyte
 test_kem_gt_tmvp_asm_gtntt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c gt_tmvp_quartic_tmvp_experimental.h $(GT_TMVP_ASM_GTNTT_KEM_SOURCES)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM -DGT_TMVP_USE_EXTERNAL_POLY_NTT -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_tmvp_asm_gtntt randombytes.c test/test.c $(GT_TMVP_ASM_GTNTT_KEM_SOURCES)
+
+test_kem_gt_tmvp_candidate_a: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h gt_tmvp_quartic_tmvp_experimental.h $(CANDIDATE_A_EVALPACK_KEM_ASM_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_CANDIDATE_A_EVALPACK_KEM -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_ASM -DGT_TMVP_USE_BLOCK_MAJOR_NTT_ASM -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_tmvp_candidate_a randombytes.c test/test.c $(CANDIDATE_A_EVALPACK_KEM_ASM_SOURCES)
+
+test_kem_gt_tmvp_candidate_a_evalpack_c: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h gt_tmvp_quartic_tmvp_experimental.h $(CANDIDATE_A_EVALPACK_KEM_C_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_CANDIDATE_A_EVALPACK_KEM -DGT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_tmvp_candidate_a_evalpack_c randombytes.c test/test.c $(CANDIDATE_A_EVALPACK_KEM_C_SOURCES)
+
+test_kem_gt_tmvp_candidate_a_direct_tuple_c: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h $(CANDIDATE_A_DIRECT_TUPLE_KEM_C_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_KEM -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_tmvp_candidate_a_direct_tuple_c randombytes.c test/test.c $(CANDIDATE_A_DIRECT_TUPLE_KEM_C_SOURCES)
+
+test_kem_gt_tmvp_candidate_a_direct_tuple: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h $(CANDIDATE_A_DIRECT_TUPLE_KEM_ASM_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_KEM -DGT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM -DGT_TMVP_USE_DIRECT_TUPLE_NTT_ASM -DGT_TMVP_USE_BLOCK_MAJOR_INVNTT_ASM -DCANDIDATE_A_DIRECT_TUPLE_BASEMUL_USE_OPT -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_tmvp_candidate_a_direct_tuple randombytes.c test/test.c $(CANDIDATE_A_DIRECT_TUPLE_KEM_ASM_SOURCES)
+
+test_candidate_a_direct_tuple_ntt_contract: $(HEADERS) ntt.h ntt.c gt_test/test_candidate_a_direct_tuple_ntt_contract.c $(CANDIDATE_A_DIRECT_TUPLE_NTT_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -Wno-unused-function -I. -o $(BUILD_DIR)/test_candidate_a_direct_tuple_ntt_contract gt_test/test_candidate_a_direct_tuple_ntt_contract.c ntt.c $(CANDIDATE_A_DIRECT_TUPLE_NTT_ASM)
+	./$(BUILD_DIR)/test_candidate_a_direct_tuple_ntt_contract
 
 test_kem_gt_tmvp_candidate_a_batch8: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h gt_tmvp_quartic_tmvp_experimental.h $(CANDIDATE_A_BATCH8_KEM_SOURCES)
 	@mkdir -p $(BUILD_DIR)

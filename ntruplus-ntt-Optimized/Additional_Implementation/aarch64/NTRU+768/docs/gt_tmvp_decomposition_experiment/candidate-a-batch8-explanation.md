@@ -1,11 +1,15 @@
-# Candidate A Batch8 Explanation
+# Stage4-Source Batch8 Explanation
 
-This note documents the current Candidate A batch8 path after the stale
+This note documents the legacy stage4-source batch8 path after the stale
 experiments were removed and the fast batch8 TMVP kernel was restored.
+
+This is no longer the current Candidate A contract.  Candidate A now means the
+complete-stage5 evalpack KEM path documented in
+`candidate-a-complete-evalpack-explanation.md`.
 
 ## Current Status
 
-Candidate A batch8 is a validated stage4-boundary product probe plus a KEM
+The stage4-source batch8 route is a validated stage4-boundary product probe plus a KEM
 bridge.  It is not yet a production-compatible KEM backend.
 
 The important distinction is:
@@ -142,7 +146,7 @@ Pure incomplete stage4 is the higher-upside route, but it is not just "write a
 forward stage4 ASM."  It requires a new residual TMVP algebra and a new test
 oracle.
 
-## Current Candidate A Stage4-Source Route
+## Stage4-Source Batch8 Route
 
 This is the route implemented now.
 
@@ -170,9 +174,10 @@ Cons:
 
 Implication:
 
-This is the best near-term route for measurement.  If the goal is a large
-end-to-end KEM speedup, the next gates are forward stage4 ASM and batch8 add
-ASM, followed by a representation decision.
+This remains a useful measurement route, especially for understanding the
+batch8 TMVP core.  It should not be used as the primary KEM representation
+contract unless the whole scheme API is changed around incomplete-domain
+polynomials.
 
 ## Complete Stage5 / Evalpack Route
 
