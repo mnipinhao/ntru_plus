@@ -1,0 +1,79 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
+  name: NTRUPlus768 incomplete Candidate A TMVP batch8 product core
+  source: docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.sym.S
+  scheme: ntruplus768
+  operation: stage4_batch_to_invntt_stage1_state_product_core
+
+target:
+  arch: aarch64_neon
+  microarchitecture: raspberry_pi_5_cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: ra_then_window_opt
+  driver: docs/gt_soa_layout_experiment/optimize_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.py
+  expected_outputs: [docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.alloc.S, docs/gt_soa_layout_experiment/kernels/ntruplus768_gt_tmvp_candidate_a_tmvp_batch8.opt.S]
+  allow_spills: false
+
+region:
+  start_label: slothy_start_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
+  end_label: slothy_end_ntruplus768_gt_tmvp_candidate_a_tmvp_batch8
+  expected_instruction_count: 303
+  live_in: [x0_output_batch_base, x1_a_stage4_batch_base, x2_b_stage4_batch_base, x3_candidate_a_batch_constants]
+  live_out: [memory_at_x0_offsets_0_16_64_80_128_144_192_208]
+
+abi:
+  inputs: [x0_output_batch_base, x1_a_stage4_batch_base, x2_b_stage4_batch_base, x3_candidate_a_batch_constants]
+  outputs: [x0_output_batch_filled]
+  clobbers: [v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+
+instruction_dag:
+  file: docs/gt_tmvp_decomposition_experiment/decomposition-quartic-tmvp-incomplete-candidate-a-tmvp-batch8-instruction-dag.yml
+  summary: materialize_stage5_for_eight_pairs_then_compute_even_and_odd_quartic_products_and_store_ce_plus_co_ce_minus_co
+
+layout:
+  input_representation: rowpack_stage4_branch_row_kpair_batch_i16
+  output_representation: rowpack_invntt_stage1_state_even_ce_plus_co_odd_ce_minus_co_i16
+  vector_lanes: 8x16_bit_neon
+  packing: four_quartic_lanes_separated_by_64_bytes_with_two_vectors_per_lane
+
+memory_contract:
+  loads: [a_stage4_batch_public_offsets, b_stage4_batch_public_offsets, constants_public_offsets]
+  stores: [output_batch_public_offsets]
+  aliasing: output_may_not_alias_inputs_for_first_candidate
+  alignment: 16_byte_preferred_unaligned_safe
+  public_offsets_only: true
+  pointer_updates: [none_escape_abi]
+
+constant_contract:
+  constants: [ntruplus_q_3457, montgomery_qinv_minus12929, ntruplus_rsq_867, stage5_twiddle, stage5_twiddle_pre, lambda_even, lambda_odd]
+  modulus: 3457
+  representation: signed_i16_montgomery_for_products_with_centered_modq_equivalence
+  reduction_method: montgomery_reduce_after_stage5_twiddle_products_quartic_products_and_final_rsq_normalization
+
+range_contract:
+  input_ranges: [stage4_inputs_observed_and_required_within_minus1728_to_1728]
+  intermediate_ranges: [stage5_materialized_inputs_expected_within_minus3435_to_3435, quartic_products_use_i32_accumulators]
+  output_ranges: [adapter_output_centered_i16_modq_equivalent]
+  narrowing_points: [after_montgomery_reduce_to_i16]
+
+constant_time_contract:
+  secret_inputs: [a_stage4_values, b_stage4_values]
+  public_inputs: [output_pointer, input_pointers, constants_pointer, branch_index, row_index, kpair_block_index]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_true_forward_stage4_fullpath_asm
+  test_command: make test_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_batch8_symbolic_contract
+  full_path_benchmark_command: make bench_gt_tmvp_quartic_tmvp_incomplete_candidate_a_tmvp_asm_skeleton_fullpath
+  benchmark_metric: cntvct_ticks_per_call_after_public_wrapper_integration
+  lower_is_better: true

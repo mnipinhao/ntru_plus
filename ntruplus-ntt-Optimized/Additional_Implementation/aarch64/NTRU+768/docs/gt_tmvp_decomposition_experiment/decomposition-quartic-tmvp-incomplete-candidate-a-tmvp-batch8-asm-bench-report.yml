@@ -1,0 +1,49 @@
+candidate_a_tmvp_batch8_asm_bench_status: done
+selected_path: incomplete_stage4_candidate_a_tmvp_batch8_asm_to_invntt_stage2_to_postmerge
+clock_source: cntvct_el0
+metric_unit: cntvct_ticks_per_call
+samples: 101
+inner_iterations_per_sample: 16
+countergap_ticks: 0
+sink_after_run: 322587614
+stage4_input_source: true_forward_stage4_c_reference
+tmvp_asm_boundary_checked: true
+tmvp_asm_skeleton_trampoline_to_c: false
+tmvp_asm_batch8_core_used: true
+tmvp_add_asm_fallback_to_c: true
+tmvp_asm_implemented: true
+rowkernel_stage2_to5_asm_used: true
+postmerge_regular_asm_used: true
+postmerge_bounded_asm_used: false
+benchmark_or_cycle_claim_made: true
+correctness_precheck: pass
+results:
+  - name: tmvp_adapter_c_mul
+    min_ticks: 499
+    median_ticks: 501
+    mean_ticks: 506
+  - name: tmvp_batch8_asm_mul
+    min_ticks: 68
+    median_ticks: 68
+    mean_ticks: 68
+  - name: tmvp_adapter_c_add
+    min_ticks: 407
+    median_ticks: 407
+    mean_ticks: 408
+  - name: tmvp_batch8_asm_add_c_fallback
+    min_ticks: 407
+    median_ticks: 407
+    mean_ticks: 407
+  - name: tmvp_batch8_asm_fullpath_mul
+    min_ticks: 155
+    median_ticks: 155
+    mean_ticks: 155
+  - name: tmvp_batch8_asm_fullpath_add_c_fallback
+    min_ticks: 495
+    median_ticks: 503
+    mean_ticks: 501
+notes:
+  - TMVP batch8 ASM rows use the Slothy-generated product core through a C wrapper.
+  - Product rows include real batch8 TMVP ASM; product-add rows still use the Candidate A C add adapter.
+  - Fullpath rows include TMVP boundary, stage2_to5 rowkernel ASM, and regular postmerge ASM.
+recommended_next_gate: candidate_a_batch8_tmvp_add_variant_or_full_wrapper_asm

@@ -242,6 +242,7 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
 	return (int)ret;
 }
 
+#if !defined(GT_TMVP_USE_EXTERNAL_POLY_NTT)
 void poly_ntt(poly *r, const poly *a)
 {
 	ntt(r->coeffs, a->coeffs);
@@ -251,6 +252,7 @@ void poly_invntt(poly *r, const poly *a)
 {
 	invntt(r->coeffs, a->coeffs);
 }
+#endif
 
 int poly_baseinv(poly *r, const poly *a)
 {
