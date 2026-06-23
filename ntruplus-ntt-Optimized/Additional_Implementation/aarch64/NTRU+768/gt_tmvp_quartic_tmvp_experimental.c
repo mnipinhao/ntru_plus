@@ -46,7 +46,6 @@ int gt_tmvp_quartic_tmvp_physical_j(int row, int k32)
 	return (GT_TMVP_ROW_N * row + GT_TMVP_ROWS * k32) %
 	       (GT_TMVP_ROWS * GT_TMVP_ROW_N);
 }
-
 #if defined(GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C)
 static int16_t gt_tmvp_montgomery_reduce(int32_t a)
 {
@@ -403,6 +402,163 @@ int gt_tmvp_quartic_tmvp_add_incomplete_materialized_stage5_adapter_c(
 
 					r[even_index] = (int16_t)(r_even[lane] + r_odd[lane]);
 					r[odd_index] = (int16_t)(r_even[lane] - r_odd[lane]);
+				}
+			}
+		}
+	}
+
+	return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK;
+#endif
+}
+
+int gt_tmvp_quartic_tmvp_incomplete_complete_stage5_adapter_c(
+	int16_t r[NTRUPLUS_N],
+	const int16_t a_complete[NTRUPLUS_N],
+	const int16_t b_complete[NTRUPLUS_N])
+{
+	if (!gt_tmvp_check_3args(r, a_complete, b_complete))
+	{
+		return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_INVALID_ARGUMENT;
+	}
+
+#if !defined(GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C)
+	return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_DISABLED;
+#else
+	for (int branch = 0; branch < GT_TMVP_BRANCHES; branch++)
+	{
+		for (int row = 0; row < GT_TMVP_ROWS; row++)
+		{
+			for (int pair = 0; pair < GT_TMVP_ROW_N / 2; pair++)
+			{
+				const int k_even = 2 * pair;
+				const int k_odd = k_even + 1;
+				const int even_j =
+					gt_tmvp_quartic_tmvp_physical_j(row, k_even);
+				const int odd_j =
+					gt_tmvp_quartic_tmvp_physical_j(row, k_odd);
+				int16_t a_even[GT_TMVP_QUARTIC_LANES];
+				int16_t a_odd[GT_TMVP_QUARTIC_LANES];
+				int16_t b_even[GT_TMVP_QUARTIC_LANES];
+				int16_t b_odd[GT_TMVP_QUARTIC_LANES];
+				int16_t r_even[GT_TMVP_QUARTIC_LANES];
+				int16_t r_odd[GT_TMVP_QUARTIC_LANES];
+
+				for (int lane = 0; lane < GT_TMVP_QUARTIC_LANES; lane++)
+				{
+					const int even_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_even);
+					const int odd_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_odd);
+
+					a_even[lane] = a_complete[even_index];
+					a_odd[lane] = a_complete[odd_index];
+					b_even[lane] = b_complete[even_index];
+					b_odd[lane] = b_complete[odd_index];
+				}
+
+				gt_tmvp_quartic_leaf_experimental_c(
+					r_even, a_even, b_even,
+					gt_rowbitrev_lambda[branch][even_j]);
+				gt_tmvp_quartic_leaf_experimental_c(
+					r_odd, a_odd, b_odd,
+					gt_rowbitrev_lambda[branch][odd_j]);
+
+				for (int lane = 0; lane < GT_TMVP_QUARTIC_LANES; lane++)
+				{
+					const int even_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_even);
+					const int odd_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_odd);
+
+					r[even_index] =
+						(int16_t)(r_even[lane] + r_odd[lane]);
+					r[odd_index] =
+						(int16_t)(r_even[lane] - r_odd[lane]);
+				}
+			}
+		}
+	}
+
+	return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK;
+#endif
+}
+
+int gt_tmvp_quartic_tmvp_add_incomplete_complete_stage5_adapter_c(
+	int16_t r[NTRUPLUS_N],
+	const int16_t a_complete[NTRUPLUS_N],
+	const int16_t b_complete[NTRUPLUS_N],
+	const int16_t c_complete[NTRUPLUS_N])
+{
+	if (!gt_tmvp_check_4args(r, a_complete, b_complete, c_complete))
+	{
+		return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_INVALID_ARGUMENT;
+	}
+
+#if !defined(GT_TMVP_ENABLE_QUARTIC_TMVP_EXPERIMENTAL_C)
+	return GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_DISABLED;
+#else
+	for (int branch = 0; branch < GT_TMVP_BRANCHES; branch++)
+	{
+		for (int row = 0; row < GT_TMVP_ROWS; row++)
+		{
+			for (int pair = 0; pair < GT_TMVP_ROW_N / 2; pair++)
+			{
+				const int k_even = 2 * pair;
+				const int k_odd = k_even + 1;
+				const int even_j =
+					gt_tmvp_quartic_tmvp_physical_j(row, k_even);
+				const int odd_j =
+					gt_tmvp_quartic_tmvp_physical_j(row, k_odd);
+				int16_t a_even[GT_TMVP_QUARTIC_LANES];
+				int16_t a_odd[GT_TMVP_QUARTIC_LANES];
+				int16_t b_even[GT_TMVP_QUARTIC_LANES];
+				int16_t b_odd[GT_TMVP_QUARTIC_LANES];
+				int16_t c_even[GT_TMVP_QUARTIC_LANES];
+				int16_t c_odd[GT_TMVP_QUARTIC_LANES];
+				int16_t r_even[GT_TMVP_QUARTIC_LANES];
+				int16_t r_odd[GT_TMVP_QUARTIC_LANES];
+
+				for (int lane = 0; lane < GT_TMVP_QUARTIC_LANES; lane++)
+				{
+					const int even_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_even);
+					const int odd_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_odd);
+
+					a_even[lane] = a_complete[even_index];
+					a_odd[lane] = a_complete[odd_index];
+					b_even[lane] = b_complete[even_index];
+					b_odd[lane] = b_complete[odd_index];
+					c_even[lane] = c_complete[even_index];
+					c_odd[lane] = c_complete[odd_index];
+				}
+
+				gt_tmvp_quartic_leaf_add_experimental_c(
+					r_even, a_even, b_even, c_even,
+					gt_rowbitrev_lambda[branch][even_j]);
+				gt_tmvp_quartic_leaf_add_experimental_c(
+					r_odd, a_odd, b_odd, c_odd,
+					gt_rowbitrev_lambda[branch][odd_j]);
+
+				for (int lane = 0; lane < GT_TMVP_QUARTIC_LANES; lane++)
+				{
+					const int even_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_even);
+					const int odd_index =
+						gt_tmvp_quartic_tmvp_rowpack_index(
+							branch, row, lane, k_odd);
+
+					r[even_index] =
+						(int16_t)(r_even[lane] + r_odd[lane]);
+					r[odd_index] =
+						(int16_t)(r_even[lane] - r_odd[lane]);
 				}
 			}
 		}

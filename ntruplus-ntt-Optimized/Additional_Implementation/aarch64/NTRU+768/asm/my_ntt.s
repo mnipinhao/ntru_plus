@@ -2,6 +2,13 @@
     .equ NTT32_FUSED_SCATTER, 1
 .endif
 
+.macro CALL_NTT32_8WAY
+    bl _ntt32_8way
+.endm
+
+    .equ MY_NTT_FRAME_SIZE, 1568
+    .equ MY_NTT_SAVED_DST_OFFSET, 1576
+
 .macro DFT3_STORE x0, x1, x2, off
     sub      v6.8h, \x1\().8h, \x2\().8h
     sqrdmulh v7.8h, v6.8h, v0.h[3]
@@ -256,7 +263,7 @@ _poly_ntt:
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
     stp x30, x0, [sp, #-16]!
-    sub sp, sp, #1568
+    sub sp, sp, #MY_NTT_FRAME_SIZE
 
     adr twist_ptr, twist_table
     add row0_ptr, sp, #32
@@ -279,32 +286,32 @@ slothy_end_ntt_phase123:
     ldr q0, [zetas_ptr]
 
 .if NTT32_FUSED_SCATTER
-    ldr dst, [sp, #1576]
+    ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
     add row0_ptr, sp, #32
     mov x10, dst
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 
-    ldr dst, [sp, #1576]
+    ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
     add row0_ptr, sp, #544
     add x10, dst, #256
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 
-    ldr dst, [sp, #1576]
+    ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
     add row0_ptr, sp, #1056
     add x10, dst, #512
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 .else
     add row0_ptr, sp, #32
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 
     add row0_ptr, sp, #544
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 
     add row0_ptr, sp, #1056
-    bl _ntt32_8way
+    CALL_NTT32_8WAY
 
     add x9, sp, #32
-    ldr dst, [sp, #1576]
+    ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
     mov x10, dst
     bl _scatter_ntt32_row
 
@@ -317,7 +324,7 @@ slothy_end_ntt_phase123:
     bl _scatter_ntt32_row
 .endif
 
-    add sp, sp, #1568
+    add sp, sp, #MY_NTT_FRAME_SIZE
     ldp x30, x0, [sp], #16
     ldp d14, d15, [sp, #48]
     ldp d12, d13, [sp, #32]

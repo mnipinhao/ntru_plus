@@ -35,16 +35,16 @@ int gt_tmvp_quartic_tmvp_add_incomplete_materialized_stage5_adapter_c(
 	const int16_t b_stage4[NTRUPLUS_N],
 	const int16_t c_stage4[NTRUPLUS_N]);
 
-int gt_tmvp_quartic_tmvp_incomplete_candidate_a_asm(
+int gt_tmvp_quartic_tmvp_incomplete_complete_stage5_adapter_c(
 	int16_t r[NTRUPLUS_N],
-	const int16_t a_stage4[NTRUPLUS_N],
-	const int16_t b_stage4[NTRUPLUS_N]);
+	const int16_t a_complete[NTRUPLUS_N],
+	const int16_t b_complete[NTRUPLUS_N]);
 
-int gt_tmvp_quartic_tmvp_add_incomplete_candidate_a_asm(
+int gt_tmvp_quartic_tmvp_add_incomplete_complete_stage5_adapter_c(
 	int16_t r[NTRUPLUS_N],
-	const int16_t a_stage4[NTRUPLUS_N],
-	const int16_t b_stage4[NTRUPLUS_N],
-	const int16_t c_stage4[NTRUPLUS_N]);
+	const int16_t a_complete[NTRUPLUS_N],
+	const int16_t b_complete[NTRUPLUS_N],
+	const int16_t c_complete[NTRUPLUS_N]);
 
 int gt_tmvp_quartic_tmvp_experimental_asm(int16_t r[NTRUPLUS_N],
                                           const int16_t a[NTRUPLUS_N],

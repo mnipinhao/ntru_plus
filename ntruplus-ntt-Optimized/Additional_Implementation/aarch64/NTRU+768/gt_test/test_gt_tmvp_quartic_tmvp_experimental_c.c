@@ -37,6 +37,19 @@ static int16_t bounded_sample(uint32_t *seed)
 	                 NTRUPLUS_Q);
 }
 
+static int16_t ref_montgomery_reduce(int32_t a)
+{
+	int16_t t = (int16_t)a * 12929;
+
+	t = (a - (int32_t)t * NTRUPLUS_Q) >> 16;
+	return t;
+}
+
+static int16_t ref_fqmul(int16_t a, int16_t b)
+{
+	return ref_montgomery_reduce((int32_t)a * b);
+}
+
 static void fill_case(int16_t v[NTRUPLUS_N], int which, uint32_t seed)
 {
 	for (int i = 0; i < NTRUPLUS_N; i++)
@@ -85,6 +98,39 @@ static void fill_case(int16_t v[NTRUPLUS_N], int which, uint32_t seed)
 		v[ref_rowpack_index(0, 2, 1, 31)] = -3;
 		v[ref_rowpack_index(1, 0, 2, 0)] = 5;
 		v[ref_rowpack_index(1, 1, 3, 17)] = -7;
+	}
+}
+
+static void materialize_complete_stage5(int16_t complete[NTRUPLUS_N],
+                                        const int16_t stage4[NTRUPLUS_N])
+{
+	for (int branch = 0; branch < GT_BRANCHES; branch++)
+	{
+		for (int row = 0; row < GT_ROWS; row++)
+		{
+			for (int pair = 0; pair < GT_ROW_N / 2; pair++)
+			{
+				const int k_even = 2 * pair;
+				const int k_odd = k_even + 1;
+				const int16_t w =
+					gt_ntt32_ct_twiddle(5, (unsigned)k_even);
+
+				for (int lane = 0; lane < GT_QUARTIC_LANES; lane++)
+				{
+					const int even_index =
+						ref_rowpack_index(branch, row, lane, k_even);
+					const int odd_index =
+						ref_rowpack_index(branch, row, lane, k_odd);
+					const int16_t weighted =
+						ref_fqmul(stage4[odd_index], w);
+
+					complete[even_index] =
+						(int16_t)(stage4[even_index] + weighted);
+					complete[odd_index] =
+						(int16_t)(stage4[even_index] - weighted);
+				}
+			}
+		}
 	}
 }
 
@@ -233,7 +279,8 @@ static int compare_exact(const char *label, const int16_t got[NTRUPLUS_N],
 	return 1;
 }
 
-static int write_report(int vector_tests, int alias_tests, int mismatches)
+static int write_report(int vector_tests, int alias_tests,
+                        int complete_stage5_tests, int mismatches)
 {
 	FILE *f;
 
@@ -276,6 +323,8 @@ static int write_report(int vector_tests, int alias_tests, int mismatches)
 	fprintf(f, "final_candidate_selected: false\n");
 	fprintf(f, "vector_tests_run: %d\n", vector_tests);
 	fprintf(f, "alias_tests_run: %d\n", alias_tests);
+	fprintf(f, "complete_stage5_adapter_tests_run: %d\n",
+	        complete_stage5_tests);
 	fprintf(f, "leaf_calls_run: %d\n",
 	        (vector_tests + alias_tests) * GT_BRANCHES * GT_ROWS * GT_ROW_N);
 	fprintf(f, "comparison_status: %s\n",
@@ -297,10 +346,14 @@ int main(void)
 	int16_t a[NTRUPLUS_N];
 	int16_t b[NTRUPLUS_N];
 	int16_t c[NTRUPLUS_N];
+	int16_t a_complete[NTRUPLUS_N];
+	int16_t b_complete[NTRUPLUS_N];
+	int16_t c_complete[NTRUPLUS_N];
 	int16_t got[NTRUPLUS_N];
 	int16_t want[NTRUPLUS_N];
 	int vector_tests = 0;
 	int alias_tests = 0;
+	int complete_stage5_tests = 0;
 	int mismatches = 0;
 
 	if (!check_index_maps())
@@ -318,6 +371,19 @@ int main(void)
 	    GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_INVALID_ARGUMENT)
 	{
 		fprintf(stderr, "invalid argument check failed for add\n");
+		return 1;
+	}
+	if (gt_tmvp_quartic_tmvp_incomplete_complete_stage5_adapter_c(
+		    0, a, b) != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_INVALID_ARGUMENT)
+	{
+		fprintf(stderr, "invalid argument check failed for complete-stage5 mul\n");
+		return 1;
+	}
+	if (gt_tmvp_quartic_tmvp_add_incomplete_complete_stage5_adapter_c(
+		    got, a, b, 0) !=
+	    GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_INVALID_ARGUMENT)
+	{
+		fprintf(stderr, "invalid argument check failed for complete-stage5 add\n");
 		return 1;
 	}
 
@@ -357,6 +423,56 @@ int main(void)
 			mismatches++;
 		}
 		vector_tests++;
+
+		materialize_complete_stage5(a_complete, a);
+		materialize_complete_stage5(b_complete, b);
+		materialize_complete_stage5(c_complete, c);
+
+		status = gt_tmvp_quartic_tmvp_incomplete_materialized_stage5_adapter_c(
+			want, a, b);
+		if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+		{
+			fprintf(stderr, "materialized-stage5 mul returned %s on vector case %d\n",
+			        gt_tmvp_quartic_tmvp_experimental_status_name(status), t);
+			return 1;
+		}
+		status = gt_tmvp_quartic_tmvp_incomplete_complete_stage5_adapter_c(
+			got, a_complete, b_complete);
+		if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+		{
+			fprintf(stderr, "complete-stage5 mul returned %s on vector case %d\n",
+			        gt_tmvp_quartic_tmvp_experimental_status_name(status), t);
+			return 1;
+		}
+		if (!compare_exact("complete_stage5_mul", got, want))
+		{
+			mismatches++;
+		}
+		complete_stage5_tests++;
+
+		status =
+			gt_tmvp_quartic_tmvp_add_incomplete_materialized_stage5_adapter_c(
+				want, a, b, c);
+		if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+		{
+			fprintf(stderr, "materialized-stage5 add returned %s on vector case %d\n",
+			        gt_tmvp_quartic_tmvp_experimental_status_name(status), t);
+			return 1;
+		}
+		status =
+			gt_tmvp_quartic_tmvp_add_incomplete_complete_stage5_adapter_c(
+				got, a_complete, b_complete, c_complete);
+		if (status != GT_TMVP_QUARTIC_TMVP_EXPERIMENTAL_OK)
+		{
+			fprintf(stderr, "complete-stage5 add returned %s on vector case %d\n",
+			        gt_tmvp_quartic_tmvp_experimental_status_name(status), t);
+			return 1;
+		}
+		if (!compare_exact("complete_stage5_add", got, want))
+		{
+			mismatches++;
+		}
+		complete_stage5_tests++;
 	}
 
 	fill_case(a, 11, 0x13579bdfu);
@@ -405,7 +521,8 @@ int main(void)
 	}
 	alias_tests++;
 
-	if (!write_report(vector_tests, alias_tests, mismatches))
+	if (!write_report(vector_tests, alias_tests, complete_stage5_tests,
+	                  mismatches))
 	{
 		fprintf(stderr, "could not write production C experimental report\n");
 		return 1;
@@ -414,6 +531,7 @@ int main(void)
 	printf("Good-Thomas quartic TMVP production C experimental path summary:\n");
 	printf("  vector tests: %d\n", vector_tests);
 	printf("  alias tests: %d\n", alias_tests);
+	printf("  Complete-stage5 adapter tests: %d\n", complete_stage5_tests);
 	printf("  leaf calls: %d\n",
 	       (vector_tests + alias_tests) * GT_BRANCHES * GT_ROWS * GT_ROW_N);
 	printf("  comparison: %s\n",
