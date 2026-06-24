@@ -21,6 +21,7 @@ F1 = 22
 ROOT = Path(__file__).resolve().parents[1]
 ASM = ROOT / "asm" / "slothy" / "invntt_opt.s"
 BRANCHFOLD = ROOT / "asm" / "slothy" / "invntt_branchfold_vecs.inc"
+BRANCHFOLD_RMINUS1 = ROOT / "asm" / "slothy" / "invntt_branchfold_vecs_rminus1.inc"
 
 
 def centered(x: int) -> int:
@@ -211,8 +212,9 @@ def check_untwist(text: str) -> None:
     assert seen == expected_order, "untwist table order does not match inverse DFT3/store order"
 
 
-def check_branchfold(text: str) -> None:
-    table = BRANCHFOLD.read_text()
+def check_branchfold(text: str, table_path: Path = BRANCHFOLD,
+                     scale: int = 1, label: str = "branchfold") -> None:
+    table = table_path.read_text()
     lines = table.splitlines()
 
     low0 = centered((1 - 1634) * centered(inv_mod(192)))
@@ -246,26 +248,28 @@ def check_branchfold(text: str) -> None:
         assert pending_k is not None
         f0 = centered(pow(F0, pending_k, Q))
         f1 = centered(pow(F1, pending_k, Q))
-        low_normal = [centered(f0 * low0)] * 4 + [centered(f1 * low1)] * 4
+        low_normal = [centered(scale * centered(f0 * low0))] * 4
+        low_normal += [centered(scale * centered(f1 * low1))] * 4
         low_pre = [precompute(x) for x in low_normal]
-        high_normal = [centered(f0 * high0)] * 4 + [centered(f1 * high1)] * 4
+        high_normal = [centered(scale * centered(f0 * high0))] * 4
+        high_normal += [centered(scale * centered(f1 * high1))] * 4
         high_pre = [precompute(x) for x in high_normal]
 
         want = [low_normal, low_pre, high_normal, high_pre]
         assert vectors == want, (
-            f"branchfold k={pending_k} mismatch\n got={vectors}\nwant={want}"
+            f"{label} k={pending_k} mismatch\n got={vectors}\nwant={want}"
         )
         seen.append(pending_k)
         pending_k = None
         vectors = []
 
-    assert len(seen) == 96, f"branchfold table has {len(seen)} entries"
+    assert len(seen) == 96, f"{label} table has {len(seen)} entries"
 
     expected_order: list[int] = []
     for k32 in range(32):
         base = (33 * k32) % 96
         expected_order.extend([base, (base + 64) % 96, (base + 32) % 96])
-    assert seen == expected_order, "branchfold table order does not match post order"
+    assert seen == expected_order, f"{label} table order does not match post order"
 
 
 def main() -> int:
@@ -275,6 +279,8 @@ def main() -> int:
     check_stage45(text)
     check_untwist(text)
     check_branchfold(text)
+    check_branchfold(text, BRANCHFOLD_RMINUS1, centered(pow(2, 16, Q)),
+                     "branchfold_rminus1")
     print("inverse NTT constants verified: normal-form tables and precomputes ok")
     return 0
 

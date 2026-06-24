@@ -1,4 +1,5 @@
 CC = gcc
+CPPFLAGS += -D_DEFAULT_SOURCE
 CFLAGS += -Wall -Wextra -Wpedantic -Wmissing-prototypes -Wredundant-decls \
   -Wshadow -Wpointer-arith -O3 -fomit-frame-pointer
 NISTFLAGS += -Wno-unused-result -O3 -fomit-frame-pointer
@@ -13,11 +14,13 @@ STOCK_NTT_ASM = asm/ntt.s
 STOCK_BASE_ASM = asm/base.s
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
 GT_BASE_ASM = asm/base_gt.S
-GT_BASE_OPT_ASM = asm/base_gt.opt.s
+GT_BASE_OPT_ASM = asm/base_gt_opt_wrapper.S
+GT_BASE_RMINUS1_OPT_ASM = asm/base_gt_rminus1_opt_wrapper.S
 GT_NTT_ASM_ORIGINAL = asm/my_ntt.s asm/slothy/my_32ntt.opt.s
 GT_NTT_ASM_PHASE123_N1 = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
 GT_INVNTT_ASM = asm/inv_my_ntt.s
+GT_INVNTT_RMINUS1_ASM = asm/inv_my_ntt_rminus1.S
 GT_TMVP_C = poly_gt_tmvp_experimental_c.c gt_tmvp_quartic_tmvp_experimental.c
 GT_TMVP_ASM = asm/gt_tmvp_quartic_tmvp_experimental_asm.S
 GT_TMVP_CORE_C = gt_tmvp_quartic_tmvp_experimental.c
@@ -61,6 +64,12 @@ GT_PRODUCTION_KEM_SOURCES = \
 GT_PRODUCTION_OPT_KEM_SOURCES = \
 	$(GT_PRODUCTION_KEM_COMMON_SOURCES) \
 	$(GT_BASE_OPT_ASM)
+
+GT_PRODUCTION_OPT_RMINUS1_KEM_SOURCES = \
+	$(GT_PRODUCTION_KEM_COMMON_SOURCES) \
+	$(GT_INVNTT_RMINUS1_ASM) \
+	$(GT_BASE_OPT_ASM) \
+	$(GT_BASE_RMINUS1_OPT_ASM)
 
 GT_TMVP_KEM_COMMON_SOURCES = \
 	$(KEM_COMMON_C) \
@@ -137,7 +146,7 @@ CANDIDATE_A_BATCH8_KEM_SOURCES = \
 
 .PHONY: all PQCgenKAT_kem test clean
 .PHONY: test_kem_stock
-.PHONY: test_kem_gt_production test_kem_gt_production_opt
+.PHONY: test_kem_gt_production test_kem_gt_production_opt test_kem_gt_production_opt_rminus1
 .PHONY: test_kem_gt_tmvp_asm_gtntt
 .PHONY: test_kem_gt_tmvp_candidate_a test_kem_gt_tmvp_candidate_a_evalpack_c
 .PHONY: test_kem_gt_tmvp_candidate_a_direct_tuple test_kem_gt_tmvp_candidate_a_direct_tuple_c
@@ -174,6 +183,10 @@ test_kem_gt_production: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c 
 test_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h $(GT_PRODUCTION_OPT_KEM_SOURCES)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_BASE_REF_ONLY_BASEINV_ABI -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_production_opt randombytes.c test/test.c $(GT_PRODUCTION_OPT_KEM_SOURCES)
+
+test_kem_gt_production_opt_rminus1: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h $(GT_PRODUCTION_OPT_RMINUS1_KEM_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_BASE_REF_ONLY_BASEINV_ABI -DGT_PRODUCTION_USE_RMINUS1_DECAP -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_gt_production_opt_rminus1 randombytes.c test/test.c $(GT_PRODUCTION_OPT_RMINUS1_KEM_SOURCES)
 
 test_kem_gt_tmvp_asm_gtntt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c gt_tmvp_quartic_tmvp_experimental.h $(GT_TMVP_ASM_GTNTT_KEM_SOURCES)
 	@mkdir -p $(BUILD_DIR)

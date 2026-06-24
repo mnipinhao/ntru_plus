@@ -6,6 +6,11 @@
 #include "poly.h"
 #include "randombytes.h"
 
+#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
+void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
+void poly_invntt_from_rminus1(poly *r, const poly *a);
+#endif
+
 #ifdef DSUPPORTS_SHAKE256_ASM
 #include "CE/fips202.h"
 #else
@@ -259,8 +264,13 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     poly_frombytes(&f, sk);
     poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
     
+#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
+    poly_basemul_rminus1(&m1, &c, &f);
+    poly_invntt_from_rminus1(&m1, &m1);
+#else
     poly_basemul(&m1, &c, &f);
     poly_invntt(&m1, &m1);
+#endif
     poly_crepmod3(&m1, &m1);
     
     poly_ntt(&m2, &m1);
