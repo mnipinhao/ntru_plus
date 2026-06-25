@@ -16,4 +16,7 @@
 .equ INVNTT_POST_DFT3_NO_REDUCE, 1
 .equ INVNTT_USE_POST_BRANCHFOLD, 1
 .equ INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, 1
-.include "asm/slothy/invntt_opt.s"
+#ifdef __APPLE__
+.equ INVNTT_DARWIN_NO_WEAK, 1
+#endif
+.include "asm/slothy/invntt_opt.production.s"

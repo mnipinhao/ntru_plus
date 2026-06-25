@@ -160,9 +160,12 @@ The active inverse NTT path is intentionally narrow:
 - `asm/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
   directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
   branch-constant folded final merge path through assembler-time gates, then
-  includes `asm/slothy/invntt_opt.s`.
-- `asm/slothy/invntt_opt.s` is the current inverse implementation wired into
-  tests and benchmarks.
+  includes `asm/slothy/invntt_opt.production.s`.
+- `asm/slothy/invntt_opt.production.s` is the current inverse implementation
+  wired into production tests and benchmarks.  The older
+  `asm/slothy/invntt_opt.s` remains as a legacy experiment superset.
+- `asm/slothy/archive/invntt_rowstage45_post_prototypes.s` archives rowstage45
+  and post prototypes that are not included by production wrappers.
 - `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
   `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
   Slothy sources for the promoted scheduled regions.
