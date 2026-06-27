@@ -9,6 +9,7 @@
  *   - Slothy-scheduled stage45 + row-end Barrett reduction fusion
  *   - branchfold post path with final output reductions
  *   - rminus1 branchfold table switch through INVNTT_INPUT_RMINUS1
+ *   - optional decap-only crepmod3 output through INVNTT_FUSED_CREP3_OUTPUT
  *
  * Rowstage45/post prototypes, bench-only symbols, old gather, and fastscale
  * experiments live in asm/slothy/archive/invntt_rowstage45_post_prototypes.s
@@ -19,6 +20,31 @@
     sqdmulh \tmp\().8h, \reg\().8h, v0.h[1]
     srshr   \tmp\().8h, \tmp\().8h, #11
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
+.endm
+
+.macro CREP3_PAIR_FROM_BARRETT_RAW lo, hi, qlo, qhi, divlo, divhi
+    /*
+     * Current final reduction computes red = raw - t*q.  Since q=3457 is
+     * congruent to 1 modulo 3, red mod 3 == raw - t mod 3.  Production
+     * poly_crepmod3 is exactly the fixed Neon mod-3 reduction below, so this
+     * decap-only path can skip the intermediate q-reduced store/reload.
+     *
+     * Schedule the low/high outputs as a pair.  The instruction count is the
+     * same as two scalar CREP3_FROM_BARRETT_RAW chains, but it exposes the two
+     * independent q-quotient and div-by-3 chains to the A76/Pi5 scheduler.
+     */
+    sqdmulh \qlo\().8h, \lo\().8h, v0.h[1]
+    sqdmulh \qhi\().8h, \hi\().8h, v0.h[1]
+    srshr   \qlo\().8h, \qlo\().8h, #11
+    srshr   \qhi\().8h, \qhi\().8h, #11
+    sub     \lo\().8h, \lo\().8h, \qlo\().8h
+    sub     \hi\().8h, \hi\().8h, \qhi\().8h
+    sqdmulh \divlo\().8h, \lo\().8h, v31.8h
+    sqdmulh \divhi\().8h, \hi\().8h, v31.8h
+    srshr   \divlo\().8h, \divlo\().8h, #1
+    srshr   \divhi\().8h, \divhi\().8h, #1
+    mls     \lo\().8h, \divlo\().8h, v30.8h
+    mls     \hi\().8h, \divhi\().8h, v30.8h
 .endm
 
 .macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
@@ -42,9 +68,9 @@
      *   [j, j+8, j+16, j+24] at x14 + 64*j.
      */
     ldr q11, [x14, #(64 * \j + 48)]
-    ldr q7, [x3, #16]
+    ldr q7, [x3, #(32 * \j + 16)]
     ldr q30, [x14, #(64 * \j + 32)]
-    ldr q5, [x3]
+    ldr q5, [x3, #(32 * \j)]
     ldr q26, [x14, #(64 * \j + 16)]
     ldr q17, [x14, #(64 * \j + 0)]
     sqrdmulh v29.8h, v11.8h, v7.h[0]
@@ -83,7 +109,6 @@
     str q23, [x2, #(16 * (\j + 24))]
     str q29, [x2, #(16 * (\j + 16))]
     str q10, [x2, #(16 * (\j + 8))]
-    add x3, x3, #32
 .endm
 
 .macro DIRECT_STAGE123_VEC dst, srcoff
@@ -197,7 +222,7 @@
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
 .endm
 
-.macro TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	.macro TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
     /*
      * Candidate A direct-tuple input already stores each GT row contiguously:
      *   tuple[branch][row][k32][quartic_lane].
@@ -211,11 +236,548 @@
     DIRECT_STAGE123_BLOCK_TO_SCRATCH 0,   0,   8,  16,  24,  32,  40,  48,  56
     DIRECT_STAGE123_BLOCK_TO_SCRATCH 1,  64,  72,  80,  88,  96, 104, 112, 120
     DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 128, 136, 144, 152, 160, 168, 176, 184
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 192, 200, 208, 216, 224, 232, 240, 248
-.endm
+	    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 192, 200, 208, 216, 224, 232, 240, 248
+	.endm
+
+	.macro BPQ_STAGE123_VEC dst, srcoff
+	    /*
+	     * Candidate B branch-pair-Q input stores one inverse NTT32 vector as:
+	     *   q = [branch0 quartic lane0..3 | branch1 quartic lane0..3].
+	     *
+	     * That is exactly the register shape stage123 wants after the old
+	     * block-major/tuple loaders had paired two D halves, so BPQ can use a
+	     * single Q load per k32.
+	     */
+	    ldr q\dst, [x3, #\srcoff]
+	.endm
+
+	.macro BPQ_STAGE123_BLOCK_TO_SCRATCH group, off0, off1, off2, off3, off4, off5, off6, off7
+	    BPQ_STAGE123_VEC 3, \off0
+	    BPQ_STAGE123_VEC 4, \off1
+	    BPQ_STAGE123_VEC 5, \off2
+	    BPQ_STAGE123_VEC 6, \off3
+	    BPQ_STAGE123_VEC 7, \off4
+	    BPQ_STAGE123_VEC 8, \off5
+	    BPQ_STAGE123_VEC 9, \off6
+	    BPQ_STAGE123_VEC 10, \off7
+
+	    /* len=2 */
+	    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+	    /* len=4 */
+	    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+	    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+	    /* len=8 */
+	    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+	    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+	    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+	    STORE_STAGE123_STRIPE_SCRATCH \group
+	.endm
+
+	.macro BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    /*
+	     * Candidate B BPQ row layout:
+	     *   bpq[row][k32] = q{branch0 lanes0..3, branch1 lanes0..3}
+	     *
+	     * Each row is 32 Q records = 512 bytes.  The inverse stage123 order is
+	     * k32 = 0..31, so the offsets are simply 16*k32.
+	     */
+	    DIRECT_STAGE123_CONSTS
+	    BPQ_STAGE123_BLOCK_TO_SCRATCH 0,   0,  16,  32,  48,  64,  80,  96, 112
+	    BPQ_STAGE123_BLOCK_TO_SCRATCH 1, 128, 144, 160, 176, 192, 208, 224, 240
+	    BPQ_STAGE123_BLOCK_TO_SCRATCH 2, 256, 272, 288, 304, 320, 336, 352, 368
+	    BPQ_STAGE123_BLOCK_TO_SCRATCH 3, 384, 400, 416, 432, 448, 464, 480, 496
+	.endm
 
 .macro RUN_INVNTT32_STAGE45_SCRATCH_ROW
-    bl _invntt32_8way_stage45_from_scratch
+    /*
+     * Slothy N1 schedule for all eight stage45 stripes as one row kernel.
+     * Contract: x14 = stage123 stripe scratch, x2 = row output buffer,
+     * v0 = q/reduction constants.  x3 is set here to the stage45 const base.
+     */
+    adr x3, invntt32_stage45_consts
+        ldr q14, [x3, #16]
+        ldr q17, [x14, #48]
+        ldr q8, [x14, #0]
+        ldr q21, [x14, #16]
+        ldr q13, [x3, #0]
+        ldr q29, [x14, #32]
+        sqrdmulh v24.8H, v17.8H, v14.H[0]
+        sqrdmulh v20.8H, v21.8H, v14.H[0]
+        mul v3.8H, v17.8H, v13.H[0]
+        mls v3.8H, v24.8H, v0.H[0]
+        mul v1.8H, v21.8H, v13.H[0]
+        mls v1.8H, v20.8H, v0.H[0]
+        sub v30.8H, v29.8H, v3.8H
+        add v26.8H, v29.8H, v3.8H
+        sqrdmulh v7.8H, v30.8H, v14.H[2]
+        mul v17.8H, v30.8H, v13.H[2]
+        sub v21.8H, v8.8H, v1.8H
+        sqrdmulh v24.8H, v26.8H, v14.H[1]
+        ldr q4, [x3, #48]
+        ldr q18, [x14, #112]
+        mls v17.8H, v7.8H, v0.H[0]
+        ldr q7, [x3, #32]
+        mul v14.8H, v26.8H, v13.H[1]
+        mls v14.8H, v24.8H, v0.H[0]
+        add v20.8H, v8.8H, v1.8H
+        add v13.8H, v21.8H, v17.8H
+        sqrdmulh v12.8H, v18.8H, v4.H[0]
+        sub v22.8H, v21.8H, v17.8H
+        sqdmulh v15.8H, v13.8H, v0.H[1]
+        add v26.8H, v20.8H, v14.8H
+        sub v29.8H, v20.8H, v14.8H
+        sqdmulh v10.8H, v22.8H, v0.H[1]
+        sqdmulh v16.8H, v29.8H, v0.H[1]
+        srshr v24.8H, v15.8H, #11
+        srshr v21.8H, v16.8H, #11
+        mls v13.8H, v24.8H, v0.H[0]
+        ldr q17, [x14, #96]
+        ldr q15, [x14, #80]
+        ldr q8, [x14, #64]
+        mul v14.8H, v18.8H, v7.H[0]
+        mls v14.8H, v12.8H, v0.H[0]
+        str q13, [x2, #128]
+        mls v29.8H, v21.8H, v0.H[0]
+        mul v3.8H, v15.8H, v7.H[0]
+        sub v9.8H, v17.8H, v14.8H
+        add v14.8H, v17.8H, v14.8H
+        sqrdmulh v21.8H, v15.8H, v4.H[0]
+        str q29, [x2, #256]
+        mul v24.8H, v14.8H, v7.H[1]
+        sqrdmulh v14.8H, v14.8H, v4.H[1]
+        sqrdmulh v1.8H, v9.8H, v4.H[2]
+        ldr q2, [x14, #128]
+        ldr q25, [x14, #160]
+        srshr v16.8H, v10.8H, #11
+        mul v7.8H, v9.8H, v7.H[2]
+        mls v3.8H, v21.8H, v0.H[0]
+        mls v24.8H, v14.8H, v0.H[0]
+        mls v22.8H, v16.8H, v0.H[0]
+        sub v15.8H, v8.8H, v3.8H
+        mls v7.8H, v1.8H, v0.H[0]
+        add v23.8H, v8.8H, v3.8H
+        sqdmulh v14.8H, v26.8H, v0.H[1]
+        sub v12.8H, v23.8H, v24.8H
+        add v29.8H, v23.8H, v24.8H
+        sqdmulh v21.8H, v12.8H, v0.H[1]
+        add v9.8H, v15.8H, v7.8H
+        sqdmulh v23.8H, v29.8H, v0.H[1]
+        srshr v24.8H, v14.8H, #11
+        sub v1.8H, v15.8H, v7.8H
+        srshr v14.8H, v23.8H, #11
+        sqdmulh v16.8H, v9.8H, v0.H[1]
+        ldr q13, [x3, #80]
+        srshr v15.8H, v21.8H, #11
+        sqdmulh v28.8H, v1.8H, v0.H[1]
+        ldr q5, [x3, #64]
+        ldr q17, [x14, #176]
+        str q22, [x2, #384]
+        mls v26.8H, v24.8H, v0.H[0]
+        srshr v19.8H, v16.8H, #11
+        mls v12.8H, v15.8H, v0.H[0]
+        srshr v30.8H, v28.8H, #11
+        mls v29.8H, v14.8H, v0.H[0]
+        ldr q14, [x14, #144]
+        str q26, [x2, #0]
+        sqrdmulh v11.8H, v17.8H, v13.H[0]
+        str q12, [x2, #272]
+        str q29, [x2, #16]
+        mul v3.8H, v17.8H, v5.H[0]
+        sqrdmulh v16.8H, v14.8H, v13.H[0]
+        mls v3.8H, v11.8H, v0.H[0]
+        mls v9.8H, v19.8H, v0.H[0]
+        mul v12.8H, v14.8H, v5.H[0]
+        add v20.8H, v25.8H, v3.8H
+        mls v12.8H, v16.8H, v0.H[0]
+        sub v28.8H, v25.8H, v3.8H
+        str q9, [x2, #144]
+        sqrdmulh v6.8H, v20.8H, v13.H[1]
+        sqrdmulh v23.8H, v28.8H, v13.H[2]
+        sub v21.8H, v2.8H, v12.8H
+        mul v10.8H, v20.8H, v5.H[1]
+        add v3.8H, v2.8H, v12.8H
+        ldr q9, [x3, #112]
+        mul v17.8H, v28.8H, v5.H[2]
+        ldr q2, [x14, #192]
+        ldr q27, [x14, #240]
+        mls v17.8H, v23.8H, v0.H[0]
+        ldr q23, [x14, #208]
+        ldr q7, [x3, #96]
+        mls v10.8H, v6.8H, v0.H[0]
+        mls v1.8H, v30.8H, v0.H[0]
+        sub v13.8H, v21.8H, v17.8H
+        add v11.8H, v21.8H, v17.8H
+        mul v21.8H, v27.8H, v7.H[0]
+        add v5.8H, v3.8H, v10.8H
+        sqdmulh v26.8H, v11.8H, v0.H[1]
+        sub v3.8H, v3.8H, v10.8H
+        str q1, [x2, #400]
+        sqrdmulh v19.8H, v27.8H, v9.H[0]
+        mls v21.8H, v19.8H, v0.H[0]
+        srshr v27.8H, v26.8H, #11
+        ldr q15, [x14, #224]
+        sqrdmulh v12.8H, v23.8H, v9.H[0]
+        mul v26.8H, v23.8H, v7.H[0]
+        sub v24.8H, v15.8H, v21.8H
+        sqdmulh v14.8H, v3.8H, v0.H[1]
+        add v8.8H, v15.8H, v21.8H
+        sqrdmulh v23.8H, v24.8H, v9.H[2]
+        mul v19.8H, v24.8H, v7.H[2]
+        srshr v14.8H, v14.8H, #11
+        mul v1.8H, v8.8H, v7.H[1]
+        mls v26.8H, v12.8H, v0.H[0]
+        sqrdmulh v15.8H, v8.8H, v9.H[1]
+        mls v11.8H, v27.8H, v0.H[0]
+        sub v18.8H, v2.8H, v26.8H
+        ldr q9, [x14, #304]
+        mls v1.8H, v15.8H, v0.H[0]
+        add v25.8H, v2.8H, v26.8H
+        str q11, [x2, #160]
+        mls v19.8H, v23.8H, v0.H[0]
+        ldr q6, [x3, #144]
+        sqdmulh v26.8H, v13.8H, v0.H[1]
+        sub v17.8H, v25.8H, v1.8H
+        sqdmulh v7.8H, v5.8H, v0.H[1]
+        sub v11.8H, v18.8H, v19.8H
+        add v1.8H, v25.8H, v1.8H
+        sqdmulh v12.8H, v17.8H, v0.H[1]
+        add v15.8H, v18.8H, v19.8H
+        srshr v23.8H, v26.8H, #11
+        sqdmulh v8.8H, v11.8H, v0.H[1]
+        srshr v4.8H, v7.8H, #11
+        sqdmulh v26.8H, v15.8H, v0.H[1]
+        mls v3.8H, v14.8H, v0.H[0]
+        ldr q27, [x14, #256]
+        ldr q22, [x14, #288]
+        srshr v21.8H, v8.8H, #11
+        ldr q7, [x14, #272]
+        sqrdmulh v14.8H, v9.8H, v6.H[0]
+        srshr v18.8H, v26.8H, #11
+        ldr q2, [x3, #128]
+        mls v13.8H, v23.8H, v0.H[0]
+        srshr v26.8H, v12.8H, #11
+        str q3, [x2, #288]
+        sqrdmulh v29.8H, v7.8H, v6.H[0]
+        mls v15.8H, v18.8H, v0.H[0]
+        str q13, [x2, #416]
+        mul v25.8H, v7.8H, v2.H[0]
+        mls v25.8H, v29.8H, v0.H[0]
+        str q15, [x2, #176]
+        mul v9.8H, v9.8H, v2.H[0]
+        sub v3.8H, v27.8H, v25.8H
+        add v7.8H, v27.8H, v25.8H
+        mls v9.8H, v14.8H, v0.H[0]
+        mls v17.8H, v26.8H, v0.H[0]
+        mls v5.8H, v4.8H, v0.H[0]
+        sub v25.8H, v22.8H, v9.8H
+        sqdmulh v24.8H, v1.8H, v0.H[1]
+        str q17, [x2, #304]
+        add v17.8H, v22.8H, v9.8H
+        sqrdmulh v9.8H, v25.8H, v6.H[2]
+        str q5, [x2, #32]
+        sqrdmulh v20.8H, v17.8H, v6.H[1]
+        mul v27.8H, v25.8H, v2.H[2]
+        srshr v8.8H, v24.8H, #11
+        mls v27.8H, v9.8H, v0.H[0]
+        mul v25.8H, v17.8H, v2.H[1]
+        ldr q14, [x3, #176]
+        mls v25.8H, v20.8H, v0.H[0]
+        ldr q2, [x14, #336]
+        sub v29.8H, v3.8H, v27.8H
+        mls v11.8H, v21.8H, v0.H[0]
+        add v13.8H, v3.8H, v27.8H
+        ldr q6, [x14, #352]
+        ldr q12, [x14, #368]
+        sqdmulh v26.8H, v13.8H, v0.H[1]
+        sub v3.8H, v7.8H, v25.8H
+        sqrdmulh v17.8H, v2.8H, v14.H[0]
+        add v27.8H, v7.8H, v25.8H
+        str q11, [x2, #432]
+        sqdmulh v21.8H, v29.8H, v0.H[1]
+        ldr q7, [x3, #160]
+        sqrdmulh v18.8H, v12.8H, v14.H[0]
+        mul v10.8H, v2.8H, v7.H[0]
+        mul v12.8H, v12.8H, v7.H[0]
+        srshr v11.8H, v21.8H, #11
+        ldr q25, [x14, #320]
+        mls v12.8H, v18.8H, v0.H[0]
+        mls v10.8H, v17.8H, v0.H[0]
+        mls v1.8H, v8.8H, v0.H[0]
+        add v23.8H, v6.8H, v12.8H
+        sqdmulh v21.8H, v3.8H, v0.H[1]
+        sqrdmulh v5.8H, v23.8H, v14.H[1]
+        sub v18.8H, v6.8H, v12.8H
+        str q1, [x2, #48]
+        mul v16.8H, v23.8H, v7.H[1]
+        mul v17.8H, v18.8H, v7.H[2]
+        mls v16.8H, v5.8H, v0.H[0]
+        srshr v9.8H, v21.8H, #11
+        sqrdmulh v20.8H, v18.8H, v14.H[2]
+        sub v5.8H, v25.8H, v10.8H
+        mls v29.8H, v11.8H, v0.H[0]
+        add v24.8H, v25.8H, v10.8H
+        ldr q7, [x3, #192]
+        srshr v30.8H, v26.8H, #11
+        mls v3.8H, v9.8H, v0.H[0]
+        add v15.8H, v24.8H, v16.8H
+        ldr q8, [x14, #432]
+        mls v17.8H, v20.8H, v0.H[0]
+        ldr q6, [x3, #208]
+        sub v10.8H, v24.8H, v16.8H
+        ldr q2, [x14, #384]
+        str q29, [x2, #448]
+        mls v13.8H, v30.8H, v0.H[0]
+        ldr q4, [x14, #416]
+        str q3, [x2, #320]
+        sqdmulh v25.8H, v27.8H, v0.H[1]
+        srshr v25.8H, v25.8H, #11
+        sqdmulh v18.8H, v15.8H, v0.H[1]
+        str q13, [x2, #192]
+        ldr q29, [x14, #400]
+        sqdmulh v1.8H, v10.8H, v0.H[1]
+        add v3.8H, v5.8H, v17.8H
+        mls v27.8H, v25.8H, v0.H[0]
+        srshr v9.8H, v18.8H, #11
+        sub v5.8H, v5.8H, v17.8H
+        sqrdmulh v13.8H, v29.8H, v6.H[0]
+        srshr v30.8H, v1.8H, #11
+        sqrdmulh v28.8H, v8.8H, v6.H[0]
+        mul v1.8H, v29.8H, v7.H[0]
+        mls v1.8H, v13.8H, v0.H[0]
+        sqdmulh v21.8H, v3.8H, v0.H[1]
+        sqdmulh v20.8H, v5.8H, v0.H[1]
+        add v12.8H, v2.8H, v1.8H
+        srshr v11.8H, v21.8H, #11
+        mul v21.8H, v8.8H, v7.H[0]
+        str q27, [x2, #64]
+        srshr v27.8H, v20.8H, #11
+        sub v29.8H, v2.8H, v1.8H
+        mls v21.8H, v28.8H, v0.H[0]
+        mls v3.8H, v11.8H, v0.H[0]
+        mls v15.8H, v9.8H, v0.H[0]
+        sub v28.8H, v4.8H, v21.8H
+        add v8.8H, v4.8H, v21.8H
+        mls v5.8H, v27.8H, v0.H[0]
+        str q3, [x2, #208]
+        sqrdmulh v13.8H, v28.8H, v6.H[2]
+        str q15, [x2, #80]
+        sqrdmulh v25.8H, v8.8H, v6.H[1]
+        mul v1.8H, v28.8H, v7.H[2]
+        mls v1.8H, v13.8H, v0.H[0]
+        mls v10.8H, v30.8H, v0.H[0]
+        ldr q22, [x14, #496]
+        add v3.8H, v29.8H, v1.8H
+        str q5, [x2, #464]
+        sub v5.8H, v29.8H, v1.8H
+        mul v1.8H, v8.8H, v7.H[1]
+        ldr q15, [x3, #240]
+        ldr q29, [x14, #464]
+        mls v1.8H, v25.8H, v0.H[0]
+        ldr q11, [x3, #224]
+        str q10, [x2, #336]
+        ldr q21, [x14, #480]
+        ldr q17, [x14, #448]
+        sqdmulh v8.8H, v3.8H, v0.H[1]
+        sqrdmulh v25.8H, v22.8H, v15.H[0]
+        sub v30.8H, v12.8H, v1.8H
+        add v18.8H, v12.8H, v1.8H
+        mul v7.8H, v22.8H, v11.H[0]
+        srshr v16.8H, v8.8H, #11
+        mls v7.8H, v25.8H, v0.H[0]
+        sqrdmulh v10.8H, v29.8H, v15.H[0]
+        mul v1.8H, v29.8H, v11.H[0]
+        add v13.8H, v21.8H, v7.8H
+        sub v20.8H, v21.8H, v7.8H
+        sqdmulh v22.8H, v18.8H, v0.H[1]
+        mul v12.8H, v20.8H, v11.H[2]
+        sqrdmulh v24.8H, v13.8H, v15.H[1]
+        srshr v27.8H, v22.8H, #11
+        sqrdmulh v29.8H, v20.8H, v15.H[2]
+        mls v1.8H, v10.8H, v0.H[0]
+        mls v3.8H, v16.8H, v0.H[0]
+        mul v7.8H, v13.8H, v11.H[1]
+        sub v13.8H, v17.8H, v1.8H
+        add v15.8H, v17.8H, v1.8H
+        sqdmulh v20.8H, v5.8H, v0.H[1]
+        str q3, [x2, #224]
+        sqdmulh v22.8H, v30.8H, v0.H[1]
+        mls v12.8H, v29.8H, v0.H[0]
+        mls v7.8H, v24.8H, v0.H[0]
+        srshr v24.8H, v20.8H, #11
+        mls v18.8H, v27.8H, v0.H[0]
+        sub v11.8H, v13.8H, v12.8H
+        add v3.8H, v13.8H, v12.8H
+        mls v5.8H, v24.8H, v0.H[0]
+        sub v24.8H, v15.8H, v7.8H
+        add v20.8H, v15.8H, v7.8H
+        sqdmulh v1.8H, v11.8H, v0.H[1]
+        str q18, [x2, #96]
+        sqdmulh v17.8H, v3.8H, v0.H[1]
+        str q5, [x2, #480]
+        srshr v5.8H, v22.8H, #11
+        sqdmulh v13.8H, v20.8H, v0.H[1]
+        srshr v6.8H, v1.8H, #11
+        sqdmulh v1.8H, v24.8H, v0.H[1]
+        srshr v29.8H, v17.8H, #11
+        mls v30.8H, v5.8H, v0.H[0]
+        srshr v9.8H, v13.8H, #11
+        mls v11.8H, v6.8H, v0.H[0]
+        srshr v21.8H, v1.8H, #11
+        mls v3.8H, v29.8H, v0.H[0]
+        str q30, [x2, #352]
+        mls v20.8H, v9.8H, v0.H[0]
+        str q11, [x2, #496]
+        mls v24.8H, v21.8H, v0.H[0]
+        str q3, [x2, #240]
+        str q20, [x2, #112]
+        str q24, [x2, #368]
+.endm
+
+.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
+    adr x3, invntt32_stage45_consts
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
+.endm
+
+.macro STORE_STAGE123_STRIPE_SCRATCH_SKIP0 group
+    str q4,  [x14, #(64 * 1 + 16 * \group)]
+    str q5,  [x14, #(64 * 2 + 16 * \group)]
+    str q6,  [x14, #(64 * 3 + 16 * \group)]
+    str q7,  [x14, #(64 * 4 + 16 * \group)]
+    str q8,  [x14, #(64 * 5 + 16 * \group)]
+    str q9,  [x14, #(64 * 6 + 16 * \group)]
+    str q10, [x14, #(64 * 7 + 16 * \group)]
+.endm
+
+.macro DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 group, keep, off0, off1, off2, off3, off4, off5, off6, off7
+    DIRECT_STAGE123_VEC 3, \off0
+    DIRECT_STAGE123_VEC 4, \off1
+    DIRECT_STAGE123_VEC 5, \off2
+    DIRECT_STAGE123_VEC 6, \off3
+    DIRECT_STAGE123_VEC 7, \off4
+    DIRECT_STAGE123_VEC 8, \off5
+    DIRECT_STAGE123_VEC 9, \off6
+    DIRECT_STAGE123_VEC 10, \off7
+
+    /* len=2 */
+    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+    /* len=4 */
+    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+    /* len=8 */
+    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+    mov \keep\().16b, v3.16b
+    STORE_STAGE123_STRIPE_SCRATCH_SKIP0 \group
+.endm
+
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16,   0,  24,  48,  72,  96, 120, 144, 168
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 192, 216, 240, 264, 288, 312, 336, 360
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 384, 408, 432, 456, 480, 504, 528, 552
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19, 576, 600, 624, 648, 672, 696, 720, 744
+.endm
+
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16, 256, 280, 304, 328, 352, 376, 400, 424
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 448, 472, 496, 520, 544, 568, 592, 616
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 640, 664, 688, 712, 736, 760,  16,  40
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19,  64,  88, 112, 136, 160, 184, 208, 232
+.endm
+
+.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
+    add x14, sp, #1568
+    DIRECT_STAGE123_CONSTS
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16, 512, 536, 560, 584, 608, 632, 656, 680
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 704, 728, 752,   8,  32,  56,  80, 104
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 128, 152, 176, 200, 224, 248, 272, 296
+    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19, 320, 344, 368, 392, 416, 440, 464, 488
+.endm
+
+.macro INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
+    ldr q7, [x3, #16]
+    ldr q5, [x3, #0]
+    mov v11.16b, v19.16b
+    mov v30.16b, v18.16b
+    mov v26.16b, v17.16b
+    mov v17.16b, v16.16b
+    sqrdmulh v29.8h, v11.8h, v7.h[0]
+    mul v23.8h, v11.8h, v5.h[0]
+    mls v23.8h, v29.8h, v0.h[0]
+    sqrdmulh v20.8h, v26.8h, v7.h[0]
+    mul v10.8h, v26.8h, v5.h[0]
+    add v19.8h, v30.8h, v23.8h
+    sub v21.8h, v30.8h, v23.8h
+    mls v10.8h, v20.8h, v0.h[0]
+    sqrdmulh v6.8h, v19.8h, v7.h[1]
+    sqrdmulh v22.8h, v21.8h, v7.h[2]
+    mul v25.8h, v19.8h, v5.h[1]
+    mls v25.8h, v6.8h, v0.h[0]
+    add v9.8h, v17.8h, v10.8h
+    mul v14.8h, v21.8h, v5.h[2]
+    sub v7.8h, v17.8h, v10.8h
+    mls v14.8h, v22.8h, v0.h[0]
+    sub v29.8h, v9.8h, v25.8h
+    add v17.8h, v9.8h, v25.8h
+    sqdmulh v8.8h, v29.8h, v0.h[1]
+    sub v23.8h, v7.8h, v14.8h
+    sqdmulh v22.8h, v17.8h, v0.h[1]
+    add v10.8h, v7.8h, v14.8h
+    sqdmulh v3.8h, v23.8h, v0.h[1]
+    srshr v13.8h, v8.8h, #11
+    sqdmulh v28.8h, v10.8h, v0.h[1]
+    srshr v9.8h, v22.8h, #11
+    mls v29.8h, v13.8h, v0.h[0]
+    srshr v18.8h, v3.8h, #11
+    mls v17.8h, v9.8h, v0.h[0]
+    srshr v27.8h, v28.8h, #11
+    mls v23.8h, v18.8h, v0.h[0]
+    mls v10.8h, v27.8h, v0.h[0]
+    str q17, [x2, #0]
+    str q23, [x2, #384]
+    str q29, [x2, #256]
+    str q10, [x2, #128]
+.endm
+
+.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
+    adr x3, invntt32_stage45_consts
+    INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
+    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
 .endm
 
 .macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
@@ -223,10 +785,11 @@
 .endm
 
 .macro LOAD_BRANCHFOLD_CONSTS
-    ldr     q10, [x3], #16    // low normal constants
-    ldr     q11, [x3], #16    // low sqrdmulh precompute
-    ldr     q12, [x3], #16    // high normal constants
-    ldr     q13, [x3], #16    // high sqrdmulh precompute
+    ldr     q10, [x3, #0]     // low normal constants
+    ldr     q11, [x3, #16]    // low sqrdmulh precompute
+    ldr     q12, [x3, #32]    // high normal constants
+    ldr     q13, [x3, #48]    // high sqrdmulh precompute
+    add     x3, x3, #64
 .endm
 
 .macro POST_STORE_PTR_BRANCHFOLD xvec, ptr, off_lo, off_hi
@@ -262,17 +825,24 @@
     ext      v24.16b, v23.16b, v23.16b, #8
     add      v23.8h, v23.8h, v24.8h
 
+.ifdef INVNTT_FUSED_CREP3_OUTPUT
+    CREP3_PAIR_FROM_BARRETT_RAW v21, v23, v17, v18, v19, v20
+.else
     BARRETT_REDUCE v21, v20
     BARRETT_REDUCE v23, v20
+.endif
 
     str      d21, [\ptr, #\off_lo]
     str      d23, [\ptr, #\off_hi]
 .endm
 
 .macro FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
-    ldr q1, [x8], #16
-    ldr q2, [x9], #16
-    ldr q3, [x10], #16
+    ldr q1, [x8]
+    ldr q2, [x9]
+    ldr q3, [x10]
+    add x8, x8, #16
+    add x9, x9, #16
+    add x10, x10, #16
 
     sub      v4.8h, v3.8h, v2.8h
     sqrdmulh v5.8h, v4.8h, v0.h[3]
@@ -351,10 +921,15 @@
 .global _poly_invntt
 .endif
 .endif
-.global gt_block_major_poly_invntt
-.global _gt_block_major_poly_invntt
-.global gt_tuple_poly_invntt
-.global _gt_tuple_poly_invntt
+	.global gt_block_major_poly_invntt
+	.global _gt_block_major_poly_invntt
+	.global gt_tuple_poly_invntt
+	.global _gt_tuple_poly_invntt
+	.global gt_bpq_poly_invntt
+	.global _gt_bpq_poly_invntt
+
+.equ INVNTT_STACK_SIZE, 2080
+.equ INVNTT_SAVED_X0_OFFSET, 2088
 
 .ifndef INVNTT_NO_POLY_ALIAS
 poly_invntt:
@@ -362,71 +937,148 @@ _poly_invntt:
 .endif
 gt_block_major_poly_invntt:
 _gt_block_major_poly_invntt:
-    mov w15, #0
-    b L_invntt_entry_common
-gt_tuple_poly_invntt:
-_gt_tuple_poly_invntt:
-    mov w15, #1
-    b L_invntt_entry_common
-
-L_invntt_entry_common:
-.equ INVNTT_STACK_SIZE, 2080
-.equ INVNTT_SAVED_X0_OFFSET, 2088
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #INVNTT_STACK_SIZE
-    str w15, [sp]
 
     adr x3, inv_consts
     ldr q0, [x3]
 
-    ldr w15, [sp]
-    cbnz w15, L_invntt_tuple_row0
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
-    b L_invntt_row0_done
-L_invntt_tuple_row0:
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #544
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #1056
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    b L_invntt_post_tail
+
+gt_tuple_poly_invntt:
+_gt_tuple_poly_invntt:
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #INVNTT_STACK_SIZE
+
+    adr x3, inv_consts
+    ldr q0, [x3]
+
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
     add x14, sp, #1568
     TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
-L_invntt_row0_done:
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
-    ldr w15, [sp]
-    cbnz w15, L_invntt_tuple_row1
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #544
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
-    b L_invntt_row1_done
-L_invntt_tuple_row1:
     add x3, x1, #256
     add x4, x1, #1024
     add x2, sp, #544
     add x14, sp, #1568
     TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
-L_invntt_row1_done:
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
-    ldr w15, [sp]
-    cbnz w15, L_invntt_tuple_row2
+	    add x3, x1, #512
+	    add x4, x1, #1280
+	    add x2, sp, #1056
+	    add x14, sp, #1568
+	    TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+	    b L_invntt_post_tail
+
+	gt_bpq_poly_invntt:
+	_gt_bpq_poly_invntt:
+	    stp x30, x0, [sp, #-16]!
+	    sub sp, sp, #INVNTT_STACK_SIZE
+
+	    adr x3, inv_consts
+	    ldr q0, [x3]
+
+	    add x3, x1, #0
+	    add x2, sp, #32
+	    add x14, sp, #1568
+	    BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+	    add x3, x1, #512
+	    add x2, sp, #544
+	    add x14, sp, #1568
+	    BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+	    add x3, x1, #1024
+	    add x2, sp, #1056
+	    add x14, sp, #1568
+	    BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+.ifdef INVNTT_EXPOSE_CARRY1_ORACLE
+    .global gt_block_major_poly_invntt_perstripe_oracle
+    .global _gt_block_major_poly_invntt_perstripe_oracle
+gt_block_major_poly_invntt_perstripe_oracle:
+_gt_block_major_poly_invntt_perstripe_oracle:
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #INVNTT_STACK_SIZE
+
+    adr x3, inv_consts
+    ldr q0, [x3]
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #32
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #544
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
+
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #1056
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
-    b L_invntt_row2_done
-L_invntt_tuple_row2:
-    add x3, x1, #512
-    add x4, x1, #1280
-    add x2, sp, #1056
-    add x14, sp, #1568
-    TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
-L_invntt_row2_done:
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
+    b L_invntt_post_tail
 
+    .global gt_block_major_poly_invntt_carry1_oracle
+    .global _gt_block_major_poly_invntt_carry1_oracle
+gt_block_major_poly_invntt_carry1_oracle:
+_gt_block_major_poly_invntt_carry1_oracle:
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #INVNTT_STACK_SIZE
+
+    adr x3, inv_consts
+    ldr q0, [x3]
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #32
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #544
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
+
+    add x3, x1, #0
+    add x4, x1, #768
+    add x2, sp, #1056
+    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
+    b L_invntt_post_tail
+.endif
+
+	L_invntt_post_tail:
     adr x3, inv_consts
     ldr q15, [x3, #16]
     ldr x0, [sp, #INVNTT_SAVED_X0_OFFSET]
@@ -434,6 +1086,10 @@ L_invntt_row2_done:
     add x9, sp, #544
     add x10, sp, #1056
     adr x3, inv_branchfold_vecs
+.ifdef INVNTT_FUSED_CREP3_OUTPUT
+    movi v30.8h, #3
+    movi v31.16b, #0x55
+.endif
 
     add x11, x0, #0
     add x12, x0, #512
@@ -499,22 +1155,20 @@ poly_invntt_stage45scratch:
 _poly_invntt_stage45scratch:
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #INVNTT_STACK_SIZE
-    str x1, [sp]
+    mov x15, x1
 
     adr x3, inv_consts
     ldr q0, [x3]
 
-    ldr x14, [sp]
+    mov x14, x15
     add x2, sp, #32
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
-    ldr x14, [sp]
-    add x14, x14, #512
+    add x14, x15, #512
     add x2, sp, #544
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
-    ldr x14, [sp]
-    add x14, x14, #1024
+    add x14, x15, #1024
     add x2, sp, #1056
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
@@ -525,6 +1179,10 @@ _poly_invntt_stage45scratch:
     add x9, sp, #544
     add x10, sp, #1056
     adr x3, inv_branchfold_vecs
+.ifdef INVNTT_FUSED_CREP3_OUTPUT
+    movi v30.8h, #3
+    movi v31.16b, #0x55
+.endif
     add x11, x0, #0
     add x12, x0, #512
     add x13, x0, #256
@@ -534,20 +1192,6 @@ _poly_invntt_stage45scratch:
     ldp x30, x0, [sp], #16
     ret
 .endif
-
-_invntt32_8way_stage45_from_scratch:
-slothy_start_invntt32_stage45_from_scratch:
-    adr x3, invntt32_stage45_consts
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
-slothy_end_invntt32_stage45_from_scratch:
-    ret
 
 .align 4
 inv_consts:
@@ -597,6 +1241,7 @@ inv_branchfold_vecs:
 .endif
 
 .purgem BARRETT_REDUCE
+.purgem CREP3_PAIR_FROM_BARRETT_RAW
 .purgem FQMUL_LANE
 .purgem INV_BUTTERFLY_LANE
 .purgem INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH
@@ -612,6 +1257,14 @@ inv_branchfold_vecs:
 .purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
 .purgem TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
 .purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
+.purgem STORE_STAGE123_STRIPE_SCRATCH_SKIP0
+.purgem DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
+.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
+.purgem INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
+.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
 .purgem POST_STORE_PTR
 .purgem LOAD_BRANCHFOLD_CONSTS
 .purgem POST_STORE_PTR_BRANCHFOLD

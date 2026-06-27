@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all bench-matrix
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_invntt_pmu
 
 TARGET = bench
 CC ?= gcc
@@ -14,6 +14,8 @@ USE_SHAKE_ASM ?= 0
 NTESTS ?= 500
 NITERATIONS ?= 300
 NWARMUP ?= 50
+CORE ?= 3
+SUDO ?=
 
 NTRUPLUS = ntruplus
 
@@ -38,6 +40,10 @@ endif
 GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/base_gt.opt.s
 GT_NTT_ASM ?= $(NTRUPLUS)/asm/my_ntt.s
 GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
+GT_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_rminus1.S
+GT_INVNTT_RMINUS1_CREP3_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_rminus1_crepmod3.S
+GT_INVNTT_PMU_SUPPORT_ASM ?= $(NTRUPLUS)/asm/crepmod3.s
+GT_BASE_RMINUS1_OPT_ASM ?= $(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S
 
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
@@ -103,6 +109,20 @@ GT_OPT_KEM_SOURCES = \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_INVNTT_SOURCE)
+
+GT_INVNTT_PMU_TARGET ?= bench_gt_invntt_pmu_bin
+GT_INVNTT_PMU_STATS ?= $(GT_INVNTT_PMU_TARGET).stats
+GT_INVNTT_PMU_NTESTS ?= 31
+GT_INVNTT_PMU_NITERATIONS ?= 10000
+GT_INVNTT_PMU_NWARMUP ?= 100
+
+GT_INVNTT_PMU_SOURCES = \
+	bench_gt_invntt_pmu.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_INVNTT_PMU_SUPPORT_ASM) \
+	$(GT_INVNTT_RMINUS1_ASM) \
+	$(GT_INVNTT_RMINUS1_CREP3_ASM) \
+	$(GT_BASE_RMINUS1_OPT_ASM)
 
 SOURCES = $(BENCH_SOURCES)
 BENCH_ENABLE_KEM = 0
@@ -212,6 +232,19 @@ all: $(TARGET)
 $(TARGET): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
 
+$(GT_INVNTT_PMU_TARGET): $(GT_INVNTT_PMU_SOURCES)
+	$(CC) $(CFLAGS) \
+		-DNTESTS=$(NTESTS) \
+		-DNITERATIONS=$(NITERATIONS) \
+		-DNWARMUP=$(NWARMUP) \
+		$(GT_INVNTT_PMU_SOURCES) -o $@
+
+bench_gt_invntt_pmu:
+	$(MAKE) -B $(GT_INVNTT_PMU_TARGET) NTESTS=$(GT_INVNTT_PMU_NTESTS) NITERATIONS=$(GT_INVNTT_PMU_NITERATIONS) NWARMUP=$(GT_INVNTT_PMU_NWARMUP)
+	$(PYTHON) scripts/write_gt_invntt_stats.py $(GT_INVNTT_PMU_TARGET) $(GT_INVNTT_PMU_STATS)
+	cat $(GT_INVNTT_PMU_STATS)
+	$(SUDO) taskset -c $(CORE) ./$(GT_INVNTT_PMU_TARGET)
+
 bench-stock:
 	$(MAKE) clean
 	$(MAKE) CYCLES=PERF VARIANT=stock BENCH_MODE=ntt_mul_pipeline
@@ -236,4 +269,4 @@ bench-matrix:
 	$(PYTHON) scripts/run_pi5_matrix.py
 
 clean:
-	-$(RM) $(TARGET) *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_INVNTT_PMU_STATS) *.d hal/*.d
