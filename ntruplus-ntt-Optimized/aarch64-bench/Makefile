@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_invntt_pmu
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_invntt_pmu check_gt_basemul_add_direct32_q31_reducer
 
 TARGET = bench
 CC ?= gcc
@@ -244,6 +244,9 @@ bench_gt_invntt_pmu:
 	$(PYTHON) scripts/write_gt_invntt_stats.py $(GT_INVNTT_PMU_TARGET) $(GT_INVNTT_PMU_STATS)
 	cat $(GT_INVNTT_PMU_STATS)
 	$(SUDO) taskset -c $(CORE) ./$(GT_INVNTT_PMU_TARGET)
+
+check_gt_basemul_add_direct32_q31_reducer:
+	$(PYTHON) $(NTRUPLUS)/gt_test/analyze_gt_basemul_add_direct32_reducers.py
 
 bench-stock:
 	$(MAKE) clean
