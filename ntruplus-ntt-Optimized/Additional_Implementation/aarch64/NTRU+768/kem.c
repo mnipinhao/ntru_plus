@@ -6,9 +6,90 @@
 #include "poly.h"
 #include "randombytes.h"
 
+#ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+void poly_basemul_add_direct32_q31_tobytes_contract_prototype(
+    poly *r, const poly *a, const poly *b, const poly *c);
+#endif
+
 #ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP
+void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
+void poly_invntt_from_rminus1_crepmod3(poly *r, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP
+void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
+                                             const poly *a,
+                                             const poly *b);
+void poly_invntt_from_rminus1_crepmod3_stage45scratch(
+    poly *r, const int16_t *scratch);
+#endif
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
+                                             const poly *a,
+                                             const poly *b);
+void poly_invntt_from_rminus1_stage45scratch(poly *r,
+                                             const int16_t *scratch);
+#endif
+
+#ifdef GT_PRODUCTION_USE_TUPLE_DECAP
+void poly_basemul_to_tuple(poly *r, const poly *a, const poly *b);
+void gt_tuple_poly_invntt(poly *r, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_PACK_TUPLE_DECAP
+void gt_tuple_poly_invntt(poly *r, const poly *a);
+
+static int gt_pack_block_major_index(int branch, int physical_j, int lane)
+{
+    return branch * 384 + 4 * physical_j + lane;
+}
+
+static int gt_pack_tuple_index(int branch, int row, int k32, int lane)
+{
+    return branch * 384 + row * 128 + 4 * k32 + lane;
+}
+
+static int gt_pack_tuple_physical_j(int row, int k32)
+{
+    return (32 * row + 3 * k32) % 96;
+}
+
+static void gt_block_major_to_tuple_c(poly *tuple,
+                                      const poly *block_major)
+{
+    for (int branch = 0; branch < 2; branch++)
+        for (int row = 0; row < 3; row++)
+            for (int k32 = 0; k32 < 32; k32++) {
+                const int physical_j = gt_pack_tuple_physical_j(row, k32);
+
+                for (int lane = 0; lane < 4; lane++) {
+                    const int tuple_idx =
+                        gt_pack_tuple_index(branch, row, k32, lane);
+                    const int block_idx =
+                        gt_pack_block_major_index(branch, physical_j, lane);
+
+                    tuple->coeffs[tuple_idx] =
+                        block_major->coeffs[block_idx];
+                }
+            }
+}
+#endif
+
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+int poly_baseinv_scaled_r(poly *r, const poly *a);
+void poly_basemul_scaled_r_input(poly *r, const poly *a,
+                                 const poly *b_scaled_r);
+#define KEYPAIR_BASEINV poly_baseinv_scaled_r
+#define KEYPAIR_BASEMUL poly_basemul_scaled_r_input
+#else
+#define KEYPAIR_BASEINV poly_baseinv
+#define KEYPAIR_BASEMUL poly_basemul
 #endif
 
 #ifdef DSUPPORTS_SHAKE256_ASM
@@ -16,6 +97,35 @@ void poly_invntt_from_rminus1(poly *r, const poly *a);
 #else
 #include "NO_CE/fips202.h"
 #endif
+
+#ifdef GT_DIRECT32_Q31_RELEASE_GUARD_NOINLINE
+#define GT_ENCAP_TOBYTES_CONTRACT_INLINE
+#if defined(__GNUC__) || defined(__clang__)
+#define GT_ENCAP_TOBYTES_CONTRACT_ATTR __attribute__((noinline))
+#else
+#define GT_ENCAP_TOBYTES_CONTRACT_ATTR
+#endif
+#else
+#define GT_ENCAP_TOBYTES_CONTRACT_INLINE inline
+#define GT_ENCAP_TOBYTES_CONTRACT_ATTR
+#endif
+
+static GT_ENCAP_TOBYTES_CONTRACT_INLINE GT_ENCAP_TOBYTES_CONTRACT_ATTR void
+gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
+                                      const poly *r, const poly *m)
+{
+    poly c;
+
+#ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+    poly_basemul_add_direct32_q31_tobytes_contract_prototype(&c, h, r, m);
+#else
+    poly_basemul_add(&c, h, r, m);
+#endif
+    poly_tobytes(ct, &c);
+}
+
+#undef GT_ENCAP_TOBYTES_CONTRACT_INLINE
+#undef GT_ENCAP_TOBYTES_CONTRACT_ATTR
 
 /*************************************************
 * Name:        verify
@@ -63,7 +173,7 @@ static inline int genf_derand(poly *f, poly *finv, const uint8_t *coins)
 
     poly_ntt(f, f);
 
-    return poly_baseinv(finv, f);
+    return KEYPAIR_BASEINV(finv, f);
 }
 
 /*************************************************
@@ -90,7 +200,7 @@ static inline int geng_derand(poly *g, poly *ginv, const uint8_t *coins)
 
     poly_ntt(g, g);
 
-    return poly_baseinv(ginv, g);
+    return KEYPAIR_BASEINV(ginv, g);
 }
 
 /*************************************************
@@ -115,8 +225,8 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 {
     poly h, hinv;
 
-    poly_basemul(&h, g, finv);
-    poly_basemul(&hinv, f, ginv);
+    KEYPAIR_BASEMUL(&h, g, finv);
+    KEYPAIR_BASEMUL(&hinv, f, ginv);
 
     poly_tobytes(pk, &h);
     poly_tobytes(sk, f);
@@ -181,7 +291,7 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 	uint8_t buf1[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
 	uint8_t buf2[NTRUPLUS_POLYBYTES];
     
-    poly c, h, r, m;
+    poly h, r, m;
     
     for (size_t i = 0; i < NTRUPLUS_N / 8; i++)
         msg[i] = coins[i];
@@ -198,8 +308,7 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_ntt(&m, &m);
     
     poly_frombytes(&h, pk);
-    poly_basemul_add(&c, &h, &r, &m);
-    poly_tobytes(ct, &c);
+    gt_encap_basemul_add_tobytes_contract(ct, &h, &r, &m);
     
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf1[i];
@@ -264,14 +373,34 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     poly_frombytes(&f, sk);
     poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
     
-#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP
+    poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
+    poly_invntt_from_rminus1_crepmod3_stage45scratch(&m1, m1.coeffs);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP)
+    poly_basemul_rminus1(&m1, &c, &f);
+    poly_invntt_from_rminus1_crepmod3(&m1, &m1);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP)
+    poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
+    poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+    /* Paired ABI: basemul_rminus1 leaves an extra R^-1 for this invntt entry. */
     poly_basemul_rminus1(&m1, &c, &f);
     poly_invntt_from_rminus1(&m1, &m1);
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+    poly_basemul_to_tuple(&m1, &c, &f);
+    gt_tuple_poly_invntt(&m1, &m1);
+#elif defined(GT_PRODUCTION_USE_PACK_TUPLE_DECAP)
+    poly_basemul(&m1, &c, &f);
+    gt_block_major_to_tuple_c(&m2, &m1);
+    gt_tuple_poly_invntt(&m1, &m2);
 #else
     poly_basemul(&m1, &c, &f);
     poly_invntt(&m1, &m1);
 #endif
+#if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \
+    !defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP)
     poly_crepmod3(&m1, &m1);
+#endif
     
     poly_ntt(&m2, &m1);
     poly_sub(&c, &c, &m2);
