@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 GENERIC_SYMBOL = "poly_basemul_add"
-Q31_SYMBOL = "poly_basemul_add_direct32_q31_tobytes_contract_prototype"
+Q31_SYMBOL = "poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype"
 HELPER_SYMBOL = "gt_encap_basemul_add_tobytes_contract"
 
 

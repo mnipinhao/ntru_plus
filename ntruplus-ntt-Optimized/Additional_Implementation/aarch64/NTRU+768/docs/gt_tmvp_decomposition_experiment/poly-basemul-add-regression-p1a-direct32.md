@@ -860,7 +860,7 @@ R2/P1-B: inspect as the safer but lower-upside lane-map target.
 This round implements the benchmark-only prototype:
 
 ```text
-poly_basemul_add_direct32_q31_tobytes_contract_prototype
+poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
 ```
 
 This is not wired as the normal `poly_basemul_add` production default.  It is
@@ -977,7 +977,7 @@ call.
 Prototype addresses in the Pi5-linked benchmark:
 
 ```text
-poly_basemul_add_direct32_q31_tobytes_contract_prototype = 0xc880
+poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype = 0xc880
 Ldirect32_q31_loop                                      = 0xc894
 Ldirect32_q31_consts                                    = 0xca10
 ```
@@ -1168,7 +1168,7 @@ text=175478
 Symbol ranges:
 
 ```text
-poly_basemul_add_direct32_q31_tobytes_contract_prototype = 0xc8a0
+poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype = 0xc8a0
 Ldirect32_q31_consts                                    = 0xca30
 q31 prototype code size                                 = 0x190 bytes
 q31 constants                                           = 16 bytes
@@ -1274,7 +1274,7 @@ release_guard_pass=1
 generic_poly_basemul_add_symbols=1
 direct32_q31_symbols=1
 direct32_q31_call_sites=1
-direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract
+direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract -> _poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
 generic_poly_basemul_add_overwritten=0
 decap_or_arithmetic_q31_callers=0
 ```
@@ -1367,14 +1367,14 @@ public_headers_with_q31_symbol=0
 Symbol naming audit:
 
 ```text
-asm symbol: poly_basemul_add_direct32_q31_tobytes_contract_prototype
+asm symbol: poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
 gate:       GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 caller:     gt_encap_basemul_add_tobytes_contract
 ```
 
-The asm symbol name explicitly carries `direct32`, `q31`, `tobytes`, and
-`contract`.  Encapsulation is enforced by the gate and release guard, which
-requires the only q31 call site to be inside
+The asm symbol name explicitly carries `encap`, `direct32`, `q31`, `tobytes`,
+and `contract`.  Encapsulation is also enforced by the gate and release guard,
+which requires the only q31 call site to be inside
 `gt_encap_basemul_add_tobytes_contract`.
 
 Correctness, `NINPUTS=4096`:
@@ -1394,16 +1394,16 @@ Final PMU median and spread, `NTESTS=31`, `NITERATIONS=5000`, `NWARMUP=100`:
 
 | window | variant | median cycles/call | min cycles | max cycles | IQR cycles | instr/call |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| direct `poly_basemul_add` | current | 2894.364 | 14455958 | 14496017 | 6645 | 2799.001 |
-| direct `poly_basemul_add` | q31 asm | 2477.806 | 12376333 | 12402602 | 11012 | 2222.001 |
-| full encap | current | 38800.169 | 193943532 | 194066943 | 43669 | 106452.001 |
-| full encap | q31 opt-in | 38331.493 | 191592465 | 191781822 | 44517 | 105876.001 |
+| direct `poly_basemul_add` | current | 2910.493 | 14536544 | 14584420 | 9664 | 2799.001 |
+| direct `poly_basemul_add` | q31 asm | 2493.960 | 12456614 | 12490861 | 11341 | 2222.001 |
+| full encap | current | 38809.752 | 194019579 | 194102812 | 27677 | 106452.001 |
+| full encap | q31 opt-in | 38343.930 | 191667682 | 191774178 | 29050 | 105876.001 |
 
 Final deltas:
 
 ```text
-direct poly_basemul_add: -416.558 cycles/call (-14.39%), -577 instr/call
-full encap:              -468.676 cycles/call (-1.21%),  -576 instr/call
+direct poly_basemul_add: -416.533 cycles/call (-14.31%), -577 instr/call
+full encap:              -465.822 cycles/call (-1.20%),  -576 instr/call
 ```
 
 The final clean-build run is consistent with the earlier repeated PMU runs:

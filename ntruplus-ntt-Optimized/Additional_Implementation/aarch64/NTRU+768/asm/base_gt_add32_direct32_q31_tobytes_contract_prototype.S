@@ -31,10 +31,10 @@
 #define LOAD_ADDR_OFF(reg, sym) add reg, reg, :lo12:C_SYM(sym)
 #endif
 
-.global poly_basemul_add_direct32_q31_tobytes_contract_prototype
-.global _poly_basemul_add_direct32_q31_tobytes_contract_prototype
-poly_basemul_add_direct32_q31_tobytes_contract_prototype:
-_poly_basemul_add_direct32_q31_tobytes_contract_prototype:
+.global poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+.global _poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype:
+_poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype:
 	LOAD_ADDR_PAGE(x4, gt_rowbitrev_lambda)
 	LOAD_ADDR_OFF(x4, gt_rowbitrev_lambda)
 	adr x5, Ldirect32_q31_consts
