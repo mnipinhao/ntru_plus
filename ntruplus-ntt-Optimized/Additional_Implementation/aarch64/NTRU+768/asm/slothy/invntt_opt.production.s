@@ -946,20 +946,58 @@ _gt_block_major_poly_invntt:
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
+    /*
+     * Slothy target markers for the production block-major path.  The
+     * rminus1 wrapper aliases this same code and only switches the final
+     * branchfold constant table through INVNTT_INPUT_RMINUS1.
+     *
+     * These labels are markers only: do not move prologue, epilogue, or
+     * branchfold post code into a first Slothy pass.
+     */
+slothy_start_invntt_block_row0_stage123:
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+slothy_end_invntt_block_row0_stage123:
+    /*
+     * live-in: x14 = stage123 stripe scratch at sp+1568,
+     *          x2 = row0 row-buffer base at sp+32,
+     *          q0 = q / Barrett constants.
+     * live-out: row0 natural-order stage45 output at [x2].
+     */
+slothy_start_invntt_block_row0_stage45:
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
+slothy_end_invntt_block_row0_stage45:
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #544
+slothy_start_invntt_block_row1_stage123:
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+slothy_end_invntt_block_row1_stage123:
+    /*
+     * live-in: x14 = stage123 stripe scratch at sp+1568,
+     *          x2 = row1 row-buffer base at sp+544,
+     *          q0 = q / Barrett constants.
+     * live-out: row1 natural-order stage45 output at [x2].
+     */
+slothy_start_invntt_block_row1_stage45:
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
+slothy_end_invntt_block_row1_stage45:
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #1056
+slothy_start_invntt_block_row2_stage123:
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+slothy_end_invntt_block_row2_stage123:
+    /*
+     * live-in: x14 = stage123 stripe scratch at sp+1568,
+     *          x2 = row2 row-buffer base at sp+1056,
+     *          q0 = q / Barrett constants.
+     * live-out: row2 natural-order stage45 output at [x2].
+     */
+slothy_start_invntt_block_row2_stage45:
     RUN_INVNTT32_STAGE45_SCRATCH_ROW
+slothy_end_invntt_block_row2_stage45:
     b L_invntt_post_tail
 
 gt_tuple_poly_invntt:
