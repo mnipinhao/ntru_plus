@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_ntt_variants_pmu bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_crep3_fused_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_stock_basemul_add_gate_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_ntt_variants_pmu bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_crep3_fused_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_stock_basemul_add_gate_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -208,6 +208,12 @@ GT_KEM_STAGE_PMU_NTESTS ?= 31
 GT_KEM_STAGE_PMU_NITERATIONS ?= 500
 GT_KEM_STAGE_PMU_NWARMUP ?= 50
 GT_KEM_STAGE_PMU_NINPUTS ?= 64
+GT_KEM_COMPONENT_PROFILE_PMU_TARGET ?= bench_gt_kem_component_profile_pmu_bin
+GT_KEM_COMPONENT_PROFILE_PMU_STATS ?= $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET).stats
+GT_KEM_COMPONENT_PROFILE_PMU_NTESTS ?= 31
+GT_KEM_COMPONENT_PROFILE_PMU_NITERATIONS ?= 5000
+GT_KEM_COMPONENT_PROFILE_PMU_NWARMUP ?= 100
+GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS ?= 64
 GT_NONHASH_SUBSTAGE_PMU_GT_TARGET ?= bench_gt_nonhash_substage_pmu_gt
 GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET ?= bench_gt_nonhash_substage_pmu_stock
 GT_NONHASH_SUBSTAGE_PMU_STATS ?= bench_gt_nonhash_substage_pmu.stats
@@ -269,6 +275,20 @@ GT_CREP3_FUSED_PMU_SOURCES = \
 
 GT_KEM_STAGE_PMU_SOURCES = \
 	bench_gt_kem_stage_pmu.c \
+	bench_kem_current_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_SUPPORT_ASM) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM)
+
+GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
+	bench_gt_kem_component_profile_pmu.c \
 	bench_kem_current_wrapper.c \
 	$(NTRUPLUS)/symmetric.c \
 	$(NTRUPLUS)/NO_CE/fips202.c \
@@ -519,6 +539,15 @@ $(GT_KEM_STAGE_PMU_TARGET): $(GT_KEM_STAGE_PMU_SOURCES)
 		-DNINPUTS=$(GT_KEM_STAGE_PMU_NINPUTS) \
 		$(GT_KEM_STAGE_PMU_SOURCES) -o $@
 
+$(GT_KEM_COMPONENT_PROFILE_PMU_TARGET): $(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES)
+	$(CC) $(CFLAGS) \
+		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DNTESTS=$(NTESTS) \
+		-DNITERATIONS=$(NITERATIONS) \
+		-DNWARMUP=$(NWARMUP) \
+		-DNINPUTS=$(GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS) \
+		$(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES) -o $@
+
 $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET): $(GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES)
 	$(CC) $(CFLAGS) \
 		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
@@ -589,6 +618,18 @@ bench_gt_kem_stage_pmu:
 	cat $(GT_KEM_STAGE_PMU_STATS)
 	GT_KEM_STAGE_STATS_FILE=$(GT_KEM_STAGE_PMU_STATS) $(SUDO) taskset -c $(CORE) ./$(GT_KEM_STAGE_PMU_TARGET)
 
+bench_gt_kem_component_profile_pmu:
+	$(MAKE) -B $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) NTESTS=$(GT_KEM_COMPONENT_PROFILE_PMU_NTESTS) NITERATIONS=$(GT_KEM_COMPONENT_PROFILE_PMU_NITERATIONS) NWARMUP=$(GT_KEM_COMPONENT_PROFILE_PMU_NWARMUP) GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS=$(GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS)
+	$(PYTHON) scripts/write_gt_kem_component_profile_stats.py $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_STATS)
+	cat $(GT_KEM_COMPONENT_PROFILE_PMU_STATS)
+	GT_KEM_COMPONENT_PROFILE_STATS_FILE=$(GT_KEM_COMPONENT_PROFILE_PMU_STATS) $(SUDO) taskset -c $(CORE) ./$(GT_KEM_COMPONENT_PROFILE_PMU_TARGET)
+
+bench_gt_keygen_component_profile_pmu: bench_gt_kem_component_profile_pmu
+
+bench_gt_decap_component_profile_pmu: bench_gt_kem_component_profile_pmu
+
+bench_gt_encap_residual_split_pmu: bench_gt_kem_component_profile_pmu
+
 bench_gt_nonhash_substage_pmu:
 	$(MAKE) -B $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) NTESTS=$(GT_NONHASH_SUBSTAGE_PMU_NTESTS) NITERATIONS=$(GT_NONHASH_SUBSTAGE_PMU_NITERATIONS) NWARMUP=$(GT_NONHASH_SUBSTAGE_PMU_NWARMUP) GT_NONHASH_SUBSTAGE_PMU_NINPUTS=$(GT_NONHASH_SUBSTAGE_PMU_NINPUTS)
 	$(MAKE) -B $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) NTESTS=$(GT_NONHASH_SUBSTAGE_PMU_NTESTS) NITERATIONS=$(GT_NONHASH_SUBSTAGE_PMU_NITERATIONS) NWARMUP=$(GT_NONHASH_SUBSTAGE_PMU_NWARMUP) GT_NONHASH_SUBSTAGE_PMU_NINPUTS=$(GT_NONHASH_SUBSTAGE_PMU_NINPUTS)
@@ -635,4 +676,4 @@ bench-matrix:
 	$(PYTHON) scripts/run_pi5_matrix.py
 
 clean:
-	-$(RM) $(TARGET) $(GT_NTT_VARIANTS_PMU_FULL_TARGET) $(GT_NTT_VARIANTS_PMU_NTT32_TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_CREP3_FUSED_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_NTT_VARIANTS_PMU_FULL_TARGET) $(GT_NTT_VARIANTS_PMU_NTT32_TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_CREP3_FUSED_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) *.textsizes *.stats *.d hal/*.d
