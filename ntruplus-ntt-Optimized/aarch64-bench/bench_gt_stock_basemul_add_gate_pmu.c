@@ -976,7 +976,8 @@ static void run_benchmarks(void)
   printf("variant,cycles,instructions,cycles_per_call,instructions_per_call,"
          "ipc,branches,branch_misses,l1i_miss,l1d_load_miss,"
          "l1d_store_miss,cache_miss,min_cycles,p10_cycles,median_cycles,"
-         "p90_cycles,samples,iterations\n");
+         "p90_cycles,p25_cycles,p75_cycles,max_cycles,iqr_cycles,samples,"
+         "iterations\n");
 
   for (variant_loop_idx = 0; variant_loop_idx < VARIANT_COUNT;
        variant_loop_idx++)
@@ -1027,10 +1028,19 @@ static void run_benchmarks(void)
     print_event_value(&median, 6);
     printf(",");
     print_event_value(&median, 7);
-    printf(",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%d,%zu\n",
-           cycles_sorted[0], percentile_u64(cycles_sorted, 10),
-           cycles_sorted[NTESTS / 2], percentile_u64(cycles_sorted, 90),
-           NTESTS, g_iterations);
+    {
+      const uint64_t p25_cycles = percentile_u64(cycles_sorted, 25);
+      const uint64_t p75_cycles = percentile_u64(cycles_sorted, 75);
+      const uint64_t max_cycles = cycles_sorted[NTESTS - 1];
+      const uint64_t iqr_cycles = p75_cycles - p25_cycles;
+
+      printf(",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+             ",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%d,%zu\n",
+             cycles_sorted[0], percentile_u64(cycles_sorted, 10),
+             cycles_sorted[NTESTS / 2], percentile_u64(cycles_sorted, 90),
+             p25_cycles, p75_cycles, max_cycles, iqr_cycles, NTESTS,
+             g_iterations);
+    }
   }
 }
 

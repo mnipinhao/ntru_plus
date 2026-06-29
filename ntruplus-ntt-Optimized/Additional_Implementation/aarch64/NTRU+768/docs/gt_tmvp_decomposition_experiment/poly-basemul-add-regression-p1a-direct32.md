@@ -1333,3 +1333,79 @@ packing, NTT, and other KEM stages dominate the total path.
   be overwritten; decap/arithmetic q31 callers must remain zero.
 - Pi5 full encap PMU: stable about `-1.2%` cycles/call with
   `total_mismatches=0` in the gate off/on matrix.
+
+## Final RC Clean-Build Run - 2026-06-29
+
+The final release-candidate check was run from a clean aarch64-bench build on
+Pi5:
+
+```text
+make -C aarch64-bench clean
+make -C aarch64-bench check_gt_direct32_q31_release_candidate
+make -C aarch64-bench -B bench_gt_stock_basemul_add_gate_pmu SUDO= CORE=3
+```
+
+Release guard:
+
+```text
+r1_q31_regression_pass=1
+release_guard_pass=1
+generic_poly_basemul_add_symbols=1
+direct32_q31_symbols=1
+direct32_q31_call_sites=1
+direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract
+generic_poly_basemul_add_overwritten=0
+decap_or_arithmetic_q31_callers=0
+```
+
+Public header exposure audit:
+
+```text
+public_headers_with_q31_symbol=0
+```
+
+Symbol naming audit:
+
+```text
+asm symbol: poly_basemul_add_direct32_q31_tobytes_contract_prototype
+gate:       GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+caller:     gt_encap_basemul_add_tobytes_contract
+```
+
+The asm symbol name explicitly carries `direct32`, `q31`, `tobytes`, and
+`contract`.  Encapsulation is enforced by the gate and release guard, which
+requires the only q31 call site to be inside
+`gt_encap_basemul_add_tobytes_contract`.
+
+Correctness, `NINPUTS=4096`:
+
+```text
+direct32_q31_correctness:
+  ciphertext_mismatches=0
+  hash_g_input_mismatches=0
+  shared_secret_mismatches=0
+  kem_wrapper_mismatches=0
+  decap_mismatches=0
+  poly_tobytes_mismatches=0
+  total_mismatches=0
+```
+
+Final PMU median and spread, `NTESTS=31`, `NITERATIONS=5000`, `NWARMUP=100`:
+
+| window | variant | median cycles/call | min cycles | max cycles | IQR cycles | instr/call |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| direct `poly_basemul_add` | current | 2894.364 | 14455958 | 14496017 | 6645 | 2799.001 |
+| direct `poly_basemul_add` | q31 asm | 2477.806 | 12376333 | 12402602 | 11012 | 2222.001 |
+| full encap | current | 38800.169 | 193943532 | 194066943 | 43669 | 106452.001 |
+| full encap | q31 opt-in | 38331.493 | 191592465 | 191781822 | 44517 | 105876.001 |
+
+Final deltas:
+
+```text
+direct poly_basemul_add: -416.558 cycles/call (-14.39%), -577 instr/call
+full encap:              -468.676 cycles/call (-1.21%),  -576 instr/call
+```
+
+The final clean-build run is consistent with the earlier repeated PMU runs:
+the direct kernel window remains a large win, and the full encap API path
+remains a stable about `-1.2%` improvement.
