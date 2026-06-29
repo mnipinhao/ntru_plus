@@ -1,0 +1,99 @@
+schema: slothy_run_tracker_v1
+date: "2026-06-29"
+policy:
+  slothy_run_in_this_pass: false
+  production_default_changed: false
+  generated_opt_candidate_added: false
+  q31_touched: false
+  fusion_started: false
+  polyinv_rewrite_started: false
+
+runs:
+  - run_id: INVNTT-RM1-AUDIT-20260629
+    date: "2026-06-29"
+    target: invntt_rminus1
+    region: marker_only_production_block_major_audit
+    source_commit: b44c5cd
+    status: audit-only
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "pass via bench_gt_invntt_pmu build"
+    standalone_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0"
+    full_kem_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
+    local_cycles_instructions:
+      metric: poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "baseline kept; manifest seed"
+    notes:
+      - "Marker labels and contract only."
+      - "No Slothy run."
+      - "No generated candidate."
+      - "No production behavior change."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-PLAN-001
+    date: "2026-06-29"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45
+    source_commit: b44c5cd
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned first candidate, split-heuristic-only"
+    notes:
+      - "Expanded row1_stage45 window is 337 instructions."
+      - "This is above the normal 150-instruction ceiling."
+      - "Use only as split-heuristic-only or split into smaller stripe windows first."
+      - "Keep branchfold post and final output stores outside this first pass."
+
+  - run_id: INVNTT-RM1-MANIFEST-20260629
+    date: "2026-06-29"
+    target: invntt_rminus1
+    region: all_marker_bounded_windows
+    source_commit: b44c5cd
+    status: manifest-ready
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "pass via bench_gt_invntt_pmu build"
+    standalone_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0"
+    full_kem_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
+    local_cycles_instructions:
+      metric: poly_invntt_from_rminus1
+      cycles_per_call: 4153.602
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: decap_invntt_rminus1
+      cycles_per_call: 4024.475
+      instructions_per_call: 5074
+    decision: "manifest complete; no optimizer run"
+    notes:
+      - "This entry records the verification run after adding the manifest and tracker."
+      - "Documentation-only pass."
+      - "No production behavior change."

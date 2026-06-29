@@ -1,0 +1,430 @@
+schema: slothy_window_manifest_v1
+date: "2026-06-29"
+target: invntt_rminus1
+source_marker_commit: b44c5cd
+source_files:
+  wrapper: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt_rminus1.S
+  production_body: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s
+measurement:
+  host: Pi5
+  binary: ntruplus-ntt-Optimized/aarch64-bench/bench_gt_invntt_pmu_bin
+  method: "nm labels plus objdump instruction counting"
+  note: "The normal rminus1 wrapper is the first marker-label set in the binary; the crep3 wrapper produces duplicate local labels and is not used here."
+window_size_policy:
+  prefer: "70-120 instructions"
+  allow: "120-150 instructions for serious runs"
+  reject_small: "<40 unless isolating final-store/parser-risk work"
+  reject_large: ">150 unless marked split-heuristic-only"
+global_out_of_scope:
+  - "do not run Slothy in this pass"
+  - "do not optimize or move instructions"
+  - "do not rename registers"
+  - "do not change arithmetic"
+  - "do not change production default"
+  - "do not touch Q31"
+  - "do not implement basemul-to-InvNTT fusion"
+  - "do not start polyinv rewrite"
+
+windows:
+  - id: INVNTT-RM1-ROW0-STAGE123
+    start_label: slothy_start_invntt_block_row0_stage123
+    end_label: slothy_end_invntt_block_row0_stage123
+    semantic_region: "row0 direct block-major input loads through inverse NTT32 stage123, storing stripe-major stage45 scratch"
+    instruction_count_after_macro_expansion_or_extraction: 420
+    scalar_live_in_estimate:
+      count: 4
+      regs:
+        - "x3: branch0 input base"
+        - "x4: branch1 input base"
+        - "sp: frame base used to form x14 scratch base"
+        - "x2: row buffer base live-through for following stage45, not used by stage123"
+    scalar_live_out_estimate:
+      count: 2
+      regs:
+        - "x14: stage123 stripe scratch base at sp+1568"
+        - "x2: row0 row-buffer base, live-through"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "stage123 scratch stores contain the live output"
+    memory_reads:
+      count: 66
+      detail: "64 d-vector input half loads plus 2 q-vector stage123 constant loads"
+    memory_writes:
+      count: 32
+      detail: "32 q-vector stripe-major scratch stores"
+    pointer_mutation:
+      count: 2
+      detail:
+        - "sets x14 from sp+1568"
+        - "sets x7 to invntt32_stage123_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - macro_expansion_large
+      - direct_input_layout_sensitive
+      - scratch_store_layout_sensitive
+      - stage123_contract_needed_before_optimization
+    recommendation: audit_only
+    reason: "420 instructions is too large for a first Slothy window; keep as extraction/audit until a separate stage123 contract exists."
+
+  - id: INVNTT-RM1-ROW0-STAGE45
+    start_label: slothy_start_invntt_block_row0_stage45
+    end_label: slothy_end_invntt_block_row0_stage45
+    semantic_region: "row0 stage45 scratch consumer plus row-end Barrett reduction into row buffer"
+    instruction_count_after_macro_expansion_or_extraction: 337
+    scalar_live_in_estimate:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row0 row-buffer output base at sp+32"
+        - "sp: frame base live outside region"
+    scalar_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "row0 row-buffer stores contain the live output"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+    memory_reads:
+      count: 48
+      detail: "stage123 scratch loads and stage45 constant loads"
+    memory_writes:
+      count: 32
+      detail: "q-vector row-buffer stores"
+    pointer_mutation:
+      count: 1
+      detail:
+        - "sets x3 to invntt32_stage45_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - split_heuristic_only
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: candidate
+    reason: "Isolated stage45 row window, but 337 instructions exceeds the normal limit; try only after row1 or after splitting."
+
+  - id: INVNTT-RM1-ROW1-STAGE123
+    start_label: slothy_start_invntt_block_row1_stage123
+    end_label: slothy_end_invntt_block_row1_stage123
+    semantic_region: "row1 direct block-major input loads through inverse NTT32 stage123, storing stripe-major stage45 scratch"
+    instruction_count_after_macro_expansion_or_extraction: 420
+    scalar_live_in_estimate:
+      count: 4
+      regs:
+        - "x3: branch0 input base"
+        - "x4: branch1 input base"
+        - "sp: frame base used to form x14 scratch base"
+        - "x2: row buffer base live-through for following stage45, not used by stage123"
+    scalar_live_out_estimate:
+      count: 2
+      regs:
+        - "x14: stage123 stripe scratch base at sp+1568"
+        - "x2: row1 row-buffer base, live-through"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "stage123 scratch stores contain the live output"
+    memory_reads:
+      count: 66
+      detail: "64 d-vector input half loads plus 2 q-vector stage123 constant loads"
+    memory_writes:
+      count: 32
+      detail: "32 q-vector stripe-major scratch stores"
+    pointer_mutation:
+      count: 2
+      detail:
+        - "sets x14 from sp+1568"
+        - "sets x7 to invntt32_stage123_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - macro_expansion_large
+      - direct_input_layout_sensitive
+      - scratch_store_layout_sensitive
+      - stage123_contract_needed_before_optimization
+    recommendation: audit_only
+    reason: "420 instructions is too large and stage123 needs a separate direct-input/scratch-layout contract."
+
+  - id: INVNTT-RM1-ROW1-STAGE45
+    start_label: slothy_start_invntt_block_row1_stage45
+    end_label: slothy_end_invntt_block_row1_stage45
+    semantic_region: "row1 stage45 scratch consumer plus row-end Barrett reduction into row buffer"
+    instruction_count_after_macro_expansion_or_extraction: 337
+    scalar_live_in_estimate:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row1 row-buffer output base at sp+544"
+        - "sp: frame base live outside region"
+    scalar_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "row1 row-buffer stores contain the live output"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+    memory_reads:
+      count: 48
+      detail: "stage123 scratch loads and stage45 constant loads"
+    memory_writes:
+      count: 32
+      detail: "q-vector row-buffer stores"
+    pointer_mutation:
+      count: 1
+      detail:
+        - "sets x3 to invntt32_stage45_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - split_heuristic_only
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: first_candidate
+    reason: "Best first target because it is the middle isolated stage45 row and avoids prologue/post/final-store contracts; 337 instructions means split-heuristic-only, not a normal first pass."
+
+  - id: INVNTT-RM1-ROW2-STAGE123
+    start_label: slothy_start_invntt_block_row2_stage123
+    end_label: slothy_end_invntt_block_row2_stage123
+    semantic_region: "row2 direct block-major input loads through inverse NTT32 stage123, storing stripe-major stage45 scratch"
+    instruction_count_after_macro_expansion_or_extraction: 420
+    scalar_live_in_estimate:
+      count: 4
+      regs:
+        - "x3: branch0 input base"
+        - "x4: branch1 input base"
+        - "sp: frame base used to form x14 scratch base"
+        - "x2: row buffer base live-through for following stage45, not used by stage123"
+    scalar_live_out_estimate:
+      count: 2
+      regs:
+        - "x14: stage123 stripe scratch base at sp+1568"
+        - "x2: row2 row-buffer base, live-through"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "stage123 scratch stores contain the live output"
+    memory_reads:
+      count: 66
+      detail: "64 d-vector input half loads plus 2 q-vector stage123 constant loads"
+    memory_writes:
+      count: 32
+      detail: "32 q-vector stripe-major scratch stores"
+    pointer_mutation:
+      count: 2
+      detail:
+        - "sets x14 from sp+1568"
+        - "sets x7 to invntt32_stage123_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - macro_expansion_large
+      - direct_input_layout_sensitive
+      - scratch_store_layout_sensitive
+      - stage123_contract_needed_before_optimization
+    recommendation: audit_only
+    reason: "420 instructions is too large and stage123 needs a separate direct-input/scratch-layout contract."
+
+  - id: INVNTT-RM1-ROW2-STAGE45
+    start_label: slothy_start_invntt_block_row2_stage45
+    end_label: slothy_end_invntt_block_row2_stage45
+    semantic_region: "row2 stage45 scratch consumer plus row-end Barrett reduction into row buffer"
+    instruction_count_after_macro_expansion_or_extraction: 337
+    scalar_live_in_estimate:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row2 row-buffer output base at sp+1056"
+        - "sp: frame base live outside region"
+    scalar_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "row2 row-buffer stores contain the live output"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+    memory_reads:
+      count: 48
+      detail: "stage123 scratch loads and stage45 constant loads"
+    memory_writes:
+      count: 32
+      detail: "q-vector row-buffer stores"
+    pointer_mutation:
+      count: 1
+      detail:
+        - "sets x3 to invntt32_stage45_consts"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: false
+    risk_flags:
+      - oversized_window
+      - split_heuristic_only
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: candidate
+    reason: "Same isolated stage45 shape as row1, but leave until after row1 because it is closer to the post-tail boundary."
+
+  - id: INVNTT-RM1-POST-FUSED
+    start_label: slothy_start_invntt_post_fused
+    end_label: slothy_end_invntt_post_fused
+    semantic_region: "inverse DFT3, branchfold merge, final representative reductions, and final output stores"
+    instruction_count_after_macro_expansion_or_extraction: 431
+    scalar_live_in_estimate:
+      count: 7
+      regs:
+        - "x3: branchfold constant pointer"
+        - "x8: row0 row-buffer pointer"
+        - "x9: row1 row-buffer pointer"
+        - "x10: row2 row-buffer pointer"
+        - "x11: output pointer group 0"
+        - "x12: output pointer group 1"
+        - "x13: output pointer group 2"
+    scalar_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "final poly output stores contain the live output"
+    vector_live_in_estimate:
+      count: 1
+      regs:
+        - "q0: q, DFT3, and Barrett constants"
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+    memory_reads:
+      count: 75
+      detail: "row-buffer loads plus branchfold constant loads"
+    memory_writes:
+      count: 30
+      detail: "final d-vector output stores"
+    pointer_mutation:
+      count: 35
+      detail:
+        - "mutates x3 branchfold constant pointer"
+        - "mutates x8/x9/x10 row-buffer pointers"
+        - "mutates x11/x12/x13 output pointers"
+        - "uses x5 as public loop counter"
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    final_store_included: true
+    risk_flags:
+      - oversized_window
+      - inverse_dft3_included
+      - branchfold_constants_included
+      - representative_sensitive_final_reduction
+      - final_output_store_included
+      - pointer_mutation_heavy
+    recommendation: needs_review
+    reason: "Not first pass: includes inverse DFT3, branchfold final reductions, final stores, and representative-sensitive contract for poly_crepmod3."
+
+  - id: INVNTT-RM1-WHOLE-FUNCTION
+    start_label: gt_block_major_poly_invntt_from_rminus1
+    end_label: gt_rminus1_block_major_to_stage123_stripe_scratch
+    semantic_region: "whole measured symbol range from block-major entry to next exposed stage123scratch ABI symbol"
+    instruction_count_after_macro_expansion_or_extraction: 7103
+    scalar_live_in_estimate:
+      count: 2
+      regs:
+        - "x0: output poly pointer"
+        - "x1: input poly pointer"
+    scalar_live_out_estimate:
+      count: 0
+      regs: []
+      memory_side_effect: "complete output poly"
+    vector_live_in_estimate:
+      count: 0
+      regs: []
+    vector_live_out_estimate:
+      count: 0
+      regs: []
+    memory_reads:
+      count: 1011
+      detail: "objdump count across measured symbol range"
+    memory_writes:
+      count: 609
+      detail: "objdump count across measured symbol range"
+    pointer_mutation:
+      count: 101
+      detail:
+        - "crosses prologue, all rows, post path, and additional local entry bodies in measured range"
+    reduction_chains_intact: unknown
+    layout_contract_clear: false
+    final_store_included: true
+    risk_flags:
+      - huge_window
+      - crosses_abi_scaffolding
+      - crosses_stage123_stage45_post_boundaries
+      - includes_final_store
+      - includes_non_target_entry_bodies_in_symbol_range
+    recommendation: reject
+    reason: "7103 instructions and crosses too many contracts; never use as first Slothy region."
+
+  - id: INVNTT-RM1-BASEMUL-TO-INVNTT-FUSION
+    start_label: null
+    end_label: null
+    semantic_region: "hypothetical basemul_rminus1 output directly feeding InvNTT scratch or row-buffer layout"
+    instruction_count_after_macro_expansion_or_extraction: null
+    scalar_live_in_estimate:
+      count: null
+      regs: []
+    scalar_live_out_estimate:
+      count: null
+      regs: []
+    vector_live_in_estimate:
+      count: null
+      regs: []
+    vector_live_out_estimate:
+      count: null
+      regs: []
+    memory_reads:
+      count: null
+      detail: "not measured"
+    memory_writes:
+      count: null
+      detail: "not measured"
+    pointer_mutation:
+      count: null
+      detail: []
+    reduction_chains_intact: unknown
+    layout_contract_clear: unknown
+    final_store_included: unknown
+    risk_flags:
+      - out_of_scope
+      - no_marker_window
+      - prior_boundary_estimate_too_small
+    recommendation: reject
+    reason: "Basemul-to-InvNTT fusion is explicitly out of scope for this audit and is not supported by current boundary PMU estimate."
