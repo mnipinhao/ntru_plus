@@ -314,24 +314,25 @@ because Candidate A serializes NTT-domain polynomials in evalpack order.
 
 ### 6. Forward NTT32 Store / Basemul Load Shape
 
-`asm/my_ntt.s` 的前半段，也就是 `PHASE123_ITER` 到 DFT3 store
-完成，目前看起來不是 Slothy 重新排過的 generated region。
+`asm/my_ntt.s` 的前半段現在直接 include production Phase123 N1 schedule：
 
-Evidence:
+```text
+asm/slothy/my_ntt_phase123.n1.opt.s
+```
 
-- `slothy_start_ntt_phase123` / `slothy_end_ntt_phase123` 只是包住
-  `PHASE123_ITER` macro calls。
-- `PHASE123_ITER` 內部使用固定 physical registers，例如 `v4`..`v31`、
-  `row0_ptr`、`row1_ptr`、`row2_ptr`。
-- 這段沒有像 `asm/slothy/my_32ntt.opt.s` 那樣的 Slothy expected-cycle
-  comments 和 window-scheduled emitted instruction blocks。
-- 真正 Slothy 排過的是 `_ntt32_8way`，也就是 included
-  `asm/slothy/my_32ntt.opt.s` 裡面的 stage12 stripes 和 stage345 blocks。
+目前狀態：
+
+- Phase123 的 symbolic/regenerated source 是
+  `asm/slothy/my_ntt_phase123_flat.sym.s`。
+- production file 不再保留舊的 GAS `PHASE123_ITER` fallback。
+- 後半段 `_ntt32_8way` 仍然來自 included
+  `asm/slothy/my_32ntt.opt.s`，也就是 NTT32 stage12 stripes 和 stage345
+  fused-scatter blocks。
 
 目前 forward path 是：
 
 ```text
-my_ntt.s PHASE123:
+my_ntt.s / my_ntt_phase123.n1.opt.s Phase123:
   natural input -> GT split/twist/DFT3 -> row scratch
 
 my_32ntt.opt.s _ntt32_8way:

@@ -100,8 +100,8 @@ scatter_hi  += 8
 它定義：
 
 ```asm
-.equ MY_NTT_USE_PHASE123_N1, 1
 .equ MY_NTT_DIRECT_TUPLE, 1
+.equ MY_NTT_NO_POLY_ALIAS, 1
 .include "asm/my_ntt.s"
 ```
 
@@ -203,7 +203,7 @@ NTT32 stage5 done -> direct D stores to tuple layout
 因為 Slothy host 是 x86_64，完整 KEM correctness/timing 在 Pi5 跑；Pi5 只用來
 build/test，沒有在 Pi5 跑 Slothy。
 
-ASM target：
+ASM target，這是 batch baseinv 前的初始 direct-tuple ASM 結果：
 
 ```sh
 make -B test_kem_gt_tmvp_candidate_a_direct_tuple
@@ -319,7 +319,7 @@ Phase123 raw DFT output bound 約 3*(q-1)=10368。
 除非重新給更緊 input bound 或插入其他 reduce，否則不能安全刪。
 ```
 
-Pi5 same-harness KEM 結果：
+Pi5 same-harness KEM 結果，batch baseinv 前：
 
 ```text
 target                                count  KEYGEN  ENCAP  DECAP
@@ -347,3 +347,206 @@ DECAP : 12.3% slower
 
 `test_kem_stock` 是此 folder 內的 stock ASM path，不一定等於外部
 `ntruplus-KpqC-Final/.../test` baseline；不要把它直接當 KPQC Final 結論。
+
+2026-06-24 batch baseinv 後的 Pi5 same-harness KEM 結果：
+
+```text
+target                                count  KEYGEN  ENCAP  DECAP
+test_kem_stock                            0     946    924    791
+test_kem_gt_production                    0    2257    899    771
+test_kem_gt_production_opt                0     964    897    767
+test_kem_gt_tmvp_candidate_a_direct_tuple 0    1012    921    861
+```
+
+這代表 Candidate A direct tuple 的 KEYGEN 主要瓶頸確實是 scalar
+`poly_baseinv()`。新的 tuple batch baseinv 把 Candidate A KEYGEN 從
+`2309 ticks` 降到 `1012 ticks`，但它仍然比 `gt_production_opt` 慢約
+5.0%。這一版的 tuple baseinv 還有 public lambda gather；後續已改成固定
+tuple-order lambda table，見下一段。
+
+相對幅度：
+
+```text
+Candidate A direct tuple KEYGEN: 2309 -> 1012 ticks, -56.2%, 2.28x faster
+Candidate A vs gt_production_opt after batch baseinv:
+  KEYGEN +5.0%, ENCAP +2.7%, DECAP +12.3%
+```
+
+## 2026-06-24 tuple baseinv lambda table
+
+Candidate A direct tuple 的 `poly_baseinv_gt_tuple_batch()` 已移除 runtime
+`tuple_lambda8()` gather。現在 `poly_gt_baseinv_batch.c` 直接使用固定
+`gt_tuple_baseinv_lambda[2][12][8]`，table 內容由同一個公開 mapping 產生：
+
+```text
+physical_j = (32 * row + 3 * k32) mod 96
+lambda     = gt_rowbitrev_lambda[branch][physical_j]
+```
+
+這讓 tuple baseinv inner loop 從：
+
+```text
+tuple_lambda8(lambda_buf, branch, block)
+vld1q_s16(lambda_buf)
+```
+
+變成：
+
+```text
+vld1q_s16(gt_tuple_baseinv_lambda[branch][block / 8])
+```
+
+Pi5 `test_gt_baseinv_batch` rebuild/run 結果：
+
+```text
+gt_baseinv_batch_correctness: ok
+gt_scalar_block_baseinv_ticks: 758
+gt_batch_block_baseinv_ticks: 112
+gt_scalar_tuple_baseinv_ticks: 773
+gt_batch_tuple_baseinv_ticks: 112
+```
+
+也就是 tuple batch baseinv 從 `127 ticks` 追平 block-major 的 `112 ticks`。
+
+Pi5 same-harness Candidate A direct tuple KEM，在目前 stock-support +
+tuple-input inverse NTT wiring 上：
+
+```text
+target                                  count  KEYGEN  ENCAP  DECAP
+test_kem_gt_tmvp_candidate_a_direct_tuple   0     963    896    765
+```
+
+相對上一個同 wiring 的 Candidate A row `991 / 896 / 766`：
+
+```text
+KEYGEN: 991 -> 963 ticks, -2.8%
+ENCAP : unchanged
+DECAP : unchanged within noise
+```
+
+## 2026-06-24 stock support ASM wiring
+
+Candidate A direct tuple KEM 現在只保留跟 transform/base arithmetic 有關的
+自訂 `poly_*`：
+
+```text
+poly_ntt
+poly_invntt
+poly_baseinv
+poly_basemul
+poly_basemul_add
+```
+
+support 類 API 改回使用 stock support ASM：
+
+```text
+poly_cbd1
+poly_sotp_encode
+poly_sotp_decode
+poly_tobytes
+poly_frombytes
+poly_crepmod3
+poly_sub
+poly_triple
+```
+
+Makefile 上的實作方式：
+
+```text
+CANDIDATE_A_DIRECT_TUPLE_KEM_C_SOURCES
+  += $(STOCK_SUPPORT_ASM)
+
+test_kem_gt_tmvp_candidate_a_direct_tuple_c
+test_kem_gt_tmvp_candidate_a_direct_tuple
+profile_kem_gt_tmvp_candidate_a_direct_tuple
+  += -DGT_TMVP_USE_STOCK_SUPPORT_ASM
+  += -DGT_TMVP_USE_TUPLE_INVNTT_ASM
+```
+
+`poly_gt_tmvp_candidate_a_direct_tuple_kem.c` 裡的 C support implementation
+仍保留 fallback，但在 `GT_TMVP_USE_STOCK_SUPPORT_ASM` 開啟時不會編譯，
+避免跟 `asm/add.s`、`asm/crepmod3.s`、`asm/pack.s`、`asm/cbd.s` 產生
+duplicate symbol。
+
+Pi5 same-harness KEM 結果：
+
+```text
+target                                  count  KEYGEN  ENCAP  DECAP
+test_kem_gt_tmvp_candidate_a_direct_tuple   0     991    896    781
+test_kem_gt_tmvp_candidate_a_direct_tuple_c 0    3261   2913   3869
+```
+
+相對上一輪 batch baseinv 後的 Candidate A direct tuple ASM 結果
+`1012 / 921 / 861`，改回 stock support ASM 後：
+
+```text
+KEYGEN: 1012 -> 991 ticks, -2.1%
+ENCAP :  921 -> 896 ticks, -2.7%
+DECAP :  861 -> 781 ticks, -9.3%
+```
+
+## 2026-06-24 tuple-input inverse NTT wiring
+
+Before this change, Candidate A direct tuple used this inverse path:
+
+```text
+tuple NTT-domain input
+  tuple_to_block_major()
+  gt_block_major_poly_invntt()
+  canonical output
+```
+
+The new path is:
+
+```text
+tuple NTT-domain input
+  gt_tuple_poly_invntt()
+  canonical output
+```
+
+The arithmetic pipeline is the same production inverse NTT pipeline.  Only the
+row-stage123 input loads change:
+
+```text
+block-major input row load:
+  physical_j = (32*row + 3*k32) mod 96
+  byte offset = 8*physical_j
+
+direct-tuple input row load:
+  row base = branch + row*256 bytes
+  byte offset = row base + 8*k32
+```
+
+So the new entry removes the full 768-coefficient tuple-to-block-major memory
+pass before inverse NTT.
+
+Validation:
+
+```text
+make -B test_candidate_a_direct_tuple_ntt_contract
+seed=0..7: ntt_mismatches=0, invntt_mismatches=0
+total_mismatches=0
+```
+
+Pi5 same-harness KEM result after tuple-input inverse NTT:
+
+```text
+target                                  count  KEYGEN  ENCAP  DECAP
+test_kem_gt_tmvp_candidate_a_direct_tuple   0     991    896    766
+```
+
+Relative to the previous stock-support Candidate A direct tuple row
+`991 / 896 / 781`:
+
+```text
+KEYGEN: unchanged
+ENCAP : unchanged
+DECAP : 781 -> 766 ticks, -1.9%
+```
+
+Profiler result:
+
+```text
+poly_invntt: 103 -> 88 ticks
+dec_valid : 780 -> 765 ticks
+```

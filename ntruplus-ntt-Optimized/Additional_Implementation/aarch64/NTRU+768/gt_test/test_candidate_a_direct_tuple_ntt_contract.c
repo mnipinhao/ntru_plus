@@ -14,6 +14,7 @@
 #define GT_TMVP_QUARTIC_LANES 4
 
 void gt_candidate_a_direct_tuple_poly_ntt(poly *r, const poly *a);
+void gt_tuple_poly_invntt(poly *r, const poly *a);
 
 static int tuple_index(int branch, int row, int k32, int lane)
 {
@@ -78,16 +79,22 @@ int main(void)
 	for (int seed = 0; seed < 8; seed++) {
 		poly a;
 		poly got;
+		poly inv_got;
 		int16_t block_major[NTRUPLUS_N];
 		int16_t expected[NTRUPLUS_N];
+		int16_t inv_expected[NTRUPLUS_N];
 		int seed_mismatches = 0;
+		int seed_inv_mismatches = 0;
 
 		memset(&got, 0, sizeof(got));
+		memset(&inv_got, 0, sizeof(inv_got));
 		fill_input(&a, seed);
 
 		ntt(block_major, a.coeffs);
 		block_major_to_tuple(expected, block_major);
 		gt_candidate_a_direct_tuple_poly_ntt(&got, &a);
+		invntt(inv_expected, block_major);
+		gt_tuple_poly_invntt(&inv_got, &got);
 
 		for (int i = 0; i < NTRUPLUS_N; i++) {
 			if (canon(got.coeffs[i] - expected[i]) != 0) {
@@ -108,8 +115,23 @@ int main(void)
 			}
 		}
 
-		printf("seed=%d mismatches=%d\n", seed, seed_mismatches);
+		for (int i = 0; i < NTRUPLUS_N; i++) {
+			if (canon(inv_got.coeffs[i] - inv_expected[i]) != 0) {
+				if (seed_inv_mismatches < 32) {
+					printf("inv seed=%d idx=%d got=%d expected=%d diffmod=%d\n",
+					       seed, i, inv_got.coeffs[i],
+					       inv_expected[i],
+					       canon(inv_got.coeffs[i] -
+					             inv_expected[i]));
+				}
+				seed_inv_mismatches++;
+			}
+		}
+
+		printf("seed=%d ntt_mismatches=%d invntt_mismatches=%d\n",
+		       seed, seed_mismatches, seed_inv_mismatches);
 		total_mismatches += seed_mismatches;
+		total_mismatches += seed_inv_mismatches;
 	}
 
 	printf("total_mismatches=%d\n", total_mismatches);

@@ -42,12 +42,17 @@ extern void ntruplus768_invntt32_rowpack_postmerge_branchfold_asm(
 	int16_t *r, const int16_t *work, const int16_t *low_mont,
 	const int16_t *high_mont);
 
+#if defined(GT_TMVP_USE_BATCH_BASEINV)
+int poly_baseinv_gt_batch(poly *r, const poly *a);
+#endif
+
 static int16_t g_postfold_low_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
                                   __attribute__((aligned(16)));
 static int16_t g_postfold_high_mont[GT_ROWS * GT_ROW_N][GT_VECTOR_LANES]
                                    __attribute__((aligned(16)));
 static int g_postfold_consts_ready;
 
+#if !defined(GT_TMVP_USE_EXTERNAL_SUPPORT_ASM)
 static inline int16_t crepmod3(int16_t a)
 {
 	int16_t t;
@@ -62,6 +67,7 @@ static inline int16_t crepmod3(int16_t a)
 	t *= 3;
 	return a - t;
 }
+#endif
 
 static void poly_zero_coeffs(poly *r)
 {
@@ -300,6 +306,7 @@ static void candidate_a_batch8_muladd_natural(poly *r, const poly *a,
 		&g_postfold_high_mont[0][0]);
 }
 
+#if !defined(GT_TMVP_USE_EXTERNAL_SUPPORT_ASM)
 void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
 {
 	int16_t t[2];
@@ -408,6 +415,7 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
 
 	return (int)ret;
 }
+#endif
 
 void poly_ntt(poly *r, const poly *a)
 {
@@ -432,6 +440,13 @@ int poly_baseinv(poly *r, const poly *a)
 
 	ntt(freq.coeffs, a->coeffs);
 
+#if defined(GT_TMVP_USE_BATCH_BASEINV)
+	if (poly_baseinv_gt_batch(&inv_freq, &freq))
+	{
+		poly_zero_coeffs(r);
+		return 1;
+	}
+#else
 	for (int branch = 0; branch < GT_BRANCHES; branch++)
 	{
 		const int branch_start = branch * GT_BRANCH_N;
@@ -449,6 +464,7 @@ int poly_baseinv(poly *r, const poly *a)
 			}
 		}
 	}
+#endif
 
 	invntt(r->coeffs, inv_freq.coeffs);
 	return 0;
@@ -464,6 +480,7 @@ void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c)
 	candidate_a_batch8_muladd_natural(r, a, b, c);
 }
 
+#if !defined(GT_TMVP_USE_EXTERNAL_SUPPORT_ASM)
 void poly_sub(poly *r, const poly *a, const poly *b)
 {
 	for (int i = 0; i < NTRUPLUS_N; i++)
@@ -487,3 +504,4 @@ void poly_crepmod3(poly *r, const poly *a)
 		r->coeffs[i] = crepmod3(a->coeffs[i]);
 	}
 }
+#endif

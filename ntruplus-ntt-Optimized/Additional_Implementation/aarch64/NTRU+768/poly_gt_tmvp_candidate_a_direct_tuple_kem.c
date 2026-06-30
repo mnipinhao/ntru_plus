@@ -33,6 +33,10 @@ void gt_candidate_a_direct_tuple_poly_ntt(poly *r, const poly *a);
 void gt_block_major_poly_invntt(poly *r, const poly *a);
 #endif
 
+#if defined(GT_TMVP_USE_TUPLE_INVNTT_ASM)
+void gt_tuple_poly_invntt(poly *r, const poly *a);
+#endif
+
 #if defined(GT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM)
 void candidate_a_direct_tuple_basemul_asm_fast(poly *r, const poly *a,
                                                const poly *b);
@@ -41,20 +45,9 @@ void candidate_a_direct_tuple_basemul_add_asm_fast(poly *r, const poly *a,
                                                    const poly *c);
 #endif
 
-static inline int16_t crepmod3(int16_t a)
-{
-	int16_t t;
-	const int16_t v = ((1 << 15) + 3 / 2) / 3;
-
-	a += (a >> 15) & NTRUPLUS_Q;
-	a -= (NTRUPLUS_Q + 1) / 2;
-	a += (a >> 15) & NTRUPLUS_Q;
-	a -= (NTRUPLUS_Q - 1) / 2;
-
-	t = ((int32_t)v * a + (1 << 14)) >> 15;
-	t *= 3;
-	return a - t;
-}
+#if defined(GT_TMVP_USE_BATCH_BASEINV)
+int poly_baseinv_gt_tuple_batch(poly *r, const poly *a);
+#endif
 
 static void poly_zero_coeffs(poly *r)
 {
@@ -131,6 +124,22 @@ static void tuple_to_block_major(int16_t block_major[NTRUPLUS_N],
 			}
 		}
 	}
+}
+
+#if !defined(GT_TMVP_USE_STOCK_SUPPORT_ASM)
+static inline int16_t crepmod3(int16_t a)
+{
+	int16_t t;
+	const int16_t v = ((1 << 15) + 3 / 2) / 3;
+
+	a += (a >> 15) & NTRUPLUS_Q;
+	a -= (NTRUPLUS_Q + 1) / 2;
+	a += (a >> 15) & NTRUPLUS_Q;
+	a -= (NTRUPLUS_Q - 1) / 2;
+
+	t = ((int32_t)v * a + (1 << 14)) >> 15;
+	t *= 3;
+	return a - t;
 }
 
 void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
@@ -241,6 +250,7 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
 
 	return (int)ret;
 }
+#endif
 
 void poly_ntt(poly *r, const poly *a)
 {
@@ -256,7 +266,9 @@ void poly_ntt(poly *r, const poly *a)
 
 void poly_invntt(poly *r, const poly *a)
 {
-#if defined(GT_TMVP_USE_BLOCK_MAJOR_INVNTT_ASM)
+#if defined(GT_TMVP_USE_TUPLE_INVNTT_ASM)
+	gt_tuple_poly_invntt(r, a);
+#elif defined(GT_TMVP_USE_BLOCK_MAJOR_INVNTT_ASM)
 	poly block_major;
 
 	tuple_to_block_major(block_major.coeffs, a->coeffs);
@@ -271,6 +283,9 @@ void poly_invntt(poly *r, const poly *a)
 
 int poly_baseinv(poly *r, const poly *a)
 {
+#if defined(GT_TMVP_USE_BATCH_BASEINV)
+	return poly_baseinv_gt_tuple_batch(r, a);
+#else
 	for (int branch = 0; branch < GT_TMVP_BRANCHES; branch++)
 	{
 		for (int row = 0; row < GT_TMVP_ROWS; row++)
@@ -291,6 +306,7 @@ int poly_baseinv(poly *r, const poly *a)
 	}
 
 	return 0;
+#endif
 }
 
 static void tuple_basemul_c(poly *r, const poly *a, const poly *b)
@@ -349,6 +365,7 @@ void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c)
 #endif
 }
 
+#if !defined(GT_TMVP_USE_STOCK_SUPPORT_ASM)
 void poly_sub(poly *r, const poly *a, const poly *b)
 {
 	for (int i = 0; i < NTRUPLUS_N; i++)
@@ -372,3 +389,4 @@ void poly_crepmod3(poly *r, const poly *a)
 		r->coeffs[i] = crepmod3(a->coeffs[i]);
 	}
 }
+#endif
