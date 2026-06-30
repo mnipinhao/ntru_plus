@@ -226,3 +226,108 @@ extend this canonical stripe route to row0/row2.  If InvNTT is revisited, the
 next useful work is either parser/model support for the production fullrow
 addressing pattern or a different window contract; do not promote any candidate
 from this campaign.
+
+## BASEMUL-GENERIC-RMINUS1-CAMPAIGN-001
+
+Date: 2026-06-30
+
+Scope: generic/rminus1 basemul local cleanup.  This campaign was
+benchmark-only, kept production defaults unchanged, did not touch Q31, did not
+start InvNTT fusion, did not touch polyinv, and did not optimize hash/copy
+residuals.
+
+Hosts:
+
+- Slothy: `pinhao@172.25.166.141:51208`
+- Pi5: `pi@100.99.191.9`
+
+Source commits:
+
+- previous campaign commit: `6be645e2`
+- generated candidate commit: n/a, candidates were rejected and not committed
+
+Target audit:
+
+- `poly_basemul`: generic arithmetic-correct output, used by decap verify.
+- `poly_basemul_rminus1`: raw rminus1 output consumed by
+  `poly_invntt_from_rminus1`.
+- `poly_basemul_scaled_r_input`: same raw-store body as rminus1, with the
+  second operand pre-scaled by `R`; used by keygen public arithmetic.
+- `poly_basemul_add`: separate add32/full-pipeline dataflow; Q31 byte-contract
+  helper remains encap-only and was not reused.
+
+Slothy commands:
+
+```sh
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py \
+  --input window_inputs/base_gt_rminus1_loop_marked.s \
+  --output window_outputs/base_gt_rminus1_loop.n1.slothy.candidate.s \
+  --target n1 --stalls 256 \
+  --region slothy_start_base_gt_rminus1_loop:slothy_end_base_gt_rminus1_loop
+
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py \
+  --input window_inputs/base_gt_generic_loop_marked.s \
+  --output window_outputs/base_gt_generic_loop.n1.slothy.candidate.s \
+  --target n1 --stalls 256 \
+  --region slothy_start_base_gt_generic_loop:slothy_end_base_gt_generic_loop
+```
+
+Candidate windows attempted:
+
+| window | source shape | instructions | status | model cycles | wall time |
+| --- | --- | ---: | --- | ---: | ---: |
+| `base_gt_rminus1_loop` | `base_gt.S` preprocessed one-loop raw-store window | 77 | OPTIMAL, selfcheck OK | 82 | 5.93s |
+| `base_gt_generic_loop` | `base_gt.S` preprocessed one-loop corrected-output window | 101 | OPTIMAL, selfcheck OK | 121 | 6.66s |
+
+Pi5 commands:
+
+```sh
+make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_basemul_variants_pmu SUDO= CORE=3
+make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3
+```
+
+Correctness:
+
+```text
+bench_gt_basemul_variants_pmu: correctness,total_mismatches=0
+bench_gt_kem_component_profile_pmu: correctness,total_mismatches=0,valid_cases=64
+```
+
+PMU:
+
+| variant | cycles/call | instr/call | delta vs production | decision |
+| --- | ---: | ---: | ---: | --- |
+| `poly_basemul` | 2910.593 | 2489 | baseline | baseline |
+| `poly_basemul_slothy_campaign` | 2963.068 | 2489 | +52.475 | reject |
+| `poly_basemul_rminus1` | 2145.958 | 1913 | baseline | baseline |
+| `poly_basemul_rminus1_slothy_campaign` | 2180.158 | 1913 | +34.200 | reject |
+| `poly_basemul_scaled_r_input` | 2131.955 | 1913 | baseline | baseline |
+| `poly_basemul_scaled_r_input_slothy_campaign` | 2170.086 | 1913 | +38.131 | reject |
+
+Production KEM component baseline from the same Pi5 pass:
+
+| component | cycles/call | instr/call |
+| --- | ---: | ---: |
+| `decap_basemul_rminus1` | 2028.093 | 1909 |
+| `decap_verify_basemul` | 2823.359 | 2485 |
+| `encap_basemul_add` | 2864.627 | 2800 |
+| `keygen_public_arithmetic_x2` | 4083.382 | 3822 |
+
+Projected API impact:
+
+| candidate | local delta | projected impact |
+| --- | ---: | --- |
+| generic verify basemul | +52.475 cycles | +0.16% decap if mapped to verify basemul |
+| rminus1 basemul | +34.200 cycles | +0.10% decap |
+| scaled-r input | +38.131 cycles | about +0.19% keygen if used twice |
+
+Decision:
+
+No viable basemul candidate was found.  Both candidates passed correctness but
+regressed on Pi5 PMU.  The generated candidate outputs and temporary benchmark
+harness wiring are not committed as best artifacts.  Keep
+`generic_rminus1_basemul` as an active target only for a future
+production-scheduled `base_gt.opt.s` window audit or a real dataflow change;
+do not continue this source-order one-loop Slothy route.

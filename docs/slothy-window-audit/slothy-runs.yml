@@ -410,3 +410,66 @@ runs:
       - "The 337-instruction full row window was attempted exactly once with split heuristic."
       - "The failure is a parser/model gap for row-level addressing setup, not a correctness result."
       - "Do not substitute the whole function or patch generated output randomly."
+
+  - run_id: BASEMUL-GENERIC-RMINUS1-CAMPAIGN-001
+    date: "2026-06-30"
+    target: generic_rminus1_basemul
+    region: source_order_one_loop_windows
+    source_marker_commit: null
+    manifest_commit: null
+    generated_candidate_commit: null
+    status: rejected
+    materialized_source:
+      committed: false
+      reason: "negative campaign; temporary source-order window inputs were not kept as artifacts"
+      input_kind: "asm/base_gt.S after C preprocessing, one loop body"
+    slothy_command: "/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py --input window_inputs/base_gt_<generic|rminus1>_loop_marked.s --output window_outputs/base_gt_<generic|rminus1>_loop.n1.slothy.candidate.s --target n1 --stalls 256 --region <matching start>:<matching end>"
+    parser_status: "parse pass; rminus1 77 instructions, generic 101 instructions"
+    optimizer_status:
+      mode: normal
+      split_heuristic: false
+      timeout_seconds: 3600
+      regions:
+        - {name: base_gt_rminus1_loop, status: OPTIMAL, model_cycles: 82, minimum_stalls: 62, wall_time_seconds: 5.93}
+        - {name: base_gt_generic_loop, status: OPTIMAL, model_cycles: 121, minimum_stalls: 95, wall_time_seconds: 6.66}
+    assemble_status: "pass via temporary Pi5 bench_gt_basemul_variants_pmu build"
+    standalone_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_basemul_variants_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0"
+    full_kem_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
+    local_cycles_instructions:
+      metric: basemul variant PMU
+      generic_baseline_cycles_per_call: 2910.593
+      generic_candidate_cycles_per_call: 2963.068
+      generic_delta_cycles_per_call: 52.475
+      generic_instructions_per_call: 2489
+      rminus1_baseline_cycles_per_call: 2145.958
+      rminus1_candidate_cycles_per_call: 2180.158
+      rminus1_delta_cycles_per_call: 34.200
+      rminus1_instructions_per_call: 1913
+      scaled_r_baseline_cycles_per_call: 2131.955
+      scaled_r_candidate_cycles_per_call: 2170.086
+      scaled_r_delta_cycles_per_call: 38.131
+      scaled_r_instructions_per_call: 1913
+    full_api_cycles_instructions:
+      metric: production KEM component profile comparators
+      decap_basemul_rminus1_cycles_per_call: 2028.093
+      decap_basemul_rminus1_instructions_per_call: 1909
+      decap_verify_basemul_cycles_per_call: 2823.359
+      decap_verify_basemul_instructions_per_call: 2485
+      encap_basemul_add_cycles_per_call: 2864.627
+      encap_basemul_add_instructions_per_call: 2800
+      keygen_public_arithmetic_x2_cycles_per_call: 4083.382
+      keygen_public_arithmetic_x2_instructions_per_call: 3822
+    projection:
+      generic_delta_decap_percent: 0.16
+      rminus1_delta_decap_percent: 0.10
+      scaled_r_delta_keygen_percent_if_used_twice: 0.19
+    decision: "reject source-order loop route for performance; keep target active only for production-scheduled window or dataflow audit"
+    notes:
+      - "Candidates were correctness-pass but PMU-regression."
+      - "No candidate artifact was committed as current best."
+      - "Q31 was not reused; output contracts remained arithmetic-correct."
+      - "Production defaults unchanged."

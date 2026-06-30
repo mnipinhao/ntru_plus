@@ -19,6 +19,10 @@ targets:
       all4_cycles_per_call: 625.327
       all4_delta_cycles_per_call: 82.061
       all4_delta_percent: 15.10
+    last_tested_candidate: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s
+    last_result: correctness_pass_pmu_regression
+    fullrow_stress_result: "parser-blocked on `adr x3, invntt32_stage45_consts`"
+    decision: "do_not_extend_to_row0_row2"
     contract_status: "materialized canonical per-stripe input; not a contiguous production slice"
     next_action: "do not extend canonical stripe route to row0/row2; all-four scaling regressed"
 
@@ -42,9 +46,19 @@ targets:
 
   - id: generic_rminus1_basemul
     api: decap/keygen/encap
-    status: planned
+    status: active
     current_best: null
+    latest_campaign:
+      campaign: BASEMUL-GENERIC-RMINUS1-CAMPAIGN-001
+      correctness: pass
+      result: correctness_pass_pmu_regression
+      windows_attempted:
+        - {name: rminus1_loop, instructions: 77, slothy_status: OPTIMAL, model_cycles: 82, pmu_delta_cycles_per_call: 34.200}
+        - {name: generic_loop, instructions: 101, slothy_status: OPTIMAL, model_cycles: 121, pmu_delta_cycles_per_call: 52.475}
+      best_candidate: null
+      artifact_committed: false
     reason: "possible local cleanup; Q31 byte-contract path cannot be reused for decap arithmetic output"
+    next_action: "do not promote source-order loop candidates; only continue if a production-scheduled window with a clearer scheduling bottleneck is identified"
 
   - id: polyinv
     api: keygen
