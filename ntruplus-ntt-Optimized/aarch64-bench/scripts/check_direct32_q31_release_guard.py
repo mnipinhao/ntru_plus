@@ -56,6 +56,27 @@ def q31_call_sites(
     return sites
 
 
+def public_headers_with_q31_symbol(binary: Path) -> list[Path]:
+    candidates = [
+        Path.cwd() / "ntruplus",
+        binary.parent / "ntruplus",
+    ]
+
+    headers: list[Path] = []
+    seen: set[Path] = set()
+    for directory in candidates:
+        if not directory.exists():
+            continue
+        for header in directory.glob("*.h"):
+            resolved = header.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            if Q31_SYMBOL in header.read_text(errors="ignore"):
+                headers.append(header)
+    return headers
+
+
 def main() -> int:
     if len(sys.argv) != 2:
         print("usage: check_direct32_q31_release_guard.py <linked-binary>")
@@ -101,6 +122,10 @@ def main() -> int:
     for function, line in non_helper_sites:
         failures.append(f"q31 call outside encap helper: {function}: {line}")
 
+    public_headers = public_headers_with_q31_symbol(binary)
+    for header in public_headers:
+        failures.append(f"public header exposes q31 symbol: {header}")
+
     print(f"generic_poly_basemul_add_symbols={len(generic_addrs)}")
     print(f"direct32_q31_symbols={len(q31_addrs)}")
     print(f"encap_helper_symbols={len(helper_addrs)}")
@@ -115,6 +140,7 @@ def main() -> int:
 
     print("generic_poly_basemul_add_overwritten=0")
     print("decap_or_arithmetic_q31_callers=0")
+    print(f"public_headers_with_q31_symbol={len(public_headers)}")
     print("release_guard_pass=1")
     return 0
 
