@@ -2,6 +2,7 @@ schema: slothy_run_tracker_v1
 date: "2026-06-30"
 policy:
   slothy_run_in_this_pass: false
+  slothy_window_input_materialized: true
   production_default_changed: false
   generated_opt_candidate_added: false
   q31_touched: false
@@ -109,7 +110,7 @@ runs:
     source_marker_commit: b44c5cd
     manifest_commit: a19152f
     generated_candidate_commit: null
-    status: rejected
+    status: preflight-blocked
     preflight:
       result: "blocked before Slothy"
       checked_source: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s"
@@ -140,12 +141,54 @@ runs:
       metric: "not measured"
       cycles_per_call: null
       instructions_per_call: null
-    decision: "rejected before parser; marker/source materialization required"
+    decision: "blocked before parser; marker/source materialization required"
     notes:
       - "Exactly zero Slothy regions were attempted."
       - "The existing row-level labels bound a 337-instruction window and cannot be substituted for STRIPES2-3."
       - "No generated candidate artifact was created."
       - "No production behavior change."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3-RUN-002
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    source_marker_commit: b44c5cd
+    manifest_commit: 9166b2d
+    generated_candidate_commit: null
+    status: planned
+    materialized_source:
+      path: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s"
+      start_label: slothy_start_invntt_rm1_row1_stage45_stripes2_3
+      end_label: slothy_end_invntt_rm1_row1_stage45_stripes2_3
+      generator_and_check: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/materialize_invntt_rminus1_row1_stage45_stripes.py"
+      parent_instruction_count: 337
+      child_instruction_count: 84
+      equivalence_check: "pass; child equals canonical production per-stripe macro expansion"
+      contiguous_parent_slice_check: "not applicable; production parent row is cross-stripe scheduled"
+    slothy_command: "not run; planned for later task using materialized start/end labels"
+    parser_status: "not run"
+    optimizer_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned next Slothy run; materialized labels now exist"
+    notes:
+      - "No Slothy run in this pass."
+      - "No generated .opt.s candidate in this pass."
+      - "Do not use the 337-instruction ROW1-STAGE45 parent labels for this run."
+      - "Production behavior unchanged."
 
   - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5-PLAN-001
     date: "2026-06-30"

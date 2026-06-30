@@ -102,10 +102,21 @@ stopped before Slothy.  The 337-instruction row-level window was not used as a
 substitute.  A later run must first materialize exact stripes2-3 extraction
 labels/source; otherwise this window remains a semantic candidate only.
 
+2026-06-30 materialization created a benchmark-only Slothy input source at
+`ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s`.
+It does not modify production assembly and is not included by production
+wrappers.  The required concrete labels are:
+`slothy_start_invntt_rm1_row1_stage45_stripes2_3` and
+`slothy_end_invntt_rm1_row1_stage45_stripes2_3`.
+The check script reports parent count 337, child count 84, and equivalence
+against the canonical production per-stripe macro expansion.  A contiguous
+parent-slice comparison is not applicable because the production parent row is
+already cross-stripe scheduled.
+
 | subwindow | stripes | instructions | memory reads | memory writes | recommendation |
 | --- | ---: | ---: | ---: | ---: | --- |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES0-1` | 0-1 | 84 | 12 | 8 | candidate |
-| `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` | 2-3 | 84 | 12 | 8 | needs marker/source materialization |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` | 2-3 | 84 | 12 | 8 | materialized / planned |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5` | 4-5 | 84 | 12 | 8 | candidate |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES6-7` | 6-7 | 84 | 12 | 8 | candidate |
 
@@ -115,6 +126,8 @@ labels/source; otherwise this window remains a semantic candidate only.
 
    First normal candidate.  It avoids the `j=0` constant edge case and the row
    tail, while still using a representative nontrivial stage45 stripe pair.
+   The next run should use the materialized labels in the benchmark-only Slothy
+   input source, not the 337-instruction parent row labels.
 
 2. `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5`
 

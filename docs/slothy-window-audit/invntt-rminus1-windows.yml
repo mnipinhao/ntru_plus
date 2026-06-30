@@ -6,6 +6,8 @@ manifest_commit: 0edf12e
 source_files:
   wrapper: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt_rminus1.S
   production_body: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s
+  slothy_window_input: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+  slothy_window_input_generator: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/materialize_invntt_rminus1_row1_stage45_stripes.py
 measurement:
   host: Pi5
   binary: ntruplus-ntt-Optimized/aarch64-bench/bench_gt_invntt_pmu_bin
@@ -26,6 +28,18 @@ subwindow_measurement:
       - slothy_end_invntt_block_row1_stage45
     required_fix: "materialize exact stripes2-3 start/end labels or an exact extraction source before any Slothy run"
     forbidden_substitute: "do not use the 337-instruction ROW1-STAGE45 row-level window as a replacement for stripes2-3"
+  materialization_2026_06_30:
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    result: materialized
+    source: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    generator_and_check: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/materialize_invntt_rminus1_row1_stage45_stripes.py
+    start_label: slothy_start_invntt_rm1_row1_stage45_stripes2_3
+    end_label: slothy_end_invntt_rm1_row1_stage45_stripes2_3
+    parent_instruction_count: 337
+    child_instruction_count: 84
+    equivalence_check: "pass; child equals canonical production per-stripe macro expansion"
+    contiguous_parent_slice_check: "not applicable; production parent row is cross-stripe scheduled"
+    production_asm_changed: false
 window_size_policy:
   prefer: "70-120 instructions"
   allow: "120-150 instructions for serious runs"
@@ -449,8 +463,10 @@ windows:
 subwindows:
   - name: INVNTT-RM1-ROW1-STAGE45-STRIPES0-1
     parent: INVNTT-RM1-ROW1-STAGE45
-    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0"
-    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1"
+    start: slothy_start_invntt_rm1_row1_stage45_stripes0_1
+    end: slothy_end_invntt_rm1_row1_stage45_stripes0_1
+    source: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    canonical_derivation: "INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0 then 1"
     instruction_count: 84
     memory_reads:
       count: 12
@@ -496,14 +512,20 @@ subwindows:
 
   - name: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
     parent: INVNTT-RM1-ROW1-STAGE45
-    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2"
-    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3"
+    start: slothy_start_invntt_rm1_row1_stage45_stripes2_3
+    end: slothy_end_invntt_rm1_row1_stage45_stripes2_3
+    source: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    canonical_derivation: "INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2 then 3"
     materialization_status:
-      source_labels_present: false
+      source_labels_present: true
       objdump_marker_labels_present: false
-      runnable_slothy_region: false
+      runnable_slothy_region: true
       preflight_result: "2026-06-30 RUN-001 blocked before Slothy because concrete start/end labels do not exist"
-      required_fix: "materialize exact stripes2-3 extraction labels/source; do not invent a different region"
+      materialization_result: "2026-06-30 materialized in benchmark-only Slothy input source; production ASM unchanged"
+      parent_instruction_count: 337
+      child_instruction_count: 84
+      equivalence_check: "pass; child equals canonical production per-stripe macro expansion"
+      next_run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3-RUN-002
     instruction_count: 84
     memory_reads:
       count: 12
@@ -541,16 +563,18 @@ subwindows:
     risk_flags:
       - derived_from_canonical_perstripe_macro
       - requires_extraction_before_slothy
-      - preflight_labels_missing
+      - benchmark_only_materialized_source
       - row_buffer_store_layout_sensitive
       - physical_register_source
-    recommendation: needs_review
-    reason: "Semantic first normal Slothy window, but RUN-001 preflight found no concrete stripes2-3 start/end labels in source or objdump marker flow; materialize the exact extraction before running Slothy."
+    recommendation: first_candidate
+    reason: "Materialized first normal Slothy window: 84 instructions, non-edge stripe-pair, complete reduction/store groups, no pointer mutation, and concrete benchmark-only start/end labels."
 
   - name: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5
     parent: INVNTT-RM1-ROW1-STAGE45
-    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4"
-    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5"
+    start: slothy_start_invntt_rm1_row1_stage45_stripes4_5
+    end: slothy_end_invntt_rm1_row1_stage45_stripes4_5
+    source: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    canonical_derivation: "INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4 then 5"
     instruction_count: 84
     memory_reads:
       count: 12
@@ -595,8 +619,10 @@ subwindows:
 
   - name: INVNTT-RM1-ROW1-STAGE45-STRIPES6-7
     parent: INVNTT-RM1-ROW1-STAGE45
-    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6"
-    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7"
+    start: slothy_start_invntt_rm1_row1_stage45_stripes6_7
+    end: slothy_end_invntt_rm1_row1_stage45_stripes6_7
+    source: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    canonical_derivation: "INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6 then 7"
     instruction_count: 84
     memory_reads:
       count: 12
