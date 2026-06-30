@@ -4,6 +4,8 @@ production_default_changed: false
 q31_touched: false
 fusion_started: false
 polyinv_rewrite_started: false
+active_local_window_slothy_target: null
+global_note: "No Slothy target is currently active for immediate local-window scheduling. Next active Slothy work requires structural/window-contract preparation."
 
 promotion_policy:
   source_order_local_windows_sufficient: false
@@ -92,7 +94,11 @@ targets:
       decap_ntt_r1_cycles: 2705.003
       decap_ntt_r1_api_share_percent: 8.1
     reason: "production block-major row-bitrev contract is clear, but the first local-window campaign produced no correctness-passing candidate"
-    next_action: "only revisit with a structural/window-contract strategy: label-clean materialized inputs, explicit live-out contracts, and safer benchmark-only integration"
+    next_action:
+      - produce_label_clean_materialized_forward_ntt_inputs
+      - move_adr_and_table_pointer_setup_outside_schedulable_regions
+      - define_explicit_live_in_live_out_contracts
+      - add_crash_safe_benchmark_only_wrapper_before_rerunning_slothy
 
   - id: generic_rminus1_basemul
     api: decap/keygen/encap

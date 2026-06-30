@@ -43,6 +43,7 @@ Recent negative examples:
 | `forward-ntt-production-contract.md` | Production Forward NTT entrypoint, layout contract, caller audit, and Slothy readiness decision. |
 | `forward-ntt-production-windows.md` | Human-readable production-contract Forward NTT window manifest and first campaign result. |
 | `forward-ntt-production-windows.yml` | Machine-readable Forward NTT production window manifest. |
+| `slothy-structural-strategy.md` | Structural Slothy strategy, input hygiene checklist, and benchmark-only integration safety rules. |
 | `invntt-rminus1-windows.yml` | Machine-readable manifest for marker-bounded windows and rejected unsafe windows. |
 | `slothy-run-tracker.md` | Human-readable run ledger. Entries stay here even for audit-only and planned runs. |
 | `slothy-runs.yml` | Machine-readable run tracker for audit, planned, optimized, and promoted candidates. |
@@ -96,3 +97,10 @@ Current decision: `forward_ntt_production_windows` is
 `needs_structural_strategy`.  Do not continue small local source/window Slothy
 runs until the next pass has label-clean materialized inputs, explicit live-out
 contracts, and safer benchmark-only integration.
+
+## Current Global Slothy State
+
+No Slothy target is currently active for immediate local-window scheduling.  The
+next active Slothy work must first prepare a structural/window contract,
+including label-clean inputs, explicit live-in/live-out, and crash-safe
+benchmark-only integration.
