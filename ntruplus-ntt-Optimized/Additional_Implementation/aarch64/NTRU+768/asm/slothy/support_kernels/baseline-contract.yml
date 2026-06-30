@@ -1,0 +1,130 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: stock_support_add_crepmod3_pack
+  source: asm/add.s, asm/crepmod3.s, asm/pack.s
+  extracted_region: loop bodies for poly_sub, poly_triple, poly_crepmod3, poly_frombytes, poly_tobytes
+  function: support kernels used by GT production
+  start_label: slothy_start_support_*_loop
+  end_label: slothy_end_support_*_loop
+  source_commit: working-tree prototype
+
+region:
+  instruction_count: 165
+  live_in:
+    - x0 destination pointer
+    - x1 source pointer
+    - x2 second source pointer for poly_sub only
+    - x8 public byte counter outside the scheduled body
+    - fixed constant vectors loaded before loops when needed
+  live_out:
+    - destination memory for each public stripe
+    - post-incremented public pointers
+  clobbers:
+    - v0..v31 according to each original function body
+
+abi:
+  inputs:
+    - original AArch64 support ABI for poly_sub, poly_triple, poly_crepmod3, poly_frombytes, poly_tobytes
+  outputs:
+    - same destination buffers and pointer movement as the original support asm
+  concrete_gprs_allowed: [x0, x1, x2, x8, sp]
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+    - v25
+    - v26
+    - v27
+    - v28
+    - v29
+    - v30
+    - v31
+  reserved_registers:
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+
+memory_contract:
+  loads:
+    - public sequential loads from source polynomial or byte buffer
+  stores:
+    - public sequential stores to destination polynomial or byte buffer
+  aliasing: same as original support asm; destination must be valid for full output region
+  alignment: original code assumes NEON vector accesses are valid for project buffers
+  public_offsets_only: true
+
+constant_contract:
+  constants:
+    - poly_triple constant 3
+    - poly_crepmod3 constants 3 and 0x5555
+    - poly_frombytes mask 0x0fff
+    - poly_tobytes q = 3457
+  modulus: 3457
+  representation: unchanged from stock support asm
+  reduction_method: unchanged from stock support asm
+
+range_contract:
+  input_ranges:
+    - support helper input ranges from KEM/poly callers
+  intermediate_ranges:
+    - vector lanes remain within original support helper assumptions
+  output_ranges:
+    - same output representation as stock support asm
+  narrowing_points:
+    - pack/unpack shifts, masks, and transposes preserve the original byte format
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient lanes
+  public_inputs:
+    - fixed loop trip counts and public sequential offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 165
+  benchmark_command: make profile_kem_gt_production_opt

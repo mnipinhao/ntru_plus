@@ -1,0 +1,90 @@
+dag:
+  id: gt_support_add_crepmod3_pack_dag
+  kernel_contract: kernel-contract.yml
+  description: Existing support loops with original instruction selection and dependency-safe scheduling.
+
+inputs:
+  - x0 dst pointer
+  - x1 src pointer
+  - x2 second src pointer for poly_sub
+  - fixed constants loaded before loops
+
+constants:
+  - three = 3
+  - crepmod3 multiplier = 0x5555
+  - pack mask = 0x0fff
+  - q = 3457
+
+nodes:
+  - id: poly_sub_loop
+    op: load_sub_store
+    inputs: [x1, x2]
+    outputs: [x0 memory]
+    instruction_shape: three source ld1 groups, three source2 ld1 groups, twelve vector sub, six st1 pairs
+    tied_operands: []
+    range_before: int16 coefficient vectors
+    range_after: int16 differences
+    may_reorder_with: [independent loads and independent vector subtracts before dependent stores]
+    must_precede: [poly_sub_store_outputs]
+  - id: poly_triple_loop
+    op: load_mul3_store
+    inputs: [x1, v0]
+    outputs: [x0 memory]
+    instruction_shape: three ld1 groups, twelve mul by 3, six st1 pairs
+    tied_operands: []
+    range_before: int16 coefficient vectors
+    range_after: int16 products by 3
+    may_reorder_with: [independent loads and independent vector multiplies before dependent stores]
+    must_precede: [poly_triple_store_outputs]
+  - id: poly_crepmod3_loop
+    op: centered_mod3
+    inputs: [x1, v0, v1]
+    outputs: [x0 memory]
+    instruction_shape: ld1, sqdmulh, srshr, mls, st1
+    tied_operands: [mls destructive destination vectors]
+    range_before: int16 coefficients
+    range_after: coefficients reduced modulo 3 representative
+    may_reorder_with: [independent lanes before final stores]
+    must_precede: [poly_crepmod3_store_outputs]
+  - id: poly_frombytes_loop
+    op: unpack_12bit_to_int16
+    inputs: [x1, v0]
+    outputs: [x0 memory]
+    instruction_shape: ld1, transpose tree, shifts, eor combines, mask, st1
+    tied_operands: []
+    range_before: packed byte stream
+    range_after: int16 coefficient vectors masked to 12 bits
+    may_reorder_with: [independent transpose and shift nodes respecting dataflow]
+    must_precede: [poly_frombytes_store_outputs]
+  - id: poly_tobytes_loop
+    op: pack_int16_to_12bit
+    inputs: [x1, v0]
+    outputs: [x0 memory]
+    instruction_shape: ld1, sign correction, shifts, eor combines, transpose tree, st1
+    tied_operands: []
+    range_before: int16 coefficient vectors
+    range_after: packed 12-bit byte stream
+    may_reorder_with: [independent sign correction, packing, transpose nodes respecting dataflow]
+    must_precede: [poly_tobytes_store_outputs]
+
+memory:
+  loads:
+    - all loads use public sequential post-incremented source pointers
+  stores:
+    - all stores use public sequential post-incremented destination pointers
+  ordering_constraints:
+    - stores must follow dependent loads and arithmetic
+    - loop counter update and branch remain outside Slothy scheduled regions
+
+outputs:
+  - same helper outputs as stock support asm
+
+live_out:
+  - destination memory
+  - post-incremented public pointers
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

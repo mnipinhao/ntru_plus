@@ -1,0 +1,156 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt_support_add_crepmod3_pack_slothy
+  name: GT production support kernels scheduled by Slothy
+  source: support_kernels.slothy.s
+  scheme: NTRU+768
+  operation: poly_sub, poly_triple, poly_crepmod3, poly_frombytes, poly_tobytes support helpers
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_pi5_probe
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: schedule fixed-register existing loops
+  driver: optimize_support.py --target n1
+  expected_outputs: [support_kernels.n1.opt.S]
+  allow_spills: false
+
+region:
+  start_label: multiple slothy_start_support_*_loop labels
+  end_label: multiple slothy_end_support_*_loop labels
+  expected_instruction_count: 163
+  live_in:
+    - concrete ABI pointers x0, x1, x2 as used by each function
+    - x8 loop counter outside each scheduled body
+    - fixed constant vectors loaded before each loop
+  live_out:
+    - post-incremented public pointers
+    - destination memory
+
+abi:
+  inputs:
+    - original public C ABI symbols are preserved
+  outputs:
+    - original output buffers are preserved
+  clobbers:
+    - caller-saved vector registers as in original support asm
+  concrete_gprs_allowed: [x0, x1, x2, x8, sp]
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+    - v25
+    - v26
+    - v27
+    - v28
+    - v29
+    - v30
+    - v31
+  reserved_registers:
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: preserve original load/compute/store loops and allow only dependency-safe scheduling inside each loop body
+
+layout:
+  input_representation: same polynomial and byte layouts as stock support asm
+  output_representation: same polynomial and byte layouts as stock support asm
+  vector_lanes: int16x8 vector lanes
+  packing: unchanged for poly_frombytes/poly_tobytes
+
+memory_contract:
+  loads:
+    - sequential public loads from x1 and x2
+  stores:
+    - sequential public stores to x0
+  aliasing: unchanged from original support asm
+  alignment: unchanged from original support asm
+  public_offsets_only: true
+  pointer_updates:
+    - same post-increments as original loops
+
+constant_contract:
+  constants:
+    - poly_triple uses vector constant 3
+    - poly_crepmod3 uses vector constants 3 and 0x5555
+    - poly_frombytes uses mask 0x0fff
+    - poly_tobytes uses q = 3457
+  modulus: 3457
+  representation: unchanged
+  reduction_method: unchanged
+
+range_contract:
+  input_ranges:
+    - unchanged KEM/poly helper ranges
+  intermediate_ranges:
+    - unchanged vector arithmetic ranges
+  output_ranges:
+    - unchanged helper output ranges
+  narrowing_points:
+    - unchanged mask/shift/transposition points in pack helpers
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient lanes
+  public_inputs:
+    - fixed loop trip counts
+    - public sequential offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_kem_gt_production_opt
+  test_command: make test_kem_gt_production_opt
+  full_path_benchmark_command: make profile_kem_gt_production_opt && ./build/profile_kem_gt_production_opt
+  benchmark_metric: ticks
+  lower_is_better: true

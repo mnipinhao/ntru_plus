@@ -35,10 +35,9 @@ current Makefile still wires it into `poly_ntt`.  Treat it as a disposable
 Slothy artifact, not as the source of truth unless you intentionally overwrite
 it with the fused-scatter version.
 
-`asm/my_ntt.s` is currently wired for the fused-scatter `_ntt32_8way` by setting
-the assembler-time `NTT32_FUSED_SCATTER` constant to `1`.  If you intentionally
-test an older row-buffer `_ntt32_8way` artifact, switch that constant back to
-`0`.
+`asm/my_ntt.s` is the production wrapper and now always calls the fused-scatter
+`_ntt32_8way` row kernel.  The older row-buffer scatter fallback was removed
+from the production file to keep the active path readable.
 
 The generated `my_32ntt.opt.s` has a small boundary post-process: it defines
 stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
@@ -47,23 +46,19 @@ regenerate the file from scratch.
 
 ## Forward Phase123 N1 Schedule
 
-The first half of `asm/my_ntt.s`, from `slothy_start_ntt_phase123` to
-`slothy_end_ntt_phase123`, has an N1 Slothy-scheduled variant:
+The first half of `asm/my_ntt.s` is the N1 Slothy-scheduled Phase123 path:
 
-- unscheduled source of truth: `asm/my_ntt.s`
+- symbolic source used to run Slothy: `asm/slothy/my_ntt_phase123_flat.sym.s`
 - scheduled wrapper used by the default GT KEM builds:
   `asm/my_ntt_phase123_n1.s`
 - scheduled region included by the wrapper:
   `asm/slothy/my_ntt_phase123.n1.opt.s`
-- flat symbolic source used to run Slothy:
-  `asm/slothy/my_ntt_phase123_flat.sym.s`
 - local driver used for the split-heuristic run:
   `asm/slothy/optimize_phase123_split.py`
 
-`asm/my_ntt.s` keeps the original macro-expanded Phase123 block behind the
-default path.  Defining `MY_NTT_USE_PHASE123_N1` includes the scheduled region
-instead; `asm/my_ntt_phase123_n1.s` is just that define plus an include of
-`asm/my_ntt.s`.
+`asm/my_ntt.s` directly includes the scheduled region.  The old
+macro-expanded GAS `PHASE123_ITER` fallback and the Phase123 A/B/C experiment
+selector were removed from the production file.
 
 The default Makefile path uses:
 
@@ -71,18 +66,22 @@ The default Makefile path uses:
 GT_NTT_ASM = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
 ```
 
-To compare against the unscheduled Phase123 block without editing files:
-
-```sh
-make -B test_kem_gt_production_opt \
-  GT_NTT_ASM='asm/my_ntt.s asm/slothy/my_32ntt.opt.s'
-```
-
-Slothy cannot directly parse the original `PHASE123_ITER` GAS macro because of
-the `.if \pattern == ...` branch.  The flat symbolic file expands the eight
-iterations explicitly and then optimizes each
+The flat symbolic file expands the eight iterations explicitly and then
+optimizes each
 `slothy_start_ntt_phase123_iterN:slothy_end_ntt_phase123_iterN` region with the
 N1 target and split heuristic.
+
+Rejected 2026-06-25 Phase123 A76 load-schedule experiments:
+
+| variant | change | Slothy n1 per iter | Pi5 KEM result |
+| --- | --- | ---: | --- |
+| A | twist table `ldp` fixed-offset, one final `add x3,#384` | 161 instr / 40 cycles | parity: 923 / 893 / 745 |
+| B | A + zip/DFT3 triad streaming | 161 instr / 40 cycles | parity/slight NTT noise: 924 / 893 / 744 |
+| C | A + full triad streaming, pairs 0/2/4 then 1/3/5 | 165 instr / 41 cycles | slower: 926 / 895 / 745 |
+
+Do not keep or promote these experiment artifacts.  The current production
+Phase123 remains the baseline 160-instruction / 40-cycle N1 schedule, measured
+on Pi5 at roughly KEYGEN 923, ENCAP 894, DECAP 744.
 
 Rerun command:
 

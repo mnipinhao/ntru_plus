@@ -1,0 +1,127 @@
+dag:
+  id: base_gt_add32_full_pipeline_dag
+  kernel_contract: base_gt_add32_full_pipeline_kernel_contract.yml
+  description: One eight-lane GT block-major basemul_add32 stripe.
+
+inputs:
+  - x0 dst pointer
+  - x1 src1 pointer
+  - x2 src2 pointer
+  - x3 src3 pointer
+  - x4 lambda pointer
+  - x5 constants pointer
+
+constants:
+  - q = const.h[0] = 3457
+  - neg_qinv = const.h[2] = -12929
+  - R = const.h[3] = -147
+  - R2 = const.h[7] = 867
+  - lambda vector from gt_rowbitrev_lambda
+
+nodes:
+  - id: load_inputs
+    op: ldr_ld4
+    inputs: [x1, x2, x3, x4, x5]
+    outputs: [const, lam, a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3]
+    instruction_shape: ldr const, ldr lambda, ld4 a, ld4 b, ld4 c
+    tied_operands: []
+    range_before: public pointers to block-major GT stripes
+    range_after: SoA int16x8 vectors for eight quartics
+    may_reorder_with: []
+    must_precede: [wraparound_reduce]
+  - id: wraparound_reduce
+    op: montgomery_reduce_three_high_terms
+    inputs: [a1, a2, a3, b1, b2, b3, const]
+    outputs: [red_high0, red_high1, red_high2]
+    instruction_shape: smull/smlal chains, uzp1, mul neg_qinv, smlal q, uzp2
+    tied_operands: [accumulator_lo_hi_pairs]
+    range_before: signed int16 coefficient lanes
+    range_after: signed int16 Montgomery-reduced high terms
+    may_reorder_with: [low_dot_products]
+    must_precede: [lambda_products]
+  - id: lambda_products
+    op: multiply_reduced_high_terms_by_lambda
+    inputs: [red_high0, red_high1, red_high2, lam]
+    outputs: [lambda0_lo_hi, lambda1_lo_hi, lambda2_lo_hi]
+    instruction_shape: smull/smull2 by lambda
+    tied_operands: []
+    range_before: reduced high terms and Montgomery lambda lanes
+    range_after: signed int32 products
+    may_reorder_with: [low_dot_products]
+    must_precede: [coefficient_accumulate]
+  - id: low_dot_products
+    op: quartic_low_dot_products
+    inputs: [a0, a1, a2, a3, b0, b1, b2, b3]
+    outputs: [r0_acc, r1_acc, r2_acc, r3_acc]
+    instruction_shape: smull/smull2 plus smlal/smlal2
+    tied_operands: [accumulator_lo_hi_pairs]
+    range_before: signed int16 coefficient lanes
+    range_after: signed int32 raw products before fold
+    may_reorder_with: [lambda_products]
+    must_precede: [product_reduce]
+  - id: coefficient_accumulate
+    op: add_lambda_products_to_low_products
+    inputs: [lambda_products, low_dot_products]
+    outputs: [r0_acc, r1_acc, r2_acc, r3_acc]
+    instruction_shape: accumulator chains
+    tied_operands: [accumulator_lo_hi_pairs]
+    range_before: signed int32 products
+    range_after: signed int32 product accumulators
+    may_reorder_with: []
+    must_precede: [product_reduce]
+  - id: product_reduce
+    op: montgomery_reduce_four_coefficients
+    inputs: [r0_acc, r1_acc, r2_acc, r3_acc, const]
+    outputs: [raw0, raw1, raw2, raw3]
+    instruction_shape: uzp1, mul neg_qinv, smlal q, uzp2
+    tied_operands: [accumulator_lo_hi_pairs]
+    range_before: signed int32 product accumulators
+    range_after: signed int16 R^-1 raw residues
+    may_reorder_with: []
+    must_precede: [add32_finalize]
+  - id: add32_finalize
+    op: montgomery_reduce_cR_plus_rawR2
+    inputs: [raw0, raw1, raw2, raw3, c0, c1, c2, c3, const]
+    outputs: [out0, out1, out2, out3]
+    instruction_shape: smull raw by R2, smlal c by R, Montgomery fold
+    tied_operands: [accumulator_lo_hi_pairs]
+    range_before: signed int16 raw residues and addend coefficients
+    range_after: signed int16 normal-domain output residues
+    may_reorder_with: []
+    must_precede: [store_outputs]
+  - id: store_outputs
+    op: st4
+    inputs: [out0, out1, out2, out3, x0]
+    outputs: [dst memory]
+    instruction_shape: st4 {out0,out1,out2,out3}, [x0], #64
+    tied_operands: []
+    range_before: final int16 output vectors
+    range_after: block-major output stripe in memory
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads:
+    - x5 constants
+    - x4 lambda vector
+    - x1 src1 stripe
+    - x2 src2 stripe
+    - x3 src3 stripe
+  stores:
+    - x0 output stripe
+  ordering_constraints:
+    - all loads must precede the final st4
+    - pointer post-increments are public and one-stripe local
+
+outputs:
+  - out = c + a*b modulo q, using the same GT lambda table and add32 R^-1 finalizer as base_gt.S
+
+live_out:
+  - dst memory
+  - post-incremented x0, x1, x2, x3, x4
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

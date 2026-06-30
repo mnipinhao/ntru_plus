@@ -77,7 +77,7 @@ def main() -> None:
     parser.add_argument(
         "--loop",
         action="append",
-        default=["Lgt_basemul_loop", "Lgt_basemul_add_loop"],
+        default=None,
         help="Loop label to optimize. May be repeated.",
     )
     parser.add_argument("--stalls", type=int, default=128)
@@ -107,7 +107,8 @@ def main() -> None:
     )
     slothy.load_source_from_file(str(source))
     configure_common(slothy, args)
-    for loop in args.loop:
+    loops = args.loop or ["Lgt_basemul_loop", "Lgt_basemul_add_loop"]
+    for loop in loops:
         slothy.optimize_loop(loop)
     slothy.write_source_to_file(str(output))
 

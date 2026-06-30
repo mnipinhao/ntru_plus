@@ -1,0 +1,123 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: baseinv_batch_finish8
+  name: GT batch baseinv finish for eight quartic blocks
+  source: baseinv_batch_finish.sym.S
+  scheme: NTRU+768
+  operation: baseinv_8_finish numerator final scaling
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_or_cortex_a72_pi5_probe
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: allocate-and-optimize
+  driver: optimize.py --input baseinv_batch_finish.sym.S --output baseinv_batch_finish.n1.opt.s --target n1 --region baseinv_batch_finish8_slothy_start:baseinv_batch_finish8_slothy_end
+  expected_outputs: [baseinv_batch_finish.n1.opt.s]
+  allow_spills: false
+
+region:
+  start_label: baseinv_batch_finish8_slothy_start
+  end_label: baseinv_batch_finish8_slothy_end
+  expected_instruction_count: 33
+  live_in:
+    - x0 points to one block-major numerator/output block, 32 int16 coefficients
+    - x1 points to one int16x8 den_inv vector produced by poly_fqinv_batch_neon
+    - v0 fixed constant vector, lane 0 is q and lane 2 is Montgomery qinv
+  live_out:
+    - memory at x0 is overwritten with final inverse coefficients for eight quartics
+
+abi:
+  inputs:
+    - x0 dst, equivalent to baseinv_8_finish dst
+    - x1 den_inv_ptr, prototype stand-in for the C int16x8_t den_inv argument
+    - v0 constants loaded from gt_baseinv_consts or gt_baseinv_scaled_r_consts
+  outputs:
+    - dst memory contains n0*den_inv, n1*(-den_inv), n2*den_inv, n3*(-den_inv)
+  clobbers:
+    - symbolic vector temporaries allocated by Slothy
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - sp
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+    - v0
+
+instruction_dag:
+  file: baseinv_batch_finish_instruction_dag.yml
+  summary: ld4 numerator lanes, load den_inv, form -den_inv, four Montgomery vector multiplies, st4 final lanes
+
+layout:
+  input_representation: block-major numerator memory from baseinv_8_prepare, dst[4*j+lane] for j in 0..7 and lane in 0..3
+  output_representation: same block-major memory, final inverse coefficients in dst[4*j+lane]
+  vector_lanes: eight independent quartic blocks per int16x8 vector lane
+  packing: ld4 deinterleaves n0,n1,n2,n3 vectors; st4 reinterleaves to quartic-major memory
+
+memory_contract:
+  loads:
+    - ld4 reads 64 bytes from x0, offsets 0..63, public block offset
+    - ldr reads 16 bytes from x1, den_inv vector for this public block index
+  stores:
+    - st4 writes 64 bytes to x0, offsets 0..63, public block offset
+  aliasing: x1 points into temporary den array and must not overlap the 64-byte dst block
+  alignment: x0 and x1 are at least 16-byte aligned in the current C path
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants:
+    - v0.h[0] = q = 3457
+    - v0.h[2] = qinv = -12929 for Montgomery reduction
+    - other v0 lanes are ignored by this finish kernel
+  modulus: 3457
+  representation: signed int16 Montgomery-domain field residues, exact representative is not part of the contract
+  reduction_method: fqmul_neon Montgomery reduction using smull, smull2, uzp1, mul, smlal, smlal2, uzp2
+
+range_contract:
+  input_ranges:
+    - numerator vectors are signed int16 residues produced by baseinv_8_prepare
+    - den_inv is a signed int16 residue produced by poly_fqinv_batch_neon
+  intermediate_ranges:
+    - low and high products are signed 32-bit smull products of int16 lanes
+    - Montgomery fold adds q times a signed int16 low-half multiplier and follows the existing C Neon fqmul_neon range
+  output_ranges:
+    - each output lane is the int16 Montgomery-reduced product modulo q
+  narrowing_points:
+    - uzp2 extracts the high halfwords after Montgomery folding, matching montgomery_reduce_vec
+
+constant_time_contract:
+  secret_inputs:
+    - numerator memory at x0
+    - den_inv vector at x1
+  public_inputs:
+    - block index expressed only through caller-supplied public x0 and x1
+    - fixed v0 constants
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: build or run gt_test/test_gt_baseinv_batch against the C path before integration
+  test_command: not run for this symbolic-only prototype because it is not wired into production
+  full_path_benchmark_command: not available until a wrapper and Slothy output are integrated behind an opt-in harness
+  benchmark_metric: cycles
+  lower_is_better: true

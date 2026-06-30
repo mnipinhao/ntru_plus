@@ -1,0 +1,128 @@
+kernel:
+  id: base_gt_add32_rminus1_finalize
+  name: GT basemul_add32 R^-1 finalizer prototype
+  scheme: NTRU+768
+  source: asm/slothy/base_gt_add32_rminus1_finalize.sym.S
+  target_arch: aarch64_neon
+  target_microarchitecture: neoverse-n1-placeholder
+  workflow: allocate-and-optimize
+
+region:
+  start_label: slothy_start_base_gt_add32_rminus1_finalize
+  end_label: slothy_end_base_gt_add32_rminus1_finalize
+  expected_instruction_count: 37
+  live_in:
+    - Q<v_raw0>..Q<v_raw3>: raw product residues from the existing GT quartic basemul inner reductions
+    - Q<v_c0>..Q<v_c3>: normal R^0 addend coefficients
+    - Q<v_const>: base constants vector
+    - x0: destination pointer for one 8-block GT block-major stripe
+  live_out:
+    - st4 output at old x0
+    - x0 post-incremented by 64 bytes
+
+abi:
+  prototype_inputs:
+    x0: output pointer, block-major st4 layout
+    x1: prototype raw-vector input pointer, four Q vectors, not production ABI
+    x2: prototype c-vector input pointer, four Q vectors, not production ABI
+    x3: constants pointer, one Q vector matching Lgt_base_consts
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - sp
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+  fixed_vector_registers: []
+
+operation:
+  description: >
+    Per coefficient lane, compute Mont(c * R + raw_rminus1 * R^2), where
+    raw_rminus1 is the existing GT quartic basemul result, or a bounded sum of
+    such results, before the final R^2 correction.  This is the final
+    add32/finalize block only.
+  instruction_sequence_summary:
+    - smull/smull2 raw_rminus1 by R^2 into 32-bit lanes
+    - smlal/smlal2 c by R into the same 32-bit lanes
+    - Montgomery low-half correction with -qinv and q
+    - uzp2 high-half extraction as the Montgomery result
+    - st4 block-major output
+  do_not_include:
+    - Good-Thomas lambda dot products
+    - full poly_basemul_add loop
+    - production aliases or Makefile wiring
+
+memory_contract:
+  loads:
+    - Prototype scaffolding before the Slothy region loads raw vectors from x1 + {0,16,32,48}
+    - Prototype scaffolding before the Slothy region loads c vectors from x2 + {0,16,32,48}
+    - Prototype scaffolding before the Slothy region loads constants from x3
+  stores:
+    - st4 writes one 64-byte block-major stripe to x0 and post-increments x0 by 64
+  aliasing: >
+    For standalone assembly testing, x0 must not overlap x1 or x2.  In the
+    production loop, raw/c live-ins are register values before this region.
+  alignment: 16-byte alignment preferred for x0, x1, x2, and x3
+  public_offsets_only: true
+
+constant_contract:
+  constants:
+    - q = 3457 in const.h[0]
+    - neg_qinv = -12929 in const.h[2]
+    - R = -147 in const.h[3]
+    - R2 = 867 in const.h[7]
+  representation: >
+    Constants match asm/base_gt.S Lgt_base_consts with h[7] populated for the
+    add32 finalizer.  The low-half correction computes a + ((a_low *
+    -qinv) mod 2^16) * q, then takes the signed high half.
+
+range_contract:
+  input_ranges:
+    - raw_rminus1: each lane is a signed 16-bit Montgomery-reduced inner product, or a signed 16-bit bounded sum of such products
+    - one-product raw_rminus1 bound: [-3456,3456]
+    - two-product raw_rminus1 bound: [-6912,6912], still valid for the smull/smull2 signed 16-bit input path
+    - c: normal R^0 coefficient; centered examples use abs(c) <= 1728, conservative bounded-normal input may use abs(c) <= 3456
+  intermediate_ranges:
+    - prefinal lane: c * R + raw_rminus1 * R^2
+    - with centered c and one product: abs(prefinal) <= 1728*147 + 3456*867 = 3250368
+    - with centered c and two products accumulated before finalization: abs(prefinal) <= 1728*147 + 2*3456*867 = 6246720
+    - both are below int32 and below the Montgomery precondition q*2^15 = 113278976
+  output_range: Montgomery result is bounded normal R^0, congruent to c + product modulo q
+  narrowing_points:
+    - uzp1 extracts the low 16 bits for Montgomery correction
+    - uzp2 extracts the high 16 bits after adding correction*q
+
+constant_time_contract:
+  secret_inputs:
+    - raw_rminus1 lanes
+    - c lanes when message-dependent
+  public_inputs:
+    - fixed constants
+    - fixed vector offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+post_slothy_validation:
+  static_checks:
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-symbolic-asm.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-slothy-region-size.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-physical-reg-leaks.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S --allow-reg x0
+  required_before_benchmark:
+    - Run Slothy externally and inspect allocated output.
+    - Add an isolated harness or wrapper without production aliases.
+    - Differential-test against basemul_add and the add32 reference for edge coefficients.
+    - Only then wire an opt-in benchmark target outside production defaults.

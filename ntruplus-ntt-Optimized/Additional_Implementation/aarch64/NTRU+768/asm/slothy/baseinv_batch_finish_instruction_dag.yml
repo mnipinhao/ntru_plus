@@ -1,0 +1,183 @@
+dag:
+  id: baseinv_batch_finish8_dag
+  kernel_contract: baseinv_batch_finish_kernel_contract.yml
+  description: One baseinv_8_finish block for eight block-major quartic leaves.
+
+inputs:
+  - dst memory contains interleaved numerator coefficients n0,n1,n2,n3 for lanes 0..7
+  - den_inv memory contains one int16x8 denominator inverse vector
+  - v0.h[0] is q = 3457
+  - v0.h[2] is qinv = -12929
+
+constants:
+  - q = v0.h[0]
+  - qinv = v0.h[2]
+
+nodes:
+  - id: load_numerators
+    op: ld4
+    inputs: [x0]
+    outputs: [n0_in, n1_in, n2_in, n3_in]
+    instruction_shape: ld4 {V<n0_in>.8h, V<n1_in>.8h, V<n2_in>.8h, V<n3_in>.8h}, [x0]
+    tied_operands: []
+    range_before: signed int16 numerator memory
+    range_after: four signed int16 numerator vectors
+    may_reorder_with: [load_den_inv]
+    must_precede: [mul_n0_den_lo, mul_n1_negden_lo, mul_n2_den_lo, mul_n3_negden_lo]
+  - id: load_den_inv
+    op: ldr
+    inputs: [x1]
+    outputs: [den_inv]
+    instruction_shape: ldr Q<den_inv>, [x1]
+    tied_operands: []
+    range_before: signed int16 denominator inverse memory
+    range_after: signed int16 denominator inverse vector
+    may_reorder_with: [load_numerators]
+    must_precede: [make_neg_den_inv, mul_n0_den_lo, mul_n2_den_lo]
+  - id: make_zero
+    op: movi
+    inputs: []
+    outputs: [zero]
+    instruction_shape: movi V<zero>.8h, #0
+    tied_operands: []
+    range_before: none
+    range_after: zero vector
+    may_reorder_with: [load_numerators, load_den_inv]
+    must_precede: [make_neg_den_inv]
+  - id: make_neg_den_inv
+    op: sub
+    inputs: [zero, den_inv]
+    outputs: [neg_den_inv]
+    instruction_shape: sub V<neg_den_inv>.8h, V<zero>.8h, V<den_inv>.8h
+    tied_operands: []
+    range_before: signed int16 lanes
+    range_after: lane-wise int16 negation of den_inv
+    may_reorder_with: []
+    must_precede: [mul_n1_negden_lo, mul_n3_negden_lo]
+
+  - id: mul_n0_den_lo
+    op: smull
+    inputs: [n0_in.low4, den_inv.low4]
+    outputs: [n0_lo]
+    instruction_shape: smull V<n0_lo>.4s, V<n0_in>.4h, V<den_inv>.4h
+    tied_operands: []
+    range_before: signed int16 lanes
+    range_after: signed int32 products
+    may_reorder_with: [mul_n0_den_hi]
+    must_precede: [mred_n0_lowhalf]
+  - id: mul_n0_den_hi
+    op: smull2
+    inputs: [n0_in.high4, den_inv.high4]
+    outputs: [n0_hi]
+    instruction_shape: smull2 V<n0_hi>.4s, V<n0_in>.8h, V<den_inv>.8h
+    tied_operands: []
+    range_before: signed int16 lanes
+    range_after: signed int32 products
+    may_reorder_with: [mul_n0_den_lo]
+    must_precede: [mred_n0_lowhalf]
+  - id: mred_n0_lowhalf
+    op: uzp1_mul
+    inputs: [n0_lo, n0_hi, qinv]
+    outputs: [n0_mred]
+    instruction_shape: uzp1 then mul by v0.h[2]
+    tied_operands: []
+    range_before: int32 product limbs
+    range_after: signed int16 Montgomery low-half multiplier
+    may_reorder_with: []
+    must_precede: [mred_n0_fold]
+  - id: mred_n0_fold
+    op: smlal_smlal2
+    inputs: [n0_lo, n0_hi, n0_mred, q]
+    outputs: [n0_lo_folded, n0_hi_folded]
+    instruction_shape: smlal and smlal2 by v0.h[0]
+    tied_operands: [n0_lo, n0_hi]
+    range_before: int32 product limbs and signed int16 Montgomery low-half multiplier
+    range_after: folded int32 limbs
+    may_reorder_with: []
+    must_precede: [pack_n0_out]
+  - id: pack_n0_out
+    op: uzp2
+    inputs: [n0_lo_folded, n0_hi_folded]
+    outputs: [n0_out]
+    instruction_shape: uzp2 V<n0_out>.8h, V<n0_lo>.8h, V<n0_hi>.8h
+    tied_operands: []
+    range_before: folded int32 limbs
+    range_after: int16 Montgomery product
+    may_reorder_with: []
+    must_precede: [store_outputs]
+
+  - id: fqmul_n1_negden
+    op: fqmul_neon
+    inputs: [n1_in, neg_den_inv, q, qinv]
+    outputs: [n1_out]
+    instruction_shape: smull, smull2, uzp1, mul, smlal, smlal2, uzp2
+    tied_operands: [n1_lo, n1_hi]
+    range_before: signed int16 lanes
+    range_after: int16 Montgomery product
+    may_reorder_with: [fqmul_n0_den, fqmul_n2_den, fqmul_n3_negden]
+    must_precede: [store_outputs]
+  - id: fqmul_n2_den
+    op: fqmul_neon
+    inputs: [n2_in, den_inv, q, qinv]
+    outputs: [n2_out]
+    instruction_shape: smull, smull2, uzp1, mul, smlal, smlal2, uzp2
+    tied_operands: [n2_lo, n2_hi]
+    range_before: signed int16 lanes
+    range_after: int16 Montgomery product
+    may_reorder_with: [fqmul_n0_den, fqmul_n1_negden, fqmul_n3_negden]
+    must_precede: [store_outputs]
+  - id: fqmul_n3_negden
+    op: fqmul_neon
+    inputs: [n3_in, neg_den_inv, q, qinv]
+    outputs: [n3_out]
+    instruction_shape: smull, smull2, uzp1, mul, smlal, smlal2, uzp2
+    tied_operands: [n3_lo, n3_hi]
+    range_before: signed int16 lanes
+    range_after: int16 Montgomery product
+    may_reorder_with: [fqmul_n0_den, fqmul_n1_negden, fqmul_n2_den]
+    must_precede: [store_outputs]
+  - id: fqmul_n0_den
+    op: fqmul_neon_expanded_above
+    inputs: [n0_in, den_inv, q, qinv]
+    outputs: [n0_out]
+    instruction_shape: expanded as mul_n0_den through pack_n0_out
+    tied_operands: [n0_lo, n0_hi]
+    range_before: signed int16 lanes
+    range_after: int16 Montgomery product
+    may_reorder_with: [fqmul_n1_negden, fqmul_n2_den, fqmul_n3_negden]
+    must_precede: [store_outputs]
+  - id: store_outputs
+    op: st4
+    inputs: [n0_out, n1_out, n2_out, n3_out, x0]
+    outputs: [dst memory]
+    instruction_shape: st4 {V<n0_out>.8h, V<n1_out>.8h, V<n2_out>.8h, V<n3_out>.8h}, [x0]
+    tied_operands: []
+    range_before: four int16 Montgomery product vectors
+    range_after: interleaved block-major final inverse memory
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads:
+    - load_numerators reads x0 + public offsets 0..63
+    - load_den_inv reads x1 + public offsets 0..15
+  stores:
+    - store_outputs writes x0 + public offsets 0..63
+  ordering_constraints:
+    - load_numerators must precede store_outputs because x0 is read and overwritten
+    - load_den_inv does not alias x0 by contract
+
+outputs:
+  - n0_out = fqmul_neon(n0_in, den_inv)
+  - n1_out = fqmul_neon(n1_in, -den_inv)
+  - n2_out = fqmul_neon(n2_in, den_inv)
+  - n3_out = fqmul_neon(n3_in, -den_inv)
+
+live_out:
+  - dst memory only
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
