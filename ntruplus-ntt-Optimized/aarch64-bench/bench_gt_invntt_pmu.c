@@ -40,8 +40,9 @@
 #define NWARMUP 100
 #endif
 
-#define VARIANT_COUNT 8
+#define VARIANT_COUNT 10
 #define PMU_EVENT_COUNT 8
+#define ROW_STAGE45_I16 256
 
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
@@ -54,6 +55,10 @@ void gt_rminus1_block_major_to_stage123_stripe_scratch(int16_t *scratch,
                                                        const poly *a);
 void gt_rminus1_crepmod3_block_major_to_stage123_stripe_scratch(
     int16_t *scratch, const poly *a);
+void bench_invntt_rminus1_row1_stage45_marked_canonical(
+    int16_t *row_out, const int16_t *row_scratch);
+void bench_invntt_rminus1_row1_stage45_slothy_stripes2_3(
+    int16_t *row_out, const int16_t *row_scratch);
 
 typedef void (*bench_target_fn)(size_t idx);
 
@@ -84,6 +89,7 @@ static poly *g_tmp;
 static poly *g_outputs;
 static int16_t (*g_scratch)[NTRUPLUS_N];
 static int16_t (*g_scratch_crep3)[NTRUPLUS_N];
+static int16_t (*g_row1_stage45)[ROW_STAGE45_I16];
 static size_t g_iterations = NITERATIONS;
 static volatile uint64_t g_sink;
 
@@ -207,6 +213,20 @@ static uint64_t checksum_scratch(const int16_t a[NTRUPLUS_N])
   return acc;
 }
 
+static uint64_t checksum_row_stage45(const int16_t a[ROW_STAGE45_I16])
+{
+  uint64_t acc = 0x3c6ef372fe94f82bULL;
+  size_t i;
+
+  for (i = 0; i < ROW_STAGE45_I16; i++)
+  {
+    acc ^= (uint16_t)a[i];
+    acc *= 0x100000001b3ULL;
+    acc ^= acc >> 32;
+  }
+  return acc;
+}
+
 static void checksum_outputs(void)
 {
   size_t i;
@@ -216,6 +236,7 @@ static void checksum_outputs(void)
     uint64_t x = checksum_poly(&g_outputs[i]);
     x ^= checksum_poly(&g_tmp[i]);
     x ^= checksum_scratch(g_scratch[i]);
+    x ^= checksum_row_stage45(g_row1_stage45[i]);
     g_sink ^= x + 0x9e3779b97f4a7c15ULL + (g_sink << 6) + (g_sink >> 2);
   }
 }
@@ -283,6 +304,27 @@ static int compare_scratch_exact(const char *label, const int16_t *got,
   return mismatches;
 }
 
+static int compare_i16_exact(const char *label, const int16_t *got,
+                             const int16_t *want, size_t n)
+{
+  size_t i;
+  int mismatches = 0;
+
+  for (i = 0; i < n; i++)
+  {
+    if (got[i] != want[i])
+    {
+      if (mismatches < 8)
+      {
+        fprintf(stderr, "%s mismatch idx=%zu got=%d want=%d\n", label, i,
+                got[i], want[i]);
+      }
+      mismatches++;
+    }
+  }
+  return mismatches;
+}
+
 static void prepare_inputs(void)
 {
   size_t i;
@@ -311,6 +353,8 @@ static int run_correctness(void)
   poly crep3_split;
   int16_t scratch[NTRUPLUS_N] __attribute__((aligned(16)));
   int16_t scratch_crep3[NTRUPLUS_N] __attribute__((aligned(16)));
+  int16_t row1_canonical[ROW_STAGE45_I16] __attribute__((aligned(16)));
+  int16_t row1_candidate[ROW_STAGE45_I16] __attribute__((aligned(16)));
   int mismatches = 0;
 
   fill_poly(&a, 101);
@@ -321,6 +365,16 @@ static int run_correctness(void)
   gt_rminus1_block_major_to_stage123_stripe_scratch(scratch, &product);
   poly_invntt_from_rminus1_stage45scratch(&split, scratch);
   mismatches += compare_poly_modq("rminus1.stage45scratch", &split, &full);
+
+  memset(row1_canonical, 0, sizeof(row1_canonical));
+  memset(row1_candidate, 0, sizeof(row1_candidate));
+  bench_invntt_rminus1_row1_stage45_marked_canonical(row1_canonical,
+                                                     scratch + 256);
+  bench_invntt_rminus1_row1_stage45_slothy_stripes2_3(row1_candidate,
+                                                      scratch + 256);
+  mismatches += compare_i16_exact("rminus1.row1_stage45_slothy",
+                                  row1_candidate, row1_canonical,
+                                  ROW_STAGE45_I16);
 
   poly_crepmod3(&crep3_ref, &full);
   poly_invntt_from_rminus1_crepmod3(&crep3_fused, &product);
@@ -373,6 +427,18 @@ static void target_stage45scratch_tail(size_t idx)
   poly_invntt_from_rminus1_stage45scratch(&g_outputs[idx], g_scratch[idx]);
 }
 
+static void target_row1_stage45_marked_canonical(size_t idx)
+{
+  bench_invntt_rminus1_row1_stage45_marked_canonical(g_row1_stage45[idx],
+                                                     g_scratch[idx] + 256);
+}
+
+static void target_row1_stage45_slothy_stripes2_3(size_t idx)
+{
+  bench_invntt_rminus1_row1_stage45_slothy_stripes2_3(g_row1_stage45[idx],
+                                                      g_scratch[idx] + 256);
+}
+
 static void target_split_stage123scratch_invntt(size_t idx)
 {
   gt_rminus1_block_major_to_stage123_stripe_scratch(g_scratch[idx],
@@ -400,6 +466,10 @@ static struct variant g_variants[VARIANT_COUNT] = {
     {"poly_invntt_from_rminus1_crep3_fused", target_invntt_crep3_fused},
     {"block_major_to_stage123_scratch", target_block_to_stage123_scratch},
     {"poly_invntt_from_rminus1_stage45scratch", target_stage45scratch_tail},
+    {"row1_stage45_materialized_canonical",
+     target_row1_stage45_marked_canonical},
+    {"row1_stage45_slothy_stripes2_3",
+     target_row1_stage45_slothy_stripes2_3},
     {"split_stage123scratch_invntt", target_split_stage123scratch_invntt},
     {"poly_invntt_from_rminus1_crep3_stage45scratch",
      target_stage45scratch_tail_crep3},
@@ -693,6 +763,8 @@ int main(void)
   g_scratch = xaligned_alloc(64, g_iterations * sizeof(*g_scratch));
   g_scratch_crep3 =
       xaligned_alloc(64, g_iterations * sizeof(*g_scratch_crep3));
+  g_row1_stage45 =
+      xaligned_alloc(64, g_iterations * sizeof(*g_row1_stage45));
 
   prepare_inputs();
   if (run_correctness() != 0)

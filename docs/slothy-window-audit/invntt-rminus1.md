@@ -120,14 +120,30 @@ already cross-stripe scheduled.
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5` | 4-5 | 84 | 12 | 8 | candidate |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES6-7` | 6-7 | 84 | 12 | 8 | candidate |
 
+2026-06-30 campaign `INVNTT-RM1-ROW1-STAGE45-STRIPES-CAMPAIGN-001` ran all
+four stripe-pair windows on the remote Slothy host.  All four parsed and solved
+in normal mode without split heuristic.  `STRIPES2-3` was kept as the
+benchmark-only current best because it was the first active target and tied the
+other windows in the Slothy model result: 88 cycles and 67 stalls.
+
+Pi5 benchmark-only row1 materialized result:
+
+| variant | cycles/call | instr/call | result |
+| --- | ---: | ---: | --- |
+| materialized canonical ROW1-STAGE45 row1 | 624.673 | 357 | pass |
+| materialized + Slothy `STRIPES2-3` | 616.679 | 357 | pass, -1.28% |
+
+Production `poly_invntt_from_rminus1` remained unchanged and measured 4144.795
+cycles/call in the same `bench_gt_invntt_pmu` run.  KEM component profiling
+reported `decap_invntt_rminus1 = 4024.731` cycles/call with
+`correctness,total_mismatches=0,valid_cases=64`.
+
 ## Planned Run Order
 
 1. `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`
 
-   First normal candidate.  It avoids the `j=0` constant edge case and the row
-   tail, while still using a representative nontrivial stage45 stripe pair.
-   The next run should use the materialized labels in the benchmark-only Slothy
-   input source, not the 337-instruction parent row labels.
+   Completed as RUN-002.  Kept as a benchmark-only current best, not promoted
+   to production.
 
 2. `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5`
 

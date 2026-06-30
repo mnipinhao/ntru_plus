@@ -1,10 +1,10 @@
 schema: slothy_run_tracker_v1
 date: "2026-06-30"
 policy:
-  slothy_run_in_this_pass: false
+  slothy_run_in_this_pass: true
   slothy_window_input_materialized: true
   production_default_changed: false
-  generated_opt_candidate_added: false
+  generated_opt_candidate_added: true
   q31_touched: false
   fusion_started: false
   polyinv_rewrite_started: false
@@ -154,8 +154,8 @@ runs:
     region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
     source_marker_commit: b44c5cd
     manifest_commit: 9166b2d
-    generated_candidate_commit: null
-    status: planned
+    generated_candidate_commit: "this campaign commit"
+    status: pmu-win
     materialized_source:
       path: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s"
       start_label: slothy_start_invntt_rm1_row1_stage45_stripes2_3
@@ -165,29 +165,35 @@ runs:
       child_instruction_count: 84
       equivalence_check: "pass; child equals canonical production per-stripe macro expansion"
       contiguous_parent_slice_check: "not applicable; production parent row is cross-stripe scheduled"
-    slothy_command: "not run; planned for later task using materialized start/end labels"
-    parser_status: "not run"
-    optimizer_status: "not run"
-    assemble_status: "not run"
+    slothy_command: "timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py --input window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s --output window_outputs/invntt_rminus1_row1_stage45_stripes2_3.n1.slothy.candidate.s --target n1 --stalls 256 --region slothy_start_invntt_rm1_row1_stage45_stripes2_3:slothy_end_invntt_rm1_row1_stage45_stripes2_3"
+    parser_status: "parse pass; 84 instructions"
+    optimizer_status: "OPTIMAL; model cycles 88; minimum stalls 67; wall time 5.173500s"
+    assemble_status: "pass via Pi5 bench_gt_invntt_pmu build"
     standalone_correctness:
-      command: "not run"
-      result: "not run"
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0"
     full_kem_correctness:
-      command: "not run"
-      result: "not run"
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
     local_cycles_instructions:
-      metric: baseline comparator poly_invntt_from_rminus1
-      cycles_per_call: 4152.907
-      instructions_per_call: 5078
+      metric: row1_stage45 materialized microbench
+      baseline_cycles_per_call: 624.673
+      baseline_instructions_per_call: 357
+      candidate_cycles_per_call: 616.679
+      candidate_instructions_per_call: 357
+      delta_cycles_per_call: -7.994
+      delta_percent: -1.28
     full_api_cycles_instructions:
-      metric: baseline comparator decap_invntt_rminus1
-      cycles_per_call: 4024.297
+      metric: production baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.731
       instructions_per_call: 5074
-    decision: "planned next Slothy run; materialized labels now exist"
+    decision: "keep benchmark-only candidate; materialized row microbench win only"
     notes:
-      - "No Slothy run in this pass."
-      - "No generated .opt.s candidate in this pass."
+      - "Slothy ran on remote host pinhao@172.25.166.141:51208."
+      - "Generated candidate artifact is benchmark-only."
       - "Do not use the 337-instruction ROW1-STAGE45 parent labels for this run."
+      - "Pi5 row1 materialized candidate improves canonical marked source by 7.994 cycles/call."
+      - "Candidate is not wired into production full InvNTT or decap."
       - "Production behavior unchanged."
 
   - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5-PLAN-001

@@ -252,11 +252,14 @@ GT_BASEMUL_PIPELINE_PMU_SOURCES = \
 
 GT_INVNTT_PMU_SOURCES = \
 	bench_gt_invntt_pmu.c \
+	bench_invntt_row1_stage45_marked_wrappers.S \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(NTRUPLUS)/asm/inv_my_ntt_rminus1_crepmod3.S \
-	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S
+	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s \
+	$(NTRUPLUS)/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_stripes2_3.n1.slothy.candidate.s
 
 GT_CREP3_FUSED_PMU_SOURCES = \
 	bench_gt_crep3_fused_pmu.c \

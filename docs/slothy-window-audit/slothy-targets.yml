@@ -1,0 +1,63 @@
+schema: slothy_targets_v1
+date: "2026-06-30"
+production_default_changed: false
+q31_touched: false
+fusion_started: false
+polyinv_rewrite_started: false
+
+targets:
+  - id: invntt_rminus1_row1_stage45_stripes
+    api: decap
+    status: active
+    current_best: invntt_rminus1_row1_stage45_stripes2_3_n1
+    current_best_scope: benchmark_only_materialized_row1_microbench
+    current_best_result:
+      correctness: pass
+      baseline_cycles_per_call: 624.673
+      candidate_cycles_per_call: 616.679
+      delta_cycles_per_call: -7.994
+      delta_percent: -1.28
+    contract_status: "materialized canonical per-stripe input; not a contiguous production slice"
+    next_action: "decide whether to build a combined materialized row1 candidate or clone the stripe strategy to row0/row2"
+
+  - id: invntt_rminus1_row0_row2_stage45_stripes
+    api: decap
+    status: planned
+    current_best: null
+    next_action: "clone row1 strategy only if materialized row-level evaluation remains useful"
+
+  - id: invntt_rminus1_post_fused
+    api: decap
+    status: needs_review
+    current_best: null
+    reason: "includes inverse DFT3, branchfold final reduction, and final store"
+
+  - id: forward_ntt_production_windows
+    api: keygen/encap/decap
+    status: blocked
+    current_best: null
+    reason: "rowspec/output-layout contract must be fixed before another Slothy pass"
+
+  - id: generic_rminus1_basemul
+    api: decap/keygen/encap
+    status: planned
+    current_best: null
+    reason: "possible local cleanup; Q31 byte-contract path cannot be reused for decap arithmetic output"
+
+  - id: polyinv
+    api: keygen
+    status: external_algorithm_first
+    current_best: null
+    reason: "algorithm rewrite should be handled separately before Slothy scheduling"
+
+  - id: encap_residual_hash_copy
+    api: encap
+    status: stopped
+    current_best: null
+    reason: "hash-dominated; non-hash residuals below threshold"
+
+  - id: crepmod3
+    api: decap
+    status: stopped
+    current_best: null
+    reason: "about 1.1% of decap; not a priority Slothy target"
