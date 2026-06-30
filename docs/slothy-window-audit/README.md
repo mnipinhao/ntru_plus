@@ -40,11 +40,16 @@ which is too large for a normal first pass.  `row1_stage45` remains useful as a
 row-level split-heuristic stress test, but the normal first candidates are now
 stripe-pair subwindows derived from the canonical stage45 stripe macro.
 
-The first normal window, `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`, has now been
-run through Slothy as a benchmark-only candidate.  It improves the materialized
-canonical row1-stage45 microbench from 624.673 to 616.679 cycles/call on Pi5,
-but it is not a production InvNTT win because the materialized per-stripe input
-is not the production cross-stripe scheduled row.
+The first normal window, `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`, initially showed
+a small benchmark-only microbench win.  The follow-up scaling campaign built an
+all-four row1 stripe candidate and retested the path; correctness passed, but
+the all-four candidate regressed from 543.266 to 625.327 cycles/call.  The
+production-scheduled 337-instruction row1 Stage45 stress attempt also failed in
+the Slothy parser on `adr x3, invntt32_stage45_consts`.
+
+Current decision: stop the canonical row1 Stage45 stripe route for now.  Do not
+extend it to row0/row2 unless a new production-row contract or parser/model fix
+changes the evaluation target.
 
 Stage123 rows remain audit/extract only until a separate stage123 contract is
 written.  The post path remains out of the first pass because it includes

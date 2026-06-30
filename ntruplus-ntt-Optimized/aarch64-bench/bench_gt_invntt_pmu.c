@@ -40,7 +40,7 @@
 #define NWARMUP 100
 #endif
 
-#define VARIANT_COUNT 10
+#define VARIANT_COUNT 11
 #define PMU_EVENT_COUNT 8
 #define ROW_STAGE45_I16 256
 
@@ -58,6 +58,8 @@ void gt_rminus1_crepmod3_block_major_to_stage123_stripe_scratch(
 void bench_invntt_rminus1_row1_stage45_marked_canonical(
     int16_t *row_out, const int16_t *row_scratch);
 void bench_invntt_rminus1_row1_stage45_slothy_stripes2_3(
+    int16_t *row_out, const int16_t *row_scratch);
+void bench_invntt_rminus1_row1_stage45_slothy_all4(
     int16_t *row_out, const int16_t *row_scratch);
 
 typedef void (*bench_target_fn)(size_t idx);
@@ -355,6 +357,7 @@ static int run_correctness(void)
   int16_t scratch_crep3[NTRUPLUS_N] __attribute__((aligned(16)));
   int16_t row1_canonical[ROW_STAGE45_I16] __attribute__((aligned(16)));
   int16_t row1_candidate[ROW_STAGE45_I16] __attribute__((aligned(16)));
+  int16_t row1_all4_candidate[ROW_STAGE45_I16] __attribute__((aligned(16)));
   int mismatches = 0;
 
   fill_poly(&a, 101);
@@ -368,12 +371,18 @@ static int run_correctness(void)
 
   memset(row1_canonical, 0, sizeof(row1_canonical));
   memset(row1_candidate, 0, sizeof(row1_candidate));
+  memset(row1_all4_candidate, 0, sizeof(row1_all4_candidate));
   bench_invntt_rminus1_row1_stage45_marked_canonical(row1_canonical,
                                                      scratch + 256);
   bench_invntt_rminus1_row1_stage45_slothy_stripes2_3(row1_candidate,
                                                       scratch + 256);
+  bench_invntt_rminus1_row1_stage45_slothy_all4(row1_all4_candidate,
+                                                scratch + 256);
   mismatches += compare_i16_exact("rminus1.row1_stage45_slothy",
                                   row1_candidate, row1_canonical,
+                                  ROW_STAGE45_I16);
+  mismatches += compare_i16_exact("rminus1.row1_stage45_slothy_all4",
+                                  row1_all4_candidate, row1_canonical,
                                   ROW_STAGE45_I16);
 
   poly_crepmod3(&crep3_ref, &full);
@@ -439,6 +448,12 @@ static void target_row1_stage45_slothy_stripes2_3(size_t idx)
                                                       g_scratch[idx] + 256);
 }
 
+static void target_row1_stage45_slothy_all4(size_t idx)
+{
+  bench_invntt_rminus1_row1_stage45_slothy_all4(g_row1_stage45[idx],
+                                                g_scratch[idx] + 256);
+}
+
 static void target_split_stage123scratch_invntt(size_t idx)
 {
   gt_rminus1_block_major_to_stage123_stripe_scratch(g_scratch[idx],
@@ -470,6 +485,7 @@ static struct variant g_variants[VARIANT_COUNT] = {
      target_row1_stage45_marked_canonical},
     {"row1_stage45_slothy_stripes2_3",
      target_row1_stage45_slothy_stripes2_3},
+    {"row1_stage45_slothy_all4", target_row1_stage45_slothy_all4},
     {"split_stage123scratch_invntt", target_split_stage123scratch_invntt},
     {"poly_invntt_from_rminus1_crep3_stage45scratch",
      target_stage45scratch_tail_crep3},

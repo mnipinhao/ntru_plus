@@ -4,7 +4,7 @@ date: "2026-06-30"
 best:
   - id: invntt_rminus1_row1_stage45_stripes2_3_n1
     target: invntt_rminus1_row1_stage45_stripes
-    status: benchmark_only_pmu_win
+    status: superseded_by_scaling_retest
     source_input: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
     candidate_artifact: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_stripes2_3.n1.slothy.candidate.s
     benchmark_harness:
@@ -35,5 +35,49 @@ best:
       delta_percent: -1.28
       production_invntt_baseline_cycles_per_call: 4144.795
       production_invntt_baseline_instructions_per_call: 5078
-    decision: "keep as benchmark-only current best; do not promote to production"
+    retest:
+      campaign: INVNTT-RM1-STAGE45-SCALING-CAMPAIGN-002
+      baseline_cycles_per_call: 543.266
+      candidate_cycles_per_call: 612.778
+      delta_cycles_per_call: 69.512
+      delta_percent: 12.80
+      result: "latest retest regressed; no longer active best"
+    decision: "keep artifact as historical benchmark-only result; do not promote and do not extend row0/row2 from this route"
     limitation: "materialized canonical per-stripe input is not the production cross-stripe scheduled row"
+
+  - id: invntt_rminus1_row1_stage45_all4_n1
+    target: invntt_rminus1_row1_stage45_stripes
+    status: rejected_for_performance
+    source_input: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
+    candidate_artifact: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s
+    benchmark_harness:
+      - ntruplus-ntt-Optimized/aarch64-bench/bench_gt_invntt_pmu.c
+      - ntruplus-ntt-Optimized/aarch64-bench/bench_invntt_row1_stage45_marked_wrappers.S
+    slothy:
+      host: "pinhao@172.25.166.141:51208"
+      target: n1
+      mode: normal
+      split_heuristic: false
+      timeout_seconds: 3600
+      stalls_first_attempt: 256
+      regions:
+        - {name: STRIPES0-1, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 11.624899}
+        - {name: STRIPES2-3, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 8.802855}
+        - {name: STRIPES4-5, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 7.512587}
+        - {name: STRIPES6-7, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 14.771695}
+    correctness:
+      invntt_pmu: "correctness,total_mismatches=0"
+      kem_component_profile: "correctness,total_mismatches=0,valid_cases=64"
+    pmu:
+      platform: Pi5
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3"
+      materialized_canonical_cycles_per_call: 543.266
+      materialized_canonical_instructions_per_call: 357
+      candidate_cycles_per_call: 625.327
+      candidate_instructions_per_call: 357
+      delta_cycles_per_call: 82.061
+      delta_percent: 15.10
+      production_invntt_baseline_cycles_per_call: 4157.693
+      production_invntt_baseline_instructions_per_call: 5078
+    decision: "reject for performance; canonical all-four stripe scheduling does not scale"
+    limitation: "benchmark-only materialized canonical input; not production row scheduling"

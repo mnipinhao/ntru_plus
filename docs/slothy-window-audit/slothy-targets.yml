@@ -8,23 +8,25 @@ polyinv_rewrite_started: false
 targets:
   - id: invntt_rminus1_row1_stage45_stripes
     api: decap
-    status: active
-    current_best: invntt_rminus1_row1_stage45_stripes2_3_n1
-    current_best_scope: benchmark_only_materialized_row1_microbench
-    current_best_result:
+    status: stopped
+    current_best: null
+    current_best_scope: null
+    latest_scaling_result:
+      campaign: INVNTT-RM1-STAGE45-SCALING-CAMPAIGN-002
       correctness: pass
-      baseline_cycles_per_call: 624.673
-      candidate_cycles_per_call: 616.679
-      delta_cycles_per_call: -7.994
-      delta_percent: -1.28
+      baseline_cycles_per_call: 543.266
+      stripes2_3_cycles_per_call: 612.778
+      all4_cycles_per_call: 625.327
+      all4_delta_cycles_per_call: 82.061
+      all4_delta_percent: 15.10
     contract_status: "materialized canonical per-stripe input; not a contiguous production slice"
-    next_action: "decide whether to build a combined materialized row1 candidate or clone the stripe strategy to row0/row2"
+    next_action: "do not extend canonical stripe route to row0/row2; all-four scaling regressed"
 
   - id: invntt_rminus1_row0_row2_stage45_stripes
     api: decap
-    status: planned
+    status: not_recommended
     current_best: null
-    next_action: "clone row1 strategy only if materialized row-level evaluation remains useful"
+    next_action: "defer; row1 all-four canonical scaling did not win"
 
   - id: invntt_rminus1_post_fused
     api: decap

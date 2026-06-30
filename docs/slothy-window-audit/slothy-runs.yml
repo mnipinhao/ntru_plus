@@ -318,3 +318,95 @@ runs:
     notes:
       - "84-instruction stripe-pair candidate."
       - "Run after middle stripe pairs because this pair is closest to row tail."
+
+  - run_id: INVNTT-RM1-STAGE45-SCALING-CAMPAIGN-002-ALL4
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: canonical_ROW1_STAGE45_all_four_stripe_pairs
+    source_marker_commit: b44c5cd
+    manifest_commit: f13d41b1
+    generated_candidate_commit: "this campaign commit"
+    status: rejected
+    materialized_source:
+      path: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s"
+      parent_instruction_count: 337
+      child_instruction_count_each: 84
+      input_kind: "canonical per-stripe macro expansion; not production cross-stripe scheduled row"
+    slothy_command: "/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py --input window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s --output window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s --target n1 --stalls 256 --region slothy_start_invntt_rm1_row1_stage45_stripes0_1:slothy_end_invntt_rm1_row1_stage45_stripes0_1 --region slothy_start_invntt_rm1_row1_stage45_stripes2_3:slothy_end_invntt_rm1_row1_stage45_stripes2_3 --region slothy_start_invntt_rm1_row1_stage45_stripes4_5:slothy_end_invntt_rm1_row1_stage45_stripes4_5 --region slothy_start_invntt_rm1_row1_stage45_stripes6_7:slothy_end_invntt_rm1_row1_stage45_stripes6_7"
+    parser_status: "parse pass; four regions, 84 instructions each"
+    optimizer_status:
+      mode: normal
+      split_heuristic: false
+      timeout_seconds: 3600
+      regions:
+        - {name: STRIPES0-1, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 11.624899}
+        - {name: STRIPES2-3, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 8.802855}
+        - {name: STRIPES4-5, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 7.512587}
+        - {name: STRIPES6-7, status: OPTIMAL, model_cycles: 88, minimum_stalls: 67, wall_time_seconds: 14.771695}
+    assemble_status: "pass via Pi5 bench_gt_invntt_pmu build"
+    standalone_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0"
+    full_kem_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
+    local_cycles_instructions:
+      metric: row1_stage45 materialized microbench
+      baseline_cycles_per_call: 543.266
+      baseline_instructions_per_call: 357
+      stripes2_3_cycles_per_call: 612.778
+      stripes2_3_instructions_per_call: 357
+      all4_cycles_per_call: 625.327
+      all4_instructions_per_call: 357
+      all4_delta_cycles_per_call: 82.061
+      all4_delta_percent: 15.10
+      repeat_check:
+        baseline_cycles_per_call: 542.135
+        stripes2_3_cycles_per_call: 607.505
+        all4_cycles_per_call: 625.103
+    full_api_cycles_instructions:
+      metric: production baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4023.006
+      instructions_per_call: 5074
+    projection:
+      row1_saving_cycles: -82.061
+      projected_3row_saving_cycles: -246.183
+      projected_full_decap_saving_percent: -0.74
+      denominator_decap_cycles: 33285.358
+    decision: "reject for performance; do not extend canonical stripe route to row0/row2"
+    notes:
+      - "Correctness passed, but all-four materialized candidate regressed."
+      - "The previous STRIPES2-3 microbench win did not reproduce in the scaling retest."
+      - "Candidate remains benchmark-only and is not a production route."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-FULLROW-SPLIT-RUN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: rejected
+    slothy_command: "/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py --input invntt_opt.production.s --output window_outputs/invntt_rminus1_row1_stage45.fullrow.n1.slothy.candidate.s --target n1 --stalls 256 --split-heuristic --split-stepsize 0.05 --split-factor 8.0 --region slothy_start_invntt_block_row1_stage45:slothy_end_invntt_block_row1_stage45"
+    parser_status: "parser fail after counting 337 instructions; unsupported instruction adr x3, invntt32_stage45_consts"
+    optimizer_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run for candidate"
+      result: "not run"
+    full_kem_correctness:
+      command: "make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3"
+      result: "correctness,total_mismatches=0,valid_cases=64"
+    local_cycles_instructions:
+      metric: "not measured"
+      cycles_per_call: null
+      instructions_per_call: null
+    full_api_cycles_instructions:
+      metric: production baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4023.006
+      instructions_per_call: 5074
+    decision: "blocked by parser support; no candidate artifact and no PMU claim"
+    notes:
+      - "The 337-instruction full row window was attempted exactly once with split heuristic."
+      - "The failure is a parser/model gap for row-level addressing setup, not a correctness result."
+      - "Do not substitute the whole function or patch generated output randomly."

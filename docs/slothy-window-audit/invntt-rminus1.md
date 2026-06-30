@@ -138,22 +138,41 @@ cycles/call in the same `bench_gt_invntt_pmu` run.  KEM component profiling
 reported `decap_invntt_rminus1 = 4024.731` cycles/call with
 `correctness,total_mismatches=0,valid_cases=64`.
 
+2026-06-30 scaling campaign `INVNTT-RM1-STAGE45-SCALING-CAMPAIGN-002`
+retested the row1 materialized path and built an all-four Slothy stripe-pair
+candidate.  Correctness still passed, but the performance result did not scale:
+
+| variant | cycles/call | instr/call | result |
+| --- | ---: | ---: | --- |
+| materialized canonical ROW1-STAGE45 row1 | 543.266 | 357 | pass |
+| materialized + Slothy `STRIPES2-3` | 612.778 | 357 | pass, slower |
+| materialized + all-four Slothy stripes | 625.327 | 357 | pass, slower |
+
+The production-scheduled 337-instruction row1 Stage45 split-heuristic stress
+attempt reached Slothy parsing with 337 instructions, then failed on
+`adr x3, invntt32_stage45_consts`.  No fullrow candidate was produced.
+
+Current conclusion: stop the canonical row1 Stage45 stripe route.  Do not clone
+this route to row0/row2 unless a new production-row contract or parser/model
+fix changes the evaluation target.
+
 ## Planned Run Order
 
 1. `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`
 
-   Completed as RUN-002.  Kept as a benchmark-only current best, not promoted
-   to production.
+   Completed as RUN-002.  Later scaling retest regressed, so it is no longer an
+   active best and is not promoted to production.
 
 2. `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5`
 
-   Second normal candidate with the same 84-instruction shape and clean
-   row-buffer stores.
+   Solved during the scaling campaign.  Do not extend the canonical stripe
+   route further because all-four row1 PMU regressed.
 
 3. `INVNTT-RM1-ROW1-STAGE45`
 
-   Row-level stress test only.  It remains split-heuristic-only and should not
-   be treated as a normal first window.
+   Row-level stress test only.  One split-heuristic attempt failed in the parser
+   on `adr x3, invntt32_stage45_consts`; parser/model support is needed before
+   this route can continue.
 
 `INVNTT-RM1-ROW1-STAGE45` remains useful as a row-level audit/stress window:
 

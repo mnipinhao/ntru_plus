@@ -40,6 +40,21 @@ bench_invntt_rminus1_row1_stage45_slothy_stripes2_3:
     ret
 .size bench_invntt_rminus1_row1_stage45_slothy_stripes2_3, .-bench_invntt_rminus1_row1_stage45_slothy_stripes2_3
 
+.global bench_invntt_rminus1_row1_stage45_slothy_all4
+.type bench_invntt_rminus1_row1_stage45_slothy_all4, %function
+bench_invntt_rminus1_row1_stage45_slothy_all4:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+    mov x2, x0
+    mov x14, x1
+    adr x5, .Lbench_invntt_row1_inv_consts
+    ldr q0, [x5]
+    adr x3, .Lbench_invntt_row1_stage45_consts
+    bl invntt_rminus1_row1_stage45_all4_n1_slothy_candidate
+    ldp x29, x30, [sp], #16
+    ret
+.size bench_invntt_rminus1_row1_stage45_slothy_all4, .-bench_invntt_rminus1_row1_stage45_slothy_all4
+
 .align 4
 .Lbench_invntt_row1_inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171

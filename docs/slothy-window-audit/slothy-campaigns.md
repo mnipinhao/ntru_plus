@@ -81,3 +81,148 @@ Before extending to production, choose between building a combined materialized
 row1 candidate that uses scheduled stripe-pairs for all row1 stripes, or cloning
 the same materialized-window method to row0/row2.  The 337-instruction row-level
 window remains split-heuristic-only and was not run in this campaign.
+
+## INVNTT-RM1-STAGE45-SCALING-CAMPAIGN-002
+
+Date: 2026-06-30
+
+Scope: InvNTT rminus1 ROW1-STAGE45 scaling.  This campaign answers whether the
+single `STRIPES2-3` materialized microbench win scales to all four canonical
+row1 stripe-pairs, and whether the actual production-scheduled 337-instruction
+ROW1-STAGE45 window can be handled by Slothy split heuristic.
+
+This campaign is benchmark-only.  It does not change production defaults, Q31,
+basemul-to-InvNTT fusion, polyinv, or hash/copy residuals.
+
+Hosts:
+
+- Slothy: `pinhao@172.25.166.141:51208`
+- Pi5: `pi@100.99.191.9`
+
+Source commits:
+
+- source marker commit: `b44c5cd`
+- materialization commit: `f13d41b1`
+- previous campaign commit: `a5e34df6`
+- generated candidate commit: this campaign commit
+
+Canonical stripe command template:
+
+```sh
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py \
+  --input window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s \
+  --output window_outputs/<candidate>.n1.slothy.candidate.s \
+  --target n1 --stalls 256 \
+  --region <start>:<end>
+```
+
+All-four artifact command:
+
+```sh
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py \
+  --input window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s \
+  --output window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s \
+  --target n1 --stalls 256 \
+  --region slothy_start_invntt_rm1_row1_stage45_stripes0_1:slothy_end_invntt_rm1_row1_stage45_stripes0_1 \
+  --region slothy_start_invntt_rm1_row1_stage45_stripes2_3:slothy_end_invntt_rm1_row1_stage45_stripes2_3 \
+  --region slothy_start_invntt_rm1_row1_stage45_stripes4_5:slothy_end_invntt_rm1_row1_stage45_stripes4_5 \
+  --region slothy_start_invntt_rm1_row1_stage45_stripes6_7:slothy_end_invntt_rm1_row1_stage45_stripes6_7
+```
+
+Canonical windows attempted:
+
+| window | status | model result | wall time |
+| --- | --- | --- | ---: |
+| `STRIPES0-1` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 6.998595s |
+| `STRIPES2-3` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 8.310964s |
+| `STRIPES4-5` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 8.316333s |
+| `STRIPES6-7` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 16.192300s |
+
+All-four artifact run:
+
+| region | status | model result | wall time |
+| --- | --- | --- | ---: |
+| `STRIPES0-1` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 11.624899s |
+| `STRIPES2-3` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 8.802855s |
+| `STRIPES4-5` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 7.512587s |
+| `STRIPES6-7` | parse pass, OPTIMAL, selfcheck OK | 88 cycles, 67 stalls | 14.771695s |
+
+Combined candidate:
+
+`ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s`
+
+Pi5 validation commands:
+
+```sh
+make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_invntt_pmu SUDO= CORE=3
+make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3
+```
+
+Correctness:
+
+```text
+bench_gt_invntt_pmu: correctness,total_mismatches=0
+bench_gt_kem_component_profile_pmu: correctness,total_mismatches=0,valid_cases=64
+```
+
+Canonical row1 Stage45 PMU:
+
+| variant | correctness | cycles/call | instr/call | p10 cycles | p90 cycles | decision |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| canonical row1 Stage45 baseline | pass | 543.266 | 357 | 491.609 | 545.260 | baseline |
+| row1 + `STRIPES2-3` Slothy | pass | 612.778 | 357 | 608.972 | 616.264 | regressed |
+| row1 + all-four Slothy stripes | pass | 625.327 | 357 | 611.851 | 629.409 | regressed |
+
+The current InvNTT PMU harness reports `min/p10/median/p90`, not IQR.  A repeat
+run showed the same direction:
+
+| variant | cycles/call | instr/call |
+| --- | ---: | ---: |
+| canonical row1 Stage45 baseline | 542.135 | 357 |
+| row1 + `STRIPES2-3` Slothy | 607.505 | 357 |
+| row1 + all-four Slothy stripes | 625.103 | 357 |
+
+Production-scheduled fullrow stress command:
+
+```sh
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py \
+  --input invntt_opt.production.s \
+  --output window_outputs/invntt_rminus1_row1_stage45.fullrow.n1.slothy.candidate.s \
+  --target n1 --stalls 256 \
+  --split-heuristic --split-stepsize 0.05 --split-factor 8.0 \
+  --region slothy_start_invntt_block_row1_stage45:slothy_end_invntt_block_row1_stage45
+```
+
+Fullrow stress result:
+
+```text
+Instructions in body: 337
+status: parser fail
+first unsupported instruction: adr x3, invntt32_stage45_consts
+candidate artifact: none
+PMU claim: none
+```
+
+Projection from all-four row1 result:
+
+```text
+row1 saving = 543.266 - 625.327 = -82.061 cycles
+projected 3-row saving = -82.061 * 3 = -246.183 cycles
+projected full decap saving = -246.183 / 33285.358 = -0.74%
+```
+
+The projection is negative, so it is a projected regression rather than a
+saving.
+
+Decision:
+
+Stop the canonical InvNTT rminus1 ROW1-STAGE45 stripe route for now.  The
+all-four materialized candidate is correct but slower, and the production
+fullrow split-heuristic route is blocked by parser support for `adr`.  Do not
+extend this canonical stripe route to row0/row2.  If InvNTT is revisited, the
+next useful work is either parser/model support for the production fullrow
+addressing pattern or a different window contract; do not promote any candidate
+from this campaign.
