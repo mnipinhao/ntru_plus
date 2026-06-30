@@ -24,34 +24,32 @@ static inline int16x8_t fqmul_neon(int16x8_t x, int16x8_t y, int16x8_t con)
 
 static inline int16x8_t fqinv_neon(int16x8_t a, int16x8_t con)
 {
-    int16x8_t t1, t2, t3;
+    int16x8_t t, t16, t128, t145, t691, u;
 
-    t1 = fqmul_neon(a,  a,  con); // 10
-    t2 = fqmul_neon(t1, t1, con); // 100
-    t2 = fqmul_neon(t2, t2, con); // 1000
-    t3 = fqmul_neon(t2, t2, con); // 10000
+    t = fqmul_neon(a, a, con);       // 2
+    t = fqmul_neon(t, t, con);       // 4
+    t = fqmul_neon(t, t, con);       // 8
+    t16 = fqmul_neon(t, t, con);     // 16
 
-    t1 = fqmul_neon(t1, t2, con); // 1010
+    t = fqmul_neon(t16, t16, con);   // 32
+    t = fqmul_neon(t, t, con);       // 64
+    t128 = fqmul_neon(t, t, con);    // 128
 
-    t2 = fqmul_neon(t1, t3, con); // 11010
-    t2 = fqmul_neon(t2, t2, con); // 110100
-    t2 = fqmul_neon(t2, a,  con); // 110101
+    t = fqmul_neon(t128, t16, con);  // 144
+    t145 = fqmul_neon(t, a, con);    // 145
+    t = fqmul_neon(t145, t128, con); // 273
+    t = fqmul_neon(t, t, con);       // 546
+    t691 = fqmul_neon(t, t145, con); // 691
 
-    t1 = fqmul_neon(t1, t2, con); // 111111
+    t = fqmul_neon(t691, t691, con); // 1382
+    t = fqmul_neon(t, t, con);       // 2764
+    t = fqmul_neon(t, t691, con);    // 3455
 
-    t2 = fqmul_neon(t2, t2, con); // 1101010
-    t2 = fqmul_neon(t2, t2, con); // 11010100
-    t2 = fqmul_neon(t2, t2, con); // 110101000
-    t2 = fqmul_neon(t2, t2, con); // 1101010000
-    t2 = fqmul_neon(t2, t2, con); // 11010100000
-    t2 = fqmul_neon(t2, t2, con); // 110101000000
-    t2 = fqmul_neon(t2, t1, con); // 110101111111
+    u = vqrdmulhq_laneq_s16(t, con, 6);
+    t = vmulq_laneq_s16(t, con, 5);
+    t = vmlsq_laneq_s16(t, u, con, 0);
 
-    t1   = vqrdmulhq_laneq_s16(t2, con, 6);
-    t2 = vmulq_laneq_s16(t2, con, 5);
-    t2 = vmlsq_laneq_s16(t2, t1, con, 0);
-
-    return t2;
+    return t;
 }
 
 static inline int poly_fqinv_batch(int16x8_t r[24], int16x8_t con)
