@@ -1,2 +1,4 @@
-.equ MY_NTT_USE_PHASE123_N1, 1
+#ifdef __APPLE__
+.equ MY_NTT_DARWIN_NO_WEAK, 1
+#endif
 .include "asm/my_ntt.s"

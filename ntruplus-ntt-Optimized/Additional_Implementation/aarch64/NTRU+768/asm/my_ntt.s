@@ -1,6 +1,17 @@
-.ifndef NTT32_FUSED_SCATTER
-    .equ NTT32_FUSED_SCATTER, 1
-.endif
+/*
+ * Production GT forward NTT.
+ *
+ * Active path:
+ *   - Slothy-scheduled Phase123 (`asm/slothy/my_ntt_phase123.n1.opt.s`)
+ *   - three fused 8-way NTT32 row kernels
+ *   - normal block-major output, or Candidate A direct tuple output when
+ *     MY_NTT_DIRECT_TUPLE is set by the wrapper.
+ *
+ * The old GAS PHASE123_ITER fallback, NTT32 row-buffer scatter fallback, and
+ * Phase123 A/B/C experiment selectors are intentionally not kept here.  The
+ * flat symbolic Phase123 source used for Slothy regeneration remains in
+ * `asm/slothy/my_ntt_phase123_flat.sym.s`.
+ */
 
 .macro CALL_NTT32_8WAY
 .ifdef MY_NTT_DIRECT_TUPLE
@@ -14,228 +25,22 @@
     .equ MY_NTT_FRAME_SIZE, 1568
     .equ MY_NTT_SAVED_DST_OFFSET, 1576
 
-.macro DFT3_STORE x0, x1, x2, off
-    sub      v6.8h, \x1\().8h, \x2\().8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  \x0\().8h, \x1\().8h
-    add      v9.8h,  v9.8h,  \x2\().8h
-    sub      v10.8h, \x0\().8h, \x2\().8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, \x0\().8h, \x1\().8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [row0_ptr, #\off]
-    str q10, [row1_ptr, #\off]
-    str q11, [row2_ptr, #\off]
-.endm
-
-.macro PHASE123_ITER pattern
-    #level 0
-    // high side
-    ldp q10, q11, [src, #6*128]
-
-    ldr q12, [src, #8*128]
-    ldr q13, [src, #8*128 + 16]
-
-    ldr q14, [src, #10*128]
-    ldr q15, [src, #10*128 + 16]
-
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-
-    #update 1
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-
-    #load low side
-    ldp q4, q5, [src, #0*128]
-    ldp q6, q7, [src, #2*128]
-    ldp q8, q9, [src, #4*128]
-
-    #update 2
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-
-    #Twist
-    # load twist table
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-
-
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-
-
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [twist_ptr], #32
-
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-
-    # Permutation
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-
-    # DFT3. The correct source order is known for each unrolled iteration.
-    #
-    # DFT3_STORE assumes its operands are logical (x0, x1, x2).  As src moves
-    # through the original polynomial, the three Good-Thomas coordinates land
-    # in a cyclically shifted register order.  This assembler-time pattern
-    # passes the registers to DFT3_STORE in the right logical order, so row1
-    # and row2 do not need a later omega/omega^2 phase correction.  This is not
-    # a runtime branch or state variable.
-    .if \pattern == 0
-        DFT3_STORE v22, v30, v26, 0
-        DFT3_STORE v27, v23, v31, 16
-        DFT3_STORE v4,  v28, v24, 32
-        DFT3_STORE v25, v5,  v29, 48
-    .elseif \pattern == 1
-        DFT3_STORE v26, v22, v30, 0
-        DFT3_STORE v31, v27, v23, 16
-        DFT3_STORE v24, v4,  v28, 32
-        DFT3_STORE v29, v25, v5,  48
-    .elseif \pattern == 2
-        DFT3_STORE v30, v26, v22, 0
-        DFT3_STORE v23, v31, v27, 16
-        DFT3_STORE v28, v24, v4,  32
-        DFT3_STORE v5,  v29, v25, 48
-    .else
-        .error "unknown PHASE123_ITER pattern"
-    .endif
-
-    add src, src, #32
-    add row0_ptr, row0_ptr, #64
-    add row1_ptr, row1_ptr, #64
-    add row2_ptr, row2_ptr, #64
-.endm
-
+.ifndef MY_NTT_NO_POLY_ALIAS
+.ifndef MY_NTT_DARWIN_NO_WEAK
 .weak poly_ntt
 .weak _poly_ntt
+.else
+.global poly_ntt
+.global _poly_ntt
+.endif
+.endif
 .ifdef MY_NTT_DIRECT_TUPLE
 .global gt_candidate_a_direct_tuple_poly_ntt
 .global _gt_candidate_a_direct_tuple_poly_ntt
+.ifndef MY_NTT_NO_POLY_ALIAS
 poly_ntt:
 _poly_ntt:
+.endif
 gt_candidate_a_direct_tuple_poly_ntt:
 _gt_candidate_a_direct_tuple_poly_ntt:
 .else
@@ -253,13 +58,11 @@ _gt_block_major_poly_ntt:
     row0_ptr .req x4
     row1_ptr .req x5
     row2_ptr .req x6
-    counter   .req x8
 
     adr zetas_ptr, zetas
     ldr q0, [zetas_ptr]
 
-    // Preserve callee-saved SIMD lanes for the C ABI; _ntt32_8way is only
-    // called under this wrapper in the rowpack-v2 experiment.
+    // Preserve callee-saved SIMD lanes across the NTT32 row-kernel calls.
     stp d8, d9, [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -272,26 +75,12 @@ _gt_block_major_poly_ntt:
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
-.ifdef MY_NTT_USE_PHASE123_N1
     .include "asm/slothy/my_ntt_phase123.n1.opt.s"
-.else
-slothy_start_ntt_phase123:
-    PHASE123_ITER 0
-    PHASE123_ITER 1
-    PHASE123_ITER 2
-    PHASE123_ITER 0
-    PHASE123_ITER 1
-    PHASE123_ITER 2
-    PHASE123_ITER 0
-    PHASE123_ITER 1
-slothy_end_ntt_phase123:
-.endif
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas
     ldr q0, [zetas_ptr]
 
-.if NTT32_FUSED_SCATTER
     ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
     add row0_ptr, sp, #32
     mov x10, dst
@@ -306,29 +95,6 @@ slothy_end_ntt_phase123:
     add row0_ptr, sp, #1056
     add x10, dst, #512
     CALL_NTT32_8WAY
-.else
-    add row0_ptr, sp, #32
-    CALL_NTT32_8WAY
-
-    add row0_ptr, sp, #544
-    CALL_NTT32_8WAY
-
-    add row0_ptr, sp, #1056
-    CALL_NTT32_8WAY
-
-    add x9, sp, #32
-    ldr dst, [sp, #MY_NTT_SAVED_DST_OFFSET]
-    mov x10, dst
-    bl _scatter_ntt32_row
-
-    add x9, sp, #544
-    add x10, dst, #256
-    bl _scatter_ntt32_row
-
-    add x9, sp, #1056
-    add x10, dst, #512
-    bl _scatter_ntt32_row
-.endif
 
     add sp, sp, #MY_NTT_FRAME_SIZE
     ldp x30, x0, [sp], #16
@@ -336,26 +102,6 @@ slothy_end_ntt_phase123:
     ldp d12, d13, [sp, #32]
     ldp d10, d11, [sp, #16]
     ldp d8, d9, [sp], #64
-    ret
-
-_scatter_ntt32_row:
-    // _ntt32_8way owns the Q output representative contract; this loop only
-    // scatters the row-buffer fallback layout.
-    add x14, dst, #768
-    mov counter, #32
-_scatter_ntt32_row_loop:
-    ldr q16, [x9], #16
-    ext v17.16b, v16.16b, v16.16b, #8
-    add x11, x10, #768
-    str d16, [x10]
-    str d17, [x11]
-    add x10, x10, #24
-    cmp x10, x14
-    b.lo _scatter_ntt32_row_no_wrap
-    sub x10, x10, #768
-_scatter_ntt32_row_no_wrap:
-    subs counter, counter, #1
-    b.ne _scatter_ntt32_row_loop
     ret
 
 .align 4
