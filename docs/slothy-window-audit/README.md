@@ -32,11 +32,14 @@ Current scope:
 
 ## Current InvNTT rminus1 Decision
 
-The existing marker-bounded row stage45 windows expand to 337 instructions each.
-That is too large for a normal first pass, but `row1_stage45` is still the
-best first candidate as a split-heuristic-only scheduling experiment because it
-is isolated from the public ABI prologue, final branchfold post path, and
-basemul-to-InvNTT boundary.
+The existing marker-bounded row stage45 windows expand to 337 instructions each,
+which is too large for a normal first pass.  `row1_stage45` remains useful as a
+row-level split-heuristic stress test, but the normal first candidates are now
+stripe-pair subwindows derived from the canonical stage45 stripe macro.
+
+The first planned normal window is `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`: two
+complete stage45 stripes, 84 instructions, no pointer mutation, and complete
+row-buffer store groups.
 
 Stage123 rows remain audit/extract only until a separate stage123 contract is
 written.  The post path remains out of the first pass because it includes

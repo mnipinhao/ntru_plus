@@ -1,5 +1,5 @@
 schema: slothy_run_tracker_v1
-date: "2026-06-29"
+date: "2026-06-30"
 policy:
   slothy_run_in_this_pass: false
   production_default_changed: false
@@ -13,7 +13,9 @@ runs:
     date: "2026-06-29"
     target: invntt_rminus1
     region: marker_only_production_block_major_audit
-    source_commit: b44c5cd
+    source_marker_commit: b44c5cd
+    manifest_commit: null
+    generated_candidate_commit: null
     status: audit-only
     slothy_command: "not run"
     parser_status: "not run"
@@ -39,41 +41,13 @@ runs:
       - "No generated candidate."
       - "No production behavior change."
 
-  - run_id: INVNTT-RM1-ROW1-STAGE45-PLAN-001
-    date: "2026-06-29"
-    target: invntt_rminus1
-    region: INVNTT-RM1-ROW1-STAGE45
-    source_commit: b44c5cd
-    status: planned
-    slothy_command: "not run"
-    parser_status: "not run"
-    assemble_status: "not run"
-    standalone_correctness:
-      command: "not run"
-      result: "not run"
-    full_kem_correctness:
-      command: "not run"
-      result: "not run"
-    local_cycles_instructions:
-      metric: baseline comparator poly_invntt_from_rminus1
-      cycles_per_call: 4152.907
-      instructions_per_call: 5078
-    full_api_cycles_instructions:
-      metric: baseline comparator decap_invntt_rminus1
-      cycles_per_call: 4024.297
-      instructions_per_call: 5074
-    decision: "planned first candidate, split-heuristic-only"
-    notes:
-      - "Expanded row1_stage45 window is 337 instructions."
-      - "This is above the normal 150-instruction ceiling."
-      - "Use only as split-heuristic-only or split into smaller stripe windows first."
-      - "Keep branchfold post and final output stores outside this first pass."
-
   - run_id: INVNTT-RM1-MANIFEST-20260629
     date: "2026-06-29"
     target: invntt_rminus1
     region: all_marker_bounded_windows
-    source_commit: b44c5cd
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
     status: manifest-ready
     slothy_command: "not run"
     parser_status: "not run"
@@ -92,8 +66,161 @@ runs:
       metric: decap_invntt_rminus1
       cycles_per_call: 4024.475
       instructions_per_call: 5074
-    decision: "manifest complete; no optimizer run"
+    decision: "row-level manifest complete; no optimizer run"
     notes:
-      - "This entry records the verification run after adding the manifest and tracker."
       - "Documentation-only pass."
       - "No production behavior change."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3-PLAN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned run order 1; first normal stripe-level candidate"
+    notes:
+      - "84-instruction stripe-pair candidate."
+      - "Non-edge stripe pair with complete reduction and row-buffer store groups."
+      - "Requires extraction from canonical perstripe macro before any Slothy run."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5-PLAN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned run order 2; second normal stripe-level candidate"
+    notes:
+      - "84-instruction stripe-pair candidate."
+      - "Same clean shape as stripes2-3."
+      - "Requires extraction from canonical perstripe macro before any Slothy run."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-PLAN-001
+    date: "2026-06-29"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned run order 3; row-level split-heuristic stress test only"
+    notes:
+      - "Expanded row1_stage45 window is 337 instructions."
+      - "This is above the normal 150-instruction ceiling."
+      - "Do not treat as a normal window."
+      - "Keep branchfold post and final output stores outside this pass."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES0-1-PLAN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES0-1
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned later stripe-level candidate"
+    notes:
+      - "84-instruction stripe-pair candidate."
+      - "Run after non-edge stripe pairs because j=0 has edge-case constants."
+
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES6-7-PLAN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES6-7
+    source_marker_commit: b44c5cd
+    manifest_commit: 0edf12e
+    generated_candidate_commit: null
+    status: planned
+    slothy_command: "not run"
+    parser_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: baseline comparator poly_invntt_from_rminus1
+      cycles_per_call: 4152.907
+      instructions_per_call: 5078
+    full_api_cycles_instructions:
+      metric: baseline comparator decap_invntt_rminus1
+      cycles_per_call: 4024.297
+      instructions_per_call: 5074
+    decision: "planned later stripe-level candidate"
+    notes:
+      - "84-instruction stripe-pair candidate."
+      - "Run after middle stripe pairs because this pair is closest to row tail."

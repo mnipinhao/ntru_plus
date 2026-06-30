@@ -1,7 +1,8 @@
 schema: slothy_window_manifest_v1
-date: "2026-06-29"
+date: "2026-06-30"
 target: invntt_rminus1
 source_marker_commit: b44c5cd
+manifest_commit: 0edf12e
 source_files:
   wrapper: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt_rminus1.S
   production_body: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s
@@ -10,6 +11,11 @@ measurement:
   binary: ntruplus-ntt-Optimized/aarch64-bench/bench_gt_invntt_pmu_bin
   method: "nm labels plus objdump instruction counting"
   note: "The normal rminus1 wrapper is the first marker-label set in the binary; the crep3 wrapper produces duplicate local labels and is not used here."
+subwindow_measurement:
+  method: "canonical INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH macro expansion"
+  note: "ROW1-STAGE45 production body is already cross-stripe scheduled; stripe-pair subwindows are extraction targets for future symbolic/perstripe source, not existing marker labels."
+  single_stripe_instruction_count: 42
+  stripe_pair_instruction_count: 84
 window_size_policy:
   prefer: "70-120 instructions"
   allow: "120-150 instructions for serious runs"
@@ -205,8 +211,9 @@ windows:
       - split_heuristic_only
       - row_buffer_store_layout_sensitive
       - physical_register_source
-    recommendation: first_candidate
-    reason: "Best first target because it is the middle isolated stage45 row and avoids prologue/post/final-store contracts; 337 instructions means split-heuristic-only, not a normal first pass."
+      - row_level_stress_only
+    recommendation: candidate
+    reason: "Keep as row-level split-heuristic stress test only; normal first candidates are ROW1-STAGE45 stripe-pair subwindows."
 
   - id: INVNTT-RM1-ROW2-STAGE123
     start_label: slothy_start_invntt_block_row2_stage123
@@ -428,3 +435,190 @@ windows:
       - prior_boundary_estimate_too_small
     recommendation: reject
     reason: "Basemul-to-InvNTT fusion is explicitly out of scope for this audit and is not supported by current boundary PMU estimate."
+
+subwindows:
+  - name: INVNTT-RM1-ROW1-STAGE45-STRIPES0-1
+    parent: INVNTT-RM1-ROW1-STAGE45
+    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0"
+    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1"
+    instruction_count: 84
+    memory_reads:
+      count: 12
+      detail: "8 stage123 scratch q-loads plus 4 stage45 constant q-loads"
+    memory_writes:
+      count: 8
+      detail: "8 row-buffer q-stores; four stores per stripe"
+    semantic_region: "row1 stage45 stripes j=0 and j=1, including complete butterflies, row-end reductions, and row-buffer store groups"
+    vector_live_in:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out:
+      count: 0
+      regs: []
+      memory_side_effect: "row-buffer q-stores contain live outputs"
+    scalar_live_in:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row1 row-buffer output base at sp+544"
+        - "x3: invntt32_stage45_consts base"
+    scalar_live_out:
+      count: 3
+      regs:
+        - "x14: unchanged scratch base"
+        - "x2: unchanged row-buffer base"
+        - "x3: unchanged constant base"
+    pointer_mutation:
+      count: 0
+      detail: []
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    row_buffer_store_included: true
+    risk_flags:
+      - derived_from_canonical_perstripe_macro
+      - requires_extraction_before_slothy
+      - j0_constant_edge_case
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: candidate
+    reason: "84 instructions and clean store boundary, but j=0 has edge-case constants; run after the non-edge stripe-pair candidates."
+
+  - name: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    parent: INVNTT-RM1-ROW1-STAGE45
+    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2"
+    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3"
+    instruction_count: 84
+    memory_reads:
+      count: 12
+      detail: "8 stage123 scratch q-loads plus 4 stage45 constant q-loads"
+    memory_writes:
+      count: 8
+      detail: "8 row-buffer q-stores; four stores per stripe"
+    semantic_region: "row1 stage45 stripes j=2 and j=3, including complete butterflies, row-end reductions, and row-buffer store groups"
+    vector_live_in:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out:
+      count: 0
+      regs: []
+      memory_side_effect: "row-buffer q-stores contain live outputs"
+    scalar_live_in:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row1 row-buffer output base at sp+544"
+        - "x3: invntt32_stage45_consts base"
+    scalar_live_out:
+      count: 3
+      regs:
+        - "x14: unchanged scratch base"
+        - "x2: unchanged row-buffer base"
+        - "x3: unchanged constant base"
+    pointer_mutation:
+      count: 0
+      detail: []
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    row_buffer_store_included: true
+    risk_flags:
+      - derived_from_canonical_perstripe_macro
+      - requires_extraction_before_slothy
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: first_candidate
+    reason: "First normal Slothy window: 84 instructions, non-edge stripe-pair, complete reduction/store groups, and no pointer mutation."
+
+  - name: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5
+    parent: INVNTT-RM1-ROW1-STAGE45
+    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4"
+    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5"
+    instruction_count: 84
+    memory_reads:
+      count: 12
+      detail: "8 stage123 scratch q-loads plus 4 stage45 constant q-loads"
+    memory_writes:
+      count: 8
+      detail: "8 row-buffer q-stores; four stores per stripe"
+    semantic_region: "row1 stage45 stripes j=4 and j=5, including complete butterflies, row-end reductions, and row-buffer store groups"
+    vector_live_in:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out:
+      count: 0
+      regs: []
+      memory_side_effect: "row-buffer q-stores contain live outputs"
+    scalar_live_in:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row1 row-buffer output base at sp+544"
+        - "x3: invntt32_stage45_consts base"
+    scalar_live_out:
+      count: 3
+      regs:
+        - "x14: unchanged scratch base"
+        - "x2: unchanged row-buffer base"
+        - "x3: unchanged constant base"
+    pointer_mutation:
+      count: 0
+      detail: []
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    row_buffer_store_included: true
+    risk_flags:
+      - derived_from_canonical_perstripe_macro
+      - requires_extraction_before_slothy
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: candidate
+    reason: "Second normal Slothy window candidate; same clean 84-instruction stripe-pair shape as stripes2-3."
+
+  - name: INVNTT-RM1-ROW1-STAGE45-STRIPES6-7
+    parent: INVNTT-RM1-ROW1-STAGE45
+    start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6"
+    end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7"
+    instruction_count: 84
+    memory_reads:
+      count: 12
+      detail: "8 stage123 scratch q-loads plus 4 stage45 constant q-loads"
+    memory_writes:
+      count: 8
+      detail: "8 row-buffer q-stores; four stores per stripe"
+    semantic_region: "row1 stage45 stripes j=6 and j=7, including complete butterflies, row-end reductions, and row-buffer store groups"
+    vector_live_in:
+      count: 1
+      regs:
+        - "q0: modulus and Barrett constants"
+    vector_live_out:
+      count: 0
+      regs: []
+      memory_side_effect: "row-buffer q-stores contain live outputs"
+    scalar_live_in:
+      count: 3
+      regs:
+        - "x14: stage123 stripe scratch base"
+        - "x2: row1 row-buffer output base at sp+544"
+        - "x3: invntt32_stage45_consts base"
+    scalar_live_out:
+      count: 3
+      regs:
+        - "x14: unchanged scratch base"
+        - "x2: unchanged row-buffer base"
+        - "x3: unchanged constant base"
+    pointer_mutation:
+      count: 0
+      detail: []
+    reduction_chains_intact: true
+    layout_contract_clear: true
+    row_buffer_store_included: true
+    risk_flags:
+      - derived_from_canonical_perstripe_macro
+      - requires_extraction_before_slothy
+      - row_tail_candidate
+      - row_buffer_store_layout_sensitive
+      - physical_register_source
+    recommendation: candidate
+    reason: "Clean 84-instruction stripe-pair, but leave after middle stripe-pairs because it is closest to the row tail."

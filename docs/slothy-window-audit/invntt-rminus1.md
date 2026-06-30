@@ -1,6 +1,7 @@
 # InvNTT rminus1 Window Audit
 
 Date: 2026-06-29
+Refined: 2026-06-30
 
 Status: manifest-ready, documentation-only.  Slothy was not run.
 
@@ -73,26 +74,56 @@ this manifest.
 | row0_stage123 | 420 | 66 | 32 | audit_only |
 | row0_stage45 | 337 | 48 | 32 | candidate |
 | row1_stage123 | 420 | 66 | 32 | audit_only |
-| row1_stage45 | 337 | 48 | 32 | first_candidate |
-| row2_stage123 | 420 | 66 | 32 | candidate |
+| row1_stage45 | 337 | 48 | 32 | candidate, split-heuristic-only |
+| row2_stage123 | 420 | 66 | 32 | audit_only |
 | row2_stage45 | 337 | 48 | 32 | candidate |
 | post_fused | 431 | 75 | 30 | needs_review |
 | whole_function | 7103 | 1011 | 609 | reject |
 
-## First Candidate
+## ROW1-STAGE45 Subwindows
 
-`INVNTT-RM1-ROW1-STAGE45` is the first candidate, but only under a
-split-heuristic-only policy:
+`INVNTT-RM1-ROW1-STAGE45` is a 337-instruction row-level window.  It is too
+large for a normal first Slothy pass, so the refined manifest adds stripe-pair
+subwindows derived from the canonical `INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH`
+macro.  Each stripe macro is 42 instructions, so two complete stripes form an
+84-instruction window.  This keeps every butterfly, reduction chain, and
+row-buffer store group intact.
+
+The current production row macro is already cross-stripe scheduled.  Therefore
+these subwindows are extraction targets for a future symbolic/perstripe source,
+not labels that already exist in `invntt_opt.production.s`.
+
+| subwindow | stripes | instructions | memory reads | memory writes | recommendation |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES0-1` | 0-1 | 84 | 12 | 8 | candidate |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` | 2-3 | 84 | 12 | 8 | first_candidate |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5` | 4-5 | 84 | 12 | 8 | candidate |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES6-7` | 6-7 | 84 | 12 | 8 | candidate |
+
+## Planned Run Order
+
+1. `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3`
+
+   First normal candidate.  It avoids the `j=0` constant edge case and the row
+   tail, while still using a representative nontrivial stage45 stripe pair.
+
+2. `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5`
+
+   Second normal candidate with the same 84-instruction shape and clean
+   row-buffer stores.
+
+3. `INVNTT-RM1-ROW1-STAGE45`
+
+   Row-level stress test only.  It remains split-heuristic-only and should not
+   be treated as a normal first window.
+
+`INVNTT-RM1-ROW1-STAGE45` remains useful as a row-level audit/stress window:
 
 - It is isolated between stage123 scratch production and row-buffer output.
 - It avoids public ABI prologue/epilogue and the final branchfold post path.
 - It is representative-neutral as long as row-buffer store layout and row-end
   reductions are preserved.
 - It is 337 instructions, so it is not a normal 70-150 instruction window.
-
-If Slothy cannot parse or solve this row window, the next preparation step is to
-extract smaller stage45 stripe windows or use the existing stage45 stripe macro
-as the source of a narrower symbolic target.  That is a separate task.
 
 ## Rejected Or Deferred Windows
 
