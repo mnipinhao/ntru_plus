@@ -12,11 +12,35 @@ Current scope:
 - No arithmetic, register allocation, or instruction-order change in production
   sources unless a later task explicitly promotes a candidate.
 
+## Promotion Policy
+
+Small source-order local Slothy windows are no longer considered sufficient
+promotion evidence for these production kernels.
+
+A Slothy candidate must pass all of the following before it can be considered a
+real optimization candidate:
+
+1. Correctness against the relevant standalone and KEM/full-path differential.
+2. Pi5 PMU against the correct benchmark-only or production baseline.
+3. Reproducibility, or at least non-regression on a repeat run.
+
+Slothy model cycles are useful for scheduling diagnostics, but they are not
+promotion evidence by themselves.
+
+Recent negative examples:
+
+- InvNTT Stage45 canonical stripes: Slothy reported `OPTIMAL` and selfcheck OK,
+  correctness passed, but the PMU win was not reproducible and the all-four
+  scaling candidate regressed.  The route is stopped.
+- Generic/rminus1 basemul one-loop: Slothy reported `OPTIMAL` and correctness
+  passed, but Pi5 PMU regressed.  The source-order one-loop route is rejected.
+
 ## Files
 
 | file | purpose |
 | --- | --- |
 | `invntt-rminus1.md` | Human-readable target contract, baseline, and window selection notes for production decap `poly_invntt_from_rminus1`. |
+| `forward-ntt-production-contract.md` | Production Forward NTT entrypoint, layout contract, caller audit, and Slothy readiness decision. |
 | `invntt-rminus1-windows.yml` | Machine-readable manifest for marker-bounded windows and rejected unsafe windows. |
 | `slothy-run-tracker.md` | Human-readable run ledger. Entries stay here even for audit-only and planned runs. |
 | `slothy-runs.yml` | Machine-readable run tracker for audit, planned, optimized, and promoted candidates. |

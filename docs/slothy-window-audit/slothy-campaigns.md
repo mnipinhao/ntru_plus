@@ -327,7 +327,7 @@ Decision:
 
 No viable basemul candidate was found.  Both candidates passed correctness but
 regressed on Pi5 PMU.  The generated candidate outputs and temporary benchmark
-harness wiring are not committed as best artifacts.  Keep
-`generic_rminus1_basemul` as an active target only for a future
-production-scheduled `base_gt.opt.s` window audit or a real dataflow change;
-do not continue this source-order one-loop Slothy route.
+harness wiring are not committed as best artifacts.  Set
+`generic_rminus1_basemul` to `needs_new_strategy`, not active immediate rerun.
+Only revisit it with a wider production-scheduled multi-loop/window or a real
+structural DAG change; do not continue this source-order one-loop Slothy route.

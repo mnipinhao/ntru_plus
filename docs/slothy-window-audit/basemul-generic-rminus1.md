@@ -123,8 +123,8 @@ one-loop slices, while production already uses `base_gt.opt.s`, a scheduled
 body with the current final-store contract.  Do not continue this exact
 source-order loop route.
 
-Keep `generic_rminus1_basemul` active only as a target-selection item: future
-work should start from a production-scheduled `base_gt.opt.s` window or from a
-real dataflow change.  Do not reuse Q31 for this target, because decap and
+Tracking status is now `needs_new_strategy`, not active immediate rerun.  Only
+revisit this target with a wider production-scheduled multi-loop/window or a
+structural DAG change.  Do not reuse Q31 for this target, because decap and
 generic arithmetic consumers require arithmetic-correct polynomial output, not
 only byte-equivalent `poly_tobytes` output.
