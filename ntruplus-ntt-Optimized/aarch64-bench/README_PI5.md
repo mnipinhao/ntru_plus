@@ -100,6 +100,33 @@ RUNS=5 scripts/run_pi5_gt_refined_matrix.sh
 
 Use `INCLUDE_INVNTT_STAGES=1` to include inverse stage modes in these sweeps.
 
+For the GT production basemul PMU comparison, run:
+
+```sh
+make bench_gt_basemul_variants_pmu
+```
+
+This target benchmarks the live production symbols plus benchmark-only
+old-store and ldrtrn controls:
+
+```text
+poly_basemul
+poly_basemul_ldrtrn_noadd
+poly_basemul_add
+poly_basemul_add32
+poly_basemul_rminus1
+poly_basemul_rminus1_oldstore
+poly_basemul_scaled_r_input
+poly_basemul_scaled_r_input_oldstore
+```
+
+It also emits objdump-derived static counts for text size, static instruction
+count, `ld4`, `st4`, `ldr`, `ldp`, `str`, `stp`, `uzp`, `trn`, `zip`, vector
+`mov`, reduction-class instructions, and stack memory references.  The default
+is `CORE=3`,
+`GT_BASEMUL_PMU_NTESTS=31`, `GT_BASEMUL_PMU_NITERATIONS=10000`, and
+`GT_BASEMUL_PMU_NWARMUP=100`.
+
 Arithmetic-only modes (`ntt`, `invntt`, `basemul`, `basemul_add`,
 `ntt_mul_pipeline`, and `ntt_basemul_add_pipeline`) intentionally do not link
 KEM, randombytes, pack, CBD, crepmod3, or SHAKE sources.

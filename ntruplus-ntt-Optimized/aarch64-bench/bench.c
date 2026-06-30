@@ -14,7 +14,9 @@
 #include <string.h>
 
 #include "hal.h"
+#if BENCH_VARIANT_GT
 #include "ntt.h"
+#endif
 #include "params.h"
 #include "poly.h"
 
@@ -24,6 +26,40 @@
 
 #if BENCH_ENABLE_KEM
 #include "api.h"
+#include "symmetric.h"
+#ifdef SUPPORTS_SHAKE256_ASM
+#include "CE/fips202.h"
+#else
+#include "NO_CE/fips202.h"
+#endif
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
+void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
+void poly_invntt_from_rminus1(poly *r, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
+                                             const poly *a, const poly *b);
+void poly_invntt_from_rminus1_stage45scratch(poly *r,
+                                             const int16_t *scratch);
+#endif
+
+#ifdef GT_PRODUCTION_USE_TUPLE_DECAP
+void poly_basemul_to_tuple(poly *r, const poly *a, const poly *b);
+void gt_tuple_poly_invntt(poly *r, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+int poly_baseinv_scaled_r(poly *r, const poly *a);
+void poly_basemul_scaled_r_input(poly *r, const poly *a,
+                                 const poly *b_scaled_r);
+#define KEYPAIR_BASEINV poly_baseinv_scaled_r
+#define KEYPAIR_BASEMUL poly_basemul_scaled_r_input
+#else
+#define KEYPAIR_BASEINV poly_baseinv
+#define KEYPAIR_BASEMUL poly_basemul
+#endif
 #endif
 
 #ifndef BENCH_MODE
@@ -83,11 +119,27 @@ void poly_invntt_bench_post_finalmerge(poly *r, const int16_t *untwisted);
 #endif
 
 #if BENCH_ENABLE_KEM
+static uint8_t g_fcoins[NTRUPLUS_SYMBYTES];
+static uint8_t g_gcoins[NTRUPLUS_SYMBYTES];
+static uint8_t g_ecoins[NTRUPLUS_N / 8];
 static uint8_t g_pk[NTRUPLUS_PUBLICKEYBYTES];
 static uint8_t g_sk[NTRUPLUS_SECRETKEYBYTES];
 static uint8_t g_ct[NTRUPLUS_CIPHERTEXTBYTES];
 static uint8_t g_ss_enc[NTRUPLUS_SSBYTES];
 static uint8_t g_ss_dec[NTRUPLUS_SSBYTES];
+static uint8_t g_sample_buf[NTRUPLUS_N / 4];
+static uint8_t g_msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
+static uint8_t g_polybytes[NTRUPLUS_POLYBYTES];
+static poly g_small;
+static poly g_small_triple;
+static poly g_ntt_poly;
+static poly g_inv_poly;
+static poly g_base_inv;
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+static poly g_base_inv_keypair;
+#endif
+static poly g_product;
+static poly g_decoded;
 #endif
 
 static volatile uint64_t g_sink;
@@ -153,6 +205,20 @@ static void fill_poly(poly *a, uint32_t seed)
     a->coeffs[i] = (int16_t)((int)(next_u32(&seed) % 3) - 1);
   }
 }
+
+#if BENCH_ENABLE_KEM
+static void fill_bytes(uint8_t *out, size_t len, uint32_t seed)
+{
+  uint32_t x = seed ? seed : 1;
+  size_t i;
+
+  for (i = 0; i < len; i++)
+  {
+    x = x * 1664525u + 1013904223u;
+    out[i] = (uint8_t)(x >> 24);
+  }
+}
+#endif
 
 static int modq(int64_t a)
 {
@@ -262,6 +328,137 @@ static uint64_t checksum_bytes(const uint8_t *a, size_t len)
 }
 #endif
 
+#if BENCH_ENABLE_KEM
+static uint8_t ct_verify(const uint8_t *a, const uint8_t *b, size_t len)
+{
+  uint8_t acc = 0;
+  size_t i;
+
+  for (i = 0; i < len; i++)
+  {
+    acc |= (uint8_t)(a[i] ^ b[i]);
+  }
+
+  return (uint8_t)((-(uint64_t)acc) >> 63);
+}
+
+static int genf_derand_bench(poly *f, poly *finv, const uint8_t *coins)
+{
+  uint8_t buf[NTRUPLUS_N / 4];
+
+  shake256(buf, sizeof buf, coins, NTRUPLUS_SYMBYTES);
+
+  poly_cbd1(f, buf);
+  poly_triple(f, f);
+  f->coeffs[0] += 1;
+
+  poly_ntt(f, f);
+  return KEYPAIR_BASEINV(finv, f);
+}
+
+static int geng_derand_bench(poly *g, poly *ginv, const uint8_t *coins)
+{
+  uint8_t buf[NTRUPLUS_N / 4];
+
+  shake256(buf, sizeof buf, coins, NTRUPLUS_SYMBYTES);
+
+  poly_cbd1(g, buf);
+  poly_triple(g, g);
+
+  poly_ntt(g, g);
+  return KEYPAIR_BASEINV(ginv, g);
+}
+
+static void keypair_derand_bench(uint8_t *pk, uint8_t *sk,
+                                 const uint8_t *fcoins,
+                                 const uint8_t *gcoins)
+{
+  poly f;
+  poly finv;
+  poly g;
+  poly ginv;
+  poly h;
+  poly hinv;
+
+  if (genf_derand_bench(&f, &finv, fcoins) != 0 ||
+      geng_derand_bench(&g, &ginv, gcoins) != 0)
+  {
+    fprintf(stderr, "keypair_derand_bench setup used non-invertible coins\n");
+    abort();
+  }
+
+  KEYPAIR_BASEMUL(&h, &g, &finv);
+  KEYPAIR_BASEMUL(&hinv, &f, &ginv);
+
+  poly_tobytes(pk, &h);
+  poly_tobytes(sk, &f);
+  poly_tobytes(sk + NTRUPLUS_POLYBYTES, &hinv);
+  hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
+}
+
+static void enc_derand_bench(uint8_t *ct, uint8_t *ss, const uint8_t *pk,
+                             const uint8_t *coins)
+{
+  uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
+  uint8_t buf1[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
+  uint8_t buf2[NTRUPLUS_POLYBYTES];
+  poly c;
+  poly h;
+  poly r;
+  poly m;
+  size_t i;
+
+  for (i = 0; i < NTRUPLUS_N / 8; i++)
+  {
+    msg[i] = coins[i];
+  }
+
+  hash_f(msg + NTRUPLUS_N / 8, pk);
+  hash_h(buf1, msg);
+
+  poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
+  poly_ntt(&r, &r);
+
+  poly_tobytes(buf2, &r);
+  hash_g(buf2, buf2);
+  poly_sotp_encode(&m, msg, buf2);
+  poly_ntt(&m, &m);
+
+  poly_frombytes(&h, pk);
+  poly_basemul_add(&c, &h, &r, &m);
+  poly_tobytes(ct, &c);
+
+  for (i = 0; i < NTRUPLUS_SSBYTES; i++)
+  {
+    ss[i] = buf1[i];
+  }
+}
+
+static void find_invertible_coins(uint8_t coins[NTRUPLUS_SYMBYTES],
+                                  int is_f, uint32_t start_seed)
+{
+  poly a;
+  poly ainv;
+  uint32_t seed;
+
+  for (seed = start_seed;; seed++)
+  {
+    fill_bytes(coins, NTRUPLUS_SYMBYTES, seed);
+    if (is_f)
+    {
+      if (genf_derand_bench(&a, &ainv, coins) == 0)
+      {
+        return;
+      }
+    }
+    else if (geng_derand_bench(&a, &ainv, coins) == 0)
+    {
+      return;
+    }
+  }
+}
+#endif
+
 static void checksum_outputs(void)
 {
   int i;
@@ -278,7 +475,21 @@ static void checksum_outputs(void)
   }
 
 #if BENCH_ENABLE_KEM
+  g_sink ^= checksum_bytes(g_pk, sizeof(g_pk));
+  g_sink ^= checksum_bytes(g_sk, sizeof(g_sk));
+  g_sink ^= checksum_bytes(g_ct, sizeof(g_ct));
+  g_sink ^= checksum_bytes(g_ss_enc, sizeof(g_ss_enc));
   g_sink ^= checksum_bytes(g_ss_dec, sizeof(g_ss_dec));
+  g_sink ^= checksum_bytes(g_sample_buf, sizeof(g_sample_buf));
+  g_sink ^= checksum_bytes(g_msg, sizeof(g_msg));
+  g_sink ^= checksum_bytes(g_polybytes, sizeof(g_polybytes));
+  g_sink ^= checksum_poly(&g_small);
+  g_sink ^= checksum_poly(&g_small_triple);
+  g_sink ^= checksum_poly(&g_ntt_poly);
+  g_sink ^= checksum_poly(&g_inv_poly);
+  g_sink ^= checksum_poly(&g_base_inv);
+  g_sink ^= checksum_poly(&g_product);
+  g_sink ^= checksum_poly(&g_decoded);
 #endif
 }
 
@@ -347,9 +558,36 @@ static void prepare_poly_inputs(void)
 #if BENCH_ENABLE_KEM
 static int prepare_kem_inputs(void)
 {
-  if (crypto_kem_keypair(g_pk, g_sk) != 0 ||
-      crypto_kem_enc(g_ct, g_ss_enc, g_pk) != 0 ||
-      crypto_kem_dec(g_ss_dec, g_ct, g_sk) != 0)
+  find_invertible_coins(g_fcoins, 1, 1);
+  find_invertible_coins(g_gcoins, 0, 1001);
+  fill_bytes(g_ecoins, sizeof g_ecoins, 2001);
+  fill_bytes(g_msg, sizeof g_msg, 3001);
+
+  shake256(g_sample_buf, sizeof g_sample_buf, g_fcoins, sizeof g_fcoins);
+  poly_cbd1(&g_small, g_sample_buf);
+  poly_triple(&g_small_triple, &g_small);
+  g_small_triple.coeffs[0] += 1;
+  poly_ntt(&g_ntt_poly, &g_small_triple);
+  if (poly_baseinv(&g_base_inv, &g_ntt_poly) != 0)
+  {
+    fprintf(stderr, "KEM setup prepared non-invertible baseinv input\n");
+    return 0;
+  }
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+  if (poly_baseinv_scaled_r(&g_base_inv_keypair, &g_ntt_poly) != 0)
+  {
+    fprintf(stderr, "KEM setup prepared non-invertible scaled baseinv input\n");
+    return 0;
+  }
+#endif
+  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
+  poly_invntt(&g_inv_poly, &g_product);
+  poly_crepmod3(&g_decoded, &g_inv_poly);
+  poly_tobytes(g_polybytes, &g_ntt_poly);
+
+  keypair_derand_bench(g_pk, g_sk, g_fcoins, g_gcoins);
+  enc_derand_bench(g_ct, g_ss_enc, g_pk, g_ecoins);
+  if (crypto_kem_dec(g_ss_dec, g_ct, g_sk) != 0)
   {
     fprintf(stderr, "kem_dec setup failed\n");
     return 0;
@@ -506,7 +744,8 @@ static int check_correctness(const char *mode)
   }
 #endif
 
-  if (strcmp(mode, "kem_dec") == 0)
+  if (strcmp(mode, "kem_keygen") == 0 || strcmp(mode, "kem_enc") == 0 ||
+      strcmp(mode, "kem_dec") == 0 || strcmp(mode, "kem_components") == 0)
   {
     return 1;
   }
@@ -625,10 +864,195 @@ static void target_invntt_post_finalmerge(int idx)
 #endif
 
 #if BENCH_ENABLE_KEM
+static void target_kem_keygen(int idx)
+{
+  (void)idx;
+  keypair_derand_bench(g_pk, g_sk, g_fcoins, g_gcoins);
+}
+
+static void target_kem_enc(int idx)
+{
+  (void)idx;
+  enc_derand_bench(g_ct, g_ss_enc, g_pk, g_ecoins);
+}
+
 static void target_kem_dec(int idx)
 {
   (void)idx;
   crypto_kem_dec(g_ss_dec, g_ct, g_sk);
+}
+
+static void component_shake256_sample(int idx)
+{
+  (void)idx;
+  shake256(g_sample_buf, sizeof g_sample_buf, g_fcoins, sizeof g_fcoins);
+}
+
+static void component_poly_cbd1_secret(int idx)
+{
+  (void)idx;
+  poly_cbd1(&g_small, g_sample_buf);
+}
+
+static void component_poly_triple_secret(int idx)
+{
+  (void)idx;
+  poly_triple(&g_small_triple, &g_small);
+}
+
+static void component_poly_ntt_secret(int idx)
+{
+  (void)idx;
+  poly_ntt(&g_ntt_poly, &g_small_triple);
+}
+
+static void component_poly_baseinv_secret(int idx)
+{
+  (void)idx;
+  (void)poly_baseinv(&g_base_inv, &g_ntt_poly);
+}
+
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+static void component_poly_baseinv_scaled_r_secret(int idx)
+{
+  (void)idx;
+  (void)poly_baseinv_scaled_r(&g_base_inv_keypair, &g_ntt_poly);
+}
+
+static void component_poly_basemul_scaled_keypair(int idx)
+{
+  (void)idx;
+  poly_basemul_scaled_r_input(&g_product, &g_ntt_poly, &g_base_inv_keypair);
+}
+#endif
+
+static void component_poly_basemul_keypair(int idx)
+{
+  (void)idx;
+  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
+}
+
+static void component_poly_tobytes(int idx)
+{
+  (void)idx;
+  poly_tobytes(g_polybytes, &g_ntt_poly);
+}
+
+static void component_hash_f_pk(int idx)
+{
+  (void)idx;
+  hash_f(g_sample_buf, g_pk);
+}
+
+static void component_hash_h_msg(int idx)
+{
+  (void)idx;
+  hash_h(g_sample_buf, g_msg);
+}
+
+static void component_hash_g_polybytes(int idx)
+{
+  (void)idx;
+  hash_g(g_sample_buf, g_polybytes);
+}
+
+static void component_poly_sotp_encode(int idx)
+{
+  (void)idx;
+  poly_sotp_encode(&g_decoded, g_msg, g_sample_buf);
+}
+
+static void component_poly_frombytes(int idx)
+{
+  (void)idx;
+  poly_frombytes(&g_decoded, g_polybytes);
+}
+
+static void component_poly_basemul_add(int idx)
+{
+  (void)idx;
+  poly_basemul_add(&g_product, &g_ntt_poly, &g_base_inv, &g_ntt_poly);
+}
+
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+static void component_poly_basemul_rminus1_to_stage123scratch(int idx)
+{
+  (void)idx;
+  poly_basemul_rminus1_to_stage123scratch(g_product.coeffs, &g_ntt_poly,
+                                          &g_base_inv);
+}
+
+static void component_poly_invntt_from_rminus1_stage45scratch(int idx)
+{
+  (void)idx;
+  poly_invntt_from_rminus1_stage45scratch(&g_inv_poly, g_product.coeffs);
+}
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+static void component_poly_basemul_rminus1(int idx)
+{
+  (void)idx;
+  poly_basemul_rminus1(&g_product, &g_ntt_poly, &g_base_inv);
+}
+
+static void component_poly_invntt_from_rminus1(int idx)
+{
+  (void)idx;
+  poly_invntt_from_rminus1(&g_inv_poly, &g_product);
+}
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+static void component_poly_basemul_to_tuple(int idx)
+{
+  (void)idx;
+  poly_basemul_to_tuple(&g_product, &g_ntt_poly, &g_base_inv);
+}
+
+static void component_gt_tuple_poly_invntt(int idx)
+{
+  (void)idx;
+  gt_tuple_poly_invntt(&g_inv_poly, &g_product);
+}
+#endif
+
+static void component_poly_basemul(int idx)
+{
+  (void)idx;
+  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
+}
+
+static void component_poly_invntt(int idx)
+{
+  (void)idx;
+  poly_invntt(&g_inv_poly, &g_product);
+}
+
+static void component_poly_crepmod3(int idx)
+{
+  (void)idx;
+  poly_crepmod3(&g_decoded, &g_inv_poly);
+}
+
+static void component_poly_sub(int idx)
+{
+  (void)idx;
+  poly_sub(&g_product, &g_ntt_poly, &g_base_inv);
+}
+
+static void component_poly_sotp_decode(int idx)
+{
+  (void)idx;
+  (void)poly_sotp_decode(g_msg, &g_decoded, g_sample_buf);
+}
+
+static void component_poly_cbd1_r1(int idx)
+{
+  (void)idx;
+  poly_cbd1(&g_small, g_sample_buf);
+}
+
+static void component_verify_polybytes(int idx)
+{
+  (void)idx;
+  (void)ct_verify(g_polybytes, g_polybytes, NTRUPLUS_POLYBYTES);
 }
 #endif
 
@@ -699,6 +1123,14 @@ static target_fn select_target(const char *mode)
     return target_add_pipeline;
   }
 #if BENCH_ENABLE_KEM
+  if (strcmp(mode, "kem_keygen") == 0)
+  {
+    return target_kem_keygen;
+  }
+  if (strcmp(mode, "kem_enc") == 0)
+  {
+    return target_kem_enc;
+  }
   if (strcmp(mode, "kem_dec") == 0)
   {
     return target_kem_dec;
@@ -751,6 +1183,98 @@ static int bench(const char *name, const char *mode, target_fn target)
   return 0;
 }
 
+#if BENCH_ENABLE_KEM
+struct kem_component_case
+{
+  const char *group;
+  const char *name;
+  unsigned count;
+  target_fn target;
+};
+
+static int run_kem_component_benches(void)
+{
+  static const struct kem_component_case cases[] = {
+      {"KEYGEN", "keygen_shake256_sample", 2, component_shake256_sample},
+      {"KEYGEN", "keygen_poly_cbd1_secret", 2, component_poly_cbd1_secret},
+      {"KEYGEN", "keygen_poly_triple_secret", 2, component_poly_triple_secret},
+      {"KEYGEN", "keygen_poly_ntt_secret", 2, component_poly_ntt_secret},
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+      {"KEYGEN", "keygen_poly_baseinv_scaled_r_secret", 2,
+       component_poly_baseinv_scaled_r_secret},
+      {"KEYGEN", "keygen_poly_basemul_scaled_keypair", 2,
+       component_poly_basemul_scaled_keypair},
+#else
+      {"KEYGEN", "keygen_poly_baseinv_secret", 2,
+       component_poly_baseinv_secret},
+      {"KEYGEN", "keygen_poly_basemul_keypair", 2,
+       component_poly_basemul_keypair},
+#endif
+      {"KEYGEN", "keygen_poly_tobytes_key", 3, component_poly_tobytes},
+      {"KEYGEN", "keygen_hash_f_pk", 1, component_hash_f_pk},
+
+      {"ENCAP", "enc_hash_f_pk", 1, component_hash_f_pk},
+      {"ENCAP", "enc_hash_h_msg", 1, component_hash_h_msg},
+      {"ENCAP", "enc_poly_cbd1_r", 1, component_poly_cbd1_secret},
+      {"ENCAP", "enc_poly_ntt_r", 1, component_poly_ntt_secret},
+      {"ENCAP", "enc_poly_tobytes_r", 1, component_poly_tobytes},
+      {"ENCAP", "enc_hash_g_polybytes", 1, component_hash_g_polybytes},
+      {"ENCAP", "enc_poly_sotp_encode", 1, component_poly_sotp_encode},
+      {"ENCAP", "enc_poly_ntt_m", 1, component_poly_ntt_secret},
+      {"ENCAP", "enc_poly_frombytes_pk", 1, component_poly_frombytes},
+      {"ENCAP", "enc_poly_basemul_add", 1, component_poly_basemul_add},
+      {"ENCAP", "enc_poly_tobytes_ct", 1, component_poly_tobytes},
+
+      {"DECAP", "dec_poly_frombytes", 3, component_poly_frombytes},
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+      {"DECAP", "dec_poly_basemul_rminus1_to_stage123scratch", 1,
+       component_poly_basemul_rminus1_to_stage123scratch},
+      {"DECAP", "dec_poly_invntt_from_rminus1_stage45scratch", 1,
+       component_poly_invntt_from_rminus1_stage45scratch},
+      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+      {"DECAP", "dec_poly_basemul_rminus1", 1,
+       component_poly_basemul_rminus1},
+      {"DECAP", "dec_poly_invntt_from_rminus1", 1,
+       component_poly_invntt_from_rminus1},
+      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+      {"DECAP", "dec_poly_basemul_to_tuple", 1,
+       component_poly_basemul_to_tuple},
+      {"DECAP", "dec_gt_tuple_poly_invntt", 1,
+       component_gt_tuple_poly_invntt},
+      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
+#else
+      {"DECAP", "dec_poly_basemul", 2, component_poly_basemul},
+      {"DECAP", "dec_poly_invntt", 1, component_poly_invntt},
+#endif
+      {"DECAP", "dec_poly_crepmod3", 1, component_poly_crepmod3},
+      {"DECAP", "dec_poly_ntt_m1", 1, component_poly_ntt_secret},
+      {"DECAP", "dec_poly_sub", 1, component_poly_sub},
+      {"DECAP", "dec_poly_tobytes", 2, component_poly_tobytes},
+      {"DECAP", "dec_hash_g_polybytes", 1, component_hash_g_polybytes},
+      {"DECAP", "dec_poly_sotp_decode", 1, component_poly_sotp_decode},
+      {"DECAP", "dec_hash_h_msg", 1, component_hash_h_msg},
+      {"DECAP", "dec_poly_cbd1_r1", 1, component_poly_cbd1_r1},
+      {"DECAP", "dec_poly_ntt_r1", 1, component_poly_ntt_secret},
+      {"DECAP", "dec_verify_polybytes", 1, component_verify_polybytes},
+  };
+  size_t i;
+
+  for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++)
+  {
+    printf("\ncomponent_group = %s\n", cases[i].group);
+    printf("component_count = %u\n", cases[i].count);
+    if (bench(cases[i].name, cases[i].name, cases[i].target) != 0)
+    {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+#endif
+
 int main(void)
 {
   const char *mode = BENCH_MODE;
@@ -767,15 +1291,25 @@ int main(void)
   target = select_target(mode);
   if (target == NULL)
   {
+#if BENCH_ENABLE_KEM
+    if (strcmp(mode, "kem_components") == 0)
+    {
+      target = target_kem_dec;
+    }
+    else
+#endif
+    {
     fprintf(stderr,
             "unknown BENCH_MODE=%s "
             "(use ntt, invntt, basemul, basemul_add, ntt_mul_pipeline, "
-            "ntt_basemul_add_pipeline, kem_dec, invntt_rows, invntt_row0, "
-            "invntt_row1, invntt_row2, invntt_post, invntt_post_dft3_raw, "
+            "ntt_basemul_add_pipeline, kem_keygen, kem_enc, kem_dec, "
+            "kem_components, invntt_rows, invntt_row0, invntt_row1, "
+            "invntt_row2, invntt_post, invntt_post_dft3_raw, "
             "invntt_post_dft3_reduce, invntt_post_untwist, "
             "invntt_post_finalmerge)\n",
             mode);
     return 1;
+    }
   }
 
   if (!check_correctness(mode))
@@ -785,6 +1319,14 @@ int main(void)
   }
 
   enable_cyclecounter();
+#if BENCH_ENABLE_KEM
+  if (strcmp(mode, "kem_components") == 0)
+  {
+    int rc = run_kem_component_benches();
+    disable_cyclecounter();
+    return rc;
+  }
+#endif
   bench(BENCH_NAME, mode, target);
   disable_cyclecounter();
 
