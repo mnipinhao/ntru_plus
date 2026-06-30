@@ -2,9 +2,32 @@ schema: slothy_best_v1
 date: "2026-06-30"
 
 best: []
-current_best_note: "No active InvNTT ROW1-STAGE45 canonical stripe best after scaling regression."
+current_best_note: "No active InvNTT ROW1-STAGE45 or Forward NTT production-window best after PMU/correctness failures."
 
 historical_or_rejected:
+  - id: forward_ntt_ntt32_stage345_block1_n1
+    target: forward_ntt_production_windows
+    status: rejected_for_correctness
+    source_input: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_32ntt.opt.s
+    candidate_artifact: remote_only_discarded
+    artifact_committed: false
+    slothy:
+      host: "pinhao@172.25.166.141:51208"
+      target: n1
+      mode: split_heuristic
+      timeout_seconds: 3600
+      stalls_first_attempt: 256
+      region: _ntt32_stage345_block1_slothy_start:_ntt32_stage345_block1_slothy_end
+      status: "split heuristic completed; selfcheck OK"
+    correctness:
+      kem_component_profile: "failed before correctness output; benchmark binary segfaulted"
+    pmu:
+      platform: Pi5
+      command: "make -C /home/pi/ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3 GT_PRODUCTION_NTT32_ASM=/home/pi/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/forward_ntt_ntt32_stage345_block1.n1.slothy.candidate.s"
+      delta_cycles_per_call: null
+      result: "not reported because correctness did not pass"
+    decision: "discard candidate; do not promote or extend local Forward NTT Slothy route without a structural/window-contract strategy"
+
   - id: invntt_rminus1_row1_stage45_stripes2_3_n1
     target: invntt_rminus1_row1_stage45_stripes
     status: superseded_by_scaling_retest

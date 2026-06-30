@@ -53,8 +53,20 @@ targets:
 
   - id: forward_ntt_production_windows
     api: keygen/encap/decap
-    status: ready_for_window_manifest
+    status: needs_structural_strategy
     current_best: null
+    last_campaign: FORWARD-NTT-PROD-CAMPAIGN-001
+    latest_campaign:
+      campaign: FORWARD-NTT-PROD-CAMPAIGN-001
+      production_default_changed: false
+      windows_attempted:
+        - {name: FWD-NTT-NTT32-BLOCK0-FINAL-REDUCE-STORE, instructions: 81, status: solver_infeasible, candidate: null}
+        - {name: FWD-NTT-NTT32-STAGE12-STRIPES0-3, instructions: 103, status: parser_blocked_internal_labels, candidate: null}
+        - {name: FWD-NTT-NTT32-STAGE345-BLOCK1, instructions: 160, status: slothy_selfcheck_ok_runtime_segfault, candidate: null}
+      correctness: fail
+      pmu_delta: not_reported
+      best_candidate: null
+      artifact_committed: false
     production_entrypoints:
       - poly_ntt
       - gt_block_major_poly_ntt
@@ -79,8 +91,8 @@ targets:
       decap_ntt_m1_api_share_percent: 8.1
       decap_ntt_r1_cycles: 2705.003
       decap_ntt_r1_api_share_percent: 8.1
-    reason: "production block-major row-bitrev output contract is clear; no Slothy run until a production-only window manifest and repeat PMU plan exist"
-    next_action: "write Forward NTT production window manifest for Phase123, NTT32 stage12 grouping, NTT32 stage345, and final-store contracts"
+    reason: "production block-major row-bitrev contract is clear, but the first local-window campaign produced no correctness-passing candidate"
+    next_action: "only revisit with a structural/window-contract strategy: label-clean materialized inputs, explicit live-out contracts, and safer benchmark-only integration"
 
   - id: generic_rminus1_basemul
     api: decap/keygen/encap

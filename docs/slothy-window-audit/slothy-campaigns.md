@@ -331,3 +331,135 @@ harness wiring are not committed as best artifacts.  Set
 `generic_rminus1_basemul` to `needs_new_strategy`, not active immediate rerun.
 Only revisit it with a wider production-scheduled multi-loop/window or a real
 structural DAG change; do not continue this source-order one-loop Slothy route.
+
+## FORWARD-NTT-PROD-CAMPAIGN-001
+
+Date: 2026-06-30
+
+Scope: Forward NTT production-contract windows for
+`poly_ntt` / `gt_block_major_poly_ntt`.  This campaign used only the production
+block-major row-bitrev path:
+
+```text
+asm/my_ntt_phase123_n1.s
+asm/slothy/my_32ntt.opt.s
+```
+
+Rowspec, oldstore, ldrtrn, rowpack, tuple, BPQ, and TMVP candidate paths were
+not used.  Production defaults were not changed.
+
+Hosts:
+
+- Slothy: `pinhao@172.25.166.141:51208`
+- Pi5: `pi@100.99.191.9`
+
+Source commits:
+
+- source commit: `a7bf9f0c`
+- generated candidate commit: n/a, no candidate survived correctness
+
+Manifest and materialized input:
+
+- `docs/slothy-window-audit/forward-ntt-production-windows.md`
+- `docs/slothy-window-audit/forward-ntt-production-windows.yml`
+- `asm/slothy/window_inputs/forward_ntt_ntt32_final_store_marked.s`
+- `asm/slothy/window_inputs/materialize_forward_ntt_production_windows.py`
+
+Materialization check:
+
+```text
+block0 parent_instruction_count=167 child_instruction_count=81 equivalence_check=pass
+block1 parent_instruction_count=160 child_instruction_count=98 equivalence_check=pass
+block2 parent_instruction_count=162 child_instruction_count=98 equivalence_check=pass
+block3 parent_instruction_count=162 child_instruction_count=99 equivalence_check=pass
+```
+
+Slothy command pattern:
+
+```sh
+/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
+  /home/pinhao/slothy/venv/bin/python optimize.py \
+  --input <input> \
+  --output <output> \
+  --target n1 --stalls 256 \
+  --region <start>:<end>
+```
+
+Split-heuristic command adds:
+
+```sh
+--split-heuristic --split-stepsize 0.05 --split-factor 8.0
+```
+
+Candidate windows attempted:
+
+| window | instructions | Slothy command status | candidate | decision |
+| --- | ---: | --- | --- | --- |
+| `FWD-NTT-NTT32-BLOCK0-FINAL-REDUCE-STORE` | 81 | parsed; solver infeasible at 256/512 stalls | none | reject |
+| `FWD-NTT-NTT32-STAGE12-STRIPES0-3` | 103 | parser-blocked on internal marker label `_ntt32_stage12_stripe0_slothy_end:` | none | needs label-clean materialized input before retry |
+| `FWD-NTT-NTT32-STAGE345-BLOCK1` | 160 | split heuristic completed; selfcheck OK | remote-only, discarded | compiled but benchmark binary segfaulted before correctness output |
+
+Exact commands:
+
+```sh
+ssh pinhao@172.25.166.141 -p 51208 'cd /home/pinhao/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy && /usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python optimize.py --input window_inputs/forward_ntt_ntt32_final_store_marked.s --output window_outputs/forward_ntt_ntt32_block0_final_reduce_store.n1.slothy.candidate.s --target n1 --stalls 256 --region slothy_start_forward_ntt_ntt32_block0_final_reduce_store:slothy_end_forward_ntt_ntt32_block0_final_reduce_store'
+
+ssh pinhao@172.25.166.141 -p 51208 'cd /home/pinhao/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy && /usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python optimize.py --input my_32ntt.opt.s --output window_outputs/forward_ntt_ntt32_stage12_stripes0_3.n1.slothy.candidate.s --target n1 --stalls 256 --region _ntt32_stage12_stripe0_slothy_start:_ntt32_stage12_stripe3_slothy_end'
+
+ssh pinhao@172.25.166.141 -p 51208 'cd /home/pinhao/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy && /usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python optimize.py --input my_32ntt.opt.s --output window_outputs/forward_ntt_ntt32_stage345_block1.n1.slothy.candidate.s --target n1 --stalls 256 --split-heuristic --split-stepsize 0.05 --split-factor 8.0 --region _ntt32_stage345_block1_slothy_start:_ntt32_stage345_block1_slothy_end'
+```
+
+Pi5 baseline command:
+
+```sh
+make -C /home/pi/ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3
+```
+
+Baseline correctness:
+
+```text
+correctness,total_mismatches=0,valid_cases=64
+```
+
+Relevant baseline PMU:
+
+| component | cycles/call | instr/call |
+| --- | ---: | ---: |
+| `encap_ntt_r` | 2707.833 | 3993 |
+| `encap_ntt_m` | 2707.428 | 3993 |
+| `decap_ntt_m1` | 2711.590 | 3995 |
+| `decap_ntt_r1` | 2707.725 | 3993 |
+
+Candidate benchmark command:
+
+```sh
+make -C /home/pi/ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_kem_component_profile_pmu SUDO= CORE=3 GT_PRODUCTION_NTT32_ASM=/home/pi/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/window_outputs/forward_ntt_ntt32_stage345_block1.n1.slothy.candidate.s
+```
+
+Candidate correctness:
+
+```text
+failed before correctness output; benchmark binary segfaulted
+```
+
+PMU delta:
+
+```text
+not reported because correctness did not pass
+```
+
+Projection:
+
+```text
+encap projected impact: n/a, no correctness-passing NTT saving
+decap projected impact: n/a, no correctness-passing NTT saving
+```
+
+Decision:
+
+No useful Forward NTT candidate was found.  The only generated candidate
+compiled but failed full-path execution, so it is not committed as a best
+artifact.  Set `forward_ntt_production_windows` to `needs_structural_strategy`.
+Do not continue small local production-window Slothy runs until the next pass
+has label-clean materialized inputs, explicit live-out contracts, and safer
+benchmark-only integration.

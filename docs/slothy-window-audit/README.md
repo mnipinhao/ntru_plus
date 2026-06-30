@@ -41,6 +41,8 @@ Recent negative examples:
 | --- | --- |
 | `invntt-rminus1.md` | Human-readable target contract, baseline, and window selection notes for production decap `poly_invntt_from_rminus1`. |
 | `forward-ntt-production-contract.md` | Production Forward NTT entrypoint, layout contract, caller audit, and Slothy readiness decision. |
+| `forward-ntt-production-windows.md` | Human-readable production-contract Forward NTT window manifest and first campaign result. |
+| `forward-ntt-production-windows.yml` | Machine-readable Forward NTT production window manifest. |
 | `invntt-rminus1-windows.yml` | Machine-readable manifest for marker-bounded windows and rejected unsafe windows. |
 | `slothy-run-tracker.md` | Human-readable run ledger. Entries stay here even for audit-only and planned runs. |
 | `slothy-runs.yml` | Machine-readable run tracker for audit, planned, optimized, and promoted candidates. |
@@ -79,3 +81,18 @@ Stage123 rows remain audit/extract only until a separate stage123 contract is
 written.  The post path remains out of the first pass because it includes
 inverse DFT3, branchfold constants, representative-sensitive final reductions,
 and final output stores.
+
+## Current Forward NTT Decision
+
+The production Forward NTT path is `poly_ntt` / `gt_block_major_poly_ntt` using
+`asm/my_ntt_phase123_n1.s` plus `asm/slothy/my_32ntt.opt.s`, with GT
+block-major row-bitrev output.  The first production-contract local-window
+campaign attempted final-store, stage12, and stage345 windows.  It produced no
+correctness-passing candidate: final-store was solver-infeasible, stage12 was
+parser-blocked by internal labels, and the stage345 split-heuristic candidate
+segfaulted in the KEM component benchmark.
+
+Current decision: `forward_ntt_production_windows` is
+`needs_structural_strategy`.  Do not continue small local source/window Slothy
+runs until the next pass has label-clean materialized inputs, explicit live-out
+contracts, and safer benchmark-only integration.
