@@ -16,6 +16,16 @@ subwindow_measurement:
   note: "ROW1-STAGE45 production body is already cross-stripe scheduled; stripe-pair subwindows are extraction targets for future symbolic/perstripe source, not existing marker labels."
   single_stripe_instruction_count: 42
   stripe_pair_instruction_count: 84
+  preflight_2026_06_30:
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    result: "blocked before Slothy"
+    source_labels_present: false
+    objdump_marker_labels_present: false
+    labels_found:
+      - slothy_start_invntt_block_row1_stage45
+      - slothy_end_invntt_block_row1_stage45
+    required_fix: "materialize exact stripes2-3 start/end labels or an exact extraction source before any Slothy run"
+    forbidden_substitute: "do not use the 337-instruction ROW1-STAGE45 row-level window as a replacement for stripes2-3"
 window_size_policy:
   prefer: "70-120 instructions"
   allow: "120-150 instructions for serious runs"
@@ -488,6 +498,12 @@ subwindows:
     parent: INVNTT-RM1-ROW1-STAGE45
     start: "canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2"
     end: "after canonical macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3"
+    materialization_status:
+      source_labels_present: false
+      objdump_marker_labels_present: false
+      runnable_slothy_region: false
+      preflight_result: "2026-06-30 RUN-001 blocked before Slothy because concrete start/end labels do not exist"
+      required_fix: "materialize exact stripes2-3 extraction labels/source; do not invent a different region"
     instruction_count: 84
     memory_reads:
       count: 12
@@ -525,10 +541,11 @@ subwindows:
     risk_flags:
       - derived_from_canonical_perstripe_macro
       - requires_extraction_before_slothy
+      - preflight_labels_missing
       - row_buffer_store_layout_sensitive
       - physical_register_source
-    recommendation: first_candidate
-    reason: "First normal Slothy window: 84 instructions, non-edge stripe-pair, complete reduction/store groups, and no pointer mutation."
+    recommendation: needs_review
+    reason: "Semantic first normal Slothy window, but RUN-001 preflight found no concrete stripes2-3 start/end labels in source or objdump marker flow; materialize the exact extraction before running Slothy."
 
   - name: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5
     parent: INVNTT-RM1-ROW1-STAGE45

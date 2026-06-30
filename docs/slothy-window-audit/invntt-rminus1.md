@@ -93,10 +93,19 @@ The current production row macro is already cross-stripe scheduled.  Therefore
 these subwindows are extraction targets for a future symbolic/perstripe source,
 not labels that already exist in `invntt_opt.production.s`.
 
+2026-06-30 preflight for `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` confirmed that
+only the full row labels exist in the production source:
+`slothy_start_invntt_block_row1_stage45` and
+`slothy_end_invntt_block_row1_stage45`.  There are no concrete
+`STRIPES2-3` start/end labels in the source or marker flow, so RUN-001 was
+stopped before Slothy.  The 337-instruction row-level window was not used as a
+substitute.  A later run must first materialize exact stripes2-3 extraction
+labels/source; otherwise this window remains a semantic candidate only.
+
 | subwindow | stripes | instructions | memory reads | memory writes | recommendation |
 | --- | ---: | ---: | ---: | ---: | --- |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES0-1` | 0-1 | 84 | 12 | 8 | candidate |
-| `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` | 2-3 | 84 | 12 | 8 | first_candidate |
+| `INVNTT-RM1-ROW1-STAGE45-STRIPES2-3` | 2-3 | 84 | 12 | 8 | needs marker/source materialization |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES4-5` | 4-5 | 84 | 12 | 8 | candidate |
 | `INVNTT-RM1-ROW1-STAGE45-STRIPES6-7` | 6-7 | 84 | 12 | 8 | candidate |
 

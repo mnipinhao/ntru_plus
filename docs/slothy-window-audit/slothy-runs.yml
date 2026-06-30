@@ -102,6 +102,51 @@ runs:
       - "Non-edge stripe pair with complete reduction and row-buffer store groups."
       - "Requires extraction from canonical perstripe macro before any Slothy run."
 
+  - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3-RUN-001
+    date: "2026-06-30"
+    target: invntt_rminus1
+    region: INVNTT-RM1-ROW1-STAGE45-STRIPES2-3
+    source_marker_commit: b44c5cd
+    manifest_commit: a19152f
+    generated_candidate_commit: null
+    status: rejected
+    preflight:
+      result: "blocked before Slothy"
+      checked_source: "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s"
+      checked_manifest: "docs/slothy-window-audit/invntt-rminus1-windows.yml"
+      found_labels:
+        - slothy_start_invntt_block_row1_stage45
+        - slothy_end_invntt_block_row1_stage45
+      missing_labels:
+        - "concrete stripes2-3 start label"
+        - "concrete stripes2-3 end label"
+      decision: "do not run Slothy until the exact stripes2-3 extraction is materialized"
+      forbidden_substitute: "337-instruction ROW1-STAGE45 was not run"
+    slothy_command: "not run (preflight labels missing)"
+    parser_status: "not run"
+    optimizer_status: "not run"
+    assemble_status: "not run"
+    standalone_correctness:
+      command: "not run"
+      result: "not run"
+    full_kem_correctness:
+      command: "not run"
+      result: "not run"
+    local_cycles_instructions:
+      metric: "not measured"
+      cycles_per_call: null
+      instructions_per_call: null
+    full_api_cycles_instructions:
+      metric: "not measured"
+      cycles_per_call: null
+      instructions_per_call: null
+    decision: "rejected before parser; marker/source materialization required"
+    notes:
+      - "Exactly zero Slothy regions were attempted."
+      - "The existing row-level labels bound a 337-instruction window and cannot be substituted for STRIPES2-3."
+      - "No generated candidate artifact was created."
+      - "No production behavior change."
+
   - run_id: INVNTT-RM1-ROW1-STAGE45-STRIPES4-5-PLAN-001
     date: "2026-06-30"
     target: invntt_rminus1
