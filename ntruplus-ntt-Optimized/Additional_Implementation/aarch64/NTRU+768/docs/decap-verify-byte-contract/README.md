@@ -72,6 +72,10 @@ direct-finalizer-design.md
   Audit of production basemul final output, production poly_tobytes packing,
   and the next direct arithmetic byte-finalizer design.
 
+vector-finalizer-feasibility.md
+  Audit of why the scalar direct ASM prototype regressed, and whether a V2
+  vector-packing finalizer is worth implementing.
+
 model_tobytes_layout.py
   Small byte-contract model for centered coefficient normalization and
   support-kernel 64-coefficient packing order.

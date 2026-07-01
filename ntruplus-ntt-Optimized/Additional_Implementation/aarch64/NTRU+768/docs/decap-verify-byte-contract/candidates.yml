@@ -69,7 +69,7 @@ candidates:
       - "Correctness pass, but PMU-regresses versus reference/helper path."
       - "Next useful candidate needs a real direct arithmetic byte reducer."
 
-  - id: direct_arithmetic_byte_finalizer
+  - id: direct_arithmetic_byte_finalizer_scalar_pack
     status: rejected_pmu_regression
     symbol: gt_decap_verify_basemul_tobytes_direct_candidate
     output: bytes
@@ -102,3 +102,26 @@ candidates:
       - "Scalar umov/strb packing is too expensive; local PMU regresses by 1067 cycles."
       - "A useful next design would need vector byte packing, not scalar extraction."
       - "Q31 is not reused and generic poly_basemul remains unchanged."
+
+  - id: direct_arithmetic_byte_finalizer_vector_pack
+    status: feasible_design
+    symbol: gt_decap_verify_basemul_tobytes_vector_candidate
+    output: bytes
+    production_default: false
+    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_VECTOR
+    proof_status: lane_map_needed
+    reducer_range_proof: empirical_range_capture_only
+    asm_status: not_started
+    design_doc: docs/decap-verify-byte-contract/vector-finalizer-feasibility.md
+    expected_saving_cycles:
+      v2a_virtual_st4_to_ld1_low: -50
+      v2a_virtual_st4_to_ld1_high: 100
+      v2b_direct_soa_pack_low: 100
+      v2b_direct_soa_pack_high: 250
+    production_ready: false
+    reason: "Production poly_tobytes vector packing can be reused after a 12-zip/64-coeff register-layout conversion; a direct st4-shape pack may be faster but needs a tagged lane-map proof."
+    notes:
+      - "Feasible as a benchmark-only V2 design, not a production candidate."
+      - "V2A avoids scalar extraction and stack staging but may be only neutral because it trades L1 r2 store/load for extra zips."
+      - "V2B is the only route with meaningful headroom, but the full-decap ceiling is still below about 1%."
+      - "Do not implement without explicit approval."
