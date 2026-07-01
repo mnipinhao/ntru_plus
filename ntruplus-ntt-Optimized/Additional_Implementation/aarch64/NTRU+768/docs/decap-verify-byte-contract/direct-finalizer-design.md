@@ -307,3 +307,50 @@ Proceed only with a benchmark-only prototype if the next pass can keep the
 existing final reduction and directly pack two basemul loops at a time.  A
 one-loop direct-byte prototype is likely to either use awkward non-contiguous
 stores or reintroduce a layout buffer, which would erase most of the benefit.
+
+## Prototype Result - 2026-07-01
+
+The first benchmark-only ASM prototype is:
+
+```text
+asm/gt_decap_verify_basemul_tobytes_direct_candidate.S
+symbol: gt_decap_verify_basemul_tobytes_direct_candidate
+gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
+```
+
+It compiles the current `base_gt.opt.s` plain basemul body with a default-off
+final-store hook:
+
+```text
+loop A: final reduced 32 coeffs -> stack-staged st4
+loop B: final reduced 32 coeffs + staged loop A -> direct 96-byte output
+```
+
+Correctness passed:
+
+```text
+verify_basemul_tobytes_mismatches=0
+decap_verify_contract_total_mismatches=0,valid_cases=256,invalid_cases=1280
+```
+
+PMU on Pi5:
+
+| window | cycles p50 | cycles IQR | instr p50 |
+| --- | ---: | ---: | ---: |
+| `decap_verify_basemul_plus_tobytes_r2` | 3288 | 0 | 3290 |
+| `decap_verify_contract_direct_candidate` | 4355 | 1 | 5947 |
+| `full_decap_current` | 33352 | 11 | 75217 |
+| `full_decap_contract_direct_candidate` | 34487 | 15 | 77875 |
+
+Decision:
+
+```text
+status: rejected_pmu_regression
+local delta: +1067 cycles
+full decap delta: +1135 cycles
+```
+
+This result says the byte contract and final-store hook are viable for
+correctness, but scalar byte packing is not performance-viable.  A future
+attempt would need vector byte packing close to the production `poly_tobytes`
+network, or the route should remain stopped.

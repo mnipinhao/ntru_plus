@@ -1,6 +1,7 @@
 # Decap Verify Basemul to Tobytes Byte Contract
 
-Status: guarded reference harness plus C byte-output candidate.
+Status: guarded reference harness plus rejected benchmark-only direct ASM
+prototype.
 
 This directory tracks the decap verification byte-contract experiment for:
 
@@ -29,19 +30,30 @@ uses a C mirror of the production `support_kernels.n1.opt.S` packing order to
 emit bytes.  It is a guarded semantic prototype, not an optimized direct
 arithmetic reducer.
 
+The current direct ASM prototype is:
+
+```text
+gt_decap_verify_basemul_tobytes_direct_candidate()
+```
+
+It preserves the current GT `poly_basemul` arithmetic and final reductions, then
+packs bytes directly through a stack-staged scalar finalizer.  It is byte-correct
+but PMU-regresses, so it is kept only as a diagnostic benchmark artifact.
+
 ## Production Status
 
 ```text
 production default: unchanged
 reference gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
 C candidate gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
+direct ASM gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
 default: off
 output: bytes only
 scope: decap verify block only
 generic poly_basemul: not replaced
 Q31: not reused
 public poly API: not exposed
-optimized ASM: not added
+production default: not changed
 ```
 
 ## Files
@@ -94,6 +106,7 @@ decap_verify_contract_total_mismatches=0,valid_cases=256,invalid_cases=1280
 ```
 
 The C candidate is correctness-equivalent, but PMU-regresses because C packing
-is much slower than the production Slothy support `poly_tobytes`.  The next
-useful optimization still needs a real basemul finalizer/direct-byte reducer
-proof; Q31 is not reused here.
+is much slower than the production Slothy support `poly_tobytes`.  The first
+direct ASM prototype is also correctness-equivalent but slower because scalar
+byte packing is too expensive.  The next useful optimization would need a vector
+byte-packing finalizer; Q31 is not reused here.

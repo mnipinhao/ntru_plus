@@ -71,6 +71,9 @@ int bench_crypto_kem_dec_decap_verify_contract_ref(uint8_t *ss,
 int bench_crypto_kem_dec_decap_verify_contract_c(uint8_t *ss,
                                                  const uint8_t *ct,
                                                  const uint8_t *sk);
+int bench_crypto_kem_dec_decap_verify_contract_direct(uint8_t *ss,
+                                                      const uint8_t *ct,
+                                                      const uint8_t *sk);
 
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
@@ -78,6 +81,9 @@ void gt_decap_verify_basemul_tobytes_contract_ref(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
     const poly *hinv);
 void gt_decap_verify_basemul_tobytes_contract_c_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const poly *hinv);
+void gt_decap_verify_basemul_tobytes_direct_candidate(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
     const poly *hinv);
 
@@ -88,6 +94,7 @@ enum decap_verify_contract_variant
   DECAP_VERIFY_CURRENT = 0,
   DECAP_VERIFY_REF = 1,
   DECAP_VERIFY_C_CANDIDATE = 2,
+  DECAP_VERIFY_DIRECT_CANDIDATE = 3,
 };
 
 struct input_case
@@ -374,6 +381,7 @@ static int compare_contract_bytes(const char *label, const poly *c_minus_m2,
   uint8_t reference[NTRUPLUS_POLYBYTES];
   uint8_t contract_ref[NTRUPLUS_POLYBYTES];
   uint8_t contract_candidate[NTRUPLUS_POLYBYTES];
+  uint8_t direct_candidate[NTRUPLUS_POLYBYTES];
   int mismatches = 0;
 
   poly_basemul(&r2, c_minus_m2, hinv);
@@ -382,10 +390,14 @@ static int compare_contract_bytes(const char *label, const poly *c_minus_m2,
                                                hinv);
   gt_decap_verify_basemul_tobytes_contract_c_candidate(contract_candidate,
                                                        c_minus_m2, hinv);
+  gt_decap_verify_basemul_tobytes_direct_candidate(direct_candidate,
+                                                   c_minus_m2, hinv);
 
   mismatches +=
       compare_bytes(label, contract_ref, reference, NTRUPLUS_POLYBYTES);
   mismatches += compare_bytes("c_candidate bytes", contract_candidate,
+                              reference, NTRUPLUS_POLYBYTES);
+  mismatches += compare_bytes("direct_candidate bytes", direct_candidate,
                               reference, NTRUPLUS_POLYBYTES);
 
   return mismatches;
@@ -425,6 +437,10 @@ static int decap_trace(struct decap_trace *trace, const uint8_t *ct,
   {
     gt_decap_verify_basemul_tobytes_contract_c_candidate(trace->buf1, &c,
                                                          &hinv);
+  }
+  else if (variant == DECAP_VERIFY_DIRECT_CANDIDATE)
+  {
+    gt_decap_verify_basemul_tobytes_direct_candidate(trace->buf1, &c, &hinv);
   }
   else
   {
@@ -655,15 +671,19 @@ static int full_decap_differential_test(void)
       uint8_t ss_current[CRYPTO_BYTES];
       uint8_t ss_contract[CRYPTO_BYTES];
       uint8_t ss_candidate[CRYPTO_BYTES];
+      uint8_t ss_direct[CRYPTO_BYTES];
       struct decap_trace current_trace;
       struct decap_trace contract_trace;
       struct decap_trace candidate_trace;
+      struct decap_trace direct_trace;
       int fail_current_trace;
       int fail_contract_trace;
       int fail_candidate_trace;
+      int fail_direct_trace;
       int fail_current_api;
       int fail_contract_api;
       int fail_candidate_api;
+      int fail_direct_api;
       char label[96];
 
       make_case_ct(ct_case, &g_inputs[input_idx], input_idx, case_id);
@@ -679,12 +699,18 @@ static int full_decap_differential_test(void)
       fail_candidate_trace = decap_trace(&candidate_trace, ct_case,
                                          g_inputs[input_idx].sk,
                                          DECAP_VERIFY_C_CANDIDATE);
+      fail_direct_trace = decap_trace(&direct_trace, ct_case,
+                                      g_inputs[input_idx].sk,
+                                      DECAP_VERIFY_DIRECT_CANDIDATE);
 
       total_mismatches += compare_decap_traces(label, &current_trace,
                                                &contract_trace);
       total_mismatches += compare_decap_traces("c_candidate trace",
                                                &current_trace,
                                                &candidate_trace);
+      total_mismatches += compare_decap_traces("direct_candidate trace",
+                                               &current_trace,
+                                               &direct_trace);
       if (fail_current_trace != fail_contract_trace)
       {
         fprintf(stderr, "%s trace fail mismatch: got=%d want=%d\n", label,
@@ -697,6 +723,12 @@ static int full_decap_differential_test(void)
                 label, fail_candidate_trace, fail_current_trace);
         total_mismatches++;
       }
+      if (fail_current_trace != fail_direct_trace)
+      {
+        fprintf(stderr, "%s direct trace fail mismatch: got=%d want=%d\n",
+                label, fail_direct_trace, fail_current_trace);
+        total_mismatches++;
+      }
 
       fail_current_api =
           bench_crypto_kem_dec_current(ss_current, ct_case,
@@ -707,6 +739,9 @@ static int full_decap_differential_test(void)
       fail_candidate_api =
           bench_crypto_kem_dec_decap_verify_contract_c(
               ss_candidate, ct_case, g_inputs[input_idx].sk);
+      fail_direct_api =
+          bench_crypto_kem_dec_decap_verify_contract_direct(
+              ss_direct, ct_case, g_inputs[input_idx].sk);
 
       if (fail_current_api != fail_contract_api)
       {
@@ -720,12 +755,20 @@ static int full_decap_differential_test(void)
                 label, fail_candidate_api, fail_current_api);
         total_mismatches++;
       }
+      if (fail_current_api != fail_direct_api)
+      {
+        fprintf(stderr, "%s direct api fail mismatch: got=%d want=%d\n",
+                label, fail_direct_api, fail_current_api);
+        total_mismatches++;
+      }
       total_mismatches +=
           compare_bytes("api shared secret", ss_contract, ss_current,
                         CRYPTO_BYTES);
       total_mismatches +=
           compare_bytes("candidate api shared secret", ss_candidate,
                         ss_current, CRYPTO_BYTES);
+      total_mismatches += compare_bytes("direct api shared secret", ss_direct,
+                                        ss_current, CRYPTO_BYTES);
 
       if (case_id == 0)
       {
@@ -900,6 +943,16 @@ static void target_decap_verify_contract_c_candidate(size_t idx)
   g_sink ^= g_bytes1[input_idx][idx & (NTRUPLUS_POLYBYTES - 1)];
 }
 
+static void target_decap_verify_contract_direct_candidate(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  gt_decap_verify_basemul_tobytes_direct_candidate(g_bytes1[input_idx],
+                                                   &g_cminus_m2[input_idx],
+                                                   &g_hinv[input_idx]);
+  g_sink ^= g_bytes1[input_idx][idx & (NTRUPLUS_POLYBYTES - 1)];
+}
+
 static void target_full_decap_current(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
@@ -925,6 +978,16 @@ static void target_full_decap_contract_c_candidate(size_t idx)
   const size_t input_idx = idx % NINPUTS;
 
   g_sink ^= (uint64_t)bench_crypto_kem_dec_decap_verify_contract_c(
+      g_ss_workspace[input_idx], g_inputs[input_idx].ct,
+      g_inputs[input_idx].sk);
+  g_sink ^= g_ss_workspace[input_idx][idx & (CRYPTO_BYTES - 1)];
+}
+
+static void target_full_decap_contract_direct_candidate(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  g_sink ^= (uint64_t)bench_crypto_kem_dec_decap_verify_contract_direct(
       g_ss_workspace[input_idx], g_inputs[input_idx].ct,
       g_inputs[input_idx].sk);
   g_sink ^= g_ss_workspace[input_idx][idx & (CRYPTO_BYTES - 1)];
@@ -994,10 +1057,14 @@ static void run_pmu(void)
       {"decap_verify_contract_ref", target_decap_verify_contract_ref},
       {"decap_verify_contract_c_candidate",
        target_decap_verify_contract_c_candidate},
+      {"decap_verify_contract_direct_candidate",
+       target_decap_verify_contract_direct_candidate},
       {"full_decap_current", target_full_decap_current},
       {"full_decap_contract_ref", target_full_decap_contract_ref},
       {"full_decap_contract_c_candidate",
        target_full_decap_contract_c_candidate},
+      {"full_decap_contract_direct_candidate",
+       target_full_decap_contract_direct_candidate},
   };
   size_t variant_idx;
 

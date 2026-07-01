@@ -107,22 +107,22 @@ def check_exhaustive_pairs():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--exhaustive-pairs",
+        "--skip-exhaustive-pairs",
         action="store_true",
-        help="also exhaustively round-trip every centered coefficient pair",
+        help="skip the exhaustive centered coefficient pair round-trip check",
     )
     args = parser.parse_args()
 
     check_centered_range()
     check_edge_pairs()
     check_layout_mapping()
-    if args.exhaustive_pairs:
+    if not args.skip_exhaustive_pairs:
         check_exhaustive_pairs()
 
     print("centered_range_ok=1")
     print("edge_pair_pack_ok=1")
     print("layout_mapping_ok=1")
-    print(f"exhaustive_pairs={'pass' if args.exhaustive_pairs else 'skipped'}")
+    print(f"exhaustive_pairs_ok={0 if args.skip_exhaustive_pairs else 1}")
 
 
 if __name__ == "__main__":

@@ -327,10 +327,12 @@ GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_SOURCES = \
 	bench_kem_current_wrapper.c \
 	bench_kem_current_decap_verify_contract_ref_wrapper.c \
 	bench_kem_current_decap_verify_contract_c_wrapper.c \
+	bench_kem_current_decap_verify_contract_direct_wrapper.c \
 	$(NTRUPLUS)/poly_gt_decap_verify_tobytes_contract_ref.c \
 	$(NTRUPLUS)/symmetric.c \
 	$(NTRUPLUS)/NO_CE/fips202.c \
 	$(NTRUPLUS)/ntt.c \
+	$(NTRUPLUS)/asm/gt_decap_verify_basemul_tobytes_direct_candidate.S \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \

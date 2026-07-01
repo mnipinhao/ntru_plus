@@ -73,6 +73,21 @@ This candidate still materializes an internal `poly r2` from
 Slothy support `poly_tobytes` lane order.  It is useful as a byte-output API
 prototype and oracle; it is not the final direct arithmetic reducer.
 
+The benchmark-only direct ASM prototype is:
+
+```c
+void gt_decap_verify_basemul_tobytes_direct_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES],
+    const poly *c_minus_m2,
+    const poly *hinv);
+```
+
+This candidate keeps the current `base_gt.opt.s` product DAG and final
+reductions, then replaces the public poly store plus later `poly_tobytes` call
+with a direct byte-output finalizer.  The first prototype uses stack staging and
+scalar byte stores, so it is a diagnostic correctness artifact, not a production
+candidate.
+
 ## Non-Goals
 
 This helper is not:
@@ -119,7 +134,13 @@ The default-off C candidate gate is:
 GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
 ```
 
-The two gates are mutually exclusive.
+The default-off direct ASM candidate gate is:
+
+```text
+GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
+```
+
+The three gates are mutually exclusive.
 
 When disabled, decap remains:
 
@@ -138,6 +159,12 @@ When enabled for the C candidate experiment:
 
 ```c
 gt_decap_verify_basemul_tobytes_contract_c_candidate(buf1, &c, &hinv);
+```
+
+When enabled for the direct ASM candidate experiment:
+
+```c
+gt_decap_verify_basemul_tobytes_direct_candidate(buf1, &c, &hinv);
 ```
 
 ## Release Guard Plan

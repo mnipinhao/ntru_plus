@@ -70,28 +70,35 @@ candidates:
       - "Next useful candidate needs a real direct arithmetic byte reducer."
 
   - id: direct_arithmetic_byte_finalizer
-    status: design_audit
+    status: rejected_pmu_regression
     symbol: gt_decap_verify_basemul_tobytes_direct_candidate
     output: bytes
     production_default: false
-    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_DIRECT_CANDIDATE
-    proof_status: pending
-    reducer_range_proof: pending
-    asm_status: not_started
+    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
+    proof_status: exhaustive_pair_checked
+    reducer_range_proof: empirical_range_capture_only
+    asm_status: benchmark_only_prototype
+    prototype: asm/gt_decap_verify_basemul_tobytes_direct_candidate.S
     model: docs/decap-verify-byte-contract/model_tobytes_layout.py
     design_doc: docs/decap-verify-byte-contract/direct-finalizer-design.md
-    expected_saving_cycles:
-      practical_low: 150
-      practical_high: 350
-      local_ceiling_from_tobytes: 421
-    projected_full_decap_impact:
-      practical_low_percent: 0.45
-      practical_high_percent: 1.05
-      ceiling_percent: 1.27
+    correctness:
+      direct_byte_oracle_mismatches: 0
+      decap_differential_mismatches: 0
+      valid_cases: 256
+      invalid_cases: 1280
+    pmu_p50_cycles:
+      decap_verify_basemul_plus_tobytes_r2: 3288
+      decap_verify_contract_direct_candidate: 4355
+      full_decap_current: 33352
+      full_decap_contract_direct_candidate: 34487
+    pmu_delta_cycles:
+      local_vs_basemul_plus_tobytes: 1067
+      full_decap_vs_current: 1135
     production_ready: false
     notes:
       - "Reuse current poly_basemul product DAG and final reductions first."
-      - "Replace final st4 poly output plus later poly_tobytes load/pack."
-      - "Pack two consecutive basemul loops into one 64-coefficient/96-byte tobytes chunk."
-      - "Requires formal final-lane range proof and register-pressure audit before ASM."
+      - "Prototype replaces final st4 poly output plus later poly_tobytes load/pack."
+      - "It stages one 32-coefficient half on the stack, then packs two halves into one 96-byte tobytes chunk."
+      - "Scalar umov/strb packing is too expensive; local PMU regresses by 1067 cycles."
+      - "A useful next design would need vector byte packing, not scalar extraction."
       - "Q31 is not reused and generic poly_basemul remains unchanged."

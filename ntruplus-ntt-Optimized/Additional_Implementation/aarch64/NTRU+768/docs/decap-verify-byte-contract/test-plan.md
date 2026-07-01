@@ -104,9 +104,11 @@ decap_tobytes_r2
 decap_verify_basemul_plus_tobytes_r2
 decap_verify_contract_ref
 decap_verify_contract_c_candidate
+decap_verify_contract_direct_candidate
 full_decap_current
 full_decap_contract_ref
 full_decap_contract_c_candidate
+full_decap_contract_direct_candidate
 ```
 
 Baseline context from earlier PMU profiles:
@@ -160,9 +162,11 @@ PMU:
 | `decap_verify_basemul_plus_tobytes_r2` | 3288 | 2 | 3290 |
 | `decap_verify_contract_ref` | 3244 | 1 | 3298 |
 | `decap_verify_contract_c_candidate` | 4053 | 1 | 5620 |
+| `decap_verify_contract_direct_candidate` | 4355 | 1 | 5947 |
 | `full_decap_current` | 33362 | 17 | 75217 |
 | `full_decap_contract_ref` | 33385 | 8 | 75226 |
 | `full_decap_contract_c_candidate` | 34134 | 13 | 77548 |
+| `full_decap_contract_direct_candidate` | 34487 | 15 | 77875 |
 
 Interpretation:
 
@@ -170,7 +174,9 @@ Interpretation:
 The reference helper establishes the API and oracle.  It is not an optimized
 candidate.  The C candidate is byte-correct but slower because it replaces the
 Slothy support packer with scalar C packing while still materializing the
-`poly_basemul` temporary.
+`poly_basemul` temporary.  The first direct ASM prototype is also
+byte-correct but slower because it uses stack staging plus scalar `umov`/`strb`
+packing.
 
 The direct-bytes optimization ceiling starts from roughly:
 
@@ -181,6 +187,14 @@ Removing the standalone tobytes boundary alone can at most recover about:
   decap_tobytes_r2 ~= 421 cycles
 
 Further wins require a real basemul finalizer/direct-byte reducer proof.
+```
+
+The first direct ASM prototype result is a regression:
+
+```text
+local delta vs basemul_plus_tobytes = +1067 cycles
+full decap delta vs current         = +1135 cycles
+decision                            = rejected diagnostic prototype
 ```
 
 ## Direct Finalizer Byte Model
@@ -198,7 +212,7 @@ Expected output:
 centered_range_ok=1
 edge_pair_pack_ok=1
 layout_mapping_ok=1
-exhaustive_pairs=skipped
+exhaustive_pairs_ok=1
 ```
 
 This model checks only:
