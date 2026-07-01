@@ -59,6 +59,20 @@ It is implemented in:
 poly_gt_decap_verify_tobytes_contract_ref.c
 ```
 
+The C candidate helper is:
+
+```c
+void gt_decap_verify_basemul_tobytes_contract_c_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES],
+    const poly *c_minus_m2,
+    const poly *hinv);
+```
+
+This candidate still materializes an internal `poly r2` from
+`poly_basemul()`, then emits bytes through a C mirror of the production
+Slothy support `poly_tobytes` lane order.  It is useful as a byte-output API
+prototype and oracle; it is not the final direct arithmetic reducer.
+
 ## Non-Goals
 
 This helper is not:
@@ -99,6 +113,14 @@ The default-off gate is:
 GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
 ```
 
+The default-off C candidate gate is:
+
+```text
+GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
+```
+
+The two gates are mutually exclusive.
+
 When disabled, decap remains:
 
 ```c
@@ -110,6 +132,12 @@ When enabled for the reference experiment:
 
 ```c
 gt_decap_verify_basemul_tobytes_contract_ref(buf1, &c, &hinv);
+```
+
+When enabled for the C candidate experiment:
+
+```c
+gt_decap_verify_basemul_tobytes_contract_c_candidate(buf1, &c, &hinv);
 ```
 
 ## Release Guard Plan

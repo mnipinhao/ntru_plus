@@ -68,14 +68,27 @@ int bench_crypto_kem_dec_current(uint8_t *ss, const uint8_t *ct,
 int bench_crypto_kem_dec_decap_verify_contract_ref(uint8_t *ss,
                                                    const uint8_t *ct,
                                                    const uint8_t *sk);
+int bench_crypto_kem_dec_decap_verify_contract_c(uint8_t *ss,
+                                                 const uint8_t *ct,
+                                                 const uint8_t *sk);
 
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
 void gt_decap_verify_basemul_tobytes_contract_ref(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
     const poly *hinv);
+void gt_decap_verify_basemul_tobytes_contract_c_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const poly *hinv);
 
 typedef void (*bench_target_fn)(size_t idx);
+
+enum decap_verify_contract_variant
+{
+  DECAP_VERIFY_CURRENT = 0,
+  DECAP_VERIFY_REF = 1,
+  DECAP_VERIFY_C_CANDIDATE = 2,
+};
 
 struct input_case
 {
@@ -118,6 +131,21 @@ struct counts
   uint64_t v[PMU_EVENT_COUNT];
 };
 
+struct range_stats
+{
+  int initialized;
+  int16_t c_min;
+  int16_t c_max;
+  int16_t hinv_min;
+  int16_t hinv_max;
+  int16_t r2_min;
+  int16_t r2_max;
+  uint64_t cases;
+  uint64_t valid_cases;
+  uint64_t invalid_cases;
+  uint64_t synthetic_cases;
+};
+
 static struct input_case *g_inputs;
 static poly *g_cminus_m2;
 static poly *g_hinv;
@@ -131,6 +159,7 @@ static uint8_t (*g_ss_workspace)[CRYPTO_BYTES];
 static uint32_t g_random_state = 0x5eed1234u;
 static uint64_t g_iterations = NITERATIONS;
 static volatile uint64_t g_sink;
+static struct range_stats g_range_stats;
 
 static struct pmu_event g_events[PMU_EVENT_COUNT] = {
     {"cycles", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, -1, -1},
@@ -252,6 +281,57 @@ static void fill_boundary_poly(poly *p, size_t salt)
   }
 }
 
+static void update_minmax(int16_t value, int16_t *min_value,
+                          int16_t *max_value)
+{
+  if (value < *min_value)
+  {
+    *min_value = value;
+  }
+  if (value > *max_value)
+  {
+    *max_value = value;
+  }
+}
+
+static void range_stats_add(struct range_stats *stats, const poly *c_minus_m2,
+                            const poly *hinv, const poly *r2,
+                            unsigned case_class)
+{
+  size_t coeff_idx;
+
+  if (!stats->initialized)
+  {
+    stats->c_min = stats->c_max = c_minus_m2->coeffs[0];
+    stats->hinv_min = stats->hinv_max = hinv->coeffs[0];
+    stats->r2_min = stats->r2_max = r2->coeffs[0];
+    stats->initialized = 1;
+  }
+
+  for (coeff_idx = 0; coeff_idx < NTRUPLUS_N; coeff_idx++)
+  {
+    update_minmax(c_minus_m2->coeffs[coeff_idx], &stats->c_min,
+                  &stats->c_max);
+    update_minmax(hinv->coeffs[coeff_idx], &stats->hinv_min,
+                  &stats->hinv_max);
+    update_minmax(r2->coeffs[coeff_idx], &stats->r2_min, &stats->r2_max);
+  }
+
+  stats->cases++;
+  if (case_class == 0)
+  {
+    stats->valid_cases++;
+  }
+  else if (case_class == 1)
+  {
+    stats->invalid_cases++;
+  }
+  else
+  {
+    stats->synthetic_cases++;
+  }
+}
+
 static void make_malformed_coeff_bytes(uint8_t out[CRYPTO_CIPHERTEXTBYTES])
 {
   size_t pair_idx;
@@ -292,17 +372,28 @@ static int compare_contract_bytes(const char *label, const poly *c_minus_m2,
 {
   poly r2;
   uint8_t reference[NTRUPLUS_POLYBYTES];
-  uint8_t contract[NTRUPLUS_POLYBYTES];
+  uint8_t contract_ref[NTRUPLUS_POLYBYTES];
+  uint8_t contract_candidate[NTRUPLUS_POLYBYTES];
+  int mismatches = 0;
 
   poly_basemul(&r2, c_minus_m2, hinv);
   poly_tobytes(reference, &r2);
-  gt_decap_verify_basemul_tobytes_contract_ref(contract, c_minus_m2, hinv);
+  gt_decap_verify_basemul_tobytes_contract_ref(contract_ref, c_minus_m2,
+                                               hinv);
+  gt_decap_verify_basemul_tobytes_contract_c_candidate(contract_candidate,
+                                                       c_minus_m2, hinv);
 
-  return compare_bytes(label, contract, reference, NTRUPLUS_POLYBYTES);
+  mismatches +=
+      compare_bytes(label, contract_ref, reference, NTRUPLUS_POLYBYTES);
+  mismatches += compare_bytes("c_candidate bytes", contract_candidate,
+                              reference, NTRUPLUS_POLYBYTES);
+
+  return mismatches;
 }
 
 static int decap_trace(struct decap_trace *trace, const uint8_t *ct,
-                       const uint8_t *sk, int use_contract)
+                       const uint8_t *sk,
+                       enum decap_verify_contract_variant variant)
 {
   poly c;
   poly f;
@@ -326,9 +417,14 @@ static int decap_trace(struct decap_trace *trace, const uint8_t *ct,
   poly_ntt(&m2, &m1);
   poly_sub(&c, &c, &m2);
 
-  if (use_contract)
+  if (variant == DECAP_VERIFY_REF)
   {
     gt_decap_verify_basemul_tobytes_contract_ref(trace->buf1, &c, &hinv);
+  }
+  else if (variant == DECAP_VERIFY_C_CANDIDATE)
+  {
+    gt_decap_verify_basemul_tobytes_contract_c_candidate(trace->buf1, &c,
+                                                         &hinv);
   }
   else
   {
@@ -473,6 +569,67 @@ static void make_case_ct(uint8_t out[CRYPTO_CIPHERTEXTBYTES],
   }
 }
 
+static void range_capture_add_case(const poly *c_minus_m2, const poly *hinv,
+                                   unsigned case_class)
+{
+  poly r2;
+
+  poly_basemul(&r2, c_minus_m2, hinv);
+  range_stats_add(&g_range_stats, c_minus_m2, hinv, &r2, case_class);
+}
+
+static int range_capture_test(void)
+{
+  enum
+  {
+    CASE_COUNT = 6
+  };
+  size_t input_idx;
+
+  memset(&g_range_stats, 0, sizeof(g_range_stats));
+
+  for (input_idx = 0; input_idx < NINPUTS; input_idx++)
+  {
+    unsigned case_id;
+
+    for (case_id = 0; case_id < CASE_COUNT; case_id++)
+    {
+      uint8_t ct_case[CRYPTO_CIPHERTEXTBYTES];
+      poly c_minus_m2;
+      poly hinv;
+
+      make_case_ct(ct_case, &g_inputs[input_idx], input_idx, case_id);
+      derive_decap_verify_operands(&c_minus_m2, &hinv, ct_case,
+                                   g_inputs[input_idx].sk);
+      range_capture_add_case(&c_minus_m2, &hinv, case_id == 0 ? 0u : 1u);
+    }
+
+    fill_random_poly(&g_synth_a[input_idx]);
+    fill_random_poly(&g_synth_b[input_idx]);
+    range_capture_add_case(&g_synth_a[input_idx], &g_synth_b[input_idx], 2u);
+
+    fill_boundary_poly(&g_synth_a[input_idx], input_idx);
+    fill_boundary_poly(&g_synth_b[input_idx], input_idx + 5);
+    range_capture_add_case(&g_synth_a[input_idx], &g_synth_b[input_idx], 2u);
+  }
+
+  printf("range_capture_cases=%" PRIu64 ",valid_cases=%" PRIu64
+         ",invalid_cases=%" PRIu64 ",synthetic_cases=%" PRIu64 "\n",
+         g_range_stats.cases, g_range_stats.valid_cases,
+         g_range_stats.invalid_cases, g_range_stats.synthetic_cases);
+  printf("c_minus_m2_min=%d,c_minus_m2_max=%d\n",
+         (int)g_range_stats.c_min, (int)g_range_stats.c_max);
+  printf("hinv_min=%d,hinv_max=%d\n", (int)g_range_stats.hinv_min,
+         (int)g_range_stats.hinv_max);
+  printf("r2_pre_tobytes_min=%d,r2_pre_tobytes_max=%d\n",
+         (int)g_range_stats.r2_min, (int)g_range_stats.r2_max);
+  printf("intermediate_product_range=not_accessible_existing_poly_basemul\n");
+  printf("range_capture_status=%s\n",
+         g_range_stats.initialized ? "pass" : "fail");
+
+  return g_range_stats.initialized ? 0 : 1;
+}
+
 static int full_decap_differential_test(void)
 {
   enum
@@ -497,29 +654,47 @@ static int full_decap_differential_test(void)
       uint8_t ct_case[CRYPTO_CIPHERTEXTBYTES];
       uint8_t ss_current[CRYPTO_BYTES];
       uint8_t ss_contract[CRYPTO_BYTES];
+      uint8_t ss_candidate[CRYPTO_BYTES];
       struct decap_trace current_trace;
       struct decap_trace contract_trace;
+      struct decap_trace candidate_trace;
       int fail_current_trace;
       int fail_contract_trace;
+      int fail_candidate_trace;
       int fail_current_api;
       int fail_contract_api;
+      int fail_candidate_api;
       char label[96];
 
       make_case_ct(ct_case, &g_inputs[input_idx], input_idx, case_id);
       snprintf(label, sizeof(label), "%s_%zu", case_names[case_id],
                input_idx);
 
-      fail_current_trace =
-          decap_trace(&current_trace, ct_case, g_inputs[input_idx].sk, 0);
-      fail_contract_trace =
-          decap_trace(&contract_trace, ct_case, g_inputs[input_idx].sk, 1);
+      fail_current_trace = decap_trace(&current_trace, ct_case,
+                                       g_inputs[input_idx].sk,
+                                       DECAP_VERIFY_CURRENT);
+      fail_contract_trace = decap_trace(&contract_trace, ct_case,
+                                        g_inputs[input_idx].sk,
+                                        DECAP_VERIFY_REF);
+      fail_candidate_trace = decap_trace(&candidate_trace, ct_case,
+                                         g_inputs[input_idx].sk,
+                                         DECAP_VERIFY_C_CANDIDATE);
 
       total_mismatches += compare_decap_traces(label, &current_trace,
                                                &contract_trace);
+      total_mismatches += compare_decap_traces("c_candidate trace",
+                                               &current_trace,
+                                               &candidate_trace);
       if (fail_current_trace != fail_contract_trace)
       {
         fprintf(stderr, "%s trace fail mismatch: got=%d want=%d\n", label,
                 fail_contract_trace, fail_current_trace);
+        total_mismatches++;
+      }
+      if (fail_current_trace != fail_candidate_trace)
+      {
+        fprintf(stderr, "%s candidate trace fail mismatch: got=%d want=%d\n",
+                label, fail_candidate_trace, fail_current_trace);
         total_mismatches++;
       }
 
@@ -529,6 +704,9 @@ static int full_decap_differential_test(void)
       fail_contract_api =
           bench_crypto_kem_dec_decap_verify_contract_ref(
               ss_contract, ct_case, g_inputs[input_idx].sk);
+      fail_candidate_api =
+          bench_crypto_kem_dec_decap_verify_contract_c(
+              ss_candidate, ct_case, g_inputs[input_idx].sk);
 
       if (fail_current_api != fail_contract_api)
       {
@@ -536,9 +714,18 @@ static int full_decap_differential_test(void)
                 fail_contract_api, fail_current_api);
         total_mismatches++;
       }
+      if (fail_current_api != fail_candidate_api)
+      {
+        fprintf(stderr, "%s candidate api fail mismatch: got=%d want=%d\n",
+                label, fail_candidate_api, fail_current_api);
+        total_mismatches++;
+      }
       total_mismatches +=
           compare_bytes("api shared secret", ss_contract, ss_current,
                         CRYPTO_BYTES);
+      total_mismatches +=
+          compare_bytes("candidate api shared secret", ss_candidate,
+                        ss_current, CRYPTO_BYTES);
 
       if (case_id == 0)
       {
@@ -703,6 +890,16 @@ static void target_decap_verify_contract_ref(size_t idx)
   g_sink ^= g_bytes1[input_idx][idx & (NTRUPLUS_POLYBYTES - 1)];
 }
 
+static void target_decap_verify_contract_c_candidate(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  gt_decap_verify_basemul_tobytes_contract_c_candidate(g_bytes1[input_idx],
+                                                       &g_cminus_m2[input_idx],
+                                                       &g_hinv[input_idx]);
+  g_sink ^= g_bytes1[input_idx][idx & (NTRUPLUS_POLYBYTES - 1)];
+}
+
 static void target_full_decap_current(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
@@ -718,6 +915,16 @@ static void target_full_decap_contract_ref(size_t idx)
   const size_t input_idx = idx % NINPUTS;
 
   g_sink ^= (uint64_t)bench_crypto_kem_dec_decap_verify_contract_ref(
+      g_ss_workspace[input_idx], g_inputs[input_idx].ct,
+      g_inputs[input_idx].sk);
+  g_sink ^= g_ss_workspace[input_idx][idx & (CRYPTO_BYTES - 1)];
+}
+
+static void target_full_decap_contract_c_candidate(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  g_sink ^= (uint64_t)bench_crypto_kem_dec_decap_verify_contract_c(
       g_ss_workspace[input_idx], g_inputs[input_idx].ct,
       g_inputs[input_idx].sk);
   g_sink ^= g_ss_workspace[input_idx][idx & (CRYPTO_BYTES - 1)];
@@ -785,8 +992,12 @@ static void run_pmu(void)
       {"decap_verify_basemul_plus_tobytes_r2",
        target_decap_verify_basemul_plus_tobytes},
       {"decap_verify_contract_ref", target_decap_verify_contract_ref},
+      {"decap_verify_contract_c_candidate",
+       target_decap_verify_contract_c_candidate},
       {"full_decap_current", target_full_decap_current},
       {"full_decap_contract_ref", target_full_decap_contract_ref},
+      {"full_decap_contract_c_candidate",
+       target_full_decap_contract_c_candidate},
   };
   size_t variant_idx;
 
@@ -809,6 +1020,7 @@ static void run_pmu(void)
 
 int main(void)
 {
+  int range_mismatches;
   int direct_mismatches;
   int decap_mismatches;
 
@@ -824,10 +1036,12 @@ int main(void)
   g_ss_workspace = xaligned_alloc(64, NINPUTS * sizeof(*g_ss_workspace));
 
   prepare_inputs();
+  range_mismatches = range_capture_test();
   direct_mismatches = direct_byte_oracle_test();
   decap_mismatches = full_decap_differential_test();
 
-  if (direct_mismatches != 0 || decap_mismatches != 0)
+  if (range_mismatches != 0 || direct_mismatches != 0 ||
+      decap_mismatches != 0)
   {
     fprintf(stderr,
             "decap verify byte-contract correctness failed; not running PMU\n");

@@ -1,6 +1,6 @@
 # Decap Verify Basemul to Tobytes Byte Contract
 
-Status: guarded reference harness only.
+Status: guarded reference harness plus C byte-output candidate.
 
 This directory tracks the decap verification byte-contract experiment for:
 
@@ -8,7 +8,7 @@ This directory tracks the decap verification byte-contract experiment for:
 gt_decap_verify_basemul_tobytes_contract(out, c_minus_m2, hinv)
 ```
 
-The current implementation added in this pass is only:
+The baseline implementation is:
 
 ```text
 gt_decap_verify_basemul_tobytes_contract_ref()
@@ -18,17 +18,30 @@ It calls `poly_basemul` followed by `poly_tobytes` and exists to lock the API,
 test oracle, and PMU windows before any optimized reducer or ASM candidate is
 written.
 
+The current C candidate is:
+
+```text
+gt_decap_verify_basemul_tobytes_contract_c_candidate()
+```
+
+It still computes an internal arithmetic-correct `poly_basemul` result, then
+uses a C mirror of the production `support_kernels.n1.opt.S` packing order to
+emit bytes.  It is a guarded semantic prototype, not an optimized direct
+arithmetic reducer.
+
 ## Production Status
 
 ```text
 production default: unchanged
-gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+reference gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+C candidate gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
 default: off
 output: bytes only
 scope: decap verify block only
 generic poly_basemul: not replaced
 Q31: not reused
 public poly API: not exposed
+optimized ASM: not added
 ```
 
 ## Files
@@ -63,9 +76,16 @@ decap_verify_contract_total_mismatches=0
 Pi5, 2026-07-01:
 
 ```text
+range_capture_cases=2048,valid_cases=256,invalid_cases=1280,synthetic_cases=512
+c_minus_m2_min=-4095,c_minus_m2_max=5823
+hinv_min=-4095,hinv_max=4095
+r2_pre_tobytes_min=-1728,r2_pre_tobytes_max=1728
+range_capture_status=pass
 verify_basemul_tobytes_mismatches=0
 decap_verify_contract_total_mismatches=0,valid_cases=256,invalid_cases=1280
 ```
 
-The reference helper is correctness-equivalent and is not an optimized
-candidate.
+The C candidate is correctness-equivalent, but PMU-regresses because C packing
+is much slower than the production Slothy support `poly_tobytes`.  The next
+useful optimization still needs a real basemul finalizer/direct-byte reducer
+proof; Q31 is not reused here.

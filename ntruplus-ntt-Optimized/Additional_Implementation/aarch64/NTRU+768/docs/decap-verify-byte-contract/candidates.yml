@@ -13,10 +13,10 @@ candidates:
       valid_cases: 256
       invalid_cases: 1280
     pmu_p50_cycles:
-      decap_verify_basemul_plus_tobytes_r2: 3276
-      decap_verify_contract_ref: 3240
-      full_decap_current: 33360
-      full_decap_contract_ref: 33382
+      decap_verify_basemul_plus_tobytes_r2: 3288
+      decap_verify_contract_ref: 3244
+      full_decap_current: 33362
+      full_decap_contract_ref: 33385
     notes:
       - "Reference helper only; no optimized reducer or ASM."
       - "Locks API shape and oracle for future candidates."
@@ -33,3 +33,38 @@ candidates:
       - "Must not reuse Q31."
       - "Must not replace generic poly_basemul."
       - "Must pass valid and invalid decap differential tests."
+
+  - id: c_direct_bytes_candidate
+    status: implemented_pmu_regression
+    symbol: gt_decap_verify_basemul_tobytes_contract_c_candidate
+    output: bytes
+    production_default: false
+    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
+    proof_status: byte_equivalence_pass
+    reducer_range_proof: partial
+    range_capture:
+      cases: 2048
+      valid_cases: 256
+      invalid_cases: 1280
+      synthetic_cases: 512
+      c_minus_m2_min: -4095
+      c_minus_m2_max: 5823
+      hinv_min: -4095
+      hinv_max: 4095
+      r2_pre_tobytes_min: -1728
+      r2_pre_tobytes_max: 1728
+      intermediate_product_range: not_accessible_existing_poly_basemul
+    correctness:
+      direct_byte_oracle_mismatches: 0
+      decap_differential_mismatches: 0
+      valid_cases: 256
+      invalid_cases: 1280
+    pmu_p50_cycles:
+      decap_verify_contract_c_candidate: 4053
+      full_decap_contract_c_candidate: 34134
+    production_ready: false
+    notes:
+      - "Still materializes an internal poly_basemul output."
+      - "Uses a C mirror of production support-kernel poly_tobytes layout."
+      - "Correctness pass, but PMU-regresses versus reference/helper path."
+      - "Next useful candidate needs a real direct arithmetic byte reducer."

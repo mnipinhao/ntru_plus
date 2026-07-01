@@ -11,8 +11,19 @@ void poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(
     poly *r, const poly *a, const poly *b, const poly *c);
 #endif
 
+#if defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
+    defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C)
+#error "select only one decap verify basemul->tobytes contract helper"
+#endif
+
 #ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
 void gt_decap_verify_basemul_tobytes_contract_ref(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const poly *hinv);
+#endif
+
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C
+void gt_decap_verify_basemul_tobytes_contract_c_candidate(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
     const poly *hinv);
 #endif
@@ -373,7 +384,8 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     poly c, f, hinv;
     poly r1;
-#ifndef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+#if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C)
     poly r2;
 #endif
     poly m1, m2;
@@ -415,6 +427,8 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     poly_sub(&c, &c, &m2);
 #ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
     gt_decap_verify_basemul_tobytes_contract_ref(buf1, &c, &hinv);
+#elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C)
+    gt_decap_verify_basemul_tobytes_contract_c_candidate(buf1, &c, &hinv);
 #else
     poly_basemul(&r2, &c, &hinv);
     poly_tobytes(buf1, &r2);
