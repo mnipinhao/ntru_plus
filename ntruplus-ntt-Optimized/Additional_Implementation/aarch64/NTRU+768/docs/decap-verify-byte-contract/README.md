@@ -55,6 +55,14 @@ test-plan.md
 
 candidates.yml
   Candidate tracking for the reference baseline and planned optimized helper.
+
+direct-finalizer-design.md
+  Audit of production basemul final output, production poly_tobytes packing,
+  and the next direct arithmetic byte-finalizer design.
+
+model_tobytes_layout.py
+  Small byte-contract model for centered coefficient normalization and
+  support-kernel 64-coefficient packing order.
 ```
 
 ## Current Command

@@ -35,7 +35,7 @@ candidates:
       - "Must pass valid and invalid decap differential tests."
 
   - id: c_direct_bytes_candidate
-    status: implemented_pmu_regression
+    status: correctness_pass_pmu_regression
     symbol: gt_decap_verify_basemul_tobytes_contract_c_candidate
     output: bytes
     production_default: false
@@ -68,3 +68,30 @@ candidates:
       - "Uses a C mirror of production support-kernel poly_tobytes layout."
       - "Correctness pass, but PMU-regresses versus reference/helper path."
       - "Next useful candidate needs a real direct arithmetic byte reducer."
+
+  - id: direct_arithmetic_byte_finalizer
+    status: design_audit
+    symbol: gt_decap_verify_basemul_tobytes_direct_candidate
+    output: bytes
+    production_default: false
+    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_DIRECT_CANDIDATE
+    proof_status: pending
+    reducer_range_proof: pending
+    asm_status: not_started
+    model: docs/decap-verify-byte-contract/model_tobytes_layout.py
+    design_doc: docs/decap-verify-byte-contract/direct-finalizer-design.md
+    expected_saving_cycles:
+      practical_low: 150
+      practical_high: 350
+      local_ceiling_from_tobytes: 421
+    projected_full_decap_impact:
+      practical_low_percent: 0.45
+      practical_high_percent: 1.05
+      ceiling_percent: 1.27
+    production_ready: false
+    notes:
+      - "Reuse current poly_basemul product DAG and final reductions first."
+      - "Replace final st4 poly output plus later poly_tobytes load/pack."
+      - "Pack two consecutive basemul loops into one 64-coefficient/96-byte tobytes chunk."
+      - "Requires formal final-lane range proof and register-pressure audit before ASM."
+      - "Q31 is not reused and generic poly_basemul remains unchanged."

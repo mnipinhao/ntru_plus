@@ -174,11 +174,42 @@ Slothy support packer with scalar C packing while still materializing the
 
 The direct-bytes optimization ceiling starts from roughly:
 
-  decap_verify_basemul_plus_tobytes_r2 ~= 3276 cycles
+  decap_verify_basemul_plus_tobytes_r2 ~= 3288 cycles
 
 Removing the standalone tobytes boundary alone can at most recover about:
 
-  decap_tobytes_r2 ~= 425 cycles
+  decap_tobytes_r2 ~= 421 cycles
 
 Further wins require a real basemul finalizer/direct-byte reducer proof.
 ```
+
+## Direct Finalizer Byte Model
+
+The direct-finalizer audit adds a small model for the byte-emission part of a
+future ASM candidate:
+
+```sh
+python3 ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/docs/decap-verify-byte-contract/model_tobytes_layout.py
+```
+
+Expected output:
+
+```text
+centered_range_ok=1
+edge_pair_pack_ok=1
+layout_mapping_ok=1
+exhaustive_pairs=skipped
+```
+
+This model checks only:
+
+```text
+centered x in [-1728, 1728] -> x + q if negative -> [0, 3456]
+12-bit pair packing and unpacking
+the production support-kernel 64-coefficient serialization order
+```
+
+It does not prove the product/reducer range and it does not execute the
+production ASM.  The remaining reducer proof must show that the final
+`poly_basemul` lanes are always in the modeled centered range before direct
+byte packing.
