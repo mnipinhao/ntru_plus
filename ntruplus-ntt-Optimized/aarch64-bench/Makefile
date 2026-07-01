@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_stock_basemul_add_gate_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_stock_basemul_add_gate_pmu bench_gt_decap_verify_byte_contract_pmu check_gt_decap_verify_byte_contract check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -193,6 +193,11 @@ GT_STOCK_BASEMUL_ADD_GATE_PMU_NITERATIONS ?= 5000
 GT_STOCK_BASEMUL_ADD_GATE_PMU_NWARMUP ?= 100
 GT_STOCK_BASEMUL_ADD_GATE_PMU_NINPUTS ?= 4096
 GT_DIRECT32_Q31_RELEASE_GUARD_TARGET ?= bench_gt_direct32_q31_release_guard_bin
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET ?= bench_gt_decap_verify_byte_contract_pmu_bin
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NTESTS ?= 31
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NITERATIONS ?= 5000
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NWARMUP ?= 100
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS ?= 256
 
 GT_BASEMUL_VARIANTS_PMU_SOURCES = \
 	bench_gt_basemul_variants_pmu.c \
@@ -309,6 +314,22 @@ GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	$(NTRUPLUS)/NO_CE/fips202.c \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S \
+	$(GT_SUPPORT_ASM) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM)
+
+GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_SOURCES = \
+	bench_gt_decap_verify_byte_contract_pmu.c \
+	bench_kem_current_wrapper.c \
+	bench_kem_current_decap_verify_contract_ref_wrapper.c \
+	$(NTRUPLUS)/poly_gt_decap_verify_tobytes_contract_ref.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \
@@ -521,6 +542,15 @@ $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET): $(GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES
 		-DGT_DIRECT32_Q31_RELEASE_GUARD_NOINLINE \
 		$(GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES) -o $@
 
+$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET): $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_SOURCES)
+	$(CC) $(CFLAGS) \
+		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DNTESTS=$(NTESTS) \
+		-DNITERATIONS=$(NITERATIONS) \
+		-DNWARMUP=$(NWARMUP) \
+		-DNINPUTS=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS) \
+		$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_SOURCES) -o $@
+
 bench_gt_basemul_variants_pmu:
 	$(MAKE) -B $(GT_BASEMUL_VARIANTS_PMU_TARGET) NTESTS=$(GT_BASEMUL_PMU_NTESTS) NITERATIONS=$(GT_BASEMUL_PMU_NITERATIONS) NWARMUP=$(GT_BASEMUL_PMU_NWARMUP)
 	$(PYTHON) scripts/write_gt_basemul_variant_stats.py $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_VARIANTS_PMU_STATS)
@@ -567,6 +597,14 @@ bench_gt_stock_basemul_add_gate_pmu:
 	$(MAKE) -B $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) NTESTS=$(GT_STOCK_BASEMUL_ADD_GATE_PMU_NTESTS) NITERATIONS=$(GT_STOCK_BASEMUL_ADD_GATE_PMU_NITERATIONS) NWARMUP=$(GT_STOCK_BASEMUL_ADD_GATE_PMU_NWARMUP) GT_STOCK_BASEMUL_ADD_GATE_PMU_NINPUTS=$(GT_STOCK_BASEMUL_ADD_GATE_PMU_NINPUTS)
 	$(SUDO) taskset -c $(CORE) ./$(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET)
 
+bench_gt_decap_verify_byte_contract_pmu:
+	$(MAKE) -B $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET) NTESTS=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NTESTS) NITERATIONS=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NITERATIONS) NWARMUP=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NWARMUP) GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS)
+	$(SUDO) taskset -c $(CORE) ./$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET)
+
+check_gt_decap_verify_byte_contract:
+	$(MAKE) -B $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET) NTESTS=1 NITERATIONS=1 NWARMUP=1 GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS=$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_NINPUTS)
+	$(SUDO) taskset -c $(CORE) ./$(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET)
+
 check_gt_basemul_add_direct32_q31_reducer:
 	$(PYTHON) $(NTRUPLUS)/gt_test/analyze_gt_basemul_add_direct32_reducers.py
 
@@ -600,4 +638,4 @@ bench-matrix:
 	$(PYTHON) scripts/run_pi5_matrix.py
 
 clean:
-	-$(RM) $(TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET) *.textsizes *.stats *.d hal/*.d

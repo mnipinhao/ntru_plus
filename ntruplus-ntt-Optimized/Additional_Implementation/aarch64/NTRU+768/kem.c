@@ -11,6 +11,12 @@ void poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(
     poly *r, const poly *a, const poly *b, const poly *c);
 #endif
 
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+void gt_decap_verify_basemul_tobytes_contract_ref(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const poly *hinv);
+#endif
+
 #ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
@@ -366,7 +372,10 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     int8_t fail;
     
     poly c, f, hinv;
-    poly r1, r2;
+    poly r1;
+#ifndef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+    poly r2;
+#endif
     poly m1, m2;
     
     poly_frombytes(&c, ct);
@@ -404,9 +413,12 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     poly_ntt(&m2, &m1);
     poly_sub(&c, &c, &m2);
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+    gt_decap_verify_basemul_tobytes_contract_ref(buf1, &c, &hinv);
+#else
     poly_basemul(&r2, &c, &hinv);
-
     poly_tobytes(buf1, &r2);
+#endif
     hash_g(buf2, buf1);
     fail = poly_sotp_decode(msg, &m1, buf2);
     
