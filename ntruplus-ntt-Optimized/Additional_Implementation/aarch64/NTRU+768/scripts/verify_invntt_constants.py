@@ -2,7 +2,7 @@
 """Verify GT inverse NTT ASM constants.
 
 This script checks the normal-centered constants used by
-asm/slothy/invntt_opt.s.  These constants are deliberately not Montgomery-form;
+asm/slothy/legacy/invntt_opt.s.  These constants are deliberately not Montgomery-form;
 GT basemul lambda tables are Montgomery-form and are not accepted here.
 """
 
@@ -19,9 +19,9 @@ F1 = 22
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ASM = ROOT / "asm" / "slothy" / "invntt_opt.s"
-BRANCHFOLD = ROOT / "asm" / "slothy" / "invntt_branchfold_vecs.inc"
-BRANCHFOLD_RMINUS1 = ROOT / "asm" / "slothy" / "invntt_branchfold_vecs_rminus1.inc"
+ASM = ROOT / "asm" / "slothy" / "legacy" / "invntt_opt.s"
+BRANCHFOLD = ROOT / "asm" / "slothy" / "production" / "invntt_branchfold_vecs.inc"
+BRANCHFOLD_RMINUS1 = ROOT / "asm" / "slothy" / "production" / "invntt_branchfold_vecs_rminus1.inc"
 
 
 def centered(x: int) -> int:

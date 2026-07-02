@@ -40,9 +40,9 @@ Normal GT production：
 ```text
 poly input
   -> asm/gt/my_ntt.s prologue
-  -> asm/slothy/my_ntt_phase123.n1.opt.s
+  -> asm/slothy/production/my_ntt_phase123.n1.opt.s
        natural input -> GT split/twist/DFT3 -> three row scratch buffers
-  -> asm/slothy/my_32ntt.opt.s::_ntt32_8way, called once per row
+  -> asm/slothy/production/my_32ntt.opt.s::_ntt32_8way, called once per row
        NTT32 stage1..5 -> block-major final store
   -> GT block-major NTT-domain polynomial
 ```
@@ -58,7 +58,7 @@ poly input
 | `54` | register aliases | public ABI: `x0=dst`, `x1=src` |
 | `62` | prologue | constants load、callee-saved SIMD 保存、stack frame |
 | `74` | scratch setup | `row0=sp+32`, `row1=sp+544`, `row2=sp+1056` |
-| `79` | Phase123 include | `asm/slothy/my_ntt_phase123.n1.opt.s` |
+| `79` | Phase123 include | `asm/slothy/production/my_ntt_phase123.n1.opt.s` |
 | `81` | NTT32 row calls | 三個 row 依序呼叫 row kernel，output offset 是 `0/256/512` |
 | `100` | epilogue | restore stack/GPR/SIMD |
 | `108` | `zetas` | q、Barrett/Montgomery/DFT3 constants packed in `q0` |
@@ -68,9 +68,9 @@ Generated files：
 
 | file | line | 用途 |
 | --- | ---: | --- |
-| `asm/slothy/my_ntt_phase123.n1.opt.s` | `4`..`2682` | Phase123 N1 scheduled body |
-| `asm/slothy/my_32ntt.opt.s` | `81` | normal block-major `_ntt32_8way` entry |
-| `asm/slothy/my_ntt_phase123_flat.sym.s` | full file | Phase123 Slothy symbolic/regeneration source |
+| `asm/slothy/production/my_ntt_phase123.n1.opt.s` | `4`..`2682` | Phase123 N1 scheduled body |
+| `asm/slothy/production/my_32ntt.opt.s` | `81` | normal block-major `_ntt32_8way` entry |
+| `asm/slothy/inputs/my_ntt_phase123_flat.sym.s` | full file | Phase123 Slothy symbolic/regeneration source |
 
 ## Phase123 A/B/C experiment status
 
@@ -85,5 +85,5 @@ Generated files：
 
 A/B/C 沒有比 baseline 好，所以不保留在 production 主檔，也不再保留未追蹤
 的 generated experiment tree。之後若要重開 Phase123 排程，從
-`asm/slothy/my_ntt_phase123_flat.sym.s` 和 `asm/slothy/optimize_phase123_split.py`
+`asm/slothy/inputs/my_ntt_phase123_flat.sym.s` 和 `asm/slothy/inputs/optimize_phase123_split.py`
 開始，而不是把 selector 加回 `asm/gt/my_ntt.s`。

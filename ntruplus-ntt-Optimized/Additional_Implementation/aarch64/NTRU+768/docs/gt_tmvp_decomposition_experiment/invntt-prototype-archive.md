@@ -3,7 +3,7 @@
 2026-06-25 cleanup 後，production wrapper 改 include：
 
 ```text
-asm/slothy/invntt_opt.production.s
+asm/slothy/production/invntt_opt.production.s
 ```
 
 rowstage45/post fused prototypes、bench-only symbols、old gather / fastscale
@@ -20,13 +20,13 @@ asm/slothy/archive/invntt_rowstage45_post_prototypes.s
 
 | original range | archived content |
 | --- | --- |
-| `asm/slothy/invntt_opt.s:659-705` | fastscale final-store prototype |
-| `asm/slothy/invntt_opt.s:828-1203` | post Slothy prototype helpers，包括 N1/A72 post stripe schedules |
-| `asm/slothy/invntt_opt.s:1204-2399` | rowstage45/post fused prototype macros |
-| `asm/slothy/invntt_opt.s:2459-2908` | prototype-specific stack size/prologue/entry blocks |
-| `asm/slothy/invntt_opt.s:2924-2946` | old gather input materialization fallback |
-| `asm/slothy/invntt_opt.s:3251-3503` | `INVNTT_BENCH_STAGES` bench-only symbols |
-| `asm/slothy/invntt_opt.s:3511-3524` | old gather offset table |
+| `asm/slothy/legacy/invntt_opt.s:659-705` | fastscale final-store prototype |
+| `asm/slothy/legacy/invntt_opt.s:828-1203` | post Slothy prototype helpers，包括 N1/A72 post stripe schedules |
+| `asm/slothy/legacy/invntt_opt.s:1204-2399` | rowstage45/post fused prototype macros |
+| `asm/slothy/legacy/invntt_opt.s:2459-2908` | prototype-specific stack size/prologue/entry blocks |
+| `asm/slothy/legacy/invntt_opt.s:2924-2946` | old gather input materialization fallback |
+| `asm/slothy/legacy/invntt_opt.s:3251-3503` | `INVNTT_BENCH_STAGES` bench-only symbols |
+| `asm/slothy/legacy/invntt_opt.s:3511-3524` | old gather offset table |
 
 ## How to use it
 

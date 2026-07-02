@@ -18,7 +18,7 @@ GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/stock/c
 STOCK_NTT_ASM = asm/stock/ntt.s
 STOCK_BASE_ASM = asm/stock/base.s
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
-GT_BASEINV_BATCH_FINISH_ASM = asm/slothy/baseinv_batch_finish_loop_n1.S
+GT_BASEINV_BATCH_FINISH_ASM = asm/slothy/production/baseinv_batch_finish_loop_n1.S
 GT_BASEINV_FQINV_ASM = asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_BASE_ASM = asm/gt/base_gt.S
@@ -29,16 +29,16 @@ GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
 GT_BASE_RMINUS1_OPT_ASM = asm/gt/base_gt_rminus1_opt_wrapper.S
 GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/base_gt_scaled_r_input_opt_wrapper.S
 SLOTHY_MICROKERNEL_ASM = \
-	asm/slothy/baseinv_batch_finish.n1.opt.S \
-	asm/slothy/baseinv_batch_finish_n1_wrapper.S \
+	asm/slothy/microkernels/baseinv_batch_finish.n1.opt.S \
+	asm/slothy/microkernels/baseinv_batch_finish_n1_wrapper.S \
 	asm/slothy/microkernels/base_gt_add32_rminus1_finalize_n1_wrapper.S \
-	asm/slothy/base_gt_add32_full_pipeline.n1.opt.S \
-	asm/slothy/base_gt_add32_full_pipeline_n1_wrapper.S
+	asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S \
+	asm/slothy/microkernels/base_gt_add32_full_pipeline_n1_wrapper.S
 SLOTHY_MICROKERNEL_GENERATED = \
-	asm/slothy/baseinv_batch_finish.n1.opt.S \
+	asm/slothy/microkernels/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/microkernels/base_gt_add32_rminus1_finalize.n1.opt.S \
-	asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
-GT_NTT_ASM_PHASE123_N1 = asm/gt/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+	asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
+GT_NTT_ASM_PHASE123_N1 = asm/gt/my_ntt_phase123_n1.s asm/slothy/production/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
 GT_INVNTT_ASM = asm/gt/inv_my_ntt.s
 GT_INVNTT_RMINUS1_ASM = asm/gt/inv_my_ntt_rminus1.S

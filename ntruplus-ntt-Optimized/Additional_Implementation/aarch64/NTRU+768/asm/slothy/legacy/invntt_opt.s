@@ -3682,9 +3682,9 @@ inv_untwist_vecs:
 .align 4
 inv_branchfold_vecs:
 .ifdef INVNTT_INPUT_RMINUS1
-    .include "asm/slothy/invntt_branchfold_vecs_rminus1.inc"
+    .include "asm/slothy/production/invntt_branchfold_vecs_rminus1.inc"
 .else
-    .include "asm/slothy/invntt_branchfold_vecs.inc"
+    .include "asm/slothy/production/invntt_branchfold_vecs.inc"
 .endif
 
 .purgem BARRETT_REDUCE

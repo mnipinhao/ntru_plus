@@ -1,7 +1,7 @@
 /*
  * Benchmark-only Slothy input for InvNTT rminus1 row1 stage45 stripe-pair
  * windows.  This file is generated from INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH
- * in asm/slothy/invntt_opt.production.s by
+ * in asm/slothy/production/invntt_opt.production.s by
  * window_inputs/materialize_invntt_rminus1_row1_stage45_stripes.py.
  *
  * It is not included by production wrappers and must not replace

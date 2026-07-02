@@ -32,4 +32,4 @@
 .equ INVNTT_DARWIN_NO_WEAK, 1
 #endif
 
-#include "../slothy/invntt_opt.production.s"
+#include "../slothy/production/invntt_opt.production.s"

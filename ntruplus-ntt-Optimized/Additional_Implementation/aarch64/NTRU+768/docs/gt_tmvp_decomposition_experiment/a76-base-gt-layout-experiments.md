@@ -144,7 +144,7 @@ ld4 c at about cycle 82 in the annotated old add path
 
 ```text
 GT_BASE_ADD32_ASM = asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
-asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
+asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 ```
 
 在這個 full-pipeline Slothy path 中：

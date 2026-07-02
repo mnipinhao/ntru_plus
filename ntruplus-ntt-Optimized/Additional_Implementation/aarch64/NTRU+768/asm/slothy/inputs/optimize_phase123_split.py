@@ -16,7 +16,7 @@ def load_target(name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", default="my_ntt_phase123_flat.sym.s")
-    ap.add_argument("--output", default="my_ntt_phase123.n1.opt.s")
+    ap.add_argument("--output", default="../production/my_ntt_phase123.n1.opt.s")
     ap.add_argument("--target", default="n1")
     ap.add_argument("--region", action="append", required=True)
     ap.add_argument("--stalls", type=int, default=192)

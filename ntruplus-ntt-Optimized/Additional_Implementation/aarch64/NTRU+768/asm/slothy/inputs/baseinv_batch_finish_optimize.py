@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Slothy driver for the full GT basemul_add32 one-stripe prototype.
+"""Draft Slothy driver for the GT batch baseinv finish prototype.
 
-This is intentionally prototype-only.  It writes a generated candidate file
-under asm/slothy and does not modify production assembly or Makefile wiring.
+This writes candidate output only.  It must not overwrite production assembly
+or production-wired generated files.
 """
 
 from __future__ import annotations
@@ -48,13 +48,11 @@ def load_target(name: str):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="base_gt_add32_full_pipeline.sym.S")
-    parser.add_argument("--output", default="base_gt_add32_full_pipeline.n1.opt.S")
+    parser.add_argument("--input", default="baseinv_batch_finish.sym.S")
+    parser.add_argument("--output", default="../microkernels/baseinv_batch_finish.n1.opt.S")
     parser.add_argument("--target", default=os.environ.get("SLOTHY_TARGET", "n1"))
-    parser.add_argument("--stalls", type=int, default=256)
+    parser.add_argument("--stalls", type=int, default=96)
     parser.add_argument("--allow-spills", action="store_true")
-    parser.add_argument("--split-heuristic", action="store_true",
-                        help="Use a looser first attempt for this large region.")
     args = parser.parse_args()
 
     add_slothy_path()
@@ -69,7 +67,7 @@ def main() -> None:
     slothy = Slothy(
         AArch64_Neon,
         load_target(args.target),
-        logger=logging.getLogger("slothy-base-gt-add32-full-pipeline"),
+        logger=logging.getLogger("slothy-baseinv-batch-finish"),
     )
     slothy.load_source_from_file(str(source))
     slothy.config.variable_size = True
@@ -78,11 +76,9 @@ def main() -> None:
     slothy.config.allow_useless_instructions = True
     slothy.config.constraints.allow_spills = args.allow_spills
     slothy.config.constraints.stalls_first_attempt = args.stalls
-    if args.split_heuristic:
-        slothy.config.constraints.stalls_first_attempt = max(args.stalls, 384)
     slothy.config.reserved_regs = [
-        "x6",
-        "x7",
+        "x2",
+        "x3",
         "x8",
         "x9",
         "x10",
@@ -107,11 +103,12 @@ def main() -> None:
         "x29",
         "x30",
         "sp",
+        "v0",
     ]
 
     slothy.optimize(
-        start="slothy_start_base_gt_add32_full_pipeline",
-        end="slothy_end_base_gt_add32_full_pipeline",
+        start="baseinv_batch_finish8_slothy_start",
+        end="baseinv_batch_finish8_slothy_end",
     )
     slothy.write_source_to_file(str(output))
 

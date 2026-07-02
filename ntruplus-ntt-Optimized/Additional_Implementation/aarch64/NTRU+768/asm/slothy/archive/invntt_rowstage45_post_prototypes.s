@@ -1,15 +1,15 @@
 /*
  * Archive of inverse-NTT rowstage45/post prototype and bench fragments.
  *
- * Extracted from asm/slothy/invntt_opt.s on 2026-06-25 when production
- * wrappers were moved to asm/slothy/invntt_opt.production.s.
+ * Extracted from asm/slothy/legacy/invntt_opt.s on 2026-06-25 when production
+ * wrappers were moved to asm/slothy/production/invntt_opt.production.s.
  *
  * This file is not included by production builds.  It preserves experiment
  * fragments so the production file can stay readable.  The legacy superset
- * asm/slothy/invntt_opt.s still remains as historical context for old wrappers.
+ * asm/slothy/legacy/invntt_opt.s still remains as historical context for old wrappers.
  */
 
-/* ---- original asm/slothy/invntt_opt.s:659-705: fastscale final-store prototype ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:659-705: fastscale final-store prototype ---- */
 .macro POST_STORE_PTR_FASTSCALE xvec, ptr, off_lo, off_hi
     /*
      * Experimental exactness probe:
@@ -58,7 +58,7 @@
     str      d23, [\ptr, #\off_hi]
 .endm
 
-/* ---- original asm/slothy/invntt_opt.s:828-1203: post Slothy prototype helpers that are not active production ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:828-1203: post Slothy prototype helpers that are not active production ---- */
 .macro FUSED_POST_STRIPE_SLOTHY ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
     /*
      * A72 Slothy schedule for one production-equivalent fused post-row stripe.
@@ -436,7 +436,7 @@
 .endm
 
 
-/* ---- original asm/slothy/invntt_opt.s:1204-2399: rowstage45/post fused prototype macros ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:1204-2399: rowstage45/post fused prototype macros ---- */
 .macro POST_STORE_PTR_BRANCHFOLD_SAFE xvec, ptr, off_lo, off_hi
     /*
      * Branchfold final store using only v4-v6 and v10-v13 as temporaries.
@@ -1634,7 +1634,7 @@
     add x2, sp, #1696
     INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH_KEEP01_STORE2 \j, v12, v15
 
-/* ---- original asm/slothy/invntt_opt.s:2459-2908: prototype entry blocks and stack variants ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:2459-2908: prototype entry blocks and stack variants ---- */
 .ifdef INVNTT_USE_ROWSTAGE45_POST_COMBINED_V6_PROTO
 .equ INVNTT_STACK_SIZE, 1760
 .equ INVNTT_SAVED_X0_OFFSET, 1768
@@ -2086,7 +2086,7 @@
     ret
 .endif
 
-/* ---- original asm/slothy/invntt_opt.s:2924-2946: old gather input materialization fallback ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:2924-2946: old gather input materialization fallback ---- */
 .ifdef INVNTT_USE_OLD_GATHER
     add x2, sp, #32
     adr x3, inv_gather_offsets
@@ -2111,7 +2111,7 @@
     RUN_INVNTT32_ROW
 .else
 
-/* ---- original asm/slothy/invntt_opt.s:3251-3503: bench-only symbols for row/post component probes ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:3251-3503: bench-only symbols for row/post component probes ---- */
 .ifdef INVNTT_BENCH_STAGES
 .global poly_invntt_bench_rows
 .global _poly_invntt_bench_rows
@@ -2366,7 +2366,7 @@ _poly_invntt_bench_post_finalmerge:
     ret
 .endif
 
-/* ---- original asm/slothy/invntt_opt.s:3511-3524: old gather offset table ---- */
+/* ---- original asm/slothy/legacy/invntt_opt.s:3511-3524: old gather offset table ---- */
 .align 4
 inv_gather_offsets:
     .hword      0,   1200,    864,     16,   1216,    880,     32,   1232

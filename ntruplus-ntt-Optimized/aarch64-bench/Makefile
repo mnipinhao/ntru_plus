@@ -37,12 +37,12 @@ GT_INVNTT_SOURCE = $(GT_INVNTT_ASM)
 endif
 GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/gt/base_gt.opt.s
 GT_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt.s
-GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
+GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
 GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt_phase123_n1.s
-GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
+GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
 GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt.s
 GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt_rminus1.S
-GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/baseinv_batch_finish_loop_n1.S
+GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/production/baseinv_batch_finish_loop_n1.S
 GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/variants/base_gt_add32_direct32_q31_tobytes_contract_encap.S

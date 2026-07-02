@@ -14,7 +14,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SLOTHY_DIR = SCRIPT_DIR.parent
-PRODUCTION = SLOTHY_DIR / "invntt_opt.production.s"
+PRODUCTION = SLOTHY_DIR / "production" / "invntt_opt.production.s"
 OUTPUT = SCRIPT_DIR / "invntt_rminus1_row1_stage45_stripes_marked.s"
 
 PARENT_START = "slothy_start_invntt_block_row1_stage45"
@@ -131,7 +131,7 @@ def source_header() -> str:
     return """/*
  * Benchmark-only Slothy input for InvNTT rminus1 row1 stage45 stripe-pair
  * windows.  This file is generated from INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH
- * in asm/slothy/invntt_opt.production.s by
+ * in asm/slothy/production/invntt_opt.production.s by
  * window_inputs/materialize_invntt_rminus1_row1_stage45_stripes.py.
  *
  * It is not included by production wrappers and must not replace

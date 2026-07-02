@@ -2,14 +2,14 @@
  * Production GT forward NTT.
  *
  * Active path:
- *   - Slothy-scheduled Phase123 (`asm/slothy/my_ntt_phase123.n1.opt.s`)
+ *   - Slothy-scheduled Phase123 (`asm/slothy/production/my_ntt_phase123.n1.opt.s`)
  *   - three fused 8-way NTT32 row kernels
  *   - normal block-major output
  *
  * The old GAS PHASE123_ITER fallback, NTT32 row-buffer scatter fallback, and
  * Phase123 A/B/C experiment selectors are intentionally not kept here.  The
  * flat symbolic Phase123 source used for Slothy regeneration remains in
- * `asm/slothy/my_ntt_phase123_flat.sym.s`.
+ * `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`.
  */
 
 .macro CALL_NTT32_8WAY
@@ -58,7 +58,7 @@ _gt_block_major_poly_ntt:
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
-    .include "asm/slothy/my_ntt_phase123.n1.opt.s"
+    .include "asm/slothy/production/my_ntt_phase123.n1.opt.s"
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas

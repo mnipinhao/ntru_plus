@@ -13,4 +13,4 @@
 .equ INVNTT_USE_POST_BRANCHFOLD, 1
 .equ INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, 1
 .equ INVNTT_USE_POST_BRANCHFOLD_A72_SLOTHY, 1
-.include "asm/slothy/invntt_opt.s"
+.include "asm/slothy/legacy/invntt_opt.s"

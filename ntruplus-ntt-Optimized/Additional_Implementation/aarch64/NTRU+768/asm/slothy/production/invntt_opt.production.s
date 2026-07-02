@@ -2,7 +2,7 @@
  * Production-only AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
  * layout produced by asm/gt/my_ntt.s.
  *
- * This file is intentionally smaller than asm/slothy/invntt_opt.s.  It keeps
+ * This file is intentionally smaller than asm/slothy/legacy/invntt_opt.s.  It keeps
  * only the path currently wired into production wrappers:
  *   - direct physical input -> inverse NTT32 stage123
  *   - stage123 stripe scratch laid out for stage45 consumption
@@ -13,7 +13,7 @@
  *
  * Rowstage45/post prototypes, bench-only symbols, old gather, and fastscale
  * experiments live in asm/slothy/archive/invntt_rowstage45_post_prototypes.s
- * and the legacy superset asm/slothy/invntt_opt.s.
+ * and the legacy superset asm/slothy/legacy/invntt_opt.s.
  */
 
 .macro BARRETT_REDUCE reg, tmp
@@ -1273,9 +1273,9 @@ invntt32_stage45_consts:
 .align 4
 inv_branchfold_vecs:
 .ifdef INVNTT_INPUT_RMINUS1
-    .include "asm/slothy/invntt_branchfold_vecs_rminus1.inc"
+    .include "asm/slothy/production/invntt_branchfold_vecs_rminus1.inc"
 .else
-    .include "asm/slothy/invntt_branchfold_vecs.inc"
+    .include "asm/slothy/production/invntt_branchfold_vecs.inc"
 .endif
 
 .purgem BARRETT_REDUCE

@@ -144,10 +144,10 @@ Source of truth:
 ```text
 asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
 includes:
-asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
+asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 
 symbolic source:
-asm/slothy/base_gt_add32_full_pipeline.sym.S
+asm/slothy/inputs/base_gt_add32_full_pipeline.sym.S
 ```
 
 One loop handles eight independent physical quartic products.  Memory is

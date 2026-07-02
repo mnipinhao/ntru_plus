@@ -1,22 +1,27 @@
 # Forward NTT Slothy Sources
 
-This directory is now split by role:
+This directory is split by role:
 
-- production-linked Slothy outputs and their active regeneration inputs stay in
-  `asm/slothy/`.
-- isolated benchmark/proof microkernels that are not wired into production stay
-  in `asm/slothy/microkernels/`.
-- archived prototypes that should remain readable but inactive stay in
-  `asm/slothy/archive/`.
-- support-kernel replacements for stock pack/crepmod3 helpers stay in
-  `asm/slothy/support_kernels/`.
+- `production/`: Slothy outputs and include files wired into current GT
+  production builds.
+- `inputs/`: symbolic sources, contracts, DAG notes, and kernel-specific
+  Slothy drivers used to regenerate selected production or microkernel outputs.
+- `microkernels/`: isolated benchmark/proof kernels that are not production
+  defaults.
+- `legacy/`: large legacy experiment supersets still needed by opt-in wrappers
+  or validation scripts.
+- `archive/`: readable inactive prototype extracts.
+- `support_kernels/`: support-kernel replacements for stock pack/crepmod3
+  helpers.
 
 The old generic `optimize.py` and `optimize_gt_kernels.py` drivers were
 removed.  Use the kernel-specific drivers instead, such as
-`baseinv_batch_finish_optimize.py`, `base_gt_add32_full_pipeline_optimize.py`,
-`optimize_phase123_split.py`, or the driver inside the relevant subdirectory.
+`inputs/baseinv_batch_finish_optimize.py`,
+`inputs/base_gt_add32_full_pipeline_optimize.py`,
+`inputs/optimize_phase123_split.py`, or the driver inside the relevant
+subdirectory.
 
-`asm/slothy/my_32ntt.opt.s` is the only retained NTT32 row kernel wired into
+`asm/slothy/production/my_32ntt.opt.s` is the only retained NTT32 row kernel wired into
 the production GT forward NTT.  The older rowpack, shadow-base, and forward
 window experiment artifacts were removed from the active tree after they failed
 to become production candidates.
@@ -34,13 +39,13 @@ regenerate the file from scratch.
 
 The first half of `asm/gt/my_ntt.s` is the N1 Slothy-scheduled Phase123 path:
 
-- symbolic source used to run Slothy: `asm/slothy/my_ntt_phase123_flat.sym.s`
+- symbolic source used to run Slothy: `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`
 - scheduled wrapper used by the default GT KEM builds:
   `asm/gt/my_ntt_phase123_n1.s`
 - scheduled region included by the wrapper:
-  `asm/slothy/my_ntt_phase123.n1.opt.s`
+  `asm/slothy/production/my_ntt_phase123.n1.opt.s`
 - local driver used for the split-heuristic run:
-  `asm/slothy/optimize_phase123_split.py`
+  `asm/slothy/inputs/optimize_phase123_split.py`
 
 `asm/gt/my_ntt.s` directly includes the scheduled region.  The old
 macro-expanded GAS `PHASE123_ITER` fallback and the Phase123 A/B/C experiment
@@ -49,7 +54,7 @@ selector were removed from the production file.
 The default Makefile path uses:
 
 ```sh
-GT_NTT_ASM = asm/gt/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM = asm/gt/my_ntt_phase123_n1.s asm/slothy/production/my_32ntt.opt.s
 ```
 
 The flat symbolic file expands the eight iterations explicitly and then
@@ -94,22 +99,22 @@ The active inverse NTT path is intentionally narrow:
 - `asm/gt/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
   directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
   branch-constant folded final merge path through assembler-time gates, then
-  includes `asm/slothy/invntt_opt.production.s`.
-- `asm/slothy/invntt_opt.production.s` is the current inverse implementation
+  includes `asm/slothy/production/invntt_opt.production.s`.
+- `asm/slothy/production/invntt_opt.production.s` is the current inverse implementation
   wired into production tests and benchmarks.  The older
-  `asm/slothy/invntt_opt.s` remains as a legacy experiment superset.
+  `asm/slothy/legacy/invntt_opt.s` remains as a legacy experiment superset.
 - `asm/slothy/archive/invntt_rowstage45_post_prototypes.s` archives rowstage45
   and post prototypes that are not included by production wrappers.
-- `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
-  `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
-  Slothy sources for the promoted scheduled regions.
+- retained clean Slothy source fragments for older InvNTT experiments live only
+  in `asm/slothy/legacy/invntt_opt.s` and
+  `asm/slothy/archive/invntt_rowstage45_post_prototypes.s`.
 - `asm/variants/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
   mathematical path, but it uses an A72 Slothy schedule for the branchfold
   fused post stripe.  It is not production default until Pi 5 measurements
   show a clear win.
-- `asm/slothy/invntt_post_branchfold_reduce_clean.slothy.s` and
-  `asm/slothy/invntt_post_branchfold_reduce_a72.opt.s` are the clean and
-  generated sources for that opt-in branchfold schedule.
+- the A72 opt-in branchfold schedule is retained through
+  `asm/slothy/legacy/invntt_opt.s` and
+  `asm/variants/inv_my_ntt_post_branchfold_a72.s`.
 - `asm/gt/base_gt.opt.s` and `asm/gt/inv_my_ntt.s` are the current Pi 5 promoted
   pair.  The current result summary and rerun commands live in
   `docs/slothy_pi5_bench_matrix.md`.

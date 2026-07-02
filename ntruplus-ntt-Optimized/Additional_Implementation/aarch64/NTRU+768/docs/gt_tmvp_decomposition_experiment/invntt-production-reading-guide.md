@@ -4,10 +4,10 @@
 inverse NTT 用的讀碼索引。production wrapper 現在 include 的主檔是：
 
 ```text
-asm/slothy/invntt_opt.production.s
+asm/slothy/production/invntt_opt.production.s
 ```
 
-原本的 `asm/slothy/invntt_opt.s` 保留成 legacy / experiment superset；
+原本的 `asm/slothy/legacy/invntt_opt.s` 保留成 legacy / experiment superset；
 rowstage45/post prototypes 和 bench-only fragments 另外集中到：
 
 ```text
@@ -94,7 +94,7 @@ KEM benchmark 沒有比 standard rminus1 path 快，所以不視為 production d
 
 ## What is intentionally not in production
 
-`asm/slothy/invntt_opt.production.s` 不保留：
+`asm/slothy/production/invntt_opt.production.s` 不保留：
 
 - `INVNTT_USE_OLD_GATHER`
 - `INVNTT_USE_POST_FASTSCALE`

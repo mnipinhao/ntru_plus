@@ -19,4 +19,4 @@
 #ifdef __APPLE__
 .equ INVNTT_DARWIN_NO_WEAK, 1
 #endif
-.include "asm/slothy/invntt_opt.production.s"
+.include "asm/slothy/production/invntt_opt.production.s"

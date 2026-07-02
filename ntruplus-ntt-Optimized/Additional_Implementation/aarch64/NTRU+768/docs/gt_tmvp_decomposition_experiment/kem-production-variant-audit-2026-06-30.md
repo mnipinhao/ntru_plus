@@ -31,11 +31,11 @@ GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/asm/slothy/support_kernels/support_kernels.n1.opt.S
   ntruplus/asm/stock/cbd.s
   ntruplus/asm/gt/my_ntt_phase123_n1.s
-  ntruplus/asm/slothy/my_32ntt.opt.s
+  ntruplus/asm/slothy/production/my_32ntt.opt.s
   ntruplus/asm/gt/inv_my_ntt.s
   ntruplus/asm/gt/inv_my_ntt_rminus1.S
   ntruplus/poly_gt_baseinv_batch.c
-  ntruplus/asm/slothy/baseinv_batch_finish_loop_n1.S
+  ntruplus/asm/slothy/production/baseinv_batch_finish_loop_n1.S
   ntruplus/asm/gt/gt_fqinv15.S
   ntruplus/asm/gt/base_gt_opt_noadd_wrapper.S
   ntruplus/asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
@@ -84,7 +84,7 @@ object column below is recorded as "linked binary only".
 
 | function | production symbol | source file | linked? | gate | notes |
 | --- | --- | --- | --- | --- | --- |
-| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/my_ntt_phase123_n1.s`, `asm/slothy/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
+| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/my_ntt_phase123_n1.s`, `asm/slothy/production/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
 | Generic InvNTT | `poly_invntt` | `asm/gt/inv_my_ntt.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
 | rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/inv_my_ntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
 | Generic basemul | `poly_basemul` | `asm/gt/base_gt_opt_noadd_wrapper.S` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |

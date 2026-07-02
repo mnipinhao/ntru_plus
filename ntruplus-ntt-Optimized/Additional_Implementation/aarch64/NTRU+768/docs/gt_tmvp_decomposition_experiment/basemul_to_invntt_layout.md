@@ -274,7 +274,7 @@ Files:
 
 ```text
 asm/gt/inv_my_ntt_rminus1.S
-asm/slothy/invntt_opt.production.s
+asm/slothy/production/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 ```
 
@@ -345,7 +345,7 @@ Files:
 ```text
 asm/base_gt_rminus1_to_stage123scratch_wrapper.S
 asm/gt/inv_my_ntt_rminus1.S
-asm/slothy/invntt_opt.production.s
+asm/slothy/production/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 kem.c
 gt_test/kem_component_profiler.c

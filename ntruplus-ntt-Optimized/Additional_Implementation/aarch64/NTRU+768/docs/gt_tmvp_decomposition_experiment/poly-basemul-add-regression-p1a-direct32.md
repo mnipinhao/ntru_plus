@@ -639,8 +639,8 @@ complete and before the current product Montgomery fold starts.
 Source:
 
 ```text
-asm/slothy/base_gt_add32_full_pipeline.sym.S
-asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
+asm/slothy/inputs/base_gt_add32_full_pipeline.sym.S
+asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 ```
 
 Current allocated physical map at the P-boundary:
