@@ -78,7 +78,7 @@ void poly_basemul_add_stock_noce_experimental(poly *r, const poly *a,
 void poly_basemul_add_direct32_finalizer_prototype(poly *r, const poly *a,
                                                    const poly *b,
                                                    const poly *c);
-void poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(poly *r,
+void poly_basemul_add_encap_direct32_q31_tobytes_contract(poly *r,
                                                               const poly *a,
                                                               const poly *b,
                                                               const poly *c);
@@ -336,7 +336,7 @@ static void direct32_basemul_add(poly *r, const poly *a, const poly *b,
 static void direct32_q31_basemul_add(poly *r, const poly *a, const poly *b,
                                      const poly *c)
 {
-  poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(r, a, b, c);
+  poly_basemul_add_encap_direct32_q31_tobytes_contract(r, a, b, c);
 }
 
 static int prepare_inputs(void)
@@ -525,7 +525,7 @@ static int prepare_inputs(void)
 
     poly_basemul_add(&g_out_current[input_idx], &g_h[input_idx],
                      &g_r[input_idx], &g_m[input_idx]);
-    poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(
+    poly_basemul_add_encap_direct32_q31_tobytes_contract(
         &g_out_direct32_q31_add[input_idx], &g_h[input_idx], &g_r[input_idx],
         &g_m[input_idx]);
     poly_tobytes(tobytes_current, &g_out_current[input_idx]);
@@ -693,7 +693,7 @@ static NOINLINE void target_encap_basemul_add_direct32_q31(size_t idx)
 {
   size_t input_idx = idx % NINPUTS;
 
-  poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(
+  poly_basemul_add_encap_direct32_q31_tobytes_contract(
       &g_out_direct32_q31_add[input_idx], &g_h[input_idx], &g_r[input_idx],
       &g_m[input_idx]);
 }

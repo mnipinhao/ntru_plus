@@ -41,7 +41,7 @@ GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/asm/base_gt_add32_full_pipeline_inline_wrapper.S
   ntruplus/asm/base_gt_scaled_r_input_opt_wrapper.S
   ntruplus/asm/base_gt_rminus1_opt_wrapper.S
-  ntruplus/asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S
+  ntruplus/asm/base_gt_add32_direct32_q31_tobytes_contract_encap.S
 
 VARIANT_CFLAGS =
   -DGT_PRODUCTION_USE_SCALED_KEYPAIR
@@ -74,7 +74,7 @@ poly_invntt_from_rminus1 / gt_block_major_poly_invntt_from_rminus1
 poly_baseinv_scaled_r
 poly_basemul / _poly_basemul
 poly_basemul_add / _poly_basemul_add
-poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+poly_basemul_add_encap_direct32_q31_tobytes_contract
 poly_basemul_scaled_r_input / _poly_basemul_scaled_r_input
 poly_basemul_rminus1 / _poly_basemul_rminus1
 ```
@@ -89,7 +89,7 @@ object column below is recorded as "linked binary only".
 | rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/inv_my_ntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
 | Generic basemul | `poly_basemul` | `asm/base_gt_opt_noadd_wrapper.S` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
 | Basemul add | `poly_basemul_add` | `asm/base_gt_add32_full_pipeline_inline_wrapper.S` | yes | none | generic symbol remains the production arithmetic-correct implementation |
-| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype` | `asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
+| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/base_gt_add32_direct32_q31_tobytes_contract_encap.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
 | rminus1 basemul | `poly_basemul_rminus1` | `asm/base_gt_rminus1_opt_wrapper.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
 | Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/base_gt_scaled_r_input_opt_wrapper.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
 | Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `gt_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM` | closed-form/batch baseinv path used by current keygen |
@@ -97,7 +97,7 @@ object column below is recorded as "linked binary only".
 | crepmod3 | `poly_crepmod3` | `asm/slothy/support_kernels/support_kernels.n1.opt.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
 
 Default current GT production contains both `poly_basemul_add` and
-`poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype` at distinct
+`poly_basemul_add_encap_direct32_q31_tobytes_contract` at distinct
 addresses.  The promoted default binary has exactly one call into the Q31
 symbol from the encap path (`crypto_kem_enc_derand.isra.0` after inlining the
 contract helper).  The no-Q31 fallback binary contains no `q31` symbol.

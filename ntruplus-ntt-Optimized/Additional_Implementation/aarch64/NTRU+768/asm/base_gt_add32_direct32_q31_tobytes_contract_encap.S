@@ -1,5 +1,5 @@
 /*
- * Benchmark-only GT poly_basemul_add direct32 Q31 prototype.
+ * GT encap-only poly_basemul_add direct32 Q31 byte-contract path.
  *
  * This is not a production replacement for poly_basemul_add.  It keeps the
  * current base_gt_add32_full_pipeline.n1.opt.S register allocation through the
@@ -14,7 +14,8 @@
  *   y = x - t * q
  *
  * The output is byte-equivalent under poly_tobytes, not a general centered
- * representative contract.
+ * representative contract.  Callers must consume the result immediately with
+ * poly_tobytes in the encap ciphertext path.
  */
 
 .text
@@ -31,10 +32,10 @@
 #define LOAD_ADDR_OFF(reg, sym) add reg, reg, :lo12:C_SYM(sym)
 #endif
 
-.global poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
-.global _poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
-poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype:
-_poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype:
+.global poly_basemul_add_encap_direct32_q31_tobytes_contract
+.global _poly_basemul_add_encap_direct32_q31_tobytes_contract
+poly_basemul_add_encap_direct32_q31_tobytes_contract:
+_poly_basemul_add_encap_direct32_q31_tobytes_contract:
 	LOAD_ADDR_PAGE(x4, gt_rowbitrev_lambda)
 	LOAD_ADDR_OFF(x4, gt_rowbitrev_lambda)
 	adr x5, Ldirect32_q31_consts

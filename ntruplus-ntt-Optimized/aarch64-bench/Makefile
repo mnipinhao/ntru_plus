@@ -45,7 +45,7 @@ GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_rminus1.S
 GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/baseinv_batch_finish_loop_n1.S
 GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
-GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S
+GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_encap.S
 GT_PRODUCTION_BASE_ASM ?= \
 	$(NTRUPLUS)/asm/base_gt_opt_noadd_wrapper.S \
 	$(NTRUPLUS)/asm/base_gt_add32_full_pipeline_inline_wrapper.S \
@@ -286,7 +286,7 @@ GT_STOCK_BASEMUL_ADD_GATE_PMU_SOURCES = \
 	$(NTRUPLUS)/NO_CE/fips202.c \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/poly_gt_basemul_add_direct32_finalizer_prototype.c \
-	$(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S \
+	$(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_encap.S \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \
@@ -303,7 +303,7 @@ GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	$(NTRUPLUS)/symmetric.c \
 	$(NTRUPLUS)/NO_CE/fips202.c \
 	$(NTRUPLUS)/ntt.c \
-	$(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_prototype.S \
+	$(NTRUPLUS)/asm/base_gt_add32_direct32_q31_tobytes_contract_encap.S \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \

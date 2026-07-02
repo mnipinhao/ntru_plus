@@ -860,7 +860,7 @@ R2/P1-B: inspect as the safer but lower-upside lane-map target.
 This round implements the benchmark-only prototype:
 
 ```text
-poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+poly_basemul_add_encap_direct32_q31_tobytes_contract
 ```
 
 This is not wired as the normal `poly_basemul_add` production default.  It is
@@ -977,7 +977,7 @@ call.
 Prototype addresses in the Pi5-linked benchmark:
 
 ```text
-poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype = 0xc880
+poly_basemul_add_encap_direct32_q31_tobytes_contract = 0xc880
 Ldirect32_q31_loop                                      = 0xc894
 Ldirect32_q31_consts                                    = 0xca10
 ```
@@ -1168,7 +1168,7 @@ text=175478
 Symbol ranges:
 
 ```text
-poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype = 0xc8a0
+poly_basemul_add_encap_direct32_q31_tobytes_contract = 0xc8a0
 Ldirect32_q31_consts                                    = 0xca30
 q31 prototype code size                                 = 0x190 bytes
 q31 constants                                           = 16 bytes
@@ -1274,7 +1274,7 @@ release_guard_pass=1
 generic_poly_basemul_add_symbols=1
 direct32_q31_symbols=1
 direct32_q31_call_sites=1
-direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract -> _poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract -> _poly_basemul_add_encap_direct32_q31_tobytes_contract
 generic_poly_basemul_add_overwritten=0
 decap_or_arithmetic_q31_callers=0
 ```
@@ -1367,7 +1367,7 @@ public_headers_with_q31_symbol=0
 Symbol naming audit:
 
 ```text
-asm symbol: poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype
+asm symbol: poly_basemul_add_encap_direct32_q31_tobytes_contract
 gate:       GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 caller:     gt_encap_basemul_add_tobytes_contract
 ```

@@ -7,7 +7,7 @@
 #include "randombytes.h"
 
 #ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
-void poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(
+void poly_basemul_add_encap_direct32_q31_tobytes_contract(
     poly *r, const poly *a, const poly *b, const poly *c);
 #endif
 
@@ -133,7 +133,7 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
     poly c;
 
 #ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
-    poly_basemul_add_encap_direct32_q31_tobytes_contract_prototype(&c, h, r, m);
+    poly_basemul_add_encap_direct32_q31_tobytes_contract(&c, h, r, m);
 #else
     poly_basemul_add(&c, h, r, m);
 #endif
