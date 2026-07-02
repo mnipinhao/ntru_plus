@@ -50,25 +50,65 @@
 #define DEN36_WORDS (36 * 8)
 #define M24_K_COUNT 8
 #define M36_K_COUNT 9
+#define DEPTH_COUNT 5
+#define EXTRA_FQMUL_COUNT 4
 
 int gt_baseinv_fqinv_batch_old_24_for_bench(int16_t r[DEN24_WORDS]);
 int gt_baseinv_fqinv_batch_new_24_for_bench(int16_t r[DEN24_WORDS]);
 int gt_baseinv_fqinv_kway_new_24_for_bench(int16_t r[DEN24_WORDS], int k);
 int gt_baseinv_fqinv_batch_new_36_for_bench(int16_t r[DEN36_WORDS]);
 int gt_baseinv_fqinv_kway_new_36_for_bench(int16_t r[DEN36_WORDS], int k);
+int gt_baseinv_fqinv_batch_current_m_for_bench(int16_t *r, int m);
+int gt_baseinv_fqinv_flat_kway_current_for_bench(int16_t *r, int m, int k);
+int gt_baseinv_fqinv_hier_kway_current_for_bench(int16_t *r, int m, int k);
+void gt_baseinv_fqinv_current_extra_fqmul_vec_for_bench(
+    int16_t out[8], const int16_t in[8], const int16_t mul[8], int extra);
 void gt_baseinv_fqmul_vec_for_bench(int16_t out[8], const int16_t a[8],
                                     const int16_t b[8]);
+int16_t fqinv_divstep_scalar_ref(int16_t a, int scaled_r);
+void gt_baseinv_fqinv_current_vec_for_bench(int16_t out[8],
+                                            const int16_t in[8],
+                                            int scaled_r);
+void gt_baseinv_fqinv16_vec_for_bench(int16_t out[8],
+                                      const int16_t in[8],
+                                      int scaled_r);
+void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],
+                                            const int16_t in[8],
+                                            int scaled_r);
+int gt_baseinv_fqinv16_24_for_bench(int16_t r[DEN24_WORDS]);
+int gt_baseinv_fqinv_divstep_24_for_bench(int16_t r[DEN24_WORDS]);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
+int poly_baseinv_gt_batch_scaled_r_fqinv16_for_bench(poly *r, const poly *a);
 int poly_baseinv_gt_batch_scaled_r_kway_new_for_bench(poly *r, const poly *a,
                                                       int k);
+int poly_baseinv_gt_batch_scaled_r_flat_kway_current_for_bench(poly *r,
+                                                               const poly *a,
+                                                               int k);
+int poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(poly *r,
+                                                               const poly *a,
+                                                               int k);
+int poly_baseinv_gt_batch_scaled_r_divstep_for_bench(poly *r, const poly *a);
 
 enum variant_mode
 {
-  MODE_M24_OLD = 0,
-  MODE_M24_NEW = 1,
-  MODE_M36_NEW = 2,
-  MODE_BASEINV_CURRENT_X2 = 3,
-  MODE_BASEINV_KWAY_X2 = 4,
+  MODE_FQINV_ONLY_CURRENT = 0,
+  MODE_FQINV_ONLY_FQINV16 = 1,
+  MODE_FQINV_ONLY_DELTA = 2,
+  MODE_M24_CURRENT = 3,
+  MODE_M24_FQINV16 = 4,
+  MODE_M24_NEW = 5,
+  MODE_M36_NEW = 6,
+  MODE_BASEINV_SCALED_CURRENT = 7,
+  MODE_BASEINV_SCALED_FQINV16 = 8,
+  MODE_BASEINV_KWAY_X2 = 9,
+  MODE_M24_DELTA = 10,
+  MODE_BASEINV_SCALED_DELTA = 11,
+  MODE_FQINV15_EXTRA_FQMUL = 12,
+  MODE_BATCH_DEPTH_CURRENT = 13,
+  MODE_FLAT_KWAY_CURRENT = 14,
+  MODE_HIER_KWAY_CURRENT = 15,
+  MODE_BASEINV_FLAT_KWAY_CURRENT = 16,
+  MODE_BASEINV_HIER_KWAY_CURRENT = 17,
 };
 
 struct pmu_event
@@ -90,10 +130,13 @@ struct variant
   const char *name;
   enum variant_mode mode;
   int k;
+  int m;
 };
 
 static const int g_m24_k[M24_K_COUNT] = {1, 2, 3, 4, 6, 8, 12, 24};
 static const int g_m36_k[M36_K_COUNT] = {1, 2, 3, 4, 6, 9, 12, 18, 36};
+static const int g_depths[DEPTH_COUNT] = {8, 12, 16, 24, 36};
+static const int g_extra_fqmul[EXTRA_FQMUL_COUNT] = {1, 2, 4, 8};
 
 static int16_t g_den24[NINPUTS][DEN24_WORDS] __attribute__((aligned(64)));
 static int16_t g_den36[NINPUTS][DEN36_WORDS] __attribute__((aligned(64)));
@@ -227,6 +270,140 @@ static int compare_poly_modq(const poly *a, const poly *b)
   return compare_i16_modq(a->coeffs, b->coeffs, NTRUPLUS_N);
 }
 
+static int32_t modq_i32(int32_t x)
+{
+  x %= NTRUPLUS_Q;
+  if (x < 0)
+    x += NTRUPLUS_Q;
+  return x;
+}
+
+static uint64_t check_divstep_scalar_exhaustive(void)
+{
+  uint64_t mismatches = 0;
+
+  for (int a = 0; a < NTRUPLUS_Q; a++)
+  {
+    for (int scaled_r = 0; scaled_r <= 1; scaled_r++)
+    {
+      int16_t out = fqinv_divstep_scalar_ref((int16_t)a, scaled_r);
+
+      if (a == 0)
+      {
+        if (!modq_equal_i16(out, 0))
+          mismatches++;
+        continue;
+      }
+
+      if (!modq_equal_i16((int16_t)modq_i32((int32_t)a * out),
+                          scaled_r ? -147 : 1))
+        mismatches++;
+    }
+  }
+
+  return mismatches;
+}
+
+static uint64_t check_divstep_vec_case(const int16_t in[8], int scaled_r,
+                                       uint64_t *zero_mismatches)
+{
+  uint64_t mismatches = 0;
+  int16_t out[8];
+  int16_t prod[8];
+
+  gt_baseinv_fqinv_divstep_vec_for_bench(out, in, scaled_r);
+  gt_baseinv_fqmul_vec_for_bench(prod, in, out);
+
+  for (int lane = 0; lane < 8; lane++)
+  {
+    if (modq_i32(in[lane]) == 0)
+    {
+      if (!modq_equal_i16(out[lane], 0))
+        (*zero_mismatches)++;
+      continue;
+    }
+
+    if (!modq_equal_i16(prod[lane], scaled_r ? 1 : -682))
+      mismatches++;
+  }
+
+  return mismatches;
+}
+
+static uint64_t check_divstep_vector_tests(uint64_t *zero_mismatches)
+{
+  uint64_t mismatches = 0;
+  uint32_t state = 0xfeed1234u;
+  const int16_t cases[][8] = {
+      {1, 1, 1, 1, 1, 1, 1, 1},
+      {0, 1, 2, 3, 4, 5, 6, 7},
+      {-1, -2, -3, -4, 1728, -1728, 13, -13},
+      {0, -1, 0, 2, 0, -3, 4, 0},
+  };
+
+  for (size_t ci = 0; ci < sizeof(cases) / sizeof(cases[0]); ci++)
+  {
+    mismatches += check_divstep_vec_case(cases[ci], 0, zero_mismatches);
+    mismatches += check_divstep_vec_case(cases[ci], 1, zero_mismatches);
+  }
+
+  for (int i = 0; i < 128; i++)
+  {
+    int16_t in[8];
+
+    for (int lane = 0; lane < 8; lane++)
+      in[lane] = sample_centered_modq(&state);
+
+    mismatches += check_divstep_vec_case(in, 0, zero_mismatches);
+    mismatches += check_divstep_vec_case(in, 1, zero_mismatches);
+  }
+
+  return mismatches;
+}
+
+static uint64_t check_fqinv16_vector_exhaustive(uint64_t *zero_mismatches)
+{
+  uint64_t mismatches = 0;
+  int16_t in[8];
+  int16_t out[8];
+  int16_t prod[8];
+
+  for (int scaled_r = 0; scaled_r <= 1; scaled_r++)
+  {
+    for (int base = 0; base < NTRUPLUS_Q; base += 8)
+    {
+      for (int lane = 0; lane < 8; lane++)
+      {
+        int32_t v = base + lane;
+
+        if (v >= NTRUPLUS_Q)
+          v = 0;
+        if (v > NTRUPLUS_Q / 2)
+          v -= NTRUPLUS_Q;
+        in[lane] = (int16_t)v;
+      }
+
+      gt_baseinv_fqinv16_vec_for_bench(out, in, scaled_r);
+      gt_baseinv_fqmul_vec_for_bench(prod, in, out);
+
+      for (int lane = 0; lane < 8; lane++)
+      {
+        if (modq_i32(in[lane]) == 0)
+        {
+          if (!modq_equal_i16(out[lane], 0))
+            (*zero_mismatches)++;
+          continue;
+        }
+
+        if (!modq_equal_i16(prod[lane], scaled_r ? 1 : -682))
+          mismatches++;
+      }
+    }
+  }
+
+  return mismatches;
+}
+
 static uint64_t check_product_oracle(const int16_t *orig, const int16_t *old_inv,
                                      const int16_t *new_inv, int m)
 {
@@ -247,13 +424,49 @@ static uint64_t check_product_oracle(const int16_t *orig, const int16_t *old_inv
   return mismatches;
 }
 
+static uint64_t check_inverse_product_const(const int16_t *orig,
+                                            const int16_t *inv, int m,
+                                            int16_t expected)
+{
+  uint64_t mismatches = 0;
+  int16_t prod[8];
+
+  for (int i = 0; i < m; i++)
+  {
+    gt_baseinv_fqmul_vec_for_bench(prod, orig + 8 * i, inv + 8 * i);
+    for (int lane = 0; lane < 8; lane++)
+    {
+      if (!modq_equal_i16(prod[lane], expected))
+        mismatches++;
+    }
+  }
+
+  return mismatches;
+}
+
 static uint64_t run_correctness(void)
 {
   uint64_t mismatches = 0;
   uint64_t fqinv_mismatches = 0;
   uint64_t product_mismatches = 0;
   uint64_t baseinv_scaled_mismatches = 0;
-  uint64_t exact_rep_mismatches = 0;
+  uint64_t current_sweep_mismatches = 0;
+  uint64_t current_sweep_exact_rep_mismatches = 0;
+  uint64_t fqinv16_vector_mismatches;
+  uint64_t current_m24_exact_rep_mismatches = 0;
+  uint64_t flat_m24_exact_rep_mismatches[M24_K_COUNT] = {0};
+  uint64_t hier_m24_exact_rep_mismatches[M24_K_COUNT] = {0};
+  uint64_t current_baseinv_exact_rep_mismatches = 0;
+  uint64_t flat_baseinv_exact_rep_mismatches[M24_K_COUNT] = {0};
+  uint64_t hier_baseinv_exact_rep_mismatches[M24_K_COUNT] = {0};
+  uint64_t fqinv16_exact_rep_mismatches = 0;
+  uint64_t divstep_exact_rep_mismatches = 0;
+  uint64_t kway_exact_rep_mismatches = 0;
+  uint64_t exact_rep_mismatches;
+  uint64_t scalar_mismatches = check_divstep_scalar_exhaustive();
+  uint64_t vector_mismatches;
+  uint64_t zero_behavior_mismatches = 0;
+  uint64_t total_mismatches;
   int16_t old24[DEN24_WORDS];
   int16_t got36_base[DEN36_WORDS];
   int16_t got[DEN36_WORDS];
@@ -262,6 +475,10 @@ static uint64_t run_correctness(void)
   poly candidate0;
   poly candidate1;
 
+  vector_mismatches = check_divstep_vector_tests(&zero_behavior_mismatches);
+  fqinv16_vector_mismatches =
+      check_fqinv16_vector_exhaustive(&zero_behavior_mismatches);
+
   for (size_t input = 0; input < NINPUTS; input++)
   {
     memcpy(old24, g_den24[input], sizeof(old24));
@@ -269,6 +486,112 @@ static uint64_t run_correctness(void)
     {
       mismatches++;
       continue;
+    }
+
+    for (size_t di = 0; di < DEPTH_COUNT; di++)
+    {
+      const int m = g_depths[di];
+      int16_t *src = m <= 24 ? g_den24[input] : g_den36[input];
+
+      memcpy(got, src, (size_t)m * 8 * sizeof(int16_t));
+      if (gt_baseinv_fqinv_batch_current_m_for_bench(got, m) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+        continue;
+      }
+      if (m == 24 && compare_i16(old24, got, DEN24_WORDS) != 0)
+        current_m24_exact_rep_mismatches++;
+      current_sweep_mismatches +=
+          check_inverse_product_const(src, got, m, -682);
+    }
+
+    for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    {
+      const int k = g_m24_k[ki];
+
+      memcpy(got, g_den24[input], sizeof(g_den24[input]));
+      if (gt_baseinv_fqinv_flat_kway_current_for_bench(got, 24, k) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+        continue;
+      }
+      if (compare_i16_modq(old24, got, DEN24_WORDS) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+      }
+      if (compare_i16(old24, got, DEN24_WORDS) != 0)
+      {
+        current_sweep_exact_rep_mismatches++;
+        flat_m24_exact_rep_mismatches[ki]++;
+      }
+      current_sweep_mismatches +=
+          check_product_oracle(g_den24[input], old24, got, 24);
+    }
+
+    for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    {
+      const int k = g_m24_k[ki];
+
+      memcpy(got, g_den24[input], sizeof(g_den24[input]));
+      if (gt_baseinv_fqinv_hier_kway_current_for_bench(got, 24, k) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+        continue;
+      }
+      if (compare_i16_modq(old24, got, DEN24_WORDS) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+      }
+      if (compare_i16(old24, got, DEN24_WORDS) != 0)
+      {
+        current_sweep_exact_rep_mismatches++;
+        hier_m24_exact_rep_mismatches[ki]++;
+      }
+      current_sweep_mismatches +=
+          check_product_oracle(g_den24[input], old24, got, 24);
+    }
+
+    memcpy(got, g_den24[input], sizeof(g_den24[input]));
+    if (gt_baseinv_fqinv16_24_for_bench(got) != 0)
+    {
+      mismatches++;
+      fqinv_mismatches++;
+    }
+    else
+    {
+      if (compare_i16_modq(old24, got, DEN24_WORDS) != 0)
+      {
+        mismatches++;
+        fqinv_mismatches++;
+      }
+      if (compare_i16(old24, got, DEN24_WORDS) != 0)
+        fqinv16_exact_rep_mismatches++;
+      product_mismatches += check_product_oracle(g_den24[input], old24, got,
+                                                 24);
+    }
+
+    memcpy(got, g_den24[input], sizeof(g_den24[input]));
+    if (gt_baseinv_fqinv_divstep_24_for_bench(got) != 0)
+    {
+      mismatches++;
+      fqinv_mismatches++;
+    }
+    else
+    {
+      if (compare_i16_modq(old24, got, DEN24_WORDS) != 0)
+      {
+        mismatches++;
+        fqinv_mismatches++;
+      }
+      if (compare_i16(old24, got, DEN24_WORDS) != 0)
+        divstep_exact_rep_mismatches++;
+      product_mismatches += check_product_oracle(g_den24[input], old24, got,
+                                                 24);
     }
 
     for (size_t ki = 0; ki < M24_K_COUNT; ki++)
@@ -288,7 +611,7 @@ static uint64_t run_correctness(void)
         fqinv_mismatches++;
       }
       if (compare_i16(old24, got, DEN24_WORDS) != 0)
-        exact_rep_mismatches++;
+        kway_exact_rep_mismatches++;
       product_mismatches += check_product_oracle(g_den24[input], old24, got,
                                                  24);
     }
@@ -317,7 +640,7 @@ static uint64_t run_correctness(void)
         fqinv_mismatches++;
       }
       if (compare_i16(got36_base, got, DEN36_WORDS) != 0)
-        exact_rep_mismatches++;
+        kway_exact_rep_mismatches++;
     }
 
     if (poly_baseinv_scaled_r(&current0, &g_poly_inputs[input]) != 0 ||
@@ -325,6 +648,101 @@ static uint64_t run_correctness(void)
     {
       mismatches++;
       continue;
+    }
+    for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    {
+      const int k = g_m24_k[ki];
+
+      if (poly_baseinv_gt_batch_scaled_r_flat_kway_current_for_bench(
+              &candidate0, &g_poly_inputs[input], k) != 0 ||
+          poly_baseinv_gt_batch_scaled_r_flat_kway_current_for_bench(
+              &candidate1, &g_poly_inputs_alt[input], k) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+        continue;
+      }
+      if (compare_poly_modq(&current0, &candidate0) != 0 ||
+          compare_poly_modq(&current1, &candidate1) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+      }
+      if (compare_poly(&current0, &candidate0) != 0 ||
+          compare_poly(&current1, &candidate1) != 0)
+      {
+        current_sweep_exact_rep_mismatches++;
+        flat_baseinv_exact_rep_mismatches[ki]++;
+      }
+    }
+
+    for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    {
+      const int k = g_m24_k[ki];
+
+      if (poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(
+              &candidate0, &g_poly_inputs[input], k) != 0 ||
+          poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(
+              &candidate1, &g_poly_inputs_alt[input], k) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+        continue;
+      }
+      if (compare_poly_modq(&current0, &candidate0) != 0 ||
+          compare_poly_modq(&current1, &candidate1) != 0)
+      {
+        mismatches++;
+        current_sweep_mismatches++;
+      }
+      if (compare_poly(&current0, &candidate0) != 0 ||
+          compare_poly(&current1, &candidate1) != 0)
+      {
+        current_sweep_exact_rep_mismatches++;
+        hier_baseinv_exact_rep_mismatches[ki]++;
+      }
+    }
+
+    if (poly_baseinv_gt_batch_scaled_r_fqinv16_for_bench(
+            &candidate0, &g_poly_inputs[input]) != 0 ||
+        poly_baseinv_gt_batch_scaled_r_fqinv16_for_bench(
+            &candidate1, &g_poly_inputs_alt[input]) != 0)
+    {
+      mismatches++;
+      baseinv_scaled_mismatches++;
+    }
+    else
+    {
+      if (compare_poly_modq(&current0, &candidate0) != 0 ||
+          compare_poly_modq(&current1, &candidate1) != 0)
+      {
+        mismatches++;
+        baseinv_scaled_mismatches++;
+      }
+      if (compare_poly(&current0, &candidate0) != 0 ||
+          compare_poly(&current1, &candidate1) != 0)
+        fqinv16_exact_rep_mismatches++;
+    }
+
+    if (poly_baseinv_gt_batch_scaled_r_divstep_for_bench(
+            &candidate0, &g_poly_inputs[input]) != 0 ||
+        poly_baseinv_gt_batch_scaled_r_divstep_for_bench(
+            &candidate1, &g_poly_inputs_alt[input]) != 0)
+    {
+      mismatches++;
+      baseinv_scaled_mismatches++;
+    }
+    else
+    {
+      if (compare_poly_modq(&current0, &candidate0) != 0 ||
+          compare_poly_modq(&current1, &candidate1) != 0)
+      {
+        mismatches++;
+        baseinv_scaled_mismatches++;
+      }
+      if (compare_poly(&current0, &candidate0) != 0 ||
+          compare_poly(&current1, &candidate1) != 0)
+        divstep_exact_rep_mismatches++;
     }
 
     for (size_t ki = 0; ki < M24_K_COUNT; ki++)
@@ -348,25 +766,90 @@ static uint64_t run_correctness(void)
       }
       if (compare_poly(&current0, &candidate0) != 0 ||
           compare_poly(&current1, &candidate1) != 0)
-        exact_rep_mismatches++;
+        kway_exact_rep_mismatches++;
     }
+  }
+
+  memcpy(old24, g_den24[0], sizeof(g_den24[0]));
+  old24[5] = 0;
+  memcpy(got, g_den24[0], sizeof(g_den24[0]));
+  got[5] = 0;
+  {
+    int old_ret = gt_baseinv_fqinv_batch_old_24_for_bench(old24);
+    int fqinv16_ret;
+    int divstep_ret = gt_baseinv_fqinv_divstep_24_for_bench(got);
+
+    memcpy(got, g_den24[0], sizeof(g_den24[0]));
+    got[5] = 0;
+    fqinv16_ret = gt_baseinv_fqinv16_24_for_bench(got);
+    if ((old_ret == 0) != (fqinv16_ret == 0))
+      zero_behavior_mismatches++;
+    if (fqinv16_ret == 0)
+      zero_behavior_mismatches++;
+
+    if ((old_ret == 0) != (divstep_ret == 0))
+      zero_behavior_mismatches++;
+    if (divstep_ret == 0)
+      zero_behavior_mismatches++;
   }
 
   memcpy(got, g_den24[0], sizeof(g_den24[0]));
   got[5] = 0;
   if (gt_baseinv_fqinv_kway_new_24_for_bench(got, 4) == 0)
-    mismatches++;
+    zero_behavior_mismatches++;
+
+  total_mismatches = mismatches + product_mismatches + current_sweep_mismatches +
+                     scalar_mismatches +
+                     vector_mismatches + fqinv16_vector_mismatches +
+                     zero_behavior_mismatches;
+  exact_rep_mismatches = current_sweep_exact_rep_mismatches +
+                         fqinv16_exact_rep_mismatches +
+                         divstep_exact_rep_mismatches +
+                         kway_exact_rep_mismatches;
 
   printf("correctness,total_mismatches=%" PRIu64
+         ",divstep_scalar_mismatches=%" PRIu64
+         ",divstep_vector_mismatches=%" PRIu64
+         ",fqinv16_vector_mismatches=%" PRIu64
+         ",zero_behavior_mismatches=%" PRIu64
          ",fqinv_mismatches=%" PRIu64
          ",product_oracle_mismatches=%" PRIu64
          ",baseinv_scaled_mismatches=%" PRIu64
+         ",current_sweep_mismatches=%" PRIu64
+         ",current_sweep_exact_rep_mismatches=%" PRIu64
+         ",fqinv16_exact_rep_mismatches=%" PRIu64
+         ",divstep_exact_rep_mismatches=%" PRIu64
+         ",kway_exact_rep_mismatches=%" PRIu64
          ",exact_rep_mismatches=%" PRIu64
          ",valid_cases=%d\n",
-         mismatches + product_mismatches, fqinv_mismatches, product_mismatches,
-         baseinv_scaled_mismatches, exact_rep_mismatches, NINPUTS);
+         total_mismatches, scalar_mismatches, vector_mismatches,
+         fqinv16_vector_mismatches, zero_behavior_mismatches,
+         fqinv_mismatches, product_mismatches, baseinv_scaled_mismatches,
+         current_sweep_mismatches, current_sweep_exact_rep_mismatches,
+         fqinv16_exact_rep_mismatches, divstep_exact_rep_mismatches,
+         kway_exact_rep_mismatches, exact_rep_mismatches, NINPUTS);
 
-  return mismatches + product_mismatches;
+  printf("exact_rep_m24,current=%" PRIu64,
+         current_m24_exact_rep_mismatches);
+  for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    printf(",flat_k%d=%" PRIu64, g_m24_k[ki],
+           flat_m24_exact_rep_mismatches[ki]);
+  for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    printf(",hier_k%d=%" PRIu64, g_m24_k[ki],
+           hier_m24_exact_rep_mismatches[ki]);
+  printf(",hier_k8=%" PRIu64 "\n", hier_m24_exact_rep_mismatches[5]);
+
+  printf("exact_rep_baseinv_scaled,current=%" PRIu64,
+         current_baseinv_exact_rep_mismatches);
+  for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    printf(",flat_k%d=%" PRIu64, g_m24_k[ki],
+           flat_baseinv_exact_rep_mismatches[ki]);
+  for (size_t ki = 0; ki < M24_K_COUNT; ki++)
+    printf(",hier_k%d=%" PRIu64, g_m24_k[ki],
+           hier_baseinv_exact_rep_mismatches[ki]);
+  printf(",hier_k8=%" PRIu64 "\n", hier_baseinv_exact_rep_mismatches[5]);
+
+  return total_mismatches;
 }
 
 static int open_pmu_events(void)
@@ -431,26 +914,88 @@ static void run_variant_once(const struct variant *variant, size_t idx)
 
   switch (variant->mode)
   {
-  case MODE_M24_OLD:
+  case MODE_FQINV_ONLY_CURRENT:
+    gt_baseinv_fqinv_current_vec_for_bench(g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 5) & 7];
+    break;
+  case MODE_FQINV_ONLY_FQINV16:
+    gt_baseinv_fqinv16_vec_for_bench(g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 6) & 7];
+    break;
+  case MODE_FQINV_ONLY_DELTA:
+    gt_baseinv_fqinv_divstep_vec_for_bench(g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 7) & 7];
+    break;
+  case MODE_FQINV15_EXTRA_FQMUL:
+    gt_baseinv_fqinv_current_extra_fqmul_vec_for_bench(
+        g_work36, g_den24[input], g_den24[input] + 8, variant->k);
+    g_sink ^= (uint16_t)g_work36[(idx + 3) & 7];
+    break;
+  case MODE_BATCH_DEPTH_CURRENT:
+  {
+    const int m = variant->m;
+    const int16_t *src = m <= 24 ? g_den24[input] : g_den36[input];
+
+    memcpy(g_work36, src, (size_t)m * 8 * sizeof(int16_t));
+    ret = gt_baseinv_fqinv_batch_current_m_for_bench(g_work36, m);
+    g_sink ^= (uint16_t)g_work36[(idx + 5) % ((size_t)m * 8)];
+    break;
+  }
+  case MODE_M24_CURRENT:
     memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
     ret = gt_baseinv_fqinv_batch_old_24_for_bench(g_work36);
     g_sink ^= (uint16_t)g_work36[(idx + 17) % DEN24_WORDS];
+    break;
+  case MODE_M24_FQINV16:
+    memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
+    ret = gt_baseinv_fqinv16_24_for_bench(g_work36);
+    g_sink ^= (uint16_t)g_work36[(idx + 19) % DEN24_WORDS];
     break;
   case MODE_M24_NEW:
     memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
     ret = gt_baseinv_fqinv_kway_new_24_for_bench(g_work36, variant->k);
     g_sink ^= (uint16_t)g_work36[(idx + 23) % DEN24_WORDS];
     break;
+  case MODE_FLAT_KWAY_CURRENT:
+    memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
+    ret = gt_baseinv_fqinv_flat_kway_current_for_bench(g_work36, 24,
+                                                       variant->k);
+    g_sink ^= (uint16_t)g_work36[(idx + 25) % DEN24_WORDS];
+    break;
+  case MODE_HIER_KWAY_CURRENT:
+    memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
+    ret = gt_baseinv_fqinv_hier_kway_current_for_bench(g_work36, 24,
+                                                       variant->k);
+    g_sink ^= (uint16_t)g_work36[(idx + 27) % DEN24_WORDS];
+    break;
+  case MODE_M24_DELTA:
+    memcpy(g_work36, g_den24[input], sizeof(g_den24[input]));
+    ret = gt_baseinv_fqinv_divstep_24_for_bench(g_work36);
+    g_sink ^= (uint16_t)g_work36[(idx + 29) % DEN24_WORDS];
+    break;
   case MODE_M36_NEW:
     memcpy(g_work36, g_den36[input], sizeof(g_den36[input]));
     ret = gt_baseinv_fqinv_kway_new_36_for_bench(g_work36, variant->k);
     g_sink ^= (uint16_t)g_work36[(idx + 31) % DEN36_WORDS];
     break;
-  case MODE_BASEINV_CURRENT_X2:
+  case MODE_BASEINV_SCALED_CURRENT:
     ret = poly_baseinv_scaled_r(&g_poly_out0, &g_poly_inputs[input]);
-    ret |= poly_baseinv_scaled_r(&g_poly_out1, &g_poly_inputs_alt[input]);
     g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 7) % NTRUPLUS_N];
-    g_sink ^= (uint16_t)g_poly_out1.coeffs[(idx + 11) % NTRUPLUS_N];
+    break;
+  case MODE_BASEINV_SCALED_FQINV16:
+    ret = poly_baseinv_gt_batch_scaled_r_fqinv16_for_bench(
+        &g_poly_out0, &g_poly_inputs[input]);
+    g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 11) % NTRUPLUS_N];
+    break;
+  case MODE_BASEINV_FLAT_KWAY_CURRENT:
+    ret = poly_baseinv_gt_batch_scaled_r_flat_kway_current_for_bench(
+        &g_poly_out0, &g_poly_inputs[input], variant->k);
+    g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 13) % NTRUPLUS_N];
+    break;
+  case MODE_BASEINV_HIER_KWAY_CURRENT:
+    ret = poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(
+        &g_poly_out0, &g_poly_inputs[input], variant->k);
+    g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 15) % NTRUPLUS_N];
     break;
   case MODE_BASEINV_KWAY_X2:
     ret = poly_baseinv_gt_batch_scaled_r_kway_new_for_bench(
@@ -459,6 +1004,11 @@ static void run_variant_once(const struct variant *variant, size_t idx)
         &g_poly_out1, &g_poly_inputs_alt[input], variant->k);
     g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 13) % NTRUPLUS_N];
     g_sink ^= (uint16_t)g_poly_out1.coeffs[(idx + 19) % NTRUPLUS_N];
+    break;
+  case MODE_BASEINV_SCALED_DELTA:
+    ret = poly_baseinv_gt_batch_scaled_r_divstep_for_bench(
+        &g_poly_out0, &g_poly_inputs[input]);
+    g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 17) % NTRUPLUS_N];
     break;
   }
 
@@ -519,16 +1069,17 @@ static void summarize_variant(const struct variant *variant)
   qsort(instr, NTESTS, sizeof(instr[0]), compare_double);
 
   printf("pmu,%s,cycles_p50=%.3f,cycles_iqr=%.3f,cycles_min=%.3f,"
-         "cycles_max=%.3f,instr_p50=%.3f,instr_iqr=%.3f\n",
+         "cycles_max=%.3f,instr_p50=%.3f,instr_iqr=%.3f,ipc_p50=%.3f\n",
          variant->name, cycles[NTESTS / 2],
          cycles[(3 * NTESTS) / 4] - cycles[NTESTS / 4], cycles[0],
          cycles[NTESTS - 1], instr[NTESTS / 2],
-         instr[(3 * NTESTS) / 4] - instr[NTESTS / 4]);
+         instr[(3 * NTESTS) / 4] - instr[NTESTS / 4],
+         instr[NTESTS / 2] / cycles[NTESTS / 2]);
 }
 
 int main(void)
 {
-  struct variant variants[1 + M24_K_COUNT + M36_K_COUNT + 1 + M24_K_COUNT];
+  struct variant variants[96];
   size_t nvariants = 0;
 
   fill_den_inputs();
@@ -542,14 +1093,63 @@ int main(void)
     return 1;
 
   variants[nvariants++] =
-      (struct variant){"m24_old_batch_fqinv15_asm", MODE_M24_OLD, 1};
+      (struct variant){"fqinv_only_fqinv15_asm", MODE_FQINV_ONLY_CURRENT, 1,
+                       0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv16", MODE_FQINV_ONLY_FQINV16, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_delta_divstep", MODE_FQINV_ONLY_DELTA, 1,
+                       0};
+  for (size_t i = 0; i < EXTRA_FQMUL_COUNT; i++)
+  {
+    static char names[EXTRA_FQMUL_COUNT][64];
+
+    snprintf(names[i], sizeof(names[i]), "fqinv15_asm_extra_fqmul%d",
+             g_extra_fqmul[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_FQINV15_EXTRA_FQMUL,
+                         g_extra_fqmul[i], 0};
+  }
+  for (size_t i = 0; i < DEPTH_COUNT; i++)
+  {
+    static char names[DEPTH_COUNT][64];
+
+    snprintf(names[i], sizeof(names[i]), "batch_depth_m%d_fqinv15_asm",
+             g_depths[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_BATCH_DEPTH_CURRENT, 1, g_depths[i]};
+  }
+  variants[nvariants++] =
+      (struct variant){"m24_fqinv15_asm", MODE_M24_CURRENT, 1, 24};
+  variants[nvariants++] =
+      (struct variant){"m24_fqinv16", MODE_M24_FQINV16, 1, 24};
+  variants[nvariants++] =
+      (struct variant){"m24_delta_divstep", MODE_M24_DELTA, 1, 24};
+  for (size_t i = 0; i < M24_K_COUNT; i++)
+  {
+    static char names[M24_K_COUNT][64];
+
+    snprintf(names[i], sizeof(names[i]), "flat_k%d_m24_fqinv15_asm",
+             g_m24_k[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_FLAT_KWAY_CURRENT, g_m24_k[i], 24};
+  }
+  for (size_t i = 0; i < M24_K_COUNT; i++)
+  {
+    static char names[M24_K_COUNT][64];
+
+    snprintf(names[i], sizeof(names[i]), "hier_k%d_m24_fqinv15_asm",
+             g_m24_k[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_HIER_KWAY_CURRENT, g_m24_k[i], 24};
+  }
   for (size_t i = 0; i < M24_K_COUNT; i++)
   {
     static char names[M24_K_COUNT][48];
 
     snprintf(names[i], sizeof(names[i]), "m24_new_k%d", g_m24_k[i]);
     variants[nvariants++] =
-        (struct variant){names[i], MODE_M24_NEW, g_m24_k[i]};
+        (struct variant){names[i], MODE_M24_NEW, g_m24_k[i], 24};
   }
   for (size_t i = 0; i < M36_K_COUNT; i++)
   {
@@ -557,11 +1157,37 @@ int main(void)
 
     snprintf(names[i], sizeof(names[i]), "m36_new_k%d", g_m36_k[i]);
     variants[nvariants++] =
-        (struct variant){names[i], MODE_M36_NEW, g_m36_k[i]};
+        (struct variant){names[i], MODE_M36_NEW, g_m36_k[i], 36};
   }
   variants[nvariants++] =
-      (struct variant){"baseinv_scaled_x2_current", MODE_BASEINV_CURRENT_X2,
-                       1};
+      (struct variant){"baseinv_scaled_fqinv15_asm",
+                       MODE_BASEINV_SCALED_CURRENT, 1, 24};
+  variants[nvariants++] =
+      (struct variant){"baseinv_scaled_fqinv16",
+                       MODE_BASEINV_SCALED_FQINV16, 1, 24};
+  variants[nvariants++] =
+      (struct variant){"baseinv_scaled_delta_divstep",
+                       MODE_BASEINV_SCALED_DELTA, 1, 24};
+  for (size_t i = 0; i < M24_K_COUNT; i++)
+  {
+    static char names[M24_K_COUNT][80];
+
+    snprintf(names[i], sizeof(names[i]), "baseinv_scaled_flat_k%d_fqinv15_asm",
+             g_m24_k[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_BASEINV_FLAT_KWAY_CURRENT,
+                         g_m24_k[i], 24};
+  }
+  for (size_t i = 0; i < M24_K_COUNT; i++)
+  {
+    static char names[M24_K_COUNT][80];
+
+    snprintf(names[i], sizeof(names[i]), "baseinv_scaled_hier_k%d_fqinv15_asm",
+             g_m24_k[i]);
+    variants[nvariants++] =
+        (struct variant){names[i], MODE_BASEINV_HIER_KWAY_CURRENT,
+                         g_m24_k[i], 24};
+  }
   for (size_t i = 0; i < M24_K_COUNT; i++)
   {
     static char names[M24_K_COUNT][64];
@@ -569,7 +1195,7 @@ int main(void)
     snprintf(names[i], sizeof(names[i]), "baseinv_scaled_x2_new_k%d",
              g_m24_k[i]);
     variants[nvariants++] =
-        (struct variant){names[i], MODE_BASEINV_KWAY_X2, g_m24_k[i]};
+        (struct variant){names[i], MODE_BASEINV_KWAY_X2, g_m24_k[i], 24};
   }
 
   if (open_pmu_events() != 0)
@@ -585,7 +1211,7 @@ int main(void)
   printf("settings,NTESTS=%d,NITERATIONS=%d,NWARMUP=%d,NINPUTS=%d\n",
          NTESTS, NITERATIONS, NWARMUP, NINPUTS);
   printf("columns,name,cycles_p50,cycles_iqr,cycles_min,cycles_max,"
-         "instr_p50,instr_iqr\n");
+         "instr_p50,instr_iqr,ipc_p50\n");
 
   for (size_t i = 0; i < nvariants; i++)
     summarize_variant(&variants[i]);
