@@ -48,7 +48,7 @@ run_case gt_post_branchfold_a72_1stripe \
   --variants gt_opt \
   --modes "${post_modes}" \
   "${stage_args[@]}" \
-  --make-var GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_post_branchfold_a72.s
+  --make-var GT_INVNTT_ASM=ntruplus/asm/variants/inv_my_ntt_post_branchfold_a72.s
 
 run_case gt_post_branchfold_3stripe \
   --variants gt_opt \

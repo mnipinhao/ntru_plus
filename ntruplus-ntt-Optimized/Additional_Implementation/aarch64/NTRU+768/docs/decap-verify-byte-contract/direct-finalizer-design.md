@@ -313,7 +313,7 @@ stores or reintroduce a layout buffer, which would erase most of the benefit.
 The first benchmark-only ASM prototype is:
 
 ```text
-asm/gt_decap_verify_basemul_tobytes_direct_candidate.S
+asm/bench_only/gt_decap_verify_basemul_tobytes_direct_candidate.S
 symbol: gt_decap_verify_basemul_tobytes_direct_candidate
 gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
 ```

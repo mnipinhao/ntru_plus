@@ -9,7 +9,7 @@ PMU:
 
 ```text
 symbol: gt_decap_verify_basemul_tobytes_direct_candidate
-prototype: asm/gt_decap_verify_basemul_tobytes_direct_candidate.S
+prototype: asm/bench_only/gt_decap_verify_basemul_tobytes_direct_candidate.S
 gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
 status: rejected_pmu_regression
 ```

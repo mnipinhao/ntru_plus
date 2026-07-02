@@ -17,4 +17,4 @@
 #define _poly_basemul_add _gt_decap_verify_basemul_tobytes_direct_add_unused
 #define GT_BASEMUL_DIRECT_TOBYTES 1
 
-#include "base_gt.opt.s"
+#include "../base_gt.opt.s"

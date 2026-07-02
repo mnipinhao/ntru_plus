@@ -103,7 +103,7 @@ The active inverse NTT path is intentionally narrow:
 - `asm/slothy/invntt32_stage45_reduce_fused_clean.slothy.s` and
   `asm/slothy/invntt_post_fused_dstore_clean.slothy.s` are the retained clean
   Slothy sources for the promoted scheduled regions.
-- `asm/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
+- `asm/variants/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
   mathematical path, but it uses an A72 Slothy schedule for the branchfold
   fused post stripe.  It is not production default until Pi 5 measurements
   show a clear win.
