@@ -36,9 +36,9 @@ else
 GT_INVNTT_SOURCE = $(GT_INVNTT_ASM)
 endif
 GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/gt/base_gt.opt.s
-GT_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt.s
+GT_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s
 GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
-GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt_phase123_n1.s
+GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
 GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt.s
 GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt_rminus1.S
@@ -79,7 +79,7 @@ STOCK_ARITH_SOURCES = \
 
 GT_ARITH_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
-	$(NTRUPLUS)/asm/gt/base_gt.S \
+	$(NTRUPLUS)/asm/baseline/base_gt.S \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_INVNTT_SOURCE)
@@ -105,7 +105,7 @@ GT_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(STOCK_SUPPORT_ASM) \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
-	$(NTRUPLUS)/asm/gt/base_gt.S \
+	$(NTRUPLUS)/asm/baseline/base_gt.S \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_INVNTT_SOURCE)

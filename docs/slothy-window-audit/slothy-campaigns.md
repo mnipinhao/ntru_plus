@@ -278,8 +278,8 @@ Candidate windows attempted:
 
 | window | source shape | instructions | status | model cycles | wall time |
 | --- | --- | ---: | --- | ---: | ---: |
-| `base_gt_rminus1_loop` | `base_gt.S` preprocessed one-loop raw-store window | 77 | OPTIMAL, selfcheck OK | 82 | 5.93s |
-| `base_gt_generic_loop` | `base_gt.S` preprocessed one-loop corrected-output window | 101 | OPTIMAL, selfcheck OK | 121 | 6.66s |
+| `base_gt_rminus1_loop` | `asm/baseline/base_gt.S` preprocessed one-loop raw-store window | 77 | OPTIMAL, selfcheck OK | 82 | 5.93s |
+| `base_gt_generic_loop` | `asm/baseline/base_gt.S` preprocessed one-loop corrected-output window | 101 | OPTIMAL, selfcheck OK | 121 | 6.66s |
 
 Pi5 commands:
 
@@ -341,8 +341,8 @@ Scope: Forward NTT production-contract windows for
 block-major row-bitrev path:
 
 ```text
-asm/my_ntt_phase123_n1.s
-asm/slothy/my_32ntt.opt.s
+asm/gt/poly_ntt_gt_production.s
+asm/slothy/production/my_32ntt.opt.s
 ```
 
 Rowspec, oldstore, ldrtrn, rowpack, tuple, BPQ, and TMVP candidate paths were

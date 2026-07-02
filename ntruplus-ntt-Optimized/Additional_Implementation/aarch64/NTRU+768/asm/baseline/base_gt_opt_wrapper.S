@@ -5,4 +5,4 @@
  * uses adrp/add with :lo12:, while Darwin/Mach-O requires @PAGE/@PAGEOFF and
  * a leading underscore for C-visible symbols.
  */
-#include "base_gt.opt.s"
+#include "../gt/base_gt.opt.s"

@@ -19,14 +19,14 @@ excluded_routes:
 
 windows:
   - name: FWD-NTT-PHASE123-ITER0
-    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_ntt_phase123.n1.opt.s
+    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/production/my_ntt_phase123.n1.opt.s
     start: slothy_start_ntt_phase123_iter0
     end: slothy_end_ntt_phase123_iter0
     instruction_count: 160
     semantic_region: phase123_one_iteration
     input_layout: natural_order_poly_source_stripe
     output_layout: stage123_row_scratch_handoff
-    consumer_contract: "my_ntt.s passes stage123 row scratch to three production _ntt32_8way calls."
+    consumer_contract: "ntt_gt_body.inc passes stage123 row scratch to three production _ntt32_8way calls."
     memory_reads: "source polynomial, twist/precompute tables"
     memory_writes: "row scratch/stage123 handoff"
     vector_live_in: "q/v working set plus constants; needs separate live map before running"
@@ -44,7 +44,7 @@ windows:
     reason: "160-instruction production iteration; not selected until NTT32 local windows have a viable integration path."
 
   - name: FWD-NTT-NTT32-STAGE12-STRIPES0-3
-    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_32ntt.opt.s
+    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/production/my_32ntt.opt.s
     start: _ntt32_stage12_stripe0_slothy_start
     end: _ntt32_stage12_stripe3_slothy_end
     instruction_count: 103
@@ -68,7 +68,7 @@ windows:
     reason: "Normal-size grouped stage12 window, but direct production-source run was parser-blocked by internal labels."
 
   - name: FWD-NTT-NTT32-STAGE12-STRIPES4-7
-    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_32ntt.opt.s
+    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/production/my_32ntt.opt.s
     start: _ntt32_stage12_stripe4_slothy_start
     end: _ntt32_stage12_stripe7_slothy_end
     instruction_count: 103
@@ -92,7 +92,7 @@ windows:
     reason: "Do not run until a label-clean grouped stage12 materialized input is prepared."
 
   - name: FWD-NTT-NTT32-STAGE345-BLOCK0
-    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_32ntt.opt.s
+    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/production/my_32ntt.opt.s
     start: _ntt32_stage345_block0_slothy_start
     end: _ntt32_stage345_block0_slothy_end
     instruction_count: 167
@@ -117,7 +117,7 @@ windows:
     reason: "Large production-scheduled block; use only with explicit candidate integration and correctness plan."
 
   - name: FWD-NTT-NTT32-STAGE345-BLOCK1
-    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/my_32ntt.opt.s
+    source_file: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/production/my_32ntt.opt.s
     start: _ntt32_stage345_block1_slothy_start
     end: _ntt32_stage345_block1_slothy_end
     instruction_count: 160

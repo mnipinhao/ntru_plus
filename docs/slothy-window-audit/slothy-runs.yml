@@ -422,7 +422,7 @@ runs:
     materialized_source:
       committed: false
       reason: "negative campaign; temporary source-order window inputs were not kept as artifacts"
-      input_kind: "asm/base_gt.S after C preprocessing, one loop body"
+      input_kind: "asm/baseline/base_gt.S after C preprocessing, one loop body"
     slothy_command: "/usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy /home/pinhao/slothy/venv/bin/python asm/slothy/optimize.py --input window_inputs/base_gt_<generic|rminus1>_loop_marked.s --output window_outputs/base_gt_<generic|rminus1>_loop.n1.slothy.candidate.s --target n1 --stalls 256 --region <matching start>:<matching end>"
     parser_status: "parse pass; rminus1 77 instructions, generic 101 instructions"
     optimizer_status:

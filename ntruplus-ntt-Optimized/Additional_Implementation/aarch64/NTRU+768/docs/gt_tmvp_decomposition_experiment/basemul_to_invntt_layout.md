@@ -17,7 +17,7 @@ ABI，也符合 `poly_tobytes()` / `poly_frombytes()` 的 public polynomial
 
 ## 1. 目前 base_gt output: block-major AoS
 
-`asm/gt/base_gt.S` 的 layout contract 是：
+`asm/baseline/base_gt.S` 的 layout contract 是：
 
 ```text
 coeff[branch * 384 + 4 * physical_j + lane]

@@ -19,13 +19,14 @@ names:
 
 | build path | production NTT setting | source files |
 | --- | --- | --- |
-| `Additional_Implementation/aarch64/NTRU+768/Makefile` | `GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)` | `asm/my_ntt_phase123_n1.s`, `asm/slothy/my_32ntt.opt.s` |
-| `aarch64-bench/Makefile` | `GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/my_ntt_phase123_n1.s` and `GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s` | same production pair |
+| `Additional_Implementation/aarch64/NTRU+768/Makefile` | `GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)` | `asm/gt/poly_ntt_gt_production.s`, `asm/slothy/production/my_32ntt.opt.s` |
+| `aarch64-bench/Makefile` | `GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s` and `GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s` | same production pair |
 
-`asm/my_ntt_phase123_n1.s` is a thin production wrapper that includes
-`asm/my_ntt.s`.  The wrapper in `asm/my_ntt.s` emits the public symbols above,
-includes the scheduled Phase123 body from `asm/slothy/my_ntt_phase123.n1.opt.s`,
-and calls `_ntt32_8way` from `asm/slothy/my_32ntt.opt.s` three times.
+`asm/gt/poly_ntt_gt_production.s` is a thin production wrapper that includes
+`asm/gt/ntt_gt_body.inc`.  The wrapper emits the public symbols above; the body
+includes the scheduled Phase123 region from
+`asm/slothy/production/my_ntt_phase123.n1.opt.s` and calls `_ntt32_8way` from
+`asm/slothy/production/my_32ntt.opt.s` three times.
 
 The three `_ntt32_8way` calls use row offsets:
 
@@ -78,7 +79,7 @@ The contract to preserve for Slothy candidates:
 Production output is GT block-major row-bitrev layout.  It is not tuple,
 rowpack, BPQ, or TMVP evalpack.
 
-`asm/slothy/my_32ntt.opt.s` completes each NTT32 row and scatters reduced output
+`asm/slothy/production/my_32ntt.opt.s` completes each NTT32 row and scatters reduced output
 directly to the final `poly_ntt` destination.  The final layout is:
 
 ```text
@@ -124,7 +125,7 @@ against historical source-order or alternative-layout experiments.
 
 | route | files / flags | status | reason |
 | --- | --- | --- | --- |
-| production block-major | `asm/my_ntt_phase123_n1.s`, `asm/my_ntt.s`, `asm/slothy/my_ntt_phase123.n1.opt.s`, `asm/slothy/my_32ntt.opt.s` | active production default | emits `poly_ntt` / `gt_block_major_poly_ntt`; output is GT block-major row-bitrev |
+| production block-major | `asm/gt/poly_ntt_gt_production.s`, `asm/gt/ntt_gt_body.inc`, `asm/slothy/production/my_ntt_phase123.n1.opt.s`, `asm/slothy/production/my_32ntt.opt.s` | active production default | emits `poly_ntt` / `gt_block_major_poly_ntt`; output is GT block-major row-bitrev |
 | rowspec / shadow-base | `asm/my_ntt_shadow_base*.s`, `asm/slothy/my_32ntt.shadow_base*.s`, `gt_test/test_gt_ntt_shadow_base*.c` | experimental / stopped | benchmark-only route; previous rowspec/source-order scheduling did not provide promotion evidence |
 | direct tuple / Candidate A | `asm/my_ntt_candidate_a_direct_tuple.s`, `MY_NTT_DIRECT_TUPLE`, `asm/slothy/ntt32_8way.to_tuple.n1.opt.s` | experimental / not production | writes tuple layout for TMVP experiments; not the production output contract |
 | BPQ / Candidate B | `asm/my_ntt_candidate_b_bpq.s`, `MY_NTT_BRANCH_PAIR_Q`, `asm/slothy/ntt32_8way.to_bpq.n1.opt.s` | experimental / not production | BPQ branch-pair layout candidate; not production |
@@ -147,9 +148,9 @@ Candidate windows to document in that manifest:
 
 | candidate | source anchor | readiness | notes |
 | --- | --- | --- | --- |
-| Phase123 iteration windows | markers in `asm/slothy/my_ntt_phase123.n1.opt.s` | audit first | production-scheduled already; avoid detached source-order Phase123 windows |
-| NTT32 stage12 grouped stripes | `_ntt32_stage12_stripe*` markers in `asm/slothy/my_32ntt.opt.s` | needs grouping | individual stripes may be too small for normal Slothy policy |
-| NTT32 stage345 block windows | `_ntt32_stage345_block*` markers in `asm/slothy/my_32ntt.opt.s` | likely first serious area | output-layout and scatter-store sensitive; document exact store map before running |
+| Phase123 iteration windows | markers in `asm/slothy/production/my_ntt_phase123.n1.opt.s` | audit first | production-scheduled already; avoid detached source-order Phase123 windows |
+| NTT32 stage12 grouped stripes | `_ntt32_stage12_stripe*` markers in `asm/slothy/production/my_32ntt.opt.s` | needs grouping | individual stripes may be too small for normal Slothy policy |
+| NTT32 stage345 block windows | `_ntt32_stage345_block*` markers in `asm/slothy/production/my_32ntt.opt.s` | likely first serious area | output-layout and scatter-store sensitive; document exact store map before running |
 | final reduction/store subwindow | inside stage345 blocks | needs explicit contract | preserve block-major row-bitrev output; do not silently switch to tuple/rowpack/BPQ |
 
 ## Blockers And Next Action

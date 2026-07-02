@@ -7,8 +7,8 @@ Scope: production-contract Forward NTT window selection for
 production block-major row-bitrev path:
 
 ```text
-asm/my_ntt_phase123_n1.s
-asm/slothy/my_32ntt.opt.s
+asm/gt/poly_ntt_gt_production.s
+asm/slothy/production/my_32ntt.opt.s
 ```
 
 Rowspec, oldstore, ldrtrn, rowpack, tuple, BPQ, and TMVP candidate paths are
@@ -25,16 +25,16 @@ change this physical layout.
 
 | window | source | instructions | policy | recommendation |
 | --- | --- | ---: | --- | --- |
-| `FWD-NTT-PHASE123-ITER0` | `asm/slothy/my_ntt_phase123.n1.opt.s` | 160 | split-heuristic-only | audit later |
-| `FWD-NTT-NTT32-STAGE12-STRIPES0-3` | `asm/slothy/my_32ntt.opt.s` | 103 | normal | attempted, parser-blocked by internal labels |
-| `FWD-NTT-NTT32-STAGE12-STRIPES4-7` | `asm/slothy/my_32ntt.opt.s` | 103 | normal | later only if label-clean input is materialized |
-| `FWD-NTT-NTT32-STAGE345-BLOCK0` | `asm/slothy/my_32ntt.opt.s` | 167 | split-heuristic-only | later only with safer integration plan |
-| `FWD-NTT-NTT32-STAGE345-BLOCK1` | `asm/slothy/my_32ntt.opt.s` | 160 | split-heuristic-only | attempted, generated candidate crashed KEM profiler |
+| `FWD-NTT-PHASE123-ITER0` | `asm/slothy/production/my_ntt_phase123.n1.opt.s` | 160 | split-heuristic-only | audit later |
+| `FWD-NTT-NTT32-STAGE12-STRIPES0-3` | `asm/slothy/production/my_32ntt.opt.s` | 103 | normal | attempted, parser-blocked by internal labels |
+| `FWD-NTT-NTT32-STAGE12-STRIPES4-7` | `asm/slothy/production/my_32ntt.opt.s` | 103 | normal | later only if label-clean input is materialized |
+| `FWD-NTT-NTT32-STAGE345-BLOCK0` | `asm/slothy/production/my_32ntt.opt.s` | 167 | split-heuristic-only | later only with safer integration plan |
+| `FWD-NTT-NTT32-STAGE345-BLOCK1` | `asm/slothy/production/my_32ntt.opt.s` | 160 | split-heuristic-only | attempted, generated candidate crashed KEM profiler |
 | `FWD-NTT-NTT32-BLOCK0-FINAL-REDUCE-STORE` | `asm/slothy/window_inputs/forward_ntt_ntt32_final_store_marked.s` | 81 | normal | attempted, solver infeasible |
 
 ## Materialized Final-Store Input
 
-Production `asm/slothy/my_32ntt.opt.s` already has stage12 and stage345 block
+Production `asm/slothy/production/my_32ntt.opt.s` already has stage12 and stage345 block
 labels, but it does not have exact final-reduction/store subwindow labels.  The
 benchmark-only helper below creates a production-derived marked input copy:
 

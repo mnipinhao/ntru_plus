@@ -86,7 +86,7 @@ and final output stores.
 ## Current Forward NTT Decision
 
 The production Forward NTT path is `poly_ntt` / `gt_block_major_poly_ntt` using
-`asm/my_ntt_phase123_n1.s` plus `asm/slothy/my_32ntt.opt.s`, with GT
+`asm/gt/poly_ntt_gt_production.s` plus `asm/slothy/production/my_32ntt.opt.s`, with GT
 block-major row-bitrev output.  The first production-contract local-window
 campaign attempted final-store, stage12, and stage345 windows.  It produced no
 correctness-passing candidate: final-store was solver-infeasible, stage12 was

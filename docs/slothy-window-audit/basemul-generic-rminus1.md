@@ -21,8 +21,8 @@ The first campaign intentionally used small one-loop windows:
 
 | window | source used for Slothy input | instructions | memory shape | risk flags | recommendation |
 | --- | --- | ---: | --- | --- | --- |
-| `base_gt_rminus1_loop` | `asm/base_gt.S` after C preprocessing, one 8-quartic loop | 77 | `ld1 lambda`, two `ld4` operand loads, final raw `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
-| `base_gt_generic_loop` | `asm/base_gt.S` after C preprocessing, one 8-quartic loop | 101 | same loads plus final Montgomery/reduction and corrected `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
+| `base_gt_rminus1_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 77 | `ld1 lambda`, two `ld4` operand loads, final raw `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
+| `base_gt_generic_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 101 | same loads plus final Montgomery/reduction and corrected `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
 | `poly_basemul_add` core | not run in this campaign | n/a | add32 full pipeline with accumulator/addend contract | distinct add32 dataflow; should not use Q31 outside byte-contract encap path | later audit only |
 
 Boundary policy followed: no splits inside product/reduction chains, lane
