@@ -15,11 +15,11 @@ The linked symbol is:
 
 ```text
 symbol: poly_basemul
-wrapper: asm/gt/poly_basemul_gt_production.s
+wrapper: asm/gt/poly_basemul.s
 body: asm/gt/base_gt_opt_body.inc
 ```
 
-`poly_basemul_gt_production.s` owns the public `poly_basemul` symbol and
+`poly_basemul.s` owns the public `poly_basemul` symbol and
 includes the shared `base_gt_opt_body.inc` basemul body.  The body include does
 not export a public ABI by itself.
 
@@ -118,7 +118,7 @@ The linked `poly_tobytes` symbol is:
 
 ```text
 symbol: poly_tobytes
-source: asm/slothy/support_kernels/support_kernels.n1.opt.S
+source: asm/gt/support/poly_support_n1.S
 ```
 
 This is the production support kernel, not the older `asm/stock/pack.s` path.

@@ -19,93 +19,10 @@
 #error "base_gt_opt_body.inc requires GT_BASEMUL_EMIT_BASEMUL or GT_BASEMUL_EMIT_ADD"
 #endif
 
-#ifdef __APPLE__
-#define C_SYM_1(sym) _##sym
-#define C_SYM(sym) C_SYM_1(sym)
-#define LOAD_ADDR_PAGE(reg, sym) adrp reg, C_SYM(sym)@PAGE
-#define LOAD_ADDR_OFF(reg, sym) add reg, reg, C_SYM(sym)@PAGEOFF
-#else
-#define C_SYM(sym) sym
-#define LOAD_ADDR_PAGE(reg, sym) adrp reg, C_SYM(sym)
-#define LOAD_ADDR_OFF(reg, sym) add reg, reg, :lo12:C_SYM(sym)
-#endif
+#include "common.inc"
 
-#ifdef GT_BASEMUL_USE_LDPTRN_LOAD4
-.macro GT_LDPTRN_LOAD4 d0, d1, d2, d3, ptr, t0, t1, t2, t3
-	ldp q\d0, q\d1, [\ptr]
-	ldp q\d2, q\d3, [\ptr, #32]
-	add \ptr, \ptr, #64
-
-	uzp1 v\t0\().8h, v\d0\().8h, v\d1\().8h
-	uzp2 v\t1\().8h, v\d0\().8h, v\d1\().8h
-	uzp1 v\t2\().8h, v\d2\().8h, v\d3\().8h
-	uzp2 v\t3\().8h, v\d2\().8h, v\d3\().8h
-
-	uzp1 v\d0\().8h, v\t0\().8h, v\t2\().8h
-	uzp1 v\d1\().8h, v\t1\().8h, v\t3\().8h
-	uzp2 v\d2\().8h, v\t0\().8h, v\t2\().8h
-	uzp2 v\d3\().8h, v\t1\().8h, v\t3\().8h
-.endm
-#define GT_LOAD4_BLOCK(d0, d1, d2, d3, ptr, t0, t1, t2, t3) \
-	GT_LDPTRN_LOAD4 d0, d1, d2, d3, ptr, t0, t1, t2, t3
-#else
 #define GT_LOAD4_BLOCK(d0, d1, d2, d3, ptr, t0, t1, t2, t3) \
 	ld4 {v##d0.8H, v##d1.8H, v##d2.8H, v##d3.8H}, [ptr], #64
-#endif
-
-#ifdef GT_BASEMUL_DIRECT_TOBYTES
-.macro GT_DIRECT_TOBYTES_NORMALIZE reg, tmp, qvec
-	sshr v\tmp\().8H, v\reg\().8H, #15
-	and v\tmp\().16B, v\tmp\().16B, v\qvec\().16B
-	add v\reg\().8H, v\reg\().8H, v\tmp\().8H
-.endm
-
-.macro GT_DIRECT_TOBYTES_PACK_PAIR reg0, lane0, reg1, lane1
-	umov w10, v\reg0\().H[\lane0]
-	umov w11, v\reg1\().H[\lane1]
-	strb w10, [x0], #1
-	lsr w12, w10, #8
-	orr w12, w12, w11, lsl #4
-	strb w12, [x0], #1
-	lsr w12, w11, #4
-	strb w12, [x0], #1
-.endm
-
-.macro GT_DIRECT_TOBYTES_PACK_BRANCH_EVEN reg_a, reg_b
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_a, 0, \reg_a, 2
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_a, 4, \reg_a, 6
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_b, 0, \reg_b, 2
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_b, 4, \reg_b, 6
-.endm
-
-.macro GT_DIRECT_TOBYTES_PACK_BRANCH_ODD reg_a, reg_b
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_a, 1, \reg_a, 3
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_a, 5, \reg_a, 7
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_b, 1, \reg_b, 3
-	GT_DIRECT_TOBYTES_PACK_PAIR \reg_b, 5, \reg_b, 7
-.endm
-
-.macro GT_DIRECT_TOBYTES_PACK64_FROM_STAGED_HALF
-	ld4 {v1.8H, v2.8H, v3.8H, v4.8H}, [sp]
-	dup v31.8H, v0.H[0]
-	GT_DIRECT_TOBYTES_NORMALIZE 1, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 2, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 3, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 4, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 23, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 24, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 25, 29, 31
-	GT_DIRECT_TOBYTES_NORMALIZE 26, 29, 31
-	GT_DIRECT_TOBYTES_PACK_BRANCH_EVEN 1, 23
-	GT_DIRECT_TOBYTES_PACK_BRANCH_EVEN 2, 24
-	GT_DIRECT_TOBYTES_PACK_BRANCH_EVEN 3, 25
-	GT_DIRECT_TOBYTES_PACK_BRANCH_EVEN 4, 26
-	GT_DIRECT_TOBYTES_PACK_BRANCH_ODD 1, 23
-	GT_DIRECT_TOBYTES_PACK_BRANCH_ODD 2, 24
-	GT_DIRECT_TOBYTES_PACK_BRANCH_ODD 3, 25
-	GT_DIRECT_TOBYTES_PACK_BRANCH_ODD 4, 26
-.endm
-#endif
 
 /*
  * GT row-bitrev optimized poly_basemul.
@@ -150,10 +67,6 @@ GT_BASEMUL_DARWIN_SYMBOL:
  LOAD_ADDR_OFF(lambda, gt_rowbitrev_lambda)
 
  mov counter, #24
-#ifdef GT_BASEMUL_DIRECT_TOBYTES
- sub sp, sp, #64
- mov x9, #0
-#endif
 
 Lgt_basemul_loop:
                                                                // Instructions:    101
@@ -238,8 +151,7 @@ Lgt_basemul_loop:
         smlal2 v11.4S, v29.8H, v0.H[0]                         // ......................................................................*..................................................
         uzp1 v18.8H, v28.8H, v26.8H                            // ......................................................................*..................................................
         smlal2 v12.4S, v22.8H, v0.H[0]                         // .......................................................................*.................................................
-#if defined(GT_BASEMUL_STORE_RMINUS1) && \
-    !defined(GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT)
+#ifdef GT_BASEMUL_STORE_RMINUS1
         /*
          * Raw rminus1/scaled final st4 contract:
          *   v8  = out0, formerly produced in v5
@@ -255,8 +167,7 @@ Lgt_basemul_loop:
         uzp2 v6.8H, v13.8H, v21.8H                             // ........................................................................*................................................
 #endif
         mul v5.8H, v18.8H, v0.H[2]                             // ........................................................................*................................................
-#if defined(GT_BASEMUL_STORE_RMINUS1) && \
-    !defined(GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT)
+#ifdef GT_BASEMUL_STORE_RMINUS1
         uzp2 v10.8H, v1.8H, v11.8H
 #else
         uzp2 v18.8H, v1.8H, v11.8H                             // ..........................................................................*..............................................
@@ -274,18 +185,12 @@ Lgt_basemul_loop:
         sqrdmulh v8.8H, v11.8H, v0.H[4]                        // ................................................................................*........................................
         sqrdmulh v13.8H, v6.8H, v0.H[4]                        // ..................................................................................*......................................
 #endif
-#if defined(GT_BASEMUL_STORE_RMINUS1) && \
-    !defined(GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT)
+#ifdef GT_BASEMUL_STORE_RMINUS1
         uzp2 v8.8H, v28.8H, v26.8H
 #else
         uzp2 v5.8H, v28.8H, v26.8H                             // ...................................................................................*.....................................
 #endif
 #ifdef GT_BASEMUL_STORE_RMINUS1
-#ifdef GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT
-        mov v8.16B, v5.16B
-        mov v9.16B, v6.16B
-        mov v10.16B, v18.16B
-#endif
         st4 {v8.8H, v9.8H, v10.8H, v11.8H}, [x0], #64
 #else
         mul v25.8H, v18.8H, v0.H[3]                            // ....................................................................................*....................................
@@ -308,18 +213,7 @@ Lgt_basemul_loop:
         srshr v4.8H, v15.8H, #11                               // ...............................................................................................................*.........
         mls v23.8H, v18.8H, v0.H[0]                            // .................................................................................................................*.......
         mls v24.8H, v4.8H, v0.H[0]                             // ...................................................................................................................*.....
-#ifdef GT_BASEMUL_DIRECT_TOBYTES
-        cbnz x9, Lgt_direct_tobytes_pack64
-        st4 {v23.8H, v24.8H, v25.8H, v26.8H}, [sp]
-        mov x9, #1
-        b Lgt_direct_tobytes_after_store
-Lgt_direct_tobytes_pack64:
-        GT_DIRECT_TOBYTES_PACK64_FROM_STAGED_HALF
-        mov x9, #0
-Lgt_direct_tobytes_after_store:
-#else
         st4 {v23.8H, v24.8H, v25.8H, v26.8H}, [x0], #64        // ........................................................................................................................*
-#endif
 #endif
 
                                                                         // --------------------------------------------------- cycle (expected) --------------------------------------------------->
@@ -429,10 +323,6 @@ Lgt_direct_tobytes_after_store:
 
         subs counter, counter, #1
         b.ne Lgt_basemul_loop
-
-#ifdef GT_BASEMUL_DIRECT_TOBYTES
- add sp, sp, #64
-#endif
 
  .unreq dst
  .unreq src1

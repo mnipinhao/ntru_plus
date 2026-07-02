@@ -14,12 +14,7 @@
 .text
 .align 2
 
-#ifdef __APPLE__
-#define C_SYM_1(sym) _##sym
-#define C_SYM(sym) C_SYM_1(sym)
-#else
-#define C_SYM(sym) sym
-#endif
+#include "common.inc"
 
 .macro fqmul dst, lhs, rhs
 	smull v16.4s, \lhs\().4h, \rhs\().4h

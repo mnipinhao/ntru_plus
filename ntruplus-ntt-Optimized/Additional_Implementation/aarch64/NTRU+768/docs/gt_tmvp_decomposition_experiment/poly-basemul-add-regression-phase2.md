@@ -142,7 +142,7 @@ drop-in route is closed by layout/representation incompatibility.
 Source of truth:
 
 ```text
-asm/gt/poly_basemul_add_gt_production.s
+asm/gt/poly_basemul_add.s
 includes:
 asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 

@@ -273,7 +273,7 @@ poly_invntt_from_rminus1_stage45scratch(out, scratch)
 Files:
 
 ```text
-asm/gt/poly_invntt_from_rminus1_gt_production.S
+asm/gt/poly_invntt_rminus1.S
 asm/slothy/production/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 ```
@@ -344,7 +344,7 @@ Files:
 
 ```text
 asm/base_gt_rminus1_to_stage123scratch_wrapper.S
-asm/gt/poly_invntt_from_rminus1_gt_production.S
+asm/gt/poly_invntt_rminus1.S
 asm/slothy/production/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 kem.c

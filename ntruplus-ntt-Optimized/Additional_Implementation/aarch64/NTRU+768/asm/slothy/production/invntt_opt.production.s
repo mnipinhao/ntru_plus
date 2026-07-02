@@ -8,38 +8,12 @@
  *   - Slothy-scheduled stage45 + row-end Barrett reduction fusion
  *   - branchfold post path with final output reductions
  *   - rminus1 branchfold table switch through INVNTT_INPUT_RMINUS1
- *   - optional decap-only crepmod3 output through INVNTT_FUSED_CREP3_OUTPUT
  */
 
 .macro BARRETT_REDUCE reg, tmp
     sqdmulh \tmp\().8h, \reg\().8h, v0.h[1]
     srshr   \tmp\().8h, \tmp\().8h, #11
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
-.endm
-
-.macro CREP3_PAIR_FROM_BARRETT_RAW lo, hi, qlo, qhi, divlo, divhi
-    /*
-     * Current final reduction computes red = raw - t*q.  Since q=3457 is
-     * congruent to 1 modulo 3, red mod 3 == raw - t mod 3.  Production
-     * poly_crepmod3 is exactly the fixed Neon mod-3 reduction below, so this
-     * decap-only path can skip the intermediate q-reduced store/reload.
-     *
-     * Schedule the low/high outputs as a pair.  The instruction count is the
-     * same as two scalar CREP3_FROM_BARRETT_RAW chains, but it exposes the two
-     * independent q-quotient and div-by-3 chains to the A76/Pi5 scheduler.
-     */
-    sqdmulh \qlo\().8h, \lo\().8h, v0.h[1]
-    sqdmulh \qhi\().8h, \hi\().8h, v0.h[1]
-    srshr   \qlo\().8h, \qlo\().8h, #11
-    srshr   \qhi\().8h, \qhi\().8h, #11
-    sub     \lo\().8h, \lo\().8h, \qlo\().8h
-    sub     \hi\().8h, \hi\().8h, \qhi\().8h
-    sqdmulh \divlo\().8h, \lo\().8h, v31.8h
-    sqdmulh \divhi\().8h, \hi\().8h, v31.8h
-    srshr   \divlo\().8h, \divlo\().8h, #1
-    srshr   \divhi\().8h, \divhi\().8h, #1
-    mls     \lo\().8h, \divlo\().8h, v30.8h
-    mls     \hi\().8h, \divhi\().8h, v30.8h
 .endm
 
 .macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
@@ -637,144 +611,6 @@
         str q24, [x2, #368]
 .endm
 
-.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
-    adr x3, invntt32_stage45_consts
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 0
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
-.endm
-
-.macro STORE_STAGE123_STRIPE_SCRATCH_SKIP0 group
-    str q4,  [x14, #(64 * 1 + 16 * \group)]
-    str q5,  [x14, #(64 * 2 + 16 * \group)]
-    str q6,  [x14, #(64 * 3 + 16 * \group)]
-    str q7,  [x14, #(64 * 4 + 16 * \group)]
-    str q8,  [x14, #(64 * 5 + 16 * \group)]
-    str q9,  [x14, #(64 * 6 + 16 * \group)]
-    str q10, [x14, #(64 * 7 + 16 * \group)]
-.endm
-
-.macro DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 group, keep, off0, off1, off2, off3, off4, off5, off6, off7
-    DIRECT_STAGE123_VEC 3, \off0
-    DIRECT_STAGE123_VEC 4, \off1
-    DIRECT_STAGE123_VEC 5, \off2
-    DIRECT_STAGE123_VEC 6, \off3
-    DIRECT_STAGE123_VEC 7, \off4
-    DIRECT_STAGE123_VEC 8, \off5
-    DIRECT_STAGE123_VEC 9, \off6
-    DIRECT_STAGE123_VEC 10, \off7
-
-    /* len=2 */
-    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
-
-    /* len=4 */
-    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
-    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
-
-    /* len=8 */
-    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
-    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
-    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
-    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
-
-    mov \keep\().16b, v3.16b
-    STORE_STAGE123_STRIPE_SCRATCH_SKIP0 \group
-.endm
-
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
-    add x14, sp, #1568
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16,   0,  24,  48,  72,  96, 120, 144, 168
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 192, 216, 240, 264, 288, 312, 336, 360
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 384, 408, 432, 456, 480, 504, 528, 552
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19, 576, 600, 624, 648, 672, 696, 720, 744
-.endm
-
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
-    add x14, sp, #1568
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16, 256, 280, 304, 328, 352, 376, 400, 424
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 448, 472, 496, 520, 544, 568, 592, 616
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 640, 664, 688, 712, 736, 760,  16,  40
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19,  64,  88, 112, 136, 160, 184, 208, 232
-.endm
-
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
-    add x14, sp, #1568
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 0, v16, 512, 536, 560, 584, 608, 632, 656, 680
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 1, v17, 704, 728, 752,   8,  32,  56,  80, 104
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 2, v18, 128, 152, 176, 200, 224, 248, 272, 296
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0 3, v19, 320, 344, 368, 392, 416, 440, 464, 488
-.endm
-
-.macro INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
-    ldr q7, [x3, #16]
-    ldr q5, [x3, #0]
-    mov v11.16b, v19.16b
-    mov v30.16b, v18.16b
-    mov v26.16b, v17.16b
-    mov v17.16b, v16.16b
-    sqrdmulh v29.8h, v11.8h, v7.h[0]
-    mul v23.8h, v11.8h, v5.h[0]
-    mls v23.8h, v29.8h, v0.h[0]
-    sqrdmulh v20.8h, v26.8h, v7.h[0]
-    mul v10.8h, v26.8h, v5.h[0]
-    add v19.8h, v30.8h, v23.8h
-    sub v21.8h, v30.8h, v23.8h
-    mls v10.8h, v20.8h, v0.h[0]
-    sqrdmulh v6.8h, v19.8h, v7.h[1]
-    sqrdmulh v22.8h, v21.8h, v7.h[2]
-    mul v25.8h, v19.8h, v5.h[1]
-    mls v25.8h, v6.8h, v0.h[0]
-    add v9.8h, v17.8h, v10.8h
-    mul v14.8h, v21.8h, v5.h[2]
-    sub v7.8h, v17.8h, v10.8h
-    mls v14.8h, v22.8h, v0.h[0]
-    sub v29.8h, v9.8h, v25.8h
-    add v17.8h, v9.8h, v25.8h
-    sqdmulh v8.8h, v29.8h, v0.h[1]
-    sub v23.8h, v7.8h, v14.8h
-    sqdmulh v22.8h, v17.8h, v0.h[1]
-    add v10.8h, v7.8h, v14.8h
-    sqdmulh v3.8h, v23.8h, v0.h[1]
-    srshr v13.8h, v8.8h, #11
-    sqdmulh v28.8h, v10.8h, v0.h[1]
-    srshr v9.8h, v22.8h, #11
-    mls v29.8h, v13.8h, v0.h[0]
-    srshr v18.8h, v3.8h, #11
-    mls v17.8h, v9.8h, v0.h[0]
-    srshr v27.8h, v28.8h, #11
-    mls v23.8h, v18.8h, v0.h[0]
-    mls v10.8h, v27.8h, v0.h[0]
-    str q17, [x2, #0]
-    str q23, [x2, #384]
-    str q29, [x2, #256]
-    str q10, [x2, #128]
-.endm
-
-.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
-    adr x3, invntt32_stage45_consts
-    INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 1
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 2
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 3
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 4
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 5
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 6
-    INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH 7
-.endm
-
 .macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
     POST_STORE_PTR_BRANCHFOLD \xvec, \ptr, \off_lo, \off_hi
 .endm
@@ -820,12 +656,8 @@
     ext      v24.16b, v23.16b, v23.16b, #8
     add      v23.8h, v23.8h, v24.8h
 
-.ifdef INVNTT_FUSED_CREP3_OUTPUT
-    CREP3_PAIR_FROM_BARRETT_RAW v21, v23, v17, v18, v19, v20
-.else
     BARRETT_REDUCE v21, v20
     BARRETT_REDUCE v23, v20
-.endif
 
     str      d21, [\ptr, #\off_lo]
     str      d23, [\ptr, #\off_hi]
@@ -907,6 +739,10 @@
 .error "invntt_opt.production.s requires INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS"
 .endif
 
+.equ INVNTT_STACK_SIZE, 2080
+.equ INVNTT_SAVED_X0_OFFSET, 2088
+
+.ifndef INVNTT_STAGE123_SCRATCH_ONLY
 .ifndef INVNTT_NO_POLY_ALIAS
 .ifndef INVNTT_DARWIN_NO_WEAK
 .weak poly_invntt
@@ -922,9 +758,6 @@
 	.global _gt_tuple_poly_invntt
 	.global gt_bpq_poly_invntt
 	.global _gt_bpq_poly_invntt
-
-.equ INVNTT_STACK_SIZE, 2080
-.equ INVNTT_SAVED_X0_OFFSET, 2088
 
 .ifndef INVNTT_NO_POLY_ALIAS
 poly_invntt:
@@ -1051,66 +884,6 @@ _gt_tuple_poly_invntt:
 	    BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
 	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
 
-.ifdef INVNTT_EXPOSE_CARRY1_ORACLE
-    .global gt_block_major_poly_invntt_perstripe_oracle
-    .global _gt_block_major_poly_invntt_perstripe_oracle
-gt_block_major_poly_invntt_perstripe_oracle:
-_gt_block_major_poly_invntt_perstripe_oracle:
-    stp x30, x0, [sp, #-16]!
-    sub sp, sp, #INVNTT_STACK_SIZE
-
-    adr x3, inv_consts
-    ldr q0, [x3]
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #32
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #544
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #1056
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
-    b L_invntt_post_tail
-
-    .global gt_block_major_poly_invntt_carry1_oracle
-    .global _gt_block_major_poly_invntt_carry1_oracle
-gt_block_major_poly_invntt_carry1_oracle:
-_gt_block_major_poly_invntt_carry1_oracle:
-    stp x30, x0, [sp, #-16]!
-    sub sp, sp, #INVNTT_STACK_SIZE
-
-    adr x3, inv_consts
-    ldr q0, [x3]
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #32
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #544
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
-
-    add x3, x1, #0
-    add x4, x1, #768
-    add x2, sp, #1056
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
-    b L_invntt_post_tail
-.endif
-
 	L_invntt_post_tail:
     adr x3, inv_consts
     ldr q15, [x3, #16]
@@ -1119,10 +892,6 @@ _gt_block_major_poly_invntt_carry1_oracle:
     add x9, sp, #544
     add x10, sp, #1056
     adr x3, inv_branchfold_vecs
-.ifdef INVNTT_FUSED_CREP3_OUTPUT
-    movi v30.8h, #3
-    movi v31.16b, #0x55
-.endif
 
     add x11, x0, #0
     add x12, x0, #512
@@ -1134,6 +903,7 @@ slothy_end_invntt_post_fused:
     add sp, sp, #INVNTT_STACK_SIZE
     ldp x30, x0, [sp], #16
     ret
+.endif
 
 .ifdef INVNTT_EXPOSE_STAGE123_SCRATCH_ABI
 .global gt_block_major_to_stage123_stripe_scratch
@@ -1212,10 +982,6 @@ _poly_invntt_stage45scratch:
     add x9, sp, #544
     add x10, sp, #1056
     adr x3, inv_branchfold_vecs
-.ifdef INVNTT_FUSED_CREP3_OUTPUT
-    movi v30.8h, #3
-    movi v31.16b, #0x55
-.endif
     add x11, x0, #0
     add x12, x0, #512
     add x13, x0, #256
@@ -1274,7 +1040,6 @@ inv_branchfold_vecs:
 .endif
 
 .purgem BARRETT_REDUCE
-.purgem CREP3_PAIR_FROM_BARRETT_RAW
 .purgem FQMUL_LANE
 .purgem INV_BUTTERFLY_LANE
 .purgem INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH
@@ -1290,14 +1055,6 @@ inv_branchfold_vecs:
 .purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
 .purgem TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
 .purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
-.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW_PERSTRIPE
-.purgem STORE_STAGE123_STRIPE_SCRATCH_SKIP0
-.purgem DIRECT_STAGE123_BLOCK_TO_SCRATCH_CARRY0
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_CARRY0
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_CARRY0
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_CARRY0
-.purgem INVNTT32_STAGE45_STRIPE0_CARRY_SCRATCH
-.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW_CARRY0
 .purgem POST_STORE_PTR
 .purgem LOAD_BRANCHFOLD_CONSTS
 .purgem POST_STORE_PTR_BRANCHFOLD

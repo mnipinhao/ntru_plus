@@ -59,7 +59,7 @@ DEFAULT_REGIONS = [
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="support_kernels.slothy.s")
-    parser.add_argument("--output", default="support_kernels.n1.opt.S")
+    parser.add_argument("--output", default="../../../gt/support/poly_support_n1.S")
     parser.add_argument("--target", default=os.environ.get("SLOTHY_TARGET", "n1"))
     parser.add_argument("--region", action="append")
     parser.add_argument("--stalls", type=int, default=96)

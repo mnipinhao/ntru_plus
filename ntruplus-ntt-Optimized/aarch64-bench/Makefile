@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-gt bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-gt bench-kpqc-final bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -22,24 +22,29 @@ ifeq ($(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); production-only bench supports $(KEM_MODES))
 endif
 
-NTRUPLUS = ntruplus
+NTRUPLUS ?= ntruplus
+KPQC_FINAL_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768
 
-GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s
+GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt.s
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
-GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt_gt_production.s
-GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt_from_rminus1_gt_production.S
+GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt.s
+GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt_rminus1.S
+GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM ?= \
+	$(NTRUPLUS)/asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
+	$(NTRUPLUS)/asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
+GT_BENCH_EXTRA_ASM ?=
 GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/production/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/gt_fqinv15.S
+GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
-GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/gt/poly_basemul_add_encap_direct32_q31_tobytes_gt_production.S
+GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/gt/poly_basemul_add_encap_tobytes_q31.S
 GT_PRODUCTION_BASE_ASM ?= \
-	$(NTRUPLUS)/asm/gt/poly_basemul_gt_production.s \
-	$(NTRUPLUS)/asm/gt/poly_basemul_add_gt_production.s \
-	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input_gt_production.s \
-	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s
+	$(NTRUPLUS)/asm/gt/poly_basemul.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_add.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1.s
 GT_SUPPORT_ASM ?= \
-	$(NTRUPLUS)/asm/slothy/support_kernels/support_kernels.n1.opt.S \
-	$(NTRUPLUS)/asm/gt/poly_cbd_sotp_gt_production.s
+	$(NTRUPLUS)/asm/gt/support/poly_support_n1.S \
+	$(NTRUPLUS)/asm/gt/poly_cbd_sotp.s
 
 BENCH_SOURCES = \
 	hal/hal.c \
@@ -50,6 +55,23 @@ KEM_CORE_SOURCES = \
 	$(NTRUPLUS)/kem.c \
 	$(NTRUPLUS)/symmetric.c
 
+KPQC_FINAL_KEM_CORE_SOURCES = \
+	$(KPQC_FINAL_ROOT)/randombytes.c \
+	$(KPQC_FINAL_ROOT)/kem.c \
+	$(KPQC_FINAL_ROOT)/symmetric.c
+
+KPQC_FINAL_SUPPORT_ASM = \
+	$(KPQC_FINAL_ROOT)/asm/add.s \
+	$(KPQC_FINAL_ROOT)/asm/crepmod3.s \
+	$(KPQC_FINAL_ROOT)/asm/pack.s \
+	$(KPQC_FINAL_ROOT)/asm/cbd.s
+
+KPQC_FINAL_KEM_SOURCES = \
+	$(KPQC_FINAL_ROOT)/poly.c \
+	$(KPQC_FINAL_SUPPORT_ASM) \
+	$(KPQC_FINAL_ROOT)/asm/ntt.s \
+	$(KPQC_FINAL_ROOT)/asm/base.s
+
 GT_PRODUCTION_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
@@ -58,25 +80,34 @@ GT_PRODUCTION_KEM_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
-	$(GT_PRODUCTION_BASE_ASM)
-
-SOURCES = $(BENCH_SOURCES) $(KEM_CORE_SOURCES)
-SHAKE_CFLAGS =
-ifeq ($(USE_SHAKE_ASM),1)
-SOURCES += $(NTRUPLUS)/CE/fips202.c $(NTRUPLUS)/CE/f1600.S
-SHAKE_CFLAGS = -DSUPPORTS_SHAKE256_ASM
-else
-SOURCES += $(NTRUPLUS)/NO_CE/fips202.c
-endif
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_BENCH_EXTRA_ASM)
 
 ifeq ($(VARIANT),gt_production)
+SCHEME_ROOT = $(NTRUPLUS)
+SOURCES = $(BENCH_SOURCES) $(KEM_CORE_SOURCES)
 SOURCES += $(GT_PRODUCTION_KEM_SOURCES) $(GT_PRODUCTION_Q31_ENCAP_ASM)
 VARIANT_CFLAGS = -DGT_PRODUCTION_USE_SCALED_KEYPAIR -DGT_PRODUCTION_USE_RMINUS1_DECAP -DGT_BASEINV_BATCH_USE_ASM_FINISH -DGT_BASEINV_USE_FQINV15_ASM -DGT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP -DBENCH_VARIANT_GT=1
 else ifeq ($(VARIANT),gt_production_no_q31)
+SCHEME_ROOT = $(NTRUPLUS)
+SOURCES = $(BENCH_SOURCES) $(KEM_CORE_SOURCES)
 SOURCES += $(GT_PRODUCTION_KEM_SOURCES)
 VARIANT_CFLAGS = -DGT_PRODUCTION_USE_SCALED_KEYPAIR -DGT_PRODUCTION_USE_RMINUS1_DECAP -DGT_BASEINV_BATCH_USE_ASM_FINISH -DGT_BASEINV_USE_FQINV15_ASM -DBENCH_VARIANT_GT=1
+else ifeq ($(VARIANT),kpqc_final)
+SCHEME_ROOT = $(KPQC_FINAL_ROOT)
+SOURCES = $(BENCH_SOURCES) $(KPQC_FINAL_KEM_CORE_SOURCES)
+SOURCES += $(KPQC_FINAL_KEM_SOURCES)
+VARIANT_CFLAGS = -DBENCH_VARIANT_GT=0
 else
-$(error unknown VARIANT=$(VARIANT); use gt_production or gt_production_no_q31)
+$(error unknown VARIANT=$(VARIANT); use kpqc_final, gt_production, or gt_production_no_q31)
+endif
+
+SHAKE_CFLAGS =
+ifeq ($(USE_SHAKE_ASM),1)
+SOURCES += $(SCHEME_ROOT)/CE/fips202.c $(SCHEME_ROOT)/CE/f1600.S
+SHAKE_CFLAGS = -DSUPPORTS_SHAKE256_ASM
+else
+SOURCES += $(SCHEME_ROOT)/NO_CE/fips202.c
 endif
 
 CORE ?= 3
@@ -119,7 +150,8 @@ GT_KEM_STAGE_PMU_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
-	$(GT_PRODUCTION_BASE_ASM)
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_BENCH_EXTRA_ASM)
 
 GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
 	bench_gt_kem_component_profile_pmu.c \
@@ -133,7 +165,8 @@ GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
-	$(GT_PRODUCTION_BASE_ASM)
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_BENCH_EXTRA_ASM)
 
 GT_BASEINV_KWAY_PMU_SOURCES = \
 	bench_gt_baseinv_kway_pmu.c \
@@ -152,7 +185,8 @@ GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
-	$(GT_PRODUCTION_BASE_ASM)
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_BENCH_EXTRA_ASM)
 
 GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	bench_gt_direct32_q31_release_guard.c \
@@ -201,9 +235,9 @@ CFLAGS := \
 	$(VARIANT_CFLAGS) \
 	$(SHAKE_CFLAGS) \
 	-Ihal \
-	-I$(NTRUPLUS) \
-	-I$(NTRUPLUS)/CE \
-	-I$(NTRUPLUS)/NO_CE \
+	-I$(SCHEME_ROOT) \
+	-I$(SCHEME_ROOT)/CE \
+	-I$(SCHEME_ROOT)/NO_CE \
 	-MMD \
 	$(CFLAGS)
 
@@ -309,6 +343,11 @@ check_gt_direct32_q31_release_candidate: check_gt_basemul_add_direct32_q31_reduc
 bench-gt:
 	$(MAKE) clean
 	$(MAKE) CYCLES=PERF VARIANT=gt_production BENCH_MODE=kem_dec
+	sudo taskset -c 3 ./$(TARGET)
+
+bench-kpqc-final:
+	$(MAKE) clean
+	$(MAKE) CYCLES=PERF VARIANT=kpqc_final BENCH_MODE=kem_dec
 	sudo taskset -c 3 ./$(TARGET)
 
 clean:

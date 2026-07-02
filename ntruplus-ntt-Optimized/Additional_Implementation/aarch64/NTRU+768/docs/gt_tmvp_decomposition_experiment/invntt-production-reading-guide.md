@@ -15,8 +15,8 @@ asm/slothy/production/invntt_opt.production.s
 
 | wrapper | 產生的 symbol | 用途 |
 | --- | --- | --- |
-| `asm/gt/poly_invntt_gt_production.s` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
-| `asm/gt/poly_invntt_from_rminus1_gt_production.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
+| `asm/gt/poly_invntt.s` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
+| `asm/gt/poly_invntt_rminus1.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
 
 舊的 A72 opt-in prototype wrapper 已移除；目前 production 只保留上表兩個
 InvNTT wrapper 入口。
@@ -32,7 +32,7 @@ InvNTT wrapper 入口。
 | `INVNTT_USE_POST_BRANCHFOLD` | untwist、branch merge、final scaling 由 branchfold constants table 合併 |
 | `INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS` | final store 前做 output Barrett reductions，這是 `poly_crepmod3` representative contract 的關鍵 |
 | `INVNTT_INPUT_RMINUS1` | rminus1 wrapper 專用；改 include `invntt_branchfold_vecs_rminus1.inc` |
-| `INVNTT_EXPOSE_STAGE123_SCRATCH_ABI` | rminus1 wrapper 目前也 export stage123scratch split prototype symbols；standard `gt_production_opt_rminus1` KEM 不走這個 ABI |
+| `INVNTT_EXPOSE_STAGE123_SCRATCH_ABI` | benchmark-only `asm/gt/bench/poly_invntt_rminus1_stage123scratch.S` exports the split stage123scratch symbols；standard `gt_production_opt_rminus1` KEM 不走這個 ABI |
 | `INVNTT_NO_POLY_ALIAS` | legacy/prototype wrapper 專用；不要 export `poly_invntt` |
 
 ## rminus1 decap data flow

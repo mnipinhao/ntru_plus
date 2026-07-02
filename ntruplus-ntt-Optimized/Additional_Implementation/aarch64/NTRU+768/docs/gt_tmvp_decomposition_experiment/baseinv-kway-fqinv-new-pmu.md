@@ -13,7 +13,7 @@ Production GT base inversion for NTRU+768 is linked from:
 | --- | --- | --- |
 | baseinv ABI | `poly_baseinv`, `poly_baseinv_scaled_r` in `poly_gt_baseinv_batch.c` | production default |
 | batch denominator inverse | `poly_fqinv_batch_neon` in `poly_gt_baseinv_batch.c` | production internal |
-| scalar-vector inverse chain | `gt_fqinv15_asm` in `asm/gt/gt_fqinv15.S` | production linked when `GT_BASEINV_USE_FQINV15_ASM` is set |
+| scalar-vector inverse chain | `gt_fqinv15_asm` in `asm/gt/poly_baseinv_fqinv15.S` | production linked when `GT_BASEINV_USE_FQINV15_ASM` is set |
 | batch finish | `baseinv_batch_finish24_n1_asm` in `asm/slothy/production/baseinv_batch_finish_loop_n1.S` | production linked when `GT_BASEINV_BATCH_USE_ASM_FINISH` is set |
 
 Current `gt_production` already uses `gt_fqinv15_asm`, so the old assumption

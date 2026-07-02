@@ -1,14 +1,23 @@
 # Raspberry Pi 5 GT Production Benchmark Flow
 
-This directory is the production-only benchmark harness for the GT NTRU+768
-path.  The `ntruplus` entry is a relative symbolic link to:
+This directory is the benchmark harness for comparing the GT NTRU+768
+production path against KPQC final.  The `ntruplus` entry is a relative
+symbolic link to the optimized GT tree:
 
 ```text
 ../Additional_Implementation/aarch64/NTRU+768
 ```
 
-Do not clone another repository on the Raspberry Pi.  Copy or `rsync` the full
-NTRU+ repository and run benchmarks from this directory.
+KPQC final is intentionally not copied back into this optimized tree.  The
+Makefile reads it through:
+
+```text
+KPQC_FINAL_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768
+```
+
+Copy or `rsync` the full NTRU+ workspace so both `ntruplus-ntt-Optimized` and
+`ntruplus-KpqC-Final` exist as siblings, then run benchmarks from this
+directory.
 
 ## Install Packages
 
@@ -29,7 +38,7 @@ vcgencmd get_throttled
 
 ## Generic KEM Bench
 
-The generic harness now supports only GT production KEM modes:
+The generic harness supports GT production and KPQC final KEM modes:
 
 ```sh
 make clean
@@ -42,6 +51,10 @@ sudo taskset -c 3 ./bench
 
 make clean
 make CYCLES=PERF VARIANT=gt_production_no_q31 BENCH_MODE=kem_dec
+sudo taskset -c 3 ./bench
+
+make clean
+make CYCLES=PERF VARIANT=kpqc_final BENCH_MODE=kem_dec
 sudo taskset -c 3 ./bench
 ```
 
@@ -57,10 +70,13 @@ kem_components
 Supported `VARIANT` values:
 
 ```text
+kpqc_final
 gt_production_no_q31
 gt_production
 ```
 
+`kpqc_final` links sources directly from `KPQC_FINAL_ROOT`; it does not use any
+stock asm copied into the optimized repo.
 `gt_production` enables the encap-only direct32 Q31 tobytes-contract path.
 `gt_production_no_q31` keeps the generic production `poly_basemul_add` path.
 

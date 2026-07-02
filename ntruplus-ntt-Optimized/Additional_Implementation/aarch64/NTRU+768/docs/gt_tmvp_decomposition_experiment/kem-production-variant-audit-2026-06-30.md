@@ -28,20 +28,20 @@ Current `VARIANT=gt_production` in `aarch64-bench/Makefile` links:
 ```text
 GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/ntt.c
-  ntruplus/asm/slothy/support_kernels/support_kernels.n1.opt.S
-  ntruplus/asm/gt/poly_cbd_sotp_gt_production.s
-  ntruplus/asm/gt/poly_ntt_gt_production.s
+  ntruplus/asm/gt/support/poly_support_n1.S
+  ntruplus/asm/gt/poly_cbd_sotp.s
+  ntruplus/asm/gt/poly_ntt.s
   ntruplus/asm/slothy/production/my_32ntt.opt.s
-  ntruplus/asm/gt/poly_invntt_gt_production.s
-  ntruplus/asm/gt/poly_invntt_from_rminus1_gt_production.S
+  ntruplus/asm/gt/poly_invntt.s
+  ntruplus/asm/gt/poly_invntt_rminus1.S
   ntruplus/poly_gt_baseinv_batch.c
   ntruplus/asm/slothy/production/baseinv_batch_finish_loop_n1.S
-  ntruplus/asm/gt/gt_fqinv15.S
-  ntruplus/asm/gt/poly_basemul_gt_production.s
-  ntruplus/asm/gt/poly_basemul_add_gt_production.s
-  ntruplus/asm/gt/poly_basemul_scaled_r_input_gt_production.s
-  ntruplus/asm/gt/poly_basemul_rminus1_gt_production.s
-  ntruplus/asm/gt/poly_basemul_add_encap_direct32_q31_tobytes_gt_production.S
+  ntruplus/asm/gt/poly_baseinv_fqinv15.S
+  ntruplus/asm/gt/poly_basemul.s
+  ntruplus/asm/gt/poly_basemul_add.s
+  ntruplus/asm/gt/poly_basemul_scaled_r_input.s
+  ntruplus/asm/gt/poly_basemul_rminus1.s
+  ntruplus/asm/gt/poly_basemul_add_encap_tobytes_q31.S
 
 VARIANT_CFLAGS =
   -DGT_PRODUCTION_USE_SCALED_KEYPAIR
@@ -84,17 +84,17 @@ object column below is recorded as "linked binary only".
 
 | function | production symbol | source file | linked? | gate | notes |
 | --- | --- | --- | --- | --- | --- |
-| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/poly_ntt_gt_production.s`, `asm/slothy/production/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
-| Generic InvNTT | `poly_invntt` | `asm/gt/poly_invntt_gt_production.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
-| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_from_rminus1_gt_production.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
-| Generic basemul | `poly_basemul` | `asm/gt/poly_basemul_gt_production.s` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
-| Basemul add | `poly_basemul_add` | `asm/gt/poly_basemul_add_gt_production.s` | yes | none | generic symbol remains the production arithmetic-correct implementation |
-| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/gt/poly_basemul_add_encap_direct32_q31_tobytes_gt_production.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
-| rminus1 basemul | `poly_basemul_rminus1` | `asm/gt/poly_basemul_rminus1_gt_production.s` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
-| Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/gt/poly_basemul_scaled_r_input_gt_production.s` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
-| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `gt_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM` | closed-form/batch baseinv path used by current keygen |
-| pack | `poly_tobytes`, `poly_frombytes` | `asm/slothy/support_kernels/support_kernels.n1.opt.S` | yes | none | stock support API replaced by Slothy support kernel in `gt_production` |
-| crepmod3 | `poly_crepmod3` | `asm/slothy/support_kernels/support_kernels.n1.opt.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
+| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/poly_ntt.s`, `asm/slothy/production/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
+| Generic InvNTT | `poly_invntt` | `asm/gt/poly_invntt.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
+| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
+| Generic basemul | `poly_basemul` | `asm/gt/poly_basemul.s` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
+| Basemul add | `poly_basemul_add` | `asm/gt/poly_basemul_add.s` | yes | none | generic symbol remains the production arithmetic-correct implementation |
+| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/gt/poly_basemul_add_encap_tobytes_q31.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
+| rminus1 basemul | `poly_basemul_rminus1` | `asm/gt/poly_basemul_rminus1.s` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
+| Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/gt/poly_basemul_scaled_r_input.s` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
+| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `poly_baseinv_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM` | closed-form/batch baseinv path used by current keygen |
+| pack | `poly_tobytes`, `poly_frombytes` | `asm/gt/support/poly_support_n1.S` | yes | none | stock support API replaced by Slothy support kernel in `gt_production` |
+| crepmod3 | `poly_crepmod3` | `asm/gt/support/poly_support_n1.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
 
 Default current GT production contains both `poly_basemul_add` and
 `poly_basemul_add_encap_direct32_q31_tobytes_contract` at distinct

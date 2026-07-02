@@ -3,7 +3,7 @@
  *
  * This exports only the generic poly_basemul ABI from the shared
  * Slothy-scheduled GT basemul body.  Production links poly_basemul_add from
- * poly_basemul_add_gt_production.s.
+ * poly_basemul_add.s.
  */
 #define GT_BASEMUL_EMIT_BASEMUL 1
 #define GT_BASEMUL_SYMBOL poly_basemul

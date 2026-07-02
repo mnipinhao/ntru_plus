@@ -4,10 +4,10 @@
 forward NTT 的讀碼索引。production public entry 是：
 
 ```text
-asm/gt/poly_ntt_gt_production.s
+asm/gt/poly_ntt.s
 ```
 
-`asm/gt/poly_ntt_gt_production.s` 只負責宣告 public symbols，然後 include
+`asm/gt/poly_ntt.s` 只負責宣告 public symbols，然後 include
 `asm/gt/ntt_gt_body.inc`。`ntt_gt_body.inc` 是 forward NTT implementation
 body，不再決定 weak/global alias policy。舊的 GAS `PHASE123_ITER` fallback、
 `NTT32_FUSED_SCATTER=0` row-buffer scatter fallback、Phase123 A/B/C experiment
@@ -17,13 +17,13 @@ selector 都已經不在 production body 裡。
 
 | wrapper | 產生的 symbol | 用途 |
 | --- | --- | --- |
-| `asm/gt/poly_ntt_gt_production.s` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
+| `asm/gt/poly_ntt.s` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
 
 ## Active symbol contract
 
 `poly_ntt`, `_poly_ntt`, `gt_block_major_poly_ntt`, and
 `_gt_block_major_poly_ntt` are declared `.global` directly in
-`asm/gt/poly_ntt_gt_production.s`.  The previous `MY_NTT_DARWIN_NO_WEAK` weak
+`asm/gt/poly_ntt.s`.  The previous `MY_NTT_DARWIN_NO_WEAK` weak
 alias selector was removed.
 
 不再使用：
@@ -42,7 +42,7 @@ Normal GT production：
 
 ```text
 poly input
-  -> asm/gt/poly_ntt_gt_production.s public entry
+  -> asm/gt/poly_ntt.s public entry
   -> asm/gt/ntt_gt_body.inc prologue
   -> asm/slothy/production/my_ntt_phase123.n1.opt.s
        natural input -> GT split/twist/DFT3 -> three row scratch buffers
@@ -55,8 +55,8 @@ poly input
 
 | line | 段落 | 要看什麼 |
 | --- | --- | --- |
-| `asm/gt/poly_ntt_gt_production.s:8` | public symbols | `poly_ntt` / `gt_block_major_poly_ntt` global aliases |
-| `asm/gt/poly_ntt_gt_production.s:16` | body include | include `asm/gt/ntt_gt_body.inc` |
+| `asm/gt/poly_ntt.s:8` | public symbols | `poly_ntt` / `gt_block_major_poly_ntt` global aliases |
+| `asm/gt/poly_ntt.s:16` | body include | include `asm/gt/ntt_gt_body.inc` |
 | `asm/gt/ntt_gt_body.inc:19` | `CALL_NTT32_8WAY` | normal `_ntt32_8way` call |
 | `asm/gt/ntt_gt_body.inc:23` | frame constants | 3 row scratch buffers + saved destination slot |
 | `asm/gt/ntt_gt_body.inc:26` | register aliases | public ABI: `x0=dst`, `x1=src` |

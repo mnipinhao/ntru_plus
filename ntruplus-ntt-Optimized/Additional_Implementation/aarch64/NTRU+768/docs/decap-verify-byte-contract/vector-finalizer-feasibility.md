@@ -102,7 +102,7 @@ Production `poly_tobytes` is:
 
 ```text
 symbol: poly_tobytes
-source: asm/slothy/support_kernels/support_kernels.n1.opt.S
+source: asm/gt/support/poly_support_n1.S
 ```
 
 Per 64-coefficient loop, the scheduled support kernel uses:

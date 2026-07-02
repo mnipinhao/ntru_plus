@@ -15,20 +15,23 @@ SHAKE_NOCE_SOURCES = NO_CE/fips202.c
 SHAKE_CE_SOURCES = CE/fips202.c CE/f1600.S
 GT_PRODUCTION_FLAGS = -DGT_PRODUCTION_USE_SCALED_KEYPAIR -DGT_PRODUCTION_USE_RMINUS1_DECAP
 
-GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/gt/poly_cbd_sotp_gt_production.s
-GT_NTT_ASM_PHASE123_N1 = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
+GT_SUPPORT_ASM = asm/gt/support/poly_support_n1.S asm/gt/poly_cbd_sotp.s
+GT_NTT_ASM_PHASE123_N1 = asm/gt/poly_ntt.s asm/slothy/production/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
-GT_INVNTT_ASM = asm/gt/poly_invntt_gt_production.s
-GT_INVNTT_RMINUS1_ASM = asm/gt/poly_invntt_from_rminus1_gt_production.S
+GT_INVNTT_ASM = asm/gt/poly_invntt.s
+GT_INVNTT_RMINUS1_ASM = asm/gt/poly_invntt_rminus1.S
+GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM = \
+	asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
+	asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
 GT_BASEINV_BATCH_FINISH_ASM = asm/slothy/production/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM = asm/gt/gt_fqinv15.S
+GT_BASEINV_FQINV_ASM = asm/gt/poly_baseinv_fqinv15.S
 GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
-GT_BASE_OPT_NOADD_ASM = asm/gt/poly_basemul_gt_production.s
-GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/poly_basemul_add_gt_production.s
+GT_BASE_OPT_NOADD_ASM = asm/gt/poly_basemul.s
+GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/poly_basemul_add.s
 GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
-GT_BASE_RMINUS1_OPT_ASM = asm/gt/poly_basemul_rminus1_gt_production.s
-GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/poly_basemul_scaled_r_input_gt_production.s
+GT_BASE_RMINUS1_OPT_ASM = asm/gt/poly_basemul_rminus1.s
+GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/poly_basemul_scaled_r_input.s
 
 # CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
 # Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
@@ -118,9 +121,9 @@ test_gt_basemul_add32_full_pipeline_inline: $(HEADERS) ntt.h ntt.c $(GT_BASE_REF
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_BASE_REF_NO_ABI_WRAPPERS -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_basemul_add32_full_pipeline_inline gt_test/test_gt_basemul_add32_asm.c ntt.c $(GT_BASE_REF_C) $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
 	./$(BUILD_DIR)/test_gt_basemul_add32_full_pipeline_inline
 
-profile_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(GT_PRODUCTION_OPT_KEM_SOURCES)
+profile_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(GT_PRODUCTION_OPT_KEM_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_FLAGS) -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_gt_production_opt randombytes.c gt_test/kem_component_profiler.c $(GT_PRODUCTION_OPT_KEM_SOURCES)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_FLAGS) -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_gt_production_opt randombytes.c gt_test/kem_component_profiler.c $(GT_PRODUCTION_OPT_KEM_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
 
 profile_kem_gt_production_opt_rminus1: profile_kem_gt_production_opt
 

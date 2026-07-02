@@ -6,8 +6,9 @@ This directory is kept narrow:
   production builds.
 - `inputs/`: symbolic sources, contracts, DAG notes, and kernel-specific
   Slothy drivers used to regenerate selected production outputs.
-- `support_kernels/`: production support-kernel replacements for stock
-  pack/frombytes/tobytes/crepmod3 helpers.
+- `inputs/support_kernels/`: symbolic support-kernel source, contract files,
+  and the local driver.  The generated production output lives in
+  `asm/gt/support/poly_support_n1.S`.
 
 Rejected rowpack, shadow-base, window, microkernel, A72 branchfold, oldstore,
 and rowstage45/post-fusion prototypes were removed from the active tree.  Use
@@ -15,7 +16,7 @@ git history for those artifacts.
 
 ## Forward NTT
 
-`asm/gt/poly_ntt_gt_production.s` is the production public wrapper.  It exports
+`asm/gt/poly_ntt.s` is the production public wrapper.  It exports
 the forward NTT symbols and includes `asm/gt/ntt_gt_body.inc`, which calls the
 fused-scatter `_ntt32_8way` row kernel in
 `asm/slothy/production/my_32ntt.opt.s`.
@@ -30,12 +31,12 @@ path:
 The default Makefile path uses:
 
 ```sh
-GT_NTT_ASM = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
+GT_NTT_ASM = asm/gt/poly_ntt.s asm/slothy/production/my_32ntt.opt.s
 ```
 
 ## Basemul Add32
 
-`asm/gt/poly_basemul_add_gt_production.s` includes
+`asm/gt/poly_basemul_add.s` includes
 `asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S` through
 `asm/gt/base_gt_opt_body.inc`.
 
@@ -62,11 +63,14 @@ The production regeneration sources are:
 
 The active inverse NTT path is intentionally narrow:
 
-- `asm/gt/poly_invntt_gt_production.s` is the normal production wrapper.
-- `asm/gt/poly_invntt_from_rminus1_gt_production.S` is the decap rminus1
+- `asm/gt/poly_invntt.s` is the normal production wrapper.
+- `asm/gt/poly_invntt_rminus1.S` is the decap rminus1
   production wrapper.
+- `asm/gt/bench/poly_invntt_rminus1_stage123scratch.S` is the benchmark-only
+  split stage123-scratch wrapper.
 - `asm/slothy/production/invntt_opt.production.s` is the current inverse
-  implementation included by both wrappers.
+  implementation included by the production wrappers and, in scratch-only
+  mode, by the benchmark-only split wrapper.
 
 The production path keeps:
 
@@ -75,3 +79,6 @@ The production path keeps:
 - Slothy-scheduled stage45 plus row-end Barrett reduction fusion
 - branchfold post path with final output reductions
 - rminus1 branchfold table switch through `INVNTT_INPUT_RMINUS1`
+
+The old crep3-fused and carry-oracle blocks are not kept in the production
+source.  The exposed stage123-scratch ABI is isolated under `asm/gt/bench/`.
