@@ -26,9 +26,10 @@ the production GT forward NTT.  The older rowpack, shadow-base, and forward
 window experiment artifacts were removed from the active tree after they failed
 to become production candidates.
 
-`asm/gt/my_ntt.s` is the production wrapper and now always calls the fused-scatter
-`_ntt32_8way` row kernel.  The older row-buffer scatter fallback was removed
-from the production file to keep the active path readable.
+`asm/gt/poly_ntt_gt_production.s` is the production public wrapper.  It exports
+the forward NTT symbols and includes `asm/gt/ntt_gt_body.inc`, which now always
+calls the fused-scatter `_ntt32_8way` row kernel.  The older row-buffer scatter
+fallback was removed from the production body to keep the active path readable.
 
 The generated `my_32ntt.opt.s` has a small boundary post-process: it defines
 stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
@@ -37,24 +38,24 @@ regenerate the file from scratch.
 
 ## Forward Phase123 N1 Schedule
 
-The first half of `asm/gt/my_ntt.s` is the N1 Slothy-scheduled Phase123 path:
+The first half of `asm/gt/ntt_gt_body.inc` is the N1 Slothy-scheduled Phase123 path:
 
 - symbolic source used to run Slothy: `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`
 - scheduled wrapper used by the default GT KEM builds:
-  `asm/gt/my_ntt_phase123_n1.s`
+  `asm/gt/poly_ntt_gt_production.s`
 - scheduled region included by the wrapper:
   `asm/slothy/production/my_ntt_phase123.n1.opt.s`
 - local driver used for the split-heuristic run:
   `asm/slothy/inputs/optimize_phase123_split.py`
 
-`asm/gt/my_ntt.s` directly includes the scheduled region.  The old
+`asm/gt/ntt_gt_body.inc` directly includes the scheduled region.  The old
 macro-expanded GAS `PHASE123_ITER` fallback and the Phase123 A/B/C experiment
 selector were removed from the production file.
 
 The default Makefile path uses:
 
 ```sh
-GT_NTT_ASM = asm/gt/my_ntt_phase123_n1.s asm/slothy/production/my_32ntt.opt.s
+GT_NTT_ASM = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
 ```
 
 The flat symbolic file expands the eight iterations explicitly and then

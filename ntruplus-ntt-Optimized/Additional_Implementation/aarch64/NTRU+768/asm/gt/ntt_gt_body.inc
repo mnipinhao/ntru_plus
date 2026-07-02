@@ -1,5 +1,5 @@
 /*
- * Production GT forward NTT.
+ * Production GT forward NTT body.
  *
  * Active path:
  *   - Slothy-scheduled Phase123 (`asm/slothy/production/my_ntt_phase123.n1.opt.s`)
@@ -7,8 +7,12 @@
  *   - normal block-major output
  *
  * The old GAS PHASE123_ITER fallback, NTT32 row-buffer scatter fallback, and
- * Phase123 A/B/C experiment selectors are intentionally not kept here.  The
- * flat symbolic Phase123 source used for Slothy regeneration remains in
+ * Phase123 A/B/C experiment selectors are intentionally not kept here.
+ *
+ * This include file intentionally does not export public symbols.  Public
+ * entry wrappers define the symbol contract before including this body.
+ *
+ * The flat symbolic Phase123 source used for Slothy regeneration remains in
  * `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`.
  */
 
@@ -19,21 +23,6 @@
     .equ MY_NTT_FRAME_SIZE, 1568
     .equ MY_NTT_SAVED_DST_OFFSET, 1576
 
-.ifndef MY_NTT_NO_POLY_ALIAS
-.ifndef MY_NTT_DARWIN_NO_WEAK
-.weak poly_ntt
-.weak _poly_ntt
-.else
-.global poly_ntt
-.global _poly_ntt
-.endif
-.endif
-.global gt_block_major_poly_ntt
-.global _gt_block_major_poly_ntt
-poly_ntt:
-_poly_ntt:
-gt_block_major_poly_ntt:
-_gt_block_major_poly_ntt:
     dst       .req x0
     src       .req x1
     zetas_ptr .req x2

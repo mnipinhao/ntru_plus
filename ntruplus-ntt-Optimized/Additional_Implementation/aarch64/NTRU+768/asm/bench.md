@@ -175,7 +175,7 @@ integration hypothesis.  The forward NTT is now the better target: stock to
 GT-promoted improves `ntt` by 746 cycles and the full pipeline by about
 1121-1311 cycles, while the base-N1 promotion only contributes about 61 cycles
 to `ntt_mul_pipeline` and almost nothing to `ntt_basemul_add_pipeline`.
-Next code work should inspect `my_ntt.s` and `slothy/my_32ntt.opt.s`, especially
+Next code work should inspect `ntt_gt_body.inc` and `slothy/my_32ntt.opt.s`, especially
 the boundary between the hand-written outer transform and the 32-point Slothy
 kernel.
 

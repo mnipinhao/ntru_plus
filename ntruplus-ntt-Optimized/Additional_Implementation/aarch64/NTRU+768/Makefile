@@ -38,7 +38,7 @@ SLOTHY_MICROKERNEL_GENERATED = \
 	asm/slothy/microkernels/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/microkernels/base_gt_add32_rminus1_finalize.n1.opt.S \
 	asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
-GT_NTT_ASM_PHASE123_N1 = asm/gt/my_ntt_phase123_n1.s asm/slothy/production/my_32ntt.opt.s
+GT_NTT_ASM_PHASE123_N1 = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
 GT_INVNTT_ASM = asm/gt/inv_my_ntt.s
 GT_INVNTT_RMINUS1_ASM = asm/gt/inv_my_ntt_rminus1.S

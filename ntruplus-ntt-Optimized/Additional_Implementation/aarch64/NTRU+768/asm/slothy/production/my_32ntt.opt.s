@@ -7,7 +7,7 @@
  * Forward kernel contract:
  *
  *   natural input -> complete bit-reversed output scattered to final dst
- *   input comes only from my_ntt.s Phase123 row buffers
+ *   input comes only from ntt_gt_body.inc Phase123 row buffers
  *   radix-2 Cooley-Tukey butterfly:
  *     t  = fqmul(high, twiddle)
  *     lo = low + t
