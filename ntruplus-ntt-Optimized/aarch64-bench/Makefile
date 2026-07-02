@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-gt bench-kpqc-final bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-gt bench-kpqc-final bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_hier_k8_diff check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -131,6 +131,11 @@ GT_BASEINV_KWAY_PMU_NTESTS ?= 31
 GT_BASEINV_KWAY_PMU_NITERATIONS ?= 5000
 GT_BASEINV_KWAY_PMU_NWARMUP ?= 100
 GT_BASEINV_KWAY_PMU_NINPUTS ?= 256
+GT_BASEINV_HIER_K8_DIFF_TARGET ?= bench_gt_baseinv_hier_k8_diff_bin
+GT_BASEINV_HIER_K8_DIFF_NTESTS ?= 21
+GT_BASEINV_HIER_K8_DIFF_NITERATIONS ?= 1000
+GT_BASEINV_HIER_K8_DIFF_NWARMUP ?= 50
+GT_BASEINV_HIER_K8_DIFF_NINPUTS ?= 64
 GT_NONHASH_SUBSTAGE_PMU_GT_TARGET ?= bench_gt_nonhash_substage_pmu_gt
 GT_NONHASH_SUBSTAGE_PMU_STATS ?= bench_gt_nonhash_substage_pmu.stats
 GT_NONHASH_SUBSTAGE_PMU_NTESTS ?= 31
@@ -173,6 +178,22 @@ GT_BASEINV_KWAY_PMU_SOURCES = \
 	bench_gt_baseinv_kway_pmu.c \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_BASEINV_BATCH_C)
+
+GT_BASEINV_HIER_K8_DIFF_SOURCES = \
+	bench_gt_baseinv_hier_k8_diff.c \
+	bench_kem_current_wrapper.c \
+	bench_kem_hier_k8_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_SUPPORT_ASM) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_BENCH_EXTRA_ASM)
 
 GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES = \
 	bench_gt_nonhash_substage_pmu.c \
@@ -243,6 +264,8 @@ CFLAGS := \
 	-MMD \
 	$(CFLAGS)
 
+CFLAGS_NO_RUNCOUNTS = $(filter-out -DNTESTS=% -DNITERATIONS=% -DNWARMUP=%,$(CFLAGS))
+
 ifeq ($(CYCLES),PMU)
 	CFLAGS += -DPMU_CYCLES
 endif
@@ -290,6 +313,19 @@ $(GT_BASEINV_KWAY_PMU_TARGET): $(GT_BASEINV_KWAY_PMU_SOURCES)
 		-DNINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS) \
 		$(GT_BASEINV_KWAY_PMU_SOURCES) -o $@
 
+$(GT_BASEINV_HIER_K8_DIFF_TARGET): $(GT_BASEINV_HIER_K8_DIFF_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DGT_BASEINV_USE_FQINV15_ASM \
+		-DGT_BASEINV_KWAY_BENCH_HELPERS \
+		-DGT_BASEINV_DIVSTEP_BENCH_HELPERS \
+		-DGT_BASEINV_HIER_K8_DIFF_HELPERS \
+		-DNTESTS=$(GT_BASEINV_HIER_K8_DIFF_NTESTS) \
+		-DNITERATIONS=$(GT_BASEINV_HIER_K8_DIFF_NITERATIONS) \
+		-DNWARMUP=$(GT_BASEINV_HIER_K8_DIFF_NWARMUP) \
+		-DNINPUTS=$(GT_BASEINV_HIER_K8_DIFF_NINPUTS) \
+		$(GT_BASEINV_HIER_K8_DIFF_SOURCES) -o $@
+
 $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET): $(GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES)
 	$(CC) $(CFLAGS) \
 		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
@@ -321,6 +357,10 @@ bench_gt_kem_component_profile_pmu:
 bench_gt_baseinv_kway_pmu:
 	$(MAKE) -B $(GT_BASEINV_KWAY_PMU_TARGET) NTESTS=$(GT_BASEINV_KWAY_PMU_NTESTS) NITERATIONS=$(GT_BASEINV_KWAY_PMU_NITERATIONS) NWARMUP=$(GT_BASEINV_KWAY_PMU_NWARMUP) GT_BASEINV_KWAY_PMU_NINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS)
 	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_KWAY_PMU_TARGET)
+
+bench_gt_baseinv_hier_k8_diff:
+	$(MAKE) -B $(GT_BASEINV_HIER_K8_DIFF_TARGET) GT_BASEINV_HIER_K8_DIFF_NTESTS=$(GT_BASEINV_HIER_K8_DIFF_NTESTS) GT_BASEINV_HIER_K8_DIFF_NITERATIONS=$(GT_BASEINV_HIER_K8_DIFF_NITERATIONS) GT_BASEINV_HIER_K8_DIFF_NWARMUP=$(GT_BASEINV_HIER_K8_DIFF_NWARMUP) GT_BASEINV_HIER_K8_DIFF_NINPUTS=$(GT_BASEINV_HIER_K8_DIFF_NINPUTS)
+	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_HIER_K8_DIFF_TARGET)
 
 bench_gt_keygen_component_profile_pmu: bench_gt_kem_component_profile_pmu
 
@@ -354,4 +394,4 @@ bench-kpqc-final:
 	sudo taskset -c 3 ./$(TARGET)
 
 clean:
-	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_BASEINV_HIER_K8_DIFF_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) *.textsizes *.stats *.d hal/*.d
