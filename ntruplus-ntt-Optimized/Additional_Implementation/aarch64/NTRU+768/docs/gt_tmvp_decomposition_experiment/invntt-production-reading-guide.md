@@ -22,8 +22,8 @@ docs/gt_tmvp_decomposition_experiment/invntt-prototype-archive.md
 | `asm/gt/poly_invntt_gt_production.s` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
 | `asm/gt/poly_invntt_from_rminus1_gt_production.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
 
-`asm/variants/inv_my_ntt_post_branchfold_a72.s` 仍然是 opt-in prototype wrapper，沒有改成
-include production-only 檔。
+舊的 A72 opt-in prototype wrapper 已移除；目前 production 只保留上表兩個
+InvNTT wrapper 入口。
 
 ## Active flags
 

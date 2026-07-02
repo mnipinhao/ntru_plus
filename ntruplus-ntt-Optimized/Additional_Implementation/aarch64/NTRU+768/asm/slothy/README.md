@@ -109,13 +109,8 @@ The active inverse NTT path is intentionally narrow:
 - retained clean Slothy source fragments for older InvNTT experiments live only
   in `asm/slothy/legacy/invntt_opt.s` and
   `asm/slothy/archive/invntt_rowstage45_post_prototypes.s`.
-- `asm/variants/inv_my_ntt_post_branchfold_a72.s` is an opt-in wrapper for the same
-  mathematical path, but it uses an A72 Slothy schedule for the branchfold
-  fused post stripe.  It is not production default until Pi 5 measurements
-  show a clear win.
-- the A72 opt-in branchfold schedule is retained through
-  `asm/slothy/legacy/invntt_opt.s` and
-  `asm/variants/inv_my_ntt_post_branchfold_a72.s`.
+- the old A72 opt-in branchfold wrapper has been removed from the active asm
+  tree; production keeps only the Pi 5 promoted wrapper pair under `asm/gt/`.
 - `asm/gt/base_gt_opt_body.inc` and `asm/gt/poly_invntt_gt_production.s` are the current Pi 5 promoted
   pair.  The current result summary and rerun commands live in
   `docs/slothy_pi5_bench_matrix.md`.
