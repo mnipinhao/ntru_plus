@@ -47,10 +47,10 @@ GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/variants/base_gt_add32_direct32_q31_tobytes_contract_encap.S
 GT_PRODUCTION_BASE_ASM ?= \
-	$(NTRUPLUS)/asm/gt/base_gt_opt_noadd_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S
+	$(NTRUPLUS)/asm/gt/poly_basemul_gt_production.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_add_gt_production.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input_gt_production.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s
 GT_SUPPORT_ASM ?= \
 	$(NTRUPLUS)/asm/slothy/support_kernels/support_kernels.n1.opt.S \
 	$(NTRUPLUS)/asm/stock/cbd.s
@@ -192,11 +192,11 @@ GT_BASEMUL_VARIANTS_PMU_SOURCES = \
 	bench_gt_basemul_variants_pmu.c \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
-	$(NTRUPLUS)/asm/gt/base_gt_opt_noadd_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/poly_basemul_gt_production.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_add_gt_production.s \
+	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s \
 	$(NTRUPLUS)/asm/bench_only/base_gt_rminus1_oldstore_opt_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input_gt_production.s \
 	$(NTRUPLUS)/asm/bench_only/base_gt_scaled_r_input_oldstore_opt_wrapper.S
 
 GT_BASEMUL_PIPELINE_PMU_SOURCES = \
@@ -204,9 +204,9 @@ GT_BASEMUL_PIPELINE_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s \
 	$(NTRUPLUS)/asm/bench_only/base_gt_rminus1_oldstore_opt_wrapper.S \
-	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input_gt_production.s \
 	$(NTRUPLUS)/asm/bench_only/base_gt_scaled_r_input_oldstore_opt_wrapper.S
 
 GT_INVNTT_PMU_SOURCES = \
@@ -215,7 +215,7 @@ GT_INVNTT_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s \
 	$(NTRUPLUS)/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
 
 GT_KEM_STAGE_PMU_SOURCES = \

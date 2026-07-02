@@ -21,7 +21,7 @@ Live PMU binaries on Pi5:
 GT:
   /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench/bench_gt_nonhash_substage_pmu_gt
   symbol: poly_basemul_add / poly_basemul_add32
-  object path: asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
+  object path: asm/gt/poly_basemul_add_gt_production.s
   objdump region: 0x23150..0x23340
 
 stock_noce:
@@ -243,5 +243,5 @@ A useful prototype would need to attack one of these instead:
 
 Both are beyond the minimal "remove redundant mov/final-store contract" patch.
 The next step should therefore be a dataflow-level review of the 22 `uzp`
-instructions in `base_gt_add32_full_pipeline_inline_wrapper.S`, not an
+instructions in `poly_basemul_add_gt_production.s`, not an
 immediate asm patch.

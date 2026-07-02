@@ -143,7 +143,7 @@ ld4 c at about cycle 82 in the annotated old add path
 但目前 production `poly_basemul_add` 走的是：
 
 ```text
-GT_BASE_ADD32_ASM = asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
+GT_BASE_ADD32_ASM = asm/gt/poly_basemul_add_gt_production.s
 asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 ```
 

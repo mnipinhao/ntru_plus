@@ -15,11 +15,11 @@ The linked symbol is:
 
 ```text
 symbol: poly_basemul
-wrapper: asm/gt/base_gt_opt_noadd_wrapper.S
+wrapper: asm/gt/poly_basemul_gt_production.s
 body: asm/gt/base_gt.opt.s
 ```
 
-`base_gt_opt_noadd_wrapper.S` includes `base_gt.opt.s` and renames only
+`poly_basemul_gt_production.s` includes `base_gt.opt.s` and renames only
 `poly_basemul_add`; therefore plain `poly_basemul` is the production GT
 basemul symbol for the decap verify product.
 

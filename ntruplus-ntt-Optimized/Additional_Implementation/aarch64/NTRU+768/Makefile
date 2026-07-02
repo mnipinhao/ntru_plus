@@ -23,11 +23,11 @@ GT_BASEINV_FQINV_ASM = asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_BASE_ASM = asm/baseline/base_gt.S
 GT_BASE_OPT_ASM = asm/baseline/base_gt_opt_wrapper.S
-GT_BASE_OPT_NOADD_ASM = asm/gt/base_gt_opt_noadd_wrapper.S
-GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
+GT_BASE_OPT_NOADD_ASM = asm/gt/poly_basemul_gt_production.s
+GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/poly_basemul_add_gt_production.s
 GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
-GT_BASE_RMINUS1_OPT_ASM = asm/gt/base_gt_rminus1_opt_wrapper.S
-GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/base_gt_scaled_r_input_opt_wrapper.S
+GT_BASE_RMINUS1_OPT_ASM = asm/gt/poly_basemul_rminus1_gt_production.s
+GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/poly_basemul_scaled_r_input_gt_production.s
 SLOTHY_MICROKERNEL_ASM = \
 	asm/slothy/microkernels/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/microkernels/baseinv_batch_finish_n1_wrapper.S \

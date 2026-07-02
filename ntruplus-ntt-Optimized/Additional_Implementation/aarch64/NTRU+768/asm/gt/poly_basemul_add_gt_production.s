@@ -1,9 +1,9 @@
 /*
  * Inline-loop wrapper for the Slothy-generated full GT basemul_add32 pipeline.
  *
- * Unlike asm/base_gt_add32_full_pipeline_wrapper.S, this does not call the
- * generated one-stripe routine 24 times.  It includes the scheduled body inside
- * the loop so the measured production path does not pay per-stripe bl/ret.
+ * This exports poly_basemul_add / poly_basemul_add32 for the production GT
+ * path.  It includes the scheduled body inside the loop so production does not
+ * pay per-stripe bl/ret around the generated one-stripe routine.
  */
 
 .text

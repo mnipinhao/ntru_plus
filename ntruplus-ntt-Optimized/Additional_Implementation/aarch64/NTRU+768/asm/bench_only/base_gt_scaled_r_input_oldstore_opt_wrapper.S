@@ -2,7 +2,7 @@
  * Benchmark-only scaled-r-input GT basemul with the old final-store register
  * contract.
  *
- * Production uses asm/gt/base_gt_scaled_r_input_opt_wrapper.S.  This wrapper only
+ * Production uses asm/gt/poly_basemul_scaled_r_input_gt_production.s.  This wrapper only
  * exists so the PMU harness can compare the final st4 register-contract patch
  * before and after, without changing the live KEM path.
  */
