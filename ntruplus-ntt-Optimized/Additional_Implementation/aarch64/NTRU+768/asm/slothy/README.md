@@ -97,7 +97,7 @@ SLOTHY_PATH=/path/to/slothy python3 optimize_phase123_split.py \
 
 The active inverse NTT path is intentionally narrow:
 
-- `asm/gt/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
+- `asm/gt/poly_invntt_gt_production.s` is the production wrapper.  It selects the Pi 5 validated
   directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
   branch-constant folded final merge path through assembler-time gates, then
   includes `asm/slothy/production/invntt_opt.production.s`.
@@ -116,7 +116,7 @@ The active inverse NTT path is intentionally narrow:
 - the A72 opt-in branchfold schedule is retained through
   `asm/slothy/legacy/invntt_opt.s` and
   `asm/variants/inv_my_ntt_post_branchfold_a72.s`.
-- `asm/gt/base_gt.opt.s` and `asm/gt/inv_my_ntt.s` are the current Pi 5 promoted
+- `asm/gt/base_gt.opt.s` and `asm/gt/poly_invntt_gt_production.s` are the current Pi 5 promoted
   pair.  The current result summary and rerun commands live in
   `docs/slothy_pi5_bench_matrix.md`.
 
@@ -124,7 +124,7 @@ The old standalone `inv_my_ntt_*directstage123*.s`,
 `inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
 branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
 were removed after promotion.  The duplicate branchfold wrapper was also
-removed because `asm/gt/inv_my_ntt.s` is now that exact path.  The retained
+removed because `asm/gt/poly_invntt_gt_production.s` is now that exact path.  The retained
 alternate wrapper is the A72 branchfold schedule.
 
 Raspberry Pi 5 PERF medians motivating the promotion:

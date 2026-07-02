@@ -1,9 +1,10 @@
 /*
  * Production GT inverse NTT for inputs carrying one extra R^-1 factor.
  *
- * The row kernels and post pipeline are identical to asm/gt/inv_my_ntt.s.  Only
- * the public symbols and branchfold constant table are changed.  This entry is
- * paired with poly_basemul_rminus1() and returns normal R^0 coefficients.
+ * The row kernels and post pipeline are identical to
+ * asm/gt/poly_invntt_gt_production.s.  Only the public symbols and branchfold
+ * constant table are changed.  This entry is paired with poly_basemul_rminus1()
+ * and returns normal R^0 coefficients.
  */
 #define poly_invntt poly_invntt_from_rminus1
 #define _poly_invntt _poly_invntt_from_rminus1

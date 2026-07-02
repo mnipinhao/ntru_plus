@@ -10,7 +10,7 @@ Use these sources for the current fastest GT candidate:
 
 ```text
 GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s
-GT_INVNTT_ASM=ntruplus/asm/gt/inv_my_ntt.s
+GT_INVNTT_ASM=ntruplus/asm/gt/poly_invntt_gt_production.s
 ```
 
 Interpretation:
@@ -18,7 +18,7 @@ Interpretation:
 - `base_gt.opt.s` contains the promoted Neoverse-N1 schedule.  It consistently
   improved `basemul_add`, arithmetic pipelines, and `kem_dec` in the Pi 5
   matrix.
-- `inv_my_ntt.s` is the promoted inverse wrapper.  It selects the validated
+- `poly_invntt_gt_production.s` is the promoted inverse wrapper.  It selects the validated
   direct-stage123 stripe scratch, Slothy stage45-reduce, no-DFT3-reduce post
   path, and branchfold final merge through assembler-time gates.
 
@@ -64,7 +64,7 @@ python3 scripts/run_pi5_matrix.py --runs 5 \
   --variants gt_opt \
   --modes invntt,basemul,basemul_add,ntt_mul_pipeline,ntt_basemul_add_pipeline,kem_dec \
   --make-var GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s \
-  --make-var GT_INVNTT_ASM=ntruplus/asm/gt/inv_my_ntt.s
+  --make-var GT_INVNTT_ASM=ntruplus/asm/gt/poly_invntt_gt_production.s
 ```
 
 For a compact comparison against default:
@@ -85,7 +85,7 @@ old candidate wrapper was removed with the discarded assembly variants.
 ## Promotion Order
 
 1. Keep `base_gt.opt.s` as the promoted base schedule.
-2. Keep `inv_my_ntt.s` as the promoted inverse wrapper.
+2. Keep `poly_invntt_gt_production.s` as the promoted inverse wrapper.
 3. Re-open this matrix only if a new rowpack/SoA path beats the current
    full-pipeline numbers, not for the removed inverse wrapper variants.
 
@@ -99,6 +99,6 @@ make test_gt_base_opt GT_BASE_OPT_ASM=asm/gt/base_gt.opt.s
 ./build/test_gt_base_opt
 
 make clean
-make test_polyinvntt_asm POLYINVNTT_ASM=asm/gt/inv_my_ntt.s
+make test_polyinvntt_asm POLYINVNTT_ASM=asm/gt/poly_invntt_gt_production.s
 ./build/test_polyinvntt_asm
 ```

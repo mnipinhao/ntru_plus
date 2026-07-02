@@ -19,7 +19,7 @@ ASM source basis:
 
 ```text
 source marker commit: b44c5cd Prepare InvNTT rminus1 Slothy target
-wrapper: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/inv_my_ntt_rminus1.S
+wrapper: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/poly_invntt_from_rminus1_gt_production.S
 shared body: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/slothy/invntt_opt.production.s
 ```
 

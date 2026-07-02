@@ -8,7 +8,7 @@ Step 2 is applied: `asm/gt/base_gt.opt.s` now contains the promoted N1 schedule.
 The older named benchmark alias has been removed; use `asm/gt/base_gt.opt.s` for
 both current builds and reruns.
 
-Step 5 is applied from the existing Pi 5 matrix: `asm/gt/inv_my_ntt.s` now selects
+Step 5 is applied from the existing Pi 5 matrix: `asm/gt/poly_invntt_gt_production.s` now selects
 `INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH`.  The older regression-only
 wrappers have been removed from the source tree.
 `scripts/run_pi5_gt_post_branchfold_matrix.sh` now treats the no-override

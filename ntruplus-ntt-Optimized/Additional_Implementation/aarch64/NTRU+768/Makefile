@@ -40,8 +40,8 @@ SLOTHY_MICROKERNEL_GENERATED = \
 	asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
 GT_NTT_ASM_PHASE123_N1 = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
-GT_INVNTT_ASM = asm/gt/inv_my_ntt.s
-GT_INVNTT_RMINUS1_ASM = asm/gt/inv_my_ntt_rminus1.S
+GT_INVNTT_ASM = asm/gt/poly_invntt_gt_production.s
+GT_INVNTT_RMINUS1_ASM = asm/gt/poly_invntt_from_rminus1_gt_production.S
 # CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
 # Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
 # portable C SHAKE fallback as the default.  Explicitly set HAS_SHAKE256_ASM=1

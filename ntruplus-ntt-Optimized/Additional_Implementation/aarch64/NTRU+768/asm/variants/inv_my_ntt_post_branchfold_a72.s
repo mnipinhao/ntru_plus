@@ -3,7 +3,7 @@
  *
  * Same mathematical contract as production branchfold-reduce, but selects an
  * A72 Slothy schedule for the fused post-row branchfold stripe.  Default
- * production remains asm/gt/inv_my_ntt.s until Pi 5 measurements prove this path
+ * production remains asm/gt/poly_invntt_gt_production.s until Pi 5 measurements prove this path
  * is faster.
  */
 .equ INVNTT_USE_DIRECT_STAGE123, 1

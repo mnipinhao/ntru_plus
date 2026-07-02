@@ -32,8 +32,8 @@ GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/asm/stock/cbd.s
   ntruplus/asm/gt/poly_ntt_gt_production.s
   ntruplus/asm/slothy/production/my_32ntt.opt.s
-  ntruplus/asm/gt/inv_my_ntt.s
-  ntruplus/asm/gt/inv_my_ntt_rminus1.S
+  ntruplus/asm/gt/poly_invntt_gt_production.s
+  ntruplus/asm/gt/poly_invntt_from_rminus1_gt_production.S
   ntruplus/poly_gt_baseinv_batch.c
   ntruplus/asm/slothy/production/baseinv_batch_finish_loop_n1.S
   ntruplus/asm/gt/gt_fqinv15.S
@@ -85,8 +85,8 @@ object column below is recorded as "linked binary only".
 | function | production symbol | source file | linked? | gate | notes |
 | --- | --- | --- | --- | --- | --- |
 | Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/poly_ntt_gt_production.s`, `asm/slothy/production/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
-| Generic InvNTT | `poly_invntt` | `asm/gt/inv_my_ntt.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
-| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/inv_my_ntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
+| Generic InvNTT | `poly_invntt` | `asm/gt/poly_invntt_gt_production.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
+| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_from_rminus1_gt_production.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
 | Generic basemul | `poly_basemul` | `asm/gt/poly_basemul_gt_production.s` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
 | Basemul add | `poly_basemul_add` | `asm/gt/poly_basemul_add_gt_production.s` | yes | none | generic symbol remains the production arithmetic-correct implementation |
 | Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/variants/base_gt_add32_direct32_q31_tobytes_contract_encap.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |

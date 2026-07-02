@@ -24,8 +24,8 @@ basemul-to-InvNTT fusion target.
 | layer | entrypoint | file | note |
 | --- | --- | --- | --- |
 | C decap call | `poly_invntt_from_rminus1(poly *r, const poly *a)` | `kem.c` | active under `GT_PRODUCTION_USE_RMINUS1_DECAP` |
-| public ASM alias | `poly_invntt_from_rminus1`, `_poly_invntt_from_rminus1` | `asm/gt/inv_my_ntt_rminus1.S` | wrapper macro-renames `poly_invntt` |
-| block-major body | `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/inv_my_ntt_rminus1.S` -> `asm/slothy/production/invntt_opt.production.s` | decap rminus1 path uses this body |
+| public ASM alias | `poly_invntt_from_rminus1`, `_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_from_rminus1_gt_production.S` | wrapper macro-renames `poly_invntt` |
+| block-major body | `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_from_rminus1_gt_production.S` -> `asm/slothy/production/invntt_opt.production.s` | decap rminus1 path uses this body |
 | shared production source | `gt_block_major_poly_invntt` body | `asm/slothy/production/invntt_opt.production.s` | same instruction body as normal InvNTT; rminus1 only changes branchfold constants |
 
 The wrapper defines:
@@ -73,7 +73,7 @@ Output `r`:
 ## Montgomery / rminus1 Factor Contract
 
 `poly_basemul_rminus1()` intentionally leaves one extra `R^-1` factor for this
-InvNTT entry.  `asm/gt/inv_my_ntt_rminus1.S` uses the same row kernels and post
+InvNTT entry.  `asm/gt/poly_invntt_from_rminus1_gt_production.S` uses the same row kernels and post
 pipeline as normal InvNTT, but defines `INVNTT_INPUT_RMINUS1`, which switches
 the final branchfold table to:
 
