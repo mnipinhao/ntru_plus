@@ -12,7 +12,7 @@
  * The lambda table is gt_rowbitrev_lambda[branch][physical_j] in physical
  * row-bitrev block order.  These constants are Montgomery-form because the
  * scalar basemul/baseinv helpers from ntt.c consume Montgomery zeta/lambda
- * values.  Do not use stock zetas_mul here; stock asm/base.s is packed for
+ * values.  Do not use stock zetas_mul here; stock asm/stock/base.s is packed for
  * the KPQC coefficient-major NTT layout, not this GT block-major layout.
  */
 

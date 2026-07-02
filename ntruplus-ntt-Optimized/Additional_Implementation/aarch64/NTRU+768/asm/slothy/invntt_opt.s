@@ -1,6 +1,6 @@
 /*
  * Generated AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by asm/my_ntt.s.  The retained clean Slothy component
+ * layout produced by asm/gt/my_ntt.s.  The retained clean Slothy component
  * sources for the promoted scheduled regions are
  * invntt32_stage45_reduce_fused_clean.slothy.s and
  * invntt_post_fused_dstore_clean.slothy.s.

@@ -37,7 +37,7 @@ _poly_basemul_add32:
 Ladd32_full_pipeline_inline_loop:
 #define BASE_GT_ADD32_FULL_PIPELINE_BODY_ONLY 1
 #define BASE_GT_ADD32_FULL_PIPELINE_CONST_PRELOADED 1
-#include "slothy/base_gt_add32_full_pipeline.n1.opt.S"
+#include "../slothy/base_gt_add32_full_pipeline.n1.opt.S"
 #undef BASE_GT_ADD32_FULL_PIPELINE_CONST_PRELOADED
 #undef BASE_GT_ADD32_FULL_PIPELINE_BODY_ONLY
 	subs x6, x6, #1

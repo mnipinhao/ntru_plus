@@ -17,7 +17,7 @@
  * ntt.c's scalar basemul/baseinv helpers.
  *
  * This file intentionally provides scalar C reference symbols matching the
- * KEM ABI.  It is not an optimized assembly replacement for asm/base.s.
+ * KEM ABI.  It is not an optimized assembly replacement for asm/stock/base.s.
  */
 void poly_basemul_gt_ref(poly *r, const poly *a, const poly *b);
 void poly_basemul_add_gt_ref(poly *r, const poly *a, const poly *b,

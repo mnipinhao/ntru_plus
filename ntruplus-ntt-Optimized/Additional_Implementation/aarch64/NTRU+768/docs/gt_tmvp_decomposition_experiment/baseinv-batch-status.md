@@ -53,7 +53,7 @@ The block-major path loads lambda with contiguous `vld1q_s16`.
 ## Wiring
 
 `gt_production_opt` now uses `poly_gt_baseinv_batch.c` as the ABI
-`poly_baseinv()` provider, while `asm/base_gt.opt.s` still provides
+`poly_baseinv()` provider, while `asm/gt/base_gt.opt.s` still provides
 `poly_basemul()` and `poly_basemul_add()`.
 
 ## Pi5 result

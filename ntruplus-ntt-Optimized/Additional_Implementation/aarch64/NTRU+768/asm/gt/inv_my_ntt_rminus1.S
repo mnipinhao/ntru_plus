@@ -1,7 +1,7 @@
 /*
  * Production GT inverse NTT for inputs carrying one extra R^-1 factor.
  *
- * The row kernels and post pipeline are identical to asm/inv_my_ntt.s.  Only
+ * The row kernels and post pipeline are identical to asm/gt/inv_my_ntt.s.  Only
  * the public symbols and branchfold constant table are changed.  This entry is
  * paired with poly_basemul_rminus1() and returns normal R^0 coefficients.
  */
@@ -32,4 +32,4 @@
 .equ INVNTT_DARWIN_NO_WEAK, 1
 #endif
 
-#include "slothy/invntt_opt.production.s"
+#include "../slothy/invntt_opt.production.s"

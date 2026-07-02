@@ -9,8 +9,8 @@ the remaining benchmark matrix stays actionable.
 Use these sources for the current fastest GT candidate:
 
 ```text
-GT_BASE_OPT_ASM=ntruplus/asm/base_gt.opt.s
-GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt.s
+GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s
+GT_INVNTT_ASM=ntruplus/asm/gt/inv_my_ntt.s
 ```
 
 Interpretation:
@@ -63,8 +63,8 @@ cd /home/pi/ntruplus-ntt-Optimized/aarch64-bench
 python3 scripts/run_pi5_matrix.py --runs 5 \
   --variants gt_opt \
   --modes invntt,basemul,basemul_add,ntt_mul_pipeline,ntt_basemul_add_pipeline,kem_dec \
-  --make-var GT_BASE_OPT_ASM=ntruplus/asm/base_gt.opt.s \
-  --make-var GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt.s
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s \
+  --make-var GT_INVNTT_ASM=ntruplus/asm/gt/inv_my_ntt.s
 ```
 
 For a compact comparison against default:
@@ -95,10 +95,10 @@ Minimal correctness checks:
 cd /home/pi/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768
 
 make clean
-make test_gt_base_opt GT_BASE_OPT_ASM=asm/base_gt.opt.s
+make test_gt_base_opt GT_BASE_OPT_ASM=asm/gt/base_gt.opt.s
 ./build/test_gt_base_opt
 
 make clean
-make test_polyinvntt_asm POLYINVNTT_ASM=asm/inv_my_ntt.s
+make test_polyinvntt_asm POLYINVNTT_ASM=asm/gt/inv_my_ntt.s
 ./build/test_polyinvntt_asm
 ```

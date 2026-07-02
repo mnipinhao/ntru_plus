@@ -15,8 +15,8 @@ The linked symbol is:
 
 ```text
 symbol: poly_basemul
-wrapper: asm/base_gt_opt_noadd_wrapper.S
-body: asm/base_gt.opt.s
+wrapper: asm/gt/base_gt_opt_noadd_wrapper.S
+body: asm/gt/base_gt.opt.s
 ```
 
 `base_gt_opt_noadd_wrapper.S` includes `base_gt.opt.s` and renames only
@@ -121,7 +121,7 @@ symbol: poly_tobytes
 source: asm/slothy/support_kernels/support_kernels.n1.opt.S
 ```
 
-This is the production support kernel, not the older `asm/pack.s` path.
+This is the production support kernel, not the older `asm/stock/pack.s` path.
 
 ### Input Assumption
 

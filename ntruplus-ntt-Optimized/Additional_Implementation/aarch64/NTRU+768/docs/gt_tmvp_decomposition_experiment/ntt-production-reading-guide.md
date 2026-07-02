@@ -4,10 +4,10 @@
 forward NTT 的讀碼索引。production 主檔是：
 
 ```text
-asm/my_ntt.s
+asm/gt/my_ntt.s
 ```
 
-`asm/my_ntt.s` 現在只保留 production path。舊的 GAS `PHASE123_ITER`
+`asm/gt/my_ntt.s` 現在只保留 production path。舊的 GAS `PHASE123_ITER`
 fallback、`NTT32_FUSED_SCATTER=0` row-buffer scatter fallback、Phase123 A/B/C
 experiment selector 都已經不在主檔裡。
 
@@ -15,7 +15,7 @@ experiment selector 都已經不在主檔裡。
 
 | wrapper | 產生的 symbol | 用途 |
 | --- | --- | --- |
-| `asm/my_ntt_phase123_n1.s` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
+| `asm/gt/my_ntt_phase123_n1.s` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
 
 ## Active selectors
 
@@ -27,7 +27,7 @@ experiment selector 都已經不在主檔裡。
 
 | old selector/path | 狀態 |
 | --- | --- |
-| `MY_NTT_USE_PHASE123_N1` | 移除；`asm/my_ntt.s` 固定 include production Phase123 N1 schedule |
+| `MY_NTT_USE_PHASE123_N1` | 移除；`asm/gt/my_ntt.s` 固定 include production Phase123 N1 schedule |
 | `MY_NTT_PHASE123_EXPERIMENT_A/B/C` | 移除；A/B/C benchmark 沒有優於 baseline |
 | `NTT32_FUSED_SCATTER` | 移除；production 固定 fused-scatter row kernel |
 | `_scatter_ntt32_row` | 移除；舊 row-buffer fallback，不是目前 KEM 路徑 |
@@ -39,7 +39,7 @@ Normal GT production：
 
 ```text
 poly input
-  -> asm/my_ntt.s prologue
+  -> asm/gt/my_ntt.s prologue
   -> asm/slothy/my_ntt_phase123.n1.opt.s
        natural input -> GT split/twist/DFT3 -> three row scratch buffers
   -> asm/slothy/my_32ntt.opt.s::_ntt32_8way, called once per row
@@ -86,4 +86,4 @@ Generated files：
 A/B/C 沒有比 baseline 好，所以不保留在 production 主檔，也不再保留未追蹤
 的 generated experiment tree。之後若要重開 Phase123 排程，從
 `asm/slothy/my_ntt_phase123_flat.sym.s` 和 `asm/slothy/optimize_phase123_split.py`
-開始，而不是把 selector 加回 `asm/my_ntt.s`。
+開始，而不是把 selector 加回 `asm/gt/my_ntt.s`。

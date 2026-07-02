@@ -272,10 +272,10 @@ sudo taskset -c 3 ./bench
 The `.opt.s` base files are experiment-only.  Do not use them as the default
 unless Raspberry Pi 5 results show they are consistently faster.
 
-`stock_opt` only swaps `asm/base.opt.s` into the KPQC final path; forward and
-inverse NTT still come from `asm/ntt.s`.  `gt` already includes the current GT
+`stock_opt` only swaps `asm/stock/base.opt.s` into the KPQC final path; forward and
+inverse NTT still come from `asm/stock/ntt.s`.  `gt` already includes the current GT
 forward NTT and inverse NTT Slothy artifacts, while `gt_opt` additionally swaps
-in `asm/base_gt.opt.s`.  See
+in `asm/gt/base_gt.opt.s`.  See
 `../Additional_Implementation/aarch64/NTRU+768/docs/slothy_pi5_bench_matrix.md`
 for the interpretation matrix.
 

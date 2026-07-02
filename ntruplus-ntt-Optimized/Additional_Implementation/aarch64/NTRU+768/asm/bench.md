@@ -4,11 +4,11 @@
 
 ### Promotion status
 
-Step 2 is applied: `asm/base_gt.opt.s` now contains the promoted N1 schedule.
-The older named benchmark alias has been removed; use `asm/base_gt.opt.s` for
+Step 2 is applied: `asm/gt/base_gt.opt.s` now contains the promoted N1 schedule.
+The older named benchmark alias has been removed; use `asm/gt/base_gt.opt.s` for
 both current builds and reruns.
 
-Step 5 is applied from the existing Pi 5 matrix: `asm/inv_my_ntt.s` now selects
+Step 5 is applied from the existing Pi 5 matrix: `asm/gt/inv_my_ntt.s` now selects
 `INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH`.  The older regression-only
 wrappers have been removed from the source tree.
 `scripts/run_pi5_gt_post_branchfold_matrix.sh` now treats the no-override
@@ -182,8 +182,8 @@ kernel.
 ### KPQC final comparison
 
 In the benchmark harness, `VARIANT=stock` is the KPQC final AArch64 path:
-`asm/base.s` plus `asm/ntt.s`.  `stock_opt_base` is only an ablation that swaps
-in `asm/base.opt.s`; it is not the KPQC final default.  `gt_promoted_default`
+`asm/stock/base.s` plus `asm/stock/ntt.s`.  `stock_opt_base` is only an ablation that swaps
+in `asm/stock/base.opt.s`; it is not the KPQC final default.  `gt_promoted_default`
 is the current Good-Thomas path with promoted `base_gt.opt.s` and stage123
 stripe-scratch inverse NTT.
 
@@ -219,7 +219,7 @@ Interpretation:
 
 Completed in this workspace:
 
-- `asm/base_gt.opt.s` contains the promoted N1 schedule.
+- `asm/gt/base_gt.opt.s` contains the promoted N1 schedule.
 - `bash -n scripts/run_pi5_gt_pmu_attribution.sh` passes.
 - `bash -n scripts/run_pi5_gt_pipeline_pmu_attribution.sh` passes.
 - PMU runner dry-run passes with

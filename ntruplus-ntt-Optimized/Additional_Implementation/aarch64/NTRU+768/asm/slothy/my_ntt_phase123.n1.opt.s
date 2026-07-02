@@ -1,4 +1,4 @@
-// Auto-generated from asm/my_ntt.s PHASE123_ITER for Slothy.
+// Auto-generated from asm/gt/my_ntt.s PHASE123_ITER for Slothy.
 // Source keeps iteration boundaries so each chunk can be optimized with N1.
 slothy_start_ntt_phase123:
         slothy_start_ntt_phase123_iter0:

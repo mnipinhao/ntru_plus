@@ -54,11 +54,11 @@ experimental GT KEM wrapper:
     poly_basemul_add -> poly_basemul_add_stock_noce_experimental
 
 renamed stock asm:
-  stock asm/base.s poly_basemul_add exported only as
+  stock asm/stock/base.s poly_basemul_add exported only as
   poly_basemul_add_stock_noce_experimental
 ```
 
-All other stock public symbols from `asm/base.s` are renamed to unused symbols
+All other stock public symbols from `asm/stock/base.s` are renamed to unused symbols
 inside the benchmark-only wrapper, so the rest of the binary still uses GT
 production arithmetic.
 
@@ -142,7 +142,7 @@ drop-in route is closed by layout/representation incompatibility.
 Source of truth:
 
 ```text
-asm/base_gt_add32_full_pipeline_inline_wrapper.S
+asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
 includes:
 asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
 

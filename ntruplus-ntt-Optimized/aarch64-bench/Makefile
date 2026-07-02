@@ -27,7 +27,7 @@ IS_ARITH_MODE = $(filter $(BENCH_MODE),$(ARITH_MODES))
 IS_KEM_MODE = $(filter $(BENCH_MODE),$(KEM_MODES))
 IS_INVNTT_STAGE_MODE = $(filter $(BENCH_MODE),$(INVNTT_STAGE_MODES))
 
-GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
+GT_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt.s
 GT_INVNTT_STAGE_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_benchstages.s
 
 ifneq ($(IS_INVNTT_STAGE_MODE),)
@@ -35,25 +35,25 @@ GT_INVNTT_SOURCE = $(GT_INVNTT_STAGE_ASM)
 else
 GT_INVNTT_SOURCE = $(GT_INVNTT_ASM)
 endif
-GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/base_gt.opt.s
-GT_NTT_ASM ?= $(NTRUPLUS)/asm/my_ntt.s
+GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/gt/base_gt.opt.s
+GT_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt.s
 GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
-GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/my_ntt_phase123_n1.s
+GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/my_ntt_phase123_n1.s
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/my_32ntt.opt.s
-GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt.s
-GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_rminus1.S
+GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt.s
+GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/inv_my_ntt_rminus1.S
 GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt_fqinv15.S
+GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/variants/base_gt_add32_direct32_q31_tobytes_contract_encap.S
 GT_PRODUCTION_BASE_ASM ?= \
-	$(NTRUPLUS)/asm/base_gt_opt_noadd_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_add32_full_pipeline_inline_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_scaled_r_input_opt_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S
+	$(NTRUPLUS)/asm/gt/base_gt_opt_noadd_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S
 GT_SUPPORT_ASM ?= \
 	$(NTRUPLUS)/asm/slothy/support_kernels/support_kernels.n1.opt.S \
-	$(NTRUPLUS)/asm/cbd.s
+	$(NTRUPLUS)/asm/stock/cbd.s
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
 endif
@@ -68,25 +68,25 @@ KEM_CORE_SOURCES = \
 	$(NTRUPLUS)/symmetric.c
 
 STOCK_SUPPORT_ASM = \
-	$(NTRUPLUS)/asm/add.s \
-	$(NTRUPLUS)/asm/crepmod3.s \
-	$(NTRUPLUS)/asm/pack.s \
-	$(NTRUPLUS)/asm/cbd.s
+	$(NTRUPLUS)/asm/stock/add.s \
+	$(NTRUPLUS)/asm/stock/crepmod3.s \
+	$(NTRUPLUS)/asm/stock/pack.s \
+	$(NTRUPLUS)/asm/stock/cbd.s
 
 STOCK_ARITH_SOURCES = \
-	$(NTRUPLUS)/asm/base.s \
-	$(NTRUPLUS)/asm/ntt.s
+	$(NTRUPLUS)/asm/stock/base.s \
+	$(NTRUPLUS)/asm/stock/ntt.s
 
 GT_ARITH_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
-	$(NTRUPLUS)/asm/base_gt.S \
+	$(NTRUPLUS)/asm/gt/base_gt.S \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_INVNTT_SOURCE)
 
 STOCK_OPT_ARITH_SOURCES = \
-	$(NTRUPLUS)/asm/base.opt.s \
-	$(NTRUPLUS)/asm/ntt.s
+	$(NTRUPLUS)/asm/stock/base.opt.s \
+	$(NTRUPLUS)/asm/stock/ntt.s
 
 GT_OPT_ARITH_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
@@ -98,14 +98,14 @@ GT_OPT_ARITH_SOURCES = \
 STOCK_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
 	$(STOCK_SUPPORT_ASM) \
-	$(NTRUPLUS)/asm/base.s \
-	$(NTRUPLUS)/asm/ntt.s
+	$(NTRUPLUS)/asm/stock/base.s \
+	$(NTRUPLUS)/asm/stock/ntt.s
 
 GT_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(STOCK_SUPPORT_ASM) \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
-	$(NTRUPLUS)/asm/base_gt.S \
+	$(NTRUPLUS)/asm/gt/base_gt.S \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_INVNTT_SOURCE)
@@ -113,8 +113,8 @@ GT_KEM_SOURCES = \
 STOCK_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/poly.c \
 	$(STOCK_SUPPORT_ASM) \
-	$(NTRUPLUS)/asm/base.opt.s \
-	$(NTRUPLUS)/asm/ntt.s
+	$(NTRUPLUS)/asm/stock/base.opt.s \
+	$(NTRUPLUS)/asm/stock/ntt.s
 
 GT_OPT_KEM_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
@@ -192,11 +192,11 @@ GT_BASEMUL_VARIANTS_PMU_SOURCES = \
 	bench_gt_basemul_variants_pmu.c \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
-	$(NTRUPLUS)/asm/base_gt_opt_noadd_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_add32_full_pipeline_inline_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_opt_noadd_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
 	$(NTRUPLUS)/asm/bench_only/base_gt_rminus1_oldstore_opt_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_scaled_r_input_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
 	$(NTRUPLUS)/asm/bench_only/base_gt_scaled_r_input_oldstore_opt_wrapper.S
 
 GT_BASEMUL_PIPELINE_PMU_SOURCES = \
@@ -204,9 +204,9 @@ GT_BASEMUL_PIPELINE_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
 	$(NTRUPLUS)/asm/bench_only/base_gt_rminus1_oldstore_opt_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_scaled_r_input_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_scaled_r_input_opt_wrapper.S \
 	$(NTRUPLUS)/asm/bench_only/base_gt_scaled_r_input_oldstore_opt_wrapper.S
 
 GT_INVNTT_PMU_SOURCES = \
@@ -215,7 +215,7 @@ GT_INVNTT_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
+	$(NTRUPLUS)/asm/gt/base_gt_rminus1_opt_wrapper.S \
 	$(NTRUPLUS)/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
 
 GT_KEM_STAGE_PMU_SOURCES = \
@@ -272,8 +272,8 @@ GT_NONHASH_SUBSTAGE_PMU_STOCK_SOURCES = \
 	$(NTRUPLUS)/NO_CE/fips202.c \
 	$(NTRUPLUS)/poly.c \
 	$(STOCK_SUPPORT_ASM) \
-	$(NTRUPLUS)/asm/base.s \
-	$(NTRUPLUS)/asm/ntt.s
+	$(NTRUPLUS)/asm/stock/base.s \
+	$(NTRUPLUS)/asm/stock/ntt.s
 
 GT_STOCK_BASEMUL_ADD_GATE_PMU_SOURCES = \
 	bench_gt_stock_basemul_add_gate_pmu.c \

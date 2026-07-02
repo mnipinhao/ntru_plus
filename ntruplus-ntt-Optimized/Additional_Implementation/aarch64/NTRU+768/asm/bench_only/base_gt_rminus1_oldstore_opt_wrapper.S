@@ -14,4 +14,4 @@
 #define GT_BASEMUL_STORE_RMINUS1 1
 #define GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT 1
 
-#include "../base_gt.opt.s"
+#include "../gt/base_gt.opt.s"

@@ -21,7 +21,7 @@ the production GT forward NTT.  The older rowpack, shadow-base, and forward
 window experiment artifacts were removed from the active tree after they failed
 to become production candidates.
 
-`asm/my_ntt.s` is the production wrapper and now always calls the fused-scatter
+`asm/gt/my_ntt.s` is the production wrapper and now always calls the fused-scatter
 `_ntt32_8way` row kernel.  The older row-buffer scatter fallback was removed
 from the production file to keep the active path readable.
 
@@ -32,24 +32,24 @@ regenerate the file from scratch.
 
 ## Forward Phase123 N1 Schedule
 
-The first half of `asm/my_ntt.s` is the N1 Slothy-scheduled Phase123 path:
+The first half of `asm/gt/my_ntt.s` is the N1 Slothy-scheduled Phase123 path:
 
 - symbolic source used to run Slothy: `asm/slothy/my_ntt_phase123_flat.sym.s`
 - scheduled wrapper used by the default GT KEM builds:
-  `asm/my_ntt_phase123_n1.s`
+  `asm/gt/my_ntt_phase123_n1.s`
 - scheduled region included by the wrapper:
   `asm/slothy/my_ntt_phase123.n1.opt.s`
 - local driver used for the split-heuristic run:
   `asm/slothy/optimize_phase123_split.py`
 
-`asm/my_ntt.s` directly includes the scheduled region.  The old
+`asm/gt/my_ntt.s` directly includes the scheduled region.  The old
 macro-expanded GAS `PHASE123_ITER` fallback and the Phase123 A/B/C experiment
 selector were removed from the production file.
 
 The default Makefile path uses:
 
 ```sh
-GT_NTT_ASM = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM = asm/gt/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
 ```
 
 The flat symbolic file expands the eight iterations explicitly and then
@@ -91,7 +91,7 @@ SLOTHY_PATH=/path/to/slothy python3 optimize_phase123_split.py \
 
 The active inverse NTT path is intentionally narrow:
 
-- `asm/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
+- `asm/gt/inv_my_ntt.s` is the production wrapper.  It selects the Pi 5 validated
   directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
   branch-constant folded final merge path through assembler-time gates, then
   includes `asm/slothy/invntt_opt.production.s`.
@@ -110,7 +110,7 @@ The active inverse NTT path is intentionally narrow:
 - `asm/slothy/invntt_post_branchfold_reduce_clean.slothy.s` and
   `asm/slothy/invntt_post_branchfold_reduce_a72.opt.s` are the clean and
   generated sources for that opt-in branchfold schedule.
-- `asm/base_gt.opt.s` and `asm/inv_my_ntt.s` are the current Pi 5 promoted
+- `asm/gt/base_gt.opt.s` and `asm/gt/inv_my_ntt.s` are the current Pi 5 promoted
   pair.  The current result summary and rerun commands live in
   `docs/slothy_pi5_bench_matrix.md`.
 
@@ -118,7 +118,7 @@ The old standalone `inv_my_ntt_*directstage123*.s`,
 `inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
 branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
 were removed after promotion.  The duplicate branchfold wrapper was also
-removed because `asm/inv_my_ntt.s` is now that exact path.  The retained
+removed because `asm/gt/inv_my_ntt.s` is now that exact path.  The retained
 alternate wrapper is the A72 branchfold schedule.
 
 Raspberry Pi 5 PERF medians motivating the promotion:

@@ -17,7 +17,7 @@ ABI，也符合 `poly_tobytes()` / `poly_frombytes()` 的 public polynomial
 
 ## 1. 目前 base_gt output: block-major AoS
 
-`asm/base_gt.S` 的 layout contract 是：
+`asm/gt/base_gt.S` 的 layout contract 是：
 
 ```text
 coeff[branch * 384 + 4 * physical_j + lane]
@@ -273,7 +273,7 @@ poly_invntt_from_rminus1_stage45scratch(out, scratch)
 Files:
 
 ```text
-asm/inv_my_ntt_rminus1.S
+asm/gt/inv_my_ntt_rminus1.S
 asm/slothy/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 ```
@@ -344,7 +344,7 @@ Files:
 
 ```text
 asm/base_gt_rminus1_to_stage123scratch_wrapper.S
-asm/inv_my_ntt_rminus1.S
+asm/gt/inv_my_ntt_rminus1.S
 asm/slothy/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 kem.c

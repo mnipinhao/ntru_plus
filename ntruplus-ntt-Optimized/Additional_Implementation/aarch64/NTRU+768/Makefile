@@ -13,21 +13,21 @@ HEADERS = api.h params.h poly.h symmetric.h
 KEM_COMMON_C = kem.c symmetric.c
 SHAKE_NOCE_SOURCES = NO_CE/fips202.c
 SHAKE_CE_SOURCES = CE/fips202.c CE/f1600.S
-STOCK_SUPPORT_ASM = asm/add.s asm/crepmod3.s asm/pack.s asm/cbd.s
-GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/cbd.s
-STOCK_NTT_ASM = asm/ntt.s
-STOCK_BASE_ASM = asm/base.s
+STOCK_SUPPORT_ASM = asm/stock/add.s asm/stock/crepmod3.s asm/stock/pack.s asm/stock/cbd.s
+GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/stock/cbd.s
+STOCK_NTT_ASM = asm/stock/ntt.s
+STOCK_BASE_ASM = asm/stock/base.s
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
 GT_BASEINV_BATCH_FINISH_ASM = asm/slothy/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM = asm/gt_fqinv15.S
+GT_BASEINV_FQINV_ASM = asm/gt/gt_fqinv15.S
 GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
-GT_BASE_ASM = asm/base_gt.S
-GT_BASE_OPT_ASM = asm/base_gt_opt_wrapper.S
-GT_BASE_OPT_NOADD_ASM = asm/base_gt_opt_noadd_wrapper.S
-GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/base_gt_add32_full_pipeline_inline_wrapper.S
+GT_BASE_ASM = asm/gt/base_gt.S
+GT_BASE_OPT_ASM = asm/gt/base_gt_opt_wrapper.S
+GT_BASE_OPT_NOADD_ASM = asm/gt/base_gt_opt_noadd_wrapper.S
+GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
 GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
-GT_BASE_RMINUS1_OPT_ASM = asm/base_gt_rminus1_opt_wrapper.S
-GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/base_gt_scaled_r_input_opt_wrapper.S
+GT_BASE_RMINUS1_OPT_ASM = asm/gt/base_gt_rminus1_opt_wrapper.S
+GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/base_gt_scaled_r_input_opt_wrapper.S
 SLOTHY_MICROKERNEL_ASM = \
 	asm/slothy/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/baseinv_batch_finish_n1_wrapper.S \
@@ -38,10 +38,10 @@ SLOTHY_MICROKERNEL_GENERATED = \
 	asm/slothy/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/microkernels/base_gt_add32_rminus1_finalize.n1.opt.S \
 	asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
-GT_NTT_ASM_PHASE123_N1 = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
+GT_NTT_ASM_PHASE123_N1 = asm/gt/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)
-GT_INVNTT_ASM = asm/inv_my_ntt.s
-GT_INVNTT_RMINUS1_ASM = asm/inv_my_ntt_rminus1.S
+GT_INVNTT_ASM = asm/gt/inv_my_ntt.s
+GT_INVNTT_RMINUS1_ASM = asm/gt/inv_my_ntt_rminus1.S
 # CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
 # Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
 # portable C SHAKE fallback as the default.  Explicitly set HAS_SHAKE256_ASM=1

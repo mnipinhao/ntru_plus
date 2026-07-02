@@ -1,7 +1,7 @@
 /*
  * Slothy symbolic prototype for the complete GT basemul_add32 pipeline.
  *
- * This models one source-order loop body from asm/base_gt.S when
+ * This models one source-order loop body from asm/gt/base_gt.S when
  * GT_BASEMUL_ADD32_RMINUS1_FINALIZE is enabled:
  *
  *   ld4(a), ld4(b), ld4(c)

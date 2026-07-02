@@ -3,7 +3,7 @@
 
 The source keeps the original physical register ABI and instruction selection.
 Slothy is used as a scheduler for the marked loop bodies only; generated output
-is opt-in and does not overwrite asm/add.s, asm/crepmod3.s, or asm/pack.s.
+is opt-in and does not overwrite asm/stock/add.s, asm/stock/crepmod3.s, or asm/stock/pack.s.
 """
 
 from __future__ import annotations

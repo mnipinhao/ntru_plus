@@ -1,6 +1,6 @@
 /*
  * Production-only AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by asm/my_ntt.s.
+ * layout produced by asm/gt/my_ntt.s.
  *
  * This file is intentionally smaller than asm/slothy/invntt_opt.s.  It keeps
  * only the path currently wired into production wrappers:

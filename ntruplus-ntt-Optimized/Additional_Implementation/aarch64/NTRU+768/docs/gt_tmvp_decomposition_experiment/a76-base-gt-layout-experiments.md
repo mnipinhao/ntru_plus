@@ -133,7 +133,7 @@ decap: poly_basemul(m1, c, f) -> poly_invntt(m1, m1)
 
 這點要分 production 版本看。
 
-`asm/base_gt.opt.s` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
+`asm/gt/base_gt.opt.s` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
 load 放得很晚，接近 final add：
 
 ```text
@@ -143,7 +143,7 @@ ld4 c at about cycle 82 in the annotated old add path
 但目前 production `poly_basemul_add` 走的是：
 
 ```text
-GT_BASE_ADD32_ASM = asm/base_gt_add32_full_pipeline_inline_wrapper.S
+GT_BASE_ADD32_ASM = asm/gt/base_gt_add32_full_pipeline_inline_wrapper.S
 asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
 ```
 
