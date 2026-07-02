@@ -29,7 +29,7 @@ Current `VARIANT=gt_production` in `aarch64-bench/Makefile` links:
 GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/ntt.c
   ntruplus/asm/slothy/support_kernels/support_kernels.n1.opt.S
-  ntruplus/asm/stock/cbd.s
+  ntruplus/asm/gt/poly_cbd_sotp_gt_production.s
   ntruplus/asm/gt/poly_ntt_gt_production.s
   ntruplus/asm/slothy/production/my_32ntt.opt.s
   ntruplus/asm/gt/poly_invntt_gt_production.s

@@ -53,7 +53,7 @@ GT_PRODUCTION_BASE_ASM ?= \
 	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1_gt_production.s
 GT_SUPPORT_ASM ?= \
 	$(NTRUPLUS)/asm/slothy/support_kernels/support_kernels.n1.opt.S \
-	$(NTRUPLUS)/asm/stock/cbd.s
+	$(NTRUPLUS)/asm/gt/poly_cbd_sotp_gt_production.s
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
 endif

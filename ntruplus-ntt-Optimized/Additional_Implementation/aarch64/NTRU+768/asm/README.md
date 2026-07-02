@@ -5,7 +5,8 @@ benchmark-only experiments are not mixed together.
 
 - `stock/`: KPQC-final stock AArch64 support, NTT, and base multiplication
   assembly.
-- `gt/`: GT production wrappers and promoted GT assembly bodies.
+- `gt/`: GT production wrappers, promoted GT assembly bodies, and GT support
+  assembly used by the production KEM path.
 - `baseline/`: retained GT non-production baseline wrappers/bodies used by
   comparison tests and profiling targets.
 - `archive/`: readable historical/reference assembly that is not wired into

@@ -14,7 +14,7 @@ KEM_COMMON_C = kem.c symmetric.c
 SHAKE_NOCE_SOURCES = NO_CE/fips202.c
 SHAKE_CE_SOURCES = CE/fips202.c CE/f1600.S
 STOCK_SUPPORT_ASM = asm/stock/add.s asm/stock/crepmod3.s asm/stock/pack.s asm/stock/cbd.s
-GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/stock/cbd.s
+GT_SUPPORT_ASM = asm/slothy/support_kernels/support_kernels.n1.opt.S asm/gt/poly_cbd_sotp_gt_production.s
 STOCK_NTT_ASM = asm/stock/ntt.s
 STOCK_BASE_ASM = asm/stock/base.s
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
@@ -226,13 +226,13 @@ profile_kem_m2pro_stock_ce: $(HEADERS) CE/fips202.h randombytes.h randombytes.c 
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DSUPPORTS_SHAKE256_ASM -DKEM_COMPONENT_PROFILE_TARGET=\"stock_ce_m2pro\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_m2pro_stock_ce randombytes.c gt_test/kem_component_profiler.c $(KEM_COMMON_C) poly.c $(STOCK_SUPPORT_ASM) $(STOCK_NTT_ASM) $(STOCK_BASE_ASM) $(SHAKE_CE_SOURCES)
 
-profile_kem_m2pro_gt_production_opt_ce: $(HEADERS) CE/fips202.h randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(KEM_COMMON_C) ntt.c $(STOCK_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(SHAKE_CE_SOURCES)
+profile_kem_m2pro_gt_production_opt_ce: $(HEADERS) CE/fips202.h randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(KEM_COMMON_C) ntt.c $(GT_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(SHAKE_CE_SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DSUPPORTS_SHAKE256_ASM -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt_ce_m2pro\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_m2pro_gt_production_opt_ce randombytes.c gt_test/kem_component_profiler.c $(KEM_COMMON_C) ntt.c $(STOCK_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(SHAKE_CE_SOURCES)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DSUPPORTS_SHAKE256_ASM -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt_ce_m2pro\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_m2pro_gt_production_opt_ce randombytes.c gt_test/kem_component_profiler.c $(KEM_COMMON_C) ntt.c $(GT_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(SHAKE_CE_SOURCES)
 
-profile_kem_m2pro_gt_production_opt_rminus1_ce: $(HEADERS) CE/fips202.h randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(KEM_COMMON_C) ntt.c $(STOCK_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_INVNTT_RMINUS1_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(GT_BASE_RMINUS1_OPT_ASM) $(SHAKE_CE_SOURCES)
+profile_kem_m2pro_gt_production_opt_rminus1_ce: $(HEADERS) CE/fips202.h randombytes.h randombytes.c gt_test/kem_component_profiler.c ntt.h $(KEM_COMMON_C) ntt.c $(GT_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_INVNTT_RMINUS1_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(GT_BASE_RMINUS1_OPT_ASM) $(SHAKE_CE_SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DSUPPORTS_SHAKE256_ASM -DGT_PRODUCTION_USE_RMINUS1_DECAP -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt_rminus1_ce_m2pro\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_m2pro_gt_production_opt_rminus1_ce randombytes.c gt_test/kem_component_profiler.c $(KEM_COMMON_C) ntt.c $(STOCK_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_INVNTT_RMINUS1_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(GT_BASE_RMINUS1_OPT_ASM) $(SHAKE_CE_SOURCES)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DSUPPORTS_SHAKE256_ASM -DGT_PRODUCTION_USE_RMINUS1_DECAP -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_opt_rminus1_ce_m2pro\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_m2pro_gt_production_opt_rminus1_ce randombytes.c gt_test/kem_component_profiler.c $(KEM_COMMON_C) ntt.c $(GT_SUPPORT_ASM) $(GT_NTT_ASM) $(GT_INVNTT_ASM) $(GT_INVNTT_RMINUS1_ASM) $(GT_BASEINV_BATCH_C) $(GT_BASE_OPT_ASM) $(GT_BASE_RMINUS1_OPT_ASM) $(SHAKE_CE_SOURCES)
 
 profile_kem_m2pro_ce: profile_kem_m2pro_stock_ce profile_kem_m2pro_gt_production_opt_ce
 
