@@ -43,7 +43,7 @@ def q31_call_sites(
     sites: list[tuple[str, str]] = []
     current_function = "<unknown>"
     header_re = re.compile(r"^\s*([0-9a-fA-F]+) <([^>]+)>:")
-    call_re = re.compile(r"\bbl\b\s+([0-9a-fA-F]+)\b")
+    call_re = re.compile(r"\bbl\b\s+(?:0x)?([0-9a-fA-F]+)\b")
 
     for line in objdump_output.splitlines():
         header = header_re.match(line)
