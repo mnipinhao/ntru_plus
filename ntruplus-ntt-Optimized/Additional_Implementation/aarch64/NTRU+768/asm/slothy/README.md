@@ -1,5 +1,21 @@
 # Forward NTT Slothy Sources
 
+This directory is now split by role:
+
+- production-linked Slothy outputs and their active regeneration inputs stay in
+  `asm/slothy/`.
+- isolated benchmark/proof microkernels that are not wired into production stay
+  in `asm/slothy/microkernels/`.
+- archived prototypes that should remain readable but inactive stay in
+  `asm/slothy/archive/`.
+- support-kernel replacements for stock pack/crepmod3 helpers stay in
+  `asm/slothy/support_kernels/`.
+
+The old generic `optimize.py` and `optimize_gt_kernels.py` drivers were
+removed.  Use the kernel-specific drivers instead, such as
+`baseinv_batch_finish_optimize.py`, `base_gt_add32_full_pipeline_optimize.py`,
+`optimize_phase123_split.py`, or the driver inside the relevant subdirectory.
+
 `asm/slothy/my_32ntt.opt.s` is the only retained NTT32 row kernel wired into
 the production GT forward NTT.  The older rowpack, shadow-base, and forward
 window experiment artifacts were removed from the active tree after they failed

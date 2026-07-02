@@ -10,7 +10,8 @@
  *   dst[4*j + k] = Mont(c_k[j] * R + raw_k[j] * R^2)
  *
  * This file is not production-wired.  It is a benchmarkable extraction of the
- * real Slothy region from base_gt_add32_rminus1_finalize.n1.opt.S.
+ * real Slothy region from base_gt_add32_rminus1_finalize.n1.opt.S in this
+ * microkernels directory.
  */
 
 .text

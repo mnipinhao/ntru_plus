@@ -2,7 +2,7 @@ kernel:
   id: base_gt_add32_rminus1_finalize
   name: GT basemul_add32 R^-1 finalizer prototype
   scheme: NTRU+768
-  source: asm/slothy/base_gt_add32_rminus1_finalize.sym.S
+  source: asm/slothy/microkernels/base_gt_add32_rminus1_finalize.sym.S
   target_arch: aarch64_neon
   target_microarchitecture: neoverse-n1-placeholder
   workflow: allocate-and-optimize
@@ -118,9 +118,9 @@ constant_time_contract:
 
 post_slothy_validation:
   static_checks:
-    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-symbolic-asm.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S
-    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-slothy-region-size.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S
-    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-physical-reg-leaks.py asm/slothy/base_gt_add32_rminus1_finalize.sym.S --allow-reg x0
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-symbolic-asm.py asm/slothy/microkernels/base_gt_add32_rminus1_finalize.sym.S
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-slothy-region-size.py asm/slothy/microkernels/base_gt_add32_rminus1_finalize.sym.S
+    - python3 /Users/chenpinhao/ntruplus/.agents/skills/slothy-symbolic-asm-authoring/scripts/check-physical-reg-leaks.py asm/slothy/microkernels/base_gt_add32_rminus1_finalize.sym.S --allow-reg x0
   required_before_benchmark:
     - Run Slothy externally and inspect allocated output.
     - Add an isolated harness or wrapper without production aliases.

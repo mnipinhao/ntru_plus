@@ -31,12 +31,12 @@ GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/base_gt_scaled_r_input_opt_wrapper.S
 SLOTHY_MICROKERNEL_ASM = \
 	asm/slothy/baseinv_batch_finish.n1.opt.S \
 	asm/slothy/baseinv_batch_finish_n1_wrapper.S \
-	asm/slothy/base_gt_add32_rminus1_finalize_n1_wrapper.S \
+	asm/slothy/microkernels/base_gt_add32_rminus1_finalize_n1_wrapper.S \
 	asm/slothy/base_gt_add32_full_pipeline.n1.opt.S \
 	asm/slothy/base_gt_add32_full_pipeline_n1_wrapper.S
 SLOTHY_MICROKERNEL_GENERATED = \
 	asm/slothy/baseinv_batch_finish.n1.opt.S \
-	asm/slothy/base_gt_add32_rminus1_finalize.n1.opt.S \
+	asm/slothy/microkernels/base_gt_add32_rminus1_finalize.n1.opt.S \
 	asm/slothy/base_gt_add32_full_pipeline.n1.opt.S
 GT_NTT_ASM_PHASE123_N1 = asm/my_ntt_phase123_n1.s asm/slothy/my_32ntt.opt.s
 GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1)

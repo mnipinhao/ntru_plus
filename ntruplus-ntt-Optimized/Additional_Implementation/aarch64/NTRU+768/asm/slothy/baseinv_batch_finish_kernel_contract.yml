@@ -16,8 +16,8 @@ target:
 
 slothy:
   workflow: allocate-and-optimize
-  driver: optimize.py --input baseinv_batch_finish.sym.S --output baseinv_batch_finish.n1.opt.s --target n1 --region baseinv_batch_finish8_slothy_start:baseinv_batch_finish8_slothy_end
-  expected_outputs: [baseinv_batch_finish.n1.opt.s]
+  driver: baseinv_batch_finish_optimize.py --target n1
+  expected_outputs: [baseinv_batch_finish.n1.opt.S]
   allow_spills: false
 
 region:

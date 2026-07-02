@@ -35,9 +35,9 @@ negative normalization.
 
 Prototype artifacts:
 
-- `asm/slothy/base_gt_add32_rminus1_finalize.sym.S`
-- `asm/slothy/base_gt_add32_rminus1_finalize.contract.yml`
-- `asm/slothy/base_gt_add32_rminus1_finalize_optimize.py`
+- `asm/slothy/microkernels/base_gt_add32_rminus1_finalize.sym.S`
+- `asm/slothy/microkernels/base_gt_add32_rminus1_finalize.contract.yml`
+- `asm/slothy/microkernels/base_gt_add32_rminus1_finalize_optimize.py`
 
 Before benchmarking, run Slothy externally, inspect and assemble the generated
 output, add an isolated harness/wrapper, and differential-test against the
