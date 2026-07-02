@@ -1,10 +1,6 @@
 /*
  * Production-only non-hash KEM substage PMU benchmark.
  *
- * Build this harness twice:
- *   - current gt_production_opt path
- *   - stock_noce path
- *
  * The measured substages exclude hash_f/hash_g/hash_h bodies.  Hash is used
  * only during input preparation and correctness checks.
  */
@@ -61,16 +57,6 @@
 #define NOINLINE
 #endif
 
-#if defined(BENCH_STOCK_NOCE)
-#define BACKEND_NAME "stock_noce"
-int bench_crypto_kem_keypair_stock(uint8_t *pk, uint8_t *sk);
-int bench_crypto_kem_enc_stock(uint8_t *ct, uint8_t *ss, const uint8_t *pk);
-int bench_crypto_kem_dec_stock(uint8_t *ss, const uint8_t *ct,
-                               const uint8_t *sk);
-#define BENCH_KEM_KEYPAIR bench_crypto_kem_keypair_stock
-#define BENCH_KEM_ENC bench_crypto_kem_enc_stock
-#define BENCH_KEM_DEC bench_crypto_kem_dec_stock
-#else
 #define BACKEND_NAME "gt_production_opt"
 int bench_crypto_kem_keypair_current(uint8_t *pk, uint8_t *sk);
 int bench_crypto_kem_enc_current(uint8_t *ct, uint8_t *ss,
@@ -85,7 +71,6 @@ void poly_invntt_from_rminus1(poly *r, const poly *a);
 #define BENCH_KEM_KEYPAIR bench_crypto_kem_keypair_current
 #define BENCH_KEM_ENC bench_crypto_kem_enc_current
 #define BENCH_KEM_DEC bench_crypto_kem_dec_current
-#endif
 
 typedef void (*bench_target_fn)(size_t idx);
 
@@ -302,38 +287,22 @@ static int compare_bytes(const char *label, const uint8_t *got,
 
 static int keypair_baseinv(poly *r, const poly *a)
 {
-#if defined(BENCH_STOCK_NOCE)
-  return poly_baseinv(r, a);
-#else
   return poly_baseinv_scaled_r(r, a);
-#endif
 }
 
 static void keypair_basemul(poly *r, const poly *a, const poly *b)
 {
-#if defined(BENCH_STOCK_NOCE)
-  poly_basemul(r, a, b);
-#else
   poly_basemul_scaled_r_input(r, a, b);
-#endif
 }
 
 static void decap_first_basemul(poly *r, const poly *a, const poly *b)
 {
-#if defined(BENCH_STOCK_NOCE)
-  poly_basemul(r, a, b);
-#else
   poly_basemul_rminus1(r, a, b);
-#endif
 }
 
 static void decap_first_invntt(poly *r, const poly *a)
 {
-#if defined(BENCH_STOCK_NOCE)
-  poly_invntt(r, a);
-#else
   poly_invntt_from_rminus1(r, a);
-#endif
 }
 
 static int prepare_inputs(void)

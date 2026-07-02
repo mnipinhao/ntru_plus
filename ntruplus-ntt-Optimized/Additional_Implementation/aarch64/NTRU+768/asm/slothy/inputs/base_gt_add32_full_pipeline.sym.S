@@ -1,8 +1,8 @@
 /*
  * Slothy symbolic prototype for the complete GT basemul_add32 pipeline.
  *
- * This models one source-order loop body from asm/baseline/base_gt.S when
- * GT_BASEMUL_ADD32_RMINUS1_FINALIZE is enabled:
+ * This models one source-order loop body from the production GT
+ * `poly_basemul_add` path:
  *
  *   ld4(a), ld4(b), ld4(c)
  *   quartic product modulo X^4-lambda

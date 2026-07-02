@@ -1,17 +1,14 @@
 /*
  * Slothy symbolic prototype for the complete GT basemul_add32 pipeline.
  *
- * This models one source-order loop body from asm/baseline/base_gt.S when
- * GT_BASEMUL_ADD32_RMINUS1_FINALIZE is enabled:
+ * This is the Slothy-scheduled loop body used by the production
+ * `poly_basemul_add` wrapper:
  *
  *   ld4(a), ld4(b), ld4(c)
  *   quartic product modulo X^4-lambda
  *   required inner Montgomery reductions for the lambda wraparound terms
  *   add32 finalizer out = Mont(c * R + raw_rminus1 * R^2)
  *   st4(out)
- *
- * It is intentionally not production-wired.  The region uses fixed public
- * pointer GPRs x0..x5 but all NEON temporaries are symbolic.
  */
 
 #ifndef BASE_GT_ADD32_FULL_PIPELINE_BODY_ONLY

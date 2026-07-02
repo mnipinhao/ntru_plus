@@ -1,56 +1,31 @@
-# Forward NTT Slothy Sources
+# GT Production Slothy Sources
 
-This directory is split by role:
+This directory is kept narrow:
 
 - `production/`: Slothy outputs and include files wired into current GT
   production builds.
 - `inputs/`: symbolic sources, contracts, DAG notes, and kernel-specific
-  Slothy drivers used to regenerate selected production or microkernel outputs.
-- `microkernels/`: isolated benchmark/proof kernels that are not production
-  defaults.
-- `legacy/`: large legacy experiment supersets still needed by opt-in wrappers
-  or validation scripts.
-- `archive/`: readable inactive prototype extracts.
-- `support_kernels/`: support-kernel replacements for stock pack/crepmod3
-  helpers.
+  Slothy drivers used to regenerate selected production outputs.
+- `support_kernels/`: production support-kernel replacements for stock
+  pack/frombytes/tobytes/crepmod3 helpers.
 
-The old generic `optimize.py` and `optimize_gt_kernels.py` drivers were
-removed.  Use the kernel-specific drivers instead, such as
-`inputs/baseinv_batch_finish_optimize.py`,
-`inputs/base_gt_add32_full_pipeline_optimize.py`,
-`inputs/optimize_phase123_split.py`, or the driver inside the relevant
-subdirectory.
+Rejected rowpack, shadow-base, window, microkernel, A72 branchfold, oldstore,
+and rowstage45/post-fusion prototypes were removed from the active tree.  Use
+git history for those artifacts.
 
-`asm/slothy/production/my_32ntt.opt.s` is the only retained NTT32 row kernel wired into
-the production GT forward NTT.  The older rowpack, shadow-base, and forward
-window experiment artifacts were removed from the active tree after they failed
-to become production candidates.
+## Forward NTT
 
 `asm/gt/poly_ntt_gt_production.s` is the production public wrapper.  It exports
-the forward NTT symbols and includes `asm/gt/ntt_gt_body.inc`, which now always
-calls the fused-scatter `_ntt32_8way` row kernel.  The older row-buffer scatter
-fallback was removed from the production body to keep the active path readable.
+the forward NTT symbols and includes `asm/gt/ntt_gt_body.inc`, which calls the
+fused-scatter `_ntt32_8way` row kernel in
+`asm/slothy/production/my_32ntt.opt.s`.
 
-The generated `my_32ntt.opt.s` has a small boundary post-process: it defines
-stack slots for Slothy spills and reloads `dst`, `row_base`, and the row's
-initial `scatter_ptr` before each stage345 block.  Keep that in mind if you
-regenerate the file from scratch.
+The first half of `asm/gt/ntt_gt_body.inc` is the N1 Slothy-scheduled Phase123
+path:
 
-## Forward Phase123 N1 Schedule
-
-The first half of `asm/gt/ntt_gt_body.inc` is the N1 Slothy-scheduled Phase123 path:
-
-- symbolic source used to run Slothy: `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`
-- scheduled wrapper used by the default GT KEM builds:
-  `asm/gt/poly_ntt_gt_production.s`
-- scheduled region included by the wrapper:
-  `asm/slothy/production/my_ntt_phase123.n1.opt.s`
-- local driver used for the split-heuristic run:
-  `asm/slothy/inputs/optimize_phase123_split.py`
-
-`asm/gt/ntt_gt_body.inc` directly includes the scheduled region.  The old
-macro-expanded GAS `PHASE123_ITER` fallback and the Phase123 A/B/C experiment
-selector were removed from the production file.
+- symbolic source: `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`
+- local driver: `asm/slothy/inputs/optimize_phase123_split.py`
+- scheduled include: `asm/slothy/production/my_ntt_phase123.n1.opt.s`
 
 The default Makefile path uses:
 
@@ -58,79 +33,45 @@ The default Makefile path uses:
 GT_NTT_ASM = asm/gt/poly_ntt_gt_production.s asm/slothy/production/my_32ntt.opt.s
 ```
 
-The flat symbolic file expands the eight iterations explicitly and then
-optimizes each
-`slothy_start_ntt_phase123_iterN:slothy_end_ntt_phase123_iterN` region with the
-N1 target and split heuristic.
+## Basemul Add32
 
-Rejected 2026-06-25 Phase123 A76 load-schedule experiments:
+`asm/gt/poly_basemul_add_gt_production.s` includes
+`asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S` through
+`asm/gt/base_gt_opt_body.inc`.
 
-| variant | change | Slothy n1 per iter | Pi5 KEM result |
-| --- | --- | ---: | --- |
-| A | twist table `ldp` fixed-offset, one final `add x3,#384` | 161 instr / 40 cycles | parity: 923 / 893 / 745 |
-| B | A + zip/DFT3 triad streaming | 161 instr / 40 cycles | parity/slight NTT noise: 924 / 893 / 744 |
-| C | A + full triad streaming, pairs 0/2/4 then 1/3/5 | 165 instr / 41 cycles | slower: 926 / 895 / 745 |
+The production regeneration sources are:
 
-Do not keep or promote these experiment artifacts.  The current production
-Phase123 remains the baseline 160-instruction / 40-cycle N1 schedule, measured
-on Pi5 at roughly KEYGEN 923, ENCAP 894, DECAP 744.
+- `asm/slothy/inputs/base_gt_add32_full_pipeline.sym.S`
+- `asm/slothy/inputs/base_gt_add32_full_pipeline_kernel_contract.yml`
+- `asm/slothy/inputs/base_gt_add32_full_pipeline_instruction_dag.yml`
+- `asm/slothy/inputs/base_gt_add32_full_pipeline_optimize.py`
 
-Rerun command:
+## Baseinv Finish
 
-```sh
-SLOTHY_PATH=/path/to/slothy python3 optimize_phase123_split.py \
-  --input my_ntt_phase123_flat.sym.s \
-  --output my_ntt_phase123.n1.opt.s \
-  --target n1 \
-  --region slothy_start_ntt_phase123_iter0:slothy_end_ntt_phase123_iter0 \
-  --region slothy_start_ntt_phase123_iter1:slothy_end_ntt_phase123_iter1 \
-  --region slothy_start_ntt_phase123_iter2:slothy_end_ntt_phase123_iter2 \
-  --region slothy_start_ntt_phase123_iter3:slothy_end_ntt_phase123_iter3 \
-  --region slothy_start_ntt_phase123_iter4:slothy_end_ntt_phase123_iter4 \
-  --region slothy_start_ntt_phase123_iter5:slothy_end_ntt_phase123_iter5 \
-  --region slothy_start_ntt_phase123_iter6:slothy_end_ntt_phase123_iter6 \
-  --region slothy_start_ntt_phase123_iter7:slothy_end_ntt_phase123_iter7 \
-  --stalls 192
-```
+`poly_gt_baseinv_batch.c` calls the production finish loop in
+`asm/slothy/production/baseinv_batch_finish_loop_n1.S`.
 
-# Inverse NTT Files
+The production regeneration sources are:
+
+- `asm/slothy/inputs/baseinv_batch_finish.sym.S`
+- `asm/slothy/inputs/baseinv_batch_finish_kernel_contract.yml`
+- `asm/slothy/inputs/baseinv_batch_finish_instruction_dag.yml`
+- `asm/slothy/inputs/baseinv_batch_finish_optimize.py`
+
+## Inverse NTT
 
 The active inverse NTT path is intentionally narrow:
 
-- `asm/gt/poly_invntt_gt_production.s` is the production wrapper.  It selects the Pi 5 validated
-  directstage123 + Slothy stage45-reduce + post-row no-DFT3-reduce +
-  branch-constant folded final merge path through assembler-time gates, then
-  includes `asm/slothy/production/invntt_opt.production.s`.
-- `asm/slothy/production/invntt_opt.production.s` is the current inverse implementation
-  wired into production tests and benchmarks.  The older
-  `asm/slothy/legacy/invntt_opt.s` remains as a legacy experiment superset.
-- `asm/slothy/archive/invntt_rowstage45_post_prototypes.s` archives rowstage45
-  and post prototypes that are not included by production wrappers.
-- retained clean Slothy source fragments for older InvNTT experiments live only
-  in `asm/slothy/legacy/invntt_opt.s` and
-  `asm/slothy/archive/invntt_rowstage45_post_prototypes.s`.
-- the old A72 opt-in branchfold wrapper has been removed from the active asm
-  tree; production keeps only the Pi 5 promoted wrapper pair under `asm/gt/`.
-- `asm/gt/base_gt_opt_body.inc` and `asm/gt/poly_invntt_gt_production.s` are the current Pi 5 promoted
-  pair.  The current result summary and rerun commands live in
-  `docs/slothy_pi5_bench_matrix.md`.
+- `asm/gt/poly_invntt_gt_production.s` is the normal production wrapper.
+- `asm/gt/poly_invntt_from_rminus1_gt_production.S` is the decap rminus1
+  production wrapper.
+- `asm/slothy/production/invntt_opt.production.s` is the current inverse
+  implementation included by both wrappers.
 
-The old standalone `inv_my_ntt_*directstage123*.s`,
-`inv_my_ntt_*stage45*.s`, `inv_my_ntt_*post_fused*.s`, fastscale, unreduced
-branchfold, stage123-stripescratch, and negative `postmerge_folded` wrappers
-were removed after promotion.  The duplicate branchfold wrapper was also
-removed because `asm/gt/poly_invntt_gt_production.s` is now that exact path.  The retained
-alternate wrapper is the A72 branchfold schedule.
+The production path keeps:
 
-Raspberry Pi 5 PERF medians motivating the promotion:
-
-- previous no-DFT3-reduce production baseline: about 5379 cycles
-- directstage123 only: about 5263 cycles
-- directstage123 + post-fused Slothy: 5109 cycles
-- directstage123 + stage45-reduce Slothy + post-fused Slothy: 5000 cycles
-- previous promoted post no-DFT3-reduce path: 4562 cycles
-- promoted branchfold-reduce path: 4044 cycles
-- GT `ntt_mul_pipeline` with the no-DFT3-reduce inverse: 13671 cycles
-- GT `ntt_basemul_add_pipeline` with the no-DFT3-reduce inverse: 17071 cycles
-- GT `kem_dec` with the no-DFT3-reduce inverse: 35218 cycles
-- removed no-DFT3-reduce + fastscale+reduce experiment: 4997 cycles
+- direct physical input to inverse NTT32 stage123
+- stage123 stripe scratch laid out for stage45 consumption
+- Slothy-scheduled stage45 plus row-end Barrett reduction fusion
+- branchfold post path with final output reductions
+- rminus1 branchfold table switch through `INVNTT_INPUT_RMINUS1`

@@ -7,13 +7,9 @@ inverse NTT 用的讀碼索引。production wrapper 現在 include 的主檔是�
 asm/slothy/production/invntt_opt.production.s
 ```
 
-原本的 `asm/slothy/legacy/invntt_opt.s` 保留成 legacy / experiment superset；
-rowstage45/post prototypes 和 bench-only fragments 另外集中到：
-
-```text
-asm/slothy/archive/invntt_rowstage45_post_prototypes.s
-docs/gt_tmvp_decomposition_experiment/invntt-prototype-archive.md
-```
+舊的 legacy / rowstage45-post prototype assembly 已從 active `asm/` tree
+移除；需要追歷史時請看 git history 與
+`docs/gt_tmvp_decomposition_experiment/invntt-prototype-archive.md` 的背景紀錄。
 
 ## Production wrappers
 
