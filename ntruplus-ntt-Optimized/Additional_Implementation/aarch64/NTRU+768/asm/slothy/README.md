@@ -1,39 +1,9 @@
-# NTT32 Slothy Sources
+# Forward NTT Slothy Sources
 
-`ntt32_symbolic.s` is the source of truth for the 8-way parallel Forward CT
-NTT32 used by `asm/my_ntt.s`.
-
-The current symbolic kernel is specialized for the full `my_ntt.s` pipeline:
-
-- input layout: `Q0..Q31 = [row_base + 16*i]`
-- each vector lane is one independent Good-Thomas row branch
-- input is the lazy Phase123 raw DFT3 row buffer, not arbitrary int16 data
-- output is reduced to canonical range, split into low/high 64-bit halves, and
-  scattered directly to the final `poly_ntt` output layout
-- caller contract for the fused scatter form:
-  `x0 = dst`, `x4 = row_base`, `x10 = dst + row_offset`
-
-This version assumes the Slothy target model supports general
-`str D..., [x]`, plus the concrete GPR pointer updates used by the branchless
-scatter wrap.
-
-Power-0 CT butterflies are optimized specially:
-
-- stage 1 uses `t = high` directly, which is still within the current lazy
-  range bound
-- later power-0 butterflies reduce the high operand in place and omit the
-  useless `mul by 1`; using raw `high` there would let the DC path exceed the
-  int16 range
-
-Suggested generated file names after running Slothy:
-
-- `ntt32_8way.fused_scatter.alloc.s` for RA-only output
-- `ntt32_8way.fused_scatter.opt.s` for scheduled output used by `asm/my_ntt.s`
-
-The older `my_32ntt.opt.s` name is a previous generated output kept because the
-current Makefile still wires it into `poly_ntt`.  Treat it as a disposable
-Slothy artifact, not as the source of truth unless you intentionally overwrite
-it with the fused-scatter version.
+`asm/slothy/my_32ntt.opt.s` is the only retained NTT32 row kernel wired into
+the production GT forward NTT.  The older rowpack, shadow-base, and forward
+window experiment artifacts were removed from the active tree after they failed
+to become production candidates.
 
 `asm/my_ntt.s` is the production wrapper and now always calls the fused-scatter
 `_ntt32_8way` row kernel.  The older row-buffer scatter fallback was removed
@@ -99,57 +69,6 @@ SLOTHY_PATH=/path/to/slothy python3 optimize_phase123_split.py \
   --region slothy_start_ntt_phase123_iter6:slothy_end_ntt_phase123_iter6 \
   --region slothy_start_ntt_phase123_iter7:slothy_end_ntt_phase123_iter7 \
   --stalls 192
-```
-
-## NTT32 Rowpack Output v2
-
-`ntt32_v2_symbolic.s` is an experimental symbolic source for the Forward NTT
-rowpack-output path.  It keeps the same stage12 and stage345 arithmetic as
-`ntt32_symbolic.s`, but changes the final stage345 output packing:
-
-- each stage345 block reduces eight Q vectors;
-- the eight vectors are transposed with `trn1/trn2`;
-- branch/lane planes are stored as contiguous rowpack SoA Q vectors;
-- output layout matches
-  `rowpack_index(branch,row,lane,k32) = branch*384 + row*128 + lane*32 + k32`.
-
-The caller ABI is intentionally still `_ntt32_8way(x0=dst, x4=row_base,
-x10=dst+256*row)`, so this source can be generated and tested behind the same
-`asm/my_ntt.s` row calls once a wrapper is added for the rowpack public
-`poly_ntt` output convention.  It is not wired into production.
-
-Run the portable contract gate before generating or testing a candidate:
-
-```sh
-make test_gt_forward_rowpack_output_contract
-```
-
-Suggested Slothy direction for Pi 5 / Cortex-A76-class testing is the
-Neoverse-N1 model, not A72.  The stage345 v2 regions are medium sized, so use
-RA-first/window optimization or split heuristics rather than treating the whole
-NTT32 as one region.
-
-Suggested generated file names:
-
-- `ntt32_8way.rowpack_v2.n1.alloc.s`
-- `ntt32_8way.rowpack_v2.n1.opt.s`
-
-Current opt-in candidate:
-
-- `ntt32_8way.rowpack_v2.n1.opt.s`
-
-Correctness gates:
-
-```sh
-make test_gt_forward_rowpack_v2_asm
-make test_gt_rowpack_soa_invntt32_fullpath_forward_v2
-make test_gt_rowpack_soa_invntt32_fullpath_forward_v2_nativebasemul
-```
-
-Pi 5 cycle targets:
-
-```sh
-make bench_gt_rowpack_pipeline_forward_v2_nativebasemul_cycles_compare
 ```
 
 # Inverse NTT Files
