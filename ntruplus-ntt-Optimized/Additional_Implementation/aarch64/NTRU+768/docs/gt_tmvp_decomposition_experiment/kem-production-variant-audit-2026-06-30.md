@@ -121,10 +121,8 @@ only Q31 call site is `gt_encap_basemul_add_tobytes_contract`.
 | `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP` | off | fused rminus1 InvNTT+crep3 decap | stopped experiment | yes | crep3 fused PMU/correctness docs |
 | `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP` | off | rminus1 stage123 scratch split | stopped experiment | yes | component/fusion docs |
 | `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP` | off | scratch split plus crep3 fused | stopped experiment | yes | component/fusion docs |
-| `GT_PRODUCTION_USE_TUPLE_DECAP` | off | tuple decap | experimental/dead | yes | historical tests only |
-| `GT_PRODUCTION_USE_PACK_TUPLE_DECAP` | off | block-major to tuple adapter decap | experimental/dead | yes | historical tests only |
-| `GT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_KEM` and related `GT_TMVP_USE_*` tuple flags | off | Candidate A direct tuple KEM | benchmark-only / experimental | yes | candidate-specific tests only |
-| `GT_TMVP_ENABLE_CANDIDATE_B_BPQ_KEM` and BPQ/TMVP flags | off | BPQ/TMVP KEM candidates | experimental/dead | yes | candidate-specific tests only |
+| `GT_PRODUCTION_USE_TUPLE_DECAP` | off | tuple decap | removed experiment | yes | historical only |
+| `GT_PRODUCTION_USE_PACK_TUPLE_DECAP` | off | block-major to tuple adapter decap | removed experiment | yes | historical only |
 
 Non-macro benchmark-only paths visible in the Makefile include NTT shadow-base
 rowspec wrappers, basemul oldstore wrappers, and the `ldrtrn_noadd` wrapper.
@@ -146,7 +144,7 @@ They are not part of `GT_PRODUCTION_KEM_SOURCES`.
 | rowspec NTT | benchmark-only stopped | no | historical | PMU regression / not production output route | do not use |
 | oldstore basemul wrappers | benchmark-only | no | historical | oldstore comparison only | keep only for regression guard |
 | `ldrtrn_noadd` basemul | benchmark-only stopped | no | correctness pass but slower | PMU regression | do not extend |
-| rowpack / tuple / BPQ / TMVP candidates | experimental/dead | no | candidate-local only | not current fastest production | do not classify as production fastest |
+| rowpack / tuple / BPQ / TMVP candidates | removed experiments | no | historical only | not current fastest production | do not classify as production fastest |
 | stock basemul_add drop-in | benchmark-only negative control | no | fail on GT operands | diagnostic only | reject |
 
 ## Correctness and PMU commands

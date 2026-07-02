@@ -224,7 +224,7 @@
 
 	.macro TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
     /*
-     * Candidate A direct-tuple input already stores each GT row contiguously:
+     * Row-contiguous tuple input already stores each GT row contiguously:
      *   tuple[branch][row][k32][quartic_lane].
      *
      * Point x3/x4 at the branch0/branch1 row bases before invoking this macro.

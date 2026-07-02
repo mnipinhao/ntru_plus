@@ -21,7 +21,6 @@ docs/gt_tmvp_decomposition_experiment/invntt-prototype-archive.md
 | --- | --- | --- |
 | `asm/inv_my_ntt.s` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
 | `asm/inv_my_ntt_rminus1.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
-| `asm/inv_my_ntt_tuple_only.s` | `gt_tuple_poly_invntt` only | Candidate A direct-tuple KEM，避免重複 export `poly_invntt` |
 
 `asm/inv_my_ntt_post_branchfold_a72.s` 仍然是 opt-in prototype wrapper，沒有改成
 include production-only 檔。
@@ -38,7 +37,7 @@ include production-only 檔。
 | `INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS` | final store 前做 output Barrett reductions，這是 `poly_crepmod3` representative contract 的關鍵 |
 | `INVNTT_INPUT_RMINUS1` | rminus1 wrapper 專用；改 include `invntt_branchfold_vecs_rminus1.inc` |
 | `INVNTT_EXPOSE_STAGE123_SCRATCH_ABI` | rminus1 wrapper 目前也 export stage123scratch split prototype symbols；standard `gt_production_opt_rminus1` KEM 不走這個 ABI |
-| `INVNTT_NO_POLY_ALIAS` | tuple-only wrapper 專用；不要 export `poly_invntt` |
+| `INVNTT_NO_POLY_ALIAS` | legacy/prototype wrapper 專用；不要 export `poly_invntt` |
 
 ## rminus1 decap data flow
 

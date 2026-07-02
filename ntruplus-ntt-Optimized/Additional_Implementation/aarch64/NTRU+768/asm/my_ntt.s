@@ -4,8 +4,7 @@
  * Active path:
  *   - Slothy-scheduled Phase123 (`asm/slothy/my_ntt_phase123.n1.opt.s`)
  *   - three fused 8-way NTT32 row kernels
- *   - normal block-major output, or Candidate A direct tuple output when
- *     MY_NTT_DIRECT_TUPLE is set by the wrapper.
+ *   - normal block-major output
  *
  * The old GAS PHASE123_ITER fallback, NTT32 row-buffer scatter fallback, and
  * Phase123 A/B/C experiment selectors are intentionally not kept here.  The
@@ -14,12 +13,7 @@
  */
 
 .macro CALL_NTT32_8WAY
-.ifdef MY_NTT_DIRECT_TUPLE
-    add x11, x10, #768
-    bl _ntt32_8way_to_tuple
-.else
     bl _ntt32_8way
-.endif
 .endm
 
     .equ MY_NTT_FRAME_SIZE, 1568
@@ -34,23 +28,12 @@
 .global _poly_ntt
 .endif
 .endif
-.ifdef MY_NTT_DIRECT_TUPLE
-.global gt_candidate_a_direct_tuple_poly_ntt
-.global _gt_candidate_a_direct_tuple_poly_ntt
-.ifndef MY_NTT_NO_POLY_ALIAS
-poly_ntt:
-_poly_ntt:
-.endif
-gt_candidate_a_direct_tuple_poly_ntt:
-_gt_candidate_a_direct_tuple_poly_ntt:
-.else
 .global gt_block_major_poly_ntt
 .global _gt_block_major_poly_ntt
 poly_ntt:
 _poly_ntt:
 gt_block_major_poly_ntt:
 _gt_block_major_poly_ntt:
-.endif
     dst       .req x0
     src       .req x1
     zetas_ptr .req x2

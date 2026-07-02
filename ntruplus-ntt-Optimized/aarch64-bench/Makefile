@@ -54,13 +54,6 @@ GT_PRODUCTION_BASE_ASM ?= \
 GT_SUPPORT_ASM ?= \
 	$(NTRUPLUS)/asm/slothy/support_kernels/support_kernels.n1.opt.S \
 	$(NTRUPLUS)/asm/cbd.s
-CANDIDATE_A_DIRECT_TUPLE_KEM_POLY_C ?= $(NTRUPLUS)/poly_gt_tmvp_candidate_a_direct_tuple_kem.c
-CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM ?= $(NTRUPLUS)/asm/candidate_a_direct_tuple_basemul.S
-CANDIDATE_A_DIRECT_TUPLE_INVNTT_ASM ?= $(NTRUPLUS)/asm/inv_my_ntt_tuple_only.s
-CANDIDATE_A_DIRECT_TUPLE_NTT_ASM ?= \
-	$(NTRUPLUS)/asm/my_ntt_candidate_a_direct_tuple.s \
-	$(NTRUPLUS)/asm/slothy/ntt32_8way.to_tuple.n1.opt.s
-
 ifeq ($(IS_ARITH_MODE)$(IS_KEM_MODE),)
 $(error unknown BENCH_MODE=$(BENCH_MODE); use $(ARITH_MODES) or $(KEM_MODES))
 endif
@@ -141,15 +134,6 @@ GT_PRODUCTION_KEM_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM)
-
-CANDIDATE_A_KEM_SOURCES = \
-	$(NTRUPLUS)/ntt.c \
-	$(CANDIDATE_A_DIRECT_TUPLE_KEM_POLY_C) \
-	$(GT_BASEINV_BATCH_C) \
-	$(STOCK_SUPPORT_ASM) \
-	$(CANDIDATE_A_DIRECT_TUPLE_NTT_ASM) \
-	$(CANDIDATE_A_DIRECT_TUPLE_INVNTT_ASM) \
-	$(CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM)
 
 CORE ?= 3
 SUDO ?=
@@ -416,15 +400,8 @@ else
 $(error VARIANT=gt_production_no_q31 currently supports KEM modes only)
 endif
 	VARIANT_CFLAGS = -DGT_PRODUCTION_USE_SCALED_KEYPAIR -DGT_PRODUCTION_USE_RMINUS1_DECAP -DGT_BASEINV_BATCH_USE_ASM_FINISH -DGT_BASEINV_USE_FQINV15_ASM -DBENCH_VARIANT_GT=1
-else ifeq ($(VARIANT),candidate_a)
-ifneq ($(IS_KEM_MODE),)
-SOURCES += $(CANDIDATE_A_KEM_SOURCES)
 else
-$(error VARIANT=candidate_a currently supports KEM modes only)
-endif
-	VARIANT_CFLAGS = -DGT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_KEM -DGT_TMVP_ENABLE_CANDIDATE_A_DIRECT_TUPLE_BASEMUL_ASM -DGT_TMVP_USE_DIRECT_TUPLE_NTT_ASM -DGT_TMVP_USE_TUPLE_INVNTT_ASM -DGT_TMVP_USE_BATCH_BASEINV -DGT_BASEINV_BATCH_USE_ASM_FINISH -DGT_BASEINV_USE_FQINV15_ASM -DGT_BASEINV_BATCH_NO_ABI_WRAPPER -DGT_TMVP_USE_STOCK_SUPPORT_ASM -DCANDIDATE_A_DIRECT_TUPLE_BASEMUL_USE_OPT
-else
-$(error unknown VARIANT=$(VARIANT); use stock, gt, stock_opt, gt_opt, gt_production, gt_production_no_q31, or candidate_a)
+$(error unknown VARIANT=$(VARIANT); use stock, gt, stock_opt, gt_opt, gt_production, or gt_production_no_q31)
 endif
 
 CFLAGS := \

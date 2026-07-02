@@ -87,9 +87,9 @@ row k3=2: 64, 67, 70, 73, ..., 61
 `invntt` stage123 讀的是每隔 3 個 block 的 row order。兩者不是同一個
 linear order。
 
-## 3. tuple / row-contiguous input order
+## 3. row-contiguous tuple input order
 
-Candidate A direct-tuple path 的 input contract 是：
+The row-contiguous tuple input contract is:
 
 ```text
 tuple[branch][row][k32][quartic_lane]
