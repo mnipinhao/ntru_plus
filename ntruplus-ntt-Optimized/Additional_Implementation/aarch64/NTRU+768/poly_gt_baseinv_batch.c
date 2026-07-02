@@ -24,6 +24,17 @@ int poly_baseinv_gt_batch(poly *r, const poly *a);
 int poly_baseinv_gt_batch_scaled_r(poly *r, const poly *a);
 int poly_baseinv_gt_tuple_batch(poly *r, const poly *a);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+int gt_baseinv_fqinv_batch_old_24_for_bench(int16_t r[24 * 8]);
+int gt_baseinv_fqinv_batch_new_24_for_bench(int16_t r[24 * 8]);
+int gt_baseinv_fqinv_kway_new_24_for_bench(int16_t r[24 * 8], int k);
+int gt_baseinv_fqinv_batch_new_36_for_bench(int16_t r[36 * 8]);
+int gt_baseinv_fqinv_kway_new_36_for_bench(int16_t r[36 * 8], int k);
+void gt_baseinv_fqmul_vec_for_bench(int16_t out[8], const int16_t a[8],
+                                    const int16_t b[8]);
+int poly_baseinv_gt_batch_scaled_r_kway_new_for_bench(poly *r, const poly *a,
+                                                      int k);
+#endif
 
 #if defined(__aarch64__)
 void baseinv_batch_finish24_n1_asm(int16_t *dst, const int16_t *den_inv);
@@ -125,11 +136,8 @@ static inline int16x8_t reduce_mul3(int16x8_t a0, int16x8_t b0,
 	return montgomery_reduce_vec(lo, hi, con);
 }
 
-static inline int16x8_t fqinv_neon(int16x8_t a, int16x8_t con)
+static inline int16x8_t fqinv_new_neon(int16x8_t a, int16x8_t con)
 {
-#if defined(GT_BASEINV_USE_FQINV15_ASM)
-	return gt_fqinv15_asm(a, con);
-#else
 	int16x8_t t, t16, t128, t145, t691, u;
 
 	t = fqmul_neon(a, a, con);       // 2
@@ -156,6 +164,14 @@ static inline int16x8_t fqinv_neon(int16x8_t a, int16x8_t con)
 	t = vmlsq_laneq_s16(t, u, con, 0);
 
 	return t;
+}
+
+static inline int16x8_t fqinv_neon(int16x8_t a, int16x8_t con)
+{
+#if defined(GT_BASEINV_USE_FQINV15_ASM)
+	return gt_fqinv15_asm(a, con);
+#else
+	return fqinv_new_neon(a, con);
 #endif
 }
 
@@ -183,6 +199,131 @@ static int poly_fqinv_batch_neon(int16x8_t r[24], int16x8_t con)
 	r[0] = inv;
 	return 0;
 }
+
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+static int poly_fqinv_kway_new_neon(int16x8_t *r, int m, int k,
+                                    int16x8_t con)
+{
+	int16x8_t c[36];
+	int16x8_t inv[36];
+	const int s = k == 0 ? 0 : m / k;
+
+	if (m <= 0 || m > 36 || k <= 0 || k > m || (m % k) != 0)
+		return 1;
+
+	for (int group = 0; group < k; group++)
+	{
+		const int start = group * s;
+		const int end = start + s;
+
+		c[start] = r[start];
+		for (int i = start + 1; i < end; i++)
+			c[i] = fqmul_neon(c[i - 1], r[i], con);
+
+		if (!vminvq_u16(vreinterpretq_u16_s16(c[end - 1])))
+			return 1;
+
+		inv[group] = fqinv_new_neon(c[end - 1], con);
+	}
+
+	for (int group = 0; group < k; group++)
+	{
+		const int start = group * s;
+		const int end = start + s;
+		int16x8_t w = inv[group];
+
+		for (int i = end - 1; i > start; i--)
+		{
+			int16x8_t ri = r[i];
+
+			r[i] = fqmul_neon(c[i - 1], w, con);
+			w = fqmul_neon(w, ri, con);
+		}
+
+		r[start] = w;
+	}
+
+	return 0;
+}
+
+static void load_vec_array(int16x8_t *dst, const int16_t *src, int m)
+{
+	for (int i = 0; i < m; i++)
+		dst[i] = vld1q_s16(src + 8 * i);
+}
+
+static void store_vec_array(int16_t *dst, const int16x8_t *src, int m)
+{
+	for (int i = 0; i < m; i++)
+		vst1q_s16(dst + 8 * i, src[i]);
+}
+
+int gt_baseinv_fqinv_batch_old_24_for_bench(int16_t r[24 * 8])
+{
+	int16x8_t rv[24];
+	int ret;
+
+	load_vec_array(rv, r, 24);
+	ret = poly_fqinv_batch_neon(rv, vld1q_s16(gt_baseinv_consts));
+	store_vec_array(r, rv, 24);
+	return ret;
+}
+
+int gt_baseinv_fqinv_batch_new_24_for_bench(int16_t r[24 * 8])
+{
+	int16x8_t rv[24];
+	int ret;
+
+	load_vec_array(rv, r, 24);
+	ret = poly_fqinv_kway_new_neon(rv, 24, 1,
+	                               vld1q_s16(gt_baseinv_consts));
+	store_vec_array(r, rv, 24);
+	return ret;
+}
+
+int gt_baseinv_fqinv_kway_new_24_for_bench(int16_t r[24 * 8], int k)
+{
+	int16x8_t rv[24];
+	int ret;
+
+	load_vec_array(rv, r, 24);
+	ret = poly_fqinv_kway_new_neon(rv, 24, k,
+	                               vld1q_s16(gt_baseinv_consts));
+	store_vec_array(r, rv, 24);
+	return ret;
+}
+
+int gt_baseinv_fqinv_batch_new_36_for_bench(int16_t r[36 * 8])
+{
+	int16x8_t rv[36];
+	int ret;
+
+	load_vec_array(rv, r, 36);
+	ret = poly_fqinv_kway_new_neon(rv, 36, 1,
+	                               vld1q_s16(gt_baseinv_consts));
+	store_vec_array(r, rv, 36);
+	return ret;
+}
+
+int gt_baseinv_fqinv_kway_new_36_for_bench(int16_t r[36 * 8], int k)
+{
+	int16x8_t rv[36];
+	int ret;
+
+	load_vec_array(rv, r, 36);
+	ret = poly_fqinv_kway_new_neon(rv, 36, k,
+	                               vld1q_s16(gt_baseinv_consts));
+	store_vec_array(r, rv, 36);
+	return ret;
+}
+
+void gt_baseinv_fqmul_vec_for_bench(int16_t out[8], const int16_t a[8],
+                                    const int16_t b[8])
+{
+	vst1q_s16(out, fqmul_neon(vld1q_s16(a), vld1q_s16(b),
+	                          vld1q_s16(gt_baseinv_consts)));
+}
+#endif
 
 static void baseinv_8_prepare(int16_t *dst, int16x8_t *den,
                               const int16_t *src, int16x8_t zeta,
@@ -266,6 +407,49 @@ static int poly_baseinv_batch_block_major_neon(poly *r, const poly *a,
 
 	return 0;
 }
+
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+static int poly_baseinv_batch_block_major_kway_new_neon(poly *r, const poly *a,
+                                                        const int16_t consts[8],
+                                                        int k)
+{
+	int16x8_t con = vld1q_s16(consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	const int16_t *src = a->coeffs;
+	int16_t *dst = r->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int i = 0; i < 24; i++)
+	{
+		int16x8_t zeta = vld1q_s16(lambda);
+
+		baseinv_8_prepare(dst, &den[i], src, zeta, con);
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+	}
+
+	if (poly_fqinv_kway_new_neon(den, 24, k, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+#ifdef GT_BASEINV_BATCH_USE_ASM_FINISH
+	(void)con;
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+#else
+	dst = r->coeffs;
+	for (int i = 0; i < 24; i++)
+	{
+		baseinv_8_finish(dst, den[i], con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+	}
+#endif
+
+	return 0;
+}
+#endif
 
 static int poly_baseinv_batch_tuple_neon(poly *r, const poly *a)
 {
@@ -418,3 +602,19 @@ int poly_baseinv_scaled_r(poly *r, const poly *a)
 {
 	return poly_baseinv_gt_batch_scaled_r(r, a);
 }
+
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+int poly_baseinv_gt_batch_scaled_r_kway_new_for_bench(poly *r, const poly *a,
+                                                      int k)
+{
+#if defined(__aarch64__)
+	return poly_baseinv_batch_block_major_kway_new_neon(
+		r, a, gt_baseinv_scaled_r_consts, k);
+#else
+	(void)r;
+	(void)a;
+	(void)k;
+	return 1;
+#endif
+}
+#endif

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_stock_basemul_add_gate_pmu bench_gt_decap_verify_byte_contract_pmu check_gt_decap_verify_byte_contract check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-stock bench-gt bench-all bench-matrix bench_gt_basemul_variants_pmu bench_gt_basemul_pipeline_pmu bench_gt_invntt_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_stock_basemul_add_gate_pmu bench_gt_decap_verify_byte_contract_pmu check_gt_decap_verify_byte_contract check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -180,6 +180,11 @@ GT_KEM_COMPONENT_PROFILE_PMU_NTESTS ?= 31
 GT_KEM_COMPONENT_PROFILE_PMU_NITERATIONS ?= 5000
 GT_KEM_COMPONENT_PROFILE_PMU_NWARMUP ?= 100
 GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS ?= 64
+GT_BASEINV_KWAY_PMU_TARGET ?= bench_gt_baseinv_kway_pmu_bin
+GT_BASEINV_KWAY_PMU_NTESTS ?= 31
+GT_BASEINV_KWAY_PMU_NITERATIONS ?= 5000
+GT_BASEINV_KWAY_PMU_NWARMUP ?= 100
+GT_BASEINV_KWAY_PMU_NINPUTS ?= 256
 GT_NONHASH_SUBSTAGE_PMU_GT_TARGET ?= bench_gt_nonhash_substage_pmu_gt
 GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET ?= bench_gt_nonhash_substage_pmu_stock
 GT_NONHASH_SUBSTAGE_PMU_STATS ?= bench_gt_nonhash_substage_pmu.stats
@@ -260,6 +265,11 @@ GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM)
+
+GT_BASEINV_KWAY_PMU_SOURCES = \
+	bench_gt_baseinv_kway_pmu.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_BASEINV_BATCH_C)
 
 GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES = \
 	bench_gt_nonhash_substage_pmu.c \
@@ -510,6 +520,17 @@ $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET): $(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES)
 		-DNINPUTS=$(GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS) \
 		$(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES) -o $@
 
+$(GT_BASEINV_KWAY_PMU_TARGET): $(GT_BASEINV_KWAY_PMU_SOURCES)
+	$(CC) $(CFLAGS) \
+		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DGT_BASEINV_USE_FQINV15_ASM \
+		-DGT_BASEINV_KWAY_BENCH_HELPERS \
+		-DNTESTS=$(NTESTS) \
+		-DNITERATIONS=$(NITERATIONS) \
+		-DNWARMUP=$(NWARMUP) \
+		-DNINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS) \
+		$(GT_BASEINV_KWAY_PMU_SOURCES) -o $@
+
 $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET): $(GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES)
 	$(CC) $(CFLAGS) \
 		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
@@ -581,6 +602,10 @@ bench_gt_kem_component_profile_pmu:
 	cat $(GT_KEM_COMPONENT_PROFILE_PMU_STATS)
 	GT_KEM_COMPONENT_PROFILE_STATS_FILE=$(GT_KEM_COMPONENT_PROFILE_PMU_STATS) $(SUDO) taskset -c $(CORE) ./$(GT_KEM_COMPONENT_PROFILE_PMU_TARGET)
 
+bench_gt_baseinv_kway_pmu:
+	$(MAKE) -B $(GT_BASEINV_KWAY_PMU_TARGET) NTESTS=$(GT_BASEINV_KWAY_PMU_NTESTS) NITERATIONS=$(GT_BASEINV_KWAY_PMU_NITERATIONS) NWARMUP=$(GT_BASEINV_KWAY_PMU_NWARMUP) GT_BASEINV_KWAY_PMU_NINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS)
+	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_KWAY_PMU_TARGET)
+
 bench_gt_keygen_component_profile_pmu: bench_gt_kem_component_profile_pmu
 
 bench_gt_decap_component_profile_pmu: bench_gt_kem_component_profile_pmu
@@ -641,4 +666,4 @@ bench-matrix:
 	$(PYTHON) scripts/run_pi5_matrix.py
 
 clean:
-	-$(RM) $(TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_BASEMUL_VARIANTS_PMU_TARGET) $(GT_BASEMUL_PIPELINE_PMU_TARGET) $(GT_INVNTT_PMU_TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_STOCK_TARGET) $(GT_STOCK_BASEMUL_ADD_GATE_PMU_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DECAP_VERIFY_BYTE_CONTRACT_PMU_TARGET) *.textsizes *.stats *.d hal/*.d
