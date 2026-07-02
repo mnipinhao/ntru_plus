@@ -9,15 +9,15 @@ the remaining benchmark matrix stays actionable.
 Use these sources for the current fastest GT candidate:
 
 ```text
-GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s
+GT_BASE_OPT_ASM=ntruplus/asm/baseline/base_gt_opt_wrapper.S
 GT_INVNTT_ASM=ntruplus/asm/gt/poly_invntt_gt_production.s
 ```
 
 Interpretation:
 
-- `base_gt.opt.s` contains the promoted Neoverse-N1 schedule.  It consistently
-  improved `basemul_add`, arithmetic pipelines, and `kem_dec` in the Pi 5
-  matrix.
+- `base_gt_opt_wrapper.S` is the standalone baseline wrapper for the promoted
+  `asm/gt/base_gt_opt_body.inc` Neoverse-N1 schedule.  The body itself is an
+  include file and should not be linked directly.
 - `poly_invntt_gt_production.s` is the promoted inverse wrapper.  It selects the validated
   direct-stage123 stripe scratch, Slothy stage45-reduce, no-DFT3-reduce post
   path, and branchfold final merge through assembler-time gates.
@@ -63,7 +63,7 @@ cd /home/pi/ntruplus-ntt-Optimized/aarch64-bench
 python3 scripts/run_pi5_matrix.py --runs 5 \
   --variants gt_opt \
   --modes invntt,basemul,basemul_add,ntt_mul_pipeline,ntt_basemul_add_pipeline,kem_dec \
-  --make-var GT_BASE_OPT_ASM=ntruplus/asm/gt/base_gt.opt.s \
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/baseline/base_gt_opt_wrapper.S \
   --make-var GT_INVNTT_ASM=ntruplus/asm/gt/poly_invntt_gt_production.s
 ```
 
@@ -84,7 +84,7 @@ old candidate wrapper was removed with the discarded assembly variants.
 
 ## Promotion Order
 
-1. Keep `base_gt.opt.s` as the promoted base schedule.
+1. Keep `base_gt_opt_body.inc` as the promoted base body, linked through a wrapper.
 2. Keep `poly_invntt_gt_production.s` as the promoted inverse wrapper.
 3. Re-open this matrix only if a new rowpack/SoA path beats the current
    full-pipeline numbers, not for the removed inverse wrapper variants.
@@ -95,7 +95,7 @@ Minimal correctness checks:
 cd /home/pi/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768
 
 make clean
-make test_gt_base_opt GT_BASE_OPT_ASM=asm/gt/base_gt.opt.s
+make test_gt_base_opt GT_BASE_OPT_ASM=asm/baseline/base_gt_opt_wrapper.S
 ./build/test_gt_base_opt
 
 make clean

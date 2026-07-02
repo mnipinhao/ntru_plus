@@ -4,9 +4,10 @@
 
 ### Promotion status
 
-Step 2 is applied: `asm/gt/base_gt.opt.s` now contains the promoted N1 schedule.
-The older named benchmark alias has been removed; use `asm/gt/base_gt.opt.s` for
-both current builds and reruns.
+Step 2 is applied: `asm/gt/base_gt_opt_body.inc` now contains the promoted N1
+schedule body.  Current builds link it through explicit wrappers such as
+`asm/gt/poly_basemul_gt_production.s` or
+`asm/baseline/base_gt_opt_wrapper.S`; do not compile the body include directly.
 
 Step 5 is applied from the existing Pi 5 matrix: `asm/gt/poly_invntt_gt_production.s` now selects
 `INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH`.  The older regression-only
@@ -144,7 +145,7 @@ This compares `stock_default`, `stock_opt_base`, `gt_ref_base`, and
 `gt_promoted_default` across `ntt`, `basemul`, `basemul_add`,
 `ntt_mul_pipeline`, `ntt_basemul_add_pipeline`, and `kem_dec`.  Use the
 `gt_ref_base -> gt_promoted_default` delta to decide whether the next code
-change belongs in `base_gt.opt.s` or in the forward NTT / pipeline boundary.
+change belongs in `base_gt_opt_body.inc` or in the forward NTT / pipeline boundary.
 
 2026-06-11 Pi 5 C-line PMU run:
 `logs/pi5-gt-pipeline-pmu-20260611-225318/`.
@@ -169,7 +170,7 @@ Benchmark median cycles from the `core` perf group:
 | ntt_basemul_add_pipeline | -10 | 0.9990 | 1.0000 | 1.0000 | essentially noise |
 | kem_dec | -148 | 0.9956 | 1.0000 | 0.9999 | real but small end-to-end win |
 
-C-line conclusion: keep `base_gt.opt.s` promoted, but do not spend the next
+C-line conclusion: keep `base_gt_opt_body.inc` promoted, but do not spend the next
 iteration on another base-only micro-schedule unless it has a concrete pipeline
 integration hypothesis.  The forward NTT is now the better target: stock to
 GT-promoted improves `ntt` by 746 cycles and the full pipeline by about
@@ -184,7 +185,7 @@ kernel.
 In the benchmark harness, `VARIANT=stock` is the KPQC final AArch64 path:
 `asm/stock/base.s` plus `asm/stock/ntt.s`.  `stock_opt_base` is only an ablation that swaps
 in `asm/stock/base.opt.s`; it is not the KPQC final default.  `gt_promoted_default`
-is the current Good-Thomas path with promoted `base_gt.opt.s` and stage123
+is the current Good-Thomas path with promoted `base_gt_opt_body.inc` and stage123
 stripe-scratch inverse NTT.
 
 Cycle comparison from `logs/pi5-gt-pipeline-pmu-20260611-225318/`:
@@ -219,7 +220,7 @@ Interpretation:
 
 Completed in this workspace:
 
-- `asm/gt/base_gt.opt.s` contains the promoted N1 schedule.
+- `asm/gt/base_gt_opt_body.inc` contains the promoted N1 schedule.
 - `bash -n scripts/run_pi5_gt_pmu_attribution.sh` passes.
 - `bash -n scripts/run_pi5_gt_pipeline_pmu_attribution.sh` passes.
 - PMU runner dry-run passes with
@@ -248,7 +249,7 @@ Observed on Pi:
 Blocked locally:
 
 - `make test_gt_base_opt` does not assemble on macOS after the N1 promotion
-  because `base_gt.opt.s` uses Linux/GNU AArch64 relocations:
+  because `base_gt_opt_body.inc` uses Linux/GNU AArch64 relocations:
   `adrp lambda, gt_rowbitrev_lambda` plus
   `add lambda, lambda, :lo12:gt_rowbitrev_lambda`.  This needs final build and
   correctness confirmation on the Pi/Linux target where the benchmark was

@@ -19,7 +19,7 @@ asm/base_gt_opt_ldrtrn_noadd_wrapper.S
 make test_gt_basemul_opt_ldrtrn_load4
 ```
 
-它只替換 `base_gt.opt.s` 的 block-major input load，不改 arithmetic、不改
+它只替換 `base_gt_opt_body.inc` 的 block-major input load，不改 arithmetic、不改
 `st4` output，也不改 ABI。這樣可以單獨回答：
 
 ```text
@@ -133,7 +133,7 @@ decap: poly_basemul(m1, c, f) -> poly_invntt(m1, m1)
 
 這點要分 production 版本看。
 
-`asm/gt/base_gt.opt.s` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
+`asm/gt/base_gt_opt_body.inc` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
 load 放得很晚，接近 final add：
 
 ```text

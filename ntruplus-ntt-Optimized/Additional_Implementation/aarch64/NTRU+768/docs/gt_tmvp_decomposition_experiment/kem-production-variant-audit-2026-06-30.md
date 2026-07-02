@@ -136,7 +136,7 @@ wrappers.  They are not part of `GT_PRODUCTION_KEM_SOURCES`.
 | Q31 direct32 encap | production default encap byte-contract path | yes in `gt_production`; absent in `gt_production_no_q31` | release guard pass; KEM gate pass | direct add -417.952 cycles; full encap -468.065 cycles in Q31 gate harness | keep default, but do not use as generic basemul replacement |
 | KPQC final no-CE | historical comparison baseline | separate source, not GT production | pass in generic KEM bench | slower than current GT in all three KEM APIs | baseline only |
 | legacy/original `VARIANT=gt` | historical GT baseline | not current production | pass in previous audit | not rebenchmarked in the Q31 promotion matrix | baseline only |
-| `VARIANT=gt_opt` | unavailable historical variant in current tree | no | not buildable | GNU as rejects symbolic `base_gt.opt.s` macro forms | not a valid current linked comparison |
+| `VARIANT=gt_opt` | unavailable historical variant in current tree | no | not buildable | GNU as rejects symbolic `base_gt_opt_body.inc` macro forms | not a valid current linked comparison |
 | InvNTT Stage45 all4 Slothy candidate | removed experiment | no | correctness pass in prior campaign | PMU regression/non-reproducible | removed from benchmark wiring |
 | generic/rminus1 basemul one-loop Slothy | stopped/regression | no | correctness pass in prior campaign | PMU regression | needs new strategy, not active |
 | Forward NTT local Slothy candidates | needs structural strategy | no | no promoted correctness-passing production candidate | no production PMU win | not production |

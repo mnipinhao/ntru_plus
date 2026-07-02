@@ -10,10 +10,10 @@ this target requires arithmetic-correct output, including decap consumers.
 
 | function | caller API | implementation path | input layout | output layout / contract | baseline |
 | --- | --- | --- | --- | --- | --- |
-| `poly_basemul` | decap verify, generic arithmetic | `asm/poly_basemul_gt_production.s` includes `asm/base_gt.opt.s` | GT block-major, 24 loop blocks, `ld4` quartic tuple load, `gt_rowbitrev_lambda` order | arithmetic-correct GT block-major output, final corrected representative | direct PMU 2910.593 cycles/call; decap verify component 2823.360 cycles |
-| `poly_basemul_rminus1` | decap `c * f` before `poly_invntt_from_rminus1` | `asm/poly_basemul_rminus1_gt_production.s` includes `asm/base_gt.opt.s` with `GT_BASEMUL_STORE_RMINUS1` | same GT block-major input | raw `R^-1`/rminus1 output for `poly_invntt_from_rminus1`; not generic output | direct PMU 2145.958 cycles/call; decap component 2028.196 cycles |
-| `poly_basemul_scaled_r_input` | keygen public arithmetic / scaled input path | `asm/poly_basemul_scaled_r_input_gt_production.s` includes `asm/base_gt.opt.s` with `GT_BASEMUL_STORE_RMINUS1` | same GT block-major `a`; second operand is pre-scaled by `R` | arithmetic-correct product through scaled-input plus raw-store contract | direct PMU 2131.955 cycles/call; keygen public arithmetic x2 4086.035 cycles |
-| `poly_basemul_add` / `poly_basemul_add32` | encap ciphertext arithmetic | `asm/poly_basemul_add_gt_production.s` | GT block-major plus addend `c` | generic arithmetic-correct add output; Q31 byte-contract helper is encap-only and not reusable here | encap component 2864.475 cycles |
+| `poly_basemul` | decap verify, generic arithmetic | `asm/gt/poly_basemul_gt_production.s` includes `asm/gt/base_gt_opt_body.inc` | GT block-major, 24 loop blocks, `ld4` quartic tuple load, `gt_rowbitrev_lambda` order | arithmetic-correct GT block-major output, final corrected representative | direct PMU 2910.593 cycles/call; decap verify component 2823.360 cycles |
+| `poly_basemul_rminus1` | decap `c * f` before `poly_invntt_from_rminus1` | `asm/gt/poly_basemul_rminus1_gt_production.s` includes `asm/gt/base_gt_opt_body.inc` with `GT_BASEMUL_STORE_RMINUS1` | same GT block-major input | raw `R^-1`/rminus1 output for `poly_invntt_from_rminus1`; not generic output | direct PMU 2145.958 cycles/call; decap component 2028.196 cycles |
+| `poly_basemul_scaled_r_input` | keygen public arithmetic / scaled input path | `asm/gt/poly_basemul_scaled_r_input_gt_production.s` includes `asm/gt/base_gt_opt_body.inc` with `GT_BASEMUL_STORE_RMINUS1` | same GT block-major `a`; second operand is pre-scaled by `R` | arithmetic-correct product through scaled-input plus raw-store contract | direct PMU 2131.955 cycles/call; keygen public arithmetic x2 4086.035 cycles |
+| `poly_basemul_add` / `poly_basemul_add32` | encap ciphertext arithmetic | `asm/gt/poly_basemul_add_gt_production.s` | GT block-major plus addend `c` | generic arithmetic-correct add output; Q31 byte-contract helper is encap-only and not reusable here | encap component 2864.475 cycles |
 
 ## Candidate Windows
 
@@ -21,8 +21,8 @@ The first campaign intentionally used small one-loop windows:
 
 | window | source used for Slothy input | instructions | memory shape | risk flags | recommendation |
 | --- | --- | ---: | --- | --- | --- |
-| `base_gt_rminus1_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 77 | `ld1 lambda`, two `ld4` operand loads, final raw `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
-| `base_gt_generic_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 101 | same loads plus final Montgomery/reduction and corrected `st4` | source-order extraction, not production-scheduled `base_gt.opt.s` | reject after PMU regression |
+| `base_gt_rminus1_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 77 | `ld1 lambda`, two `ld4` operand loads, final raw `st4` | source-order extraction, not production-scheduled `base_gt_opt_body.inc` | reject after PMU regression |
+| `base_gt_generic_loop` | `asm/baseline/base_gt.S` after C preprocessing, one 8-quartic loop | 101 | same loads plus final Montgomery/reduction and corrected `st4` | source-order extraction, not production-scheduled `base_gt_opt_body.inc` | reject after PMU regression |
 | `poly_basemul_add` core | not run in this campaign | n/a | add32 full pipeline with accumulator/addend contract | distinct add32 dataflow; should not use Q31 outside byte-contract encap path | later audit only |
 
 Boundary policy followed: no splits inside product/reduction chains, lane
@@ -119,7 +119,7 @@ No candidate from this campaign is viable.  The generated outputs were
 correct, but slower than production and are not committed as best artifacts.
 
 The likely reason is that the attempted windows were canonical/source-order
-one-loop slices, while production already uses `base_gt.opt.s`, a scheduled
+one-loop slices, while production already uses `base_gt_opt_body.inc`, a scheduled
 body with the current final-store contract.  Do not continue this exact
 source-order loop route.
 

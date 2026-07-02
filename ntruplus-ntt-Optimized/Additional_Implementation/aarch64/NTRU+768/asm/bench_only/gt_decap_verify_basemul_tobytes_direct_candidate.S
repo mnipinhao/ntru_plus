@@ -6,15 +6,14 @@
  *     == poly_tobytes(poly_basemul(c_minus_m2, hinv))
  *
  * This is not a generic poly_basemul replacement.  It compiles the current
- * base_gt.opt.s plain basemul arithmetic with a default-off final-store hook:
+ * GT plain basemul arithmetic with a default-off final-store hook:
  * two consecutive 32-coefficient basemul output halves are combined and packed
  * directly into one 96-byte poly_tobytes chunk.
  */
 
-#define poly_basemul gt_decap_verify_basemul_tobytes_direct_candidate
-#define _poly_basemul _gt_decap_verify_basemul_tobytes_direct_candidate
-#define poly_basemul_add gt_decap_verify_basemul_tobytes_direct_add_unused
-#define _poly_basemul_add _gt_decap_verify_basemul_tobytes_direct_add_unused
+#define GT_BASEMUL_EMIT_BASEMUL 1
+#define GT_BASEMUL_SYMBOL gt_decap_verify_basemul_tobytes_direct_candidate
+#define GT_BASEMUL_DARWIN_SYMBOL _gt_decap_verify_basemul_tobytes_direct_candidate
 #define GT_BASEMUL_DIRECT_TOBYTES 1
 
-#include "../gt/base_gt.opt.s"
+#include "../gt/base_gt_opt_body.inc"

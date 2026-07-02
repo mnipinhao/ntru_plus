@@ -1,6 +1,24 @@
 .text
 .align 2
 
+/*
+ * Slothy-scheduled GT basemul body.
+ *
+ * This include file is not a standalone public object.  The wrapper that
+ * includes it owns the public symbol contract and selects which internal body
+ * to emit:
+ *
+ *   GT_BASEMUL_EMIT_BASEMUL   emits the 3-argument basemul body.
+ *   GT_BASEMUL_EMIT_ADD       emits the 4-argument basemul_add body.
+ *
+ * For each enabled body, the wrapper must define both public labels, for
+ * example GT_BASEMUL_SYMBOL / GT_BASEMUL_DARWIN_SYMBOL.
+ */
+
+#if !defined(GT_BASEMUL_EMIT_BASEMUL) && !defined(GT_BASEMUL_EMIT_ADD)
+#error "base_gt_opt_body.inc requires GT_BASEMUL_EMIT_BASEMUL or GT_BASEMUL_EMIT_ADD"
+#endif
+
 #ifdef __APPLE__
 #define C_SYM_1(sym) _##sym
 #define C_SYM(sym) C_SYM_1(sym)
@@ -106,10 +124,18 @@
  *   memory layout.  It intentionally does not use stock zetas_mul.
  */
 
-.global poly_basemul
-.global _poly_basemul
-poly_basemul:
-_poly_basemul:
+#ifdef GT_BASEMUL_EMIT_BASEMUL
+#ifndef GT_BASEMUL_SYMBOL
+#error "GT_BASEMUL_SYMBOL must be defined when GT_BASEMUL_EMIT_BASEMUL is set"
+#endif
+#ifndef GT_BASEMUL_DARWIN_SYMBOL
+#error "GT_BASEMUL_DARWIN_SYMBOL must be defined when GT_BASEMUL_EMIT_BASEMUL is set"
+#endif
+
+.global GT_BASEMUL_SYMBOL
+.global GT_BASEMUL_DARWIN_SYMBOL
+GT_BASEMUL_SYMBOL:
+GT_BASEMUL_DARWIN_SYMBOL:
  dst       .req x0
  src1      .req x1
  src2      .req x2
@@ -416,15 +442,24 @@ Lgt_direct_tobytes_after_store:
  .unreq counter
 
  ret
+#endif
 
 .align 4
 Lgt_base_consts:
  .hword 0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
 
-.global poly_basemul_add
-.global _poly_basemul_add
-poly_basemul_add:
-_poly_basemul_add:
+#ifdef GT_BASEMUL_EMIT_ADD
+#ifndef GT_BASEMUL_ADD_SYMBOL
+#error "GT_BASEMUL_ADD_SYMBOL must be defined when GT_BASEMUL_EMIT_ADD is set"
+#endif
+#ifndef GT_BASEMUL_ADD_DARWIN_SYMBOL
+#error "GT_BASEMUL_ADD_DARWIN_SYMBOL must be defined when GT_BASEMUL_EMIT_ADD is set"
+#endif
+
+.global GT_BASEMUL_ADD_SYMBOL
+.global GT_BASEMUL_ADD_DARWIN_SYMBOL
+GT_BASEMUL_ADD_SYMBOL:
+GT_BASEMUL_ADD_DARWIN_SYMBOL:
  dst       .req x0
  src1      .req x1
  src2      .req x2
@@ -684,3 +719,4 @@ Lgt_basemul_add_loop:
  .unreq counter
 
  ret
+#endif

@@ -116,7 +116,7 @@ The active inverse NTT path is intentionally narrow:
 - the A72 opt-in branchfold schedule is retained through
   `asm/slothy/legacy/invntt_opt.s` and
   `asm/variants/inv_my_ntt_post_branchfold_a72.s`.
-- `asm/gt/base_gt.opt.s` and `asm/gt/poly_invntt_gt_production.s` are the current Pi 5 promoted
+- `asm/gt/base_gt_opt_body.inc` and `asm/gt/poly_invntt_gt_production.s` are the current Pi 5 promoted
   pair.  The current result summary and rerun commands live in
   `docs/slothy_pi5_bench_matrix.md`.
 

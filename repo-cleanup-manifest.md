@@ -111,7 +111,7 @@ family:
 
 - `NTRU+768/Makefile`
 - `NTRU+768/asm/baseline/base_gt.S`
-- `NTRU+768/asm/base_gt.opt.s`
+- `NTRU+768/asm/gt/base_gt_opt_body.inc`
 - `NTRU+768/asm/gt/ntt_gt_body.inc`
 - `NTRU+768/asm/gt/poly_ntt_gt_production.s`
 - `NTRU+768/poly.c`

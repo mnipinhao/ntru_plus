@@ -100,7 +100,7 @@ st4 {v8.8H, v9.8H, v10.8H, v11.8H}, [x0], #64
 
 Current conclusion:
 
-- Keep the current final-`st4` register contract in `base_gt.opt.s`.
+- Keep the current final-`st4` register contract in `base_gt_opt_body.inc`.
 - Do not revert to old-store.
 - This is a small but real win, about 2.3% on the rminus1/scaled basemul
   kernels.

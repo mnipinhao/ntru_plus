@@ -9,10 +9,9 @@
  * final correction.  With b_scaled_r, that raw value is already the normal
  * product, so this wrapper deliberately omits the final correction block.
  */
-#define poly_basemul poly_basemul_scaled_r_input
-#define _poly_basemul _poly_basemul_scaled_r_input
-#define poly_basemul_add poly_basemul_add_scaled_r_input_unused
-#define _poly_basemul_add _poly_basemul_add_scaled_r_input_unused
+#define GT_BASEMUL_EMIT_BASEMUL 1
+#define GT_BASEMUL_SYMBOL poly_basemul_scaled_r_input
+#define GT_BASEMUL_DARWIN_SYMBOL _poly_basemul_scaled_r_input
 #define GT_BASEMUL_STORE_RMINUS1 1
 
-#include "base_gt.opt.s"
+#include "base_gt_opt_body.inc"

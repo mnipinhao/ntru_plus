@@ -69,7 +69,7 @@ example:
 python3 scripts/run_pi5_matrix.py --runs 3 \
   --variants gt_opt \
   --modes basemul,basemul_add \
-  --make-var GT_BASE_OPT_ASM=ntruplus/asm/base_gt.n1.opt.s
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/baseline/base_gt_opt_wrapper.S
 ```
 
 Inverse stage modes use `GT_INVNTT_STAGE_ASM`, while full `invntt`, pipeline,
@@ -275,7 +275,7 @@ unless Raspberry Pi 5 results show they are consistently faster.
 `stock_opt` only swaps `asm/stock/base.opt.s` into the KPQC final path; forward and
 inverse NTT still come from `asm/stock/ntt.s`.  `gt` already includes the current GT
 forward NTT and inverse NTT Slothy artifacts, while `gt_opt` additionally swaps
-in `asm/gt/base_gt.opt.s`.  See
+in `asm/gt/base_gt_opt_body.inc`.  See
 `../Additional_Implementation/aarch64/NTRU+768/docs/slothy_pi5_bench_matrix.md`
 for the interpretation matrix.
 

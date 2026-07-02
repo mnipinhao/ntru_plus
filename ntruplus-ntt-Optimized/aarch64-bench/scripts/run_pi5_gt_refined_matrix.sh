@@ -36,7 +36,7 @@ run_case gt_opt_default \
 run_case gt_base_n1 \
   --variants gt_opt \
   --modes basemul,basemul_add,ntt_mul_pipeline,ntt_basemul_add_pipeline,kem_dec \
-  --make-var GT_BASE_OPT_ASM=ntruplus/asm/base_gt.n1.opt.s
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/baseline/base_gt_opt_wrapper.S
 
 run_case gt_invntt_stage123_stripescratch \
   --variants gt_opt \
@@ -49,7 +49,7 @@ run_case gt_base_n1_invntt_stage123_stripescratch \
   --variants gt_opt \
   --modes invntt,basemul,basemul_add,ntt_mul_pipeline,ntt_basemul_add_pipeline,kem_dec \
   "${stage_args[@]}" \
-  --make-var GT_BASE_OPT_ASM=ntruplus/asm/base_gt.n1.opt.s \
+  --make-var GT_BASE_OPT_ASM=ntruplus/asm/baseline/base_gt_opt_wrapper.S \
   --make-var GT_INVNTT_ASM=ntruplus/asm/inv_my_ntt_stage123_stripescratch.s \
   --make-var GT_INVNTT_STAGE_ASM=ntruplus/asm/inv_my_ntt_stage123_stripescratch_benchstages.s
 

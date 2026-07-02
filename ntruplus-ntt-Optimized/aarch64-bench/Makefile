@@ -35,7 +35,7 @@ GT_INVNTT_SOURCE = $(GT_INVNTT_STAGE_ASM)
 else
 GT_INVNTT_SOURCE = $(GT_INVNTT_ASM)
 endif
-GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/gt/base_gt.opt.s
+GT_BASE_OPT_ASM ?= $(NTRUPLUS)/asm/baseline/base_gt_opt_wrapper.S
 GT_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s
 GT_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
 GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_gt_production.s

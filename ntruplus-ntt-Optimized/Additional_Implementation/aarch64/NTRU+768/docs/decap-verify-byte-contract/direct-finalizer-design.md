@@ -16,12 +16,12 @@ The linked symbol is:
 ```text
 symbol: poly_basemul
 wrapper: asm/gt/poly_basemul_gt_production.s
-body: asm/gt/base_gt.opt.s
+body: asm/gt/base_gt_opt_body.inc
 ```
 
-`poly_basemul_gt_production.s` includes `base_gt.opt.s` and renames only
-`poly_basemul_add`; therefore plain `poly_basemul` is the production GT
-basemul symbol for the decap verify product.
+`poly_basemul_gt_production.s` owns the public `poly_basemul` symbol and
+includes the shared `base_gt_opt_body.inc` basemul body.  The body include does
+not export a public ABI by itself.
 
 ### Input And Output Layout
 
@@ -49,7 +49,7 @@ There are 24 loops, so the full output is `24 * 64 = 1536` bytes.
 
 ### Final Reduction Before Store
 
-For the non-rminus1 plain `poly_basemul` path, `base_gt.opt.s` finishes each
+For the non-rminus1 plain `poly_basemul` path, `base_gt_opt_body.inc` finishes each
 loop with two reduction stages before the final `st4`.
 
 First, it applies the final Montgomery/factor correction to four output
@@ -318,7 +318,7 @@ symbol: gt_decap_verify_basemul_tobytes_direct_candidate
 gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
 ```
 
-It compiles the current `base_gt.opt.s` plain basemul body with a default-off
+It compiles the current `base_gt_opt_body.inc` plain basemul body with a default-off
 final-store hook:
 
 ```text

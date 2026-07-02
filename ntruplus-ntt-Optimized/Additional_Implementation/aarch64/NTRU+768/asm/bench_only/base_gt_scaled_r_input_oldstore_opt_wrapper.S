@@ -6,11 +6,10 @@
  * exists so the PMU harness can compare the final st4 register-contract patch
  * before and after, without changing the live KEM path.
  */
-#define poly_basemul poly_basemul_scaled_r_input_oldstore
-#define _poly_basemul _poly_basemul_scaled_r_input_oldstore
-#define poly_basemul_add poly_basemul_add_scaled_r_input_oldstore_unused
-#define _poly_basemul_add _poly_basemul_add_scaled_r_input_oldstore_unused
+#define GT_BASEMUL_EMIT_BASEMUL 1
+#define GT_BASEMUL_SYMBOL poly_basemul_scaled_r_input_oldstore
+#define GT_BASEMUL_DARWIN_SYMBOL _poly_basemul_scaled_r_input_oldstore
 #define GT_BASEMUL_STORE_RMINUS1 1
 #define GT_BASEMUL_STORE_RMINUS1_OLD_MOV_CONTRACT 1
 
-#include "../gt/base_gt.opt.s"
+#include "../gt/base_gt_opt_body.inc"
