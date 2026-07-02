@@ -147,10 +147,10 @@ current:
   GT_PRODUCTION_USE_RMINUS1_DECAP
   poly_basemul_rminus1 -> poly_invntt_from_rminus1 -> poly_crepmod3
 
-candidate existing path:
+removed fused-crep3 path:
   GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP
   poly_basemul_rminus1 -> poly_invntt_from_rminus1_crepmod3
 ```
 
-That comparison is lower risk than row-buffer/post fusion because the fused
+That comparison was lower risk than row-buffer/post fusion because the fused
 crep3 symbol already exists and passed `total_mismatches=0` in this harness.

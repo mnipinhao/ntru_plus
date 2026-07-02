@@ -17,19 +17,6 @@ void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
 #endif
 
-#ifdef GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1_crepmod3(poly *r, const poly *a);
-#endif
-
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP
-void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
-                                             const poly *a,
-                                             const poly *b);
-void poly_invntt_from_rminus1_crepmod3_stage45scratch(
-    poly *r, const int16_t *scratch);
-#endif
-
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
                                              const poly *a,
@@ -245,13 +232,7 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 	poly_frombytes(&f, sk);
 	poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
 
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP
-	poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
-	poly_invntt_from_rminus1_crepmod3_stage45scratch(&m1, m1.coeffs);
-#elif defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP)
-	poly_basemul_rminus1(&m1, &c, &f);
-	poly_invntt_from_rminus1_crepmod3(&m1, &m1);
-#elif defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP)
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 	poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
 	poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
@@ -559,33 +540,7 @@ int main(void)
 	BENCH_COMPONENT_ACC(dec_components, "poly_frombytes", 3, {
 		poly_frombytes(&decoded, polybytes);
 	}, decoded.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP
-	BENCH_COMPONENT_ACC(dec_components,
-	                    "poly_basemul_rminus1_to_stage123scratch", 1, {
-		poly_basemul_rminus1_to_stage123scratch(product.coeffs,
-		                                        &ntt_poly,
-		                                        &base_inv);
-	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-	BENCH_COMPONENT_ACC(dec_components,
-	                    "poly_invntt_from_rminus1_crep3_stage45scratch", 1, {
-		poly_invntt_from_rminus1_crepmod3_stage45scratch(&decoded,
-		                                                 product.coeffs);
-	}, decoded.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
-	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-#elif defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP)
-	BENCH_COMPONENT_ACC(dec_components, "poly_basemul_rminus1", 1, {
-		poly_basemul_rminus1(&product, &ntt_poly, &base_inv);
-	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-	BENCH_COMPONENT_ACC(dec_components,
-	                    "poly_invntt_from_rminus1_crepmod3", 1, {
-		poly_invntt_from_rminus1_crepmod3(&decoded, &product);
-	}, decoded.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
-	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-#elif defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP)
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 	BENCH_COMPONENT_ACC(dec_components,
 	                    "poly_basemul_rminus1_to_stage123scratch", 1, {
 		poly_basemul_rminus1_to_stage123scratch(product.coeffs,

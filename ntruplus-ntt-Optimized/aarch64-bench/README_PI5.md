@@ -107,11 +107,10 @@ make bench_gt_basemul_variants_pmu
 ```
 
 This target benchmarks the live production symbols plus benchmark-only
-old-store and ldrtrn controls:
+old-store controls:
 
 ```text
 poly_basemul
-poly_basemul_ldrtrn_noadd
 poly_basemul_add
 poly_basemul_add32
 poly_basemul_rminus1

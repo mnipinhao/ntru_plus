@@ -193,7 +193,6 @@ GT_BASEMUL_VARIANTS_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(NTRUPLUS)/gt_test/poly_gt_base_ref.c \
 	$(NTRUPLUS)/asm/base_gt_opt_noadd_wrapper.S \
-	$(NTRUPLUS)/asm/base_gt_ldrtrn_noadd_bench_wrapper.S \
 	$(NTRUPLUS)/asm/base_gt_add32_full_pipeline_inline_wrapper.S \
 	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
 	$(NTRUPLUS)/asm/base_gt_rminus1_oldstore_opt_wrapper.S \
@@ -216,11 +215,8 @@ GT_INVNTT_PMU_SOURCES = \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/inv_my_ntt_rminus1_crepmod3.S \
 	$(NTRUPLUS)/asm/base_gt_rminus1_opt_wrapper.S \
-	$(NTRUPLUS)/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s \
-	$(NTRUPLUS)/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_stripes2_3.n1.slothy.candidate.s \
-	$(NTRUPLUS)/asm/slothy/window_outputs/invntt_rminus1_row1_stage45_all4.n1.slothy.candidate.s
+	$(NTRUPLUS)/asm/slothy/window_inputs/invntt_rminus1_row1_stage45_stripes_marked.s
 
 GT_KEM_STAGE_PMU_SOURCES = \
 	bench_gt_kem_stage_pmu.c \

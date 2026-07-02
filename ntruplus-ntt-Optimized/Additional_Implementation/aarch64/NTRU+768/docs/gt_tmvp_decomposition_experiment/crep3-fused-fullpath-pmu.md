@@ -4,7 +4,8 @@ Date: 2026-06-27
 
 Scope: pause InvNTT row-buffer/post fusion work and only audit/measure whether
 `poly_invntt_from_rminus1_crepmod3` should be used on production-relevant decap
-paths.  Production defaults were not changed.
+paths.  Production defaults were not changed.  The fused crep3 asm and
+benchmark wiring were later removed after this negative result.
 
 ## Call-path audit
 
@@ -35,16 +36,15 @@ hash_h(buf3, msg)
 poly_cbd1 / poly_ntt / poly_tobytes / verify
 ```
 
-Relevant source locations:
+Historical source locations at the time of this measurement:
 
-- `kem.c`: prototypes for rminus1/fused entrypoints at lines 9-24.
-- `kem.c`: decap switch at lines 343-370.
-  - `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP` already replaces separate
-    `poly_invntt_from_rminus1 + poly_crepmod3` with
-    `poly_invntt_from_rminus1_crepmod3`.
-  - `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP` also exists as a
-    stage45scratch fused option.
-- `kem.c`: hash/verify-relevant bytes are consumed at lines 376-389:
+- `kem.c` had prototypes and decap switches for the rminus1/fused entrypoints.
+- `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP` replaced separate
+  `poly_invntt_from_rminus1 + poly_crepmod3` with
+  `poly_invntt_from_rminus1_crepmod3`.
+- `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP` existed as a
+  stage45scratch fused option.
+- `kem.c`: hash/verify-relevant bytes were consumed after message recovery:
   - `hash_g` input is `poly_tobytes(buf1, &r2)`.
   - `hash_h` input is decoded message plus secret-key hash tail.
   - verify compares `buf1` against reencoded `r1`.
@@ -208,15 +208,14 @@ measured cycles are worse even though branches are fewer.
 
 ## Conclusion
 
-`poly_invntt_from_rminus1_crepmod3` is correct and remains useful as an
-experimental/opt-in path, but it should not become the current production
-default from this data.
+`poly_invntt_from_rminus1_crepmod3` was correct, but it should not become the
+current production default from this data.  The opt-in asm/benchmark path has
+been removed; this document is retained as the historical PMU record.
 
 Recommendation:
 
 - Keep current production default:
   `poly_basemul_rminus1 -> poly_invntt_from_rminus1 -> poly_crepmod3`.
-- Keep fused crep3 as an opt-in benchmark/experiment gate:
-  `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP`.
+- Do not keep fused crep3 as an active benchmark/experiment gate.
 - Do not spend more time on crep3 fused production integration unless a new
   in-place schedule or final-store contract changes the full-path result.

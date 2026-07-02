@@ -18,7 +18,6 @@ make bench_gt_basemul_variants_pmu \
 測量內容：
 
 - `poly_basemul`
-- `poly_basemul_ldrtrn_noadd`
 - `poly_basemul_add`
 - `poly_basemul_add32`
 - `poly_basemul_rminus1`
@@ -105,7 +104,7 @@ Current conclusion:
 - Do not revert to old-store.
 - This is a small but real win, about 2.3% on the rminus1/scaled basemul
   kernels.
-- Do not productionize `ldrtrn_noadd`; keep it as a benchmark-only negative
-  result.
+- The `ldrtrn_noadd` load experiment was correct but slower, so its benchmark
+  wrapper and target were removed; this document keeps the historical result.
 - Next basemul work should move to larger effects such as add/accumulation path
   shape or cross-kernel layout, not this `ld4` to `ldp+uzp` noadd variant.

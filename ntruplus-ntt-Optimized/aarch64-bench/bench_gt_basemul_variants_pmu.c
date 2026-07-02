@@ -43,13 +43,12 @@
 #define NWARMUP 100
 #endif
 
-#define VARIANT_COUNT 8
+#define VARIANT_COUNT 7
 #define PMU_EVENT_COUNT 8
 #define GT_BENCH_R -147
 #define GT_BENCH_QINV 12929
 
 void poly_basemul_add32(poly *r, const poly *a, const poly *b, const poly *c);
-void poly_basemul_ldrtrn_noadd(poly *r, const poly *a, const poly *b);
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_basemul_rminus1_oldstore(poly *r, const poly *a, const poly *b);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
@@ -342,8 +341,6 @@ static int run_correctness(void)
   poly_basemul_gt_ref(&want, &a, &b);
   poly_basemul(&got, &a, &b);
   mismatches += compare_poly_modq("poly_basemul", &got, &want);
-  poly_basemul_ldrtrn_noadd(&got, &a, &b);
-  mismatches += compare_poly_modq("poly_basemul_ldrtrn_noadd", &got, &want);
 
   poly_basemul_add_gt_ref(&want, &a, &b, &c);
   poly_basemul_add(&got, &a, &b, &c);
@@ -379,11 +376,6 @@ static void target_basemul(size_t idx)
   poly_basemul(&g_outputs[idx], &g_a[idx], &g_b[idx]);
 }
 
-static void target_basemul_ldrtrn_noadd(size_t idx)
-{
-  poly_basemul_ldrtrn_noadd(&g_outputs[idx], &g_a[idx], &g_b[idx]);
-}
-
 static void target_basemul_add(size_t idx)
 {
   poly_basemul_add(&g_outputs[idx], &g_a[idx], &g_b[idx], &g_c[idx]);
@@ -417,7 +409,6 @@ static void target_scaled_r_input_oldstore(size_t idx)
 
 static struct variant g_variants[VARIANT_COUNT] = {
     {"poly_basemul", target_basemul, {0}},
-    {"poly_basemul_ldrtrn_noadd", target_basemul_ldrtrn_noadd, {0}},
     {"poly_basemul_add", target_basemul_add, {0}},
     {"poly_basemul_add32", target_basemul_add32, {0}},
     {"poly_basemul_rminus1", target_rminus1, {0}},

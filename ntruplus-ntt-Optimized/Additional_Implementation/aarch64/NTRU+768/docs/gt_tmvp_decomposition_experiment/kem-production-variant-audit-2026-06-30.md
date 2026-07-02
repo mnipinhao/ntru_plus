@@ -118,15 +118,14 @@ only Q31 call site is `gt_encap_basemul_add_tobytes_contract`.
 | `GT_USE_STOCK_BASEMUL_ADD_EXPERIMENTAL` | off | benchmark-only stock add drop-in | negative control | yes; correctness-incompatible on GT operands | gate harness reports mismatch |
 | `GT_USE_DIRECT32_BASEMUL_ADD_EXPERIMENTAL` | off | benchmark-only direct32 C prototype | experimental | yes; not production | gate harness |
 | `VARIANT=gt_production_no_q31` | off unless selected | previous GT production behavior without Q31 | fallback / comparison path | yes, disables Q31 encap byte-contract | generic KEM bench correctness |
-| `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP` | off | fused rminus1 InvNTT+crep3 decap | stopped experiment | yes | crep3 fused PMU/correctness docs |
+| `GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP` | removed | fused rminus1 InvNTT+crep3 decap | removed experiment | yes | crep3 fused PMU/correctness docs |
 | `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP` | off | rminus1 stage123 scratch split | stopped experiment | yes | component/fusion docs |
-| `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP` | off | scratch split plus crep3 fused | stopped experiment | yes | component/fusion docs |
+| `GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP` | removed | scratch split plus crep3 fused | removed experiment | yes | component/fusion docs |
 | `GT_PRODUCTION_USE_TUPLE_DECAP` | off | tuple decap | removed experiment | yes | historical only |
 | `GT_PRODUCTION_USE_PACK_TUPLE_DECAP` | off | block-major to tuple adapter decap | removed experiment | yes | historical only |
 
-Non-macro benchmark-only paths visible in the Makefile include NTT shadow-base
-rowspec wrappers, basemul oldstore wrappers, and the `ldrtrn_noadd` wrapper.
-They are not part of `GT_PRODUCTION_KEM_SOURCES`.
+Non-macro benchmark-only paths visible in the Makefile include basemul oldstore
+wrappers.  They are not part of `GT_PRODUCTION_KEM_SOURCES`.
 
 ## Candidate classification
 
@@ -138,12 +137,12 @@ They are not part of `GT_PRODUCTION_KEM_SOURCES`.
 | KPQC final no-CE | historical comparison baseline | separate source, not GT production | pass in generic KEM bench | slower than current GT in all three KEM APIs | baseline only |
 | legacy/original `VARIANT=gt` | historical GT baseline | not current production | pass in previous audit | not rebenchmarked in the Q31 promotion matrix | baseline only |
 | `VARIANT=gt_opt` | unavailable historical variant in current tree | no | not buildable | GNU as rejects symbolic `base_gt.opt.s` macro forms | not a valid current linked comparison |
-| InvNTT Stage45 all4 Slothy candidate | stopped/regression | no | correctness pass in prior campaign | PMU regression/non-reproducible | not best, do not extend |
+| InvNTT Stage45 all4 Slothy candidate | removed experiment | no | correctness pass in prior campaign | PMU regression/non-reproducible | removed from benchmark wiring |
 | generic/rminus1 basemul one-loop Slothy | stopped/regression | no | correctness pass in prior campaign | PMU regression | needs new strategy, not active |
 | Forward NTT local Slothy candidates | needs structural strategy | no | no promoted correctness-passing production candidate | no production PMU win | not production |
-| rowspec NTT | benchmark-only stopped | no | historical | PMU regression / not production output route | do not use |
+| rowspec NTT | removed experiment | no | historical | PMU regression / not production output route | do not use |
 | oldstore basemul wrappers | benchmark-only | no | historical | oldstore comparison only | keep only for regression guard |
-| `ldrtrn_noadd` basemul | benchmark-only stopped | no | correctness pass but slower | PMU regression | do not extend |
+| `ldrtrn_noadd` basemul | removed experiment | no | correctness pass but slower | PMU regression | removed from benchmark wiring |
 | rowpack / tuple / BPQ / TMVP candidates | removed experiments | no | historical only | not current fastest production | do not classify as production fastest |
 | stock basemul_add drop-in | benchmark-only negative control | no | fail on GT operands | diagnostic only | reject |
 

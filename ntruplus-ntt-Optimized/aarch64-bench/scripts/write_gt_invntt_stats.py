@@ -22,16 +22,6 @@ STARTS = [
         None,
     ),
     (
-        "poly_invntt_from_rminus1_crep3_fused",
-        "gt_block_major_poly_invntt_from_rminus1_crepmod3",
-        "gt_rminus1_crepmod3_block_major_to_stage123_stripe_scratch",
-    ),
-    (
-        "poly_invntt_from_rminus1_crep3_stage45scratch",
-        "poly_invntt_from_rminus1_crepmod3_stage45scratch",
-        None,
-    ),
-    (
         "block_major_to_stage123_scratch",
         "gt_rminus1_block_major_to_stage123_stripe_scratch",
         None,

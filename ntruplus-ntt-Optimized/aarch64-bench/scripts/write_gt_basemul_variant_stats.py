@@ -12,7 +12,6 @@ from pathlib import Path
 
 STARTS = [
     ("poly_basemul", "poly_basemul"),
-    ("poly_basemul_ldrtrn_noadd", "poly_basemul_ldrtrn_noadd"),
     ("poly_basemul_add", "poly_basemul_add"),
     ("poly_basemul_add32", "poly_basemul_add32"),
     ("poly_basemul_rminus1", "poly_basemul_rminus1"),
