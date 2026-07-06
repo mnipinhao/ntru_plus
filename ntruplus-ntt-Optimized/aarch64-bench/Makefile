@@ -37,6 +37,10 @@ GT_BENCH_EXTRA_ASM ?=
 GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/production/baseinv_batch_finish_loop_n1.S
 GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv15.S
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
+GT_BASEINV_DIVSTEP_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep.S
+GT_BASEINV_DIVSTEP_S32FOLD_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_s32fold.S
+GT_BASEINV_DIVSTEP_MODQ16_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_modq16.S
+GT_BASEINV_DIVSTEP_SWAR_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_swar.S
 GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/gt/poly_basemul_add_encap_tobytes_q31.S
 GT_PRODUCTION_BASE_ASM ?= \
 	$(NTRUPLUS)/asm/gt/poly_basemul.s \
@@ -177,7 +181,11 @@ GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
 GT_BASEINV_KWAY_PMU_SOURCES = \
 	bench_gt_baseinv_kway_pmu.c \
 	$(NTRUPLUS)/ntt.c \
-	$(GT_BASEINV_BATCH_C)
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_BASEINV_DIVSTEP_ASM) \
+	$(GT_BASEINV_DIVSTEP_S32FOLD_ASM) \
+	$(GT_BASEINV_DIVSTEP_MODQ16_ASM) \
+	$(GT_BASEINV_DIVSTEP_SWAR_ASM)
 
 GT_BASEINV_HIER_K8_DIFF_SOURCES = \
 	bench_gt_baseinv_hier_k8_diff.c \

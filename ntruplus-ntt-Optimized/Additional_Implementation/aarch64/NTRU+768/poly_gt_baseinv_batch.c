@@ -33,7 +33,23 @@ int poly_baseinv_scaled_r_hier_k8_fqinv16_candidate(poly *r, const poly *a);
 #if defined(GT_BASEINV_DIVSTEP_BENCH_HELPERS)
 int16_t fqinv_divstep_scalar_ref(int16_t a, int scaled_r);
 int16x8_t fqinv_divstep_neon_intrinsics(int16x8_t a, int16x8_t con,
-                                        int16_t final_scale);
+                                         int16_t final_scale);
+#if defined(GT_BASEINV_USE_DIVSTEP_ASM)
+int16x8_t gt_fqinv_delta_divstep_asm(int16x8_t a, int16x8_t con,
+                                      int16_t final_scale);
+#endif
+#if defined(GT_BASEINV_USE_DIVSTEP_S32FOLD_ASM)
+int16x8_t gt_fqinv_delta_divstep_s32fold_asm(int16x8_t a, int16x8_t con,
+                                              int16_t final_scale);
+#endif
+#if defined(GT_BASEINV_USE_DIVSTEP_MODQ16_ASM)
+int16x8_t gt_fqinv_delta_divstep_modq16_asm(int16x8_t a, int16x8_t con,
+                                             int16_t final_scale);
+#endif
+#if defined(GT_BASEINV_USE_DIVSTEP_SWAR_ASM)
+int16x8_t gt_fqinv_delta_divstep_swar_asm(int16x8_t a, int16x8_t con,
+                                           int16_t final_scale);
+#endif
 void gt_baseinv_fqinv_current_vec_for_bench(int16_t out[8],
                                             const int16_t in[8],
                                             int scaled_r);
@@ -45,10 +61,14 @@ void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],
                                             int scaled_r);
 int gt_baseinv_fqinv16_24_for_bench(int16_t r[24 * 8]);
 int gt_baseinv_fqinv_divstep_24_for_bench(int16_t r[24 * 8]);
+int gt_baseinv_fqinv_hier_kway_divstep_for_bench(int16_t *r, int m, int k);
 int poly_baseinv_gt_batch_scaled_r_fqinv16_for_bench(poly *r,
                                                      const poly *a);
 int poly_baseinv_gt_batch_scaled_r_divstep_for_bench(poly *r,
                                                      const poly *a);
+int poly_baseinv_gt_batch_scaled_r_hier_kway_divstep_for_bench(poly *r,
+                                                               const poly *a,
+                                                               int k);
 #endif
 #if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
 int gt_baseinv_fqinv_batch_old_24_for_bench(int16_t r[24 * 8]);
@@ -279,8 +299,8 @@ static inline int16x8_t fqinv16_neon(int16x8_t a, int16x8_t con)
 	return t2;
 }
 
-#define GT_BASEINV_DELTA_SCALE_NORMAL (-541)
-#define GT_BASEINV_DELTA_SCALE_SCALED_R 16
+#define GT_BASEINV_DELTA_SCALE_NORMAL (-1082)
+#define GT_BASEINV_DELTA_SCALE_SCALED_R 32
 #define GT_BASEINV_DELTA_REDUCE_RECIP 621199
 
 static int32_t divstep_modq_i32(int32_t x)
@@ -307,7 +327,7 @@ static int32_t delta_divstep_v_scalar(int16_t a, int16_t *final_f)
 	int32_t vcoef = 0;
 	int32_t rcoef = 1;
 
-	for (int i = 0; i < 28; i++)
+	for (int i = 0; i < 27; i++)
 	{
 		int32_t s = delta2 >= 0;
 		int32_t t = g & 1;
@@ -344,10 +364,10 @@ int16_t fqinv_divstep_scalar_ref(int16_t a, int scaled_r)
 		vcoef = -vcoef;
 
 	/*
-	 * The delta2 divstep leaves a * V = final_f * 2^28 mod q.
-	 * Apply final_f and 2^-28 once after the fixed 28 iterations.
+	 * The delta2 divstep leaves a * V = final_f * 2^27 mod q.
+	 * Apply final_f and 2^-27 once after the fixed 27 iterations.
 	 */
-	scaled = (int64_t)vcoef * (scaled_r ? 2916 : 2520);
+	scaled = (int64_t)vcoef * (scaled_r ? 2375 : 1583);
 	return divstep_center_i32((int32_t)(scaled % NTRUPLUS_Q));
 }
 
@@ -422,7 +442,7 @@ int16x8_t fqinv_divstep_neon_intrinsics(int16x8_t a, int16x8_t con,
 	const int16x8_t two16 = vdupq_n_s16(2);
 	const int32x4_t zero32 = vdupq_n_s32(0);
 
-	for (int i = 0; i < 28; i++)
+	for (int i = 0; i < 27; i++)
 	{
 		uint16x8_t s = vcgeq_s16(delta2, zero16);
 		uint16x8_t t = vceqq_s16(vandq_s16(g, one16), one16);
@@ -478,6 +498,22 @@ int16x8_t fqinv_divstep_neon_intrinsics(int16x8_t a, int16x8_t con,
 	}
 }
 
+static inline int16x8_t fqinv_divstep_neon(int16x8_t a, int16x8_t con,
+                                           int16_t final_scale)
+{
+#if defined(GT_BASEINV_USE_DIVSTEP_S32FOLD_ASM)
+	return gt_fqinv_delta_divstep_s32fold_asm(a, con, final_scale);
+#elif defined(GT_BASEINV_USE_DIVSTEP_MODQ16_ASM)
+	return gt_fqinv_delta_divstep_modq16_asm(a, con, final_scale);
+#elif defined(GT_BASEINV_USE_DIVSTEP_SWAR_ASM)
+	return gt_fqinv_delta_divstep_swar_asm(a, con, final_scale);
+#elif defined(GT_BASEINV_USE_DIVSTEP_ASM)
+	return gt_fqinv_delta_divstep_asm(a, con, final_scale);
+#else
+	return fqinv_divstep_neon_intrinsics(a, con, final_scale);
+#endif
+}
+
 static int poly_fqinv_batch_divstep_neon(int16x8_t r[24], int16x8_t con,
                                          int16_t final_scale)
 {
@@ -491,7 +527,7 @@ static int poly_fqinv_batch_divstep_neon(int16x8_t r[24], int16x8_t con,
 	if (!vminvq_u16(vreinterpretq_u16_s16(c[23])))
 		return 1;
 
-	inv = fqinv_divstep_neon_intrinsics(c[23], con, final_scale);
+	inv = fqinv_divstep_neon(c[23], con, final_scale);
 
 	for (int i = 23; i > 0; i--)
 	{
@@ -501,6 +537,81 @@ static int poly_fqinv_batch_divstep_neon(int16x8_t r[24], int16x8_t con,
 	}
 
 	r[0] = inv;
+	return 0;
+}
+
+static int poly_fqinv_batch_divstep_m_neon(int16x8_t *r, int m,
+                                           int16x8_t con,
+                                           int16_t final_scale)
+{
+	int16x8_t c[36];
+	int16x8_t inv;
+
+	if (m <= 0 || m > 36)
+		return 1;
+
+	c[0] = r[0];
+	for (int i = 1; i < m; i++)
+		c[i] = fqmul_neon(c[i - 1], r[i], con);
+
+	if (!vminvq_u16(vreinterpretq_u16_s16(c[m - 1])))
+		return 1;
+
+	inv = fqinv_divstep_neon(c[m - 1], con, final_scale);
+
+	for (int i = m - 1; i > 0; i--)
+	{
+		int16x8_t ri = r[i];
+		r[i] = fqmul_neon(c[i - 1], inv, con);
+		inv = fqmul_neon(inv, ri, con);
+	}
+
+	r[0] = inv;
+	return 0;
+}
+
+static int poly_fqinv_hier_kway_divstep_neon(int16x8_t *r, int m, int k,
+                                             int16x8_t con,
+                                             int16_t final_scale)
+{
+	int16x8_t c[36];
+	int16x8_t group_prod[36];
+	const int s = k == 0 ? 0 : m / k;
+
+	if (m <= 0 || m > 36 || k <= 0 || k > m || (m % k) != 0)
+		return 1;
+
+	for (int group = 0; group < k; group++)
+	{
+		const int start = group * s;
+		const int end = start + s;
+
+		c[start] = r[start];
+		for (int i = start + 1; i < end; i++)
+			c[i] = fqmul_neon(c[i - 1], r[i], con);
+		group_prod[group] = c[end - 1];
+	}
+
+	if (poly_fqinv_batch_divstep_m_neon(group_prod, k, con, final_scale))
+		return 1;
+
+	for (int group = 0; group < k; group++)
+	{
+		const int start = group * s;
+		const int end = start + s;
+		int16x8_t w = group_prod[group];
+
+		for (int i = end - 1; i > start; i--)
+		{
+			int16x8_t ri = r[i];
+
+			r[i] = fqmul_neon(c[i - 1], w, con);
+			w = fqmul_neon(w, ri, con);
+		}
+
+		r[start] = w;
+	}
+
 	return 0;
 }
 
@@ -960,9 +1071,9 @@ void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],
 		GT_BASEINV_DELTA_SCALE_SCALED_R :
 		GT_BASEINV_DELTA_SCALE_NORMAL;
 
-	vst1q_s16(out, fqinv_divstep_neon_intrinsics(vld1q_s16(in),
-	                                             vld1q_s16(consts),
-	                                             final_scale));
+	vst1q_s16(out, fqinv_divstep_neon(vld1q_s16(in),
+	                                  vld1q_s16(consts),
+	                                  final_scale));
 }
 
 int gt_baseinv_fqinv16_24_for_bench(int16_t r[24 * 8])
@@ -995,6 +1106,21 @@ int gt_baseinv_fqinv_divstep_24_for_bench(int16_t r[24 * 8])
 	for (int i = 0; i < 24; i++)
 		vst1q_s16(r + 8 * i, rv[i]);
 
+	return ret;
+}
+
+int gt_baseinv_fqinv_hier_kway_divstep_for_bench(int16_t *r, int m, int k)
+{
+	int16x8_t rv[36];
+	int ret;
+
+	for (int i = 0; i < m; i++)
+		rv[i] = vld1q_s16(r + 8 * i);
+	ret = poly_fqinv_hier_kway_divstep_neon(
+		rv, m, k, vld1q_s16(gt_baseinv_consts),
+		GT_BASEINV_DELTA_SCALE_NORMAL);
+	for (int i = 0; i < m; i++)
+		vst1q_s16(r + 8 * i, rv[i]);
 	return ret;
 }
 #endif
@@ -1203,6 +1329,49 @@ static int poly_baseinv_batch_block_major_hier_kway_current_neon(
 
 	return 0;
 }
+
+#if defined(GT_BASEINV_DIVSTEP_BENCH_HELPERS)
+static int poly_baseinv_batch_block_major_hier_kway_divstep_neon(
+	poly *r, const poly *a, const int16_t consts[8], int k,
+	int16_t final_scale)
+{
+	int16x8_t con = vld1q_s16(consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	const int16_t *src = a->coeffs;
+	int16_t *dst = r->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int i = 0; i < 24; i++)
+	{
+		int16x8_t zeta = vld1q_s16(lambda);
+
+		baseinv_8_prepare(dst, &den[i], src, zeta, con);
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+	}
+
+	if (poly_fqinv_hier_kway_divstep_neon(den, 24, k, con, final_scale))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+#ifdef GT_BASEINV_BATCH_USE_ASM_FINISH
+	(void)con;
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+#else
+	dst = r->coeffs;
+	for (int i = 0; i < 24; i++)
+	{
+		baseinv_8_finish(dst, den[i], con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+	}
+#endif
+
+	return 0;
+}
+#endif
 
 #if defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
 static int poly_baseinv_batch_block_major_hier_k8_neon(
@@ -1632,6 +1801,22 @@ int poly_baseinv_gt_batch_scaled_r_divstep_for_bench(poly *r, const poly *a)
 #else
 	(void)r;
 	(void)a;
+	return 1;
+#endif
+}
+
+int poly_baseinv_gt_batch_scaled_r_hier_kway_divstep_for_bench(poly *r,
+                                                               const poly *a,
+                                                               int k)
+{
+#if defined(__aarch64__) && defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+	return poly_baseinv_batch_block_major_hier_kway_divstep_neon(
+		r, a, gt_baseinv_scaled_r_consts, k,
+		GT_BASEINV_DELTA_SCALE_SCALED_R);
+#else
+	(void)r;
+	(void)a;
+	(void)k;
 	return 1;
 #endif
 }

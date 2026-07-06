@@ -214,6 +214,20 @@ nm bench_gt_kem_component_profile_pmu_bin | grep -E 'gt_baseinv_fqinv|kway_new_f
 Output: no matches.  The k-way helper symbols are not present when
 `GT_BASEINV_KWAY_BENCH_HELPERS` is not enabled.
 
+## Delta-divstep negative result
+
+The benchmark-only delta-divstep path was tested as an alternative scalar Fq
+inverse backend for the batch denominator inverse.  The final prototype uses
+27 fixed delta2 divsteps for q=3457, folds the final scale into the initial
+R coefficient, and includes early-round and final-round specializations in the
+s32fold ASM.  Exhaustive checks confirm 27 rounds are sufficient; 26 rounds
+fail for 2927, 3186, 3255, and 3439.
+
+After special-round elimination and final-scale folding, delta-divstep remains
+slower than the existing fqinv15/fqinv16 backends. The remaining overhead is
+structural, mainly lane-wise mask materialization and int32 coefficient
+tracking. This path is parked.
+
 ## Decision
 
 Flat k-way batch inversion should not be pursued for NTRU+768 baseinv:
