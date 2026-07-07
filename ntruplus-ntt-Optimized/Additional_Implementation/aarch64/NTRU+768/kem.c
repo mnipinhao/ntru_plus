@@ -11,6 +11,11 @@ void poly_basemul_add_encap_direct32_q31_tobytes_contract(
     poly *r, const poly *a, const poly *b, const poly *c);
 #endif
 
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+void poly_ntt_triple_scheduled(poly *out, const poly *a);
+void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+#endif
+
 #if defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C)
 #error "select only one decap verify basemul->tobytes contract helper"
@@ -143,6 +148,44 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
 #undef GT_ENCAP_TOBYTES_CONTRACT_INLINE
 #undef GT_ENCAP_TOBYTES_CONTRACT_ATTR
 
+#ifdef GT_KEYGEN_SAMPLE_DAG_RELEASE_GUARD_NOINLINE
+#define GT_KEYGEN_SAMPLE_DAG_INLINE
+#if defined(__GNUC__) || defined(__clang__)
+#define GT_KEYGEN_SAMPLE_DAG_ATTR __attribute__((noinline))
+#else
+#define GT_KEYGEN_SAMPLE_DAG_ATTR
+#endif
+#else
+#define GT_KEYGEN_SAMPLE_DAG_INLINE inline
+#define GT_KEYGEN_SAMPLE_DAG_ATTR
+#endif
+
+static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
+gt_keygen_ntt_triple_add1(poly *out, const poly *small)
+{
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+    poly_ntt_triple_add1_scheduled(out, small);
+#else
+    poly_triple(out, small);
+    out->coeffs[0] += 1;
+    poly_ntt(out, out);
+#endif
+}
+
+static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
+gt_keygen_ntt_triple(poly *out, const poly *small)
+{
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+    poly_ntt_triple_scheduled(out, small);
+#else
+    poly_triple(out, small);
+    poly_ntt(out, out);
+#endif
+}
+
+#undef GT_KEYGEN_SAMPLE_DAG_INLINE
+#undef GT_KEYGEN_SAMPLE_DAG_ATTR
+
 /*************************************************
 * Name:        verify
 *
@@ -184,10 +227,7 @@ static inline int genf_derand(poly *f, poly *finv, const uint8_t *coins)
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(f, buf);
-    poly_triple(f, f);
-    f->coeffs[0] += 1;
-
-    poly_ntt(f, f);
+    gt_keygen_ntt_triple_add1(f, f);
 
     return KEYPAIR_BASEINV(finv, f);
 }
@@ -212,9 +252,7 @@ static inline int geng_derand(poly *g, poly *ginv, const uint8_t *coins)
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(g, buf);
-    poly_triple(g, g);
-
-    poly_ntt(g, g);
+    gt_keygen_ntt_triple(g, g);
 
     return KEYPAIR_BASEINV(ginv, g);
 }

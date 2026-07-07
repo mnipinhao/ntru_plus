@@ -1,10 +1,10 @@
 /*
  * Production-only GT KEM component PMU breakdown.
  *
- * This benchmark-only harness measures the current gt_production path and
+ * This benchmark-only harness measures the selected GT production variant and
  * one-level keygen, decap, and encap residual components.  It deliberately
- * does not enable rowspec, ldrtrn, fused crep3, Q31 opt-in, or other
- * experiment gates.
+ * does not enable rowspec, ldrtrn, fused crep3, or other experiment gates.
+ * Q31 is controlled only by the selected production variant macros.
  */
 #if !defined(__linux__)
 #error "bench_gt_kem_component_profile_pmu requires Linux perf_event_open"
@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "api.h"
+#include "bench_build_config.h"
 #include "NO_CE/fips202.h"
 #include "params.h"
 #include "poly.h"
@@ -72,6 +73,10 @@ void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
 void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
 void poly_invntt_from_rminus1(poly *r, const poly *a);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+void poly_ntt_triple_scheduled(poly *out, const poly *a);
+void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+#endif
 
 typedef void (*bench_target_fn)(size_t idx);
 
@@ -284,9 +289,13 @@ static void sample_f_ntt_from_seed(poly *out, const uint8_t seed[32])
 
   shake256(buf, sizeof(buf), seed, 32);
   poly_cbd1(out, buf);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+  poly_ntt_triple_add1_scheduled(out, out);
+#else
   poly_triple(out, out);
   out->coeffs[0] += 1;
   poly_ntt(out, out);
+#endif
 }
 
 static void sample_g_ntt_from_seed(poly *out, const uint8_t seed[32])
@@ -295,8 +304,12 @@ static void sample_g_ntt_from_seed(poly *out, const uint8_t seed[32])
 
   shake256(buf, sizeof(buf), seed, 32);
   poly_cbd1(out, buf);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+  poly_ntt_triple_scheduled(out, out);
+#else
   poly_triple(out, out);
   poly_ntt(out, out);
+#endif
 }
 
 static int compare_bytes(const char *label, const uint8_t *got,
@@ -1297,6 +1310,7 @@ int main(void)
     return EXIT_FAILURE;
   }
 
+  bench_print_gt_production_config();
   load_static_stats();
   setup_perf_events();
   run_benchmarks();

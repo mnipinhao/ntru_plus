@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release-safety guard for the direct32 Q31 encap-only opt-in."""
+"""Release-safety guard for the direct32 Q31 encap-only path."""
 
 from __future__ import annotations
 
@@ -78,11 +78,25 @@ def public_headers_with_q31_symbol(binary: Path) -> list[Path]:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("usage: check_direct32_q31_release_guard.py <linked-binary>")
+    if len(sys.argv) not in (2, 3):
+        print(
+            "usage: check_direct32_q31_release_guard.py "
+            "[--expect-enabled|--expect-disabled] <linked-binary>"
+        )
         return 2
 
-    binary = Path(sys.argv[1])
+    mode = "--expect-enabled"
+    binary_arg = sys.argv[1]
+    if len(sys.argv) == 3:
+        mode = sys.argv[1]
+        binary_arg = sys.argv[2]
+
+    if mode not in ("--expect-enabled", "--expect-disabled"):
+        print(f"error: unknown mode {mode}", file=sys.stderr)
+        return 2
+
+    expect_enabled = mode == "--expect-enabled"
+    binary = Path(binary_arg)
     if not binary.exists():
         print(f"error: binary not found: {binary}", file=sys.stderr)
         return 2
@@ -102,17 +116,21 @@ def main() -> int:
     failures: list[str] = []
     if not generic_addrs:
         failures.append(f"missing generic text symbol {GENERIC_SYMBOL}")
-    if not q31_addrs:
+    if expect_enabled and not q31_addrs:
         failures.append(f"missing q31 text symbol {Q31_SYMBOL}")
-    if not helper_addrs:
+    if expect_enabled and not helper_addrs:
         failures.append(f"missing helper text symbol containing {HELPER_SYMBOL}")
-    if set(generic_addrs) & set(q31_addrs):
+    if q31_addrs and set(generic_addrs) & set(q31_addrs):
         failures.append("generic poly_basemul_add and q31 symbol share an address")
 
     objdump_output = run(["objdump", "-d", "--no-show-raw-insn", str(binary)])
     call_sites = q31_call_sites(objdump_output, set(q31_addrs))
-    if not call_sites:
+    if expect_enabled and not call_sites:
         failures.append(f"no call sites to {Q31_SYMBOL} found")
+    if not expect_enabled and q31_addrs:
+        failures.append(f"q31 text symbol present in no-Q31 binary: {Q31_SYMBOL}")
+    if not expect_enabled and call_sites:
+        failures.append(f"q31 call sites present in no-Q31 binary: {Q31_SYMBOL}")
 
     non_helper_sites = [
         (function, line)
@@ -126,6 +144,7 @@ def main() -> int:
     for header in public_headers:
         failures.append(f"public header exposes q31 symbol: {header}")
 
+    print(f"q31_guard_mode={'enabled' if expect_enabled else 'disabled'}")
     print(f"generic_poly_basemul_add_symbols={len(generic_addrs)}")
     print(f"direct32_q31_symbols={len(q31_addrs)}")
     print(f"encap_helper_symbols={len(helper_addrs)}")

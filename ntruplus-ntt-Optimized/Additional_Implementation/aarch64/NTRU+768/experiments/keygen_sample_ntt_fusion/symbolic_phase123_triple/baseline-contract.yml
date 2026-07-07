@@ -1,0 +1,44 @@
+baseline:
+  id: phase123_triple_unscheduled_baseline
+  source: asm/gt/experiment/poly_ntt_triple.S and asm/gt/experiment/poly_ntt_triple_add1.S
+  extracted_region: full Phase123 include generated from asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+  function: poly_ntt_triple and poly_ntt_triple_add1
+  start_label: slothy_start_ntt_phase123
+  end_label: slothy_end_ntt_phase123
+
+region:
+  instruction_count: 1472
+  live_in:
+    - x1 input pointer
+    - x3 twist pointer
+    - x4 row0 scratch pointer
+    - x5 row1 scratch pointer
+    - x6 row2 scratch pointer
+    - v0 constants
+  live_out:
+    - row scratch memory
+    - x1/x3/x4/x5/x6 advanced as production Phase123
+
+abi:
+  inputs:
+    - x0 output poly pointer
+    - x1 input poly pointer
+  outputs:
+    - GT block-major row-bitrev poly after unchanged production NTT32 rows
+
+memory_contract:
+  loads:
+    - natural input poly public offsets
+    - public twist table
+  stores:
+    - row0/row1/row2 scratch
+    - final output through unchanged NTT32
+  public_offsets_only: true
+
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 1472
+  measured_cycles: symbolic unscheduled Wave 1 post_cbd_x2 6144 cycles

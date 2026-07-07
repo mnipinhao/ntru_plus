@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "api.h"
+#include "bench_build_config.h"
 #include "params.h"
 #include "poly.h"
 #include "randombytes.h"
@@ -984,6 +985,7 @@ int main(void)
     return EXIT_FAILURE;
   }
 
+  bench_print_gt_production_config();
   load_static_stats();
   setup_perf_events();
   run_benchmarks();

@@ -24,9 +24,31 @@ int poly_baseinv_gt_batch(poly *r, const poly *a);
 int poly_baseinv_gt_batch_scaled_r(poly *r, const poly *a);
 int poly_baseinv_gt_tuple_batch(poly *r, const poly *a);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
+#if defined(GT_BASEINV_USE_HIER_K8) || \
+    defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
+    defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
+int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a);
+#endif
+#if defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS)
+int poly_keygen_baseinv_scaled_r_x2_direct_model(poly *finv, poly *ginv,
+                                                 const poly *f,
+                                                 const poly *g);
+int poly_keygen_compute_h_hinv_direct_model(poly *h, poly *hinv,
+                                            const poly *f, const poly *g);
+void poly_basemul_scaled_r_input(poly *r, const poly *a,
+                                 const poly *b_scaled_r);
+#endif
+#if defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
+int poly_baseinv_scaled_r_hier_k8_prepare_for_bench(poly *num,
+                                                    int16_t den[24 * 8],
+                                                    const poly *a);
+int poly_baseinv_scaled_r_hier_k8_tree_for_bench(int16_t den[24 * 8]);
+void poly_baseinv_scaled_r_finish_for_bench(poly *out, const poly *num,
+                                            const int16_t den_inv[24 * 8]);
+void gt_baseinv_fqinv15_x2_for_bench(int16_t f[8], int16_t g[8]);
+#endif
 #if defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
 int poly_baseinv_scaled_r_current_reference(poly *r, const poly *a);
-int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a);
 int poly_baseinv_scaled_r_fqinv16_reference(poly *r, const poly *a);
 int poly_baseinv_scaled_r_hier_k8_fqinv16_candidate(poly *r, const poly *a);
 #endif
@@ -106,6 +128,24 @@ int poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(poly *r,
 #if defined(GT_BASEINV_HIER_K8_OUTPUT_CANON) && \
     defined(GT_BASEINV_HIER_K8_EACH_INV_CANON)
 #error "select only one GT_BASEINV_HIER_K8 canonicalization mode"
+#endif
+
+#if defined(GT_BASEINV_USE_HIER_K8) && !defined(__aarch64__)
+#error "GT_BASEINV_USE_HIER_K8 is an AArch64/Neon-only backend"
+#endif
+
+#if defined(GT_BASEINV_USE_HIER_K8) && !defined(GT_BASEINV_USE_FQINV15_ASM)
+#error "GT_BASEINV_USE_HIER_K8 requires GT_BASEINV_USE_FQINV15_ASM"
+#endif
+
+#if defined(GT_BASEINV_USE_HIER_K8_TREE) && !defined(GT_BASEINV_USE_HIER_K8)
+#error "GT_BASEINV_USE_HIER_K8_TREE requires GT_BASEINV_USE_HIER_K8"
+#endif
+
+#if defined(GT_BASEINV_USE_HIER_K8) && \
+    (defined(GT_BASEINV_HIER_K8_OUTPUT_CANON) || \
+     defined(GT_BASEINV_HIER_K8_EACH_INV_CANON))
+#error "GT_BASEINV_USE_HIER_K8 is the no-canon fqinv15_asm candidate only"
 #endif
 
 #if defined(__aarch64__)
@@ -750,7 +790,11 @@ static int poly_fqinv_batch_neon(int16x8_t r[24], int16x8_t con)
 	return 0;
 }
 
-#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+#if defined(GT_BASEINV_USE_HIER_K8) || \
+    defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
+    defined(GT_BASEINV_KWAY_BENCH_HELPERS) || \
+    defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS) || \
+    defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
 static int poly_fqinv_batch_current_m_neon(int16x8_t *r, int m, int16x8_t con)
 {
 	int16x8_t c[36];
@@ -778,7 +822,9 @@ static int poly_fqinv_batch_current_m_neon(int16x8_t *r, int m, int16x8_t con)
 	r[0] = inv;
 	return 0;
 }
+#endif
 
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
 static int poly_fqinv_flat_kway_current_neon(int16x8_t *r, int m, int k,
                                              int16x8_t con)
 {
@@ -823,7 +869,13 @@ static int poly_fqinv_flat_kway_current_neon(int16x8_t *r, int m, int k,
 
 	return 0;
 }
+#endif
 
+#if defined(GT_BASEINV_USE_HIER_K8) || \
+    defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
+    defined(GT_BASEINV_KWAY_BENCH_HELPERS) || \
+    defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS) || \
+    defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
 static int poly_fqinv_hier_kway_current_neon(int16x8_t *r, int m, int k,
                                              int16x8_t con)
 {
@@ -867,7 +919,9 @@ static int poly_fqinv_hier_kway_current_neon(int16x8_t *r, int m, int k,
 
 	return 0;
 }
+#endif
 
+#if defined(GT_BASEINV_KWAY_BENCH_HELPERS)
 static int poly_fqinv_kway_new_neon(int16x8_t *r, int m, int k,
                                     int16x8_t con)
 {
@@ -1373,7 +1427,108 @@ static int poly_baseinv_batch_block_major_hier_kway_divstep_neon(
 }
 #endif
 
-#if defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
+#endif
+
+#if defined(GT_BASEINV_USE_HIER_K8) || \
+    defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
+    defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
+#if defined(GT_BASEINV_USE_HIER_K8_TREE)
+static int batch_inverse_8_tree_neon(int16x8_t r[8], int16x8_t con)
+{
+	int16x8_t c0, c1, c2, c3, c4, c5, c6;
+	int16x8_t inv;
+	int16x8_t ri;
+
+	c0 = r[0];
+	c1 = fqmul_neon(c0, r[1], con);
+	c2 = fqmul_neon(c1, r[2], con);
+	c3 = fqmul_neon(c2, r[3], con);
+	c4 = fqmul_neon(c3, r[4], con);
+	c5 = fqmul_neon(c4, r[5], con);
+	c6 = fqmul_neon(c5, r[6], con);
+
+	ri = fqmul_neon(c6, r[7], con);
+	if (!vminvq_u16(vreinterpretq_u16_s16(ri)))
+		return 1;
+
+	inv = gt_fqinv15_asm(ri, con);
+
+	ri = r[7];
+	r[7] = fqmul_neon(c6, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[6];
+	r[6] = fqmul_neon(c5, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[5];
+	r[5] = fqmul_neon(c4, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[4];
+	r[4] = fqmul_neon(c3, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[3];
+	r[3] = fqmul_neon(c2, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[2];
+	r[2] = fqmul_neon(c1, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	ri = r[1];
+	r[1] = fqmul_neon(c0, inv, con);
+	inv = fqmul_neon(inv, ri, con);
+
+	r[0] = inv;
+	return 0;
+}
+
+static void recover_group3_tree_neon(int16x8_t *r0, int16x8_t *r1,
+                                     int16x8_t *r2, int16x8_t c01,
+                                     int16x8_t group_inv, int16x8_t con)
+{
+	int16x8_t old1 = *r1;
+	int16x8_t old2 = *r2;
+	int16x8_t w = group_inv;
+
+	*r2 = fqmul_neon(c01, w, con);
+	w = fqmul_neon(w, old2, con);
+	*r1 = fqmul_neon(*r0, w, con);
+	w = fqmul_neon(w, old1, con);
+	*r0 = w;
+}
+
+static int poly_fqinv_hier_k8_tree_neon(int16x8_t den[24], int16x8_t con)
+{
+	int16x8_t c01[8];
+	int16x8_t group_prod[8];
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		c01[group] = fqmul_neon(den[start], den[start + 1], con);
+		group_prod[group] = fqmul_neon(c01[group], den[start + 2], con);
+	}
+
+	if (batch_inverse_8_tree_neon(group_prod, con))
+		return 1;
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		recover_group3_tree_neon(&den[start], &den[start + 1],
+		                         &den[start + 2], c01[group],
+		                         group_prod[group], con);
+	}
+
+	return 0;
+}
+#endif
+
 static int poly_baseinv_batch_block_major_hier_k8_neon(
 	poly *r, const poly *a, const int16_t consts[8], int use_fqinv16)
 {
@@ -1407,7 +1562,11 @@ static int poly_baseinv_batch_block_major_hier_k8_neon(
 		return 1;
 #endif
 	}
+#if defined(GT_BASEINV_USE_HIER_K8_TREE)
+	else if (poly_fqinv_hier_k8_tree_neon(den, con))
+#else
 	else if (poly_fqinv_hier_kway_current_neon(den, 24, 8, con))
+#endif
 	{
 		memset(r->coeffs, 0, sizeof(r->coeffs));
 		return 1;
@@ -1436,6 +1595,190 @@ static int poly_baseinv_batch_block_major_hier_k8_neon(
 	return 0;
 }
 #endif
+
+#if defined(__aarch64__) && defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
+int poly_baseinv_scaled_r_hier_k8_prepare_for_bench(poly *num,
+                                                    int16_t den_out[24 * 8],
+                                                    const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	const int16_t *src = a->coeffs;
+	int16_t *dst = num->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int i = 0; i < 24; i++)
+	{
+		int16x8_t zeta = vld1q_s16(lambda);
+
+		baseinv_8_prepare(dst, &den[i], src, zeta, con);
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+	}
+
+	for (int i = 0; i < 24; i++)
+		vst1q_s16(den_out + 8 * i, den[i]);
+	return 0;
+}
+
+int poly_baseinv_scaled_r_hier_k8_tree_for_bench(int16_t den_buf[24 * 8])
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	int ret;
+
+	for (int i = 0; i < 24; i++)
+		den[i] = vld1q_s16(den_buf + 8 * i);
+
+	ret = poly_fqinv_hier_kway_current_neon(den, 24, 8, con);
+
+	for (int i = 0; i < 24; i++)
+		vst1q_s16(den_buf + 8 * i, den[i]);
+	return ret;
+}
+
+void poly_baseinv_scaled_r_finish_for_bench(poly *out, const poly *num,
+                                            const int16_t den_inv[24 * 8])
+{
+	memcpy(out->coeffs, num->coeffs, sizeof(out->coeffs));
+#ifdef GT_BASEINV_BATCH_USE_ASM_FINISH
+	baseinv_batch_finish24_n1_asm(out->coeffs, den_inv);
+#else
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16_t *dst = out->coeffs;
+
+	for (int i = 0; i < 24; i++)
+	{
+		baseinv_8_finish(dst, vld1q_s16(den_inv + 8 * i), con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+	}
+#endif
+}
+
+void gt_baseinv_fqinv15_x2_for_bench(int16_t f[8], int16_t g[8])
+{
+#if defined(GT_BASEINV_USE_FQINV15_ASM)
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t fv = vld1q_s16(f);
+	int16x8_t gv = vld1q_s16(g);
+
+	fv = gt_fqinv15_asm(fv, con);
+	gv = gt_fqinv15_asm(gv, con);
+	vst1q_s16(f, fv);
+	vst1q_s16(g, gv);
+#else
+	(void)f;
+	(void)g;
+#endif
+}
+#endif
+
+#if defined(__aarch64__) && defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS)
+static int poly_fqinv_hier_k8_x2_current_neon(int16x8_t fden[24],
+                                              int16x8_t gden[24],
+                                              int16x8_t con)
+{
+	int16x8_t fc[24];
+	int16x8_t gc[24];
+	int16x8_t group_prod[16];
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = 3 * group;
+		const int end = start + 3;
+
+		fc[start] = fden[start];
+		gc[start] = gden[start];
+		for (int i = start + 1; i < end; i++)
+		{
+			fc[i] = fqmul_neon(fc[i - 1], fden[i], con);
+			gc[i] = fqmul_neon(gc[i - 1], gden[i], con);
+		}
+
+		group_prod[group] = fc[end - 1];
+		group_prod[8 + group] = gc[end - 1];
+	}
+
+	if (poly_fqinv_batch_current_m_neon(group_prod, 16, con))
+		return 1;
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = 3 * group;
+		const int end = start + 3;
+		int16x8_t fw = group_prod[group];
+		int16x8_t gw = group_prod[8 + group];
+
+		for (int i = end - 1; i > start; i--)
+		{
+			int16x8_t fri = fden[i];
+			int16x8_t gri = gden[i];
+
+			fden[i] = fqmul_neon(fc[i - 1], fw, con);
+			gden[i] = fqmul_neon(gc[i - 1], gw, con);
+			fw = fqmul_neon(fw, fri, con);
+			gw = fqmul_neon(gw, gri, con);
+		}
+
+		fden[start] = fw;
+		gden[start] = gw;
+	}
+
+	return 0;
+}
+
+static int poly_baseinv_batch_block_major_hier_k8_x2_neon(
+	poly *finv, poly *ginv, const poly *f, const poly *g,
+	const int16_t consts[8])
+{
+	int16x8_t con = vld1q_s16(consts);
+	int16x8_t fden[24] __attribute__((aligned(16)));
+	int16x8_t gden[24] __attribute__((aligned(16)));
+	const int16_t *fsrc = f->coeffs;
+	const int16_t *gsrc = g->coeffs;
+	int16_t *fdst = finv->coeffs;
+	int16_t *gdst = ginv->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int i = 0; i < 24; i++)
+	{
+		int16x8_t zeta = vld1q_s16(lambda);
+
+		baseinv_8_prepare(fdst, &fden[i], fsrc, zeta, con);
+		baseinv_8_prepare(gdst, &gden[i], gsrc, zeta, con);
+		fsrc += 8 * GT_BASEINV_QUARTIC_LANES;
+		gsrc += 8 * GT_BASEINV_QUARTIC_LANES;
+		fdst += 8 * GT_BASEINV_QUARTIC_LANES;
+		gdst += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+	}
+
+	if (poly_fqinv_hier_k8_x2_current_neon(fden, gden, con))
+	{
+		memset(finv->coeffs, 0, sizeof(finv->coeffs));
+		memset(ginv->coeffs, 0, sizeof(ginv->coeffs));
+		return 1;
+	}
+
+#ifdef GT_BASEINV_BATCH_USE_ASM_FINISH
+	(void)con;
+	baseinv_batch_finish24_n1_asm(finv->coeffs, (const int16_t *)fden);
+	baseinv_batch_finish24_n1_asm(ginv->coeffs, (const int16_t *)gden);
+#else
+	fdst = finv->coeffs;
+	gdst = ginv->coeffs;
+	for (int i = 0; i < 24; i++)
+	{
+		baseinv_8_finish(fdst, fden[i], con);
+		baseinv_8_finish(gdst, gden[i], con);
+		fdst += 8 * GT_BASEINV_QUARTIC_LANES;
+		gdst += 8 * GT_BASEINV_QUARTIC_LANES;
+	}
+#endif
+
+	return 0;
+}
 #endif
 
 #if defined(GT_BASEINV_DIVSTEP_BENCH_HELPERS)
@@ -1670,7 +2013,9 @@ int poly_baseinv(poly *r, const poly *a)
 
 int poly_baseinv_scaled_r(poly *r, const poly *a)
 {
-#if defined(GT_BASEINV_SCALED_R_USE_HIER_KWAY_CURRENT)
+#if defined(GT_BASEINV_USE_HIER_K8)
+	return poly_baseinv_scaled_r_hier_k8_candidate(r, a);
+#elif defined(GT_BASEINV_SCALED_R_USE_HIER_KWAY_CURRENT)
 #if defined(__aarch64__) && defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
 	return poly_baseinv_scaled_r_hier_k8_candidate(r, a);
 #elif defined(__aarch64__) && defined(GT_BASEINV_KWAY_BENCH_HELPERS)
@@ -1689,15 +2034,23 @@ int poly_baseinv_scaled_r(poly *r, const poly *a)
 #endif
 }
 
-#if defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
-int poly_baseinv_scaled_r_current_reference(poly *r, const poly *a)
-{
-	return poly_baseinv_gt_batch_scaled_r(r, a);
-}
-
+#if defined(GT_BASEINV_USE_HIER_K8) || \
+    defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
+    defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
+/*
+ * Production-selectable hier_k8 backend for scaled keygen baseinv.
+ *
+ * hier_k8 only changes the denominator batch-inversion multiplication tree:
+ * it splits the 24 denominator vectors into 8 local groups, inverts the 8
+ * group products with the existing fqinv15_asm backend, then propagates those
+ * inverses back inside each group.  This is coefficient-wise equivalent modulo
+ * q to the current flat tree, but the multiplication order is different, so it
+ * is not guaranteed to preserve exact int16 representatives.  KEM pk/sk byte
+ * differential is therefore the production-readiness gate.
+ */
 int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a)
 {
-#if defined(__aarch64__) && defined(GT_BASEINV_KWAY_BENCH_HELPERS)
+#if defined(__aarch64__)
 	return poly_baseinv_batch_block_major_hier_k8_neon(
 		r, a, gt_baseinv_scaled_r_consts, 0);
 #else
@@ -1705,6 +2058,13 @@ int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a)
 	(void)a;
 	return 1;
 #endif
+}
+#endif
+
+#if defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
+int poly_baseinv_scaled_r_current_reference(poly *r, const poly *a)
+{
+	return poly_baseinv_gt_batch_scaled_r(r, a);
 }
 
 int poly_baseinv_scaled_r_fqinv16_reference(poly *r, const poly *a)
@@ -1730,6 +2090,42 @@ int poly_baseinv_scaled_r_hier_k8_fqinv16_candidate(poly *r, const poly *a)
 	(void)a;
 	return 1;
 #endif
+}
+#endif
+
+#if defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS)
+int poly_keygen_baseinv_scaled_r_x2_direct_model(poly *finv, poly *ginv,
+                                                 const poly *f,
+                                                 const poly *g)
+{
+#if defined(__aarch64__)
+	return poly_baseinv_batch_block_major_hier_k8_x2_neon(
+		finv, ginv, f, g, gt_baseinv_scaled_r_consts);
+#else
+	(void)finv;
+	(void)ginv;
+	(void)f;
+	(void)g;
+	return 1;
+#endif
+}
+
+int poly_keygen_compute_h_hinv_direct_model(poly *h, poly *hinv,
+                                            const poly *f, const poly *g)
+{
+	poly finv;
+	poly ginv;
+
+	if (poly_keygen_baseinv_scaled_r_x2_direct_model(&finv, &ginv, f, g))
+	{
+		memset(h->coeffs, 0, sizeof(h->coeffs));
+		memset(hinv->coeffs, 0, sizeof(hinv->coeffs));
+		return 1;
+	}
+
+	poly_basemul_scaled_r_input(h, g, &finv);
+	poly_basemul_scaled_r_input(hinv, f, &ginv);
+	return 0;
 }
 #endif
 

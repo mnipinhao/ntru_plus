@@ -1,12 +1,216 @@
 # GT production KEM component PMU profile
 
-Date: 2026-06-29
+Latest update: 2026-07-07
+
+Historical baseline section date: 2026-06-29
 
 Platform: Raspberry Pi 5, `taskset -c 3`
 
 Build path: `ntruplus-ntt-Optimized/aarch64-bench`
 
-Production default: unchanged.  This is profiling only.
+Current GT production default includes:
+
+```text
+GT_PRODUCTION_USE_SCALED_KEYPAIR
+GT_PRODUCTION_USE_RMINUS1_DECAP
+GT_BASEINV_BATCH_USE_ASM_FINISH
+GT_BASEINV_USE_FQINV15_ASM
+GT_BASEINV_USE_HIER_K8
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+GT_BASEINV_USE_HIER_K8_TREE
+GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+```
+
+`GT_BASEINV_USE_HIER_K8` is the no-canon hierarchical k=8 denominator
+batch-inversion path using `gt_fqinv15_asm`.  The current production default
+also enables the promoted tree-scheduled C/NEON hier_k8 variant.  The finish
+loop and fqinv core remain ASM backends.
+
+## 2026-07-07 production release note
+
+Decision:
+
+```text
+SAMPLE-DAG Slothy Phase123 triple/add1 and HIERK8 tree are now promoted to
+gt_production_default.
+
+Q31 remains production default only for the existing encap byte-contract path.
+No stopped Slothy/local-window candidate is promoted, and generic arithmetic
+symbols are not overwritten.
+```
+
+Production kill switches:
+
+```text
+GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_PRODUCTION_DISABLE_HIERK8_TREE=1
+```
+
+Release guard commands:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench \
+  -B check_gt_sample_hierk8_release_guard \
+  VARIANT=gt_production_default SUDO= CORE=3
+
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench \
+  -B check_gt_direct32_q31_release_guard \
+  VARIANT=gt_production_default SUDO= CORE=3
+```
+
+Release guard results:
+
+```text
+sample_hierk8 default release_guard_pass=1
+sample_hierk8 sample-off release_guard_pass=1
+sample_hierk8 hier-off release_guard_pass=1
+
+generic_poly_ntt_symbols=1
+generic_poly_baseinv_scaled_r_symbols=1
+sample_dag_call_sites=2
+sample_dag_call_site=gt_keygen_ntt_triple_add1: b _poly_ntt_triple_add1_scheduled
+sample_dag_call_site=gt_keygen_ntt_triple: b _poly_ntt_triple_scheduled
+experiment_tree_symbol_present=0
+public_headers_with_internal_symbols=0
+
+q31 enabled release_guard_pass=1
+direct32_q31_call_sites=1
+direct32_q31_call_site=gt_encap_basemul_add_tobytes_contract
+generic_poly_basemul_add_overwritten=0
+decap_or_arithmetic_q31_callers=0
+public_headers_with_q31_symbol=0
+q31 disabled release_guard_pass=1
+```
+
+Scheme-directory production default correctness:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768 \
+  -B test_kem_gt_production_default
+./build/test_kem_gt_production_default
+```
+
+Result:
+
+```text
+count: 0
+```
+
+## 2026-07-07 GT production vs KPQC final
+
+This is the right place to record the comparison because it contains both the
+full KEM totals and the GT component-level PMU profile.  The baseinv-only
+decision remains in `baseinv-kway-fqinv-new-pmu.md`.
+
+KEM total command shape:
+
+```sh
+cd /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench
+make -B bench VARIANT=gt_production_default BENCH_MODE=<mode> \
+  CYCLES=PERF NTESTS=31 NITERATIONS=300 NWARMUP=50
+taskset -c 3 ./bench
+
+make -B bench VARIANT=kpqc_final BENCH_MODE=<mode> \
+  CYCLES=PERF NTESTS=31 NITERATIONS=300 NWARMUP=50
+taskset -c 3 ./bench
+```
+
+The GT production build identity for this comparison is:
+
+```text
+GT_PRODUCTION_VARIANT=gt_production_default
+GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP=1
+GT_PRODUCTION_USE_RMINUS1_DECAP=1
+GT_PRODUCTION_USE_SCALED_KEYPAIR=1
+GT_BASEINV_USE_FQINV15_ASM=1
+GT_BASEINV_BATCH_USE_ASM_FINISH=1
+GT_BASEINV_USE_HIER_K8=1
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_BASEINV_USE_HIER_K8_TREE=1
+```
+
+The KPQC final comparison uses the `aarch64-bench VARIANT=kpqc_final` linked
+path.  The bench harness performs KEM setup/correctness checks before PMU; all
+six benchmark invocations below exited successfully.
+
+| KEM mode | GT production cycles | KPQC final cycles | cycle reduction vs KPQC | speedup |
+| --- | ---: | ---: | ---: | ---: |
+| keygen | 37978 | 39966 | 1988 cycles, 4.97% | 1.052x |
+| encap | 37749 | 39095 | 1346 cycles, 3.44% | 1.036x |
+| decap | 33075 | 35165 | 2090 cycles, 5.94% | 1.063x |
+
+Interpretation:
+
+```text
+GT production default is consistently faster than KPQC final on Pi5 in this
+aarch64-bench comparison.  The margin is still single-digit percent, but the
+new production default closes the keygen gap that remained before the
+SAMPLE-DAG + HIERK8 promotion.
+```
+
+GT KEM component profiler command:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench \
+  -B bench_gt_kem_component_profile_pmu SUDO= CORE=3
+```
+
+Component PMU settings:
+
+```text
+NTESTS=31
+NITERATIONS=5000
+NWARMUP=100
+NINPUTS=64
+correctness,total_mismatches=0,valid_cases=64
+```
+
+KEM component totals:
+
+| component total | cycles/call | instr/call | IPC |
+| --- | ---: | ---: | ---: |
+| `keypair_total` | 38251.234 | 81708.000 | 2.1361 |
+| `encap_total` | 37632.930 | 105879.000 | 2.8134 |
+| `decap_total` | 33305.420 | 75190.000 | 2.2576 |
+
+Keygen windows:
+
+| component | cycles/call | % keygen | instr/call | note |
+| --- | ---: | ---: | ---: | --- |
+| `keygen_sample_prebaseinv_x2` | 11533.959 | 30.2% | 27078.000 | two `shake256+cbd1+triple+ntt` paths, now using SAMPLE-DAG scheduled triple/add1 |
+| `keygen_polyinv_scaled_x2` | 9429.257 | 24.7% | 8604.000 | two `poly_baseinv_scaled_r` calls, now using HIERK8 tree |
+| `keygen_public_arithmetic_x2` | 4088.426 | 10.7% | 3822.000 | two scaled keypair basemuls |
+| `keygen_hash_f_pk` | not reprinted in latest run | n/a | n/a | covered by `keygen_pack_hashf_total` row |
+| `keygen_pack_hashf_total` | 13178.302 | 34.5% | 41671.000 | pack pk/sk plus `hash_f` |
+
+Encap windows.  Some windows are nested and should not be summed:
+
+| component | cycles/call | % encap | instr/call | note |
+| --- | ---: | ---: | ---: | --- |
+| `encap_total` | 37632.930 | 100.0% | 105879.000 | full encap |
+| `encap_basemul_add` | 2867.494 | 7.6% | not reprinted | Q31 encap byte-contract path |
+
+Decap windows.  Some windows are nested and should not be summed:
+
+| component | cycles/call | % decap | instr/call | note |
+| --- | ---: | ---: | ---: | --- |
+| `decap_total` | 33305.420 | 100.0% | 75190.000 | full decap |
+| `decap_invntt_rminus1` | 4025.294 | 12.1% | not reprinted | rminus1 InvNTT |
+| `decap_verify_basemul` | 2823.899 | 8.5% | not reprinted | second basemul |
+
+Current readout:
+
+```text
+Keygen: SAMPLE-DAG and HIERK8 tree are now production default.  The remaining
+large windows are sample/hash/pack-hash plus baseinv/public arithmetic.
+
+Encap: still dominated by hash-related windows plus two NTTs and basemul_add.
+
+Decap: rminus1 basemul->InvNTT pair and verify basemul are visible, but the
+largest measured windows remain hash/pack/re-encryption-check shaped.
+```
+
+## Historical 2026-06-29 Profile
 
 Command:
 

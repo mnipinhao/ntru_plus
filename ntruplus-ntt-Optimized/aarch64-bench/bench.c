@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bench_build_config.h"
 #include "hal.h"
 #if BENCH_VARIANT_GT
 #include "ntt.h"
@@ -59,6 +60,11 @@ void poly_basemul_scaled_r_input(poly *r, const poly *a,
 #else
 #define KEYPAIR_BASEINV poly_baseinv
 #define KEYPAIR_BASEMUL poly_basemul
+#endif
+
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+void poly_ntt_triple_scheduled(poly *out, const poly *a);
+void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
 #endif
 #endif
 
@@ -342,6 +348,27 @@ static uint8_t ct_verify(const uint8_t *a, const uint8_t *b, size_t len)
   return (uint8_t)((-(uint64_t)acc) >> 63);
 }
 
+static void keygen_ntt_triple_add1_bench(poly *out, const poly *small)
+{
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+  poly_ntt_triple_add1_scheduled(out, small);
+#else
+  poly_triple(out, small);
+  out->coeffs[0] += 1;
+  poly_ntt(out, out);
+#endif
+}
+
+static void keygen_ntt_triple_bench(poly *out, const poly *small)
+{
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+  poly_ntt_triple_scheduled(out, small);
+#else
+  poly_triple(out, small);
+  poly_ntt(out, out);
+#endif
+}
+
 static int genf_derand_bench(poly *f, poly *finv, const uint8_t *coins)
 {
   uint8_t buf[NTRUPLUS_N / 4];
@@ -349,10 +376,7 @@ static int genf_derand_bench(poly *f, poly *finv, const uint8_t *coins)
   shake256(buf, sizeof buf, coins, NTRUPLUS_SYMBYTES);
 
   poly_cbd1(f, buf);
-  poly_triple(f, f);
-  f->coeffs[0] += 1;
-
-  poly_ntt(f, f);
+  keygen_ntt_triple_add1_bench(f, f);
   return KEYPAIR_BASEINV(finv, f);
 }
 
@@ -363,9 +387,7 @@ static int geng_derand_bench(poly *g, poly *ginv, const uint8_t *coins)
   shake256(buf, sizeof buf, coins, NTRUPLUS_SYMBYTES);
 
   poly_cbd1(g, buf);
-  poly_triple(g, g);
-
-  poly_ntt(g, g);
+  keygen_ntt_triple_bench(g, g);
   return KEYPAIR_BASEINV(ginv, g);
 }
 
@@ -1317,6 +1339,8 @@ int main(void)
     fprintf(stderr, "correctness check failed for BENCH_MODE=%s\n", mode);
     return 1;
   }
+
+  bench_print_gt_production_config();
 
   enable_cyclecounter();
 #if BENCH_ENABLE_KEM

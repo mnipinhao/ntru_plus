@@ -46,6 +46,18 @@
 #define NINPUTS 64
 #endif
 
+#ifndef NKEMDIFF
+#define NKEMDIFF 1000
+#endif
+
+#ifndef NKEYPAIR_ITERATIONS
+#define NKEYPAIR_ITERATIONS 100
+#endif
+
+#ifndef NKEYPAIR_WARMUP
+#define NKEYPAIR_WARMUP 5
+#endif
+
 #define PMU_EVENT_COUNT 2
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -88,12 +100,18 @@ struct variant
 {
   const char *name;
   bench_target_fn target;
+  size_t iterations;
+  size_t warmup;
 };
 
 struct poly_diff
 {
   uint64_t modq_mismatches;
   uint64_t exact_mismatches;
+  int16_t min_a;
+  int16_t max_a;
+  int16_t min_b;
+  int16_t max_b;
   int first_modq_idx;
   int first_exact_idx;
   int16_t first_modq_a;
@@ -209,9 +227,22 @@ static void collect_poly_diff(const poly *a, const poly *b,
   memset(out, 0, sizeof(*out));
   out->first_modq_idx = -1;
   out->first_exact_idx = -1;
+  out->min_a = a->coeffs[0];
+  out->max_a = a->coeffs[0];
+  out->min_b = b->coeffs[0];
+  out->max_b = b->coeffs[0];
 
   for (int i = 0; i < NTRUPLUS_N; i++)
   {
+    if (a->coeffs[i] < out->min_a)
+      out->min_a = a->coeffs[i];
+    if (a->coeffs[i] > out->max_a)
+      out->max_a = a->coeffs[i];
+    if (b->coeffs[i] < out->min_b)
+      out->min_b = b->coeffs[i];
+    if (b->coeffs[i] > out->max_b)
+      out->max_b = b->coeffs[i];
+
     if (!modq_equal_i16(a->coeffs[i], b->coeffs[i]))
     {
       if (out->first_modq_idx < 0)
@@ -242,10 +273,13 @@ static void compare_poly_stage(const char *name, const poly *a, const poly *b,
 
   printf("stage_poly,%s,modq_mismatches=%" PRIu64
          ",exact_mismatches=%" PRIu64
+         ",current_min=%d,current_max=%d,candidate_min=%d,"
+         "candidate_max=%d"
          ",first_modq_idx=%d,first_modq_current=%d,"
          "first_modq_candidate=%d,first_exact_idx=%d,"
          "first_exact_current=%d,first_exact_candidate=%d\n",
          name, out->modq_mismatches, out->exact_mismatches,
+         out->min_a, out->max_a, out->min_b, out->max_b,
          out->first_modq_idx, out->first_modq_a, out->first_modq_b,
          out->first_exact_idx, out->first_exact_a, out->first_exact_b);
 }
@@ -350,6 +384,11 @@ static uint64_t run_baseinv_ab(baseinv_fn current, baseinv_fn candidate,
   uint64_t exact = 0;
   uint64_t modq = 0;
   int first_input = -1;
+  int have_range = 0;
+  int16_t current_min = 0;
+  int16_t current_max = 0;
+  int16_t candidate_min = 0;
+  int16_t candidate_max = 0;
   struct poly_diff first_diff;
   struct poly_diff diff;
 
@@ -372,6 +411,25 @@ static uint64_t run_baseinv_ab(baseinv_fn current, baseinv_fn candidate,
     if (ret0 != 0)
       continue;
     collect_poly_diff(&g_poly_out0, &g_poly_out1, &diff);
+    if (!have_range)
+    {
+      current_min = diff.min_a;
+      current_max = diff.max_a;
+      candidate_min = diff.min_b;
+      candidate_max = diff.max_b;
+      have_range = 1;
+    }
+    else
+    {
+      if (diff.min_a < current_min)
+        current_min = diff.min_a;
+      if (diff.max_a > current_max)
+        current_max = diff.max_a;
+      if (diff.min_b < candidate_min)
+        candidate_min = diff.min_b;
+      if (diff.max_b > candidate_max)
+        candidate_max = diff.max_b;
+    }
     modq += diff.modq_mismatches;
     exact += diff.exact_mismatches;
     if ((diff.modq_mismatches || diff.exact_mismatches) && first_input < 0)
@@ -384,10 +442,13 @@ static uint64_t run_baseinv_ab(baseinv_fn current, baseinv_fn candidate,
   printf("baseinv_ab,%s,ret_mismatches=%" PRIu64
          ",modq_mismatches=%" PRIu64
          ",exact_mismatches=%" PRIu64
+         ",current_min=%d,current_max=%d,candidate_min=%d,"
+         "candidate_max=%d"
          ",first_input=%d,first_modq_idx=%d,first_modq_current=%d,"
          "first_modq_candidate=%d,first_exact_idx=%d,"
          "first_exact_current=%d,first_exact_candidate=%d\n",
-         name, mismatches, modq, exact, first_input,
+         name, mismatches, modq, exact, current_min, current_max,
+         candidate_min, candidate_max, first_input,
          first_diff.first_modq_idx, first_diff.first_modq_a,
          first_diff.first_modq_b, first_diff.first_exact_idx,
          first_diff.first_exact_a, first_diff.first_exact_b);
@@ -452,44 +513,123 @@ static void run_stage_diff(void)
   printf("stage_note,invntt,not_applicable=1,path=keygen_scaled_baseinv\n");
 }
 
+static uint64_t kem_seed_for_index(size_t idx, uint64_t domain)
+{
+  uint64_t x = (uint64_t)idx + domain + 0x9e3779b97f4a7c15ULL;
+
+  x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+  x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+  x ^= x >> 31;
+  return x ? x : domain;
+}
+
 static void run_kem_byte_diff(void)
 {
   struct byte_diff pk_diff;
   struct byte_diff sk_diff;
   struct byte_diff ss_diff;
+  uint64_t keypair_ret_mismatches = 0;
+  uint64_t pk_mismatch_seeds = 0;
+  uint64_t sk_mismatch_seeds = 0;
+  uint64_t pk_byte_mismatches = 0;
+  uint64_t sk_byte_mismatches = 0;
+  uint64_t current_functional_failures = 0;
+  uint64_t hier_functional_failures = 0;
+  int first_pk_seed = -1;
+  int first_sk_seed = -1;
+  int first_current_fail_seed = -1;
+  int first_hier_fail_seed = -1;
+  int first_pk_idx = -1;
+  int first_sk_idx = -1;
+  uint8_t first_pk_current = 0;
+  uint8_t first_pk_candidate = 0;
+  uint8_t first_sk_current = 0;
+  uint8_t first_sk_candidate = 0;
   int enc_ret;
   int dec_ret;
 
-  randombytes_reset(0x1234567812345678ULL);
-  (void)bench_crypto_kem_keypair_current(g_pk0, g_sk0);
-  randombytes_reset(0x1234567812345678ULL);
-  (void)bench_crypto_kem_keypair_hier_k8(g_pk1, g_sk1);
+  for (size_t seed_idx = 0; seed_idx < NKEMDIFF; seed_idx++)
+  {
+    const uint64_t key_seed =
+        kem_seed_for_index(seed_idx, 0x1234567812345678ULL);
+    const uint64_t enc_seed =
+        kem_seed_for_index(seed_idx, 0xabcdef0102030405ULL);
+    int ret0;
+    int ret1;
 
-  compare_bytes(g_pk0, g_pk1, sizeof(g_pk0), &pk_diff);
-  compare_bytes(g_sk0, g_sk1, sizeof(g_sk0), &sk_diff);
-  printf("kem_byte_diff,pk_mismatches=%" PRIu64
-         ",pk_first=%d,pk_current=%u,pk_candidate=%u,"
-         "sk_mismatches=%" PRIu64
-         ",sk_first=%d,sk_current=%u,sk_candidate=%u\n",
-         pk_diff.mismatches, pk_diff.first_idx, pk_diff.first_a,
-         pk_diff.first_b, sk_diff.mismatches, sk_diff.first_idx,
-         sk_diff.first_a, sk_diff.first_b);
+    randombytes_reset(key_seed);
+    ret0 = bench_crypto_kem_keypair_current(g_pk0, g_sk0);
+    randombytes_reset(key_seed);
+    ret1 = bench_crypto_kem_keypair_hier_k8(g_pk1, g_sk1);
+    if (ret0 != ret1)
+      keypair_ret_mismatches++;
 
-  randombytes_reset(0xabcdef0102030405ULL);
-  enc_ret = bench_crypto_kem_enc_current(g_ct, g_ss0, g_pk0);
-  dec_ret = bench_crypto_kem_dec_current(g_ss1, g_ct, g_sk0);
-  compare_bytes(g_ss0, g_ss1, sizeof(g_ss0), &ss_diff);
-  printf("kem_functional,current,enc_ret=%d,dec_ret=%d,ss_mismatches=%" PRIu64
-         ",first=%d\n",
-         enc_ret, dec_ret, ss_diff.mismatches, ss_diff.first_idx);
+    compare_bytes(g_pk0, g_pk1, sizeof(g_pk0), &pk_diff);
+    compare_bytes(g_sk0, g_sk1, sizeof(g_sk0), &sk_diff);
+    if (pk_diff.mismatches)
+    {
+      pk_mismatch_seeds++;
+      pk_byte_mismatches += pk_diff.mismatches;
+      if (first_pk_seed < 0)
+      {
+        first_pk_seed = (int)seed_idx;
+        first_pk_idx = pk_diff.first_idx;
+        first_pk_current = pk_diff.first_a;
+        first_pk_candidate = pk_diff.first_b;
+      }
+    }
+    if (sk_diff.mismatches)
+    {
+      sk_mismatch_seeds++;
+      sk_byte_mismatches += sk_diff.mismatches;
+      if (first_sk_seed < 0)
+      {
+        first_sk_seed = (int)seed_idx;
+        first_sk_idx = sk_diff.first_idx;
+        first_sk_current = sk_diff.first_a;
+        first_sk_candidate = sk_diff.first_b;
+      }
+    }
 
-  randombytes_reset(0xabcdef0102030405ULL);
-  enc_ret = bench_crypto_kem_enc_current(g_ct, g_ss0, g_pk1);
-  dec_ret = bench_crypto_kem_dec_current(g_ss1, g_ct, g_sk1);
-  compare_bytes(g_ss0, g_ss1, sizeof(g_ss0), &ss_diff);
-  printf("kem_functional,hier_k8,enc_ret=%d,dec_ret=%d,ss_mismatches=%" PRIu64
-         ",first=%d\n",
-         enc_ret, dec_ret, ss_diff.mismatches, ss_diff.first_idx);
+    randombytes_reset(enc_seed);
+    enc_ret = bench_crypto_kem_enc_current(g_ct, g_ss0, g_pk0);
+    dec_ret = bench_crypto_kem_dec_current(g_ss1, g_ct, g_sk0);
+    compare_bytes(g_ss0, g_ss1, sizeof(g_ss0), &ss_diff);
+    if (enc_ret != 0 || dec_ret != 0 || ss_diff.mismatches)
+    {
+      current_functional_failures++;
+      if (first_current_fail_seed < 0)
+        first_current_fail_seed = (int)seed_idx;
+    }
+
+    randombytes_reset(enc_seed);
+    enc_ret = bench_crypto_kem_enc_current(g_ct, g_ss0, g_pk1);
+    dec_ret = bench_crypto_kem_dec_current(g_ss1, g_ct, g_sk1);
+    compare_bytes(g_ss0, g_ss1, sizeof(g_ss0), &ss_diff);
+    if (enc_ret != 0 || dec_ret != 0 || ss_diff.mismatches)
+    {
+      hier_functional_failures++;
+      if (first_hier_fail_seed < 0)
+        first_hier_fail_seed = (int)seed_idx;
+    }
+  }
+
+  printf("kem_byte_diff_many,seeds=%d,keypair_ret_mismatches=%" PRIu64
+         ",pk_mismatch_seeds=%" PRIu64 ",pk_byte_mismatches=%" PRIu64
+         ",pk_first_seed=%d,pk_first_idx=%d,pk_current=%u,"
+         "pk_candidate=%u,sk_mismatch_seeds=%" PRIu64
+         ",sk_byte_mismatches=%" PRIu64
+         ",sk_first_seed=%d,sk_first_idx=%d,sk_current=%u,"
+         "sk_candidate=%u\n",
+         NKEMDIFF, keypair_ret_mismatches, pk_mismatch_seeds,
+         pk_byte_mismatches, first_pk_seed, first_pk_idx, first_pk_current,
+         first_pk_candidate, sk_mismatch_seeds, sk_byte_mismatches,
+         first_sk_seed, first_sk_idx, first_sk_current, first_sk_candidate);
+  printf("kem_functional_many,seeds=%d,current_failures=%" PRIu64
+         ",current_first_fail_seed=%d,hier_k8_failures=%" PRIu64
+         ",hier_k8_first_fail_seed=%d\n",
+         NKEMDIFF, current_functional_failures, first_current_fail_seed,
+         hier_functional_failures, first_hier_fail_seed);
 }
 
 static int open_pmu_events(void)
@@ -571,6 +711,22 @@ static NOINLINE void target_baseinv_hier_k8_fqinv16(size_t idx)
   g_sink ^= (uint16_t)g_poly_out0.coeffs[(idx + 11) % NTRUPLUS_N];
 }
 
+static NOINLINE void target_keypair_current(size_t idx)
+{
+  randombytes_reset(kem_seed_for_index(idx, 0x3141592653589793ULL));
+  (void)bench_crypto_kem_keypair_current(g_pk0, g_sk0);
+  g_sink ^= g_pk0[idx % sizeof(g_pk0)];
+  g_sink ^= (uint64_t)g_sk0[(idx + 17) % sizeof(g_sk0)] << 8;
+}
+
+static NOINLINE void target_keypair_hier_k8(size_t idx)
+{
+  randombytes_reset(kem_seed_for_index(idx, 0x3141592653589793ULL));
+  (void)bench_crypto_kem_keypair_hier_k8(g_pk1, g_sk1);
+  g_sink ^= g_pk1[idx % sizeof(g_pk1)];
+  g_sink ^= (uint64_t)g_sk1[(idx + 19) % sizeof(g_sk1)] << 8;
+}
+
 static void run_variant_once(const struct variant *variant, size_t idx)
 {
   variant->target(idx);
@@ -578,7 +734,7 @@ static void run_variant_once(const struct variant *variant, size_t idx)
 
 static void warmup_variant(const struct variant *variant)
 {
-  for (size_t i = 0; i < NWARMUP; i++)
+  for (size_t i = 0; i < variant->warmup; i++)
     run_variant_once(variant, i);
 }
 
@@ -591,7 +747,7 @@ static int measure_variant(const struct variant *variant, struct counts *out)
   if (ioctl(g_leader_fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) < 0)
     return -1;
 
-  for (size_t i = 0; i < NITERATIONS; i++)
+  for (size_t i = 0; i < variant->iterations; i++)
     run_variant_once(variant, i);
 
   if (ioctl(g_leader_fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) < 0)
@@ -621,8 +777,8 @@ static void summarize_variant(const struct variant *variant)
       fprintf(stderr, "PMU read failed for %s\n", variant->name);
       exit(1);
     }
-    cycles[test] = (double)counts.v[0] / (double)NITERATIONS;
-    instr[test] = (double)counts.v[1] / (double)NITERATIONS;
+    cycles[test] = (double)counts.v[0] / (double)variant->iterations;
+    instr[test] = (double)counts.v[1] / (double)variant->iterations;
   }
 
   qsort(cycles, NTESTS, sizeof(cycles[0]), compare_double);
@@ -639,15 +795,21 @@ static void summarize_variant(const struct variant *variant)
 int main(void)
 {
   const struct variant variants[] = {
-      {"baseinv_scaled_current", target_baseinv_current},
-      {"baseinv_scaled_hier_k8_fqinv15_asm", target_baseinv_hier_k8},
-      {"baseinv_scaled_fqinv16", target_baseinv_fqinv16},
-      {"baseinv_scaled_hier_k8_fqinv16", target_baseinv_hier_k8_fqinv16},
+      {"baseinv_scaled_flat_reference", target_baseinv_current, NITERATIONS,
+       NWARMUP},
+      {"baseinv_scaled_gt_production_hier_k8", target_baseinv_hier_k8,
+       NITERATIONS, NWARMUP},
+      {"keypair_total_gt_production", target_keypair_current, NKEYPAIR_ITERATIONS,
+       NKEYPAIR_WARMUP},
+      {"keypair_total_explicit_hier_k8", target_keypair_hier_k8,
+       NKEYPAIR_ITERATIONS, NKEYPAIR_WARMUP},
   };
 
   printf("settings,canon_mode=%s,NTESTS=%d,NITERATIONS=%d,NWARMUP=%d,"
-         "NINPUTS=%d\n",
-         canon_mode(), NTESTS, NITERATIONS, NWARMUP, NINPUTS);
+         "NINPUTS=%d,NKEMDIFF=%d,NKEYPAIR_ITERATIONS=%d,"
+         "NKEYPAIR_WARMUP=%d\n",
+         canon_mode(), NTESTS, NITERATIONS, NWARMUP, NINPUTS, NKEMDIFF,
+         NKEYPAIR_ITERATIONS, NKEYPAIR_WARMUP);
 
   if (prepare_baseinv_inputs() != 0)
   {
@@ -657,10 +819,7 @@ int main(void)
 
   (void)run_baseinv_ab(poly_baseinv_scaled_r_current_reference,
                        poly_baseinv_scaled_r_hier_k8_candidate,
-                       "current_vs_hier_k8_fqinv15_asm");
-  (void)run_baseinv_ab(poly_baseinv_scaled_r_fqinv16_reference,
-                       poly_baseinv_scaled_r_hier_k8_fqinv16_candidate,
-                       "fqinv16_vs_hier_k8_fqinv16");
+                       "flat_reference_vs_hier_k8_fqinv15_asm");
   run_kem_byte_diff();
   run_stage_diff();
 
