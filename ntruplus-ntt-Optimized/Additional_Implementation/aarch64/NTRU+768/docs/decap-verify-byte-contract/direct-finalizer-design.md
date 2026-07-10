@@ -1,6 +1,7 @@
 # Decap Verify Direct Byte Finalizer Design
 
-Status: design audit only.  No optimized ASM has been implemented.
+Status: design audit complete.  Benchmark-only direct ASM prototypes were
+implemented and tested, but both current shapes are rejected for PMU regression.
 
 ## Production Basemul Output Contract
 
@@ -179,7 +180,7 @@ was confirmed by the byte-correct C candidate.
 
 ## Direct Finalizer Candidate
 
-The next viable optimized helper is:
+The audited helper shape is:
 
 ```text
 gt_decap_verify_basemul_tobytes_direct_candidate(out, c_minus_m2, hinv)
@@ -244,6 +245,36 @@ This avoids writing 64-byte poly chunks and reloading 128-byte tobytes chunks.
 It also avoids awkward non-contiguous stores where loop A writes only half of
 each 12-byte group and loop B fills the other half later.
 
+### Tested ASM Prototype Results
+
+Two benchmark-only prototypes have now been tested:
+
+```text
+scalar pack:
+  byte-correct, rejected because scalar umov/strb packing regressed badly
+
+vector V2A-style pack:
+  byte-correct, rejected because conservative st4-to-ld1 scratch conversion
+  was still slower than production basemul + Slothy poly_tobytes
+```
+
+Latest Pi5 result for the vector V2A-style prototype:
+
+| window | cycles p50 | cycles IQR | instr p50 |
+| --- | ---: | ---: | ---: |
+| `decap_verify_basemul_plus_tobytes_r2` | 3245 | 0 | 3297 |
+| `decap_verify_contract_direct_candidate` | 3330 | 0 | 3374 |
+| `full_decap_current` | 33307 | 3 | 75211 |
+| `full_decap_contract_direct_candidate` | 33418 | 6 | 75289 |
+
+Decision:
+
+```text
+correctness-pass PMU-regression
+do not promote
+do not continue this conservative scratch-conversion route
+```
+
 ### Potential Saving
 
 The current measured windows are:
@@ -254,7 +285,8 @@ decap_tobytes_r2                      = 421 cycles
 decap_verify_contract_ref             = 3244 cycles
 ```
 
-The optimistic local ceiling is roughly the standalone `poly_tobytes` cost:
+The original optimistic local ceiling was roughly the standalone `poly_tobytes`
+cost:
 
 ```text
 ~400-425 cycles/call

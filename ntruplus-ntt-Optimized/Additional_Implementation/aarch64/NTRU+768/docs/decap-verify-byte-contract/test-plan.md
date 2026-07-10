@@ -227,3 +227,104 @@ It does not prove the product/reducer range and it does not execute the
 production ASM.  The remaining reducer proof must show that the final
 `poly_basemul` lanes are always in the modeled centered range before direct
 byte packing.
+
+## V2 Vector ASM Check
+
+Benchmark-only V2 artifact:
+
+```text
+asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
+```
+
+Correctness target:
+
+```sh
+make -C ntruplus-ntt-Optimized/aarch64-bench \
+  -B check_gt_decap_verify_byte_contract \
+  VARIANT=gt_production_default
+```
+
+Expected:
+
+```text
+verify_basemul_tobytes_mismatches=0
+decap_verify_contract_total_mismatches=0,valid_cases=4096,invalid_cases=1280
+```
+
+PMU target:
+
+```sh
+make -C ntruplus-ntt-Optimized/aarch64-bench \
+  -B bench_gt_decap_verify_byte_contract_pmu \
+  VARIANT=gt_production_default SUDO= CORE=3
+```
+
+## V2 Vector ASM Result - 2026-07-06
+
+Command:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench \
+  -B bench_gt_decap_verify_byte_contract_pmu \
+  VARIANT=gt_production_default SUDO= CORE=3
+```
+
+Settings:
+
+```text
+NTESTS=31
+NITERATIONS=5000
+NWARMUP=100
+NINPUTS=64
+NVALID_ORACLE=4096
+NINVALID_DIFF=1280
+NSYNTHETIC_ORACLE=512
+```
+
+Correctness:
+
+```text
+build_config,GT_PRODUCTION_VARIANT=gt_production_default
+build_config,GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP=1
+build_config,GT_PRODUCTION_USE_RMINUS1_DECAP=1
+build_config,GT_PRODUCTION_USE_SCALED_KEYPAIR=1
+build_config,GT_BASEINV_USE_FQINV15_ASM=1
+build_config,GT_BASEINV_BATCH_USE_ASM_FINISH=1
+verify_basemul_tobytes_mismatches=0
+decap_verify_contract_total_mismatches=0,valid_cases=4096,invalid_cases=1280,synthetic_cases=512
+```
+
+PMU:
+
+| window | cycles p50 | cycles IQR | instr p50 |
+| --- | ---: | ---: | ---: |
+| `decap_verify_basemul` | 2830 | 0 | 2515 |
+| `decap_tobytes_r2` | 413 | 0 | 810 |
+| `decap_verify_basemul_plus_tobytes_r2` | 3245 | 0 | 3297 |
+| `decap_verify_contract_ref` | 3244 | 0 | 3305 |
+| `decap_verify_contract_direct_candidate` | 3330 | 0 | 3374 |
+| `full_decap_current` | 33307 | 3 | 75211 |
+| `full_decap_contract_direct_candidate` | 33418 | 6 | 75289 |
+
+Result:
+
+```text
+local delta vs basemul_plus_tobytes = +85 cycles
+full decap delta vs current         = +111 cycles
+decision                            = correctness-pass PMU-regression
+```
+
+The vector V2 prototype removes scalar extraction, but the conservative
+st4-to-ld1 scratch conversion is still slower than keeping the production
+`poly_basemul` store and production Slothy `poly_tobytes` load/pack.  This
+candidate is not a release path.
+
+The useful comparison is:
+
+```text
+decap_verify_contract_direct_candidate
+  vs decap_verify_basemul_plus_tobytes_r2
+```
+
+Do not compare against the rejected scalar/C candidate as the performance
+baseline.

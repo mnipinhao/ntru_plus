@@ -104,24 +104,89 @@ candidates:
       - "Q31 is not reused and generic poly_basemul remains unchanged."
 
   - id: direct_arithmetic_byte_finalizer_vector_pack
-    status: feasible_design
-    symbol: gt_decap_verify_basemul_tobytes_vector_candidate
+    status: correctness_pass_pmu_regression
+    symbol: gt_decap_verify_basemul_tobytes_direct_candidate
     output: bytes
     production_default: false
-    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_VECTOR
-    proof_status: lane_map_needed
+    gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
+    proof_status: exhaustive_pair_checked
     reducer_range_proof: empirical_range_capture_only
-    asm_status: not_started
+    asm_status: benchmark_only_prototype
+    prototype: asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
     design_doc: docs/decap-verify-byte-contract/vector-finalizer-feasibility.md
+    implementation:
+      source_basis: asm/gt/base_gt_opt_body.inc
+      strategy: "production GT basemul DAG with final-store hook"
+      finalizer: "two 32-coeff basemul blocks -> st4-shape to ld1-shape register conversion -> vector poly_tobytes pack"
+      scratch: "64-byte stack stage for the first 32-coeff half of each 64-coeff tobytes chunk"
+      generic_poly_basemul_overwritten: false
+      q31_reused: false
+      production_default: false
+    verification_status:
+      local_cross_assemble: pass
+      pi5_correctness: pass
+      pi5_pmu: regression
+    correctness:
+      direct_byte_oracle_mismatches: 0
+      decap_differential_mismatches: 0
+      valid_cases: 4096
+      invalid_cases: 1280
+      synthetic_cases: 512
+    pmu_p50_cycles:
+      decap_verify_basemul: 2830
+      decap_tobytes_r2: 413
+      decap_verify_basemul_plus_tobytes_r2: 3245
+      decap_verify_contract_ref: 3244
+      decap_verify_contract_direct_candidate: 3330
+      full_decap_current: 33307
+      full_decap_contract_direct_candidate: 33418
+    pmu_p50_instr:
+      decap_verify_basemul_plus_tobytes_r2: 3297
+      decap_verify_contract_direct_candidate: 3374
+      full_decap_current: 75211
+      full_decap_contract_direct_candidate: 75289
+    pmu_delta_cycles:
+      local_vs_basemul_plus_tobytes: 85
+      full_decap_vs_current: 111
     expected_saving_cycles:
       v2a_virtual_st4_to_ld1_low: -50
       v2a_virtual_st4_to_ld1_high: 100
       v2b_direct_soa_pack_low: 100
       v2b_direct_soa_pack_high: 250
     production_ready: false
-    reason: "Production poly_tobytes vector packing can be reused after a 12-zip/64-coeff register-layout conversion; a direct st4-shape pack may be faster but needs a tagged lane-map proof."
+    reason: "Pi5 correctness passes, but the conservative vector-pack V2 is slower than basemul_plus_tobytes and full decap."
     notes:
-      - "Feasible as a benchmark-only V2 design, not a production candidate."
-      - "V2A avoids scalar extraction and stack staging but may be only neutral because it trades L1 r2 store/load for extra zips."
-      - "V2B is the only route with meaningful headroom, but the full-decap ceiling is still below about 1%."
-      - "Do not implement without explicit approval."
+      - "This is not the old scalar extraction prototype."
+      - "It avoids per-coefficient umov/strb packing."
+      - "It still uses a small 64-byte stack stage because the production basemul body clobbers all vector registers between consecutive 32-coeff blocks."
+      - "It is wired only into benchmark/check targets and the existing disabled direct experiment gate."
+      - "The V2 result is much better than scalar packing, but not enough to beat the production basemul plus Slothy poly_tobytes path."
+      - "Do not promote; any next attempt would need a true register-resident/direct-SoA pack, not the conservative st4-to-ld1 scratch conversion."
+
+  - id: direct_arithmetic_byte_finalizer_v3_register_resident_pack
+    status: blocked_needs_new_two_loop_dag
+    symbol: gt_decap_verify_basemul_tobytes_direct_candidate_v3
+    output: bytes
+    production_default: false
+    gate: not_allocated
+    proof_status: not_started
+    reducer_range_proof: empirical_range_capture_only
+    asm_status: not_started
+    design_doc: docs/decap-verify-byte-contract/v3-register-resident-direct-pack-audit.md
+    blocker:
+      current_hook: GT_BASEMUL_FINAL_STORE
+      hook_scope: "one 32-coefficient basemul loop"
+      tobytes_scope: "one 64-coefficient pack loop"
+      base_loop_vector_regs_used: "v0..v31"
+      free_vector_regs_for_cross_loop_state: 0
+    required_redesign:
+      - "new paired basemul loop DAG"
+      - "register allocation that reserves low-half packed intermediates across the second loop"
+      - "tagged lane map from GT st4 output vectors to exact POLYBYTES positions"
+      - "full byte oracle and valid/invalid decap differential"
+    production_ready: false
+    reason: "A true register-resident V3 cannot be implemented as a small final-store hook over the current production basemul body."
+    notes:
+      - "Do not implement another scratch conversion under this candidate."
+      - "Do not use Q31 or overwrite generic poly_basemul."
+      - "Only reopen if we are willing to author a new two-loop basemul+pack symbolic kernel."

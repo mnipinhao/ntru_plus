@@ -1,6 +1,17 @@
 # Decap Verify Vector Finalizer Feasibility
 
-Status: audit only.  No V2 ASM was implemented.
+Status: V2 benchmark-only ASM prototype implemented; Pi5 correctness passed,
+but PMU regressed.
+
+Implementation artifact:
+
+```text
+asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
+```
+
+This V2 reuses the production GT `poly_basemul` arithmetic body through a
+final-store hook in `asm/gt/base_gt_opt_body.inc`.  The production wrappers do
+not define that hook, so their final `st4` contract is unchanged.
 
 ## Starting Point
 
@@ -9,9 +20,9 @@ PMU:
 
 ```text
 symbol: gt_decap_verify_basemul_tobytes_direct_candidate
-prototype: asm/bench_only/gt_decap_verify_basemul_tobytes_direct_candidate.S
+prototype: asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
 gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
-status: rejected_pmu_regression
+status: scalar version rejected; vector V2 correctness-pass PMU-regression
 ```
 
 Correctness:
@@ -300,7 +311,7 @@ That is still a small full-decap gain:
 Decision:
 
 ```text
-feasible_vector_v2
+feasible_vector_v2_but_current_v2a_rejected
 ```
 
 Reason:
@@ -311,6 +322,25 @@ st4-register to contiguous-vector conversion, and a more aggressive direct-SoA
 network is possible with a lane-map proof.
 ```
 
+The implemented V2A-like benchmark-only prototype confirms the correctness
+side of that statement, but not the performance side:
+
+| window | cycles p50 | cycles IQR | instr p50 |
+| --- | ---: | ---: | ---: |
+| `decap_verify_basemul_plus_tobytes_r2` | 3245 | 0 | 3297 |
+| `decap_verify_contract_direct_candidate` | 3330 | 0 | 3374 |
+| `full_decap_current` | 33307 | 3 | 75211 |
+| `full_decap_contract_direct_candidate` | 33418 | 6 | 75289 |
+
+```text
+local delta vs basemul_plus_tobytes = +85 cycles
+full decap delta vs current         = +111 cycles
+```
+
+The conservative route is therefore rejected.  It avoids scalar extraction, but
+the scratch/st4-to-ld1 conversion still costs more than the production
+`poly_basemul` memory store plus Slothy `poly_tobytes` load/pack sequence.
+
 However, this is not a strong next optimization target:
 
 ```text
@@ -318,13 +348,13 @@ V2A likely has weak or neutral PMU movement.
 V2B requires non-trivial lane-map work for at most sub-1% full-decap gain.
 ```
 
-Recommendation:
+Updated recommendation:
 
 ```text
-Do not write V2 ASM unless this route is explicitly approved as a small
-benchmark-only experiment.  If approved, implement V2A first only as a
-correctness/PMU sanity check; continue to V2B only if V2A is non-regressing or
-the lane-map suggests fewer than twelve additional permutation instructions.
+Do not promote V2A.
+Do not continue the conservative st4-to-ld1 scratch-conversion route.
+Only revisit this topic with a new V2B direct-SoA/register-resident pack network
+that removes most of the conversion zips and scratch traffic.
 ```
 
 ## Required Checks Before Any V2 ASM
