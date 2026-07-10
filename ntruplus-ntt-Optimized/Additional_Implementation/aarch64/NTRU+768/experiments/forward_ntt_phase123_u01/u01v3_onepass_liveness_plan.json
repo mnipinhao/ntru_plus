@@ -1,0 +1,68 @@
+{
+  "candidate": "u01v3_onepass_cumulative_feasibility",
+  "status": "not_feasible_with_current_unchanged_stage345_register_allocation",
+  "constraints": {
+    "production_default_changed": false,
+    "two_pass_cumulative_allowed": false,
+    "extra_raw_q_reloads_allowed": false,
+    "duplicated_stage12_allowed": false,
+    "stage345_arithmetic_changed": false,
+    "stage345_scatter_changed": false
+  },
+  "handoff_registers": {
+    "block0": {
+      "stage12_output": "out0",
+      "q_values": ["Q0", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7"],
+      "registers": ["q29", "q1", "q28", "q17", "q26", "q5", "q18", "q8"],
+      "inserted_vector_moves_per_3_rows": 3
+    },
+    "block1": {
+      "stage12_output": "out1",
+      "q_values": ["Q8", "Q9", "Q10", "Q11", "Q12", "Q13", "Q14", "Q15"],
+      "registers": ["q10", "q20", "q30", "q24", "q9", "q6", "q31", "q23"],
+      "inserted_vector_moves_per_3_rows": 3
+    },
+    "block2": {
+      "stage12_output": "out2",
+      "q_values": ["Q16", "Q17", "Q18", "Q19", "Q20", "Q21", "Q22", "Q23"],
+      "registers": ["q15", "q7", "q6", "q13", "q27", "q17", "q29", "q20"],
+      "inserted_vector_moves_per_3_rows": 0
+    }
+  },
+  "max_simultaneous_live_q_registers": {
+    "block0_only": 8,
+    "block0_plus_block1": 16,
+    "block0_plus_block1_plus_block2": 24
+  },
+  "stage345_clobber_sets": {
+    "block0": {
+      "writes": [
+        "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q10", "q11",
+        "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20",
+        "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29", "q30",
+        "q31"
+      ],
+      "clobbers_block1_handoff": ["q10", "q20", "q30", "q24", "q9", "q6", "q31", "q23"],
+      "clobbers_block2_handoff": ["q15", "q7", "q6", "q13", "q27", "q17", "q29", "q20"]
+    },
+    "block1": {
+      "writes": [
+        "q1", "q2", "q3", "q5", "q6", "q7", "q8", "q9", "q10", "q12",
+        "q13", "q14", "q17", "q18", "q19", "q20", "q21", "q23", "q25",
+        "q26", "q27", "q28", "q30", "q31"
+      ],
+      "clobbers_block2_handoff": ["q7", "q6", "q13", "q27", "q17", "q20"],
+      "preserves_block2_handoff": ["q15", "q29"]
+    }
+  },
+  "onepass_success_conditions": {
+    "extra_raw_q_reloads": 0,
+    "duplicated_stage12_computation": false,
+    "live_ranges_consumed_block_by_block": "not_satisfied_with_current_stage345_clobbers"
+  },
+  "feasible_next_experiments": [
+    "u01v3_onepass_f01_with_spill_budget",
+    "u01v3_stage345_block0_preserve_block1_liveins",
+    "continue_isolated_block_fuse_measurements"
+  ]
+}

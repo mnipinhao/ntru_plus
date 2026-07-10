@@ -1,0 +1,26 @@
+mode: existing_region_replacement
+candidate_id: u01v3_g1_stage345_reduction_slothy
+scope: first final sqdmulh through the end of each Stage345 block
+attempted_blocks: [0, 1, 2, 3]
+scheduled_blocks: [1, 2, 3]
+unchanged_blocks: [0]
+register_policy:
+  allow_renaming: false
+  allow_spills: false
+  reserved_gpr: x0-x30 and sp
+  reserved_vector: v0
+semantic_policy:
+  instruction_multiset_must_match: true
+  arithmetic_changes: forbidden
+  reduction_changes: forbidden
+  load_elimination: forbidden
+  store_shape_changes: forbidden
+  address_changes: forbidden
+  only_instruction_order_may_change: true
+block0_exception:
+  physical_code_changed: false
+  reason: full tail infeasible because of inherited stack_0 handoff
+validation:
+  target_model: slothy.targets.aarch64.neoverse_n1_experimental
+  correctness: full poly_ntt differential, ABI sentinel, and KEM
+  performance: Raspberry Pi 5 paired cycles/instructions PMU

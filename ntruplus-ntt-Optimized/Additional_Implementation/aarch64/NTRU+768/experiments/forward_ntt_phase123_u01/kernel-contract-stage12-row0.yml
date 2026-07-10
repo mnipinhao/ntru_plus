@@ -1,0 +1,187 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: phase123_u01_stage12_row0_stripe01
+  name: phase123_u01_stage12_row0_stripe01
+  source: experiments/forward_ntt_phase123_u01/phase123_u01_stage12_row0_stripe01.sym.s
+  scheme: ntruplus768_gt
+  operation: forward_ntt_phase123_u01_even_group_row0_direct_stage12_stripes0_1
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+
+slothy:
+  workflow: source_order_static_then_remote_slothy
+  driver: experiments/forward_ntt_phase123_u01/optimize_stage12_row0.py
+  expected_outputs:
+    - experiments/forward_ntt_phase123_u01/phase123_u01_stage12_row0_stripe01.opt.s
+  allow_spills: false
+
+region:
+  start_label: slothy_start_phase123_u01_stage12_row0_stripe01
+  end_label: slothy_end_phase123_u01_stage12_row0_stripe01
+  expected_instruction_count: 273
+  live_in:
+    - x1 input base at Phase123 iteration 0
+    - x3 Phase123 twist/precompute table base at iteration 0
+    - x4 row0 post-stage12 output scratch base
+    - x12 NTT32 stage12 twiddle table base
+    - v0 q/reduction/DFT3 constant vector
+  live_out:
+    - row0 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stored to x4 offsets 0/16/128/144/256/272/384/400
+    - x1/x3/x4/x12 unchanged
+
+abi:
+  inputs:
+    - x1 original GT Phase123 input base
+    - x3 original GT Phase123 twist table base
+    - x4 row0 stage12 scratch/output base
+    - x12 ntt32_twiddle_vecs base
+    - v0 constant vector with q and reduction constants
+  outputs:
+    - memory at x4 public fixed offsets
+  clobbers:
+    - x7 temporary public table base
+    - v1-v31 source-order prototype temporaries
+  concrete_gprs_allowed:
+    - x1
+    - x3
+    - x4
+    - x7
+    - x12
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+    - v25
+    - v26
+    - v27
+    - v28
+    - v29
+    - v30
+    - v31
+  reserved_registers:
+    - x0
+    - x2
+    - x5
+    - x6
+    - x8
+    - x9
+    - x10
+    - x11
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+
+instruction_dag:
+  file: instruction-dag-stage12-row0.yml
+  summary: compute row0 U01 slots0+1 for Phase123 iterations 0/2/4/6 and immediately run NTT32 stage12 stripes0+1
+
+layout:
+  input_representation: original GT Phase123 input layout; selected even iterations are addressed by public byte offsets
+  output_representation: row0 NTT32 post-stage12 row scratch layout for Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  vector_lanes: 8 signed 16-bit coefficients per Neon vector
+  packing: one q vector per logical Q slot
+
+memory_contract:
+  loads:
+    - input q loads from x1 offsets for iterations 0/2/4/6 and P0/P2/P4 low/high halves
+    - Phase123 twist/precompute ldp q pairs from x7 plus fixed offsets 0/64/128/192/256/320
+    - NTT32 stage12 twiddle q loads from x12 offsets 16/32/48
+  stores:
+    - x4+0 post-stage12 Q0
+    - x4+16 post-stage12 Q1
+    - x4+128 post-stage12 Q8
+    - x4+144 post-stage12 Q9
+    - x4+256 post-stage12 Q16
+    - x4+272 post-stage12 Q17
+    - x4+384 post-stage12 Q24
+    - x4+400 post-stage12 Q25
+  aliasing: x1/x3/x12 are read-only and must not alias x4 stores during the region
+  alignment: all q loads/stores and ldp q pairs are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x7 is assigned public x3+0/x3+768/x3+1536/x3+2304 before each producer block
+
+constant_contract:
+  constants:
+    - v0.h[0] q = 3457
+    - v0.h[2] zeta3 normal multiplier used by full U01 but not by row0-only sum
+    - v0.h[3] zeta3 precompute used by full U01 but not by row0-only sum
+    - v0.h[4] Phase123 high-half multiplier
+    - v0.h[5] Phase123 high-half precompute
+    - x3 table contains production Phase123 twiddle/precompute q pairs
+    - x12 table contains production NTT32 stage12 twiddle vectors
+  modulus: q = 3457
+  representation: signed 16-bit lane values with production Montgomery-style reductions
+  reduction_method: same sqrdmulh/mls sequences as production Phase123 U01 and production NTT32 stage12
+
+range_contract:
+  input_ranges:
+    - same as production GT Phase123 input contract
+  intermediate_ranges:
+    - row0 U01 sums match production Phase123 row0 slots0+1 for iterations 0/2/4/6
+    - stage12 intermediates match production NTT32 lazy stage12 arithmetic
+  output_ranges:
+    - same as production NTT32 stage12 output for Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  narrowing_points:
+    - no narrowing beyond signed 16-bit Neon lane wrap semantics used by production source
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficients loaded from x1
+  public_inputs:
+    - all offsets
+    - table bases x3 and x12
+    - output base x4
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: /Users/chenpinhao/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 experiments/forward_ntt_phase123_u01/verify_stage12_row0_symbolic.py --seeds 64
+  test_command: clang -target aarch64-linux-gnu -c experiments/forward_ntt_phase123_u01/phase123_u01_stage12_row0_stripe01.sym.s -o /private/tmp/phase123_u01_stage12_row0.o
+  full_path_benchmark_command: not-run; source-order prototype is not wired into KEM
+  benchmark_metric: cycles
+  lower_is_better: true

@@ -1,0 +1,128 @@
+dag:
+  id: phase123_u01_stage12_allrows_scratch_dag
+  kernel_contract: kernel-contract-stage12-allrows-scratch.yml
+  description: All-row shared-prefix U01 producer with compact stage12-order scratch, then NTT32 stage12 stripes0+1.
+
+inputs:
+  - id: input_base
+    register: x1
+    description: original Phase123 input base
+  - id: twist_base
+    register: x3
+    description: Phase123 twist/precompute table base
+  - id: out_row0
+    register: x4
+    description: row0 post-stage12 output base
+  - id: out_row1
+    register: x5
+    description: row1 post-stage12 output base
+  - id: out_row2
+    register: x6
+    description: row2 post-stage12 output base
+  - id: ntt32_twiddle_base
+    register: x12
+    description: ntt32_twiddle_vecs base
+  - id: scratch_base
+    register: x13
+    description: compact stage12-order temporary scratch
+  - id: constants
+    register: v0
+    description: q and reduction constants
+
+nodes:
+  - id: u01_iter0_allrows
+    op: phase123_u01_common_prefix_then_dft3_rows
+    inputs: [input_base + iter0 offsets, twist_base + 0, constants]
+    outputs: [raw_row0_Q0, raw_row0_Q1, raw_row1_Q0, raw_row1_Q1, raw_row2_Q0, raw_row2_Q1]
+    stores: [scratch row0/row1/row2 Q0/Q1]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row DFT3 formulas
+    tied_operands: [mls destination is read/write]
+    must_precede: [stage12_row0_stripe0, stage12_row0_stripe1, stage12_row1_stripe0, stage12_row1_stripe1, stage12_row2_stripe0, stage12_row2_stripe1]
+
+  - id: u01_iter2_allrows
+    op: phase123_u01_common_prefix_then_dft3_rows
+    inputs: [input_base + iter2 offsets, twist_base + 768, constants]
+    outputs: [raw_row0_Q8, raw_row0_Q9, raw_row1_Q8, raw_row1_Q9, raw_row2_Q8, raw_row2_Q9]
+    stores: [scratch row0/row1/row2 Q8/Q9]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row DFT3 formulas
+    tied_operands: [mls destination is read/write]
+    must_precede: [stage12_row0_stripe0, stage12_row0_stripe1, stage12_row1_stripe0, stage12_row1_stripe1, stage12_row2_stripe0, stage12_row2_stripe1]
+
+  - id: u01_iter4_allrows
+    op: phase123_u01_common_prefix_then_dft3_rows
+    inputs: [input_base + iter4 offsets, twist_base + 1536, constants]
+    outputs: [raw_row0_Q16, raw_row0_Q17, raw_row1_Q16, raw_row1_Q17, raw_row2_Q16, raw_row2_Q17]
+    stores: [scratch row0/row1/row2 Q16/Q17]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row DFT3 formulas
+    tied_operands: [mls destination is read/write]
+    must_precede: [stage12_row0_stripe0, stage12_row0_stripe1, stage12_row1_stripe0, stage12_row1_stripe1, stage12_row2_stripe0, stage12_row2_stripe1]
+
+  - id: u01_iter6_allrows
+    op: phase123_u01_common_prefix_then_dft3_rows
+    inputs: [input_base + iter6 offsets, twist_base + 2304, constants]
+    outputs: [raw_row0_Q24, raw_row0_Q25, raw_row1_Q24, raw_row1_Q25, raw_row2_Q24, raw_row2_Q25]
+    stores: [scratch row0/row1/row2 Q24/Q25]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row DFT3 formulas
+    tied_operands: [mls destination is read/write]
+    must_precede: [stage12_row0_stripe0, stage12_row0_stripe1, stage12_row1_stripe0, stage12_row1_stripe1, stage12_row2_stripe0, stage12_row2_stripe1]
+
+  - id: stage12_row0_stripe0
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row0 Q0/Q8/Q16/Q24, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row0_Q0, post_row0_Q8, post_row0_Q16, post_row0_Q24]
+    stores: [x4 + 0, x4 + 128, x4 + 256, x4 + 384]
+
+  - id: stage12_row0_stripe1
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row0 Q1/Q9/Q17/Q25, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row0_Q1, post_row0_Q9, post_row0_Q17, post_row0_Q25]
+    stores: [x4 + 16, x4 + 144, x4 + 272, x4 + 400]
+
+  - id: stage12_row1_stripe0
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row1 Q0/Q8/Q16/Q24, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row1_Q0, post_row1_Q8, post_row1_Q16, post_row1_Q24]
+    stores: [x5 + 0, x5 + 128, x5 + 256, x5 + 384]
+
+  - id: stage12_row1_stripe1
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row1 Q1/Q9/Q17/Q25, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row1_Q1, post_row1_Q9, post_row1_Q17, post_row1_Q25]
+    stores: [x5 + 16, x5 + 144, x5 + 272, x5 + 400]
+
+  - id: stage12_row2_stripe0
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row2 Q0/Q8/Q16/Q24, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row2_Q0, post_row2_Q8, post_row2_Q16, post_row2_Q24]
+    stores: [x6 + 0, x6 + 128, x6 + 256, x6 + 384]
+
+  - id: stage12_row2_stripe1
+    op: production_ntt32_stage12_stripe
+    inputs: [scratch row2 Q1/Q9/Q17/Q25, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_row2_Q1, post_row2_Q9, post_row2_Q17, post_row2_Q25]
+    stores: [x6 + 16, x6 + 144, x6 + 272, x6 + 400]
+
+memory:
+  loads:
+    - u01 input loads: x1 fixed public offsets for iter0/2/4/6 P0/P2/P4 low/high halves
+    - u01 table loads: x7 fixed public offsets 0/64/128/192/256/320, where x7 is x3 plus public iteration table offset
+    - stage12 scratch loads: x13 fixed public offsets in compact row layout
+    - stage12 table loads: x12 fixed public offsets 16/32/48
+  stores:
+    - u01 raw stores: x13 compact fixed public offsets
+    - stage12 post stores: x4/x5/x6 fixed public offsets
+  ordering_constraints:
+    - each stage12 row/stripe load must occur after its corresponding scratch raw Q stores
+    - stage12 post stores must occur after corresponding raw_Q inputs are loaded
+    - no secret-dependent memory addresses
+
+outputs:
+  - post_row0_Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  - post_row1_Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  - post_row2_Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

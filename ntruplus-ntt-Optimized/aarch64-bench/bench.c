@@ -88,6 +88,10 @@ void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
 #define NTESTS 500
 #endif
 
+#ifndef BENCH_COUNTER_NAME
+#define BENCH_COUNTER_NAME "cycles"
+#endif
+
 #ifndef BENCH_ENABLE_INVNTT_STAGES
 #define BENCH_ENABLE_INVNTT_STAGES 0
 #endif
@@ -160,7 +164,8 @@ static int cmp_uint64_t(const void *a, const void *b)
 
 static void print_median(const char *txt, uint64_t cyc[NTESTS])
 {
-  printf("%10s cycles = %" PRIu64 "\n", txt, cyc[NTESTS >> 1] / NITERATIONS);
+  printf("%10s %s = %" PRIu64 "\n", txt, BENCH_COUNTER_NAME,
+         cyc[NTESTS >> 1] / NITERATIONS);
 }
 
 static int percentiles[] = {1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99};
@@ -1196,6 +1201,7 @@ static int bench(const char *name, const char *mode, target_fn target)
 
   printf("bench_name = %s\n", name);
   printf("bench_mode = %s\n", mode);
+  printf("bench_counter = %s\n", BENCH_COUNTER_NAME);
   print_median(name, cycles);
   printf("\n");
   print_percentile_legend();

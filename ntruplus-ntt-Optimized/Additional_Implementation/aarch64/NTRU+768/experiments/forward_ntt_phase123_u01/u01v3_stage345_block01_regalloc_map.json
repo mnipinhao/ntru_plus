@@ -1,0 +1,28 @@
+{
+  "candidate_family": "u01v3_stage345_block01_regalloc",
+  "production_default_changed": false,
+  "first_wave_emitted_asm": [],
+  "skipped": [
+    {
+      "name": "R01a_delayed_produce_layout",
+      "status": "infeasible",
+      "reason": "Producing block0, consuming block0, then producing block1 requires either reloading raw Stage12 inputs from scratch or recomputing Stage12. Both are forbidden."
+    },
+    {
+      "name": "R01b_keep_block1_live_remap_block0_temps",
+      "status": "search_feasible_codegen_not_trusted_yet",
+      "reason": "A no-spill allocation exists only if Stage345 block0 is rebuilt so its temps avoid all block1 live-in registers. Prior A1 proved a physical SSA rename can avoid these regs, but correctness failed, so this must be regenerated from a stronger semantic DAG before PMU."
+    },
+    {
+      "name": "R01c_consumer_shaped_producer",
+      "status": "blocked_by_overlapping_consumer_regs",
+      "reason": "The current block0 and block1 consumer-shaped physical registers overlap and Stage345 block0 writes most of the block1 consumer set. This requires choosing a new block1 consumer contract together with a block0 temp allocation, not only changing Stage12 outputs."
+    },
+    {
+      "name": "R01d_minimal_vector_move_bridge",
+      "status": "infeasible_with_current_block0",
+      "reason": "Current Stage345 block0 clobbers 7 block1 live-ins (q6 q10 q20 q23 q24 q30 q31), but only 1 non-reserved parking regs survive block0 (q21). A <=4-move bridge cannot preserve the live set without stack spill."
+    }
+  ],
+  "note": "No R01 primary ASM is emitted until the semantic search marks a candidate correctness-safe."
+}

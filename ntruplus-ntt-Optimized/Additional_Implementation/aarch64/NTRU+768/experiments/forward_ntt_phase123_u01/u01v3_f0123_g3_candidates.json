@@ -1,0 +1,239 @@
+{
+  "artifact": "u01v3_f0123_g3_model",
+  "production_default_changed": false,
+  "baseline": {
+    "G1": {
+      "cycles": 2694,
+      "instructions": 3743,
+      "block3_q_loads_retained": 24,
+      "block3_stage12_out3_stores": 24
+    },
+    "P": {
+      "cycles": 2707,
+      "instructions": 3835
+    },
+    "V": {
+      "cycles": 2724,
+      "instructions": 3875
+    }
+  },
+  "stage345_block3": {
+    "instruction_count_per_row": 162,
+    "input_q_loads_per_row": 8,
+    "input_q_loads_total": 24,
+    "input_contract": [
+      {
+        "q_index": 28,
+        "original_dest": "q26",
+        "first_consume_op_index": 8,
+        "preclobbers": [
+          "q14"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 29,
+        "original_dest": "q17",
+        "first_consume_op_index": 9,
+        "preclobbers": [
+          "q14",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 31,
+        "original_dest": "q12",
+        "first_consume_op_index": 12,
+        "preclobbers": [
+          "q1",
+          "q14",
+          "q17",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 24,
+        "original_dest": "q7",
+        "first_consume_op_index": 13,
+        "preclobbers": [
+          "q1",
+          "q12",
+          "q14",
+          "q17",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 26,
+        "original_dest": "q5",
+        "first_consume_op_index": 14,
+        "preclobbers": [
+          "q1",
+          "q7",
+          "q12",
+          "q14",
+          "q17",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 30,
+        "original_dest": "q18",
+        "first_consume_op_index": 15,
+        "preclobbers": [
+          "q1",
+          "q5",
+          "q7",
+          "q12",
+          "q14",
+          "q17",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 27,
+        "original_dest": "q3",
+        "first_consume_op_index": 20,
+        "preclobbers": [
+          "q1",
+          "q5",
+          "q7",
+          "q11",
+          "q12",
+          "q14",
+          "q17",
+          "q18",
+          "q19",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      },
+      {
+        "q_index": 25,
+        "original_dest": "q4",
+        "first_consume_op_index": 21,
+        "preclobbers": [
+          "q1",
+          "q3",
+          "q5",
+          "q7",
+          "q11",
+          "q12",
+          "q14",
+          "q17",
+          "q18",
+          "q19",
+          "q21",
+          "q26"
+        ],
+        "same_dest_handoff_safe": true
+      }
+    ],
+    "same_dest_handoff_safe": true
+  },
+  "candidate_summary": {
+    "G3a_delayed_block3_producer_after_E3": {
+      "status": "hard_gate_fail",
+      "expected_instruction_delta_vs_G1": 201,
+      "raw_q_reloads": 96,
+      "expected_cycle_risk": "high: removes 48 memory ops but adds 96 raw q loads, 9 twiddle loads, and 144 arithmetic instructions"
+    },
+    "G3b_partial_shared_prefix_t1_t3": {
+      "status": "not_plausible",
+      "expected_instruction_delta_vs_G1": 72,
+      "raw_q_reloads": 0,
+      "expected_cycle_risk": "high: doubles prefix memory traffic and adds finish arithmetic"
+    },
+    "G3c_bounded_recompute_no_prefix": {
+      "status": "hard_gate_fail",
+      "expected_instruction_delta_vs_G1": 201,
+      "raw_q_reloads": 96,
+      "expected_cycle_risk": "high"
+    }
+  },
+  "candidates": {
+    "G3a_delayed_block3_producer_after_E3": {
+      "status": "hard_gate_fail",
+      "shape": "After E3/F012 consumes block0/1/2, regenerate Q24..Q31 and hand off directly to Stage345 block3.",
+      "extra_arithmetic_instructions": 144,
+      "extra_q_loads": 105,
+      "removed_block3_q_loads": 24,
+      "removed_block3_q_stores_if_applicable": 24,
+      "raw_q_reloads": 96,
+      "stack_spills": 0,
+      "max_live_q_regs": "producer-local <= 12 plus q0 constant; register pressure is feasible",
+      "same_as_interference_feasibility": "not the blocker; block3 same-dest handoff is preclobber-safe",
+      "same_dest_handoff_safe": true,
+      "expected_instruction_delta_vs_G1": 201,
+      "expected_cycle_risk": "high: removes 48 memory ops but adds 96 raw q loads, 9 twiddle loads, and 144 arithmetic instructions",
+      "hard_gate": {
+        "no_raw_q_reload": false,
+        "no_stack_spill": true,
+        "no_live_all_violation": true,
+        "max_live_q_regs_lte_available": true,
+        "expected_instruction_count_ok": false
+      },
+      "reason": "After G1/E3 Stage12, raw D has been overwritten by out3. Regenerating block3 later needs raw A/B/C/D reloads unless extra prefix state is saved."
+    },
+    "G3b_partial_shared_prefix_t1_t3": {
+      "status": "not_plausible",
+      "shape": "Store t1 and t3 prefix values during Stage12, then finish Q24..Q31 after E3 frees registers.",
+      "extra_arithmetic_instructions": 24,
+      "extra_q_loads": 48,
+      "extra_q_stores": 48,
+      "removed_block3_q_loads": 24,
+      "removed_block3_q_stores_if_applicable": 24,
+      "raw_q_reloads": 0,
+      "stack_spills": 0,
+      "max_live_q_regs": "bounded; prefix is memory-resident, not live-all",
+      "same_as_interference_feasibility": "feasible, but memory/instruction cost dominates",
+      "expected_instruction_delta_vs_G1": 72,
+      "expected_cycle_risk": "high: doubles prefix memory traffic and adds finish arithmetic",
+      "hard_gate": {
+        "no_raw_q_reload": true,
+        "no_stack_spill": true,
+        "no_live_all_violation": true,
+        "max_live_q_regs_lte_available": true,
+        "expected_instruction_count_ok": false
+      },
+      "reason": "Avoids raw reloads, but replaces 24 out3 stores and 24 Stage345 q loads with 48 prefix stores, 48 prefix loads, and 24 subtracts."
+    },
+    "G3c_bounded_recompute_no_prefix": {
+      "status": "hard_gate_fail",
+      "shape": "Do not save prefix; recompute block3 from raw row scratch after E3/F012.",
+      "extra_arithmetic_instructions": 144,
+      "extra_q_loads": 105,
+      "removed_block3_q_loads": 24,
+      "removed_block3_q_stores_if_applicable": 24,
+      "raw_q_reloads": 96,
+      "stack_spills": 0,
+      "max_live_q_regs": "feasible locally, but raw reload contract fails",
+      "same_as_interference_feasibility": "not the blocker",
+      "expected_instruction_delta_vs_G1": 201,
+      "expected_cycle_risk": "high",
+      "hard_gate": {
+        "no_raw_q_reload": false,
+        "no_stack_spill": true,
+        "no_live_all_violation": true,
+        "max_live_q_regs_lte_available": true,
+        "expected_instruction_count_ok": false
+      },
+      "reason": "This is effectively G3a without retained prefix; it violates the no raw q reload gate and is far above G1 instruction count."
+    }
+  },
+  "decision": {
+    "emit_physical_asm": false,
+    "reason": "No G3 candidate passes the hard gate. G3a/G3c require raw q reloads and add about 201 instructions vs G1; G3b avoids raw reloads but adds about 72 instructions and more prefix memory traffic.",
+    "next": "Stop F0123 expansion here unless we are willing to redesign deeper Phase123 layout/producer order."
+  }
+}

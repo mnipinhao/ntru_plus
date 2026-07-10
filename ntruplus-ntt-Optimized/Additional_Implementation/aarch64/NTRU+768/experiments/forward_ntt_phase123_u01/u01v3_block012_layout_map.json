@@ -1,0 +1,393 @@
+{
+  "candidate_family": "u01v3_block012_isolated_fuse_matrix",
+  "two_pass_cumulative": false,
+  "extra_stage12_raw_q_loads": 0,
+  "variants": {
+    "F0": {
+      "fused_block": 0,
+      "removed_stage12_q_stores": 24,
+      "removed_stage345_q_loads": 24,
+      "inserted_vector_moves": 3
+    },
+    "F1": {
+      "fused_block": 1,
+      "removed_stage12_q_stores": 24,
+      "removed_stage345_q_loads": 24,
+      "inserted_vector_moves": 3
+    },
+    "F2": {
+      "fused_block": 2,
+      "removed_stage12_q_stores": 24,
+      "removed_stage345_q_loads": 24,
+      "inserted_vector_moves": 0
+    }
+  },
+  "blocks": {
+    "block0": [
+      {
+        "semantic_name": "Q0",
+        "stage12_output": "out0",
+        "stage12_register": "q29",
+        "original_scratch_store_offset_by_row": {
+          "row0": 0,
+          "row1": 512,
+          "row2": 1024
+        },
+        "stage345_load_offset": 0,
+        "stage345_load_destination": "q29",
+        "proposed_handoff_register": "q29",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q1",
+        "stage12_output": "out0",
+        "stage12_register": "q1",
+        "original_scratch_store_offset_by_row": {
+          "row0": 16,
+          "row1": 528,
+          "row2": 1040
+        },
+        "stage345_load_offset": 16,
+        "stage345_load_destination": "q6",
+        "proposed_handoff_register": "q1",
+        "vector_move_required": true,
+        "inserted_move": "mov v6.16b, v1.16b"
+      },
+      {
+        "semantic_name": "Q2",
+        "stage12_output": "out0",
+        "stage12_register": "q28",
+        "original_scratch_store_offset_by_row": {
+          "row0": 32,
+          "row1": 544,
+          "row2": 1056
+        },
+        "stage345_load_offset": 32,
+        "stage345_load_destination": "q28",
+        "proposed_handoff_register": "q28",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q3",
+        "stage12_output": "out0",
+        "stage12_register": "q17",
+        "original_scratch_store_offset_by_row": {
+          "row0": 48,
+          "row1": 560,
+          "row2": 1072
+        },
+        "stage345_load_offset": 48,
+        "stage345_load_destination": "q17",
+        "proposed_handoff_register": "q17",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q4",
+        "stage12_output": "out0",
+        "stage12_register": "q26",
+        "original_scratch_store_offset_by_row": {
+          "row0": 64,
+          "row1": 576,
+          "row2": 1088
+        },
+        "stage345_load_offset": 64,
+        "stage345_load_destination": "q26",
+        "proposed_handoff_register": "q26",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q5",
+        "stage12_output": "out0",
+        "stage12_register": "q5",
+        "original_scratch_store_offset_by_row": {
+          "row0": 80,
+          "row1": 592,
+          "row2": 1104
+        },
+        "stage345_load_offset": 80,
+        "stage345_load_destination": "q5",
+        "proposed_handoff_register": "q5",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q6",
+        "stage12_output": "out0",
+        "stage12_register": "q18",
+        "original_scratch_store_offset_by_row": {
+          "row0": 96,
+          "row1": 608,
+          "row2": 1120
+        },
+        "stage345_load_offset": 96,
+        "stage345_load_destination": "q18",
+        "proposed_handoff_register": "q18",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q7",
+        "stage12_output": "out0",
+        "stage12_register": "q8",
+        "original_scratch_store_offset_by_row": {
+          "row0": 112,
+          "row1": 624,
+          "row2": 1136
+        },
+        "stage345_load_offset": 112,
+        "stage345_load_destination": "q8",
+        "proposed_handoff_register": "q8",
+        "vector_move_required": false,
+        "inserted_move": null
+      }
+    ],
+    "block1": [
+      {
+        "semantic_name": "Q8",
+        "stage12_output": "out1",
+        "stage12_register": "q10",
+        "original_scratch_store_offset_by_row": {
+          "row0": 128,
+          "row1": 640,
+          "row2": 1152
+        },
+        "stage345_load_offset": 128,
+        "stage345_load_destination": "q10",
+        "proposed_handoff_register": "q10",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q9",
+        "stage12_output": "out1",
+        "stage12_register": "q20",
+        "original_scratch_store_offset_by_row": {
+          "row0": 144,
+          "row1": 656,
+          "row2": 1168
+        },
+        "stage345_load_offset": 144,
+        "stage345_load_destination": "q20",
+        "proposed_handoff_register": "q20",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q10",
+        "stage12_output": "out1",
+        "stage12_register": "q30",
+        "original_scratch_store_offset_by_row": {
+          "row0": 160,
+          "row1": 672,
+          "row2": 1184
+        },
+        "stage345_load_offset": 160,
+        "stage345_load_destination": "q30",
+        "proposed_handoff_register": "q30",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q11",
+        "stage12_output": "out1",
+        "stage12_register": "q24",
+        "original_scratch_store_offset_by_row": {
+          "row0": 176,
+          "row1": 688,
+          "row2": 1200
+        },
+        "stage345_load_offset": 176,
+        "stage345_load_destination": "q1",
+        "proposed_handoff_register": "q24",
+        "vector_move_required": true,
+        "inserted_move": "mov v1.16b, v24.16b"
+      },
+      {
+        "semantic_name": "Q12",
+        "stage12_output": "out1",
+        "stage12_register": "q9",
+        "original_scratch_store_offset_by_row": {
+          "row0": 192,
+          "row1": 704,
+          "row2": 1216
+        },
+        "stage345_load_offset": 192,
+        "stage345_load_destination": "q9",
+        "proposed_handoff_register": "q9",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q13",
+        "stage12_output": "out1",
+        "stage12_register": "q6",
+        "original_scratch_store_offset_by_row": {
+          "row0": 208,
+          "row1": 720,
+          "row2": 1232
+        },
+        "stage345_load_offset": 208,
+        "stage345_load_destination": "q6",
+        "proposed_handoff_register": "q6",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q14",
+        "stage12_output": "out1",
+        "stage12_register": "q31",
+        "original_scratch_store_offset_by_row": {
+          "row0": 224,
+          "row1": 736,
+          "row2": 1248
+        },
+        "stage345_load_offset": 224,
+        "stage345_load_destination": "q31",
+        "proposed_handoff_register": "q31",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q15",
+        "stage12_output": "out1",
+        "stage12_register": "q23",
+        "original_scratch_store_offset_by_row": {
+          "row0": 240,
+          "row1": 752,
+          "row2": 1264
+        },
+        "stage345_load_offset": 240,
+        "stage345_load_destination": "q23",
+        "proposed_handoff_register": "q23",
+        "vector_move_required": false,
+        "inserted_move": null
+      }
+    ],
+    "block2": [
+      {
+        "semantic_name": "Q16",
+        "stage12_output": "out2",
+        "stage12_register": "q15",
+        "original_scratch_store_offset_by_row": {
+          "row0": 256,
+          "row1": 768,
+          "row2": 1280
+        },
+        "stage345_load_offset": 256,
+        "stage345_load_destination": "q15",
+        "proposed_handoff_register": "q15",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q17",
+        "stage12_output": "out2",
+        "stage12_register": "q7",
+        "original_scratch_store_offset_by_row": {
+          "row0": 272,
+          "row1": 784,
+          "row2": 1296
+        },
+        "stage345_load_offset": 272,
+        "stage345_load_destination": "q7",
+        "proposed_handoff_register": "q7",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q18",
+        "stage12_output": "out2",
+        "stage12_register": "q6",
+        "original_scratch_store_offset_by_row": {
+          "row0": 288,
+          "row1": 800,
+          "row2": 1312
+        },
+        "stage345_load_offset": 288,
+        "stage345_load_destination": "q6",
+        "proposed_handoff_register": "q6",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q19",
+        "stage12_output": "out2",
+        "stage12_register": "q13",
+        "original_scratch_store_offset_by_row": {
+          "row0": 304,
+          "row1": 816,
+          "row2": 1328
+        },
+        "stage345_load_offset": 304,
+        "stage345_load_destination": "q13",
+        "proposed_handoff_register": "q13",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q20",
+        "stage12_output": "out2",
+        "stage12_register": "q27",
+        "original_scratch_store_offset_by_row": {
+          "row0": 320,
+          "row1": 832,
+          "row2": 1344
+        },
+        "stage345_load_offset": 320,
+        "stage345_load_destination": "q27",
+        "proposed_handoff_register": "q27",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q21",
+        "stage12_output": "out2",
+        "stage12_register": "q17",
+        "original_scratch_store_offset_by_row": {
+          "row0": 336,
+          "row1": 848,
+          "row2": 1360
+        },
+        "stage345_load_offset": 336,
+        "stage345_load_destination": "q17",
+        "proposed_handoff_register": "q17",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q22",
+        "stage12_output": "out2",
+        "stage12_register": "q29",
+        "original_scratch_store_offset_by_row": {
+          "row0": 352,
+          "row1": 864,
+          "row2": 1376
+        },
+        "stage345_load_offset": 352,
+        "stage345_load_destination": "q29",
+        "proposed_handoff_register": "q29",
+        "vector_move_required": false,
+        "inserted_move": null
+      },
+      {
+        "semantic_name": "Q23",
+        "stage12_output": "out2",
+        "stage12_register": "q20",
+        "original_scratch_store_offset_by_row": {
+          "row0": 368,
+          "row1": 880,
+          "row2": 1392
+        },
+        "stage345_load_offset": 368,
+        "stage345_load_destination": "q20",
+        "proposed_handoff_register": "q20",
+        "vector_move_required": false,
+        "inserted_move": null
+      }
+    ]
+  }
+}

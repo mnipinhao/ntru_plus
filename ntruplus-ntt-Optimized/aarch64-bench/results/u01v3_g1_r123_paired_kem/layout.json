@@ -1,0 +1,376 @@
+{
+  "binary": "bench_u01v3_g1_r123_paired_kem_pmu_bin",
+  "binary_text_size": 171491,
+  "same_binary": true,
+  "measured_poly_ntt_dispatch_branch": false,
+  "candidate_poly_ntt_internal_bl_count": 0,
+  "symbols": {
+    "bench_crypto_kem_enc_u01v3_prod": {
+      "name": "bench_crypto_kem_enc_u01v3_prod",
+      "address": 9988,
+      "size": 80,
+      "kind": "T",
+      "span_to_next_text_symbol": 92,
+      "addr_mod32": 4,
+      "addr_mod64": 4
+    },
+    "bench_crypto_kem_enc_u01v3_candidate": {
+      "name": "bench_crypto_kem_enc_u01v3_candidate",
+      "address": 11204,
+      "size": 80,
+      "kind": "T",
+      "span_to_next_text_symbol": 92,
+      "addr_mod32": 4,
+      "addr_mod64": 4
+    },
+    "bench_crypto_kem_dec_u01v3_prod": {
+      "name": "bench_crypto_kem_dec_u01v3_prod",
+      "address": 10080,
+      "size": 468,
+      "kind": "T",
+      "span_to_next_text_symbol": 480,
+      "addr_mod32": 0,
+      "addr_mod64": 32
+    },
+    "bench_crypto_kem_dec_u01v3_candidate": {
+      "name": "bench_crypto_kem_dec_u01v3_candidate",
+      "address": 11296,
+      "size": 468,
+      "kind": "T",
+      "span_to_next_text_symbol": 480,
+      "addr_mod32": 0,
+      "addr_mod64": 32
+    },
+    "bench_crypto_kem_enc_u01v3_capture": {
+      "name": "bench_crypto_kem_enc_u01v3_capture",
+      "address": 12420,
+      "size": 80,
+      "kind": "T",
+      "span_to_next_text_symbol": 92,
+      "addr_mod32": 4,
+      "addr_mod64": 4
+    },
+    "bench_crypto_kem_dec_u01v3_capture": {
+      "name": "bench_crypto_kem_dec_u01v3_capture",
+      "address": 12512,
+      "size": 468,
+      "kind": "T",
+      "span_to_next_text_symbol": 480,
+      "addr_mod32": 0,
+      "addr_mod64": 32
+    },
+    "bench_u01v3_capture_poly_ntt": {
+      "name": "bench_u01v3_capture_poly_ntt",
+      "address": 9152,
+      "size": 168,
+      "kind": "T",
+      "span_to_next_text_symbol": 192,
+      "addr_mod32": 0,
+      "addr_mod64": 0
+    },
+    "poly_ntt": {
+      "name": "poly_ntt",
+      "address": 40016,
+      "size": 0,
+      "kind": "T",
+      "span_to_next_text_symbol": 48,
+      "addr_mod32": 16,
+      "addr_mod64": 16
+    },
+    "poly_ntt_u01v3_g1_r123_s2": {
+      "name": "poly_ntt_u01v3_g1_r123_s2",
+      "address": 145760,
+      "size": 14904,
+      "kind": "T",
+      "span_to_next_text_symbol": 14904,
+      "addr_mod32": 0,
+      "addr_mod64": 32
+    }
+  },
+  "linkage": {
+    "bench_crypto_kem_enc_u01v3_prod": {
+      "expected_target": 40016,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 9060,
+          "symbol": "randombytes"
+        },
+        {
+          "address": 9344,
+          "symbol": "crypto_kem_enc_derand.isra.0"
+        }
+      ],
+      "pass": true
+    },
+    "bench_crypto_kem_dec_u01v3_prod": {
+      "expected_target": 40016,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 144976,
+          "symbol": "_poly_basemul_rminus1"
+        },
+        {
+          "address": 105232,
+          "symbol": "_gt_block_major_poly_invntt_from_rminus1"
+        },
+        {
+          "address": 38328,
+          "symbol": "_poly_crepmod3"
+        },
+        {
+          "address": 40016,
+          "symbol": "_gt_block_major_poly_ntt"
+        },
+        {
+          "address": 38112,
+          "symbol": "_poly_sub"
+        },
+        {
+          "address": 143632,
+          "symbol": "_poly_basemul"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        },
+        {
+          "address": 13064,
+          "symbol": "hash_g"
+        },
+        {
+          "address": 39612,
+          "symbol": "_poly_sotp_decode"
+        },
+        {
+          "address": 13152,
+          "symbol": "hash_h"
+        },
+        {
+          "address": 38912,
+          "symbol": "_poly_cbd1"
+        },
+        {
+          "address": 40016,
+          "symbol": "_gt_block_major_poly_ntt"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        }
+      ],
+      "pass": true
+    },
+    "bench_crypto_kem_enc_u01v3_candidate": {
+      "expected_target": 145760,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 9060,
+          "symbol": "randombytes"
+        },
+        {
+          "address": 10560,
+          "symbol": "crypto_kem_enc_derand.isra.0"
+        }
+      ],
+      "pass": true
+    },
+    "bench_crypto_kem_dec_u01v3_candidate": {
+      "expected_target": 145760,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 144976,
+          "symbol": "_poly_basemul_rminus1"
+        },
+        {
+          "address": 105232,
+          "symbol": "_gt_block_major_poly_invntt_from_rminus1"
+        },
+        {
+          "address": 38328,
+          "symbol": "_poly_crepmod3"
+        },
+        {
+          "address": 145760,
+          "symbol": "poly_ntt_u01v3_g1_r123_s2"
+        },
+        {
+          "address": 38112,
+          "symbol": "_poly_sub"
+        },
+        {
+          "address": 143632,
+          "symbol": "_poly_basemul"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        },
+        {
+          "address": 13064,
+          "symbol": "hash_g"
+        },
+        {
+          "address": 39612,
+          "symbol": "_poly_sotp_decode"
+        },
+        {
+          "address": 13152,
+          "symbol": "hash_h"
+        },
+        {
+          "address": 38912,
+          "symbol": "_poly_cbd1"
+        },
+        {
+          "address": 145760,
+          "symbol": "poly_ntt_u01v3_g1_r123_s2"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        }
+      ],
+      "pass": true
+    },
+    "bench_crypto_kem_enc_u01v3_capture": {
+      "expected_target": 9152,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 9060,
+          "symbol": "randombytes"
+        },
+        {
+          "address": 11776,
+          "symbol": "crypto_kem_enc_derand.isra.0"
+        }
+      ],
+      "pass": true
+    },
+    "bench_crypto_kem_dec_u01v3_capture": {
+      "expected_target": 9152,
+      "expected_resolved_bl_count": 2,
+      "actual_resolved_bl_count": 2,
+      "count_includes_compiler_static_helpers": true,
+      "wrong_production_calls": 0,
+      "wrong_candidate_calls": 0,
+      "calls": [
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 38408,
+          "symbol": "_poly_frombytes"
+        },
+        {
+          "address": 144976,
+          "symbol": "_poly_basemul_rminus1"
+        },
+        {
+          "address": 105232,
+          "symbol": "_gt_block_major_poly_invntt_from_rminus1"
+        },
+        {
+          "address": 38328,
+          "symbol": "_poly_crepmod3"
+        },
+        {
+          "address": 9152,
+          "symbol": "bench_u01v3_capture_poly_ntt"
+        },
+        {
+          "address": 38112,
+          "symbol": "_poly_sub"
+        },
+        {
+          "address": 143632,
+          "symbol": "_poly_basemul"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        },
+        {
+          "address": 13064,
+          "symbol": "hash_g"
+        },
+        {
+          "address": 39612,
+          "symbol": "_poly_sotp_decode"
+        },
+        {
+          "address": 13152,
+          "symbol": "hash_h"
+        },
+        {
+          "address": 38912,
+          "symbol": "_poly_cbd1"
+        },
+        {
+          "address": 9152,
+          "symbol": "bench_u01v3_capture_poly_ntt"
+        },
+        {
+          "address": 38608,
+          "symbol": "_poly_tobytes"
+        }
+      ],
+      "pass": true
+    }
+  },
+  "failures": [],
+  "status": "pass"
+}

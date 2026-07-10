@@ -1,0 +1,101 @@
+candidate_id: u01v3_g1_r123_s2
+status: production
+contract_delta:
+  allowed: instruction scheduling inside four marked windows
+  arithmetic: unchanged
+  reduction: unchanged
+  load_store_multiset: unchanged
+  production_default: g1r123_s2
+acceptance:
+  - Slothy completes every window emitted into the candidate
+  - infeasible block0 remains byte-for-byte unscheduled
+  - canonical instruction multiset equal before/after
+  - full poly_ntt mismatches = 0
+  - ABI sentinel mask = 0
+  - KEM correctness pass
+  - Pi5 cycles improve over unscheduled G1
+  - same-binary production/candidate linkage audit passes
+  - same-binary paired encap and decap have no cycle regression
+  - all four KEM-context forward-NTT sites retain a stable paired win
+result:
+  block0:
+    status: kept_unscheduled
+    reason: inherited stack_0 spill/restore window is immediately infeasible
+  block1:
+    status: optimal_selfcheck_pass
+    instructions: 98
+    n1_cycles: 61
+  block2:
+    status: optimal_selfcheck_pass
+    instructions: 98
+  block3:
+    status: optimal_selfcheck_pass
+    instructions: 99
+  fullpath_correctness: pass
+  abi_sentinel: pass
+  kem_correctness: pass
+  pi5_long_paired:
+    g1r123_vs_g1_cycles_median: -7
+    g1r123_s2_vs_g1_s2_cycles_median: -11
+    g1r123_s2_vs_production_cycles_median: -48
+  pi5_same_binary_full_kem:
+    core: 3
+    samples: 61
+    iterations_per_sample: 2000
+    order: alternating_ab_ba
+    correctness_checks: 2562
+    correctness_mismatches: 0
+    encap:
+      production_cycles_p50: 37718.332
+      candidate_cycles_p50: 37614.476
+      paired_delta_cycles_p10_p50_p90: [-113.653, -106.243, -100.240]
+      paired_win_rate_percent: 100.0
+      instruction_delta: -526
+    decap:
+      production_cycles_p50: 33315.364
+      candidate_cycles_p50: 33225.502
+      paired_delta_cycles_p10_p50_p90: [-101.116, -88.853, -82.876]
+      paired_win_rate_percent: 100.0
+      instruction_delta: -526
+    forward_ntt_sites:
+      encap_ntt_r_delta_cycles_p50: -45.294
+      encap_ntt_m_delta_cycles_p50: -45.767
+      decap_ntt_m1_delta_cycles_p50: -44.489
+      decap_ntt_r1_delta_cycles_p50: -44.977
+      instruction_delta_per_site: -263
+      paired_win_rate_percent: 100.0
+    diagnostics_delta_p50_per_call:
+      encap_l1i_refill: 0.147
+      decap_l1i_refill: 0.172
+      encap_stall_backend: -53.314
+      decap_stall_backend: -16.203
+    same_binary_linkage_audit: pass
+    measurement_promotion_gate: pass
+  production_integration:
+    asm: asm/gt/poly_ntt_g1_r123_s2.S
+    tables: asm/gt/poly_ntt_g1_r123_s2_tables.inc
+    legacy_switch: GT_PRODUCTION_USE_LEGACY_NTT=1
+    frozen_candidate_text_match: pass
+    kat_match_legacy: pass
+    kat_rsp_sha256: dca76b32748655990289002a05f7b1d648334d7ded05845c7fe3f1449d26690f
+  pi5_threeway_full_kem:
+    samples: 61
+    iterations_per_sample: 2000
+    keygen_cycles:
+      kpqc_final: 39957
+      gt_legacy: 37980
+      gt_new: 37945
+      new_vs_kpqc_percent: -5.035
+    encap_cycles:
+      kpqc_final: 39023
+      gt_legacy: 37679
+      gt_new: 37633
+      new_vs_kpqc_percent: -3.562
+      new_vs_legacy_percent: -0.122
+    decap_cycles:
+      kpqc_final: 35159
+      gt_legacy: 33078
+      gt_new: 32963
+      new_vs_kpqc_percent: -6.246
+      new_vs_legacy_percent: -0.348
+  production_default_changed: true

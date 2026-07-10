@@ -1,0 +1,1783 @@
+{
+  "artifact": "stage345_block0_contract",
+  "production_default_changed": false,
+  "scope": "Track E F01 block0+block1 only",
+  "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block0_slothy_start",
+  "warning": "E1 failed correctness; this contract is the required input for the next no-spill allocator.",
+  "stage345_block0_ssa": {
+    "operation_count_including_comments": 346,
+    "logical_values": [
+      {
+        "logical_value": "in_Q0",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          50,
+          52
+        ],
+        "last_use": 52,
+        "fixed": 29,
+        "interval": [
+          -1,
+          52
+        ]
+      },
+      {
+        "logical_value": "in_Q1",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          39,
+          40
+        ],
+        "last_use": 40,
+        "fixed": 1,
+        "interval": [
+          -1,
+          40
+        ]
+      },
+      {
+        "logical_value": "in_Q2",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          28,
+          37
+        ],
+        "last_use": 37,
+        "fixed": 28,
+        "interval": [
+          -1,
+          37
+        ]
+      },
+      {
+        "logical_value": "in_Q3",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          21,
+          23
+        ],
+        "last_use": 23,
+        "fixed": 17,
+        "interval": [
+          -1,
+          23
+        ]
+      },
+      {
+        "logical_value": "in_Q4",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          44,
+          46
+        ],
+        "last_use": 46,
+        "fixed": 26,
+        "interval": [
+          -1,
+          46
+        ]
+      },
+      {
+        "logical_value": "in_Q5",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          30,
+          32
+        ],
+        "last_use": 32,
+        "fixed": 5,
+        "interval": [
+          -1,
+          32
+        ]
+      },
+      {
+        "logical_value": "in_Q6",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          20,
+          24
+        ],
+        "last_use": 24,
+        "fixed": 18,
+        "interval": [
+          -1,
+          24
+        ]
+      },
+      {
+        "logical_value": "in_Q7",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          12,
+          15
+        ],
+        "last_use": 15,
+        "fixed": 8,
+        "interval": [
+          -1,
+          15
+        ]
+      },
+      {
+        "logical_value": "q0_const",
+        "lane_shape": "8h",
+        "def_op": -1,
+        "uses": [
+          15,
+          24,
+          32,
+          41,
+          46,
+          55,
+          65,
+          73,
+          74,
+          82,
+          85,
+          86,
+          93,
+          97,
+          99,
+          105,
+          107,
+          113,
+          117,
+          126,
+          130,
+          134,
+          136,
+          143,
+          145,
+          150,
+          154,
+          159
+        ],
+        "last_use": 159,
+        "fixed": 0,
+        "interval": [
+          -1,
+          159
+        ]
+      },
+      {
+        "logical_value": "v7_q6",
+        "lane_shape": "8h",
+        "def_op": 7,
+        "uses": [],
+        "last_use": null,
+        "fixed": null,
+        "interval": null
+      },
+      {
+        "logical_value": "v8_q2",
+        "lane_shape": "8h",
+        "def_op": 8,
+        "uses": [
+          12,
+          20,
+          30,
+          44
+        ],
+        "last_use": 44,
+        "fixed": null,
+        "interval": [
+          8,
+          44
+        ]
+      },
+      {
+        "logical_value": "v11_q15",
+        "lane_shape": "8h",
+        "def_op": 11,
+        "uses": [
+          36,
+          57,
+          72,
+          77,
+          79
+        ],
+        "last_use": 79,
+        "fixed": null,
+        "interval": [
+          11,
+          79
+        ]
+      },
+      {
+        "logical_value": "v12_q20",
+        "lane_shape": "8h",
+        "def_op": 12,
+        "uses": [
+          15
+        ],
+        "last_use": 15,
+        "fixed": null,
+        "interval": [
+          12,
+          15
+        ]
+      },
+      {
+        "logical_value": "v13_q14",
+        "lane_shape": "8h",
+        "def_op": 13,
+        "uses": [
+          31,
+          51,
+          61,
+          67,
+          68,
+          69,
+          70,
+          71
+        ],
+        "last_use": 71,
+        "fixed": null,
+        "interval": [
+          13,
+          71
+        ]
+      },
+      {
+        "logical_value": "v15_q8",
+        "lane_shape": "8h",
+        "def_op": 15,
+        "uses": [
+          21,
+          23
+        ],
+        "last_use": 23,
+        "fixed": [
+          "same_as",
+          "in_Q7"
+        ],
+        "interval": [
+          15,
+          23
+        ]
+      },
+      {
+        "logical_value": "v20_q13",
+        "lane_shape": "8h",
+        "def_op": 20,
+        "uses": [
+          24
+        ],
+        "last_use": 24,
+        "fixed": null,
+        "interval": [
+          20,
+          24
+        ]
+      },
+      {
+        "logical_value": "v21_q30",
+        "lane_shape": "8h",
+        "def_op": 21,
+        "uses": [
+          51,
+          55
+        ],
+        "last_use": 55,
+        "fixed": null,
+        "interval": [
+          21,
+          55
+        ]
+      },
+      {
+        "logical_value": "v23_q12",
+        "lane_shape": "8h",
+        "def_op": 23,
+        "uses": [
+          31,
+          36
+        ],
+        "last_use": 36,
+        "fixed": null,
+        "interval": [
+          23,
+          36
+        ]
+      },
+      {
+        "logical_value": "v24_q18",
+        "lane_shape": "8h",
+        "def_op": 24,
+        "uses": [
+          28,
+          37
+        ],
+        "last_use": 37,
+        "fixed": [
+          "same_as",
+          "in_Q6"
+        ],
+        "interval": [
+          24,
+          37
+        ]
+      },
+      {
+        "logical_value": "v28_q7",
+        "lane_shape": "8h",
+        "def_op": 28,
+        "uses": [
+          69,
+          73
+        ],
+        "last_use": 73,
+        "fixed": null,
+        "interval": [
+          28,
+          73
+        ]
+      },
+      {
+        "logical_value": "v30_q20",
+        "lane_shape": "8h",
+        "def_op": 30,
+        "uses": [
+          32
+        ],
+        "last_use": 32,
+        "fixed": null,
+        "interval": [
+          30,
+          32
+        ]
+      },
+      {
+        "logical_value": "v31_q17",
+        "lane_shape": "8h",
+        "def_op": 31,
+        "uses": [
+          41
+        ],
+        "last_use": 41,
+        "fixed": null,
+        "interval": [
+          31,
+          41
+        ]
+      },
+      {
+        "logical_value": "v32_q5",
+        "lane_shape": "8h",
+        "def_op": 32,
+        "uses": [
+          39,
+          40
+        ],
+        "last_use": 40,
+        "fixed": [
+          "same_as",
+          "in_Q5"
+        ],
+        "interval": [
+          32,
+          40
+        ]
+      },
+      {
+        "logical_value": "v36_q20",
+        "lane_shape": "8h",
+        "def_op": 36,
+        "uses": [
+          41
+        ],
+        "last_use": 41,
+        "fixed": null,
+        "interval": [
+          36,
+          41
+        ]
+      },
+      {
+        "logical_value": "v37_q12",
+        "lane_shape": "8h",
+        "def_op": 37,
+        "uses": [
+          57,
+          61
+        ],
+        "last_use": 61,
+        "fixed": null,
+        "interval": [
+          37,
+          61
+        ]
+      },
+      {
+        "logical_value": "v39_q27",
+        "lane_shape": "8h",
+        "def_op": 39,
+        "uses": [
+          60,
+          63
+        ],
+        "last_use": 63,
+        "fixed": null,
+        "interval": [
+          39,
+          63
+        ]
+      },
+      {
+        "logical_value": "v40_q18",
+        "lane_shape": "8h",
+        "def_op": 40,
+        "uses": [
+          48,
+          53
+        ],
+        "last_use": 53,
+        "fixed": null,
+        "interval": [
+          40,
+          53
+        ]
+      },
+      {
+        "logical_value": "v41_q20",
+        "lane_shape": "8h",
+        "def_op": 41,
+        "uses": [
+          48,
+          53
+        ],
+        "last_use": 53,
+        "fixed": [
+          "same_as",
+          "v36_q20"
+        ],
+        "interval": [
+          41,
+          53
+        ]
+      },
+      {
+        "logical_value": "v44_q6",
+        "lane_shape": "8h",
+        "def_op": 44,
+        "uses": [
+          46
+        ],
+        "last_use": 46,
+        "fixed": null,
+        "interval": [
+          44,
+          46
+        ]
+      },
+      {
+        "logical_value": "v46_q26",
+        "lane_shape": "8h",
+        "def_op": 46,
+        "uses": [
+          50,
+          52
+        ],
+        "last_use": 52,
+        "fixed": [
+          "same_as",
+          "in_Q4"
+        ],
+        "interval": [
+          46,
+          52
+        ]
+      },
+      {
+        "logical_value": "v48_q6",
+        "lane_shape": "8h",
+        "def_op": 48,
+        "uses": [
+          68,
+          77
+        ],
+        "last_use": 77,
+        "fixed": null,
+        "interval": [
+          48,
+          77
+        ]
+      },
+      {
+        "logical_value": "v50_q11",
+        "lane_shape": "8h",
+        "def_op": 50,
+        "uses": [
+          75,
+          95
+        ],
+        "last_use": 95,
+        "fixed": null,
+        "interval": [
+          50,
+          95
+        ]
+      },
+      {
+        "logical_value": "v51_q1",
+        "lane_shape": "8h",
+        "def_op": 51,
+        "uses": [
+          55
+        ],
+        "last_use": 55,
+        "fixed": null,
+        "interval": [
+          51,
+          55
+        ]
+      },
+      {
+        "logical_value": "v52_q28",
+        "lane_shape": "8h",
+        "def_op": 52,
+        "uses": [
+          78,
+          87
+        ],
+        "last_use": 87,
+        "fixed": null,
+        "interval": [
+          52,
+          87
+        ]
+      },
+      {
+        "logical_value": "v53_q24",
+        "lane_shape": "8h",
+        "def_op": 53,
+        "uses": [
+          71,
+          79
+        ],
+        "last_use": 79,
+        "fixed": null,
+        "interval": [
+          53,
+          79
+        ]
+      },
+      {
+        "logical_value": "v55_q30",
+        "lane_shape": "8h",
+        "def_op": 55,
+        "uses": [
+          60,
+          63
+        ],
+        "last_use": 63,
+        "fixed": [
+          "same_as",
+          "v21_q30"
+        ],
+        "interval": [
+          55,
+          63
+        ]
+      },
+      {
+        "logical_value": "v57_q3",
+        "lane_shape": "8h",
+        "def_op": 57,
+        "uses": [
+          65
+        ],
+        "last_use": 65,
+        "fixed": null,
+        "interval": [
+          57,
+          65
+        ]
+      },
+      {
+        "logical_value": "v60_q20",
+        "lane_shape": "8h",
+        "def_op": 60,
+        "uses": [
+          67,
+          86
+        ],
+        "last_use": 86,
+        "fixed": null,
+        "interval": [
+          60,
+          86
+        ]
+      },
+      {
+        "logical_value": "v61_q10",
+        "lane_shape": "8h",
+        "def_op": 61,
+        "uses": [
+          65
+        ],
+        "last_use": 65,
+        "fixed": null,
+        "interval": [
+          61,
+          65
+        ]
+      },
+      {
+        "logical_value": "v63_q29",
+        "lane_shape": "8h",
+        "def_op": 63,
+        "uses": [
+          70,
+          72
+        ],
+        "last_use": 72,
+        "fixed": null,
+        "interval": [
+          63,
+          72
+        ]
+      },
+      {
+        "logical_value": "v65_q3",
+        "lane_shape": "8h",
+        "def_op": 65,
+        "uses": [
+          78,
+          87
+        ],
+        "last_use": 87,
+        "fixed": [
+          "same_as",
+          "v57_q3"
+        ],
+        "interval": [
+          65,
+          87
+        ]
+      },
+      {
+        "logical_value": "v67_q31",
+        "lane_shape": "8h",
+        "def_op": 67,
+        "uses": [
+          86
+        ],
+        "last_use": 86,
+        "fixed": null,
+        "interval": [
+          67,
+          86
+        ]
+      },
+      {
+        "logical_value": "v68_q16",
+        "lane_shape": "8h",
+        "def_op": 68,
+        "uses": [
+          85
+        ],
+        "last_use": 85,
+        "fixed": null,
+        "interval": [
+          68,
+          85
+        ]
+      },
+      {
+        "logical_value": "v69_q10",
+        "lane_shape": "8h",
+        "def_op": 69,
+        "uses": [
+          73
+        ],
+        "last_use": 73,
+        "fixed": null,
+        "interval": [
+          69,
+          73
+        ]
+      },
+      {
+        "logical_value": "v70_q8",
+        "lane_shape": "8h",
+        "def_op": 70,
+        "uses": [
+          74
+        ],
+        "last_use": 74,
+        "fixed": null,
+        "interval": [
+          70,
+          74
+        ]
+      },
+      {
+        "logical_value": "v71_q14",
+        "lane_shape": "8h",
+        "def_op": 71,
+        "uses": [
+          82
+        ],
+        "last_use": 82,
+        "fixed": null,
+        "interval": [
+          71,
+          82
+        ]
+      },
+      {
+        "logical_value": "v72_q17",
+        "lane_shape": "8h",
+        "def_op": 72,
+        "uses": [
+          74
+        ],
+        "last_use": 74,
+        "fixed": null,
+        "interval": [
+          72,
+          74
+        ]
+      },
+      {
+        "logical_value": "v73_q7",
+        "lane_shape": "8h",
+        "def_op": 73,
+        "uses": [
+          75,
+          95
+        ],
+        "last_use": 95,
+        "fixed": [
+          "same_as",
+          "v28_q7"
+        ],
+        "interval": [
+          73,
+          95
+        ]
+      },
+      {
+        "logical_value": "v74_q17",
+        "lane_shape": "8h",
+        "def_op": 74,
+        "uses": [
+          81,
+          92
+        ],
+        "last_use": 92,
+        "fixed": [
+          "same_as",
+          "v72_q17"
+        ],
+        "interval": [
+          74,
+          92
+        ]
+      },
+      {
+        "logical_value": "v75_q8",
+        "lane_shape": "8h",
+        "def_op": 75,
+        "uses": [
+          81,
+          92
+        ],
+        "last_use": 92,
+        "fixed": null,
+        "interval": [
+          75,
+          92
+        ]
+      },
+      {
+        "logical_value": "v77_q5",
+        "lane_shape": "8h",
+        "def_op": 77,
+        "uses": [
+          85
+        ],
+        "last_use": 85,
+        "fixed": null,
+        "interval": [
+          77,
+          85
+        ]
+      },
+      {
+        "logical_value": "v78_q22",
+        "lane_shape": "8h",
+        "def_op": 78,
+        "uses": [
+          90,
+          94
+        ],
+        "last_use": 94,
+        "fixed": null,
+        "interval": [
+          78,
+          94
+        ]
+      },
+      {
+        "logical_value": "v79_q2",
+        "lane_shape": "8h",
+        "def_op": 79,
+        "uses": [
+          82
+        ],
+        "last_use": 82,
+        "fixed": null,
+        "interval": [
+          79,
+          82
+        ]
+      },
+      {
+        "logical_value": "v81_q24",
+        "lane_shape": "8h",
+        "def_op": 81,
+        "uses": [
+          93,
+          99
+        ],
+        "last_use": 99,
+        "fixed": null,
+        "interval": [
+          81,
+          99
+        ]
+      },
+      {
+        "logical_value": "v82_q2",
+        "lane_shape": "8h",
+        "def_op": 82,
+        "uses": [
+          90,
+          94
+        ],
+        "last_use": 94,
+        "fixed": [
+          "same_as",
+          "v79_q2"
+        ],
+        "interval": [
+          82,
+          94
+        ]
+      },
+      {
+        "logical_value": "v85_q5",
+        "lane_shape": "8h",
+        "def_op": 85,
+        "uses": [
+          122,
+          123
+        ],
+        "last_use": 123,
+        "fixed": [
+          "same_as",
+          "v77_q5"
+        ],
+        "interval": [
+          85,
+          123
+        ]
+      },
+      {
+        "logical_value": "v86_q20",
+        "lane_shape": "8h",
+        "def_op": 86,
+        "uses": [
+          101,
+          102
+        ],
+        "last_use": 102,
+        "fixed": [
+          "same_as",
+          "v60_q20"
+        ],
+        "interval": [
+          86,
+          102
+        ]
+      },
+      {
+        "logical_value": "v87_q16",
+        "lane_shape": "8h",
+        "def_op": 87,
+        "uses": [
+          122,
+          123
+        ],
+        "last_use": 123,
+        "fixed": null,
+        "interval": [
+          87,
+          123
+        ]
+      },
+      {
+        "logical_value": "v90_q4",
+        "lane_shape": "8h",
+        "def_op": 90,
+        "uses": [
+          113,
+          145
+        ],
+        "last_use": 145,
+        "fixed": null,
+        "interval": [
+          90,
+          145
+        ]
+      },
+      {
+        "logical_value": "v92_q28",
+        "lane_shape": "8h",
+        "def_op": 92,
+        "uses": [
+          97,
+          107
+        ],
+        "last_use": 107,
+        "fixed": null,
+        "interval": [
+          92,
+          107
+        ]
+      },
+      {
+        "logical_value": "v93_q31",
+        "lane_shape": "8h",
+        "def_op": 93,
+        "uses": [
+          98
+        ],
+        "last_use": 98,
+        "fixed": null,
+        "interval": [
+          93,
+          98
+        ]
+      },
+      {
+        "logical_value": "v94_q29",
+        "lane_shape": "8h",
+        "def_op": 94,
+        "uses": [
+          134,
+          150
+        ],
+        "last_use": 150,
+        "fixed": null,
+        "interval": [
+          94,
+          150
+        ]
+      },
+      {
+        "logical_value": "v95_q11",
+        "lane_shape": "8h",
+        "def_op": 95,
+        "uses": [
+          101,
+          102
+        ],
+        "last_use": 102,
+        "fixed": null,
+        "interval": [
+          95,
+          102
+        ]
+      },
+      {
+        "logical_value": "v97_q14",
+        "lane_shape": "8h",
+        "def_op": 97,
+        "uses": [
+          103
+        ],
+        "last_use": 103,
+        "fixed": null,
+        "interval": [
+          97,
+          103
+        ]
+      },
+      {
+        "logical_value": "v98_q23",
+        "lane_shape": "8h",
+        "def_op": 98,
+        "uses": [
+          99
+        ],
+        "last_use": 99,
+        "fixed": null,
+        "interval": [
+          98,
+          99
+        ]
+      },
+      {
+        "logical_value": "v99_q24",
+        "lane_shape": "8h",
+        "def_op": 99,
+        "uses": [
+          109,
+          109,
+          110
+        ],
+        "last_use": 110,
+        "fixed": [
+          "same_as",
+          "v81_q24"
+        ],
+        "interval": [
+          99,
+          110
+        ]
+      },
+      {
+        "logical_value": "v101_q25",
+        "lane_shape": "8h",
+        "def_op": 101,
+        "uses": [
+          117,
+          136
+        ],
+        "last_use": 136,
+        "fixed": null,
+        "interval": [
+          101,
+          136
+        ]
+      },
+      {
+        "logical_value": "v102_q17",
+        "lane_shape": "8h",
+        "def_op": 102,
+        "uses": [
+          105,
+          159
+        ],
+        "last_use": 159,
+        "fixed": null,
+        "interval": [
+          102,
+          159
+        ]
+      },
+      {
+        "logical_value": "v103_q22",
+        "lane_shape": "8h",
+        "def_op": 103,
+        "uses": [
+          107
+        ],
+        "last_use": 107,
+        "fixed": null,
+        "interval": [
+          103,
+          107
+        ]
+      },
+      {
+        "logical_value": "v105_q14",
+        "lane_shape": "8h",
+        "def_op": 105,
+        "uses": [
+          111
+        ],
+        "last_use": 111,
+        "fixed": null,
+        "interval": [
+          105,
+          111
+        ]
+      },
+      {
+        "logical_value": "v107_q28",
+        "lane_shape": "8h",
+        "def_op": 107,
+        "uses": [
+          129,
+          139,
+          139
+        ],
+        "last_use": 139,
+        "fixed": [
+          "same_as",
+          "v92_q28"
+        ],
+        "interval": [
+          107,
+          139
+        ]
+      },
+      {
+        "logical_value": "v109_q22",
+        "lane_shape": "8h",
+        "def_op": 109,
+        "uses": [
+          132
+        ],
+        "last_use": 132,
+        "fixed": null,
+        "interval": [
+          109,
+          132
+        ]
+      },
+      {
+        "logical_value": "v111_q15",
+        "lane_shape": "8h",
+        "def_op": 111,
+        "uses": [
+          159
+        ],
+        "last_use": 159,
+        "fixed": null,
+        "interval": [
+          111,
+          159
+        ]
+      },
+      {
+        "logical_value": "v113_q7",
+        "lane_shape": "8h",
+        "def_op": 113,
+        "uses": [
+          116
+        ],
+        "last_use": 116,
+        "fixed": null,
+        "interval": [
+          113,
+          116
+        ]
+      },
+      {
+        "logical_value": "v116_q7",
+        "lane_shape": "8h",
+        "def_op": 116,
+        "uses": [
+          145
+        ],
+        "last_use": 145,
+        "fixed": null,
+        "interval": [
+          116,
+          145
+        ]
+      },
+      {
+        "logical_value": "v117_q6",
+        "lane_shape": "8h",
+        "def_op": 117,
+        "uses": [
+          124
+        ],
+        "last_use": 124,
+        "fixed": null,
+        "interval": [
+          117,
+          124
+        ]
+      },
+      {
+        "logical_value": "v122_q14",
+        "lane_shape": "8h",
+        "def_op": 122,
+        "uses": [
+          126,
+          154
+        ],
+        "last_use": 154,
+        "fixed": null,
+        "interval": [
+          122,
+          154
+        ]
+      },
+      {
+        "logical_value": "v123_q13",
+        "lane_shape": "8h",
+        "def_op": 123,
+        "uses": [
+          130,
+          143
+        ],
+        "last_use": 143,
+        "fixed": null,
+        "interval": [
+          123,
+          143
+        ]
+      },
+      {
+        "logical_value": "v124_q11",
+        "lane_shape": "8h",
+        "def_op": 124,
+        "uses": [
+          136
+        ],
+        "last_use": 136,
+        "fixed": null,
+        "interval": [
+          124,
+          136
+        ]
+      },
+      {
+        "logical_value": "v126_q19",
+        "lane_shape": "8h",
+        "def_op": 126,
+        "uses": [
+          141
+        ],
+        "last_use": 141,
+        "fixed": null,
+        "interval": [
+          126,
+          141
+        ]
+      },
+      {
+        "logical_value": "v130_q20",
+        "lane_shape": "8h",
+        "def_op": 130,
+        "uses": [
+          135
+        ],
+        "last_use": 135,
+        "fixed": null,
+        "interval": [
+          130,
+          135
+        ]
+      },
+      {
+        "logical_value": "v134_q6",
+        "lane_shape": "8h",
+        "def_op": 134,
+        "uses": [
+          138
+        ],
+        "last_use": 138,
+        "fixed": null,
+        "interval": [
+          134,
+          138
+        ]
+      },
+      {
+        "logical_value": "v135_q26",
+        "lane_shape": "8h",
+        "def_op": 135,
+        "uses": [
+          143
+        ],
+        "last_use": 143,
+        "fixed": null,
+        "interval": [
+          135,
+          143
+        ]
+      },
+      {
+        "logical_value": "v136_q25",
+        "lane_shape": "8h",
+        "def_op": 136,
+        "uses": [
+          148,
+          152,
+          152
+        ],
+        "last_use": 152,
+        "fixed": [
+          "same_as",
+          "v101_q25"
+        ],
+        "interval": [
+          136,
+          152
+        ]
+      },
+      {
+        "logical_value": "v138_q30",
+        "lane_shape": "8h",
+        "def_op": 138,
+        "uses": [
+          150
+        ],
+        "last_use": 150,
+        "fixed": null,
+        "interval": [
+          138,
+          150
+        ]
+      },
+      {
+        "logical_value": "v139_q11",
+        "lane_shape": "8h",
+        "def_op": 139,
+        "uses": [
+          162
+        ],
+        "last_use": 162,
+        "fixed": null,
+        "interval": [
+          139,
+          162
+        ]
+      },
+      {
+        "logical_value": "v141_q6",
+        "lane_shape": "8h",
+        "def_op": 141,
+        "uses": [
+          154
+        ],
+        "last_use": 154,
+        "fixed": null,
+        "interval": [
+          141,
+          154
+        ]
+      },
+      {
+        "logical_value": "v143_q13",
+        "lane_shape": "8h",
+        "def_op": 143,
+        "uses": [
+          147,
+          147,
+          153
+        ],
+        "last_use": 153,
+        "fixed": [
+          "same_as",
+          "v123_q13"
+        ],
+        "interval": [
+          143,
+          153
+        ]
+      },
+      {
+        "logical_value": "v145_q4",
+        "lane_shape": "8h",
+        "def_op": 145,
+        "uses": [
+          158,
+          158,
+          161
+        ],
+        "last_use": 161,
+        "fixed": [
+          "same_as",
+          "v90_q4"
+        ],
+        "interval": [
+          145,
+          161
+        ]
+      },
+      {
+        "logical_value": "v147_q1",
+        "lane_shape": "8h",
+        "def_op": 147,
+        "uses": [
+          149
+        ],
+        "last_use": 149,
+        "fixed": null,
+        "interval": [
+          147,
+          149
+        ]
+      },
+      {
+        "logical_value": "v150_q29",
+        "lane_shape": "8h",
+        "def_op": 150,
+        "uses": [
+          164,
+          164,
+          165
+        ],
+        "last_use": 165,
+        "fixed": [
+          "same_as",
+          "v94_q29"
+        ],
+        "interval": [
+          150,
+          165
+        ]
+      },
+      {
+        "logical_value": "v152_q19",
+        "lane_shape": "8h",
+        "def_op": 152,
+        "uses": [
+          160
+        ],
+        "last_use": 160,
+        "fixed": null,
+        "interval": [
+          152,
+          160
+        ]
+      },
+      {
+        "logical_value": "v154_q14",
+        "lane_shape": "8h",
+        "def_op": 154,
+        "uses": [
+          167,
+          167,
+          168
+        ],
+        "last_use": 168,
+        "fixed": [
+          "same_as",
+          "v122_q14"
+        ],
+        "interval": [
+          154,
+          168
+        ]
+      },
+      {
+        "logical_value": "v158_q26",
+        "lane_shape": "8h",
+        "def_op": 158,
+        "uses": [
+          163
+        ],
+        "last_use": 163,
+        "fixed": null,
+        "interval": [
+          158,
+          163
+        ]
+      },
+      {
+        "logical_value": "v159_q17",
+        "lane_shape": "8h",
+        "def_op": 159,
+        "uses": [
+          169,
+          170,
+          170
+        ],
+        "last_use": 170,
+        "fixed": [
+          "same_as",
+          "v102_q17"
+        ],
+        "interval": [
+          159,
+          170
+        ]
+      },
+      {
+        "logical_value": "v164_q26",
+        "lane_shape": "8h",
+        "def_op": 164,
+        "uses": [
+          172
+        ],
+        "last_use": 172,
+        "fixed": null,
+        "interval": [
+          164,
+          172
+        ]
+      },
+      {
+        "logical_value": "v167_q18",
+        "lane_shape": "8h",
+        "def_op": 167,
+        "uses": [
+          171
+        ],
+        "last_use": 171,
+        "fixed": null,
+        "interval": [
+          167,
+          171
+        ]
+      },
+      {
+        "logical_value": "v170_q14",
+        "lane_shape": "8h",
+        "def_op": 170,
+        "uses": [
+          173
+        ],
+        "last_use": 173,
+        "fixed": null,
+        "interval": [
+          170,
+          173
+        ]
+      }
+    ],
+    "destructive_ops_modeled": [
+      "mls dest is both read and written; new SSA value fixed to same physical color as old dest",
+      "scalar stack temporaries at STACK_LOC_0 are not vector values",
+      "str reads vector low half; ext produces high-half store source"
+    ]
+  },
+  "classifications": {
+    "q6": {
+      "register": "q6",
+      "class": "block1_live_in",
+      "semantic": "B1_Q13",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 240,
+        "row1": 368,
+        "row2": 496
+      }
+    },
+    "q9": {
+      "register": "q9",
+      "class": "block1_live_in",
+      "semantic": "B1_Q12",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 224,
+        "row1": 352,
+        "row2": 480
+      }
+    },
+    "q10": {
+      "register": "q10",
+      "class": "block1_live_in",
+      "semantic": "B1_Q8",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 160,
+        "row1": 288,
+        "row2": 416
+      }
+    },
+    "q20": {
+      "register": "q20",
+      "class": "block1_live_in",
+      "semantic": "B1_Q9",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 176,
+        "row1": 304,
+        "row2": 432
+      }
+    },
+    "q21": {
+      "register": "q21",
+      "class": "safe_temp_pool",
+      "semantic": "not a block1 live-in in current handoff contract",
+      "e2_action": "available for Stage12/block0 temporaries; not trusted as the only parking register"
+    },
+    "q23": {
+      "register": "q23",
+      "class": "block1_live_in",
+      "semantic": "B1_Q15",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 272,
+        "row1": 400,
+        "row2": 528
+      }
+    },
+    "q24": {
+      "register": "q24",
+      "class": "block1_live_in",
+      "semantic": "B1_Q11",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 208,
+        "row1": 336,
+        "row2": 464
+      }
+    },
+    "q30": {
+      "register": "q30",
+      "class": "block1_live_in",
+      "semantic": "B1_Q10",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 192,
+        "row1": 320,
+        "row2": 448
+      }
+    },
+    "q31": {
+      "register": "q31",
+      "class": "block1_live_in",
+      "semantic": "B1_Q14",
+      "must_survive_block0_until": "Stage345 block1 handoff load-replacement site",
+      "e2_action": "park_to_stack_and_restore",
+      "spill_offsets_by_row": {
+        "row0": 256,
+        "row1": 384,
+        "row2": 512
+      }
+    }
+  },
+  "block1_consumer_expectations": [
+    {
+      "q_index": 8,
+      "stage12_handoff_reg": "q10",
+      "stage345_expected_load_dest": "q10",
+      "bridge_required": false
+    },
+    {
+      "q_index": 9,
+      "stage12_handoff_reg": "q20",
+      "stage345_expected_load_dest": "q20",
+      "bridge_required": false
+    },
+    {
+      "q_index": 10,
+      "stage12_handoff_reg": "q30",
+      "stage345_expected_load_dest": "q30",
+      "bridge_required": false
+    },
+    {
+      "q_index": 11,
+      "stage12_handoff_reg": "q24",
+      "stage345_expected_load_dest": "q1",
+      "bridge_required": true
+    },
+    {
+      "q_index": 12,
+      "stage12_handoff_reg": "q9",
+      "stage345_expected_load_dest": "q9",
+      "bridge_required": false
+    },
+    {
+      "q_index": 13,
+      "stage12_handoff_reg": "q6",
+      "stage345_expected_load_dest": "q6",
+      "bridge_required": false
+    },
+    {
+      "q_index": 14,
+      "stage12_handoff_reg": "q31",
+      "stage345_expected_load_dest": "q31",
+      "bridge_required": false
+    },
+    {
+      "q_index": 15,
+      "stage12_handoff_reg": "q23",
+      "stage345_expected_load_dest": "q23",
+      "bridge_required": false
+    }
+  ],
+  "e1_failed_allocator": {
+    "allocator": "fixed-order SSA greedy",
+    "preserved_block1_registers": [
+      "q6",
+      "q9",
+      "q10",
+      "q20",
+      "q23",
+      "q24",
+      "q30",
+      "q31"
+    ],
+    "actual_stage345_block0_written_q_registers": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q7",
+      "q8",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15",
+      "q16",
+      "q17",
+      "q18",
+      "q26"
+    ],
+    "reserved_written": [],
+    "max_nonreserved_live_values": 15,
+    "available_nonreserved_registers": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q7",
+      "q8",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15",
+      "q16",
+      "q17",
+      "q18",
+      "q19",
+      "q21",
+      "q22",
+      "q25",
+      "q26",
+      "q27",
+      "q28",
+      "q29"
+    ]
+  },
+  "e2_parking_bridge": {
+    "symbol": "u01v3_stage345_semantic_e2_parking_bridge",
+    "stage12_passes": 1,
+    "duplicate_stage12_computation": false,
+    "extra_raw_q_loads": 0,
+    "parked_values": [
+      "B1_Q8",
+      "B1_Q9",
+      "B1_Q10",
+      "B1_Q11",
+      "B1_Q12",
+      "B1_Q13",
+      "B1_Q14",
+      "B1_Q15"
+    ],
+    "q_spills": 24,
+    "q_restores": 24,
+    "purpose": "correctness proof point, not a performance candidate",
+    "validation": {
+      "local_assemble": "pass, clang -target aarch64-linux-gnu",
+      "pi5_correctness": "pass",
+      "pi5_mismatches": 0,
+      "pi5_abi_mask": "0x0",
+      "pmu": "not_run_by_rule"
+    }
+  }
+}

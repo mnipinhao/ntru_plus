@@ -1,0 +1,16 @@
+mode: existing_region_replacement
+baseline_id: u01v3_g1_fullpath
+source: asm/gt/experiment/poly_ntt_u01v3_g1.S
+target_microarchitecture: Neoverse N1, validated on Raspberry Pi 5 PMU
+measured_pi5:
+  cycles_median: 2693
+  instructions_median: 3747
+  delta_cycles_vs_production: -12
+preserved_contract:
+  production_default_changed: false
+  phase123_changed: false
+  stage12_changed: false
+  stage345_arithmetic_changed: false
+  modular_reduction_changed: false
+  scatter_addresses_changed: false
+  block3_scratch_loads_changed: false

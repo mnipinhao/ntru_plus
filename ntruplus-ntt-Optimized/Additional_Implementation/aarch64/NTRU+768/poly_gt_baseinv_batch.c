@@ -68,6 +68,10 @@ int16x8_t gt_fqinv_delta_divstep_s32fold_asm(int16x8_t a, int16x8_t con,
 int16x8_t gt_fqinv_delta_divstep_modq16_asm(int16x8_t a, int16x8_t con,
                                              int16_t final_scale);
 #endif
+#if defined(GT_BASEINV_USE_DIVSTEP_LAZY16_ASM)
+int16x8_t gt_fqinv_delta_divstep_lazy16_asm(int16x8_t a, int16x8_t con,
+                                             int16_t final_scale);
+#endif
 #if defined(GT_BASEINV_USE_DIVSTEP_SWAR_ASM)
 int16x8_t gt_fqinv_delta_divstep_swar_asm(int16x8_t a, int16x8_t con,
                                            int16_t final_scale);
@@ -543,6 +547,8 @@ static inline int16x8_t fqinv_divstep_neon(int16x8_t a, int16x8_t con,
 {
 #if defined(GT_BASEINV_USE_DIVSTEP_S32FOLD_ASM)
 	return gt_fqinv_delta_divstep_s32fold_asm(a, con, final_scale);
+#elif defined(GT_BASEINV_USE_DIVSTEP_LAZY16_ASM)
+	return gt_fqinv_delta_divstep_lazy16_asm(a, con, final_scale);
 #elif defined(GT_BASEINV_USE_DIVSTEP_MODQ16_ASM)
 	return gt_fqinv_delta_divstep_modq16_asm(a, con, final_scale);
 #elif defined(GT_BASEINV_USE_DIVSTEP_SWAR_ASM)

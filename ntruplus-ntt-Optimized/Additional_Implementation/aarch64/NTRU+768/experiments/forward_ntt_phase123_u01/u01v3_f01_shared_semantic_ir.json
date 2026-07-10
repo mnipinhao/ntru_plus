@@ -1,0 +1,71 @@
+{
+  "candidate_family": "u01v3_f01_e_g_shared_model",
+  "date": "2026-07-09",
+  "production_default_changed": false,
+  "scope": "F01 block0+block1 only",
+  "stage12_producer": {
+    "block0_values": [
+      {"semantic": "B0_Q0", "q_index": 0, "producer": "Stage12", "current_reg": "q29", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q1", "q_index": 1, "producer": "Stage12", "current_reg": "q1", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q2", "q_index": 2, "producer": "Stage12", "current_reg": "q28", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q3", "q_index": 3, "producer": "Stage12", "current_reg": "q17", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q4", "q_index": 4, "producer": "Stage12", "current_reg": "q26", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q5", "q_index": 5, "producer": "Stage12", "current_reg": "q5", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q6", "q_index": 6, "producer": "Stage12", "current_reg": "q18", "consumer": "Stage345_block0"},
+      {"semantic": "B0_Q7", "q_index": 7, "producer": "Stage12", "current_reg": "q8", "consumer": "Stage345_block0"}
+    ],
+    "block1_values": [
+      {"semantic": "B1_Q0", "q_index": 8, "producer": "Stage12", "current_reg": "q10", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q1", "q_index": 9, "producer": "Stage12", "current_reg": "q20", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q2", "q_index": 10, "producer": "Stage12", "current_reg": "q30", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q3", "q_index": 11, "producer": "Stage12", "current_reg": "q24", "consumer": "Stage345_block1", "current_bridge": "mov q24 -> q1"},
+      {"semantic": "B1_Q4", "q_index": 12, "producer": "Stage12", "current_reg": "q9", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q5", "q_index": 13, "producer": "Stage12", "current_reg": "q6", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q6", "q_index": 14, "producer": "Stage12", "current_reg": "q31", "consumer": "Stage345_block1"},
+      {"semantic": "B1_Q7", "q_index": 15, "producer": "Stage12", "current_reg": "q23", "consumer": "Stage345_block1"}
+    ],
+    "producer_instruction_sites": {
+      "source_generator": "generate_phase123_shared_prefix_v3_block1_block01_fuse.py",
+      "stage12_block0_group": "emit_stage12_block0_group",
+      "stage12_block1_group": "emit_stage12_block1_group",
+      "onepass_spill_group": "generate_u01v3_f01_spill_budget.py:emit_stage12_block01_onepass"
+    }
+  },
+  "stage345_block0": {
+    "inputs": ["B0_Q0", "B0_Q1", "B0_Q2", "B0_Q3", "B0_Q4", "B0_Q5", "B0_Q6", "B0_Q7"],
+    "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block0_slothy_start",
+    "summary": "butterfly/twiddle/reduction/final scatter for block0",
+    "clobber_set": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20", "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29", "q30", "q31"],
+    "scatter_outputs": "block0 final scatter, low/high halves"
+  },
+  "stage345_block1": {
+    "inputs": ["B1_Q0", "B1_Q1", "B1_Q2", "B1_Q3", "B1_Q4", "B1_Q5", "B1_Q6", "B1_Q7"],
+    "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block1_slothy_start",
+    "summary": "butterfly/twiddle/reduction/final scatter for block1",
+    "clobber_set": ["q1", "q2", "q3", "q5", "q6", "q7", "q8", "q9", "q10", "q12", "q13", "q14", "q17", "q18", "q19", "q20", "q21", "q23", "q25", "q26", "q27", "q28", "q30", "q31"],
+    "scatter_outputs": "block1 final scatter, low/high halves"
+  },
+  "liveness": {
+    "block1_liveins": ["q6", "q9", "q10", "q20", "q23", "q24", "q30", "q31"],
+    "block0_clobbers_block1": ["q6", "q10", "q20", "q23", "q24", "q30", "q31"],
+    "block1_liveins_preserved_by_block0": ["q9"],
+    "safe_temp_pool_across_current_block0": ["q21"],
+    "needs_block0_regalloc_rewrite_for_no_spill": true
+  },
+  "baseline_matrix": {
+    "pmu_settings": {"host": "pi5", "ntests": 61, "niterations": 20000, "nwarmup": 300},
+    "variants": {
+      "P": {"status": "oracle", "cycles": 2047, "instructions": 2850},
+      "V": {"status": "pass", "cycles": 2073, "instructions": 2890},
+      "F0": {"status": "pass", "cycles": 2057, "instructions": 2842},
+      "F1": {"status": "pass", "cycles": 2062, "instructions": 2842},
+      "Bmin": {"status": "pass", "cycles": 2057, "instructions": 2842, "note": "same concrete shape as B8"},
+      "B8": {"status": "pass", "cycles": 2057, "instructions": 2842, "note": "24 q spills + 24 restores"}
+    },
+    "negative_results": {
+      "F01_two_pass": "correctness pass, performance regression due to raw q reloads",
+      "A1_physical_rename": "assemble and ABI pass, correctness fail",
+      "Bmin_B8_spill": "correctness pass, no gain over F0"
+    }
+  }
+}

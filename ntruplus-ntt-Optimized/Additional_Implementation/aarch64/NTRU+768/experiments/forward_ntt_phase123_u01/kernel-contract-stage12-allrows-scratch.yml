@@ -1,0 +1,163 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: phase123_u01_stage12_allrows_scratch_stripe01
+  name: phase123_u01_stage12_allrows_scratch_stripe01
+  source: experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.sym.s
+  scheme: ntruplus768_gt
+  operation: forward_ntt_phase123_u01_even_group_allrows_stage12_scratch_stripes0_1
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+  actual_remote_fallback: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: source_order_static_then_remote_slothy_quick_split
+  driver: experiments/forward_ntt_phase123_u01/optimize_stage12_allrows_scratch.py
+  expected_outputs:
+    - experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.quick.opt.s
+  allow_spills: false
+
+region:
+  start_label: slothy_start_phase123_u01_stage12_allrows_scratch_stripe01
+  end_label: slothy_end_phase123_u01_stage12_allrows_scratch_stripe01
+  expected_instruction_count: 453
+  live_in:
+    - x1 input base at Phase123 iteration 0
+    - x3 Phase123 twist/precompute table base at iteration 0
+    - x4 row0 post-stage12 output base
+    - x5 row1 post-stage12 output base
+    - x6 row2 post-stage12 output base
+    - x12 NTT32 stage12 twiddle table base
+    - x13 temporary stage12-order scratch base
+    - v0 q/reduction/DFT3 constant vector
+  live_out:
+    - row0 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stored to x4 offsets 0/16/128/144/256/272/384/400
+    - row1 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stored to x5 offsets 0/16/128/144/256/272/384/400
+    - row2 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stored to x6 offsets 0/16/128/144/256/272/384/400
+
+abi:
+  inputs:
+    - x1 original GT Phase123 input base
+    - x3 original GT Phase123 twist table base
+    - x4 row0 output base
+    - x5 row1 output base
+    - x6 row2 output base
+    - x12 ntt32_twiddle_vecs base
+    - x13 temporary scratch base, at least 384 bytes
+    - v0 constant vector with q and reduction constants
+  outputs:
+    - memory at x4/x5/x6 public fixed offsets
+    - temporary memory at x13 public fixed offsets is clobbered
+  clobbers:
+    - x7 temporary public table base
+    - v1-v31 source-order prototype temporaries
+  concrete_gprs_allowed:
+    - x1
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x12
+    - x13
+  fixed_vector_registers:
+    - v0
+    - v1-v31 source-order prototype registers
+  reserved_registers:
+    - x0
+    - x2
+    - x8
+    - x9
+    - x10
+    - x11
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+
+instruction_dag:
+  file: instruction-dag-stage12-allrows-scratch.yml
+  summary: compute all-row U01 slots0+1 for Phase123 iterations 0/2/4/6, store raw Qs to compact x13 scratch, then run NTT32 stage12 stripes0+1 for rows0/1/2
+
+layout:
+  input_representation: original GT Phase123 input layout; selected even iterations are addressed by public byte offsets
+  scratch_representation: compact stage12 consumption order at x13
+  scratch_rows:
+    row0: x13+0 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+    row1: x13+128 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+    row2: x13+256 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  output_representation: per-row NTT32 post-stage12 row scratch layout for Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+  vector_lanes: 8 signed 16-bit coefficients per Neon vector
+
+memory_contract:
+  loads:
+    - input q loads from x1 offsets for iterations 0/2/4/6 and P0/P2/P4 low/high halves
+    - Phase123 twist/precompute ldp q pairs from x7 plus fixed offsets 0/64/128/192/256/320
+    - raw Q scratch reloads from x13 compact public offsets
+    - NTT32 stage12 twiddle q loads from x12 offsets 16/32/48
+  stores:
+    - raw Q scratch stores to x13 compact public offsets
+    - post-stage12 stores to x4/x5/x6 public fixed offsets
+  aliasing: x1/x3/x12 read-only inputs must not alias x4/x5/x6/x13 stores during the region
+  alignment: all q loads/stores and ldp q pairs are 16-byte aligned
+  public_offsets_only: true
+
+constant_contract:
+  constants:
+    - v0.h[0] q = 3457
+    - v0.h[2] zeta3 normal multiplier
+    - v0.h[3] zeta3 precompute
+    - v0.h[4] Phase123 high-half multiplier
+    - v0.h[5] Phase123 high-half precompute
+    - x3 table contains production Phase123 twiddle/precompute q pairs
+    - x12 table contains production NTT32 stage12 twiddle vectors
+  modulus: q = 3457
+  representation: signed 16-bit lane values with production Montgomery-style reductions
+  reduction_method: same sqrdmulh/mls sequences as production Phase123 U01 and production NTT32 stage12
+
+range_contract:
+  input_ranges:
+    - same as production GT Phase123 input contract
+  intermediate_ranges:
+    - all-row U01 outputs match production Phase123 slots0+1 for iterations 0/2/4/6
+    - stage12 intermediates match production NTT32 lazy stage12 arithmetic
+  output_ranges:
+    - same as production NTT32 stage12 output for Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficients loaded from x1
+  public_inputs:
+    - all offsets
+    - table bases x3 and x12
+    - output bases x4/x5/x6
+    - scratch base x13
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: /Users/chenpinhao/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 experiments/forward_ntt_phase123_u01/verify_stage12_allrows_scratch_symbolic.py --seeds 64
+  post_slothy_oracle_command: /Users/chenpinhao/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 experiments/forward_ntt_phase123_u01/verify_stage12_allrows_scratch_symbolic.py --seeds 64 --source experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.quick.opt.s
+  test_command: clang -target aarch64-linux-gnu -c experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.sym.s -o /private/tmp/phase123_u01_stage12_allrows_scratch.o
+  full_path_benchmark_command: not-run; source-order prototype is not wired into KEM
+  benchmark_metric: cycles
+  lower_is_better: true

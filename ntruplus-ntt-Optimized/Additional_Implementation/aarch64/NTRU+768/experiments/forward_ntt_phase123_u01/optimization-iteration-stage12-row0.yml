@@ -1,0 +1,50 @@
+iteration:
+  id: phase123-u01-stage12-row0-001
+  mode: new_symbolic_kernel
+  current_state: full_path_benchmark
+  hypothesis: Row0-only U01 even iterations can feed NTT32 stage12 stripes0+1 directly, deleting the row0 raw-Q scratch handoff for this slice.
+  changed_artifacts:
+    - kernel-contract-stage12-row0.yml
+    - instruction-dag-stage12-row0.yml
+    - phase123_u01_stage12_row0_stripe01.sym.s
+    - verify_stage12_row0_symbolic.py
+    - candidate-contract-stage12-row0.yml
+    - optimize_stage12_row0.py
+    - phase123_u01_stage12_row0_stripe01.opt.s
+    - slothy_stage12_row0_n1.log
+  earliest_state_to_revisit: full_path_benchmark
+
+artifacts:
+  kernel_contract: kernel-contract-stage12-row0.yml
+  baseline_contract: not_required_for_new_symbolic_kernel
+  instruction_dag: instruction-dag-stage12-row0.yml
+  symbolic_source: phase123_u01_stage12_row0_stripe01.sym.s
+  slothy_driver: optimize_stage12_row0.py
+  slothy_log: slothy_stage12_row0_n1.log
+  candidate_contract: candidate-contract-stage12-row0.yml
+  candidate_score: pending_slothy_and_benchmark
+  promotion_report: pending
+
+gates:
+  repo_probe: done
+  baseline_contract: not_required
+  kernel_contract: done
+  instruction_dag: done
+  symbolic_asm: done
+  static_checks: done
+  Slothy_run_by_user: done_n1_target
+  parse_slothy_result: done_manual_header_parse
+  oracle_correctness: source_order_and_n1_opt_passed
+  full_path_benchmark: pending
+  score_candidate: pending
+  promotion_decision: pending
+  iteration_or_promote: pending
+
+notes:
+  - Local clang assemble passes.
+  - Source-order oracle passes for 64 seeds and 8 post-stage12 row0 outputs.
+  - Remote A76 target is unavailable in /home/pinhao/slothy.
+  - Remote N1 Slothy result emits expected cycles 68, IPC 4.01, no observed sp/spill use.
+  - N1 optimized output assembles and passes the row0 stage12 oracle for 64 seeds.
+  - This is not wired into production and has no full-path benchmark.
+  - Candidate remains investigate because target is not A76 and full-path benchmark is missing.

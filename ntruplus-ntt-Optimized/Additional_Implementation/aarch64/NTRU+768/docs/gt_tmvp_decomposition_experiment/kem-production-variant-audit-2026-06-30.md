@@ -48,6 +48,7 @@ VARIANT_CFLAGS =
   -DGT_PRODUCTION_USE_RMINUS1_DECAP
   -DGT_BASEINV_BATCH_USE_ASM_FINISH
   -DGT_BASEINV_USE_FQINV15_ASM
+  -DGT_BASEINV_USE_HIER_K8
   -DGT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
   -DBENCH_VARIANT_GT=1
 ```
@@ -92,7 +93,7 @@ object column below is recorded as "linked binary only".
 | Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/gt/poly_basemul_add_encap_tobytes_q31.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
 | rminus1 basemul | `poly_basemul_rminus1` | `asm/gt/poly_basemul_rminus1.s` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
 | Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/gt/poly_basemul_scaled_r_input.s` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
-| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `poly_baseinv_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM` | closed-form/batch baseinv path used by current keygen |
+| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `poly_baseinv_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM`, `GT_BASEINV_USE_HIER_K8` | closed-form/batch baseinv path using hier_k8 denominator tree for current keygen |
 | pack | `poly_tobytes`, `poly_frombytes` | `asm/gt/support/poly_support_n1.S` | yes | none | stock support API replaced by Slothy support kernel in `gt_production` |
 | crepmod3 | `poly_crepmod3` | `asm/gt/support/poly_support_n1.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
 
@@ -113,6 +114,7 @@ only Q31 call site is `gt_encap_basemul_add_tobytes_contract`.
 | `GT_PRODUCTION_USE_RMINUS1_DECAP` | on | decap `poly_basemul_rminus1` -> `poly_invntt_from_rminus1` | production default | yes, private decap temporary only | full KEM correctness |
 | `GT_BASEINV_BATCH_USE_ASM_FINISH` | on | `poly_baseinv_scaled_r` finish loop | production default | no public ABI change | full KEM correctness |
 | `GT_BASEINV_USE_FQINV15_ASM` | on | scalar inversion in baseinv batch | production default | no public ABI change | full KEM correctness |
+| `GT_BASEINV_USE_HIER_K8` | on | `poly_baseinv_scaled_r` denominator batch-inversion tree | production default | no public ABI change; exact representatives may differ before byte packing | KEM pk/sk byte differential |
 | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | on | encap `gt_encap_basemul_add_tobytes_contract` | production default encap byte-contract path | yes, but byte-contract only and immediately consumed by `poly_tobytes` | `check_gt_direct32_q31_release_candidate` |
 | `GT_DIRECT32_Q31_RELEASE_GUARD_NOINLINE` | off | release guard build only | check-only | no | nm/objdump call-site guard |
 | `GT_USE_STOCK_BASEMUL_ADD_EXPERIMENTAL` | off | benchmark-only stock add drop-in | negative control | yes; correctness-incompatible on GT operands | gate harness reports mismatch |

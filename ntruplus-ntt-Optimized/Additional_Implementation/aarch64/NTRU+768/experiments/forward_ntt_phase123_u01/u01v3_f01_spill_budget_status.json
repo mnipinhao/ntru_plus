@@ -1,0 +1,64 @@
+{
+  "candidate_family": "u01v3_onepass_f01_with_spill_budget",
+  "production_default_changed": false,
+  "stage12_passes": 1,
+  "extra_stage12_raw_q_loads": 0,
+  "duplicated_stage12_computation": false,
+  "stage345_arithmetic_changed": false,
+  "stage345_scatter_changed": false,
+  "block1_handoff_registers": [
+    "q10",
+    "q20",
+    "q30",
+    "q24",
+    "q9",
+    "q6",
+    "q31",
+    "q23"
+  ],
+  "current_generated_producer_spills_block1_handoff": [
+    "q10",
+    "q20",
+    "q30",
+    "q24",
+    "q9",
+    "q6",
+    "q31",
+    "q23"
+  ],
+  "minimum_feasible_budget_per_row": 8,
+  "feasible_variants": {
+    "bmin": {
+      "symbol": "u01v3_f01_bmin_spill_budget",
+      "matrix_alias": "u01v3_block01_f01_bmin",
+      "spill_budget_per_row": 8,
+      "spill_count_q_stores_total": 24,
+      "restore_count_q_loads_total": 24,
+      "raw_q_reload_count": 0,
+      "status": "generated_assemble_candidate"
+    },
+    "b8": {
+      "symbol": "u01v3_f01_b8_spill_budget",
+      "matrix_alias": "u01v3_block01_f01_b8",
+      "spill_budget_per_row": 8,
+      "spill_count_q_stores_total": 24,
+      "restore_count_q_loads_total": 24,
+      "raw_q_reload_count": 0,
+      "status": "generated_assemble_candidate"
+    }
+  },
+  "infeasible_variants": {
+    "b2": {
+      "spill_budget_per_row": 2,
+      "required_spills_per_row": 8,
+      "unpreserved_clobbered_block1_liveins_per_row": 6,
+      "status": "infeasible_under_unchanged_stage345_block0_no_raw_reload_no_duplicate_stage12"
+    },
+    "b4": {
+      "spill_budget_per_row": 4,
+      "required_spills_per_row": 8,
+      "unpreserved_clobbered_block1_liveins_per_row": 4,
+      "status": "infeasible_under_unchanged_stage345_block0_no_raw_reload_no_duplicate_stage12"
+    }
+  }
+}

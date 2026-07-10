@@ -32,6 +32,9 @@ InvNTT wrapper 入口。
 | `INVNTT_USE_POST_BRANCHFOLD` | untwist、branch merge、final scaling 由 branchfold constants table 合併 |
 | `INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS` | final store 前做 output Barrett reductions，這是 `poly_crepmod3` representative contract 的關鍵 |
 | `INVNTT_INPUT_RMINUS1` | rminus1 wrapper 專用；改 include `invntt_branchfold_vecs_rminus1.inc` |
+| `INVNTT_USE_LAZY_TWIDDLE1_STAGE123` | rminus1 production 專用；刪除 inverse NTT32 `len=2,4,8` 中 multiplier=1 的 modular multiply，直接做 butterfly 並延後 reduction |
+| `INVNTT_USE_LAZY_TWIDDLE1_LEN16` | rminus1 production 專用；同樣刪除 `len=16` 的兩個 multiplier=1 modular multiply；`len=32` 仍保留 reduction，避免 bound 從 29376 上升到不安全的 55296 |
+| `INVNTT_PRESERVE_CALLEE_SAVED_SIMD` | rminus1 production 在既有 stack frame 內保存/恢復 AAPCS64 規定的 `d8-d15` low halves |
 | `INVNTT_EXPOSE_STAGE123_SCRATCH_ABI` | benchmark-only `asm/gt/bench/poly_invntt_rminus1_stage123scratch.S` exports the split stage123scratch symbols；standard `gt_production_opt_rminus1` KEM 不走這個 ABI |
 | `INVNTT_NO_POLY_ALIAS` | legacy/prototype wrapper 專用；不要 export `poly_invntt` |
 
@@ -52,6 +55,18 @@ poly_crepmod3(&m1, &m1)
 差別只在 final branchfold constants table，讓最後輸出回到 normal `R^0`
 representative。
 
+目前 `GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16` 預設為 `1`，因此上述
+lazy Stage123/len16 與 ABI preservation 是 production rminus1 path。要重現
+promotion 前的歷史版本，可在 make command 顯式設定：
+
+```sh
+GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16=0
+```
+
+range proof 的核心界線是：Stage123 後 bound 13824、`len=16` 後 27648、
+保留 `len=32` multiply/reduction 後 29376。若連 `len=32` multiplier=1 也刪除，
+DC path 可達 55296，所以 production 不採用該延伸。
+
 這幾輪做的 split prototype 是另一條實驗 path：
 
 ```text
@@ -66,27 +81,27 @@ KEM benchmark 沒有比 standard rminus1 path 快，所以不視為 production d
 
 | line | 段落 | 要看什麼 |
 | --- | --- | --- |
-| `18` | `BARRETT_REDUCE` | q=3457 的 16-bit lane Barrett reduction |
-| `24` | `FQMUL_LANE` | `sqrdmulh + mul + mls` 的 signed modular multiply |
-| `37` | `INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH` | stage45 + row-end reduce fused Slothy schedule；input 從 `x14 + 64*j` stripe scratch load |
-| `89` | `DIRECT_STAGE123_VEC` | 從 branch0/branch1 各 load `d`，合成一個 `q` vector |
-| `95` | `STORE_STAGE123_STRIPE_SCRATCH` | stage123 output 寫成 `[j, j+8, j+16, j+24]` contiguous scratch |
-| `117` | `DIRECT_STAGE123_BLOCK_TO_SCRATCH` | 8-vector block 的 stage1/2/3 butterflies，最後寫 stripe scratch |
-| `154` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY` | block-major row0 physical offset map |
-| `172` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY` | block-major row1 physical offset map |
-| `186` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY` | block-major row2 physical offset map |
-| `200` | `TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY` | tuple input path；row 內 offset 是 `0,8,16,...,248` |
-| `232` | `POST_STORE_PTR_BRANCHFOLD` | branchfold final merge + final output reductions + two `d` stores |
-| `272` | `FUSED_POST_STRIPE` | inverse DFT3 + branchfold store 的 one-stripe body |
-| `363` | `gt_block_major_poly_invntt` | block-major public entry，`w15=0` |
-| `367` | `gt_tuple_poly_invntt` | tuple public entry，`w15=1` |
-| `372` | `L_invntt_entry_common` | common prologue、三個 row 的 stage123/stage45、post loop、return |
-| `498` | `poly_invntt_stage45scratch` | exposed ABI prototype tail：input 已經是 stage123 stripe scratch |
-| `538` | `_invntt32_8way_stage45_from_scratch` | stage45 scratch consumer loop |
-| `553` | `inv_consts` | q、Barrett precompute、DFT3 constants |
-| `558` | `invntt32_stage123_consts` | stage123 twiddles/precompute |
-| `563` | `invntt32_stage45_consts` | stage45 twiddles/precompute |
-| `592` | `inv_branchfold_vecs` | normal vs rminus1 branchfold table switch |
+| `13` | `BARRETT_REDUCE` | q=3457 的 16-bit lane Barrett reduction |
+| `19` | `FQMUL_LANE` | `sqrdmulh + mul + mls` 的 signed modular multiply |
+| `39` | `INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH` | stage45 + row-end reduce fused Slothy schedule；input 從 `x14 + 64*j` stripe scratch load |
+| `90` | `DIRECT_STAGE123_VEC` | 從 branch0/branch1 各 load `d`，合成一個 `q` vector |
+| `96` | `STORE_STAGE123_STRIPE_SCRATCH` | stage123 output 寫成 `[j, j+8, j+16, j+24]` contiguous scratch |
+| `118` | `DIRECT_STAGE123_BLOCK_TO_SCRATCH` | 8-vector block 的 stage1/2/3 butterflies；lazy flag 控制 multiplier=1 path |
+| `174` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY` | block-major row0 physical offset map |
+| `192` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY` | block-major row1 physical offset map |
+| `206` | `DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY` | block-major row2 physical offset map |
+| `220` | `TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY` | tuple input path；row 內 offset 是 `0,8,16,...,248` |
+| `666` | `POST_STORE_PTR_BRANCHFOLD` | branchfold final merge + final output reductions + two `d` stores |
+| `710` | `FUSED_POST_STRIPE` | inverse DFT3 + branchfold store 的 one-stripe body |
+| `790` | `INVNTT_STACK_SIZE` / ABI macros | production rminus1 frame 擴充至 2144 bytes，保存 `d8-d15` |
+| `839` | `gt_block_major_poly_invntt` | block-major public entry與三個 row 的 stage123/stage45 path |
+| `905` | `gt_tuple_poly_invntt` | tuple input public entry |
+| `963` | `L_invntt_post_tail` | common branchfold post loop、ABI restore 與 return |
+| `1034` | `poly_invntt_stage45scratch` | exposed ABI prototype tail：input 已經是 stage123 stripe scratch |
+| `1075` | `inv_consts` | q、Barrett precompute、DFT3 constants |
+| `1080` | `invntt32_stage123_consts` | stage123 twiddles/precompute |
+| `1085` | `invntt32_stage45_consts` | stage45 twiddles/precompute |
+| `1114` | `inv_branchfold_vecs` | normal vs rminus1 branchfold table switch |
 
 ## What is intentionally not in production
 

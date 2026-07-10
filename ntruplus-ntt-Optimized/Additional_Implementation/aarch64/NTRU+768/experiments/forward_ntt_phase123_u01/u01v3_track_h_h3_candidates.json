@@ -1,0 +1,507 @@
+{
+  "artifact": "u01v3_track_h_h3_minimal_block3_reconstruction_state",
+  "status": "model_complete_no_physical_candidate",
+  "production_default_changed": false,
+  "scope": {
+    "asm_emitted": false,
+    "slothy_run": false,
+    "makefile_changed": false,
+    "physical_register_inference_used": false
+  },
+  "semantic_contract": {
+    "field_modulus_q": 3457,
+    "stage12_twiddle_w_centered": -708,
+    "stage12_twiddle_w_mod_q": 2749,
+    "raw_values_per_stripe": [
+      "A_s",
+      "B_s",
+      "C_s",
+      "D_s"
+    ],
+    "known_side_information": [
+      "Q0..Q7",
+      "Q8..Q15",
+      "Q16..Q23"
+    ],
+    "target": [
+      "Q24",
+      "Q25",
+      "Q26",
+      "Q27",
+      "Q28",
+      "Q29",
+      "Q30",
+      "Q31"
+    ],
+    "per_stripe_dependency_cone": {
+      "L_s": "A_s + C_s",
+      "M_s": "A_s - C_s",
+      "H_s": "B_s + D_s (identity-reduced mod q)",
+      "T_s": "w*(B_s - D_s) mod q",
+      "Q[s]": "L_s + H_s",
+      "Q[8+s]": "L_s - H_s",
+      "Q[16+s]": "M_s + T_s",
+      "Q[24+s]": "M_s - T_s"
+    },
+    "lane_shape": "Each semantic value is one 128-bit Neon vector with eight independent int16 lanes; the rank proof applies lane-wise. Cross-lane packing is outside H3."
+  },
+  "rank_proof": {
+    "stage12_transform_rank_per_stripe": 4,
+    "side_information_rank_all_8_stripes": 24,
+    "full_stage12_output_rank_all_8_stripes": 32,
+    "conditional_block3_rank_given_q0_q23": 8,
+    "baseline_without_retained_state": {
+      "side_rank": 24,
+      "rank_with_retained": 24,
+      "rank_with_retained_and_target": 32,
+      "retained_quotient_rank": 0,
+      "unresolved_target_dimensions": 8,
+      "basis_reconstructs_all_block3_outputs": false
+    },
+    "minimum_retained_vector_valued_dimensions": 8,
+    "conclusion": "Q24..Q31 contain eight independent vector-valued dimensions after Q0..Q23 are known. Any exact same-lane linear reconstruction basis therefore needs at least eight vectors."
+  },
+  "baseline": {
+    "G1_block3_q_stores": 24,
+    "G1_block3_q_loads": 24,
+    "E3_live_outputs_per_row": 24,
+    "q0_reserved": true,
+    "data_capable_q_regs": 31
+  },
+  "candidates": {
+    "H3a_retain_1_to_4_minimal_vectors": [
+      {
+        "name": "H3a_retain_1_direct_block3_vectors",
+        "class": "register_resident_primary_search",
+        "retained_vectors": [
+          "Q24"
+        ],
+        "retained_vector_count": 1,
+        "subsets_checked": 8,
+        "best_retained_quotient_rank": 1,
+        "unresolved_target_dimensions": 7,
+        "extra_arithmetic_instructions_total_3rows": 0,
+        "extra_memory_ops": 0,
+        "memory_diagnostic": {
+          "stores": 3,
+          "loads": 3,
+          "total": 6,
+          "note": "Memory residence does not repair the missing semantic dimensions."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 1,
+          "live_data_vectors": 25,
+          "max_live_q_regs_including_q0": 26,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": true
+        },
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "register cardinality fits, but semantic reconstruction fails",
+        "hard_gate_status": "reject_semantic_rank"
+      },
+      {
+        "name": "H3a_retain_2_direct_block3_vectors",
+        "class": "register_resident_primary_search",
+        "retained_vectors": [
+          "Q24",
+          "Q25"
+        ],
+        "retained_vector_count": 2,
+        "subsets_checked": 28,
+        "best_retained_quotient_rank": 2,
+        "unresolved_target_dimensions": 6,
+        "extra_arithmetic_instructions_total_3rows": 0,
+        "extra_memory_ops": 0,
+        "memory_diagnostic": {
+          "stores": 6,
+          "loads": 6,
+          "total": 12,
+          "note": "Memory residence does not repair the missing semantic dimensions."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 2,
+          "live_data_vectors": 26,
+          "max_live_q_regs_including_q0": 27,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": true
+        },
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "register cardinality fits, but semantic reconstruction fails",
+        "hard_gate_status": "reject_semantic_rank"
+      },
+      {
+        "name": "H3a_retain_3_direct_block3_vectors",
+        "class": "register_resident_primary_search",
+        "retained_vectors": [
+          "Q24",
+          "Q25",
+          "Q26"
+        ],
+        "retained_vector_count": 3,
+        "subsets_checked": 56,
+        "best_retained_quotient_rank": 3,
+        "unresolved_target_dimensions": 5,
+        "extra_arithmetic_instructions_total_3rows": 0,
+        "extra_memory_ops": 0,
+        "memory_diagnostic": {
+          "stores": 9,
+          "loads": 9,
+          "total": 18,
+          "note": "Memory residence does not repair the missing semantic dimensions."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 3,
+          "live_data_vectors": 27,
+          "max_live_q_regs_including_q0": 28,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": true
+        },
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "register cardinality fits, but semantic reconstruction fails",
+        "hard_gate_status": "reject_semantic_rank"
+      },
+      {
+        "name": "H3a_retain_4_direct_block3_vectors",
+        "class": "register_resident_primary_search",
+        "retained_vectors": [
+          "Q24",
+          "Q25",
+          "Q26",
+          "Q27"
+        ],
+        "retained_vector_count": 4,
+        "subsets_checked": 70,
+        "best_retained_quotient_rank": 4,
+        "unresolved_target_dimensions": 4,
+        "extra_arithmetic_instructions_total_3rows": 0,
+        "extra_memory_ops": 0,
+        "memory_diagnostic": {
+          "stores": 12,
+          "loads": 12,
+          "total": 24,
+          "note": "Memory residence does not repair the missing semantic dimensions."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 4,
+          "live_data_vectors": 28,
+          "max_live_q_regs_including_q0": 29,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": true
+        },
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "register cardinality fits, but semantic reconstruction fails",
+        "hard_gate_status": "reject_semantic_rank"
+      }
+    ],
+    "H3b_reduced_basis": [
+      {
+        "name": "H3b_reduced_basis_low_diff_M",
+        "class": "register_primary_and_memory_diagnostic",
+        "retained_vectors": [
+          "low_diff_M[stripe0]",
+          "low_diff_M[stripe1]",
+          "low_diff_M[stripe2]",
+          "low_diff_M[stripe3]",
+          "low_diff_M[stripe4]",
+          "low_diff_M[stripe5]",
+          "low_diff_M[stripe6]",
+          "low_diff_M[stripe7]"
+        ],
+        "retained_vector_count": 8,
+        "reconstruction_formula": "Q[24+s] = 2*M_s - Q[16+s]",
+        "partial_1_to_4_search": {
+          "1": {
+            "side_rank": 24,
+            "rank_with_retained": 25,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 1,
+            "unresolved_target_dimensions": 7,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "2": {
+            "side_rank": 24,
+            "rank_with_retained": 26,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 2,
+            "unresolved_target_dimensions": 6,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "3": {
+            "side_rank": 24,
+            "rank_with_retained": 27,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 3,
+            "unresolved_target_dimensions": 5,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "4": {
+            "side_rank": 24,
+            "rank_with_retained": 28,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 4,
+            "unresolved_target_dimensions": 4,
+            "basis_reconstructs_all_block3_outputs": false
+          }
+        },
+        "full_basis_check": {
+          "side_rank": 24,
+          "rank_with_retained": 32,
+          "rank_with_retained_and_target": 32,
+          "retained_quotient_rank": 8,
+          "unresolved_target_dimensions": 0,
+          "basis_reconstructs_all_block3_outputs": true
+        },
+        "extra_arithmetic_instructions_per_row": 16,
+        "extra_arithmetic_instructions_total_3rows": 48,
+        "extra_memory_ops_register_resident": 0,
+        "memory_diagnostic": {
+          "stores": 24,
+          "loads": 24,
+          "total": 48,
+          "delta_memory_ops_vs_G1": 0,
+          "expected_instruction_delta_vs_G1": 48,
+          "note": "It can reuse the existing block3 scratch slots, but then preserves the same memory boundary and adds reconstruction arithmetic."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 8,
+          "live_data_vectors": 32,
+          "max_live_q_regs_including_q0": 33,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": false
+        },
+        "basis_reconstructs_all_block3_outputs": true,
+        "feasibility": "algebraically complete, but register-resident form exceeds q-register cardinality; memory form is no better than G1",
+        "hard_gate_status": "reject_register_cardinality_and_memory_cost"
+      },
+      {
+        "name": "H3b_reduced_basis_twisted_high_diff_T",
+        "class": "register_primary_and_memory_diagnostic",
+        "retained_vectors": [
+          "twisted_high_diff_T[stripe0]",
+          "twisted_high_diff_T[stripe1]",
+          "twisted_high_diff_T[stripe2]",
+          "twisted_high_diff_T[stripe3]",
+          "twisted_high_diff_T[stripe4]",
+          "twisted_high_diff_T[stripe5]",
+          "twisted_high_diff_T[stripe6]",
+          "twisted_high_diff_T[stripe7]"
+        ],
+        "retained_vector_count": 8,
+        "reconstruction_formula": "Q[24+s] = Q[16+s] - 2*T_s",
+        "partial_1_to_4_search": {
+          "1": {
+            "side_rank": 24,
+            "rank_with_retained": 25,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 1,
+            "unresolved_target_dimensions": 7,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "2": {
+            "side_rank": 24,
+            "rank_with_retained": 26,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 2,
+            "unresolved_target_dimensions": 6,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "3": {
+            "side_rank": 24,
+            "rank_with_retained": 27,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 3,
+            "unresolved_target_dimensions": 5,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "4": {
+            "side_rank": 24,
+            "rank_with_retained": 28,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 4,
+            "unresolved_target_dimensions": 4,
+            "basis_reconstructs_all_block3_outputs": false
+          }
+        },
+        "full_basis_check": {
+          "side_rank": 24,
+          "rank_with_retained": 32,
+          "rank_with_retained_and_target": 32,
+          "retained_quotient_rank": 8,
+          "unresolved_target_dimensions": 0,
+          "basis_reconstructs_all_block3_outputs": true
+        },
+        "extra_arithmetic_instructions_per_row": 16,
+        "extra_arithmetic_instructions_total_3rows": 48,
+        "extra_memory_ops_register_resident": 0,
+        "memory_diagnostic": {
+          "stores": 24,
+          "loads": 24,
+          "total": 48,
+          "delta_memory_ops_vs_G1": 0,
+          "expected_instruction_delta_vs_G1": 48,
+          "note": "It can reuse the existing block3 scratch slots, but then preserves the same memory boundary and adds reconstruction arithmetic."
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 8,
+          "live_data_vectors": 32,
+          "max_live_q_regs_including_q0": 33,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": false
+        },
+        "basis_reconstructs_all_block3_outputs": true,
+        "feasibility": "algebraically complete, but register-resident form exceeds q-register cardinality; memory form is no better than G1",
+        "hard_gate_status": "reject_register_cardinality_and_memory_cost"
+      }
+    ],
+    "H3c_linear_combinations": [
+      {
+        "name": "H3c_four_pair_sums",
+        "class": "register_resident_primary_search",
+        "retained_vectors": [
+          "Q24+Q25",
+          "Q26+Q27",
+          "Q28+Q29",
+          "Q30+Q31"
+        ],
+        "retained_vector_count": 4,
+        "check": {
+          "side_rank": 24,
+          "rank_with_retained": 28,
+          "rank_with_retained_and_target": 32,
+          "retained_quotient_rank": 4,
+          "unresolved_target_dimensions": 4,
+          "basis_reconstructs_all_block3_outputs": false
+        },
+        "extra_arithmetic_instructions_total_3rows": 12,
+        "extra_memory_ops": 0,
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 4,
+          "live_data_vectors": 28,
+          "max_live_q_regs_including_q0": 29,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": true
+        },
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "pair sums retain only one of two independent dimensions per pair",
+        "hard_gate_status": "reject_semantic_rank"
+      },
+      {
+        "name": "H3c_general_linear_combinations_k1_to_k4",
+        "class": "rank_upper_bound_search",
+        "retained_vectors": "Vandermonde-style independent combinations of Q24..Q31",
+        "retained_vector_count_range": [
+          1,
+          4
+        ],
+        "search": {
+          "1": {
+            "side_rank": 24,
+            "rank_with_retained": 25,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 1,
+            "unresolved_target_dimensions": 7,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "2": {
+            "side_rank": 24,
+            "rank_with_retained": 26,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 2,
+            "unresolved_target_dimensions": 6,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "3": {
+            "side_rank": 24,
+            "rank_with_retained": 27,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 3,
+            "unresolved_target_dimensions": 5,
+            "basis_reconstructs_all_block3_outputs": false
+          },
+          "4": {
+            "side_rank": 24,
+            "rank_with_retained": 28,
+            "rank_with_retained_and_target": 32,
+            "retained_quotient_rank": 4,
+            "unresolved_target_dimensions": 4,
+            "basis_reconstructs_all_block3_outputs": false
+          }
+        },
+        "proof": "Any k retained vector-valued linear forms add quotient rank at most k. Since the missing quotient rank is 8, every k<=4 family is incomplete regardless of coefficients.",
+        "extra_arithmetic_instructions_total_3rows": "at least k combinations per row; exact cost depends on coefficients",
+        "extra_memory_ops": 0,
+        "max_live_q_regs_including_q0": "26..29",
+        "basis_reconstructs_all_block3_outputs": false,
+        "feasibility": "algebraically impossible for k<=4",
+        "hard_gate_status": "reject_semantic_rank"
+      },
+      {
+        "name": "H3c_full_chain_basis_boundary",
+        "class": "register_primary_boundary_and_memory_diagnostic",
+        "retained_vectors": [
+          "Q24",
+          "Q25-Q24",
+          "Q26-Q25",
+          "Q27-Q26",
+          "Q28-Q27",
+          "Q29-Q28",
+          "Q30-Q29",
+          "Q31-Q30"
+        ],
+        "retained_vector_count": 8,
+        "check": {
+          "side_rank": 24,
+          "rank_with_retained": 32,
+          "rank_with_retained_and_target": 32,
+          "retained_quotient_rank": 8,
+          "unresolved_target_dimensions": 0,
+          "basis_reconstructs_all_block3_outputs": true
+        },
+        "extra_arithmetic_instructions_encode_total_3rows": 21,
+        "extra_arithmetic_instructions_decode_total_3rows": 21,
+        "extra_arithmetic_instructions_total_3rows": 42,
+        "extra_memory_ops_register_resident": 0,
+        "memory_diagnostic": {
+          "stores": 24,
+          "loads": 24,
+          "total": 48,
+          "delta_memory_ops_vs_G1": 0,
+          "expected_instruction_delta_vs_G1": 42
+        },
+        "liveness": {
+          "e3_live_data_vectors": 24,
+          "retained_vectors": 8,
+          "live_data_vectors": 32,
+          "max_live_q_regs_including_q0": 33,
+          "hardware_q_regs": 32,
+          "data_capable_q_regs_with_q0_reserved": 31,
+          "register_cardinality_feasible": false
+        },
+        "basis_reconstructs_all_block3_outputs": true,
+        "feasibility": "invertible but not smaller than direct Q24..Q31; register form hits the same cardinality blocker and memory form adds arithmetic",
+        "hard_gate_status": "reject_no_compression"
+      }
+    ]
+  },
+  "decision": {
+    "register_resident_primary_candidate": null,
+    "emit_physical_asm": false,
+    "hard_gate_status": "stop_h3",
+    "reason": "Every 1-4 vector candidate is rank-incomplete. Every complete reduced or linear basis needs eight vectors, making 24 E3 outputs plus 8 basis vectors exceed the 31 data-capable q registers with q0 reserved. Memory residence preserves the same 24-store/24-load boundary as G1 and adds reconstruction arithmetic.",
+    "track_h_implication": "H3 cannot compress block3 state under the existing same-lane semantic contract. Removing G1 block3 scratch consumption requires H1/H2-style producer/consumer lifetime reordering, not a smaller reconstruction basis."
+  }
+}

@@ -228,6 +228,154 @@ slower than the existing fqinv15/fqinv16 backends. The remaining overhead is
 structural, mainly lane-wise mask materialization and int32 coefficient
 tracking. This path is parked.
 
+### Lazy int16 / 4-round correction probe
+
+Date: 2026-07-09
+
+`asm/gt/poly_baseinv_fqinv_divstep_lazy16.S` tests the lower-risk half of the
+4-step-block idea: keep `V/R` as int16 residues and reduce them only after each
+4-round block.  This is not yet a transition-matrix block divstep; each divstep
+round still materializes `s/t/active` masks.  Exhaustive scalar range modeling
+shows period 4 reaches max raw `|V/R| = 27616`, so the block correction must use
+a real quotient-based centered reduction rather than one `+/-q` correction.
+
+Pi5 PMU command shape:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench \
+  -B bench_gt_baseinv_kway_pmu SUDO= CORE=3 \
+  EXTRA_CFLAGS="-DGT_BASEINV_USE_DIVSTEP_LAZY16_ASM -DGT_BASEINV_HIER_K8_DIFF_HELPERS"
+```
+
+Correctness:
+
+```text
+correctness,total_mismatches=0
+```
+
+Same-environment comparison:
+
+| variant | cycles p50 | instr p50 | result |
+| --- | ---: | ---: | --- |
+| `fqinv_only_fqinv15_asm` | 298.697 | 170.004 | production inverse backend |
+| `fqinv_only_fqinv16` | 284.477 | 178.004 | benchmark-only C/NEON chain |
+| `fqinv_only_delta_divstep`, lazy16 | 455.738 | 754.004 | correct, faster than s32fold, still too slow |
+| `fqinv_only_delta_divstep`, s32fold | 500.230 | 943.004 | same binary rebuilt with `GT_BASEINV_USE_DIVSTEP_S32FOLD_ASM` |
+| `baseinv_scaled_delta_divstep`, lazy16 | 5186.516 | 5063.004 | slower than fqinv15 production |
+| `baseinv_scaled_delta_divstep`, s32fold | 5223.941 | 5252.004 | slower than lazy16 |
+| `baseinv_scaled_fqinv15_asm` | 4709.768 | 4387.004 | production baseline from lazy16 run |
+
+Decision: lazy16/period-4 correction is a real improvement over s32fold
+(`~44.5` cycles isolated, `~37.4` cycles in scaled baseinv), but it remains
+about `157` cycles slower than `gt_fqinv15_asm` for the isolated inverse and
+about `477` cycles slower in scaled baseinv.  It does not change the production
+decision.  A true 4-step transition-matrix divstep would need to remove most of
+the remaining per-round mask/state-update cost before this route is worth
+reopening.
+
+## hier_k8 no-canon production default
+
+Date: 2026-07-07
+
+The hierarchical k=8 tree using the existing `gt_fqinv15_asm` backend is now
+the GT production default.  The source-of-truth production flags in
+`gt_production_variants.mk` include:
+
+```c
+GT_BASEINV_USE_HIER_K8
+GT_BASEINV_USE_FQINV15_ASM
+```
+
+With these flags, `poly_baseinv_scaled_r()` uses the hier_k8 no-canon backend
+with `gt_fqinv15_asm`.  It must not be combined with
+`GT_BASEINV_HIER_K8_OUTPUT_CANON` or `GT_BASEINV_HIER_K8_EACH_INV_CANON`; those
+remain benchmark-only rejected variants.
+
+Scheduling status: the hier_k8 no-canon multiplication tree is still C/NEON and
+has not been Slothy-scheduled.  The linked ASM pieces are the existing
+`gt_fqinv15_asm` scalar-vector inverse core and
+`baseinv_batch_finish24_n1_asm` finish loop.
+
+Contract:
+
+1. hier_k8 changes only the denominator batch-inversion multiplication tree.
+2. It is coefficient-wise equivalent modulo q to the current flat tree.
+3. It is not guaranteed to preserve exact int16 representatives, because the
+   multiplication order changes.
+4. KEM pk/sk byte differential is the production-readiness gate.
+
+Pi5 command:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_baseinv_hier_k8_diff SUDO= CORE=3
+```
+
+Representative diagnostics:
+
+```text
+baseinv_ab,current_vs_hier_k8_fqinv15_asm,
+  ret_mismatches=0,
+  modq_mismatches=0,
+  exact_mismatches=6,
+  current_min=-1767,current_max=1764,
+  candidate_min=-1767,candidate_max=1764,
+  first_exact_idx=151,
+  first_exact_current=-1695,
+  first_exact_candidate=1762
+```
+
+Large deterministic KEM byte differential:
+
+```text
+seeds=1000:
+  keypair_ret_mismatches=0
+  pk_mismatch_seeds=0, pk_byte_mismatches=0
+  sk_mismatch_seeds=0, sk_byte_mismatches=0
+  current_failures=0, hier_k8_failures=0
+
+seeds=10000:
+  keypair_ret_mismatches=0
+  pk_mismatch_seeds=0, pk_byte_mismatches=0
+  sk_mismatch_seeds=0, sk_byte_mismatches=0
+  current_failures=0, hier_k8_failures=0
+```
+
+Promotion PMU table, clean 1000-seed build before switching the default:
+
+| variant | cycles p50 | instr p50 | IPC | delta vs current |
+| --- | ---: | ---: | ---: | ---: |
+| baseinv_scaled_current | 5038.186 | 4451.025 | 0.883 | baseline |
+| baseinv_scaled_hier_k8_fqinv15_asm | 4727.342 | 4368.025 | 0.924 | -310.844 |
+| keypair_total_current | 39418.750 | 82212.250 | 2.086 | baseline |
+| keypair_total_hier_k8_fqinv15_asm | 38803.290 | 82044.250 | 2.114 | -615.460 |
+
+The gate also passed a direct production smoke test before the default switch:
+
+```sh
+make -C /home/pi/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768 \
+  -B test_kem_gt_production_opt \
+  CPPFLAGS="-D_DEFAULT_SOURCE -DGT_BASEINV_BATCH_USE_ASM_FINISH \
+  -DGT_BASEINV_USE_FQINV15_ASM -DGT_BASEINV_USE_HIER_K8"
+```
+
+Running `build/test_kem_gt_production_opt` completed keygen/encap/decap.
+
+After the default switch, the same-binary diff harness should be read as:
+
+```text
+baseinv_scaled_flat_reference:
+  explicit old flat batch-inversion tree
+
+baseinv_scaled_gt_production_hier_k8:
+  new production baseinv tree
+
+keypair_total_gt_production:
+  GT production flags from gt_production_variants.mk
+
+keypair_total_explicit_hier_k8:
+  explicit candidate symbol, used as a production sanity mirror
+```
+
 ## Decision
 
 Flat k-way batch inversion should not be pursued for NTRU+768 baseinv:
@@ -243,6 +391,7 @@ Flat k-way batch inversion should not be pursued for NTRU+768 baseinv:
    equivalent to the linked ASM path, so it is not a production-ready contract.
 
 Next baseinv work should remain at the algorithm level, not flat k-way batch
-inversion.  A future route would need a different polyinv/baseinv algorithm or
-a real reduction/representative contract improvement; this k-way split does
-not move the keygen bottleneck in the right direction.
+inversion.  The hier_k8 no-canon tree is the exception from this round: it uses
+the same single `gt_fqinv15_asm` backend, passes the KEM byte differential, and
+is now the GT production default.  The byte differential gate should remain
+part of release validation whenever the production flag set changes.

@@ -1,0 +1,128 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: ntt32_stage345_block0_production
+  source: asm/slothy/production/my_32ntt.opt.s
+  extracted_region: experiments/forward_ntt_phase123_u01/stage345_block0_livein/baseline-stage345-block0.s
+  function: _ntt32_8way
+  start_label: _ntt32_stage345_block0_slothy_start
+  end_label: _ntt32_stage345_block0_slothy_end
+  source_commit: d5ebaccd
+
+region:
+  instruction_count: 167
+  live_in:
+    - x4 row_base for production row scratch, with Q0..Q7 at x4+0..112
+    - x10 scatter pointer base for block0 output stores
+    - x12 stage345 twiddle table pointer, consumed by four post-increment q loads
+    - x14 public scatter wrap bound
+    - sp stack frame with STACK_LOC_0 temporary spill slot
+    - v0 fixed q/reduction constant vector
+  live_out:
+    - x10 restored to next scatter pointer state by the production region
+    - x12 advanced by 64 bytes after four q twiddle loads
+    - memory stores to public scatter addresses derived from x10 and wrap logic
+  clobbers:
+    - x0-x17 public pointer temporaries used by production scatter scheduling
+    - v1-v31 vector temporaries allocated by the production Slothy region
+
+abi:
+  inputs:
+    - x4 production row scratch base
+    - x10 production scatter pointer
+    - x12 stage345 twiddle base
+    - x14 scatter wrap bound
+    - v0 q/reduction constants
+  outputs:
+    - x10 post-region scatter pointer value
+    - x12 post-region twiddle pointer value
+    - scatter memory stores
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - sp
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+memory_contract:
+  loads:
+    - four q twiddle loads from x12 with public post-increment offsets
+    - eight q row scratch loads from x4 public offsets 0,16,32,48,64,80,96,112
+    - STACK_LOC_0 spill/restore pairs in the production Slothy schedule
+  stores:
+    - twenty-three public scatter stores preserving production order and addresses
+    - STACK_LOC_0 spill/restore pairs in the production Slothy schedule
+  aliasing: x12 read-only twiddle table and x4 row scratch must not alias scatter stores from x10-derived addresses
+  alignment: q row/twiddle loads are 16-byte aligned; d stores are 8-byte aligned within public scatter layout
+  public_offsets_only: true
+  pointer_updates:
+    - x12 advances by 64 bytes through four q post-increment loads
+    - scatter pointers use public add/cmp/sub/csel wrap logic unchanged from production
+
+constant_contract:
+  constants:
+    - v0.h[0] q = 3457
+    - v0.h[1] final stage reduction scaling constant
+    - x12 table contains production stage345 twiddle vectors
+  modulus: q = 3457
+  representation: signed 16-bit Neon lanes, same lazy bounds as production NTT32 stage345
+  reduction_method: production sqrdmulh/mls and sqdmulh/srshr/mls reduction sequences
+
+range_contract:
+  input_ranges:
+    - Q0..Q7 match production NTT32 post-stage12 row scratch values for one row block
+  intermediate_ranges:
+    - same lazy stage345 intermediate bounds as production my_32ntt.opt.s
+  output_ranges:
+    - final d stores match production NTT32 stage345 block0 output representatives
+  narrowing_points:
+    - ext/str d pairs store low and high halves after production reduction sequences
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficients contained in Q0..Q7
+  public_inputs:
+    - x4 row scratch base
+    - x10 scatter pointer base
+    - x12 twiddle table base
+    - x14 scatter wrap bound
+    - all offsets and cmp/csel wrap conditions
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 167
+  slothy_expected_cycles: 55
+  full_path_benchmark: production KEM benchmark unchanged; no isolated replacement benchmark for this exact block
+  benchmark_command: make -C ../../../../aarch64-bench bench_gt_kem_component_profile_pmu USE_SHAKE_ASM=0 CYCLES=PERF

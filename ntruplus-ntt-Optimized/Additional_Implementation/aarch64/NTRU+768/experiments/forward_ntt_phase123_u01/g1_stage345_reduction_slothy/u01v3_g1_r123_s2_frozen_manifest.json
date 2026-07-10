@@ -1,0 +1,406 @@
+{
+  "candidate_family": "u01v3_g1",
+  "production_default_changed": true,
+  "variants": {
+    "G1": "poly_ntt_u01v3_g1",
+    "G1_S2": "poly_ntt_u01v3_g1_s2",
+    "G1_R123": "poly_ntt_u01v3_g1_r123",
+    "G1_R123_S2": "poly_ntt_u01v3_g1_r123_s2"
+  },
+  "generator_commands": [
+    "python3 experiments/forward_ntt_phase123_u01/generate_u01v3_g1_fullpath.py",
+    "python3 experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/generate_g1_stage345_reduction_slothy.py",
+    "SLOTHY_PATH=$HOME/slothy python3 experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/optimize_g1_stage345_reduction.py",
+    "python3 experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/integrate_g1_stage345_reduction_slothy.py"
+  ],
+  "slothy": {
+    "version": "0.2.1",
+    "target": "slothy.targets.aarch64.neoverse_n1_experimental",
+    "allow_renaming": false,
+    "new_spills": false,
+    "scheduled_blocks": [
+      1,
+      2,
+      3
+    ],
+    "unchanged_blocks": [
+      0
+    ]
+  },
+  "s2_transform": {
+    "g1_safe_sites_per_row": 27,
+    "g1_kept_ext_str_per_row": 5,
+    "g1_r123_safe_sites_per_row": 28,
+    "g1_r123_kept_ext_str_per_row": 4
+  },
+  "promotion": {
+    "status": "production",
+    "production_asm": "asm/gt/poly_ntt_g1_r123_s2.S",
+    "legacy_switch": "GT_PRODUCTION_USE_LEGACY_NTT=1",
+    "production_default_changed": true,
+    "same_binary_full_kem_gate": "pass",
+    "threeway_full_kem_gate": "pass"
+  },
+  "artifacts": [
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/Makefile",
+      "size": 11216,
+      "sha256": "4286a53cd1dcd067f2ec46a6e76ac4a44407c803c1ad2fc1a4529b87ef687c84",
+      "role": "production_build"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1.S",
+      "size": 524132,
+      "sha256": "b4b6a869fe8172ba375de5dad200fae2a1ecabde74fb640d7bb2b81732d74da0",
+      "role": "variant_g1"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_abi_sentinel.S",
+      "size": 2585,
+      "sha256": "e75f43383ac0d39ccde8933f92327a7cdbb89f2d26902f9e44c6b20fc8832bb0",
+      "role": "variant_g1"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_dropin.S",
+      "size": 524214,
+      "sha256": "12647b457f038eea21424677457b5b82ceec3a118d5b01b3742094208bbcc1ff",
+      "role": "variant_g1"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123.S",
+      "size": 646029,
+      "sha256": "41c5899220506a981dfc2946ec0ac6ef218288d8b28e494384a834e0fddd8c11",
+      "role": "variant_g1_r123"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123_abi_sentinel.S",
+      "size": 2615,
+      "sha256": "b5f6b01ee2013a2effcfebeb0c1a30a515c46c810c8d0003bd699022c07065fe",
+      "role": "variant_g1_r123"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123_dropin.S",
+      "size": 646076,
+      "sha256": "f1cd7f281495818feb7c511df525c70c7ef8547567ee78425fff39279f12478a",
+      "role": "variant_g1_r123"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S",
+      "size": 646302,
+      "sha256": "7fb25cf5806245264bacfef988bb7fc82643a2bdcdd90d7dec66eab279881ee9",
+      "role": "variant_g1_r123_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2_abi_sentinel.S",
+      "size": 2633,
+      "sha256": "459fd2e367171367e5b81a833fd88208406c1911fb51494b649b2e5fc27642b8",
+      "role": "variant_g1_r123_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2_dropin.S",
+      "size": 646328,
+      "sha256": "91bab42daf9d08b3452270931a532ec90e21074cff219a89aafa924f5f2494d4",
+      "role": "variant_g1_r123_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_s2.S",
+      "size": 524606,
+      "sha256": "dec10782db8bb8a80ccc76976b77bc1a623a99a544838069d22d43cc1e87ed26",
+      "role": "variant_g1_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_s2_abi_sentinel.S",
+      "size": 2603,
+      "sha256": "35e0a95f8d4be8822081acca1276c0779bd6ef91598757ce7d34569aa57cdf15",
+      "role": "variant_g1_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/poly_ntt_u01v3_g1_s2_dropin.S",
+      "size": 524667,
+      "sha256": "7b27c277c0cb1dacbb9af5b5981c14fd11c813fd4e06259dcff38aee2ca4b8d1",
+      "role": "variant_g1_s2"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/experiment/u01_block_first_tables.inc",
+      "size": 12574,
+      "sha256": "fd7baebedf9e541998967598f1256b9dcb198d4fd34eddc841f93d7a3525f9d2",
+      "role": "generator_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/poly_ntt_g1_r123_s2.S",
+      "size": 177481,
+      "sha256": "98c028495302bf980b4816f45c751e05c4b59bbf5fde9200cc325baee308bda2",
+      "role": "production"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/gt/poly_ntt_g1_r123_s2_tables.inc",
+      "size": 12574,
+      "sha256": "fd7baebedf9e541998967598f1256b9dcb198d4fd34eddc841f93d7a3525f9d2",
+      "role": "production"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block0_stage345_reduction.input.s",
+      "size": 39973,
+      "sha256": "f6bb5392d19939ab423ace8a09698f947148f2aec5cc3b2c373daa97d40e3612",
+      "role": "slothy_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block1_stage345_reduction.input.s",
+      "size": 36893,
+      "sha256": "3ae8bd14fbda5cf2601cb62ecd07e6ad3b0b03a9d6819ee2bad4745c6eadf5b1",
+      "role": "slothy_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block1_stage345_reduction.opt.s",
+      "size": 51382,
+      "sha256": "6f60a17e09f0450b0c219e3883e9611e3342ba9cb8df7cee07938ad0516802ce",
+      "role": "slothy_output"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block2_stage345_reduction.input.s",
+      "size": 36919,
+      "sha256": "8a6cc864679ded6d2a5766c796a754cba693618759e7ed0d6cfdbc19a27e4d59",
+      "role": "slothy_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block2_stage345_reduction.opt.s",
+      "size": 49950,
+      "sha256": "c8b20134290064f5630af5f82d7a90d6089ec0a0d82e4e0abaaf8f448f6af4fe",
+      "role": "slothy_output"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block3_stage345_reduction.input.s",
+      "size": 37294,
+      "sha256": "28f0b0430b1c323f2117bee5c064f5f510fd890c9b4306ec47fd44914c1d1ec6",
+      "role": "slothy_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/asm/slothy/experiments/u01v3_g1_stage345_reduction/block3_stage345_reduction.opt.s",
+      "size": 50039,
+      "sha256": "e5c93303f89f14208c09931565e1f7ccd213a38895c32bcb77763ea65928a86c",
+      "role": "slothy_output"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/audit_umov_str_candidate.py",
+      "size": 22813,
+      "sha256": "c3ef9f72c5075ea5b67bb33326b1fc7f65535ac61407bd77ee265dcd2f36d129",
+      "role": "generator_utility"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/baseline-contract.yml",
+      "size": 532,
+      "sha256": "17a0bf63b231b9572723d14d9359892fc55bbd44cd456db33e2ec508e501f6de",
+      "role": "contract"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/candidate-contract.yml",
+      "size": 3290,
+      "sha256": "8d95a2e25abe465237134e4bb32e59936dad3cb37bbc71cc186dd576313984d5",
+      "role": "contract"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/freeze_g1_r123_s2_candidate.py",
+      "size": 7618,
+      "sha256": "4148a310a178362c94d7477b7790948a4c97811636b26dda858b1ae61d8d913f",
+      "role": "manifest_generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/g1_r123_s2_transform_audit.json",
+      "size": 13882,
+      "sha256": "c21e4076155cf5acef2772c47c32878e918b5e40cadf02b7cc95200fdbd0c326",
+      "role": "audit"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/generate_g1_stage345_reduction_slothy.py",
+      "size": 4430,
+      "sha256": "1b2e9fec06ed6f461bff5639a65273bd64d5624ba2348fa4f40ae9d90df9a644",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/integrate_g1_stage345_reduction_slothy.py",
+      "size": 7131,
+      "sha256": "59f2664a46fbff94a3807f0d1a90561003e106c4f6b4b6235b036ba6b153bfab",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/kernel-contract.yml",
+      "size": 918,
+      "sha256": "d46330f46b8705db655d00f286515097cd6b66928f26e46e157639ddf7e7512b",
+      "role": "contract"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/optimize_g1_stage345_reduction.py",
+      "size": 7152,
+      "sha256": "522c317819981a06905441f992e4b8a12d6d38e5da6e30a78a046ec240037282",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/slothy_logs/block0_n1.log",
+      "size": 4880,
+      "sha256": "5c3f41692d2d979210f72443ba083028c11b38d15adab723f3c4cc85108bb7b0",
+      "role": "slothy_log"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/slothy_logs/block1_n1.log",
+      "size": 2246,
+      "sha256": "92e1c9cbfc30ae75ca3e27985d570cf1b5542168df6b572a585da12f19cd1b41",
+      "role": "slothy_log"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/slothy_logs/block2_n1.log",
+      "size": 3931,
+      "sha256": "dd4818a95f9ab241f12a3ac2b69cb51aec7fcfc2130fe9f298872e8dea25b7eb",
+      "role": "slothy_log"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/g1_stage345_reduction_slothy/slothy_logs/block3_n1.log",
+      "size": 4505,
+      "sha256": "0191e042591930e061d6d1f5e55db7f45472a789bb7cfdd0cf8f5c31479a4b72",
+      "role": "slothy_log"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/generate_phase123_shared_prefix_v2.py",
+      "size": 3773,
+      "sha256": "346d67b0b2199a89d9323fb8e05661aea2eb024faed623cb54ac5c3fba07e94c",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/generate_u01v3_f0123_track_g.py",
+      "size": 24036,
+      "sha256": "8e93456472864430c13a0811458226c8ee4ae782a13df090b240429247df4f61",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/generate_u01v3_g1_fullpath.py",
+      "size": 17059,
+      "sha256": "d8893a03831ecbf160b038842312b8f7c2a2c2b782e900bc204af26231cd979f",
+      "role": "generator"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/phase123_shared_prefix_v2_allrows.sym.s",
+      "size": 64920,
+      "sha256": "06f2479eb7ba314c205ef938803026b7bd64f8dc8c6d616fee1205af88d26ee3",
+      "role": "generator_input"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/experiments/forward_ntt_phase123_u01/u01v3_g1_s2_transform_audit.json",
+      "size": 13763,
+      "sha256": "a7fa50e92d324ce5ac587024a477ca9e30e021290f46f86d49e302c7feab8413",
+      "role": "audit"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/gt_test/test_u01v3_g1_fullpath.c",
+      "size": 2779,
+      "sha256": "1fb29148699a0dcea5ec15d35cb334f82c588a2e49379f263da7736f686ff696",
+      "role": "correctness_test"
+    },
+    {
+      "path": "Additional_Implementation/aarch64/NTRU+768/gt_test/test_u01v3_g1_reduction_slothy.c",
+      "size": 3011,
+      "sha256": "35d959ac465803b7e2349d004159281c12d0583102d8a37f46c5ec9b07f13ace",
+      "role": "correctness_test"
+    },
+    {
+      "path": "aarch64-bench/Makefile",
+      "size": 41538,
+      "sha256": "c5adf03676e9eb984a2e535c6395d25b6b41b70fbcd3216160a10423adc2a9ad",
+      "role": "production_build"
+    },
+    {
+      "path": "aarch64-bench/bench.c",
+      "size": 33235,
+      "sha256": "a85faf362de8a1fe483e3a30c3e09eace3e292adb4bf3f142586679aa2baa516",
+      "role": "threeway_benchmark"
+    },
+    {
+      "path": "aarch64-bench/bench_kem_u01v3_g1_r123_candidate_wrapper.c",
+      "size": 331,
+      "sha256": "076742dbe525a468fa896dd767d57e04da96c39cde4c6642007cba73f7e6d46f",
+      "role": "paired_benchmark"
+    },
+    {
+      "path": "aarch64-bench/bench_kem_u01v3_g1_r123_capture_wrapper.c",
+      "size": 398,
+      "sha256": "c92106c6464422123da0742e1d6c978b57dc4238879dd0474f16247d9919410a",
+      "role": "paired_benchmark"
+    },
+    {
+      "path": "aarch64-bench/bench_kem_u01v3_g1_r123_prod_wrapper.c",
+      "size": 274,
+      "sha256": "fb64e6d4e343fc7eb9587b217373008b63ad84f784a58c82709c26caf291d68b",
+      "role": "paired_benchmark"
+    },
+    {
+      "path": "aarch64-bench/bench_u01v3_g1_r123_paired_kem_pmu.c",
+      "size": 19930,
+      "sha256": "d93b3d899487b5750ce05ddb6d6cf63476a7f16be6b258fbeb44989594262773",
+      "role": "paired_benchmark"
+    },
+    {
+      "path": "aarch64-bench/hal/hal.c",
+      "size": 7871,
+      "sha256": "b348b176f301a1f26f1db480ddc7e8cdc6a683bbfc6880108cc182f1e80fb5d3",
+      "role": "threeway_benchmark"
+    },
+    {
+      "path": "aarch64-bench/results/gt_production_g1r123s2_threeway/summary.json",
+      "size": 10058,
+      "sha256": "e965f55e49c44eaea59e9e77207d5d5283067ca0fb6e99302f3018719c44ee39",
+      "role": "threeway_result"
+    },
+    {
+      "path": "aarch64-bench/results/gt_production_g1r123s2_threeway/summary.md",
+      "size": 1961,
+      "sha256": "c14c7c0c73c1752f1655d71923e53d478ff25604ef398ad33719539cc575bfbb",
+      "role": "threeway_result"
+    },
+    {
+      "path": "aarch64-bench/results/u01v3_g1_r123_paired_kem/layout.json",
+      "size": 9171,
+      "sha256": "9eb14935a6f19e868d586de2412328e4c988312c4eff48e3a0a5a4592fad4e2c",
+      "role": "paired_result"
+    },
+    {
+      "path": "aarch64-bench/results/u01v3_g1_r123_paired_kem/linkage_audit.log",
+      "size": 9171,
+      "sha256": "9eb14935a6f19e868d586de2412328e4c988312c4eff48e3a0a5a4592fad4e2c",
+      "role": "paired_result"
+    },
+    {
+      "path": "aarch64-bench/results/u01v3_g1_r123_paired_kem/pmu.out",
+      "size": 14077,
+      "sha256": "315346e417e6226f778a6da8df108a165892cc1c5480365561e4b564f310ebbe",
+      "role": "paired_result"
+    },
+    {
+      "path": "aarch64-bench/results/u01v3_g1_r123_paired_kem/summary.json",
+      "size": 37466,
+      "sha256": "83847e43606e9694c64d9001f0443aa0d022db031373b044564b52d90dacba30",
+      "role": "paired_result"
+    },
+    {
+      "path": "aarch64-bench/results/u01v3_g1_r123_paired_kem/summary.md",
+      "size": 2260,
+      "sha256": "77cbf8df01fb1a27c1d0f68ac73a4f160cc54f9cca97d0581dad85df9a0c7d90",
+      "role": "paired_result"
+    },
+    {
+      "path": "aarch64-bench/scripts/audit_u01v3_g1_r123_paired_binary.py",
+      "size": 7151,
+      "sha256": "004f54bb58cf03631e4cc310fc977999c36ca82d1135f27c6c8ba25a25083c09",
+      "role": "paired_benchmark_audit"
+    },
+    {
+      "path": "aarch64-bench/scripts/run_gt_production_threeway.py",
+      "size": 8963,
+      "sha256": "c98f38f5fcec7c5bcb2d356bbb899418518e6a6ef65bcbf9921b6c4decace38f",
+      "role": "threeway_benchmark"
+    },
+    {
+      "path": "aarch64-bench/scripts/summarize_u01v3_g1_r123_paired_kem.py",
+      "size": 8721,
+      "sha256": "340b4f22314edab2a21a99a60aae2f339ea3e1bbbe66461dea24bf90ac1c7ac3",
+      "role": "paired_benchmark_summary"
+    }
+  ]
+}

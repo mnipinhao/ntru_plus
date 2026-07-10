@@ -1,0 +1,69 @@
+{
+  "artifact": "u01v3_track_h_candidate_registry",
+  "production_default_changed": false,
+  "trusted_baseline": {
+    "id": "G1",
+    "shape": "E3/F012 live handoff plus delayed block3 consumption from existing Stage12 scratch",
+    "correctness": "pass",
+    "abi": "pass",
+    "block3_q_loads": 24,
+    "pi5_vs_production_same_coverage": {
+      "cycles": -13,
+      "instructions": -92
+    }
+  },
+  "diagnostics": {
+    "H0": {
+      "symbol": "u01v3_f0123_h0_block3_load_elision",
+      "status": "measured_low_headroom",
+      "correctness": "skipped_diagnostic",
+      "removed_block3_q_loads": 24,
+      "arithmetic_changed": false,
+      "scatter_changed": false,
+      "local_assembler": "pass",
+      "pi5_pmu": {
+        "date": "2026-07-10",
+        "core": 3,
+        "ntests": 61,
+        "niterations": 20000,
+        "repeated_runs": 2,
+        "g1_cycles": 2696,
+        "h0_cycles": 2694,
+        "g1_instructions": 3744,
+        "h0_instructions": 3720,
+        "delta_cycles_vs_g1": -2,
+        "delta_instructions_vs_g1": -24,
+        "decision_band": "0_to_5_cycles_low_headroom"
+      }
+    }
+  },
+  "models": {
+    "H1": {
+      "status": "hard_gate_fail",
+      "emit_asm": false,
+      "passing_candidates": [],
+      "reason": "Every no-memory delayed-out3 form needs 24 F012 outputs plus eight independent block3 basis values, exceeding the 31 data registers available with q0 reserved."
+    },
+    "H2": {
+      "status": "hard_gate_fail",
+      "emit_asm": false,
+      "passing_candidates": [],
+      "least_bad": "H2b pair-major",
+      "least_bad_instruction_delta_vs_G1": 57,
+      "reason": "Pair-major preserves arithmetic reuse but requires 96 raw-q reloads, violating the Track H hard gate."
+    },
+    "H3": {
+      "status": "hard_gate_fail",
+      "emit_asm": false,
+      "passing_candidates": [],
+      "conditional_block3_rank": 8,
+      "reason": "One independent vector per stripe is required. Any complete register basis recreates the 32-data-vector versus 31-register deficit; a memory basis is no better than G1."
+    }
+  },
+  "decision": {
+    "emit_correctness_candidate": false,
+    "current_best_f0123": "G1",
+    "reason": "No H1/H2/H3 model passes the semantic, register, and memory hard gates. H0 also shows only two cycles of optimistic whole-path headroom.",
+    "reopen_condition": "Only revisit Track H with a materially different Phase123 representation or transform decomposition that changes the eight independent block3 dimensions or the q0/data-register contract."
+  }
+}

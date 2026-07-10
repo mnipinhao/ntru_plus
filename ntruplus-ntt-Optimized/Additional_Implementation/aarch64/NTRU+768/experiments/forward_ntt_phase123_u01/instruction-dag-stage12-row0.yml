@@ -1,0 +1,132 @@
+dag:
+  id: phase123_u01_stage12_row0_stripe01_dag
+  kernel_contract: kernel-contract-stage12-row0.yml
+  description: Row0-only direct handoff from Phase123 U01 even iterations into NTT32 stage12 stripes0+1.
+
+inputs:
+  - id: input_base
+    register: x1
+    description: original Phase123 input base
+  - id: twist_base
+    register: x3
+    description: Phase123 twist/precompute table base
+  - id: out_row0
+    register: x4
+    description: row0 post-stage12 output scratch base
+  - id: ntt32_twiddle_base
+    register: x12
+    description: ntt32_twiddle_vecs base
+  - id: constants
+    register: v0
+    description: q and reduction constants
+
+constants:
+  - v0.h[0] q
+  - v0.h[4] Phase123 high-half normal multiplier
+  - v0.h[5] Phase123 high-half precompute
+  - x3 table Phase123 twiddle/precompute q pairs
+  - x12 table NTT32 stage12 precompute/normal vectors
+
+nodes:
+  - id: u01_iter0_row0
+    op: phase123_u01_common_prefix_then_row0_sum
+    inputs: [input_base + iter0 offsets, twist_base + 0]
+    outputs: [raw_Q0, raw_Q1]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row0 vector sums
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 input range
+    range_after: production Phase123 row0 slots0+1 range
+    may_reorder_with: [u01_iter2_row0, u01_iter4_row0, u01_iter6_row0]
+    must_precede: [stage12_stripe0, stage12_stripe1]
+
+  - id: u01_iter2_row0
+    op: phase123_u01_common_prefix_then_row0_sum
+    inputs: [input_base + iter2 offsets, twist_base + 768]
+    outputs: [raw_Q8, raw_Q9]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row0 vector sums
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 input range
+    range_after: production Phase123 row0 slots0+1 range
+    may_reorder_with: [u01_iter0_row0, u01_iter4_row0, u01_iter6_row0]
+    must_precede: [stage12_stripe0, stage12_stripe1]
+
+  - id: u01_iter4_row0
+    op: phase123_u01_common_prefix_then_row0_sum
+    inputs: [input_base + iter4 offsets, twist_base + 1536]
+    outputs: [raw_Q16, raw_Q17]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row0 vector sums
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 input range
+    range_after: production Phase123 row0 slots0+1 range
+    may_reorder_with: [u01_iter0_row0, u01_iter2_row0, u01_iter6_row0]
+    must_precede: [stage12_stripe0, stage12_stripe1]
+
+  - id: u01_iter6_row0
+    op: phase123_u01_common_prefix_then_row0_sum
+    inputs: [input_base + iter6 offsets, twist_base + 2304]
+    outputs: [raw_Q24, raw_Q25]
+    instruction_shape: ldr/ldp, mul, sqrdmulh, mls, add/sub, zip1/zip2, row0 vector sums
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 input range
+    range_after: production Phase123 row0 slots0+1 range
+    may_reorder_with: [u01_iter0_row0, u01_iter2_row0, u01_iter4_row0]
+    must_precede: [stage12_stripe0, stage12_stripe1]
+
+  - id: stage12_stripe0
+    op: production_ntt32_stage12_stripe
+    inputs: [raw_Q0, raw_Q8, raw_Q16, raw_Q24, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_Q0, post_Q8, post_Q16, post_Q24]
+    instruction_shape: add/sub, sqrdmulh, mul, mls, four q stores
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 row0 raw Q range
+    range_after: production NTT32 post-stage12 range
+    may_reorder_with: [stage12_stripe1 after raw inputs exist]
+    must_precede: [store_post_Q0, store_post_Q8, store_post_Q16, store_post_Q24]
+
+  - id: stage12_stripe1
+    op: production_ntt32_stage12_stripe
+    inputs: [raw_Q1, raw_Q9, raw_Q17, raw_Q25, ntt32_twiddle_base + 16/32/48, q]
+    outputs: [post_Q1, post_Q9, post_Q17, post_Q25]
+    instruction_shape: add/sub, sqrdmulh, mul, mls, four q stores
+    tied_operands: [mls destination is read/write]
+    range_before: production Phase123 row0 raw Q range
+    range_after: production NTT32 post-stage12 range
+    may_reorder_with: [stage12_stripe0 after raw inputs exist]
+    must_precede: [store_post_Q1, store_post_Q9, store_post_Q17, store_post_Q25]
+
+memory:
+  loads:
+    - u01 input loads: x1 fixed public offsets for iter0/2/4/6 P0/P2/P4 low/high halves
+    - u01 table loads: x7 fixed public offsets 0/64/128/192/256/320, where x7 is x3 plus public iteration table offset
+    - stage12 table loads: x12 fixed public offsets 16/32/48
+  stores:
+    - store_post_Q0: x4 + 0
+    - store_post_Q1: x4 + 16
+    - store_post_Q8: x4 + 128
+    - store_post_Q9: x4 + 144
+    - store_post_Q16: x4 + 256
+    - store_post_Q17: x4 + 272
+    - store_post_Q24: x4 + 384
+    - store_post_Q25: x4 + 400
+  ordering_constraints:
+    - stage12 stores must occur after corresponding raw_Q inputs are computed
+    - no secret-dependent memory addresses
+
+outputs:
+  - post_Q0
+  - post_Q1
+  - post_Q8
+  - post_Q9
+  - post_Q16
+  - post_Q17
+  - post_Q24
+  - post_Q25
+
+live_out:
+  - x4 fixed-offset stores only
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

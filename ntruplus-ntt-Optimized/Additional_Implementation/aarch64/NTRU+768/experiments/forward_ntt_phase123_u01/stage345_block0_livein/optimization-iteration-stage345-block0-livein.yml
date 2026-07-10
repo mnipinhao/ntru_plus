@@ -1,0 +1,58 @@
+iteration:
+  id: stage345-block0-livein-001
+  mode: existing_region_replacement
+  current_state: parse_slothy_result
+  hypothesis: Replacing the eight production row scratch Q loads in Stage345 block0 with Stage12 live-in vectors may save memory traffic, but only if Slothy can schedule the block without excessive register pressure.
+  changed_artifacts:
+    - baseline-stage345-block0.s
+    - baseline-contract.yml
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - candidate-contract.yml
+    - generate_stage345_block0_livein.py
+    - candidate-stage345-block0-livein.sym.S
+    - optimize_stage345_block0_livein.py
+  earliest_state_to_revisit: symbolic_asm
+
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: candidate-stage345-block0-livein.sym.S
+  slothy_driver: optimize_stage345_block0_livein.py
+  slothy_log:
+    - slothy_stage345_block0_livein_n1.log
+    - slothy_stage345_block0_livein_n1_nosplit.log
+    - slothy_stage345_block0_livein_n1_nosplit_keep_tw0.log
+    - slothy_stage345_block0_livein_n1_nosplit_keep_outputs.log
+    - slothy_stage345_block0_livein_a76_nosplit.log
+  candidate_contract: candidate-contract.yml
+  candidate_score:
+  promotion_report:
+
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass-with-srshr-classifier-warnings
+  Slothy_run_by_user: pass-with-output-generation-failure
+  parse_slothy_result: investigate
+  oracle_correctness: pending
+  full_path_benchmark: pending
+  score_candidate: pending
+  promotion_decision: pending
+  iteration_or_promote: pending
+
+notes:
+  - Baseline exact production region has 167 instructions, 19 loads, 23 stores, and Slothy annotation expected cycles 55.
+  - Candidate has 159 instructions, 11 loads, 23 stores, and 77 symbolic values.
+  - Contract comparison is intentionally not preserved because x4 row scratch loads become V<b0_q0>..V<b0_q7> live-ins.
+  - This candidate is a pressure test for Stage12 to Stage345 fusion, not a drop-in production splice.
+  - Remote host pinhao@172.25.166.141 -p 51208 became reachable on 2026-07-09.
+  - Split-heuristic N1 run failed before scheduling because chunk live-out b0_q1/b0_q3 had ambiguous virtual output type.
+  - N1 no-split run reached OPTIMAL at expected 100 cycles but failed in result extraction with Slothy AssertionError, so no opt file was emitted.
+  - N1 no-split keep_tw0 and keep_outputs workarounds also reached expected 100 cycles and failed with the same result extraction AssertionError.
+  - Remote Slothy checkout has no cortex_a76 or cortex_a76_frontend target module; a76 run fails at import.
+  - Compared to the production block0 annotation of 55 expected cycles, the live-in pressure test is not promising even before integration.

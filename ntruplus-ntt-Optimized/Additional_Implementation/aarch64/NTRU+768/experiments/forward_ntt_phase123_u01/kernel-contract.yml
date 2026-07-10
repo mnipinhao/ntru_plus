@@ -1,0 +1,108 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: phase123_u01_producer
+  name: phase123_u01_producer
+  source: experiments/forward_ntt_phase123_u01/phase123_u01.sym.s
+  scheme: ntruplus768_gt
+  operation: forward_ntt_phase123_slots0_1_producer
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+
+regions:
+  - name: type_a
+    start_label: slothy_start_ntt_phase123_u01_type_a
+    end_label: slothy_end_ntt_phase123_u01_type_a
+    phase123_iterations: [0, 3, 6]
+  - name: type_b
+    start_label: slothy_start_ntt_phase123_u01_type_b
+    end_label: slothy_end_ntt_phase123_u01_type_b
+    phase123_iterations: [1, 4, 7]
+  - name: type_c
+    start_label: slothy_start_ntt_phase123_u01_type_c
+    end_label: slothy_end_ntt_phase123_u01_type_c
+    phase123_iterations: [2, 5]
+
+live_in:
+  - x1 input pointer at the selected Phase123 iteration
+  - x3 twist/precompute base for the selected Phase123 iteration
+  - x4 row0 output pointer for the selected Phase123 iteration
+  - x5 row1 output pointer for the selected Phase123 iteration
+  - x6 row2 output pointer for the selected Phase123 iteration
+  - v0 q/reduction/DFT3 constant vector
+
+live_out:
+  - slots0+1 stored to row0/row1/row2 scratch
+  - x1/x3/x4/x5/x6 unchanged
+
+outputs:
+  stores:
+    - row0 slot0 at [x4,#0]
+    - row1 slot0 at [x5,#0]
+    - row2 slot0 at [x6,#0]
+    - row0 slot1 at [x4,#16]
+    - row1 slot1 at [x5,#16]
+    - row2 slot1 at [x6,#16]
+
+memory_contract:
+  data_loads:
+    - P0 low/high q loads from x1 offsets 0 and 768
+    - P2 low/high q loads from x1 offsets 256 and 1024
+    - P4 low/high q loads from x1 offsets 512 and 1280
+  table_loads:
+    - B1 P0 twiddle pair at x3 + 0
+    - B1 P2 twiddle pair at x3 + 64
+    - B1 P4 twiddle pair at x3 + 128
+    - B0 P0 twiddle pair at x3 + 192
+    - B0 P2 twiddle pair at x3 + 256
+    - B0 P4 twiddle pair at x3 + 320
+  stores:
+    - six aligned Q stores
+  address_policy:
+    - public fixed offsets only
+    - no writeback loads/stores inside the region
+    - prefer ldp q,q,[x3,#imm] for table pairs; split to ldr only if Slothy cannot parse ldp q pairs yet
+
+layout:
+  vector_lanes: 8 signed 16-bit coefficients per Neon vector
+  produced_slots: [0, 1]
+  produced_rows: [0, 1, 2]
+  stage12_target:
+    even_iteration_group:
+      stripes: [0, 1]
+      producers: [u01_iter0, u01_iter2, u01_iter4, u01_iter6]
+    odd_iteration_group:
+      stripes: [4, 5]
+      producers: [u01_iter1, u01_iter3, u01_iter5, u01_iter7]
+
+arithmetic_contract:
+  modulus: q
+  reduction: same signed Montgomery-style reduction sequence as production Phase123
+  range_contract:
+    - must match production Phase123 slots0+1 exactly modulo q
+    - stored row scratch range must remain acceptable for production NTT32 stage12
+
+cortex_a76_notes:
+  - Q-form ASIMD multiply and multiply-accumulate pressure is V0-heavy.
+  - ZIP1/ZIP2 and add/sub should be interleaved around V0 multiply chains.
+  - Base+offset table loads avoid x3 post-increment dependency and writeback uops.
+  - Use aligned Q stores.
+
+validation:
+  before_slothy:
+    - compare U01 type A/B/C against production Phase123 slots0+1
+    - use tagged non-symmetric inputs
+    - command: /Users/chenpinhao/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 experiments/forward_ntt_phase123_u01/verify_u01_symbolic.py --seeds 64
+    - result: phase123_u01_symbolic_ok seeds=64 iterations=8 rows=3 slots=2
+  after_slothy:
+    - compare scheduled output against source-order U01
+    - then connect one-row stage12 stripes0+1 prototype
+  stage12_handoff:
+    - command: /Users/chenpinhao/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 experiments/forward_ntt_phase123_u01/verify_u01_stage12_stripe01.py --seeds 64
+    - result: phase123_u01_stage12_stripe01_ok seeds=64 rows=3 stripes=2
+    - covers: U01 iterations 0/2/4/6 feeding NTT32 stage12 stripes0+1

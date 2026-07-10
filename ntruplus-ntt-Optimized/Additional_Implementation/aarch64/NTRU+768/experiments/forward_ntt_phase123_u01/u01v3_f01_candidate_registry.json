@@ -1,0 +1,104 @@
+{
+  "candidate_family": "u01v3_f01_e_g_tracks",
+  "production_default_changed": false,
+  "tracks": {
+    "E": {
+      "goal": "verified Stage345 block0/block1 semantic DAG emitter, then preserve block1 live-ins",
+      "status": "correctness_localized",
+      "candidates": {
+        "E0": {
+          "name": "u01v3_stage345_semantic_e0_reproduce",
+          "required_before": "E1",
+          "status": "pass",
+          "success_gate": "correctness pass and ABI mask 0x0",
+          "observed": {
+            "pi5_mismatches": 0,
+            "pi5_abi_mask": "0x0"
+          }
+        },
+        "E1": {
+          "name": "u01v3_stage345_semantic_e1_preserve_liveins",
+          "required_after": "E0",
+          "status": "correctness_fail",
+          "success_gate": "correctness pass, ABI mask 0x0, no raw q reload, no stack spill",
+          "observed": {
+            "pi5_abi_mask": "0x0",
+            "previous_full_test_mismatches": 74572,
+            "localization_first_debug_diff": "row0 stage3_exit q1 lane0: e0=0 e1=911",
+            "localization_final_mismatches": 144
+          }
+        },
+        "E2": {
+          "name": "u01v3_stage345_semantic_e2_parking_bridge",
+          "required_after": "E1 localization",
+          "status": "correctness_proof_pass",
+          "success_gate": "correctness pass and ABI mask 0x0; PMU not run",
+          "observed": {
+            "pi5_mismatches": 0,
+            "pi5_abi_mask": "0x0",
+            "q_spills": 24,
+            "q_restores": 24,
+            "raw_q_reloads": 0,
+            "duplicate_stage12": false
+          },
+          "note": "E2 is not a performance candidate; it proves Stage12/block1 handoff can be correct when block1 live-ins are parked across unchanged Stage345 block0."
+        },
+        "E1v2": {
+          "name": "u01v3_stage345_semantic_e1v2_preserve_liveins",
+          "required_after": "rename validator",
+          "status": "pass_pmu_run",
+          "success_gate": "correctness pass, ABI mask 0x0, no q spill, no raw q reload, no duplicate Stage12",
+          "observed": {
+            "pi5_mismatches": 0,
+            "pi5_abi_mask": "0x0",
+            "spills": 0,
+            "raw_q_reloads": 0,
+            "duplicate_stage12": false,
+            "cycles_median": 2047,
+            "instructions_median": 2788,
+            "delta_cycles_vs_P": -7,
+            "delta_cycles_vs_V": -25,
+            "delta_cycles_vs_F0": -12,
+            "delta_cycles_vs_F1": -13
+          },
+          "note": "Minimal allocator repair: destructive same_as values are colored before unrelated temps can reuse that physical register."
+        }
+      }
+    },
+    "G": {
+      "goal": "shared-prefix/producer granularity redesign",
+      "status": "pending_subagent",
+      "candidates": {
+        "G0": {
+          "name": "granularity_tradeoff_model",
+          "status": "pending",
+          "success_gate": "model shows plausible win before ASM"
+        },
+        "G1": {
+          "name": "u01v3_f01_granularity_g1_delayed_block1",
+          "required_after": "G0_positive",
+          "status": "blocked_until_G0_positive",
+          "success_gate": "correctness pass and ABI mask 0x0"
+        }
+      }
+    },
+    "C": {
+      "goal": "integration PMU/report",
+      "status": "pending_subagent",
+      "matrix": ["P", "V", "F0", "F1", "E0", "E1", "G1", "EG1"]
+    },
+    "EG": {
+      "goal": "optional combined candidate",
+      "status": "blocked_until_E1_and_G1_pass",
+      "build_rule": "do not build EG1 unless E1 and G1 independently pass"
+    }
+  },
+  "global_rules": {
+    "no_production_default_change": true,
+    "no_s2_s4_mix": true,
+    "no_twiddle1": true,
+    "no_slothy_first_wave": true,
+    "only_f01_block0_block1": true,
+    "do_not_clean_unrelated": true
+  }
+}

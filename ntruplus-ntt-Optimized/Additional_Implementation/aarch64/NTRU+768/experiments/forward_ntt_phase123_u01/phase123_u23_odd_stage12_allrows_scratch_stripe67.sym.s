@@ -1,0 +1,496 @@
+// Generated source-order prototype for odd all-row shared-prefix U23 -> NTT32 stage12.
+// Do not edit the generated body by hand; edit generate_stage12_allrows_u23_odd_scratch.py.
+.text
+
+slothy_start_phase123_u23_odd_stage12_allrows_scratch_stripe67:
+    // U23 odd iter1: shared P1/P3/P5 prefix.
+    add x7, x3, #384
+    ldr q10, [x1, #816]
+    ldr q12, [x1, #1072]
+    ldr q14, [x1, #1328]
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    sqrdmulh v1.8h, v10.8h, v0.h[5]
+    sqrdmulh v3.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v14.8h, v0.h[5]
+    mls v16.8h, v1.8h, v0.h[0]
+    mls v18.8h, v3.8h, v0.h[0]
+    mls v20.8h, v7.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v14.8h, v14.8h, v20.8h
+    ldr q4, [x1, #48]
+    ldr q6, [x1, #304]
+    ldr q8, [x1, #560]
+    add v10.8h, v10.8h, v4.8h
+    add v12.8h, v12.8h, v6.8h
+    add v14.8h, v14.8h, v8.8h
+    add v4.8h, v4.8h, v16.8h
+    add v6.8h, v6.8h, v18.8h
+    add v8.8h, v8.8h, v20.8h
+    ldp q1, q2, [x7, #32]
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul v10.8h, v10.8h, v1.8h
+    mls v10.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #96]
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul v12.8h, v12.8h, v1.8h
+    mls v12.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #160]
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul v14.8h, v14.8h, v1.8h
+    mls v14.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #224]
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul v4.8h, v4.8h, v1.8h
+    mls v4.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #288]
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul v6.8h, v6.8h, v1.8h
+    mls v6.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #352]
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul v8.8h, v8.8h, v1.8h
+    mls v8.8h, v3.8h, v0.h[0]
+    zip1 v24.2d, v4.2d, v10.2d
+    zip2 v25.2d, v4.2d, v10.2d
+    zip1 v28.2d, v6.2d, v12.2d
+    zip2 v29.2d, v6.2d, v12.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+
+    // Type B U23 odd slot2: a=Z1e, b=Z5e, c=Z3e -> Q6.
+    sub v6.8h, v30.8h, v28.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v24.8h, v30.8h
+    add v9.8h, v9.8h, v28.8h
+    sub v10.8h, v24.8h, v28.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v24.8h, v30.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #0]
+    str q10, [x13, #128]
+    str q11, [x13, #256]
+
+    // Type B U23 odd slot3: a=Z3o, b=Z1o, c=Z5o -> Q7.
+    sub v6.8h, v25.8h, v31.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v29.8h, v25.8h
+    add v9.8h, v9.8h, v31.8h
+    sub v10.8h, v29.8h, v31.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v29.8h, v25.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #16]
+    str q10, [x13, #144]
+    str q11, [x13, #272]
+
+    // U23 odd iter3: shared P1/P3/P5 prefix.
+    add x7, x3, #1152
+    ldr q10, [x1, #880]
+    ldr q12, [x1, #1136]
+    ldr q14, [x1, #1392]
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    sqrdmulh v1.8h, v10.8h, v0.h[5]
+    sqrdmulh v3.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v14.8h, v0.h[5]
+    mls v16.8h, v1.8h, v0.h[0]
+    mls v18.8h, v3.8h, v0.h[0]
+    mls v20.8h, v7.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v14.8h, v14.8h, v20.8h
+    ldr q4, [x1, #112]
+    ldr q6, [x1, #368]
+    ldr q8, [x1, #624]
+    add v10.8h, v10.8h, v4.8h
+    add v12.8h, v12.8h, v6.8h
+    add v14.8h, v14.8h, v8.8h
+    add v4.8h, v4.8h, v16.8h
+    add v6.8h, v6.8h, v18.8h
+    add v8.8h, v8.8h, v20.8h
+    ldp q1, q2, [x7, #32]
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul v10.8h, v10.8h, v1.8h
+    mls v10.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #96]
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul v12.8h, v12.8h, v1.8h
+    mls v12.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #160]
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul v14.8h, v14.8h, v1.8h
+    mls v14.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #224]
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul v4.8h, v4.8h, v1.8h
+    mls v4.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #288]
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul v6.8h, v6.8h, v1.8h
+    mls v6.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #352]
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul v8.8h, v8.8h, v1.8h
+    mls v8.8h, v3.8h, v0.h[0]
+    zip1 v24.2d, v4.2d, v10.2d
+    zip2 v25.2d, v4.2d, v10.2d
+    zip1 v28.2d, v6.2d, v12.2d
+    zip2 v29.2d, v6.2d, v12.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+
+    // Type A U23 odd slot2: a=Z5e, b=Z3e, c=Z1e -> Q14.
+    sub v6.8h, v28.8h, v24.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v30.8h, v28.8h
+    add v9.8h, v9.8h, v24.8h
+    sub v10.8h, v30.8h, v24.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v30.8h, v28.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #32]
+    str q10, [x13, #160]
+    str q11, [x13, #288]
+
+    // Type A U23 odd slot3: a=Z1o, b=Z5o, c=Z3o -> Q15.
+    sub v6.8h, v31.8h, v29.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v25.8h, v31.8h
+    add v9.8h, v9.8h, v29.8h
+    sub v10.8h, v25.8h, v29.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v25.8h, v31.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #48]
+    str q10, [x13, #176]
+    str q11, [x13, #304]
+
+    // U23 odd iter5: shared P1/P3/P5 prefix.
+    add x7, x3, #1920
+    ldr q10, [x1, #944]
+    ldr q12, [x1, #1200]
+    ldr q14, [x1, #1456]
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    sqrdmulh v1.8h, v10.8h, v0.h[5]
+    sqrdmulh v3.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v14.8h, v0.h[5]
+    mls v16.8h, v1.8h, v0.h[0]
+    mls v18.8h, v3.8h, v0.h[0]
+    mls v20.8h, v7.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v14.8h, v14.8h, v20.8h
+    ldr q4, [x1, #176]
+    ldr q6, [x1, #432]
+    ldr q8, [x1, #688]
+    add v10.8h, v10.8h, v4.8h
+    add v12.8h, v12.8h, v6.8h
+    add v14.8h, v14.8h, v8.8h
+    add v4.8h, v4.8h, v16.8h
+    add v6.8h, v6.8h, v18.8h
+    add v8.8h, v8.8h, v20.8h
+    ldp q1, q2, [x7, #32]
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul v10.8h, v10.8h, v1.8h
+    mls v10.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #96]
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul v12.8h, v12.8h, v1.8h
+    mls v12.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #160]
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul v14.8h, v14.8h, v1.8h
+    mls v14.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #224]
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul v4.8h, v4.8h, v1.8h
+    mls v4.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #288]
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul v6.8h, v6.8h, v1.8h
+    mls v6.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #352]
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul v8.8h, v8.8h, v1.8h
+    mls v8.8h, v3.8h, v0.h[0]
+    zip1 v24.2d, v4.2d, v10.2d
+    zip2 v25.2d, v4.2d, v10.2d
+    zip1 v28.2d, v6.2d, v12.2d
+    zip2 v29.2d, v6.2d, v12.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+
+    // Type C U23 odd slot2: a=Z3e, b=Z1e, c=Z5e -> Q22.
+    sub v6.8h, v24.8h, v30.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v28.8h, v24.8h
+    add v9.8h, v9.8h, v30.8h
+    sub v10.8h, v28.8h, v30.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v28.8h, v24.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #64]
+    str q10, [x13, #192]
+    str q11, [x13, #320]
+
+    // Type C U23 odd slot3: a=Z5o, b=Z3o, c=Z1o -> Q23.
+    sub v6.8h, v29.8h, v25.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v31.8h, v29.8h
+    add v9.8h, v9.8h, v25.8h
+    sub v10.8h, v31.8h, v25.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v31.8h, v29.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #80]
+    str q10, [x13, #208]
+    str q11, [x13, #336]
+
+    // U23 odd iter7: shared P1/P3/P5 prefix.
+    add x7, x3, #2688
+    ldr q10, [x1, #1008]
+    ldr q12, [x1, #1264]
+    ldr q14, [x1, #1520]
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    sqrdmulh v1.8h, v10.8h, v0.h[5]
+    sqrdmulh v3.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v14.8h, v0.h[5]
+    mls v16.8h, v1.8h, v0.h[0]
+    mls v18.8h, v3.8h, v0.h[0]
+    mls v20.8h, v7.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v14.8h, v14.8h, v20.8h
+    ldr q4, [x1, #240]
+    ldr q6, [x1, #496]
+    ldr q8, [x1, #752]
+    add v10.8h, v10.8h, v4.8h
+    add v12.8h, v12.8h, v6.8h
+    add v14.8h, v14.8h, v8.8h
+    add v4.8h, v4.8h, v16.8h
+    add v6.8h, v6.8h, v18.8h
+    add v8.8h, v8.8h, v20.8h
+    ldp q1, q2, [x7, #32]
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul v10.8h, v10.8h, v1.8h
+    mls v10.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #96]
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul v12.8h, v12.8h, v1.8h
+    mls v12.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #160]
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul v14.8h, v14.8h, v1.8h
+    mls v14.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #224]
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul v4.8h, v4.8h, v1.8h
+    mls v4.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #288]
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul v6.8h, v6.8h, v1.8h
+    mls v6.8h, v3.8h, v0.h[0]
+    ldp q1, q2, [x7, #352]
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul v8.8h, v8.8h, v1.8h
+    mls v8.8h, v3.8h, v0.h[0]
+    zip1 v24.2d, v4.2d, v10.2d
+    zip2 v25.2d, v4.2d, v10.2d
+    zip1 v28.2d, v6.2d, v12.2d
+    zip2 v29.2d, v6.2d, v12.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+
+    // Type B U23 odd slot2: a=Z1e, b=Z5e, c=Z3e -> Q30.
+    sub v6.8h, v30.8h, v28.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v24.8h, v30.8h
+    add v9.8h, v9.8h, v28.8h
+    sub v10.8h, v24.8h, v28.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v24.8h, v30.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #96]
+    str q10, [x13, #224]
+    str q11, [x13, #352]
+
+    // Type B U23 odd slot3: a=Z3o, b=Z1o, c=Z5o -> Q31.
+    sub v6.8h, v25.8h, v31.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul v8.8h, v6.8h, v0.h[2]
+    mls v8.8h, v7.8h, v0.h[0]
+    add v9.8h, v29.8h, v25.8h
+    add v9.8h, v9.8h, v31.8h
+    sub v10.8h, v29.8h, v31.8h
+    add v10.8h, v10.8h, v8.8h
+    sub v11.8h, v29.8h, v25.8h
+    sub v11.8h, v11.8h, v8.8h
+    str q9, [x13, #112]
+    str q10, [x13, #240]
+    str q11, [x13, #368]
+
+    ldr q2, [x12, #16]
+    ldr q3, [x12, #32]
+    ldr q4, [x12, #48]
+
+    // Stage12 row0 stripe6.
+    ldr q24, [x13, #0]
+    ldr q28, [x13, #32]
+    ldr q5, [x13, #64]
+    ldr q13, [x13, #96]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x4, #96]
+    str q23, [x4, #224]
+    str q26, [x4, #352]
+    str q27, [x4, #480]
+
+    // Stage12 row0 stripe7.
+    ldr q24, [x13, #16]
+    ldr q28, [x13, #48]
+    ldr q5, [x13, #80]
+    ldr q13, [x13, #112]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x4, #112]
+    str q23, [x4, #240]
+    str q26, [x4, #368]
+    str q27, [x4, #496]
+
+    // Stage12 row1 stripe6.
+    ldr q24, [x13, #128]
+    ldr q28, [x13, #160]
+    ldr q5, [x13, #192]
+    ldr q13, [x13, #224]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x5, #96]
+    str q23, [x5, #224]
+    str q26, [x5, #352]
+    str q27, [x5, #480]
+
+    // Stage12 row1 stripe7.
+    ldr q24, [x13, #144]
+    ldr q28, [x13, #176]
+    ldr q5, [x13, #208]
+    ldr q13, [x13, #240]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x5, #112]
+    str q23, [x5, #240]
+    str q26, [x5, #368]
+    str q27, [x5, #496]
+
+    // Stage12 row2 stripe6.
+    ldr q24, [x13, #256]
+    ldr q28, [x13, #288]
+    ldr q5, [x13, #320]
+    ldr q13, [x13, #352]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x6, #96]
+    str q23, [x6, #224]
+    str q26, [x6, #352]
+    str q27, [x6, #480]
+
+    // Stage12 row2 stripe7.
+    ldr q24, [x13, #272]
+    ldr q28, [x13, #304]
+    ldr q5, [x13, #336]
+    ldr q13, [x13, #368]
+    add v16.8h, v28.8h, v13.8h
+    sqrdmulh v17.8h, v16.8h, v2.h[0]
+    mls v16.8h, v17.8h, v0.h[0]
+    sub v18.8h, v28.8h, v13.8h
+    sqrdmulh v19.8h, v18.8h, v4.h[0]
+    mul v18.8h, v18.8h, v3.h[0]
+    mls v18.8h, v19.8h, v0.h[0]
+    add v20.8h, v24.8h, v5.8h
+    sub v21.8h, v24.8h, v5.8h
+    add v22.8h, v20.8h, v16.8h
+    sub v23.8h, v20.8h, v16.8h
+    add v26.8h, v21.8h, v18.8h
+    sub v27.8h, v21.8h, v18.8h
+    str q22, [x6, #112]
+    str q23, [x6, #240]
+    str q26, [x6, #368]
+    str q27, [x6, #496]
+
+slothy_end_phase123_u23_odd_stage12_allrows_scratch_stripe67:

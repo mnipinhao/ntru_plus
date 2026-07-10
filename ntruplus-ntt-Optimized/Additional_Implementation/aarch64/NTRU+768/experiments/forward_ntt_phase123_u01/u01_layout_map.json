@@ -1,0 +1,167 @@
+{
+  "name": "u01_block_first_layout_map",
+  "status": "partial_oracle_contract",
+  "unit": "bytes",
+  "scratch": {
+    "base_register": "x13",
+    "layout": "row-major post-Stage12 Q slots",
+    "q_vector_bytes": 16,
+    "row_stride": 512,
+    "rows": [
+      {
+        "row": 0,
+        "base_offset": 0
+      },
+      {
+        "row": 1,
+        "base_offset": 512
+      },
+      {
+        "row": 2,
+        "base_offset": 1024
+      }
+    ]
+  },
+  "phase123_producers": [
+    {
+      "producer": "even_u01",
+      "iterations": [0, 2, 4, 6],
+      "slots": [0, 1],
+      "raw_q_indices": [0, 1, 8, 9, 16, 17, 24, 25],
+      "stage12_stripes": [0, 1]
+    },
+    {
+      "producer": "even_u23",
+      "iterations": [0, 2, 4, 6],
+      "slots": [2, 3],
+      "raw_q_indices": [2, 3, 10, 11, 18, 19, 26, 27],
+      "stage12_stripes": [2, 3]
+    },
+    {
+      "producer": "odd_u01",
+      "iterations": [1, 3, 5, 7],
+      "slots": [0, 1],
+      "raw_q_indices": [4, 5, 12, 13, 20, 21, 28, 29],
+      "stage12_stripes": [4, 5]
+    },
+    {
+      "producer": "odd_u23",
+      "iterations": [1, 3, 5, 7],
+      "slots": [2, 3],
+      "raw_q_indices": [6, 7, 14, 15, 22, 23, 30, 31],
+      "stage12_stripes": [6, 7]
+    }
+  ],
+  "stage12_stripes": [
+    {
+      "stripe": 0,
+      "raw_inputs_q": [0, 8, 16, 24],
+      "outputs": [
+        {"out": 0, "q": 0, "stage345_block": 0},
+        {"out": 1, "q": 8, "stage345_block": 1},
+        {"out": 2, "q": 16, "stage345_block": 2},
+        {"out": 3, "q": 24, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 1,
+      "raw_inputs_q": [1, 9, 17, 25],
+      "outputs": [
+        {"out": 0, "q": 1, "stage345_block": 0},
+        {"out": 1, "q": 9, "stage345_block": 1},
+        {"out": 2, "q": 17, "stage345_block": 2},
+        {"out": 3, "q": 25, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 2,
+      "raw_inputs_q": [2, 10, 18, 26],
+      "outputs": [
+        {"out": 0, "q": 2, "stage345_block": 0},
+        {"out": 1, "q": 10, "stage345_block": 1},
+        {"out": 2, "q": 18, "stage345_block": 2},
+        {"out": 3, "q": 26, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 3,
+      "raw_inputs_q": [3, 11, 19, 27],
+      "outputs": [
+        {"out": 0, "q": 3, "stage345_block": 0},
+        {"out": 1, "q": 11, "stage345_block": 1},
+        {"out": 2, "q": 19, "stage345_block": 2},
+        {"out": 3, "q": 27, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 4,
+      "raw_inputs_q": [4, 12, 20, 28],
+      "outputs": [
+        {"out": 0, "q": 4, "stage345_block": 0},
+        {"out": 1, "q": 12, "stage345_block": 1},
+        {"out": 2, "q": 20, "stage345_block": 2},
+        {"out": 3, "q": 28, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 5,
+      "raw_inputs_q": [5, 13, 21, 29],
+      "outputs": [
+        {"out": 0, "q": 5, "stage345_block": 0},
+        {"out": 1, "q": 13, "stage345_block": 1},
+        {"out": 2, "q": 21, "stage345_block": 2},
+        {"out": 3, "q": 29, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 6,
+      "raw_inputs_q": [6, 14, 22, 30],
+      "outputs": [
+        {"out": 0, "q": 6, "stage345_block": 0},
+        {"out": 1, "q": 14, "stage345_block": 1},
+        {"out": 2, "q": 22, "stage345_block": 2},
+        {"out": 3, "q": 30, "stage345_block": 3}
+      ]
+    },
+    {
+      "stripe": 7,
+      "raw_inputs_q": [7, 15, 23, 31],
+      "outputs": [
+        {"out": 0, "q": 7, "stage345_block": 0},
+        {"out": 1, "q": 15, "stage345_block": 1},
+        {"out": 2, "q": 23, "stage345_block": 2},
+        {"out": 3, "q": 31, "stage345_block": 3}
+      ]
+    }
+  ],
+  "block0_input_offsets": [
+    {"row": 0, "q": 0, "offset": 0},
+    {"row": 0, "q": 1, "offset": 16},
+    {"row": 0, "q": 2, "offset": 32},
+    {"row": 0, "q": 3, "offset": 48},
+    {"row": 0, "q": 4, "offset": 64},
+    {"row": 0, "q": 5, "offset": 80},
+    {"row": 0, "q": 6, "offset": 96},
+    {"row": 0, "q": 7, "offset": 112},
+    {"row": 1, "q": 0, "offset": 512},
+    {"row": 1, "q": 1, "offset": 528},
+    {"row": 1, "q": 2, "offset": 544},
+    {"row": 1, "q": 3, "offset": 560},
+    {"row": 1, "q": 4, "offset": 576},
+    {"row": 1, "q": 5, "offset": 592},
+    {"row": 1, "q": 6, "offset": 608},
+    {"row": 1, "q": 7, "offset": 624},
+    {"row": 2, "q": 0, "offset": 1024},
+    {"row": 2, "q": 1, "offset": 1040},
+    {"row": 2, "q": 2, "offset": 1056},
+    {"row": 2, "q": 3, "offset": 1072},
+    {"row": 2, "q": 4, "offset": 1088},
+    {"row": 2, "q": 5, "offset": 1104},
+    {"row": 2, "q": 6, "offset": 1120},
+    {"row": 2, "q": 7, "offset": 1136}
+  ],
+  "first_gate": {
+    "compare": "candidate block0_input_offsets vs production same-coverage partial oracle",
+    "poly_ntt_differential": "deferred until Stage345 block0 and remaining blocks are integrated"
+  }
+}

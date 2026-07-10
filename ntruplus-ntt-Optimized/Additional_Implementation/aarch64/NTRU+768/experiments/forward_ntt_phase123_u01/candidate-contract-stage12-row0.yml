@@ -1,0 +1,53 @@
+candidate:
+  id: phase123_u01_stage12_row0_stripe01_source_order
+  status: investigate
+  kernel_contract: kernel-contract-stage12-row0.yml
+  symbolic_source: experiments/forward_ntt_phase123_u01/phase123_u01_stage12_row0_stripe01.sym.s
+  slothy_driver: experiments/forward_ntt_phase123_u01/optimize_stage12_row0.py
+
+contract_preservation:
+  preserved: true
+  approved_changes:
+    - none
+
+region:
+  start_label: slothy_start_phase123_u01_stage12_row0_stripe01
+  end_label: slothy_end_phase123_u01_stage12_row0_stripe01
+  live_in:
+    - x1 input base at Phase123 iteration 0
+    - x3 Phase123 twist/precompute table base at iteration 0
+    - x4 row0 post-stage12 output scratch base
+    - x12 NTT32 stage12 twiddle table base
+    - v0 q/reduction/DFT3 constant vector
+  live_out:
+    - row0 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stored to x4 offsets 0/16/128/144/256/272/384/400
+
+abi:
+  inputs:
+    - x1 original GT Phase123 input base
+    - x3 original GT Phase123 twist table base
+    - x4 row0 stage12 scratch/output base
+    - x12 ntt32_twiddle_vecs base
+    - v0 constant vector with q and reduction constants
+  outputs:
+    - memory at x4 public fixed offsets
+
+memory_contract:
+  loads:
+    - input q loads from x1 fixed public offsets
+    - Phase123 twist/precompute ldp q pairs from x7 fixed public offsets
+    - NTT32 stage12 twiddle q loads from x12 fixed public offsets
+  stores:
+    - x4+0 post-stage12 Q0
+    - x4+16 post-stage12 Q1
+    - x4+128 post-stage12 Q8
+    - x4+144 post-stage12 Q9
+    - x4+256 post-stage12 Q16
+    - x4+272 post-stage12 Q17
+    - x4+384 post-stage12 Q24
+    - x4+400 post-stage12 Q25
+  public_offsets_only: true
+
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

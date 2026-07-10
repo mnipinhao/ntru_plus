@@ -1,0 +1,123 @@
+{
+  "candidate": "u01v3_f01_a1_stage345_block0_preserve_block1_liveins",
+  "stage12": {
+    "one_pass": true,
+    "duplicated_stage12": false,
+    "extra_raw_q_reloads": 0,
+    "block0_handoff": {
+      "0": "q29",
+      "1": "q1",
+      "2": "q28",
+      "3": "q17",
+      "4": "q26",
+      "5": "q5",
+      "6": "q18",
+      "7": "q8"
+    },
+    "block1_liveins": {
+      "8": "q10",
+      "9": "q20",
+      "10": "q30",
+      "11": "q24",
+      "12": "q9",
+      "13": "q6",
+      "14": "q31",
+      "15": "q23"
+    },
+    "block2_block3_stored_to_scratch": true
+  },
+  "stage345_block0": {
+    "allocator": "fixed-order SSA greedy",
+    "preserved_block1_registers": [
+      "q6",
+      "q9",
+      "q10",
+      "q20",
+      "q23",
+      "q24",
+      "q30",
+      "q31"
+    ],
+    "actual_stage345_block0_written_q_registers": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q7",
+      "q8",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15",
+      "q16",
+      "q17",
+      "q18",
+      "q26"
+    ],
+    "reserved_written": [],
+    "max_nonreserved_live_values": 15,
+    "available_nonreserved_registers": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q7",
+      "q8",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15",
+      "q16",
+      "q17",
+      "q18",
+      "q19",
+      "q21",
+      "q22",
+      "q25",
+      "q26",
+      "q27",
+      "q28",
+      "q29"
+    ]
+  },
+  "stage345_block1": {
+    "source": "unchanged block1 arithmetic/scatter with original U01v3 handoff load replacement",
+    "handoff": {
+      "8": "q10",
+      "9": "q20",
+      "10": "q30",
+      "11": "q24",
+      "12": "q9",
+      "13": "q6",
+      "14": "q31",
+      "15": "q23"
+    },
+    "dest": {
+      "8": "q10",
+      "9": "q20",
+      "10": "q30",
+      "11": "q1",
+      "12": "q9",
+      "13": "q6",
+      "14": "q31",
+      "15": "q23"
+    }
+  },
+  "expected_boundary_delta": {
+    "removed_stage12_q_stores": 48,
+    "removed_stage345_q_loads": 48,
+    "inserted_vector_moves": 3,
+    "added_vector_spills": 0
+  },
+  "validation": {
+    "local_assemble": "passes with clang --target=aarch64-linux-gnu",
+    "pi5_correctness": "fails against u01v3_block01_production_oracle",
+    "pi5_mismatches_observed": 74568,
+    "pi5_abi_mask_observed": "0x0",
+    "pmu": "not run because correctness fails"
+  }
+}

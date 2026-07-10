@@ -1,0 +1,1033 @@
+{
+  "artifact": "u01v3_track_h_h1_model",
+  "scope": "model-only H1 delayed out3 overwrite",
+  "production_default_changed": false,
+  "physical_asm_emitted": false,
+  "slothy_run": false,
+  "semantic_not_physical_reasoning": true,
+  "source_evidence": {
+    "validated": true,
+    "inputs": [
+      "asm/gt/experiment/u01v3_f0123_g1_delayed_block3.S",
+      "experiments/forward_ntt_phase123_u01/u01v3_f0123_g1_delayed_block3_map.json",
+      "experiments/forward_ntt_phase123_u01/u01v3_stage345_semantic_e3_map.json",
+      "experiments/forward_ntt_phase123_u01/u01v3_f0123_liveness_clobber.json",
+      "experiments/forward_ntt_phase123_u01/generate_u01v3_stage345_e3_f012.py",
+      "experiments/forward_ntt_phase123_u01/generate_u01v3_f0123_track_g.py"
+    ],
+    "g1": {
+      "stage12_rows": 3,
+      "stage12_stripes_per_row": 8,
+      "f012_live_outputs_per_row": 24,
+      "out3_overwrite_sites": 24,
+      "block3_q_loads_retained": 24,
+      "raw_q_reloads": 0,
+      "duplicate_stage12": false
+    },
+    "e3_allocator": {
+      "block0_same_as_interference_count": 0,
+      "block0_allocator_interference_count": 0,
+      "block0_max_live": 15,
+      "block1_same_as_interference_count": 0,
+      "block1_allocator_interference_count": 0,
+      "block1_max_live": 15
+    },
+    "e4_live_all_blocker": {
+      "type": "register_cardinality",
+      "summary": "F0123 needs 32 simultaneously live data vectors, but q0 must remain the modular-constant vector for Stage345, leaving at most 31 data-capable q registers.",
+      "required_all_outputs": 32,
+      "max_data_regs_with_q0_reserved": 31,
+      "global_deficit": 1,
+      "e3_live_output_regs": 24,
+      "free_data_regs_after_e3": 7,
+      "required_block3_outputs": 8,
+      "block3_deficit_after_e3": 1
+    },
+    "out3_overwrite_sites": [
+      {
+        "row": 0,
+        "stripe": 0,
+        "semantic_source_overwritten": "row0.raw_D[0]",
+        "semantic_output_written": "row0.Q24",
+        "scratch_offset": 384,
+        "asm_store_register_evidence": "q6",
+        "asm_marker_line": 1470,
+        "asm_store_line": 1491,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 1,
+        "semantic_source_overwritten": "row0.raw_D[1]",
+        "semantic_output_written": "row0.Q25",
+        "scratch_offset": 400,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 1493,
+        "asm_store_line": 1514,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 2,
+        "semantic_source_overwritten": "row0.raw_D[2]",
+        "semantic_output_written": "row0.Q26",
+        "scratch_offset": 416,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 1516,
+        "asm_store_line": 1537,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 3,
+        "semantic_source_overwritten": "row0.raw_D[3]",
+        "semantic_output_written": "row0.Q27",
+        "scratch_offset": 432,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 1539,
+        "asm_store_line": 1560,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 4,
+        "semantic_source_overwritten": "row0.raw_D[4]",
+        "semantic_output_written": "row0.Q28",
+        "scratch_offset": 448,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 1562,
+        "asm_store_line": 1583,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 5,
+        "semantic_source_overwritten": "row0.raw_D[5]",
+        "semantic_output_written": "row0.Q29",
+        "scratch_offset": 464,
+        "asm_store_register_evidence": "q18",
+        "asm_marker_line": 1585,
+        "asm_store_line": 1606,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 6,
+        "semantic_source_overwritten": "row0.raw_D[6]",
+        "semantic_output_written": "row0.Q30",
+        "scratch_offset": 480,
+        "asm_store_register_evidence": "q19",
+        "asm_marker_line": 1608,
+        "asm_store_line": 1629,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 0,
+        "stripe": 7,
+        "semantic_source_overwritten": "row0.raw_D[7]",
+        "semantic_output_written": "row0.Q31",
+        "scratch_offset": 496,
+        "asm_store_register_evidence": "q25",
+        "asm_marker_line": 1631,
+        "asm_store_line": 1652,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 0,
+        "semantic_source_overwritten": "row1.raw_D[0]",
+        "semantic_output_written": "row1.Q24",
+        "scratch_offset": 896,
+        "asm_store_register_evidence": "q6",
+        "asm_marker_line": 3034,
+        "asm_store_line": 3055,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 1,
+        "semantic_source_overwritten": "row1.raw_D[1]",
+        "semantic_output_written": "row1.Q25",
+        "scratch_offset": 912,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 3057,
+        "asm_store_line": 3078,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 2,
+        "semantic_source_overwritten": "row1.raw_D[2]",
+        "semantic_output_written": "row1.Q26",
+        "scratch_offset": 928,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 3080,
+        "asm_store_line": 3101,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 3,
+        "semantic_source_overwritten": "row1.raw_D[3]",
+        "semantic_output_written": "row1.Q27",
+        "scratch_offset": 944,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 3103,
+        "asm_store_line": 3124,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 4,
+        "semantic_source_overwritten": "row1.raw_D[4]",
+        "semantic_output_written": "row1.Q28",
+        "scratch_offset": 960,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 3126,
+        "asm_store_line": 3147,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 5,
+        "semantic_source_overwritten": "row1.raw_D[5]",
+        "semantic_output_written": "row1.Q29",
+        "scratch_offset": 976,
+        "asm_store_register_evidence": "q18",
+        "asm_marker_line": 3149,
+        "asm_store_line": 3170,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 6,
+        "semantic_source_overwritten": "row1.raw_D[6]",
+        "semantic_output_written": "row1.Q30",
+        "scratch_offset": 992,
+        "asm_store_register_evidence": "q19",
+        "asm_marker_line": 3172,
+        "asm_store_line": 3193,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 1,
+        "stripe": 7,
+        "semantic_source_overwritten": "row1.raw_D[7]",
+        "semantic_output_written": "row1.Q31",
+        "scratch_offset": 1008,
+        "asm_store_register_evidence": "q25",
+        "asm_marker_line": 3195,
+        "asm_store_line": 3216,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 0,
+        "semantic_source_overwritten": "row2.raw_D[0]",
+        "semantic_output_written": "row2.Q24",
+        "scratch_offset": 1408,
+        "asm_store_register_evidence": "q6",
+        "asm_marker_line": 4598,
+        "asm_store_line": 4619,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 1,
+        "semantic_source_overwritten": "row2.raw_D[1]",
+        "semantic_output_written": "row2.Q25",
+        "scratch_offset": 1424,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 4621,
+        "asm_store_line": 4642,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 2,
+        "semantic_source_overwritten": "row2.raw_D[2]",
+        "semantic_output_written": "row2.Q26",
+        "scratch_offset": 1440,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 4644,
+        "asm_store_line": 4665,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 3,
+        "semantic_source_overwritten": "row2.raw_D[3]",
+        "semantic_output_written": "row2.Q27",
+        "scratch_offset": 1456,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 4667,
+        "asm_store_line": 4688,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 4,
+        "semantic_source_overwritten": "row2.raw_D[4]",
+        "semantic_output_written": "row2.Q28",
+        "scratch_offset": 1472,
+        "asm_store_register_evidence": "q8",
+        "asm_marker_line": 4690,
+        "asm_store_line": 4711,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 5,
+        "semantic_source_overwritten": "row2.raw_D[5]",
+        "semantic_output_written": "row2.Q29",
+        "scratch_offset": 1488,
+        "asm_store_register_evidence": "q18",
+        "asm_marker_line": 4713,
+        "asm_store_line": 4734,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 6,
+        "semantic_source_overwritten": "row2.raw_D[6]",
+        "semantic_output_written": "row2.Q30",
+        "scratch_offset": 1504,
+        "asm_store_register_evidence": "q19",
+        "asm_marker_line": 4736,
+        "asm_store_line": 4757,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      },
+      {
+        "row": 2,
+        "stripe": 7,
+        "semantic_source_overwritten": "row2.raw_D[7]",
+        "semantic_output_written": "row2.Q31",
+        "scratch_offset": 1520,
+        "asm_store_register_evidence": "q25",
+        "asm_marker_line": 4759,
+        "asm_store_line": 4780,
+        "source_last_use": "t1_raw=B-D",
+        "overwrite_after_source_last_use": true
+      }
+    ]
+  },
+  "semantic_contract": {
+    "per_stripe_ops": [
+      {
+        "index": 0,
+        "name": "load_B",
+        "uses": [],
+        "defines": [
+          "s0_B"
+        ],
+        "memory_effect": "load raw B"
+      },
+      {
+        "index": 1,
+        "name": "load_D",
+        "uses": [],
+        "defines": [
+          "s0_D"
+        ],
+        "memory_effect": "load raw D"
+      },
+      {
+        "index": 2,
+        "name": "t0_raw=B+D",
+        "uses": [
+          "s0_B",
+          "s0_D"
+        ],
+        "defines": [
+          "s0_t0_raw"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 3,
+        "name": "t1_raw=B-D",
+        "uses": [
+          "s0_B",
+          "s0_D"
+        ],
+        "defines": [
+          "s0_t1_raw"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 4,
+        "name": "t0_quotient",
+        "uses": [
+          "s0_t0_raw"
+        ],
+        "defines": [
+          "s0_t0_quotient"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 5,
+        "name": "t0_reduced",
+        "uses": [
+          "s0_t0_raw",
+          "s0_t0_quotient"
+        ],
+        "defines": [
+          "s0_t0_reduced"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 6,
+        "name": "t1_quotient",
+        "uses": [
+          "s0_t1_raw"
+        ],
+        "defines": [
+          "s0_t1_quotient"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 7,
+        "name": "t1_scaled",
+        "uses": [
+          "s0_t1_raw"
+        ],
+        "defines": [
+          "s0_t1_scaled"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 8,
+        "name": "t1_reduced",
+        "uses": [
+          "s0_t1_scaled",
+          "s0_t1_quotient"
+        ],
+        "defines": [
+          "s0_t1_reduced"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 9,
+        "name": "load_A",
+        "uses": [],
+        "defines": [
+          "s0_A"
+        ],
+        "memory_effect": "load raw A"
+      },
+      {
+        "index": 10,
+        "name": "load_C",
+        "uses": [],
+        "defines": [
+          "s0_C"
+        ],
+        "memory_effect": "load raw C"
+      },
+      {
+        "index": 11,
+        "name": "t3=A-C",
+        "uses": [
+          "s0_A",
+          "s0_C"
+        ],
+        "defines": [
+          "s0_t3"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 12,
+        "name": "t2=A+C",
+        "uses": [
+          "s0_A",
+          "s0_C"
+        ],
+        "defines": [
+          "s0_t2"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 13,
+        "name": "out3=t3-t1",
+        "uses": [
+          "s0_t3",
+          "s0_t1_reduced"
+        ],
+        "defines": [
+          "s0_Q3"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 14,
+        "name": "out2=t3+t1",
+        "uses": [
+          "s0_t3",
+          "s0_t1_reduced"
+        ],
+        "defines": [
+          "s0_Q2"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 15,
+        "name": "out1=t2-t0",
+        "uses": [
+          "s0_t2",
+          "s0_t0_reduced"
+        ],
+        "defines": [
+          "s0_Q1"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 16,
+        "name": "out0=t2+t0",
+        "uses": [
+          "s0_t2",
+          "s0_t0_reduced"
+        ],
+        "defines": [
+          "s0_Q0"
+        ],
+        "memory_effect": null
+      },
+      {
+        "index": 17,
+        "name": "store_out3_over_raw_D_slot",
+        "uses": [
+          "s0_Q3"
+        ],
+        "defines": [],
+        "memory_effect": "raw D scratch slot := Q3"
+      }
+    ],
+    "source_last_use": {
+      "A": {
+        "semantic_op_index": 12,
+        "operation": "t2=A+C"
+      },
+      "B": {
+        "semantic_op_index": 3,
+        "operation": "t1_raw=B-D"
+      },
+      "C": {
+        "semantic_op_index": 12,
+        "operation": "t2=A+C"
+      },
+      "D": {
+        "semantic_op_index": 3,
+        "operation": "t1_raw=B-D"
+      }
+    },
+    "out3_dependency_cone": {
+      "raw": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "direct_intermediates": [
+        "t3=A-C",
+        "t1_reduced=reduce_twist(B-D)"
+      ],
+      "equations": [
+        "Q16+s = out2 = t3 + t1_reduced",
+        "Q24+s = out3 = t3 - t1_reduced",
+        "out3 = out2 - 2*t1_reduced",
+        "out3 = 2*t3 - out2"
+      ],
+      "minimum_extra_rank_with_Q16_Q23_already_live": 1,
+      "minimum_extra_vectors_for_eight_stripes": 8
+    },
+    "current_overwrite_is_after_source_last_use": true,
+    "first_current_semantic_loss": {
+      "register_value": "D",
+      "replacement": "t3=A-C",
+      "safe_because": "D's final current consumer is t1_raw=B-D, earlier in the DAG"
+    },
+    "first_persistent_memory_loss": {
+      "value": "raw D scratch image",
+      "replacement": "Q24+s/out3",
+      "operation": "store_out3_over_raw_D_slot"
+    }
+  },
+  "register_budget": {
+    "total_q_regs": 32,
+    "q0_reserved": true,
+    "data_q_regs": 31,
+    "e3_f012_outputs": 24,
+    "free_data_regs_after_e3_outputs": 7,
+    "minimum_extra_block3_rank_vectors": 8,
+    "minimum_data_values_for_no_memory_H1": 32,
+    "global_data_deficit": 1
+  },
+  "candidates": {
+    "baseline_G1": {
+      "shape": "F012 live; out3 stored over raw D scratch; block3 later reloads out3",
+      "semantic_liveness": {
+        "max_simultaneous_q_live_under_e3_order": 30,
+        "peak_site": "op137:t3=A-C",
+        "stage12_exit_live_with_twiddles": 28,
+        "stage12_exit_data_or_basis_values": 24,
+        "post_twiddle_release_lower_bound_with_q0": 25,
+        "retained_semantic_values": [
+          "s0_Q0",
+          "s0_Q1",
+          "s0_Q2",
+          "s1_Q0",
+          "s1_Q1",
+          "s1_Q2",
+          "s2_Q0",
+          "s2_Q1",
+          "s2_Q2",
+          "s3_Q0",
+          "s3_Q1",
+          "s3_Q2",
+          "s4_Q0",
+          "s4_Q1",
+          "s4_Q2",
+          "s5_Q0",
+          "s5_Q1",
+          "s5_Q2",
+          "s6_Q0",
+          "s6_Q1",
+          "s6_Q2",
+          "s7_Q0",
+          "s7_Q1",
+          "s7_Q2"
+        ]
+      },
+      "new_memory_ops_vs_G1": {
+        "q_loads": 0,
+        "q_stores": 0
+      },
+      "block3_q_loads_retained": 24
+    },
+    "H1a_last_destructive_out3_write_delay": {
+      "status": "hard_gate_fail",
+      "semantic_shape": "Compute out3 at the current point but delay/elide its store, retaining Q24..Q31 through Stage345 blocks0..2.",
+      "overwritten_sources": [
+        "raw D scratch slot for each row/stripe; overwrite would be delayed"
+      ],
+      "source_last_use": "raw D is already dead after t1_raw=B-D; the delay only creates a future reconstruction lifetime",
+      "semantic_liveness": {
+        "max_simultaneous_q_live_under_e3_order": 37,
+        "peak_site": "op130:t3=A-C",
+        "stage12_exit_live_with_twiddles": 36,
+        "stage12_exit_data_or_basis_values": 32,
+        "post_twiddle_release_lower_bound_with_q0": 33,
+        "retained_semantic_values": [
+          "s0_Q0",
+          "s0_Q1",
+          "s0_Q2",
+          "s0_Q3",
+          "s1_Q0",
+          "s1_Q1",
+          "s1_Q2",
+          "s1_Q3",
+          "s2_Q0",
+          "s2_Q1",
+          "s2_Q2",
+          "s2_Q3",
+          "s3_Q0",
+          "s3_Q1",
+          "s3_Q2",
+          "s3_Q3",
+          "s4_Q0",
+          "s4_Q1",
+          "s4_Q2",
+          "s4_Q3",
+          "s5_Q0",
+          "s5_Q1",
+          "s5_Q2",
+          "s5_Q3",
+          "s6_Q0",
+          "s6_Q1",
+          "s6_Q2",
+          "s6_Q3",
+          "s7_Q0",
+          "s7_Q1",
+          "s7_Q2",
+          "s7_Q3"
+        ]
+      },
+      "best_case_assumption": "The delayed store is ultimately elided and out3 is handed directly to block3. Merely moving the store would retain G1's memory boundary.",
+      "new_memory_ops_vs_G1": {
+        "q_loads": -24,
+        "q_stores": -24
+      },
+      "duplicate_stage12": false,
+      "raw_q_reloads": 0,
+      "metrics": {
+        "max_simultaneous_q_live": 37,
+        "new_q_loads_vs_G1": -24,
+        "new_q_stores_vs_G1": -24,
+        "duplicate_stage12": false,
+        "raw_q_reloads": 0
+      },
+      "feasibility": {
+        "same_as": "pass/inherited",
+        "allocator": "fail",
+        "first_consume": "fail/not assignable"
+      },
+      "same_as_feasibility": "inherited E3 Stage345 arithmetic is unchanged, but coloring is not reached",
+      "allocator_feasibility": "fail: 32 data outputs plus reserved q0 already require 33 q registers; E4 cardinality blocker recurs",
+      "first_consume_feasibility": "fail/not assignable: no complete cross-block handoff coloring exists",
+      "hard_gate": {
+        "status": "fail",
+        "checks": {
+          "raw_q_reloads_zero": true,
+          "new_prefix_stores_zero": true,
+          "new_prefix_loads_zero": true,
+          "duplicate_full_stage12_false": true,
+          "max_q_live_lte_32": false,
+          "same_as_feasible": true,
+          "allocator_feasible": false,
+          "first_consume_feasible": false,
+          "source_last_use_safe": true,
+          "removes_block3_scratch_consumption": true
+        },
+        "failed": [
+          "max_q_live_lte_32",
+          "allocator_feasible",
+          "first_consume_feasible"
+        ]
+      }
+    },
+    "H1b_full_out3_producer_after_block2": {
+      "status": "hard_gate_fail",
+      "semantic_shape": "Do not form out3 early; retain enough semantic state across blocks0..2, then form Q24..Q31 and hand off directly.",
+      "overwritten_sources": [
+        "no raw D scratch overwrite before block2 in the delayed-producer shape"
+      ],
+      "source_last_use": "moving the producer extends one independent block3 basis value per stripe past block2",
+      "minimum_no_memory_basis": {
+        "retained": "one of t1_reduced or t3 per stripe, because Q16..Q23/out2 is already live",
+        "vectors_per_row": 8,
+        "reconstruction": "out3=out2-2*t1_reduced or out3=2*t3-out2"
+      },
+      "semantic_liveness_minimum_basis": {
+        "max_simultaneous_q_live_under_e3_order": 37,
+        "peak_site": "op123:t3=A-C",
+        "stage12_exit_live_with_twiddles": 36,
+        "stage12_exit_data_or_basis_values": 32,
+        "post_twiddle_release_lower_bound_with_q0": 33,
+        "retained_semantic_values": [
+          "s0_Q0",
+          "s0_Q1",
+          "s0_Q2",
+          "s0_t1_reduced",
+          "s1_Q0",
+          "s1_Q1",
+          "s1_Q2",
+          "s1_t1_reduced",
+          "s2_Q0",
+          "s2_Q1",
+          "s2_Q2",
+          "s2_t1_reduced",
+          "s3_Q0",
+          "s3_Q1",
+          "s3_Q2",
+          "s3_t1_reduced",
+          "s4_Q0",
+          "s4_Q1",
+          "s4_Q2",
+          "s4_t1_reduced",
+          "s5_Q0",
+          "s5_Q1",
+          "s5_Q2",
+          "s5_t1_reduced",
+          "s6_Q0",
+          "s6_Q1",
+          "s6_Q2",
+          "s6_t1_reduced",
+          "s7_Q0",
+          "s7_Q1",
+          "s7_Q2",
+          "s7_t1_reduced"
+        ]
+      },
+      "semantic_liveness_full_t1_t3_basis": {
+        "max_simultaneous_q_live_under_e3_order": 45,
+        "peak_site": "op126:out1=t2-t0",
+        "stage12_exit_live_with_twiddles": 44,
+        "stage12_exit_data_or_basis_values": 40,
+        "post_twiddle_release_lower_bound_with_q0": 41,
+        "retained_semantic_values": [
+          "s0_Q0",
+          "s0_Q1",
+          "s0_Q2",
+          "s0_t1_reduced",
+          "s0_t3",
+          "s1_Q0",
+          "s1_Q1",
+          "s1_Q2",
+          "s1_t1_reduced",
+          "s1_t3",
+          "s2_Q0",
+          "s2_Q1",
+          "s2_Q2",
+          "s2_t1_reduced",
+          "s2_t3",
+          "s3_Q0",
+          "s3_Q1",
+          "s3_Q2",
+          "s3_t1_reduced",
+          "s3_t3",
+          "s4_Q0",
+          "s4_Q1",
+          "s4_Q2",
+          "s4_t1_reduced",
+          "s4_t3",
+          "s5_Q0",
+          "s5_Q1",
+          "s5_Q2",
+          "s5_t1_reduced",
+          "s5_t3",
+          "s6_Q0",
+          "s6_Q1",
+          "s6_Q2",
+          "s6_t1_reduced",
+          "s6_t3",
+          "s7_Q0",
+          "s7_Q1",
+          "s7_Q2",
+          "s7_t1_reduced",
+          "s7_t3"
+        ]
+      },
+      "new_memory_ops_vs_G1": {
+        "q_loads": -24,
+        "q_stores": -24
+      },
+      "duplicate_stage12": false,
+      "raw_q_reloads": 0,
+      "metrics": {
+        "max_simultaneous_q_live": 37,
+        "new_q_loads_vs_G1": -24,
+        "new_q_stores_vs_G1": -24,
+        "duplicate_stage12": false,
+        "raw_q_reloads": 0
+      },
+      "feasibility": {
+        "same_as": "pass/inherited",
+        "allocator": "fail",
+        "first_consume": "fail/not assignable"
+      },
+      "same_as_feasibility": "same_as can remain inherited, but the live-state cardinality fails before coloring",
+      "allocator_feasibility": "fail: the minimum eight-vector basis plus F012 gives 32 data values while q0 remains reserved",
+      "first_consume_feasibility": "fail/not assignable under no-spill/no-reload rules",
+      "fallback_recompute_after_block2": {
+        "raw_q_reloads": 96,
+        "duplicate_stage12": "24 partial out3 dependency cones; not a duplicate full Stage12",
+        "new_memory_ops_vs_G1": {
+          "q_loads": 72,
+          "q_stores": -24
+        },
+        "allocator_feasibility": "locally feasible after block2",
+        "same_as_feasibility": "feasible; no Stage345 semantic change required",
+        "first_consume_feasibility": "feasible with direct block3 destination contract",
+        "hard_gate_status": "fail: raw q reloads return to the rejected G3a/G3c shape"
+      },
+      "hard_gate": {
+        "status": "fail",
+        "checks": {
+          "raw_q_reloads_zero": true,
+          "new_prefix_stores_zero": true,
+          "new_prefix_loads_zero": true,
+          "duplicate_full_stage12_false": true,
+          "max_q_live_lte_32": false,
+          "same_as_feasible": true,
+          "allocator_feasible": false,
+          "first_consume_feasible": false,
+          "source_last_use_safe": true,
+          "removes_block3_scratch_consumption": true
+        },
+        "failed": [
+          "max_q_live_lte_32",
+          "allocator_feasible",
+          "first_consume_feasible"
+        ]
+      }
+    },
+    "H1c_raw_D_preserving_destination_layout": {
+      "status": "hard_gate_fail",
+      "semantic_shape": "Preserve raw D either in registers or in a separate scratch destination while producing out3.",
+      "overwritten_sources": [
+        "raw D is preserved; out3 must use another register or memory slot"
+      ],
+      "source_last_use": "D has no current consumer after t1_raw=B-D; preserving it is useful only if a new delayed consumer is added",
+      "register_resident_variant": {
+        "semantic_liveness": {
+          "max_simultaneous_q_live_under_e3_order": 38,
+          "peak_site": "op123:t3=A-C",
+          "stage12_exit_live_with_twiddles": 36,
+          "stage12_exit_data_or_basis_values": 32,
+          "post_twiddle_release_lower_bound_with_q0": 33,
+          "retained_semantic_values": [
+            "s0_D",
+            "s0_Q0",
+            "s0_Q1",
+            "s0_Q2",
+            "s1_D",
+            "s1_Q0",
+            "s1_Q1",
+            "s1_Q2",
+            "s2_D",
+            "s2_Q0",
+            "s2_Q1",
+            "s2_Q2",
+            "s3_D",
+            "s3_Q0",
+            "s3_Q1",
+            "s3_Q2",
+            "s4_D",
+            "s4_Q0",
+            "s4_Q1",
+            "s4_Q2",
+            "s5_D",
+            "s5_Q0",
+            "s5_Q1",
+            "s5_Q2",
+            "s6_D",
+            "s6_Q0",
+            "s6_Q1",
+            "s6_Q2",
+            "s7_D",
+            "s7_Q0",
+            "s7_Q1",
+            "s7_Q2"
+          ]
+        },
+        "new_memory_ops_vs_G1": {
+          "q_loads": -24,
+          "q_stores": -24
+        },
+        "duplicate_stage12": false,
+        "raw_q_reloads": 0,
+        "allocator_feasibility": "fail: eight retained D basis vectors plus F012 reproduce the 32-data-value cardinality blocker"
+      },
+      "alternate_scratch_variant": {
+        "semantic_liveness": {
+          "max_simultaneous_q_live_under_e3_order": 30,
+          "peak_site": "op137:t3=A-C",
+          "stage12_exit_live_with_twiddles": 28,
+          "stage12_exit_data_or_basis_values": 24,
+          "post_twiddle_release_lower_bound_with_q0": 25,
+          "retained_semantic_values": [
+            "s0_Q0",
+            "s0_Q1",
+            "s0_Q2",
+            "s1_Q0",
+            "s1_Q1",
+            "s1_Q2",
+            "s2_Q0",
+            "s2_Q1",
+            "s2_Q2",
+            "s3_Q0",
+            "s3_Q1",
+            "s3_Q2",
+            "s4_Q0",
+            "s4_Q1",
+            "s4_Q2",
+            "s5_Q0",
+            "s5_Q1",
+            "s5_Q2",
+            "s6_Q0",
+            "s6_Q1",
+            "s6_Q2",
+            "s7_Q0",
+            "s7_Q1",
+            "s7_Q2"
+          ]
+        },
+        "new_memory_ops_vs_G1": {
+          "q_loads": 0,
+          "q_stores": 0
+        },
+        "duplicate_stage12": false,
+        "raw_q_reloads": 0,
+        "block3_q_loads_retained": 24,
+        "extra_scratch_footprint_bytes_if_no_existing_alias_safe_space": 384,
+        "allocator_feasibility": "pass: register pressure stays G1-like",
+        "objective_feasibility": "fail: it merely relocates the same 24 out3 stores and 24 block3 loads"
+      },
+      "same_as_feasibility": "pass for the scratch-relocation form; register-resident form is blocked before coloring",
+      "allocator_feasibility": "only the no-win scratch-relocation form is allocatable",
+      "first_consume_feasibility": "pass via the existing scratch load; direct handoff remains infeasible",
+      "metrics": {
+        "selected_gate_mode": "alternate_scratch",
+        "max_simultaneous_q_live": 30,
+        "new_q_loads_vs_G1": 0,
+        "new_q_stores_vs_G1": 0,
+        "duplicate_stage12": false,
+        "raw_q_reloads": 0,
+        "block3_q_loads_removed": 0
+      },
+      "feasibility": {
+        "same_as": "pass/inherited",
+        "allocator": "pass for alternate scratch; fail for register-resident",
+        "first_consume": "pass through scratch; direct handoff unavailable"
+      },
+      "hard_gate": {
+        "status": "fail",
+        "checks": {
+          "raw_q_reloads_zero": true,
+          "new_prefix_stores_zero": true,
+          "new_prefix_loads_zero": true,
+          "duplicate_full_stage12_false": true,
+          "max_q_live_lte_32": true,
+          "same_as_feasible": true,
+          "allocator_feasible": true,
+          "first_consume_feasible": true,
+          "source_last_use_safe": true,
+          "removes_block3_scratch_consumption": false
+        },
+        "failed": [
+          "removes_block3_scratch_consumption"
+        ]
+      }
+    }
+  },
+  "decision": {
+    "passing_h1_candidates": [],
+    "emit_h1_asm": false,
+    "key_fact": "The current out3 store overwrites raw D only after D's semantic last-use. H1 must create a new future lifetime; it cannot recover a free lifetime that already existed.",
+    "reason": "Every direct no-memory H1 form needs one additional independent vector per stripe. F012 already retains 24 values, so the minimum is 32 data vectors while q0 leaves only 31 data-capable registers. The only allocatable H1c form retains the same 24-store/24-load block3 scratch boundary and therefore does not meet Track H's objective.",
+    "next_scope": "H1 has no physical candidate. A producer/consumer interleave (Track H2) or a smaller algebraic state with a different lifetime (Track H3) is required to avoid the G1 boundary."
+  }
+}

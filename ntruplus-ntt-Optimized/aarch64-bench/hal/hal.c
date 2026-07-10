@@ -89,7 +89,7 @@ uint64_t get_cyclecounter(void)
 #error PMU_CYCLES option only supported on x86_64 and AArch64
 #endif
 
-#elif defined(PERF_CYCLES)
+#elif defined(PERF_CYCLES) || defined(PERF_INSTRUCTIONS)
 
 #include <asm/unistd.h>
 #include <linux/perf_event.h>
@@ -107,7 +107,11 @@ void enable_cyclecounter(void)
   memset(&pe, 0, sizeof(struct perf_event_attr));
   pe.type = PERF_TYPE_HARDWARE;
   pe.size = sizeof(struct perf_event_attr);
+#if defined(PERF_INSTRUCTIONS)
+  pe.config = PERF_COUNT_HW_INSTRUCTIONS;
+#else
   pe.config = PERF_COUNT_HW_CPU_CYCLES;
+#endif
   pe.disabled = 1;
   pe.exclude_kernel = 1;
   pe.exclude_hv = 1;

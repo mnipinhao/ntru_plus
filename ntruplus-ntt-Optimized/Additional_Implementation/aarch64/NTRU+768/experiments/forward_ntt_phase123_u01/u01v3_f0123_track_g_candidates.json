@@ -1,0 +1,81 @@
+{
+  "artifact": "u01v3_f0123_track_g_model",
+  "production_default_changed": false,
+  "current_best": "E3/F012",
+  "stage345_instruction_counts_per_row": {
+    "block0": 167,
+    "block1": 160,
+    "block2": 162,
+    "block3": 162
+  },
+  "stage345_input_loads_per_row": {
+    "block0": 8,
+    "block1": 8,
+    "block2": 8,
+    "block3": 8
+  },
+  "stage345_semantic_max_live": {
+    "block0": 15,
+    "block1": 15,
+    "block2": 16,
+    "block3": 15
+  },
+  "q0_reserved": true,
+  "data_regs_with_q0_reserved": 31,
+  "e3_future_reserved_for_block0": 16,
+  "g2_future_reserved_for_block0": 23,
+  "g2_available_block0_colors": 8,
+  "candidates": {
+    "G1_delayed_block3_scratch_consume": {
+      "status": "model_promising",
+      "shape": "Run E3/F012 first; consume block3 later from the Stage12 block3 scratch image already written by the compact Stage12 producer.",
+      "max_live_q_regs": "same as E3 during Stage345 block0/1/2; block3 runs after those live ranges are dead",
+      "extra_arithmetic_vs_E3": 0,
+      "extra_q_loads_vs_E3": 24,
+      "extra_q_stores_vs_E3": "block3 final scatter stores only; Stage12 block3 scratch stores already exist in E3 producer",
+      "q_spills_restores": 0,
+      "expected_instruction_delta_vs_E3": 486,
+      "feasible_under_q0_reserved": true,
+      "notes": "This is not live-all block3 fusion. It is the bounded delayed-consume fallback that keeps no raw reload and no duplicate Stage12."
+    },
+    "G2_spill1_live_all": {
+      "status": "infeasible",
+      "shape": "Keep Q0..Q31 live across Stage345 block0/1/2 with exactly one q spill/restore.",
+      "max_live_q_regs": 31,
+      "extra_arithmetic_vs_E3": 0,
+      "extra_q_loads_vs_E3": 1,
+      "extra_q_stores_vs_E3": 1,
+      "q_spills_restores": 1,
+      "expected_instruction_delta_vs_E3": "not emitted; register allocator feasibility fails before PMU",
+      "feasible_under_q0_reserved": false,
+      "blocker": {
+        "cardinality_deficit_removed_by_one_spill": true,
+        "cross_block_allocator_deficit_remains": true,
+        "block0_stage345_max_live": 15,
+        "future_live_regs_reserved_for_block0": 23,
+        "available_block0_colors_with_q0_reserved": 8,
+        "available_minus_required": -7,
+        "reason": "After reserving block1+block2+block3 live-ins, Stage345 block0 would have only 8 non-future q colors, but its SSA max-live is 15. One q spill fixes global output cardinality, not block0 temporary pressure."
+      }
+    },
+    "G3_partial_shared_prefix_controlled_recompute": {
+      "status": "model_only",
+      "shape": "Recompute or delay only the block3-producing part after enough earlier values are consumed.",
+      "max_live_q_regs": "bounded by chosen granularity; can avoid live-all pressure",
+      "extra_arithmetic_vs_E3": "at least out3 recompute path per stripe if raw/intermediate values are retained",
+      "extra_q_loads_vs_E3": "depends on retained raw/intermediate source contract",
+      "extra_q_stores_vs_E3": "depends on retained raw/intermediate source contract",
+      "q_spills_restores": 0,
+      "expected_instruction_delta_vs_E3": "unknown until a concrete retained-source contract is chosen",
+      "feasible_under_q0_reserved": "likely, if it avoids keeping block3 live across block0",
+      "notes": "Do not build ASM yet. This is the next design path if G1 scratch-consume is not enough and G2 live-all spill remains infeasible."
+    }
+  },
+  "decision": {
+    "build_g2_spill1": false,
+    "build_g2_reason": "After reserving block1+block2+block3 live-ins, Stage345 block0 would have only 8 non-future q colors, but its SSA max-live is 15. One q spill fixes global output cardinality, not block0 temporary pressure.",
+    "build_g1_delayed_block3": true,
+    "build_g1_reason": "Model is bounded: no duplicate Stage12, no raw reload, and only Stage345 block3 from the existing Stage12 block3 scratch image is added.",
+    "build_g3": false
+  }
+}

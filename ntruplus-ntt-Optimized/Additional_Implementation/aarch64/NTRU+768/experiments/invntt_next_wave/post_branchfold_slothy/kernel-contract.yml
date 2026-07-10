@@ -1,0 +1,28 @@
+kernel: invntt_post_branchfold_three_outputs
+mode: existing_region_replacement
+production_default_changed: false
+operation: three independent branchfold final-factor paths after one inverse DFT3
+inputs:
+  vectors: [v7, v8, v9]
+  modulus_constants: v0
+  branchfold_constant_pointer: x3
+  output_pointers: [x11, x12, x13]
+outputs:
+  memory:
+    - x11 + [0, 768]
+    - x12 + [0, 768]
+    - x13 + [0, 768]
+  pointer: x3 + 192
+memory:
+  constant_load_bytes: 192
+  output_store_bytes: 48
+  all_six_output_stores_distinct: true
+  constants_do_not_alias_outputs: true
+range: unchanged from production branchfold plus final Barrett reduction
+constant_time: fixed instruction and address trace
+reserved: [v0, v7, v8, v9, x0-x30, sp]
+slothy:
+  target: neoverse-n1
+  allow_renaming: true
+  allow_spills: false
+  instruction_selection_frozen: true

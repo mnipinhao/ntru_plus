@@ -1,0 +1,19 @@
+dag: four independent physical-register Stage345 block tails
+window_start: first final Barrett sqdmulh
+window_end: final Stage345 scatter/address instruction
+dependencies:
+  vector:
+    - late Stage5 butterfly outputs feed sqdmulh
+    - sqdmulh feeds srshr
+    - srshr and old destination feed destructive mls
+    - reduced value feeds low/high scatter stores
+  scalar:
+    - public scatter add/sub/cmp/csel address chains
+    - block0 generated stack spill/restore annotations remain unchanged
+  memory:
+    - all output stores and stack accesses remain in the instruction multiset
+    - no vector input load appears inside a scheduled window
+optimization_goal:
+  - overlap independent Barrett chains
+  - overlap reduction latency with public address generation and stores
+  - do not optimize by deleting loads or changing layouts

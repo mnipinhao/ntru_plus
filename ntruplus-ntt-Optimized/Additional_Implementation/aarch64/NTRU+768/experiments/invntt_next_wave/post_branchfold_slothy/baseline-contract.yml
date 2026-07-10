@@ -1,0 +1,25 @@
+source: asm/slothy/production/invntt_opt.production.s
+region:
+  producer: FUSED_POST_STRIPE inverse DFT3
+  replaced_calls:
+    - POST_STORE_PTR v7
+    - POST_STORE_PTR v8
+    - POST_STORE_PTR v9
+instruction_counts:
+  ldr_q: 12
+  add_x_pointer: 3
+  sqrdmulh: 6
+  mul: 6
+  mls_montgomery: 6
+  ext: 6
+  add_vector: 6
+  sqdmulh: 6
+  srshr: 6
+  mls_barrett: 6
+  str_d: 6
+  total: 69
+equivalence_gate:
+  operation_multiset_unchanged: true
+  load_offsets_unchanged: true
+  store_offsets_unchanged: true
+  no_spills: true

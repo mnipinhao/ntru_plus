@@ -1,0 +1,440 @@
+{
+  "candidate": "u01v3_f01_onepass_liveness_clobber",
+  "scope": "Stage345 block0 handoff body vs block1 Q8..Q15 live-ins",
+  "constraints": {
+    "production_default_changed": false,
+    "s2_s4_mixed": false,
+    "twiddle1_mixed": false,
+    "slothy_mixed": false,
+    "raw_q_reloads_allowed": false,
+    "duplicate_stage12_allowed": false
+  },
+  "stage345_block0_handoff": {
+    "instruction_lines": 346,
+    "vector_write_regs": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q6",
+      "q7",
+      "q8",
+      "q10",
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15",
+      "q16",
+      "q17",
+      "q18",
+      "q19",
+      "q20",
+      "q22",
+      "q23",
+      "q24",
+      "q25",
+      "q26",
+      "q27",
+      "q28",
+      "q29",
+      "q30",
+      "q31"
+    ],
+    "vector_regs_not_written": [
+      "q0",
+      "q9",
+      "q21"
+    ],
+    "block1_livein_regs": [
+      "q6",
+      "q9",
+      "q10",
+      "q20",
+      "q23",
+      "q24",
+      "q30",
+      "q31"
+    ],
+    "usable_parking_regs_without_rewriting_block0": [
+      "q21"
+    ],
+    "reserved_unwritten_regs": {
+      "q0": "modulus/constants live across kernel"
+    }
+  },
+  "block0_liveins": [
+    {
+      "q": "Q0",
+      "semantic": "block0_Q0",
+      "stage12_handoff_reg": "q29",
+      "stage345_consumer_reg": "q29",
+      "move_required": false
+    },
+    {
+      "q": "Q1",
+      "semantic": "block0_Q1",
+      "stage12_handoff_reg": "q1",
+      "stage345_consumer_reg": "q6",
+      "move_required": true
+    },
+    {
+      "q": "Q2",
+      "semantic": "block0_Q2",
+      "stage12_handoff_reg": "q28",
+      "stage345_consumer_reg": "q28",
+      "move_required": false
+    },
+    {
+      "q": "Q3",
+      "semantic": "block0_Q3",
+      "stage12_handoff_reg": "q17",
+      "stage345_consumer_reg": "q17",
+      "move_required": false
+    },
+    {
+      "q": "Q4",
+      "semantic": "block0_Q4",
+      "stage12_handoff_reg": "q26",
+      "stage345_consumer_reg": "q26",
+      "move_required": false
+    },
+    {
+      "q": "Q5",
+      "semantic": "block0_Q5",
+      "stage12_handoff_reg": "q5",
+      "stage345_consumer_reg": "q5",
+      "move_required": false
+    },
+    {
+      "q": "Q6",
+      "semantic": "block0_Q6",
+      "stage12_handoff_reg": "q18",
+      "stage345_consumer_reg": "q18",
+      "move_required": false
+    },
+    {
+      "q": "Q7",
+      "semantic": "block0_Q7",
+      "stage12_handoff_reg": "q8",
+      "stage345_consumer_reg": "q8",
+      "move_required": false
+    }
+  ],
+  "block1_liveins": [
+    {
+      "q": "Q8",
+      "semantic": "block1_Q8",
+      "stage12_handoff_reg": "q10",
+      "stage345_consumer_reg": "q10",
+      "move_required": false
+    },
+    {
+      "q": "Q9",
+      "semantic": "block1_Q9",
+      "stage12_handoff_reg": "q20",
+      "stage345_consumer_reg": "q20",
+      "move_required": false
+    },
+    {
+      "q": "Q10",
+      "semantic": "block1_Q10",
+      "stage12_handoff_reg": "q30",
+      "stage345_consumer_reg": "q30",
+      "move_required": false
+    },
+    {
+      "q": "Q11",
+      "semantic": "block1_Q11",
+      "stage12_handoff_reg": "q24",
+      "stage345_consumer_reg": "q1",
+      "move_required": true
+    },
+    {
+      "q": "Q12",
+      "semantic": "block1_Q12",
+      "stage12_handoff_reg": "q9",
+      "stage345_consumer_reg": "q9",
+      "move_required": false
+    },
+    {
+      "q": "Q13",
+      "semantic": "block1_Q13",
+      "stage12_handoff_reg": "q6",
+      "stage345_consumer_reg": "q6",
+      "move_required": false
+    },
+    {
+      "q": "Q14",
+      "semantic": "block1_Q14",
+      "stage12_handoff_reg": "q31",
+      "stage345_consumer_reg": "q31",
+      "move_required": false
+    },
+    {
+      "q": "Q15",
+      "semantic": "block1_Q15",
+      "stage12_handoff_reg": "q23",
+      "stage345_consumer_reg": "q23",
+      "move_required": false
+    }
+  ],
+  "block1_clobbers_by_stage345_block0": [
+    {
+      "q": "Q8",
+      "semantic": "block1_Q8",
+      "stage12_handoff_reg": "q10",
+      "stage345_consumer_reg": "q10",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 61,
+        "op": "sqrdmulh",
+        "instruction": "sqrdmulh v10.8H, v12.8H, v14.H[1]"
+      },
+      "write_count_in_stage345_block0": 2,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 61,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v10.8H, v12.8H, v14.H[1]"
+        },
+        {
+          "stage345_handoff_line_index": 69,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v10.8H, v7.8H, v14.H[0]"
+        }
+      ]
+    },
+    {
+      "q": "Q9",
+      "semantic": "block1_Q9",
+      "stage12_handoff_reg": "q20",
+      "stage345_consumer_reg": "q20",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 12,
+        "op": "sqrdmulh",
+        "instruction": "sqrdmulh v20.8H, v8.8H, v2.H[0]"
+      },
+      "write_count_in_stage345_block0": 7,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 12,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v20.8H, v8.8H, v2.H[0]"
+        },
+        {
+          "stage345_handoff_line_index": 30,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v20.8H, v5.8H, v2.H[0]"
+        },
+        {
+          "stage345_handoff_line_index": 36,
+          "op": "mul",
+          "instruction": "mul v20.8H, v12.8H, v15.H[1]"
+        }
+      ]
+    },
+    {
+      "q": "Q10",
+      "semantic": "block1_Q10",
+      "stage12_handoff_reg": "q30",
+      "stage345_consumer_reg": "q30",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 21,
+        "op": "add",
+        "instruction": "add v30.8H, v17.8H, v8.8H"
+      },
+      "write_count_in_stage345_block0": 3,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 21,
+          "op": "add",
+          "instruction": "add v30.8H, v17.8H, v8.8H"
+        },
+        {
+          "stage345_handoff_line_index": 55,
+          "op": "mls",
+          "instruction": "mls v30.8H, v1.8H, v0.H[0]"
+        },
+        {
+          "stage345_handoff_line_index": 138,
+          "op": "srshr",
+          "instruction": "srshr v30.8H, v6.8H, #11"
+        }
+      ]
+    },
+    {
+      "q": "Q11",
+      "semantic": "block1_Q11",
+      "stage12_handoff_reg": "q24",
+      "stage345_consumer_reg": "q1",
+      "move_required": true,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 53,
+        "op": "sub",
+        "instruction": "sub v24.8H, v18.8H, v20.8H"
+      },
+      "write_count_in_stage345_block0": 3,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 53,
+          "op": "sub",
+          "instruction": "sub v24.8H, v18.8H, v20.8H"
+        },
+        {
+          "stage345_handoff_line_index": 81,
+          "op": "sub",
+          "instruction": "sub v24.8H, v8.8H, v17.8H"
+        },
+        {
+          "stage345_handoff_line_index": 99,
+          "op": "mls",
+          "instruction": "mls v24.8H, v23.8H, v0.H[0]"
+        }
+      ]
+    },
+    {
+      "q": "Q12",
+      "semantic": "block1_Q12",
+      "stage12_handoff_reg": "q9",
+      "stage345_consumer_reg": "q9",
+      "move_required": false,
+      "clobbered_by_stage345_block0": false,
+      "first_clobber": null,
+      "write_count_in_stage345_block0": 0,
+      "first_three_writes": []
+    },
+    {
+      "q": "Q13",
+      "semantic": "block1_Q13",
+      "stage12_handoff_reg": "q6",
+      "stage345_consumer_reg": "q6",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 7,
+        "op": "ldr",
+        "instruction": "ldr q6, [x12], #16"
+      },
+      "write_count_in_stage345_block0": 7,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 7,
+          "op": "ldr",
+          "instruction": "ldr q6, [x12], #16"
+        },
+        {
+          "stage345_handoff_line_index": 19,
+          "op": "mov",
+          "instruction": "mov v6.16b, v1.16b"
+        },
+        {
+          "stage345_handoff_line_index": 44,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v6.8H, v26.8H, v2.H[0]"
+        }
+      ]
+    },
+    {
+      "q": "Q14",
+      "semantic": "block1_Q14",
+      "stage12_handoff_reg": "q31",
+      "stage345_consumer_reg": "q31",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 67,
+        "op": "sqrdmulh",
+        "instruction": "sqrdmulh v31.8H, v20.8H, v14.H[0]"
+      },
+      "write_count_in_stage345_block0": 2,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 67,
+          "op": "sqrdmulh",
+          "instruction": "sqrdmulh v31.8H, v20.8H, v14.H[0]"
+        },
+        {
+          "stage345_handoff_line_index": 93,
+          "op": "sqdmulh",
+          "instruction": "sqdmulh v31.8H, v24.8H, v0.H[1]"
+        }
+      ]
+    },
+    {
+      "q": "Q15",
+      "semantic": "block1_Q15",
+      "stage12_handoff_reg": "q23",
+      "stage345_consumer_reg": "q23",
+      "move_required": false,
+      "clobbered_by_stage345_block0": true,
+      "first_clobber": {
+        "stage345_handoff_line_index": 98,
+        "op": "srshr",
+        "instruction": "srshr v23.8H, v31.8H, #11"
+      },
+      "write_count_in_stage345_block0": 1,
+      "first_three_writes": [
+        {
+          "stage345_handoff_line_index": 98,
+          "op": "srshr",
+          "instruction": "srshr v23.8H, v31.8H, #11"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "block1_liveins_total_per_row": 8,
+    "block1_liveins_clobbered_per_row": 7,
+    "block1_liveins_preserved_in_original_regs_per_row": 1,
+    "usable_vector_parking_regs_per_row": 1,
+    "min_q_spills_per_row_if_q21_parking_allowed": 6,
+    "min_q_spills_per_row_without_parking": 7,
+    "no_spill_A1_feasible_without_rewriting_stage345_block0_register_allocation": false
+  },
+  "spill_budget_feasibility": {
+    "B0": {
+      "memory_q_spills_per_row": 0,
+      "parking_regs_used": 1,
+      "preserved_block1_liveins_per_row": 1,
+      "feasible_without_raw_reload_or_duplicate_stage12": false
+    },
+    "B2": {
+      "memory_q_spills_per_row": 2,
+      "parking_regs_used": 1,
+      "preserved_block1_liveins_per_row": 3,
+      "feasible_without_raw_reload_or_duplicate_stage12": false
+    },
+    "B4": {
+      "memory_q_spills_per_row": 4,
+      "parking_regs_used": 1,
+      "preserved_block1_liveins_per_row": 5,
+      "feasible_without_raw_reload_or_duplicate_stage12": false
+    },
+    "B7": {
+      "memory_q_spills_per_row": 7,
+      "parking_regs_used": 0,
+      "preserved_block1_liveins_per_row": 7,
+      "feasible_without_raw_reload_or_duplicate_stage12": true
+    },
+    "B8": {
+      "memory_q_spills_per_row": 8,
+      "parking_regs_used": 0,
+      "preserved_block1_liveins_per_row": 7,
+      "feasible_without_raw_reload_or_duplicate_stage12": true
+    },
+    "Bmin": {
+      "memory_q_spills_per_row": 6,
+      "parking_regs_used": 1,
+      "preserved_block1_liveins_per_row": 7,
+      "feasible_without_raw_reload_or_duplicate_stage12": true
+    }
+  }
+}

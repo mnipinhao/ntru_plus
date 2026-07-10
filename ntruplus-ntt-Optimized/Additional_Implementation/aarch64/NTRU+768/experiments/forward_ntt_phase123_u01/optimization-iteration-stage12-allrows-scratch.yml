@@ -1,0 +1,48 @@
+iteration:
+  id: phase123-u01-stage12-allrows-scratch-001
+  mode: new_symbolic_kernel
+  current_state: score_candidate
+  hypothesis: Shared-prefix U01 across all three GT rows can amortize Phase123 prefix cost enough to justify a compact stage12-order scratch for stage12 stripes0+1.
+  changed_artifacts:
+    - generate_stage12_allrows_scratch.py
+    - kernel-contract-stage12-allrows-scratch.yml
+    - instruction-dag-stage12-allrows-scratch.yml
+    - phase123_u01_stage12_allrows_scratch_stripe01.sym.s
+    - verify_stage12_allrows_scratch_symbolic.py
+    - optimize_stage12_allrows_scratch.py
+    - candidate-contract-stage12-allrows-scratch.yml
+    - phase123_u01_stage12_allrows_scratch_stripe01.quick.opt.s
+    - slothy_stage12_allrows_scratch_n1_quick.log
+  earliest_state_to_revisit: kernel_contract
+
+artifacts:
+  kernel_contract: kernel-contract-stage12-allrows-scratch.yml
+  baseline_contract: not_required_for_new_symbolic_kernel
+  instruction_dag: instruction-dag-stage12-allrows-scratch.yml
+  symbolic_source: phase123_u01_stage12_allrows_scratch_stripe01.sym.s
+  slothy_driver: optimize_stage12_allrows_scratch.py
+  slothy_log: slothy_stage12_allrows_scratch_n1_quick.log
+  candidate_contract: candidate-contract-stage12-allrows-scratch.yml
+  candidate_score: investigate
+  promotion_report: pending
+
+gates:
+  repo_probe: done
+  baseline_contract: not_required
+  kernel_contract: done
+  instruction_dag: done
+  symbolic_asm: done
+  static_checks: assemble_and_oracle_only
+  Slothy_run_by_user: done_n1_quick_split
+  parse_slothy_result: done_manual_header_parse
+  oracle_correctness: source_order_and_n1_quick_opt_passed
+  full_path_benchmark: not_applicable_not_integrated
+  score_candidate: investigate
+  promotion_decision: pending
+
+notes:
+  - Direct all-row no-scratch has a 24-vector raw-Q lower bound before twist/zip/stage12 temporaries, so this gate intentionally uses compact x13 scratch.
+  - Source-order instruction count is 453.
+  - Quick N1 Slothy result is 453 instructions, 113 expected cycles, IPC 4.01.
+  - The comparison against production 208-cycle U01 sub-slice is promising but incomplete because production also computes slots2+3 in the same Phase123 iterations.
+  - Next fair comparison requires a matching U23 prototype for stage12 stripes2+3.

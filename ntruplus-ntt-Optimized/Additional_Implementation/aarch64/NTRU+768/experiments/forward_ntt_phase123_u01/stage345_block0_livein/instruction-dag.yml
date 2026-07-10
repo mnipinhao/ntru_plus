@@ -1,0 +1,57 @@
+kernel: ntt32_stage345_block0_livein_pressure
+mode: existing_region_replacement
+
+inputs:
+  - name: b0_q0
+    source: Stage12 stripe0 out0, production row scratch Q0
+  - name: b0_q1
+    source: Stage12 stripe1 out0, production row scratch Q1
+  - name: b0_q2
+    source: Stage12 stripe2 out0, production row scratch Q2
+  - name: b0_q3
+    source: Stage12 stripe3 out0, production row scratch Q3
+  - name: b0_q4
+    source: Stage12 stripe4 out0, production row scratch Q4
+  - name: b0_q5
+    source: Stage12 stripe5 out0, production row scratch Q5
+  - name: b0_q6
+    source: Stage12 stripe6 out0, production row scratch Q6
+  - name: b0_q7
+    source: Stage12 stripe7 out0, production row scratch Q7
+  - name: tw0_tw3
+    source: four production q loads from x12
+  - name: v0_constants
+    source: fixed v0 q/reduction constants
+  - name: scatter_state
+    source: x10/x14 public scatter pointer and wrap state
+
+outputs:
+  - name: scatter_stores
+    sink: same public d stores as production Stage345 block0
+  - name: x10_next
+    sink: same scalar pointer state as production Stage345 block0
+  - name: x12_next
+    sink: x12 advanced after four q twiddle loads
+
+dependencies:
+  - The eight Q inputs replace only production ldr qN, [x4,#offset] row scratch loads.
+  - All vector arithmetic nodes preserve the production instruction DAG from the extracted block0 region.
+  - All sqrdmulh/mls and sqdmulh/srshr/mls reduction pairs remain tied to the same source values.
+  - All scatter address add/cmp/sub/csel nodes remain scalar-public and preserve production order.
+  - Store order and destination address expressions are unchanged from production.
+
+memory:
+  loads:
+    - x12 twiddle q loads are public and may be scheduled around arithmetic.
+    - x4 row scratch loads are removed from the candidate DAG and replaced by b0_q0..b0_q7 live-ins.
+  stores:
+    - d stores use the same production scalar address DAG.
+    - STACK_LOC_0 scalar spill/restore nodes are production scheduling artifacts, not secret-dependent memory.
+
+range:
+  input: b0_q0..b0_q7 exactly equal production Stage12 row scratch values.
+  output: scatter d stores exactly equal production Stage345 block0 stores.
+
+candidate_scope:
+  status: investigate
+  note: This is a pressure-test DAG for future Stage12 to Stage345 fusion, not a standalone production splice.

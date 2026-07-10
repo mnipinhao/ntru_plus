@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-.PHONY: all clean bench-gt bench-kpqc-final bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_hier_k8_diff bench_gt_baseinv_hier_k8_decompose_pmu bench_gt_baseinv_hier_k8_tree_candidate_pmu bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu bench_gt_keygen_direct_h_hinv_pmu bench_gt_keygen_public_arith_pair_pmu bench_gt_keygen_public_arith_pair_asm_pmu bench_gt_keygen_finish_to_h_hinv_pmu bench_gt_keygen_sample_prebaseinv_split_pmu bench_gt_keygen_sample_ntt_fusion_pmu bench_gt_keygen_sample_ntt_fusion_slothy_pmu bench_gt_keygen_sample_hierk8_combo_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_sample_hierk8_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-gt bench-gt-legacy bench-kpqc-final bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_u01v3_g1_fullpath_pmu bench_u01v3_g1_r123_paired_kem_pmu bench_invntt_lazy_len16_paired_kem_pmu bench_invntt_promoted_paired_kem_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_hier_k8_diff bench_gt_baseinv_hier_k8_decompose_pmu bench_gt_baseinv_hier_k8_tree_candidate_pmu bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu bench_gt_keygen_direct_h_hinv_pmu bench_gt_keygen_public_arith_pair_pmu bench_gt_keygen_public_arith_pair_asm_pmu bench_gt_keygen_finish_to_h_hinv_pmu bench_gt_keygen_sample_prebaseinv_split_pmu bench_gt_keygen_sample_ntt_fusion_pmu bench_gt_keygen_sample_ntt_fusion_slothy_pmu bench_gt_keygen_sample_hierk8_combo_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_sample_hierk8_release_guard check_gt_direct32_q31_release_candidate
 
 TARGET = bench
 CC ?= gcc
@@ -27,8 +27,18 @@ NTRUPLUS ?= ntruplus
 KPQC_FINAL_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768
 include $(NTRUPLUS)/gt_production_variants.mk
 
+GT_PRODUCTION_USE_LEGACY_NTT ?= 0
+ifeq ($(VARIANT),gt_production_legacy_ntt)
+GT_PRODUCTION_USE_LEGACY_NTT := 1
+endif
+
+ifeq ($(GT_PRODUCTION_USE_LEGACY_NTT),1)
 GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt.s
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
+else
+GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_g1_r123_s2.S
+GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
+endif
 ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY),1)
 GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM =
 else
@@ -37,7 +47,11 @@ GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = \
 	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
 endif
 GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt.s
+ifeq ($(GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16),1)
 GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt_rminus1.S
+else
+GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_baseline.S
+endif
 GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM ?= \
 	$(NTRUPLUS)/asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
 	$(NTRUPLUS)/asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
@@ -48,7 +62,9 @@ GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FIN
 GT_BASEINV_DIVSTEP_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep.S
 GT_BASEINV_DIVSTEP_S32FOLD_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_s32fold.S
 GT_BASEINV_DIVSTEP_MODQ16_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_modq16.S
+GT_BASEINV_DIVSTEP_LAZY16_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_lazy16.S
 GT_BASEINV_DIVSTEP_SWAR_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_swar.S
+GT_BASEINV_DIVSTEP_FLAGS ?=
 GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/gt/poly_basemul_add_encap_tobytes_q31.S
 GT_PRODUCTION_BASE_ASM ?= \
 	$(NTRUPLUS)/asm/gt/poly_basemul.S \
@@ -108,6 +124,17 @@ SOURCES += $(GT_PRODUCTION_KEM_SOURCES)
 GT_PRODUCTION_SELECTED_EXTRA_ASM =
 endif
 VARIANT_CFLAGS = $(GT_PRODUCTION_DEFAULT_FLAGS) -DGT_PRODUCTION_VARIANT_NAME=\"gt_production_default\" -DBENCH_VARIANT_GT=1
+else ifeq ($(VARIANT),gt_production_legacy_ntt)
+SCHEME_ROOT = $(NTRUPLUS)
+SOURCES = $(BENCH_SOURCES) $(KEM_CORE_SOURCES)
+ifeq ($(GT_PRODUCTION_DEFAULT_VARIANT),gt_production_q31)
+SOURCES += $(GT_PRODUCTION_KEM_SOURCES) $(GT_PRODUCTION_Q31_ENCAP_ASM)
+GT_PRODUCTION_SELECTED_EXTRA_ASM = $(GT_PRODUCTION_Q31_ENCAP_ASM)
+else
+SOURCES += $(GT_PRODUCTION_KEM_SOURCES)
+GT_PRODUCTION_SELECTED_EXTRA_ASM =
+endif
+VARIANT_CFLAGS = $(GT_PRODUCTION_DEFAULT_FLAGS) -DGT_PRODUCTION_VARIANT_NAME=\"gt_production_legacy_ntt\" -DBENCH_VARIANT_GT=1
 else ifeq ($(VARIANT),gt_production_q31)
 SCHEME_ROOT = $(NTRUPLUS)
 SOURCES = $(BENCH_SOURCES) $(KEM_CORE_SOURCES)
@@ -127,7 +154,7 @@ SOURCES += $(KPQC_FINAL_KEM_SOURCES)
 GT_PRODUCTION_SELECTED_EXTRA_ASM =
 VARIANT_CFLAGS = -DGT_PRODUCTION_VARIANT_NAME=\"kpqc_final\" -DBENCH_VARIANT_GT=0
 else
-$(error unknown VARIANT=$(VARIANT); use kpqc_final, gt_production_default, gt_production_q31, or gt_production_no_q31)
+$(error unknown VARIANT=$(VARIANT); use kpqc_final, gt_production_default, gt_production_legacy_ntt, gt_production_q31, or gt_production_no_q31)
 endif
 
 SHAKE_CFLAGS =
@@ -236,6 +263,19 @@ GT_NONHASH_SUBSTAGE_PMU_NTESTS ?= 31
 GT_NONHASH_SUBSTAGE_PMU_NITERATIONS ?= 5000
 GT_NONHASH_SUBSTAGE_PMU_NWARMUP ?= 100
 GT_NONHASH_SUBSTAGE_PMU_NINPUTS ?= 64
+U01V3_G1_FULLPATH_PMU_TARGET ?= bench_u01v3_g1_fullpath_pmu_bin
+U01V3_G1_FULLPATH_PMU_NTESTS ?= 61
+U01V3_G1_FULLPATH_PMU_NITERATIONS ?= 20000
+U01V3_G1_FULLPATH_PMU_NWARMUP ?= 300
+U01V3_G1_FULLPATH_PMU_NINPUTS ?= 64
+U01V3_G1_FULLPATH_VALID_CASES ?= 4096
+U01V3_G1_R123_PAIRED_KEM_TARGET ?= bench_u01v3_g1_r123_paired_kem_pmu_bin
+INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET ?= bench_invntt_lazy_len16_paired_kem_pmu_bin
+INVNTT_PROMOTED_PAIRED_KEM_TARGET ?= bench_invntt_promoted_paired_kem_pmu_bin
+U01V3_G1_R123_PAIRED_KEM_NTESTS ?= 61
+U01V3_G1_R123_PAIRED_KEM_NITERATIONS ?= 2000
+U01V3_G1_R123_PAIRED_KEM_NWARMUP ?= 100
+U01V3_G1_R123_PAIRED_KEM_NINPUTS ?= 32
 GT_DIRECT32_Q31_RELEASE_GUARD_TARGET ?= bench_gt_direct32_q31_release_guard_bin
 GT_DIRECT32_Q31_ABSENCE_GUARD_TARGET ?= bench_gt_direct32_q31_absence_guard_bin
 GT_SAMPLE_HIERK8_RELEASE_GUARD_TARGET ?= bench_gt_sample_hierk8_release_guard_bin
@@ -283,6 +323,7 @@ GT_BASEINV_KWAY_PMU_SOURCES = \
 	$(GT_BASEINV_DIVSTEP_ASM) \
 	$(GT_BASEINV_DIVSTEP_S32FOLD_ASM) \
 	$(GT_BASEINV_DIVSTEP_MODQ16_ASM) \
+	$(GT_BASEINV_DIVSTEP_LAZY16_ASM) \
 	$(GT_BASEINV_DIVSTEP_SWAR_ASM)
 
 GT_BASEINV_HIER_K8_DIFF_SOURCES = \
@@ -443,6 +484,74 @@ GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES = \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
 	$(GT_BENCH_EXTRA_ASM)
 
+U01V3_G1_FULLPATH_PMU_SOURCES = \
+	bench_u01v3_g1_fullpath_pmu.c \
+	$(NTRUPLUS)/asm/gt/poly_ntt.s \
+	$(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1.S \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_s2.S \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123.S \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+
+U01V3_G1_R123_PAIRED_KEM_SOURCES = \
+	bench_u01v3_g1_r123_paired_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_u01v3_g1_r123_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_SUPPORT_ASM) \
+	$(NTRUPLUS)/asm/gt/poly_ntt.s \
+	$(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s \
+	$(GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+
+INVNTT_LAZY_LEN16_PAIRED_KEM_SOURCES = \
+	bench_u01v3_g1_r123_paired_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_invntt_lazy_len16_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_SUPPORT_ASM) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_len16.S \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+
+INVNTT_PROMOTED_PAIRED_KEM_SOURCES = \
+	bench_u01v3_g1_r123_paired_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_invntt_baseline_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(NTRUPLUS)/ntt.c \
+	$(GT_SUPPORT_ASM) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM) \
+	$(GT_PRODUCTION_INVNTT_ASM) \
+	$(NTRUPLUS)/asm/gt/poly_invntt_rminus1.S \
+	$(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_baseline_namespaced.S \
+	$(GT_BASEINV_BATCH_C) \
+	$(GT_PRODUCTION_BASE_ASM) \
+	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
+	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+
 GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	bench_gt_direct32_q31_release_guard.c \
 	bench_kem_current_wrapper.c \
@@ -538,7 +647,11 @@ ifeq ($(CYCLES),PMU)
 endif
 
 ifeq ($(CYCLES),PERF)
-	CFLAGS += -DPERF_CYCLES
+	CFLAGS += -DPERF_CYCLES -DBENCH_COUNTER_NAME=\"cycles\"
+endif
+
+ifeq ($(CYCLES),INSTRUCTIONS)
+	CFLAGS += -DPERF_INSTRUCTIONS -DBENCH_COUNTER_NAME=\"instructions\"
 endif
 
 ifeq ($(CYCLES),MAC)
@@ -570,6 +683,7 @@ $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET): $(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES)
 
 $(GT_BASEINV_KWAY_PMU_TARGET): $(GT_BASEINV_KWAY_PMU_SOURCES)
 	$(CC) $(CFLAGS) \
+		$(GT_BASEINV_DIVSTEP_FLAGS) \
 		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
 		-DGT_BASEINV_USE_FQINV15_ASM \
 		-DGT_BASEINV_KWAY_BENCH_HELPERS \
@@ -735,6 +849,42 @@ $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET): $(GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES)
 		-DNINPUTS=$(GT_NONHASH_SUBSTAGE_PMU_NINPUTS) \
 		$(GT_NONHASH_SUBSTAGE_PMU_GT_SOURCES) -o $@
 
+$(U01V3_G1_FULLPATH_PMU_TARGET): $(U01V3_G1_FULLPATH_PMU_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_FULLPATH_PMU_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_FULLPATH_PMU_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_FULLPATH_PMU_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_FULLPATH_PMU_NINPUTS) \
+		-DNVALID_ORACLE=$(U01V3_G1_FULLPATH_VALID_CASES) \
+		$(U01V3_G1_FULLPATH_PMU_SOURCES) -o $@
+
+$(U01V3_G1_R123_PAIRED_KEM_TARGET): $(U01V3_G1_R123_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		$(U01V3_G1_R123_PAIRED_KEM_SOURCES) -o $@
+
+$(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET): $(INVNTT_LAZY_LEN16_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_VARIANTS_LABEL=\"A_production/B_invntt_lazy_len16\" \
+		$(INVNTT_LAZY_LEN16_PAIRED_KEM_SOURCES) -o $@
+
+$(INVNTT_PROMOTED_PAIRED_KEM_TARGET): $(INVNTT_PROMOTED_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_VARIANTS_LABEL=\"A_promoted/B_historical_baseline\" \
+		$(INVNTT_PROMOTED_PAIRED_KEM_SOURCES) -o $@
+
 $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET): $(GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES)
 	$(CC) $(CFLAGS) \
 		-UGT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP \
@@ -840,6 +990,26 @@ bench_gt_nonhash_substage_pmu:
 	cat $(GT_NONHASH_SUBSTAGE_PMU_STATS)
 	GT_NONHASH_SUBSTAGE_STATS_FILE=$(GT_NONHASH_SUBSTAGE_PMU_STATS) $(SUDO) taskset -c $(CORE) ./$(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET)
 
+bench_u01v3_g1_fullpath_pmu:
+	$(MAKE) -B $(U01V3_G1_FULLPATH_PMU_TARGET)
+	size $(U01V3_G1_FULLPATH_PMU_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(U01V3_G1_FULLPATH_PMU_TARGET)
+
+bench_u01v3_g1_r123_paired_kem_pmu:
+	$(MAKE) -B $(U01V3_G1_R123_PAIRED_KEM_TARGET)
+	size $(U01V3_G1_R123_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(U01V3_G1_R123_PAIRED_KEM_TARGET)
+
+bench_invntt_lazy_len16_paired_kem_pmu:
+	$(MAKE) -B $(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET)
+	size $(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET)
+
+bench_invntt_promoted_paired_kem_pmu:
+	$(MAKE) -B $(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
+	size $(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
+
 check_gt_basemul_add_direct32_q31_reducer:
 	$(PYTHON) $(NTRUPLUS)/gt_test/analyze_gt_basemul_add_direct32_reducers.py
 
@@ -864,10 +1034,15 @@ bench-gt:
 	$(MAKE) CYCLES=PERF VARIANT=gt_production_default BENCH_MODE=kem_dec
 	sudo taskset -c 3 ./$(TARGET)
 
+bench-gt-legacy:
+	$(MAKE) clean
+	$(MAKE) CYCLES=PERF VARIANT=gt_production_legacy_ntt BENCH_MODE=kem_dec
+	sudo taskset -c 3 ./$(TARGET)
+
 bench-kpqc-final:
 	$(MAKE) clean
 	$(MAKE) CYCLES=PERF VARIANT=kpqc_final BENCH_MODE=kem_dec
 	sudo taskset -c 3 ./$(TARGET)
 
 clean:
-	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_BASEINV_HIER_K8_DIFF_TARGET) $(GT_BASEINV_HIER_K8_DECOMPOSE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_CANDIDATE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_FULLKEYGEN_PMU_TARGET) $(GT_KEYGEN_DIRECT_H_HINV_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_ASM_PMU_TARGET) $(GT_KEYGEN_FINISH_TO_H_HINV_PMU_TARGET) $(GT_KEYGEN_SAMPLE_PREBASEINV_SPLIT_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET) $(GT_KEYGEN_SAMPLE_HIERK8_COMBO_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DIRECT32_Q31_ABSENCE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_SAMPLE_OFF_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_HIER_OFF_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_BASEINV_HIER_K8_DIFF_TARGET) $(GT_BASEINV_HIER_K8_DECOMPOSE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_CANDIDATE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_FULLKEYGEN_PMU_TARGET) $(GT_KEYGEN_DIRECT_H_HINV_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_ASM_PMU_TARGET) $(GT_KEYGEN_FINISH_TO_H_HINV_PMU_TARGET) $(GT_KEYGEN_SAMPLE_PREBASEINV_SPLIT_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET) $(GT_KEYGEN_SAMPLE_HIERK8_COMBO_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(U01V3_G1_FULLPATH_PMU_TARGET) $(U01V3_G1_R123_PAIRED_KEM_TARGET) $(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET) $(INVNTT_PROMOTED_PAIRED_KEM_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DIRECT32_Q31_ABSENCE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_SAMPLE_OFF_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_HIER_OFF_TARGET) *.textsizes *.stats *.d hal/*.d

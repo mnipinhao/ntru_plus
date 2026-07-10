@@ -1,0 +1,146 @@
+{
+  "input_contract": [
+    -1728,
+    1728
+  ],
+  "assumption": "Every retained modular multiply returns a centered residue with absolute value <= 1728; add/sub use signed int16 lanes.",
+  "candidates": {
+    "stage123_only": {
+      "deleted_identity_lengths": [
+        2,
+        4,
+        8
+      ],
+      "stages": [
+        {
+          "length": 2,
+          "deleted_identity_sites": 16,
+          "max_abs_after_stage": 3456,
+          "int16_safe": true
+        },
+        {
+          "length": 4,
+          "deleted_identity_sites": 8,
+          "max_abs_after_stage": 6912,
+          "int16_safe": true
+        },
+        {
+          "length": 8,
+          "deleted_identity_sites": 4,
+          "max_abs_after_stage": 13824,
+          "int16_safe": true
+        },
+        {
+          "length": 16,
+          "deleted_identity_sites": 0,
+          "max_abs_after_stage": 15552,
+          "int16_safe": true
+        },
+        {
+          "length": 32,
+          "deleted_identity_sites": 0,
+          "max_abs_after_stage": 17280,
+          "int16_safe": true
+        }
+      ],
+      "final_max_abs_before_row_end_reduction": 17280,
+      "int16_safe": true
+    },
+    "through_len16": {
+      "deleted_identity_lengths": [
+        2,
+        4,
+        8,
+        16
+      ],
+      "stages": [
+        {
+          "length": 2,
+          "deleted_identity_sites": 16,
+          "max_abs_after_stage": 3456,
+          "int16_safe": true
+        },
+        {
+          "length": 4,
+          "deleted_identity_sites": 8,
+          "max_abs_after_stage": 6912,
+          "int16_safe": true
+        },
+        {
+          "length": 8,
+          "deleted_identity_sites": 4,
+          "max_abs_after_stage": 13824,
+          "int16_safe": true
+        },
+        {
+          "length": 16,
+          "deleted_identity_sites": 2,
+          "max_abs_after_stage": 27648,
+          "int16_safe": true
+        },
+        {
+          "length": 32,
+          "deleted_identity_sites": 0,
+          "max_abs_after_stage": 29376,
+          "int16_safe": true
+        }
+      ],
+      "final_max_abs_before_row_end_reduction": 29376,
+      "int16_safe": true
+    },
+    "all_identity_sites": {
+      "deleted_identity_lengths": [
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "stages": [
+        {
+          "length": 2,
+          "deleted_identity_sites": 16,
+          "max_abs_after_stage": 3456,
+          "int16_safe": true
+        },
+        {
+          "length": 4,
+          "deleted_identity_sites": 8,
+          "max_abs_after_stage": 6912,
+          "int16_safe": true
+        },
+        {
+          "length": 8,
+          "deleted_identity_sites": 4,
+          "max_abs_after_stage": 13824,
+          "int16_safe": true
+        },
+        {
+          "length": 16,
+          "deleted_identity_sites": 2,
+          "max_abs_after_stage": 27648,
+          "int16_safe": true
+        },
+        {
+          "length": 32,
+          "deleted_identity_sites": 1,
+          "max_abs_after_stage": 55296,
+          "int16_safe": false
+        }
+      ],
+      "final_max_abs_before_row_end_reduction": 55296,
+      "int16_safe": false
+    }
+  },
+  "selected": "through_len16",
+  "selected_reason": "Stage123 plus len16 reaches max abs 29376 after the retained len32 stage and before row-end reduction.",
+  "rejected": {
+    "all_identity_sites": "The DC path reaches absolute bound 55296 before final row reduction, exceeding signed int16."
+  },
+  "instruction_delta_selected": {
+    "identity_fqmul_sites_per_row": 30,
+    "rows": 3,
+    "instructions_per_fqmul": 3,
+    "dynamic_vector_instructions_removed": 270
+  }
+}

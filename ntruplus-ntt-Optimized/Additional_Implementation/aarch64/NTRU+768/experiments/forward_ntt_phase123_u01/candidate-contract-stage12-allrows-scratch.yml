@@ -1,0 +1,57 @@
+candidate:
+  id: phase123_u01_stage12_allrows_scratch_stripe01_quick_n1
+  status: investigate
+  kernel_contract: kernel-contract-stage12-allrows-scratch.yml
+  symbolic_source: experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.sym.s
+  slothy_driver: experiments/forward_ntt_phase123_u01/optimize_stage12_allrows_scratch.py
+  slothy_output: experiments/forward_ntt_phase123_u01/phase123_u01_stage12_allrows_scratch_stripe01.quick.opt.s
+  slothy_log: experiments/forward_ntt_phase123_u01/slothy_stage12_allrows_scratch_n1_quick.log
+
+contract_preservation:
+  preserved: true
+  approved_changes:
+    - none
+
+region:
+  start_label: slothy_start_phase123_u01_stage12_allrows_scratch_stripe01
+  end_label: slothy_end_phase123_u01_stage12_allrows_scratch_stripe01
+  live_in:
+    - x1 input base
+    - x3 Phase123 twist/precompute table base
+    - x4/x5/x6 row output bases
+    - x12 NTT32 stage12 twiddle table base
+    - x13 temporary stage12-order scratch base
+    - v0 q/reduction/DFT3 constant vector
+  live_out:
+    - row0/row1/row2 post-stage12 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stores
+    - x13 temporary scratch clobbered at public fixed offsets
+
+memory_contract:
+  loads:
+    - input q loads from x1 fixed public offsets
+    - Phase123 twist/precompute ldp q pairs from x7 fixed public offsets
+    - NTT32 stage12 twiddle q loads from x12 fixed public offsets
+    - compact scratch q loads from x13 fixed public offsets
+  stores:
+    - compact raw Q scratch stores to x13 fixed public offsets
+    - post-stage12 stores to x4/x5/x6 fixed public offsets
+  public_offsets_only: true
+
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+slothy_result:
+  target: neoverse_n1_experimental
+  command: SLOTHY_PATH=/home/pinhao/slothy python3 optimize_stage12_allrows_scratch.py --target n1 --split-stepsize 0.25 --output phase123_u01_stage12_allrows_scratch_stripe01.quick.opt.s
+  instructions: 453
+  expected_cycles: 113
+  expected_ipc: 4.01
+  split_heuristic_full: ok
+  note: cortex_a76 target was unavailable in the remote Slothy checkout
+
+validation:
+  source_order_oracle: phase123_u01_stage12_allrows_scratch_ok seeds=64 rows=3 outputs=24
+  quick_opt_assemble: pass
+  quick_opt_oracle: phase123_u01_stage12_allrows_scratch_ok seeds=64 rows=3 outputs=24
+  full_path_benchmark: not_run

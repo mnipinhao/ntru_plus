@@ -1,0 +1,241 @@
+{
+  "candidate_family": "u01v3_stage345_semantic",
+  "production_default_changed": false,
+  "scope": "F01 block0+block1 only",
+  "e0": {
+    "symbol": "u01v3_stage345_semantic_e0_reproduce",
+    "stage12_passes": 1,
+    "duplicate_stage12_computation": false,
+    "extra_raw_q_loads": 0,
+    "q_stack_spills": 0,
+    "scalar_stack_temporaries": "inherits current Stage345 STACK_LOC_0 x-register temporaries",
+    "stage345_block0": {
+      "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block0_slothy_start",
+      "mode": "live handoff",
+      "scratch_loads_removed_for_q": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "instruction_lines": 346
+    },
+    "stage345_block1": {
+      "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block1_slothy_start",
+      "mode": "current from-scratch reproduction",
+      "instruction_lines": 332
+    },
+    "block0_handoff": [
+      {
+        "q_index": 0,
+        "reg": "q29"
+      },
+      {
+        "q_index": 1,
+        "reg": "q1"
+      },
+      {
+        "q_index": 2,
+        "reg": "q28"
+      },
+      {
+        "q_index": 3,
+        "reg": "q17"
+      },
+      {
+        "q_index": 4,
+        "reg": "q26"
+      },
+      {
+        "q_index": 5,
+        "reg": "q5"
+      },
+      {
+        "q_index": 6,
+        "reg": "q18"
+      },
+      {
+        "q_index": 7,
+        "reg": "q8"
+      }
+    ],
+    "block1_stage12_scratch": [
+      {
+        "q_index": 8,
+        "producer_reg": "q10",
+        "scratch_offsets_by_row": {
+          "row0": 128,
+          "row1": 640,
+          "row2": 1152
+        }
+      },
+      {
+        "q_index": 9,
+        "producer_reg": "q20",
+        "scratch_offsets_by_row": {
+          "row0": 144,
+          "row1": 656,
+          "row2": 1168
+        }
+      },
+      {
+        "q_index": 10,
+        "producer_reg": "q30",
+        "scratch_offsets_by_row": {
+          "row0": 160,
+          "row1": 672,
+          "row2": 1184
+        }
+      },
+      {
+        "q_index": 11,
+        "producer_reg": "q24",
+        "scratch_offsets_by_row": {
+          "row0": 176,
+          "row1": 688,
+          "row2": 1200
+        }
+      },
+      {
+        "q_index": 12,
+        "producer_reg": "q9",
+        "scratch_offsets_by_row": {
+          "row0": 192,
+          "row1": 704,
+          "row2": 1216
+        }
+      },
+      {
+        "q_index": 13,
+        "producer_reg": "q6",
+        "scratch_offsets_by_row": {
+          "row0": 208,
+          "row1": 720,
+          "row2": 1232
+        }
+      },
+      {
+        "q_index": 14,
+        "producer_reg": "q31",
+        "scratch_offsets_by_row": {
+          "row0": 224,
+          "row1": 736,
+          "row2": 1248
+        }
+      },
+      {
+        "q_index": 15,
+        "producer_reg": "q23",
+        "scratch_offsets_by_row": {
+          "row0": 240,
+          "row1": 752,
+          "row2": 1264
+        }
+      }
+    ],
+    "validation": {
+      "assemble": "pass, clang -target aarch64-linux-gnu",
+      "correctness": "pass",
+      "abi": "0x0",
+      "mismatches": 0,
+      "pmu": "not_run"
+    }
+  },
+  "e1": {
+    "symbol": "u01v3_stage345_semantic_e1_preserve_liveins",
+    "stage12_passes": 1,
+    "duplicate_stage12_computation": false,
+    "extra_raw_q_loads": 0,
+    "q_stack_spills": 0,
+    "scalar_stack_temporaries": "inherits current Stage345 STACK_LOC_0 x-register temporaries",
+    "stage345_block0": {
+      "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block0_slothy_start",
+      "mode": "renamed to preserve block1 live-ins",
+      "instruction_lines": 346,
+      "allocator": {
+        "allocator": "fixed-order SSA greedy",
+        "preserved_block1_registers": [
+          "q6",
+          "q9",
+          "q10",
+          "q20",
+          "q23",
+          "q24",
+          "q30",
+          "q31"
+        ],
+        "actual_stage345_block0_written_q_registers": [
+          "q1",
+          "q2",
+          "q3",
+          "q4",
+          "q5",
+          "q7",
+          "q8",
+          "q11",
+          "q12",
+          "q13",
+          "q14",
+          "q15",
+          "q16",
+          "q17",
+          "q18",
+          "q26"
+        ],
+        "reserved_written": [],
+        "max_nonreserved_live_values": 15,
+        "available_nonreserved_registers": [
+          "q1",
+          "q2",
+          "q3",
+          "q4",
+          "q5",
+          "q7",
+          "q8",
+          "q11",
+          "q12",
+          "q13",
+          "q14",
+          "q15",
+          "q16",
+          "q17",
+          "q18",
+          "q19",
+          "q21",
+          "q22",
+          "q25",
+          "q26",
+          "q27",
+          "q28",
+          "q29"
+        ]
+      }
+    },
+    "stage345_block1": {
+      "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block1_slothy_start",
+      "mode": "live handoff",
+      "instruction_lines": 332
+    },
+    "block1_preserved_liveins": [
+      "q6",
+      "q9",
+      "q10",
+      "q20",
+      "q23",
+      "q24",
+      "q30",
+      "q31"
+    ],
+    "validation": {
+      "assemble": "pass, clang -target aarch64-linux-gnu",
+      "correctness": "fail",
+      "abi": "0x0",
+      "mismatches": 74572,
+      "pmu": "not_run_because_correctness_failed"
+    }
+  }
+}

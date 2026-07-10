@@ -29,6 +29,24 @@
     sub      \hi\().8h, \tmp\().8h, \prod\().8h
 .endm
 
+.ifdef INVNTT_EXPERIMENT_LAZY_TWIDDLE1_STAGE123
+.ifndef INVNTT_USE_LAZY_TWIDDLE1_STAGE123
+.equ INVNTT_USE_LAZY_TWIDDLE1_STAGE123, 1
+.endif
+.endif
+.ifdef INVNTT_EXPERIMENT_LAZY_TWIDDLE1_LEN16
+.ifndef INVNTT_USE_LAZY_TWIDDLE1_LEN16
+.equ INVNTT_USE_LAZY_TWIDDLE1_LEN16, 1
+.endif
+.endif
+
+.macro INV_BUTTERFLY_IDENTITY_LAZY lo, hi, tmp
+    /* Proof-gated twiddle=1 path with the reduction intentionally deferred. */
+    mov      \tmp\().16b, \lo\().16b
+    add      \lo\().8h, \lo\().8h, \hi\().8h
+    sub      \hi\().8h, \tmp\().8h, \hi\().8h
+.endm
+
 .macro INVNTT32_STAGE45_STRIPE_SLOTHY_SCRATCH j
     /*
      * Same A72 stage45+row-end-reduce schedule as
@@ -119,19 +137,38 @@
     DIRECT_STAGE123_VEC 10, \off7
 
     /* len=2 */
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_STAGE123
+    INV_BUTTERFLY_IDENTITY_LAZY v3, v4, v12
+    INV_BUTTERFLY_IDENTITY_LAZY v5, v6, v12
+    INV_BUTTERFLY_IDENTITY_LAZY v7, v8, v12
+    INV_BUTTERFLY_IDENTITY_LAZY v9, v10, v12
+.else
     INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
     INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
     INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
     INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+.endif
 
     /* len=4 */
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_STAGE123
+    INV_BUTTERFLY_IDENTITY_LAZY v3, v5, v12
+.else
     INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+.endif
     INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_STAGE123
+    INV_BUTTERFLY_IDENTITY_LAZY v7, v9, v12
+.else
     INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+.endif
     INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
 
     /* len=8 */
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_STAGE123
+    INV_BUTTERFLY_IDENTITY_LAZY v3, v7, v12
+.else
     INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+.endif
     INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
     INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
     INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
@@ -279,17 +316,29 @@
         ldr q21, [x14, #16]
         ldr q13, [x3, #0]
         ldr q29, [x14, #32]
+.ifndef INVNTT_USE_LAZY_TWIDDLE1_LEN16
         sqrdmulh v24.8H, v17.8H, v14.H[0]
         sqrdmulh v20.8H, v21.8H, v14.H[0]
         mul v3.8H, v17.8H, v13.H[0]
         mls v3.8H, v24.8H, v0.H[0]
         mul v1.8H, v21.8H, v13.H[0]
         mls v1.8H, v20.8H, v0.H[0]
+.endif
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_LEN16
+        sub v30.8H, v29.8H, v17.8H
+        add v26.8H, v29.8H, v17.8H
+.else
         sub v30.8H, v29.8H, v3.8H
         add v26.8H, v29.8H, v3.8H
+.endif
         sqrdmulh v7.8H, v30.8H, v14.H[2]
         mul v17.8H, v30.8H, v13.H[2]
+.ifdef INVNTT_USE_LAZY_TWIDDLE1_LEN16
+        add v20.8H, v8.8H, v21.8H
+        sub v21.8H, v8.8H, v21.8H
+.else
         sub v21.8H, v8.8H, v1.8H
+.endif
         sqrdmulh v24.8H, v26.8H, v14.H[1]
         ldr q4, [x3, #48]
         ldr q18, [x14, #112]
@@ -297,7 +346,9 @@
         ldr q7, [x3, #32]
         mul v14.8H, v26.8H, v13.H[1]
         mls v14.8H, v24.8H, v0.H[0]
+.ifndef INVNTT_USE_LAZY_TWIDDLE1_LEN16
         add v20.8H, v8.8H, v1.8H
+.endif
         add v13.8H, v21.8H, v17.8H
         sqrdmulh v12.8H, v18.8H, v4.H[0]
         sub v22.8H, v21.8H, v17.8H
@@ -663,6 +714,10 @@
     str      d23, [\ptr, #\off_hi]
 .endm
 
+.ifdef INVNTT_EXPERIMENT_POST_BRANCHFOLD_THREE_SLOTHY
+.include "asm/slothy/experiments/invntt_next_wave/post_branchfold_three_outputs.n1.inc"
+.endif
+
 .macro FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
     ldr q1, [x8]
     ldr q2, [x9]
@@ -691,9 +746,13 @@
     sub      v9.8h, v1.8h, v3.8h
     sub      v9.8h, v9.8h, v6.8h
 
+.ifdef INVNTT_EXPERIMENT_POST_BRANCHFOLD_THREE_SLOTHY
+    INVNTT_POST_BRANCHFOLD_THREE_SLOTHY \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.else
     POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
     POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
     POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
+.endif
 .endm
 
 .macro RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
@@ -739,8 +798,33 @@
 .error "invntt_opt.production.s requires INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS"
 .endif
 
+.ifdef INVNTT_PRESERVE_CALLEE_SAVED_SIMD
+.equ INVNTT_SIMD_SAVE_OFFSET, 2080
+.equ INVNTT_STACK_SIZE, 2144
+.else
 .equ INVNTT_STACK_SIZE, 2080
-.equ INVNTT_SAVED_X0_OFFSET, 2088
+.endif
+.equ INVNTT_SAVED_X0_OFFSET, (INVNTT_STACK_SIZE + 8)
+
+.macro INVNTT_SAVE_CALLEE_SAVED_SIMD
+.ifdef INVNTT_PRESERVE_CALLEE_SAVED_SIMD
+    add x16, sp, #INVNTT_SIMD_SAVE_OFFSET
+    stp d8, d9, [x16, #0]
+    stp d10, d11, [x16, #16]
+    stp d12, d13, [x16, #32]
+    stp d14, d15, [x16, #48]
+.endif
+.endm
+
+.macro INVNTT_RESTORE_CALLEE_SAVED_SIMD
+.ifdef INVNTT_PRESERVE_CALLEE_SAVED_SIMD
+    add x16, sp, #INVNTT_SIMD_SAVE_OFFSET
+    ldp d8, d9, [x16, #0]
+    ldp d10, d11, [x16, #16]
+    ldp d12, d13, [x16, #32]
+    ldp d14, d15, [x16, #48]
+.endif
+.endm
 
 .ifndef INVNTT_STAGE123_SCRATCH_ONLY
 .ifndef INVNTT_NO_POLY_ALIAS
@@ -767,6 +851,7 @@ gt_block_major_poly_invntt:
 _gt_block_major_poly_invntt:
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #INVNTT_STACK_SIZE
+    INVNTT_SAVE_CALLEE_SAVED_SIMD
 
     adr x3, inv_consts
     ldr q0, [x3]
@@ -832,6 +917,7 @@ gt_tuple_poly_invntt:
 _gt_tuple_poly_invntt:
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #INVNTT_STACK_SIZE
+    INVNTT_SAVE_CALLEE_SAVED_SIMD
 
     adr x3, inv_consts
     ldr q0, [x3]
@@ -862,6 +948,7 @@ _gt_tuple_poly_invntt:
 	_gt_bpq_poly_invntt:
 	    stp x30, x0, [sp, #-16]!
 	    sub sp, sp, #INVNTT_STACK_SIZE
+	    INVNTT_SAVE_CALLEE_SAVED_SIMD
 
 	    adr x3, inv_consts
 	    ldr q0, [x3]
@@ -900,6 +987,7 @@ slothy_start_invntt_post_fused:
     RUN_FUSED_POST_LOOP 4
 slothy_end_invntt_post_fused:
 
+    INVNTT_RESTORE_CALLEE_SAVED_SIMD
     add sp, sp, #INVNTT_STACK_SIZE
     ldp x30, x0, [sp], #16
     ret
@@ -958,6 +1046,7 @@ poly_invntt_stage45scratch:
 _poly_invntt_stage45scratch:
     stp x30, x0, [sp, #-16]!
     sub sp, sp, #INVNTT_STACK_SIZE
+    INVNTT_SAVE_CALLEE_SAVED_SIMD
     mov x15, x1
 
     adr x3, inv_consts
@@ -987,6 +1076,7 @@ _poly_invntt_stage45scratch:
     add x13, x0, #256
     RUN_FUSED_POST_LOOP 4
 
+    INVNTT_RESTORE_CALLEE_SAVED_SIMD
     add sp, sp, #INVNTT_STACK_SIZE
     ldp x30, x0, [sp], #16
     ret
@@ -1063,3 +1153,8 @@ inv_branchfold_vecs:
 .purgem RUN_FUSED_POST_3STRIPE_GROUP
 .purgem RUN_FUSED_POST_3STRIPE_LOOP
 .purgem RUN_FUSED_POST_LOOP
+.purgem INVNTT_SAVE_CALLEE_SAVED_SIMD
+.purgem INVNTT_RESTORE_CALLEE_SAVED_SIMD
+.ifdef INVNTT_EXPERIMENT_POST_BRANCHFOLD_THREE_SLOTHY
+.purgem INVNTT_POST_BRANCHFOLD_THREE_SLOTHY
+.endif
