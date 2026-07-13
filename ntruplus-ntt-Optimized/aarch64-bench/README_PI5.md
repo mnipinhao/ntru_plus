@@ -46,7 +46,7 @@ make CYCLES=PERF VARIANT=gt_production_no_q31 BENCH_MODE=kem_keygen
 sudo taskset -c 3 ./bench
 
 make clean
-make CYCLES=PERF VARIANT=gt_production BENCH_MODE=kem_enc
+make CYCLES=PERF VARIANT=gt_production_q31 BENCH_MODE=kem_enc
 sudo taskset -c 3 ./bench
 
 make clean
@@ -71,13 +71,19 @@ Supported `VARIANT` values:
 
 ```text
 kpqc_final
+gt_production_default
+gt_production_legacy_ntt
+gt_production_q31
 gt_production_no_q31
-gt_production
 ```
 
 `kpqc_final` links sources directly from `KPQC_FINAL_ROOT`; it does not use any
 stock asm copied into the optimized repo.
-`gt_production` enables the encap-only direct32 Q31 tobytes-contract path.
+`gt_production_default` follows the release default selected in
+`gt_production_variants.mk`.
+`gt_production_legacy_ntt` keeps the compatibility NTT path for controlled
+regression comparisons.
+`gt_production_q31` enables the encap-only direct32 Q31 tobytes-contract path.
 `gt_production_no_q31` keeps the generic production `poly_basemul_add` path.
 
 ## Production PMU Targets
@@ -106,7 +112,7 @@ active benchmark Makefile.
 ## Q31 Release Guard
 
 Run the reducer proof and release guard before relying on
-`VARIANT=gt_production`:
+`VARIANT=gt_production_q31`:
 
 ```sh
 make check_gt_direct32_q31_release_candidate
