@@ -14,12 +14,12 @@ KEM_COMMON_C = kem.c symmetric.c
 SHAKE_NOCE_SOURCES = NO_CE/fips202.c
 SHAKE_CE_SOURCES = CE/fips202.c CE/f1600.S
 include gt_production_variants.mk
+GT_SOURCE_ROOT = .
+include gt_production_sources.mk
 GT_PRODUCTION_FLAGS = $(GT_PRODUCTION_DEFAULT_FLAGS)
 
-GT_SUPPORT_ASM = asm/gt/support/poly_support_n1.S asm/gt/poly_cbd_sotp.s
-GT_NTT_ASM_G1_R123_S2_PRODUCTION = \
-	asm/gt/poly_ntt_g1_r123_s2.S \
-	asm/slothy/production/my_32ntt.opt.s
+GT_SUPPORT_ASM = $(GT_PRODUCTION_SUPPORT_SOURCES)
+GT_NTT_ASM_G1_R123_S2_PRODUCTION = $(GT_PRODUCTION_NTT_SOURCES)
 GT_NTT_ASM_PHASE123_N1_LEGACY = asm/gt/poly_ntt.s asm/slothy/production/my_32ntt.opt.s
 # Compatibility alias for retained experiment-only differential tests.
 GT_NTT_ASM_PHASE123_N1 = $(GT_NTT_ASM_PHASE123_N1_LEGACY)
@@ -40,12 +40,10 @@ U01V3_G1_R123_S2_ABI_SENTINEL_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2_
 ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY),1)
 GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM =
 else
-GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = \
-	asm/gt/experiment/poly_ntt_triple_scheduled.S \
-	asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = $(GT_PRODUCTION_SAMPLE_NTT_SOURCES)
 endif
-GT_INVNTT_ASM = asm/gt/poly_invntt.s
-GT_INVNTT_RMINUS1_PRODUCTION_ASM = asm/gt/poly_invntt_rminus1.S
+GT_INVNTT_ASM = $(GT_PRODUCTION_INVNTT_SOURCE)
+GT_INVNTT_RMINUS1_PRODUCTION_ASM = $(GT_PRODUCTION_INVNTT_RMINUS1_SOURCE)
 GT_INVNTT_RMINUS1_BASELINE_ASM = asm/gt/experiment/poly_invntt_rminus1_baseline.S
 GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM = \
 	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123.S \
@@ -71,16 +69,16 @@ GT_INVNTT_LAZY_TWIDDLE1_LEN16_KEM_SOURCES = \
 GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM = \
 	asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
 	asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
-GT_BASEINV_BATCH_FINISH_ASM = asm/slothy/production/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM = asm/gt/poly_baseinv_fqinv15.S
+GT_BASEINV_BATCH_FINISH_ASM = $(GT_PRODUCTION_BASEINV_FINISH_SOURCE)
+GT_BASEINV_FQINV_ASM = $(GT_PRODUCTION_BASEINV_FQINV_SOURCE)
 GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
-GT_PRODUCTION_Q31_ENCAP_ASM = asm/gt/poly_basemul_add_encap_tobytes_q31.S
-GT_BASE_OPT_NOADD_ASM = asm/gt/poly_basemul.S
-GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = asm/gt/poly_basemul_add.S
+GT_PRODUCTION_Q31_ENCAP_ASM = $(GT_PRODUCTION_Q31_ENCAP_SOURCE)
+GT_BASE_OPT_NOADD_ASM = $(word 1,$(GT_PRODUCTION_BASE_SOURCES))
+GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = $(word 2,$(GT_PRODUCTION_BASE_SOURCES))
 GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
-GT_BASE_RMINUS1_OPT_ASM = asm/gt/poly_basemul_rminus1.S
-GT_BASE_SCALED_R_INPUT_OPT_ASM = asm/gt/poly_basemul_scaled_r_input.S
+GT_BASE_SCALED_R_INPUT_OPT_ASM = $(word 3,$(GT_PRODUCTION_BASE_SOURCES))
+GT_BASE_RMINUS1_OPT_ASM = $(word 4,$(GT_PRODUCTION_BASE_SOURCES))
 
 # CE/f1600.S uses Armv8.2-A SHA3-extension instructions (eor3/rax1/xar/bcax).
 # Raspberry Pi 5's default toolchain/CPU path does not accept them, so keep the
@@ -126,7 +124,7 @@ else
 GT_PRODUCTION_DEFAULT_KEM_SOURCES = $(GT_PRODUCTION_NO_Q31_KEM_SOURCES)
 endif
 
-.PHONY: all PQCgenKAT_kem test clean
+.PHONY: all PQCgenKAT_kem test clean check-production-layout
 .PHONY: test_kem_gt_production test_kem_gt_production_opt test_kem_gt_production_opt_rminus1
 .PHONY: test_kem_gt_production_default test_kem_gt_production_q31 test_kem_gt_production_no_q31
 .PHONY: test_gt_baseinv_batch test_gt_basemul_opt test_gt_basemul_add32_ref test_gt_basemul_add_direct32_model test_gt_basemul_add32_asm test_gt_basemul_add32_full_pipeline_inline
@@ -245,6 +243,9 @@ profile_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randomb
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_DEFAULT_FLAGS) -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_default\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_gt_production_opt randombytes.c gt_test/kem_component_profiler.c $(GT_PRODUCTION_DEFAULT_KEM_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
 
 profile_kem_gt_production_opt_rminus1: profile_kem_gt_production_opt
+
+check-production-layout:
+	python3 scripts/check_production_layout.py
 
 clean:
 	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
