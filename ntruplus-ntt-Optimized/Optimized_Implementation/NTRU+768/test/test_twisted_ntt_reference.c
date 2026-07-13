@@ -898,7 +898,7 @@ static int check_full_ntt_goodthomas(const int factors[2])
 static int check_full_ntt_gt_natural_layout(const int factors[2])
 {
 	int min_permuted = NTRUPLUS_N;
-	int min_public = NTRUPLUS_N;
+	int min_public_old = NTRUPLUS_N;
 	int16_t a[NTRUPLUS_N];
 	int16_t old_layout[NTRUPLUS_N];
 	int16_t natural[NTRUPLUS_N];
@@ -935,16 +935,16 @@ static int check_full_ntt_gt_natural_layout(const int factors[2])
 			min_permuted = permuted;
 		}
 
-		matches = coeff_match_count(natural, public_ntt);
-		if (matches < min_public)
+		matches = coeff_match_count(old_layout, public_ntt);
+		if (matches < min_public_old)
 		{
-			min_public = matches;
+			min_public_old = matches;
 		}
 	}
 
-	printf("full ntt GT-natural layout: old-layout permutation %d/768, public ntt %d/768\n",
-	       min_permuted, min_public);
-	return min_permuted == NTRUPLUS_N && min_public == NTRUPLUS_N;
+	printf("full ntt GT-natural layout: old-layout permutation %d/768, public canonical old-layout %d/768\n",
+	       min_permuted, min_public_old);
+	return min_permuted == NTRUPLUS_N && min_public_old == NTRUPLUS_N;
 }
 
 static int check_invntt_gt_oldlayout_roundtrip(void)
