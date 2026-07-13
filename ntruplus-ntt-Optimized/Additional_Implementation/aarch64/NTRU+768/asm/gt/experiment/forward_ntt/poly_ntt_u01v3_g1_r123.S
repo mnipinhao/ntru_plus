@@ -7242,4 +7242,4 @@ poly_ntt_u01v3_g1_r123:
 .global poly_ntt_u01v3_g1_r123_end
 poly_ntt_u01v3_g1_r123_end:
 
-.include "asm/gt/experiment/u01_block_first_tables.inc"
+.include "asm/gt/experiment/forward_ntt/u01_block_first_tables.inc"

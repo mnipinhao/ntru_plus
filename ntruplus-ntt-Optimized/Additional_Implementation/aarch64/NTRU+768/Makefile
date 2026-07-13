@@ -29,14 +29,14 @@ GT_NTT_ASM ?= $(GT_NTT_ASM_PHASE123_N1_LEGACY)
 else
 GT_NTT_ASM ?= $(GT_NTT_ASM_G1_R123_S2_PRODUCTION)
 endif
-U01V3_G1_FULLPATH_ASM = asm/gt/experiment/poly_ntt_u01v3_g1.S
-U01V3_G1_S2_FULLPATH_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_s2.S
-U01V3_G1_ABI_SENTINEL_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_abi_sentinel.S
-U01V3_G1_S2_ABI_SENTINEL_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_s2_abi_sentinel.S
-U01V3_G1_R123_FULLPATH_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_r123.S
-U01V3_G1_R123_S2_FULLPATH_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
-U01V3_G1_R123_ABI_SENTINEL_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_r123_abi_sentinel.S
-U01V3_G1_R123_S2_ABI_SENTINEL_ASM = asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2_abi_sentinel.S
+U01V3_G1_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1.S
+U01V3_G1_S2_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_s2.S
+U01V3_G1_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_abi_sentinel.S
+U01V3_G1_S2_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_s2_abi_sentinel.S
+U01V3_G1_R123_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123.S
+U01V3_G1_R123_S2_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
+U01V3_G1_R123_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_abi_sentinel.S
+U01V3_G1_R123_S2_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2_abi_sentinel.S
 ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY),1)
 GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM =
 else
@@ -44,22 +44,22 @@ GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = $(GT_PRODUCTION_SAMPLE_NTT_SOURCES)
 endif
 GT_INVNTT_ASM = $(GT_PRODUCTION_INVNTT_SOURCE)
 GT_INVNTT_RMINUS1_PRODUCTION_ASM = $(GT_PRODUCTION_INVNTT_RMINUS1_SOURCE)
-GT_INVNTT_RMINUS1_BASELINE_ASM = asm/gt/experiment/poly_invntt_rminus1_baseline.S
+GT_INVNTT_RMINUS1_BASELINE_ASM = asm/gt/experiment/invntt/poly_invntt_rminus1_baseline.S
 GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM = \
-	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123.S \
-	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_len16.S \
-	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_abi_sentinel.S
+	asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123.S \
+	asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123_len16.S \
+	asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123_abi_sentinel.S
 GT_INVNTT_LAZY_TWIDDLE1_STAGE123_DROPIN_ASM = \
-	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_dropin.S
+	asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123_dropin.S
 GT_INVNTT_LAZY_TWIDDLE1_LEN16_DROPIN_ASM = \
-	asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_len16_dropin.S
+	asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123_len16_dropin.S
 ifeq ($(GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16),1)
 GT_INVNTT_RMINUS1_ASM = $(GT_INVNTT_RMINUS1_PRODUCTION_ASM)
 else
 GT_INVNTT_RMINUS1_ASM = $(GT_INVNTT_RMINUS1_BASELINE_ASM)
 endif
 GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM = \
-	asm/gt/experiment/poly_invntt_rminus1_post_branchfold_slothy.S
+	asm/gt/experiment/invntt/poly_invntt_rminus1_post_branchfold_slothy.S
 GT_INVNTT_LAZY_TWIDDLE1_KEM_SOURCES = \
 	$(filter-out $(GT_INVNTT_RMINUS1_ASM),$(GT_PRODUCTION_DEFAULT_KEM_SOURCES)) \
 	$(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_DROPIN_ASM)

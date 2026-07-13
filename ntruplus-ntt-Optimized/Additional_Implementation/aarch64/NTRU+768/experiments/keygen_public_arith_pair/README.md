@@ -114,7 +114,7 @@ Production defaults are unchanged.
 Added:
 
 ```text
-asm/gt/experiment/poly_keygen_public_arith_pair.S
+asm/gt/experiment/keygen/poly_keygen_public_arith_pair.S
 ```
 
 Symbol:

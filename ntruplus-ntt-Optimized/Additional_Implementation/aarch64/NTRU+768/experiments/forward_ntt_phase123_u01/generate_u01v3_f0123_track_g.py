@@ -223,7 +223,7 @@ def emit_p_wrapper(symbol: str) -> str:
             f".global {symbol}_end",
             f"{symbol}_end:",
             "",
-            ".include \"asm/gt/experiment/u01_block_first_tables.inc\"",
+            ".include \"asm/gt/experiment/forward_ntt/u01_block_first_tables.inc\"",
             "",
         ]
     )
@@ -278,7 +278,7 @@ def emit_v_wrapper(symbol: str) -> str:
             f".global {symbol}_end",
             f"{symbol}_end:",
             "",
-            ".include \"asm/gt/experiment/u01_block_first_tables.inc\"",
+            ".include \"asm/gt/experiment/forward_ntt/u01_block_first_tables.inc\"",
             "",
         ]
     )

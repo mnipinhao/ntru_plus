@@ -7332,4 +7332,4 @@ _gt_block_major_poly_ntt:
 .global poly_ntt_end
 poly_ntt_end:
 
-.include "asm/gt/experiment/u01_block_first_tables.inc"
+.include "asm/gt/experiment/forward_ntt/u01_block_first_tables.inc"

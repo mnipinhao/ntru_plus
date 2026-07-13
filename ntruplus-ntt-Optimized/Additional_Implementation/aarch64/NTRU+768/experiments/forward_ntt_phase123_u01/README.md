@@ -148,8 +148,8 @@ u01v3_stage345_semantic_e1v2_result.md
 u01v3_stage345_semantic_e1_cutpoints_result.md
 u01_block_first_vectors.inc
 test_u01_block_first.c
-../../asm/gt/experiment/u01_block_first_candidate.S
-../../asm/gt/experiment/u01_block_first_production_oracle.S
+../../asm/gt/experiment/forward_ntt/u01_block_first_candidate.S
+../../asm/gt/experiment/forward_ntt/u01_block_first_production_oracle.S
 ../../asm/gt/experiment/u01v2_block_first_candidate.S
 ../../asm/gt/experiment/u01v2_block_first_no_out0_store.S
 ../../asm/gt/experiment/u01v3_block0_fuse.S
@@ -197,7 +197,7 @@ test_u01_block_first.c
 ../../asm/gt/experiment/u01v3_stage345_semantic_e1_cutpoint_debug.S
 ../../asm/gt/experiment/u01v3_stage345_semantic_e1v2_preserve_liveins.S
 ../../asm/gt/experiment/u01v3_stage345_semantic_e1v2_preserve_liveins_abi_sentinel.S
-../../asm/gt/experiment/u01_block_first_tables.inc
+../../asm/gt/experiment/forward_ntt/u01_block_first_tables.inc
 ../../../aarch64-bench/bench_u01_block_first_pmu.c
 ../../../aarch64-bench/bench_u01v3_block0_fuse_pmu.c
 ../../../aarch64-bench/bench_u01v3_iterative_fuse_pmu.c
@@ -394,7 +394,7 @@ vectors; the stripe number changes row_base offsets, not the twiddle lane.
 The current callable candidate is:
 
 ```text
-asm/gt/experiment/u01_block_first_candidate.S
+asm/gt/experiment/forward_ntt/u01_block_first_candidate.S
 ```
 
 It wraps:
@@ -1039,7 +1039,7 @@ just the row scratch store/load boundary.
 The callable same-boundary oracle now exists:
 
 ```text
-asm/gt/experiment/u01_block_first_production_oracle.S
+asm/gt/experiment/forward_ntt/u01_block_first_production_oracle.S
 experiments/forward_ntt_phase123_u01/phase123_production_stage12_block0_oracle_allrows.sym.s
 ```
 

@@ -240,7 +240,7 @@ def emit_full_wrapper(symbol: str, body: list[str], public_dropin: bool) -> str:
             "    ret",
             *size_lines,
             "",
-            '.include "asm/gt/experiment/u01_block_first_tables.inc"',
+            '.include "asm/gt/experiment/forward_ntt/u01_block_first_tables.inc"',
             "",
         ]
     )

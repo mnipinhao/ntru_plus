@@ -52,16 +52,16 @@
 #define WRAPPER_A "ntruplus/asm/gt/poly_ntt.s"
 #endif
 #ifndef WRAPPER_B
-#define WRAPPER_B "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1.S"
+#define WRAPPER_B "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1.S"
 #endif
 #ifndef WRAPPER_C
-#define WRAPPER_C "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_s2.S"
+#define WRAPPER_C "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_s2.S"
 #endif
 #ifndef WRAPPER_D
-#define WRAPPER_D "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_r123.S"
+#define WRAPPER_D "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123.S"
 #endif
 #ifndef WRAPPER_E
-#define WRAPPER_E "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S"
+#define WRAPPER_E "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S"
 #endif
 
 #define VARIANT_COUNT 5

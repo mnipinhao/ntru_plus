@@ -127,8 +127,8 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
         $(GT_BASEINV_BATCH_C) \
         $(GT_PRODUCTION_BASE_ASM) \
         $(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
-        $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
-        $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S \
+        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
+        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S \
         $(NTRUPLUS)/asm/gt/poly_ntt_triple_scheduled.S \
         $(NTRUPLUS)/asm/gt/poly_ntt_triple_add1_scheduled.S
 
