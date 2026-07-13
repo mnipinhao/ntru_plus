@@ -48,7 +48,7 @@ Historical source locations at the time of this measurement:
   - `hash_g` input is `poly_tobytes(buf1, &r2)`.
   - `hash_h` input is decoded message plus secret-key hash tail.
   - verify compares `buf1` against reencoded `r1`.
-- `gt_test/kem_component_profiler.c`: same macro structure at lines 248-274 and
+- `gt_bench/kem_component_profiler.c`: same macro structure at lines 248-274 and
   component probes at lines 562-648.
 - `aarch64-bench/bench.c`: component-only hooks still benchmark
   `poly_invntt_from_rminus1` and `poly_crepmod3` separately for the current

@@ -1005,7 +1005,7 @@ bench_invntt_promoted_paired_kem_pmu:
 	$(SUDO) taskset -c $(CORE) ./$(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
 
 check_gt_basemul_add_direct32_q31_reducer:
-	$(PYTHON) $(NTRUPLUS)/gt_test/analyze_gt_basemul_add_direct32_reducers.py
+	$(PYTHON) $(NTRUPLUS)/scripts/analyze_gt_basemul_add_direct32_reducers.py
 
 check_gt_direct32_q31_release_guard:
 	$(MAKE) -B $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET)

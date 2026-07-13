@@ -348,7 +348,7 @@ asm/gt/poly_invntt_rminus1.S
 asm/slothy/production/invntt_opt.production.s
 gt_test/test_gt_rminus1_stage123scratch.c
 kem.c
-gt_test/kem_component_profiler.c
+gt_bench/kem_component_profiler.c
 ```
 
 Correctness:
