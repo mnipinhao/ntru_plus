@@ -1,5 +1,8 @@
 # Repo Cleanup Manifest
 
+> Historical worktree snapshot. Counts, `/tmp` backup paths, and remaining-file
+> lists below describe 2026-06-30 and are not the current repository state.
+
 Date: 2026-06-30
 Branch observed: `codex/poly-basemul-add-regression`
 Scope: `/Users/chenpinhao/ntruplus`

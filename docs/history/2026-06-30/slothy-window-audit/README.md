@@ -1,5 +1,9 @@
 # Slothy Window Audit
 
+> Historical campaign snapshot from 2026-06-30. Machine-specific paths and
+> commands are retained as provenance; they are not current operational
+> instructions.
+
 This directory tracks Slothy-ready windows, campaign results, and current-best
 benchmark-only candidates.  It is intentionally separate from production
 promotion decisions.

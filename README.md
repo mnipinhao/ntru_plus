@@ -20,6 +20,8 @@ make -C bench PARAM_SET=NTRU+768 compare
 
 See [WORKFLOW.md](WORKFLOW.md) before editing an implementation, and see
 [bench/README.md](bench/README.md) for arbitrary implementation comparisons.
+The [documentation index](docs/README.md) separates current runbooks from dated
+engineering records.
 
 ## Directory policy
 
