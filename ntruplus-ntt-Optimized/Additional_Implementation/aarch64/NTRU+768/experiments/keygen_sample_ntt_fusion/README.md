@@ -202,7 +202,7 @@ poly_ntt_triple_prod(out, a)      == poly_ntt(3*a)
 poly_ntt_triple_add1_prod(out, a) == poly_ntt(3*a + 1 at coeff[0])
 ```
 
-Files:
+Retired artifacts (available in Git history before the cleanup commit):
 
 ```text
 asm/gt/experiment/sample_ntt/poly_ntt_triple_prod.S
