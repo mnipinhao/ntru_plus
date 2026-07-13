@@ -56,7 +56,7 @@ void gt_decap_verify_basemul_tobytes_contract_ref(
 It is implemented in:
 
 ```text
-poly_gt_decap_verify_tobytes_contract_ref.c
+experiments/decap_verify_byte_contract/poly_gt_decap_verify_tobytes_contract_ref.c
 ```
 
 The C candidate helper is:

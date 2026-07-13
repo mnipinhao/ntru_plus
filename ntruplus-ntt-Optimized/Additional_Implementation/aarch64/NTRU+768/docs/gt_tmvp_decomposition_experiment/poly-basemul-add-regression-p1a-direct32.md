@@ -202,7 +202,7 @@ direct32_total_ambiguous_pc_packed_mismatches=0
 Added C prototype:
 
 ```text
-poly_gt_basemul_add_direct32_finalizer_prototype.c
+experiments/base_gt_direct_bytes/poly_gt_basemul_add_direct32_finalizer_prototype.c
   poly_basemul_add_direct32_finalizer_prototype()
 ```
 
@@ -447,7 +447,7 @@ Analysis tool:
 
 ```sh
 cd ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768
-python3 gt_test/analyze_gt_basemul_add_direct32_reducers.py
+python3 scripts/analyze_gt_basemul_add_direct32_reducers.py
 ```
 
 The search stage exhaustively tests:

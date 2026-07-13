@@ -103,7 +103,7 @@ scaled-r keypair input contract.
 - decap r2 component: normal `poly_basemul()`
 - encap component: `poly_basemul_add()`
 
-`gt_test/kem_component_profiler.c` mirrors the same structure for component
+`gt_bench/kem_component_profiler.c` mirrors the same structure for component
 profiling.  Candidate-A / candidate-B / unit-test call sites are separate
 experimental harnesses and are not active `gt_production` call paths.
 
