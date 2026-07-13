@@ -1,0 +1,54 @@
+kernel_id:
+scheme_id:
+parameter_set:
+
+math_contract:
+  operation:
+  ring:
+  input_representation:
+  output_representation:
+  coefficient_bounds_before:
+  coefficient_bounds_after:
+  exact_or_rounded:
+
+dependencies:
+  - load_coefficients
+  - load_constants_or_zetas
+  - arithmetic_step
+  - modular_reduction
+  - target_ring_reduction
+  - store_coefficients
+
+dataflow:
+  inputs: []
+  outputs: []
+  live_ins: []
+  live_outs: []
+  temporaries: []
+
+constants:
+  zetas: []
+  modulus_constants: []
+  decomposition_constants: []
+  representation:
+
+memory:
+  loads: []
+  stores: []
+  alignment:
+  aliasing:
+  public_offsets_only: true
+
+forbidden:
+  - secret_dependent_branch
+  - secret_dependent_memory_access
+  - changing_zeta_order
+  - changing_representative_convention
+  - changing_math_contract_without_dag_update
+
+validation:
+  reference_function:
+  boundary_tests:
+  differential_tests:
+  range_proof:
+  constant_time_review:

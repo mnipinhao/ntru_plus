@@ -1,0 +1,86 @@
+kernel_id:
+scheme_id:
+parameter_set:
+
+operation:
+  name:
+  math_contract:
+  caller_context:
+  kernel_boundary:
+  exact_or_rounded:
+
+representations:
+  input:
+  internal:
+  output:
+  required_transitions: []
+
+ranges:
+  inputs: []
+  constants: []
+  accumulations: []
+  output:
+  proof_location:
+
+dataflow:
+  inputs: []
+  outputs: []
+  reusable_values: []
+  dependencies: []
+
+constants:
+  required_sets: []
+  ordering_constraints: []
+  representation:
+  source_paths: []
+
+memory_requirements:
+  input_layout_contract:
+  output_layout_contract:
+  alignment:
+  aliasing:
+  scratch_limit:
+  public_offsets_only:
+
+security_requirements:
+  secret_inputs: []
+  public_inputs: []
+  constant_time_required:
+  forbidden_dataflow: []
+
+performance_context:
+  baseline_operation:
+  caller_work_included: []
+  conversions_included: []
+  precomputation_amortization:
+  metrics: []
+
+platform_requirements:
+  candidate_platform_skills: []
+  required_features: []
+  storage_constraints:
+  code_size_constraints:
+  selected_platform_skill:
+
+forbidden_changes:
+  - changing_math_contract
+  - changing_representative_convention
+  - changing_constant_or_table_order
+  - introducing_secret_dependent_control_flow
+  - introducing_secret_dependent_memory_access
+
+platform_handoff:
+  platform_contract_required: true
+  instruction_selection_owned_by_platform: true
+  layout_and_register_policy_owned_by_platform: true
+  slothy_requested:
+
+validation:
+  reference_function:
+  boundary_tests:
+  differential_tests:
+  range_proof:
+  representation_proof:
+  constant_time_review:
+  kats:
+  full_path_benchmark:
