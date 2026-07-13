@@ -25,6 +25,8 @@ endif
 
 NTRUPLUS ?= ntruplus
 KPQC_FINAL_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768
+GT_SOURCE_ROOT = $(NTRUPLUS)
+include $(NTRUPLUS)/gt_production_sources.mk
 include $(NTRUPLUS)/gt_production_variants.mk
 
 GT_PRODUCTION_USE_LEGACY_NTT ?= 0
@@ -36,19 +38,17 @@ ifeq ($(GT_PRODUCTION_USE_LEGACY_NTT),1)
 GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt.s
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
 else
-GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_ntt_g1_r123_s2.S
-GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s
+GT_PRODUCTION_NTT_ASM ?= $(word 1,$(GT_PRODUCTION_NTT_SOURCES))
+GT_PRODUCTION_NTT32_ASM ?= $(word 2,$(GT_PRODUCTION_NTT_SOURCES))
 endif
 ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY),1)
 GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM =
 else
-GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_scheduled.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM = $(GT_PRODUCTION_SAMPLE_NTT_SOURCES)
 endif
-GT_PRODUCTION_INVNTT_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt.s
+GT_PRODUCTION_INVNTT_ASM ?= $(GT_PRODUCTION_INVNTT_SOURCE)
 ifeq ($(GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16),1)
-GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/poly_invntt_rminus1.S
+GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(GT_PRODUCTION_INVNTT_RMINUS1_SOURCE)
 else
 GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_baseline.S
 endif
@@ -56,8 +56,8 @@ GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM ?= \
 	$(NTRUPLUS)/asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
 	$(NTRUPLUS)/asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
 GT_BENCH_EXTRA_ASM ?=
-GT_BASEINV_BATCH_FINISH_ASM ?= $(NTRUPLUS)/asm/slothy/production/baseinv_batch_finish_loop_n1.S
-GT_BASEINV_FQINV_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv15.S
+GT_BASEINV_BATCH_FINISH_ASM ?= $(GT_PRODUCTION_BASEINV_FINISH_SOURCE)
+GT_BASEINV_FQINV_ASM ?= $(GT_PRODUCTION_BASEINV_FQINV_SOURCE)
 GT_BASEINV_BATCH_C ?= $(NTRUPLUS)/poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
 GT_BASEINV_DIVSTEP_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep.S
 GT_BASEINV_DIVSTEP_S32FOLD_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_s32fold.S
@@ -65,15 +65,9 @@ GT_BASEINV_DIVSTEP_MODQ16_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_m
 GT_BASEINV_DIVSTEP_LAZY16_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_lazy16.S
 GT_BASEINV_DIVSTEP_SWAR_ASM ?= $(NTRUPLUS)/asm/gt/poly_baseinv_fqinv_divstep_swar.S
 GT_BASEINV_DIVSTEP_FLAGS ?=
-GT_PRODUCTION_Q31_ENCAP_ASM ?= $(NTRUPLUS)/asm/gt/poly_basemul_add_encap_tobytes_q31.S
-GT_PRODUCTION_BASE_ASM ?= \
-	$(NTRUPLUS)/asm/gt/poly_basemul.S \
-	$(NTRUPLUS)/asm/gt/poly_basemul_add.S \
-	$(NTRUPLUS)/asm/gt/poly_basemul_scaled_r_input.S \
-	$(NTRUPLUS)/asm/gt/poly_basemul_rminus1.S
-GT_SUPPORT_ASM ?= \
-	$(NTRUPLUS)/asm/gt/support/poly_support_n1.S \
-	$(NTRUPLUS)/asm/gt/poly_cbd_sotp.s
+GT_PRODUCTION_Q31_ENCAP_ASM ?= $(GT_PRODUCTION_Q31_ENCAP_SOURCE)
+GT_PRODUCTION_BASE_ASM ?= $(GT_PRODUCTION_BASE_SOURCES)
+GT_SUPPORT_ASM ?= $(GT_PRODUCTION_SUPPORT_SOURCES)
 
 BENCH_SOURCES = \
 	hal/hal.c \
@@ -447,8 +441,8 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
 	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
 	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_scheduled.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+	$(NTRUPLUS)/asm/gt/poly_ntt_triple_scheduled.S \
+	$(NTRUPLUS)/asm/gt/poly_ntt_triple_add1_scheduled.S
 
 GT_KEYGEN_SAMPLE_HIERK8_COMBO_PMU_SOURCES = \
 	bench_gt_keygen_sample_hierk8_combo_pmu.c \

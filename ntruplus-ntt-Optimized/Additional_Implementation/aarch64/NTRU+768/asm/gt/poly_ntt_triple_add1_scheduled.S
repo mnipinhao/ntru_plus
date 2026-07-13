@@ -13,4 +13,4 @@
 .global _poly_ntt_triple_add1_scheduled
 poly_ntt_triple_add1_scheduled:
 _poly_ntt_triple_add1_scheduled:
-    .include "asm/gt/experiment/ntt_gt_body_triple_add1_scheduled.inc"
+    .include "asm/gt/ntt_gt_body_triple_add1_scheduled.inc"

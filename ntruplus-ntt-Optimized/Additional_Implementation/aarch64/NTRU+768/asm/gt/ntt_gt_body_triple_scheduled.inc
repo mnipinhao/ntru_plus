@@ -3,7 +3,7 @@
  *
  * Experiment path:
  *   - Slothy-scheduled fresh SAMPLE-DAG Phase123
- *     (`experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/my_ntt_phase123_triple.n1.opt.s`)
+ *     (`asm/slothy/production/my_ntt_phase123_triple.n1.opt.s`)
  *   - three fused 8-way NTT32 row kernels
  *   - normal block-major output
  *
@@ -48,7 +48,7 @@
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
-    .include "experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/my_ntt_phase123_triple.n1.opt.s"
+    .include "asm/slothy/production/my_ntt_phase123_triple.n1.opt.s"
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas

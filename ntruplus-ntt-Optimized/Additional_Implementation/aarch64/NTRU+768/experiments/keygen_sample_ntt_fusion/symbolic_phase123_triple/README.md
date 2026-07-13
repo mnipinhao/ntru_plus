@@ -53,14 +53,14 @@ Slothy script:
   experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py
 
 generated Slothy ASM:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/my_ntt_phase123_triple.n1.opt.s
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/my_ntt_phase123_triple_add1.n1.opt.s
+  asm/slothy/production/my_ntt_phase123_triple.n1.opt.s
+  asm/slothy/production/my_ntt_phase123_triple_add1.n1.opt.s
 
 benchmark integration ASM:
-  asm/gt/experiment/ntt_gt_body_triple_scheduled.inc
-  asm/gt/experiment/ntt_gt_body_triple_add1_scheduled.inc
-  asm/gt/experiment/poly_ntt_triple_scheduled.S
-  asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+  asm/gt/ntt_gt_body_triple_scheduled.inc
+  asm/gt/ntt_gt_body_triple_add1_scheduled.inc
+  asm/gt/poly_ntt_triple_scheduled.S
+  asm/gt/poly_ntt_triple_add1_scheduled.S
 ```
 
 Benchmark-only wrapper symbols:
@@ -129,8 +129,8 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
         $(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
         $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
         $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S \
-        $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_scheduled.S \
-        $(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+        $(NTRUPLUS)/asm/gt/poly_ntt_triple_scheduled.S \
+        $(NTRUPLUS)/asm/gt/poly_ntt_triple_add1_scheduled.S
 
 $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET): $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES)
         $(CC) $(CFLAGS_NO_RUNCOUNTS) \

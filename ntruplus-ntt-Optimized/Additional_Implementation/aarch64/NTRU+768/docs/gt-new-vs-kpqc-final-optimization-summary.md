@@ -667,8 +667,8 @@ asm/slothy/production/my_32ntt.opt.s          # legacy/sample row-kernel depende
 Keygen sample NTT：
 
 ```text
-asm/gt/experiment/poly_ntt_triple_scheduled.S
-asm/gt/experiment/poly_ntt_triple_add1_scheduled.S
+asm/gt/poly_ntt_triple_scheduled.S
+asm/gt/poly_ntt_triple_add1_scheduled.S
 experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/
 ```
 

@@ -715,7 +715,7 @@
 .endm
 
 .ifdef INVNTT_EXPERIMENT_POST_BRANCHFOLD_THREE_SLOTHY
-.include "asm/slothy/experiments/invntt_next_wave/post_branchfold_three_outputs.n1.inc"
+    .include "asm/slothy/production/post_branchfold_three_outputs.n1.inc"
 .endif
 
 .macro FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
