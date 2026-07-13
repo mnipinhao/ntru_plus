@@ -26,7 +26,7 @@ gt_decap_verify_basemul_tobytes_contract_c_candidate()
 ```
 
 It still computes an internal arithmetic-correct `poly_basemul` result, then
-uses a C mirror of the production `poly_support_n1.S` packing order to
+uses a C mirror of the production `poly_support.n1.opt.S` packing order to
 emit bytes.  It is a guarded semantic prototype, not an optimized direct
 arithmetic reducer.
 

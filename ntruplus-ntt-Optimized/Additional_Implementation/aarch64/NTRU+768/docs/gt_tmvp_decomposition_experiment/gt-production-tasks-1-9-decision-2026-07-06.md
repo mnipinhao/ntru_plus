@@ -142,7 +142,7 @@ Updated ranking:
 Production `poly_tobytes` is the Slothy support kernel at:
 
 ```text
-asm/gt/support/poly_support_n1.S
+asm/gt/support/poly_support.n1.opt.S
 ```
 
 It reads contiguous coefficient memory and packs 64 coefficients per loop into
@@ -160,14 +160,14 @@ Production Forward NTT is:
 
 ```text
 poly_ntt / gt_block_major_poly_ntt
-  asm/gt/poly_ntt.s
-    includes asm/gt/ntt_gt_body.inc
-      includes asm/slothy/production/my_ntt_phase123.n1.opt.s
-      calls _ntt32_8way three times
-        asm/slothy/production/my_32ntt.opt.s
+  asm/gt/ntt/poly_ntt.S
+    includes asm/gt/ntt/poly_ntt_body.inc
+      includes asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
+      calls _gt_ntt32_batch8_to_blockmajor three times
+        asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
-`_ntt32_8way` final output is not a contiguous `st4`.  It uses many public
+`_gt_ntt32_batch8_to_blockmajor` final output is not a contiguous `st4`.  It uses many public
 scatter-address `str d?` stores with scalar wrap logic.  This is correct for GT
 block-major row-bitrev, but it makes direct `poly_tobytes` fusion expensive
 unless the NTT final-store DAG is redesigned.
@@ -177,7 +177,7 @@ unless the NTT final-store DAG is redesigned.
 Production plain basemul uses:
 
 ```text
-asm/gt/base_gt_opt_body.inc
+asm/gt/basemul/poly_basemul_body.inc
 GT_BASEMUL_FINAL_STORE(out0,out1,out2,out3)
 st4 {out0.8h,out1.8h,out2.8h,out3.8h}, [dst], #64
 ```
@@ -574,7 +574,7 @@ downstream `h/hinv`/bytes equality before any ASM work.
 Current facts:
 
 ```text
-Phase123 is already Slothy-scheduled: asm/slothy/production/my_ntt_phase123.n1.opt.s
+Phase123 is already Slothy-scheduled: asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
 Prior Phase123 A/B/C streaming variants were neutral or slower.
 Phase123 writes 96 Q vectors to row scratch.
 NTT32 consumes bounded raw 3-point DFT outputs, not arbitrary canonical int16.
@@ -600,7 +600,7 @@ Required proof before ASM:
 current DFT3 formula and scaling
 candidate Rader-style formula and scaling
 exact constants
-input/output lazy range into _ntt32_8way
+input/output lazy range into _gt_ntt32_batch8_to_blockmajor
 instruction count delta
 live vector pressure delta
 ```

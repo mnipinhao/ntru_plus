@@ -10,8 +10,8 @@ forward NTT decomposition route：
 ```text
 production:
   Phase123 一次產生完整 row scratch raw Q0..Q31
-  _ntt32_8way stage12 讀 raw Q
-  _ntt32_8way stage345 做完 NTT32
+  _gt_ntt32_batch8_to_blockmajor stage12 讀 raw Q
+  _gt_ntt32_batch8_to_blockmajor stage345 做完 NTT32
 
 shared-prefix experiment:
   Phase123 拆成較小 producer
@@ -262,7 +262,7 @@ block3 wants Q24..Q31
 
 ## Stage12 -> Stage345 layout audit
 
-實際檢查 `asm/slothy/production/my_32ntt.opt.s` 後，這裡有一個重要修正：
+實際檢查 `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S` 後，這裡有一個重要修正：
 
 ```text
 目前 production stage12 store 的 row scratch layout

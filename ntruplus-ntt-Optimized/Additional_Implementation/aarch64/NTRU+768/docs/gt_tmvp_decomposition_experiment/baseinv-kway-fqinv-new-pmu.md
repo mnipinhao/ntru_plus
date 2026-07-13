@@ -13,8 +13,8 @@ Production GT base inversion for NTRU+768 is linked from:
 | --- | --- | --- |
 | baseinv ABI | `poly_baseinv`, `poly_baseinv_scaled_r` in `poly_gt_baseinv_batch.c` | production default |
 | batch denominator inverse | `poly_fqinv_batch_neon` in `poly_gt_baseinv_batch.c` | production internal |
-| scalar-vector inverse chain | `gt_fqinv15_asm` in `asm/gt/poly_baseinv_fqinv15.S` | production linked when `GT_BASEINV_USE_FQINV15_ASM` is set |
-| batch finish | `baseinv_batch_finish24_n1_asm` in `asm/slothy/production/baseinv_batch_finish_loop_n1.S` | production linked when `GT_BASEINV_BATCH_USE_ASM_FINISH` is set |
+| scalar-vector inverse chain | `gt_fqinv15_asm` in `asm/gt/baseinv/poly_baseinv_fqinv15.S` | production linked when `GT_BASEINV_USE_FQINV15_ASM` is set |
+| batch finish | `baseinv_batch_finish24_n1_asm` in `asm/gt/baseinv/poly_baseinv_batch_finish.n1.opt.S` | production linked when `GT_BASEINV_BATCH_USE_ASM_FINISH` is set |
 
 Current `gt_production` already uses `gt_fqinv15_asm`, so the old assumption
 that production `fqinv_neon` is a 16-step C chain is stale for this branch.
@@ -232,7 +232,7 @@ tracking. This path is parked.
 
 Date: 2026-07-09
 
-`asm/gt/poly_baseinv_fqinv_divstep_lazy16.S` tests the lower-risk half of the
+`asm/gt/baseinv/poly_baseinv_fqinv_divstep_lazy16.S` tests the lower-risk half of the
 4-step-block idea: keep `V/R` as int16 residues and reduce them only after each
 4-round block.  This is not yet a transition-matrix block divstep; each divstep
 round still materializes `s/t/active` masks.  Exhaustive scalar range modeling

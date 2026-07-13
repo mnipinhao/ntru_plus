@@ -70,7 +70,7 @@ producer.
 Oracle:
 
 ```text
-poly_tobytes() from asm/gt/support/poly_support_n1.S
+poly_tobytes() from asm/gt/support/poly_support.n1.opt.S
 ```
 
 Cases include:
@@ -119,7 +119,7 @@ gcc -Wall -Wextra -Werror=unused-result -Wpedantic -Wmissing-prototypes \
   -DNINPUTS=256 -DNVALID_ORACLE=4096 \
   -I. -Intruplus -Intruplus/NO_CE \
   bench_gt_pack64_from_st4_vectors_pmu.c \
-  ntruplus/asm/gt/support/poly_support_n1.S \
+  ntruplus/asm/gt/support/poly_support.n1.opt.S \
   -o bench_gt_pack64_from_st4_vectors_pmu_manual
 
 taskset -c 3 ./bench_gt_pack64_from_st4_vectors_pmu_manual
@@ -182,7 +182,7 @@ GT_PACK64_FROM_ST4_VECTORS_PMU_NINPUTS ?= 256
 GT_PACK64_FROM_ST4_VECTORS_VALID_CASES ?= 4096
 GT_PACK64_FROM_ST4_VECTORS_PMU_SOURCES = \
 	bench_gt_pack64_from_st4_vectors_pmu.c \
-	$(NTRUPLUS)/asm/gt/support/poly_support_n1.S
+	$(NTRUPLUS)/asm/gt/support/poly_support.n1.opt.S
 
 $(GT_PACK64_FROM_ST4_VECTORS_PMU_TARGET): $(GT_PACK64_FROM_ST4_VECTORS_PMU_SOURCES)
 	$(CC) $(CFLAGS_NO_RUNCOUNTS) \

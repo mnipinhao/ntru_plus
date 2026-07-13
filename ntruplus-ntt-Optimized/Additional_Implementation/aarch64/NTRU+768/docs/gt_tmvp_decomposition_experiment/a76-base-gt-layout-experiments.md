@@ -19,7 +19,7 @@ asm/base_gt_opt_ldrtrn_noadd_wrapper.S
 make test_gt_basemul_opt_ldrtrn_load4
 ```
 
-它只替換 `base_gt_opt_body.inc` 的 block-major input load，不改 arithmetic、不改
+它只替換 `poly_basemul_body.inc` 的 block-major input load，不改 arithmetic、不改
 `st4` output，也不改 ABI。這樣可以單獨回答：
 
 ```text
@@ -133,7 +133,7 @@ decap: poly_basemul(m1, c, f) -> poly_invntt(m1, m1)
 
 這點要分 production 版本看。
 
-`asm/gt/base_gt_opt_body.inc` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
+`asm/gt/basemul/poly_basemul_body.inc` 裡的 old `poly_basemul_add` schedule 的確把 `c` input
 load 放得很晚，接近 final add：
 
 ```text
@@ -143,8 +143,8 @@ ld4 c at about cycle 82 in the annotated old add path
 但目前 production `poly_basemul_add` 走的是：
 
 ```text
-GT_BASE_ADD32_ASM = asm/gt/poly_basemul_add.s
-asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
+GT_BASE_ADD32_ASM = asm/gt/basemul/poly_basemul_add.S
+asm/gt/basemul/poly_basemul_add.n1.opt.inc
 ```
 
 在這個 full-pipeline Slothy path 中：

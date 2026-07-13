@@ -4,12 +4,12 @@
 
 ## Active production
 
-- `asm/gt/poly_ntt_g1_r123_s2.S`
-- `asm/gt/poly_ntt_g1_r123_s2_tables.inc`
-- `asm/slothy/production/my_32ntt.opt.s`
+- `asm/gt/ntt/poly_ntt.n1.opt.S`
+- `asm/gt/ntt/poly_ntt_tables.inc`
+- `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S`
 
-`my_32ntt.opt.s` 仍需連結，因為 specialized keypair triple NTT 會呼叫
-`_ntt32_8way`；promoted generic `poly_ntt` 本身沒有這個 call boundary。
+`ntt32_batch8_to_blockmajor.n1.opt.S` 仍需連結，因為 specialized keypair mul3 NTT 會呼叫
+`_gt_ntt32_batch8_to_blockmajor`；promoted generic `poly_ntt` 本身沒有這個 call boundary。
 
 Legacy regression path：
 

@@ -170,8 +170,8 @@ optimize_stage345_block0_livein.py
 The baseline is the exact production Slothy region:
 
 ```text
-_ntt32_stage345_block0_slothy_start
-_ntt32_stage345_block0_slothy_end
+_gt_ntt32_batch8_ct_stage345_block0_slothy_start
+_gt_ntt32_batch8_ct_stage345_block0_slothy_end
 ```
 
 Baseline static shape:

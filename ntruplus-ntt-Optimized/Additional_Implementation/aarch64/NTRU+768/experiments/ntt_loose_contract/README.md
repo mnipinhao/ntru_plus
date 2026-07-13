@@ -62,13 +62,13 @@ poly_ntt / gt_block_major_poly_ntt
 Production source:
 
 ```text
-asm/gt/poly_ntt.s
-asm/gt/ntt_gt_body.inc
-asm/slothy/production/my_ntt_phase123.n1.opt.s
-asm/slothy/production/my_32ntt.opt.s
+asm/gt/ntt/poly_ntt.S
+asm/gt/ntt/poly_ntt_body.inc
+asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
-Important contract from `my_32ntt.opt.s`:
+Important contract from `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S`:
 
 ```text
 Phase123 feeds raw 3-point DFT outputs bounded by 3*(q-1).

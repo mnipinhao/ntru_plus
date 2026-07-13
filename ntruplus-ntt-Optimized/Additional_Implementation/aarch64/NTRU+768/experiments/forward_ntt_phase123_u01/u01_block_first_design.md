@@ -32,7 +32,7 @@ Production order:
 ```text
 Phase123 emits row-local raw Q0..Q31
   -> store full row scratch
-_ntt32_8way Stage12 reads row scratch by stripe
+_gt_ntt32_batch8_to_blockmajor Stage12 reads row scratch by stripe
   -> stores post-Stage12 Q0..Q31 back to row scratch
 Stage345 reads block0 Q0..Q7, block1 Q8..Q15, ...
 ```

@@ -74,7 +74,7 @@ per-store producer bound and the downstream semantic proof before any ASM work.
 ## Producer Bounds
 
 Source evidence is the production NTT32 header in
-`asm/slothy/production/my_32ntt.opt.s`.
+`asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S`.
 
 | stage / variant | conservative bound | evidence | status |
 |---|---:|---|---|

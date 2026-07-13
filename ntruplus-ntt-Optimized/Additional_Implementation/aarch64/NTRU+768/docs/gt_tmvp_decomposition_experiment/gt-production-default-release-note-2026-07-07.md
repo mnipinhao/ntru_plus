@@ -7,7 +7,7 @@ Scope: NTRU+768 GT production default on Raspberry Pi 5 / AArch64 Neon.
 Promote the Wave 4 combination into `gt_production_default`:
 
 ```text
-GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3=1
 GT_BASEINV_USE_HIER_K8_TREE=1
 ```
 
@@ -27,7 +27,7 @@ GT_BASEINV_USE_HIER_K8=1
 Both promoted keygen changes have explicit build fallback switches:
 
 ```text
-GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3=1
 GT_PRODUCTION_DISABLE_HIERK8_TREE=1
 ```
 

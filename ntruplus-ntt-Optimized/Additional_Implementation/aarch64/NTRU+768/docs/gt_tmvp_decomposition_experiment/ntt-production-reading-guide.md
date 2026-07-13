@@ -4,11 +4,11 @@
 forward NTT 的讀碼索引。production public entry 是：
 
 ```text
-asm/gt/poly_ntt.s
+asm/gt/ntt/poly_ntt.S
 ```
 
-`asm/gt/poly_ntt.s` 只負責宣告 public symbols，然後 include
-`asm/gt/ntt_gt_body.inc`。`ntt_gt_body.inc` 是 forward NTT implementation
+`asm/gt/ntt/poly_ntt.S` 只負責宣告 public symbols，然後 include
+`asm/gt/ntt/poly_ntt_body.inc`。`ntt_gt_body.inc` 是 forward NTT implementation
 body，不再決定 weak/global alias policy。舊的 GAS `PHASE123_ITER` fallback、
 `NTT32_FUSED_SCATTER=0` row-buffer scatter fallback、Phase123 A/B/C experiment
 selector 都已經不在 production body 裡。
@@ -17,20 +17,20 @@ selector 都已經不在 production body 裡。
 
 | wrapper | 產生的 symbol | 用途 |
 | --- | --- | --- |
-| `asm/gt/poly_ntt.s` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
+| `asm/gt/ntt/poly_ntt.S` | `poly_ntt`, `gt_block_major_poly_ntt` | normal GT production forward NTT |
 
 ## Active symbol contract
 
 `poly_ntt`, `_poly_ntt`, `gt_block_major_poly_ntt`, and
 `_gt_block_major_poly_ntt` are declared `.global` directly in
-`asm/gt/poly_ntt.s`.  The previous `MY_NTT_DARWIN_NO_WEAK` weak
+`asm/gt/ntt/poly_ntt.S`.  The previous `MY_NTT_DARWIN_NO_WEAK` weak
 alias selector was removed.
 
 不再使用：
 
 | old selector/path | 狀態 |
 | --- | --- |
-| `MY_NTT_USE_PHASE123_N1` | 移除；`asm/gt/ntt_gt_body.inc` 固定 include production Phase123 N1 schedule |
+| `MY_NTT_USE_PHASE123_N1` | 移除；`asm/gt/ntt/poly_ntt_body.inc` 固定 include production Phase123 N1 schedule |
 | `MY_NTT_PHASE123_EXPERIMENT_A/B/C` | 移除；A/B/C benchmark 沒有優於 baseline |
 | `NTT32_FUSED_SCATTER` | 移除；production 固定 fused-scatter row kernel |
 | `_scatter_ntt32_row` | 移除；舊 row-buffer fallback，不是目前 KEM 路徑 |
@@ -42,11 +42,11 @@ Normal GT production：
 
 ```text
 poly input
-  -> asm/gt/poly_ntt.s public entry
-  -> asm/gt/ntt_gt_body.inc prologue
-  -> asm/slothy/production/my_ntt_phase123.n1.opt.s
+  -> asm/gt/ntt/poly_ntt.S public entry
+  -> asm/gt/ntt/poly_ntt_body.inc prologue
+  -> asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
        natural input -> GT split/twist/DFT3 -> three row scratch buffers
-  -> asm/slothy/production/my_32ntt.opt.s::_ntt32_8way, called once per row
+  -> asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S::_gt_ntt32_batch8_to_blockmajor, called once per row
        NTT32 stage1..5 -> block-major final store
   -> GT block-major NTT-domain polynomial
 ```
@@ -55,26 +55,26 @@ poly input
 
 | line | 段落 | 要看什麼 |
 | --- | --- | --- |
-| `asm/gt/poly_ntt.s:8` | public symbols | `poly_ntt` / `gt_block_major_poly_ntt` global aliases |
-| `asm/gt/poly_ntt.s:16` | body include | include `asm/gt/ntt_gt_body.inc` |
-| `asm/gt/ntt_gt_body.inc:19` | `CALL_NTT32_8WAY` | normal `_ntt32_8way` call |
-| `asm/gt/ntt_gt_body.inc:23` | frame constants | 3 row scratch buffers + saved destination slot |
-| `asm/gt/ntt_gt_body.inc:26` | register aliases | public ABI: `x0=dst`, `x1=src` |
-| `asm/gt/ntt_gt_body.inc:34` | prologue | constants load、callee-saved SIMD 保存、stack frame |
-| `asm/gt/ntt_gt_body.inc:45` | scratch setup | `row0=sp+32`, `row1=sp+544`, `row2=sp+1056` |
-| `asm/gt/ntt_gt_body.inc:50` | Phase123 include | `asm/slothy/production/my_ntt_phase123.n1.opt.s` |
-| `asm/gt/ntt_gt_body.inc:56` | NTT32 row calls | 三個 row 依序呼叫 row kernel，output offset 是 `0/256/512` |
-| `asm/gt/ntt_gt_body.inc:71` | epilogue | restore stack/GPR/SIMD |
-| `asm/gt/ntt_gt_body.inc:80` | `zetas` | q、Barrett/Montgomery/DFT3 constants packed in `q0` |
-| `asm/gt/ntt_gt_body.inc:84` | `twist_table` | Phase123 scheduled region 消耗的 twist/precompute table |
+| `asm/gt/ntt/poly_ntt.S:8` | public symbols | `poly_ntt` / `gt_block_major_poly_ntt` global aliases |
+| `asm/gt/ntt/poly_ntt.S:16` | body include | include `asm/gt/ntt/poly_ntt_body.inc` |
+| `asm/gt/ntt/poly_ntt_body.inc:19` | `CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR` | normal `_gt_ntt32_batch8_to_blockmajor` call |
+| `asm/gt/ntt/poly_ntt_body.inc:23` | frame constants | 3 row scratch buffers + saved destination slot |
+| `asm/gt/ntt/poly_ntt_body.inc:26` | register aliases | public ABI: `x0=dst`, `x1=src` |
+| `asm/gt/ntt/poly_ntt_body.inc:34` | prologue | constants load、callee-saved SIMD 保存、stack frame |
+| `asm/gt/ntt/poly_ntt_body.inc:45` | scratch setup | `row0=sp+32`, `row1=sp+544`, `row2=sp+1056` |
+| `asm/gt/ntt/poly_ntt_body.inc:50` | Phase123 include | `asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc` |
+| `asm/gt/ntt/poly_ntt_body.inc:56` | NTT32 row calls | 三個 row 依序呼叫 row kernel，output offset 是 `0/256/512` |
+| `asm/gt/ntt/poly_ntt_body.inc:71` | epilogue | restore stack/GPR/SIMD |
+| `asm/gt/ntt/poly_ntt_body.inc:80` | `zetas` | q、Barrett/Montgomery/DFT3 constants packed in `q0` |
+| `asm/gt/ntt/poly_ntt_body.inc:84` | `twist_table` | Phase123 scheduled region 消耗的 twist/precompute table |
 
 Generated files：
 
 | file | line | 用途 |
 | --- | ---: | --- |
-| `asm/slothy/production/my_ntt_phase123.n1.opt.s` | `4`..`2682` | Phase123 N1 scheduled body |
-| `asm/slothy/production/my_32ntt.opt.s` | `81` | normal block-major `_ntt32_8way` entry |
-| `asm/slothy/inputs/my_ntt_phase123_flat.sym.s` | full file | Phase123 Slothy symbolic/regeneration source |
+| `asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc` | `4`..`2682` | Phase123 N1 scheduled body |
+| `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S` | `81` | normal block-major `_gt_ntt32_batch8_to_blockmajor` entry |
+| `asm/slothy/inputs/ntt768_gt_frontend.sym.S` | full file | Phase123 Slothy symbolic/regeneration source |
 
 ## Phase123 A/B/C experiment status
 
@@ -89,5 +89,5 @@ Generated files：
 
 A/B/C 沒有比 baseline 好，所以不保留在 production 主檔，也不再保留未追蹤
 的 generated experiment tree。之後若要重開 Phase123 排程，從
-`asm/slothy/inputs/my_ntt_phase123_flat.sym.s` 和 `asm/slothy/inputs/optimize_phase123_split.py`
-開始，而不是把 selector 加回 `asm/gt/ntt_gt_body.inc`。
+`asm/slothy/inputs/ntt768_gt_frontend.sym.S` 和 `asm/slothy/inputs/optimize_ntt768_gt_frontend.py`
+開始，而不是把 selector 加回 `asm/gt/ntt/poly_ntt_body.inc`。

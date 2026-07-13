@@ -82,7 +82,7 @@ void gt_decap_verify_basemul_tobytes_direct_candidate(
     const poly *hinv);
 ```
 
-This candidate keeps the current `base_gt_opt_body.inc` product DAG and final
+This candidate keeps the current `poly_basemul_body.inc` product DAG and final
 reductions, then replaces the public poly store plus later `poly_tobytes` call
 with a direct byte-output finalizer.  The first prototype uses stack staging and
 scalar byte stores, so it is a diagnostic correctness artifact, not a production

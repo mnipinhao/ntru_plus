@@ -24,9 +24,9 @@ basemul-to-InvNTT fusion target.
 | layer | entrypoint | file | note |
 | --- | --- | --- | --- |
 | C decap call | `poly_invntt_from_rminus1(poly *r, const poly *a)` | `kem.c` | active under `GT_PRODUCTION_USE_RMINUS1_DECAP` |
-| public ASM alias | `poly_invntt_from_rminus1`, `_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_rminus1.S` | wrapper macro-renames `poly_invntt` |
-| block-major body | `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_rminus1.S` -> `asm/slothy/production/invntt_opt.production.s` | decap rminus1 path uses this body |
-| shared production source | `gt_block_major_poly_invntt` body | `asm/slothy/production/invntt_opt.production.s` | same instruction body as normal InvNTT; rminus1 only changes branchfold constants |
+| public ASM alias | `poly_invntt_from_rminus1`, `_poly_invntt_from_rminus1` | `asm/gt/invntt/poly_invntt_rminus1.S` | wrapper macro-renames `poly_invntt` |
+| block-major body | `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/invntt/poly_invntt_rminus1.S` -> `asm/gt/invntt/poly_invntt.n1.opt.inc` | decap rminus1 path uses this body |
+| shared production source | `gt_block_major_poly_invntt` body | `asm/gt/invntt/poly_invntt.n1.opt.inc` | same instruction body as normal InvNTT; rminus1 only changes branchfold constants |
 
 The wrapper defines:
 
@@ -73,12 +73,12 @@ Output `r`:
 ## Montgomery / rminus1 Factor Contract
 
 `poly_basemul_rminus1()` intentionally leaves one extra `R^-1` factor for this
-InvNTT entry.  `asm/gt/poly_invntt_rminus1.S` uses the same row kernels and post
+InvNTT entry.  `asm/gt/invntt/poly_invntt_rminus1.S` uses the same row kernels and post
 pipeline as normal InvNTT, but defines `INVNTT_INPUT_RMINUS1`, which switches
 the final branchfold table to:
 
 ```text
-asm/slothy/production/invntt_branchfold_vecs_rminus1.inc
+asm/gt/invntt/poly_invntt_branchfold_constants_rminus1.inc
 ```
 
 The paired result is a normal `R^0` output suitable for `poly_crepmod3()`.
@@ -93,7 +93,7 @@ Therefore:
 ## Slothy Region Markers
 
 Marker labels were added to the production block-major body in
-`asm/slothy/production/invntt_opt.production.s`.  They are labels/comments only and do not
+`asm/gt/invntt/poly_invntt.n1.opt.inc`.  They are labels/comments only and do not
 change instruction selection, layout, or production defaults.
 
 | marker pair | row | scope | first-pass use |

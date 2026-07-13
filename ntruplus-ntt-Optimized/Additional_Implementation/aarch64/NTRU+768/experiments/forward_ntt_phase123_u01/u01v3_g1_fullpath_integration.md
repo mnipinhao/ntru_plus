@@ -9,8 +9,8 @@ G1 原本的 same-coverage ABI 是 `x0=dst, x1=src, x2=scratch`。完整
 stack frame，其中 1536 bytes 是三個 row 的 Stage12 scratch。整個 G1 body
 直接展開在 wrapper 內，沒有額外 helper `bl`。
 
-完整 KEM binary 仍然要 link `my_32ntt.opt.s`，因為 keygen 的
-`poly_ntt_triple_scheduled` 仍呼叫 `_ntt32_8way`。generic `poly_ntt` 選到
+完整 KEM binary 仍然要 link `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S`，因為 keygen 的
+`poly_ntt_mul3` 仍呼叫 `_gt_ntt32_batch8_to_blockmajor`。generic `poly_ntt` 選到
 G1 時不會走這個 row kernel；保留它只是滿足另一個 public entry 的連結依賴。
 
 ## S2 組合 contract

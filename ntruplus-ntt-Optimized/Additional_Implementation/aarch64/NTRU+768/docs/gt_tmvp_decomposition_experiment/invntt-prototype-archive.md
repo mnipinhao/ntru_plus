@@ -3,7 +3,7 @@
 2026-06-25 cleanup 後，production wrapper 改 include：
 
 ```text
-asm/slothy/production/invntt_opt.production.s
+asm/gt/invntt/poly_invntt.n1.opt.inc
 ```
 
 rowstage45/post fused prototypes、bench-only symbols、old gather / fastscale
@@ -32,4 +32,4 @@ asm/slothy/archive/invntt_rowstage45_post_prototypes.s
 
 如果之後要重新研究 rowstage45/post fusion，從 archive 找 dataflow 和 macro 名稱，
 再另外建立新的 wrapper 或新的 production candidate。不要直接把 flags 加回
-`invntt_opt.production.s`；那個檔案應該維持「目前 KEM 真的會走」的路徑。
+`poly_invntt.n1.opt.inc`；那個檔案應該維持「目前 KEM 真的會走」的路徑。
