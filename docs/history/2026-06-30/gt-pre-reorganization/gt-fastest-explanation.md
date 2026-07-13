@@ -1,5 +1,9 @@
 # Current fastest GT implementation explanation
 
+> Historical pre-reorganization note. Most paths below were retired when the GT
+> assembly tree moved under `asm/gt/`; use the active production summary linked
+> from `docs/README.md` for current source and benchmark evidence.
+
 This note records the current fastest Good-Thomas implementation for
 NTRU+768/AArch64.  It follows the same documentation shape as
 `doc/gt_invntt_explanation.md`: source map, selected paths, dataflow, current

@@ -1,5 +1,9 @@
 # GT inverse NTT 目前實作中文說明
 
+> 歷史封存文件。下列路徑描述 2026 年 6 月重整前的實作，不能當成目前
+> production source map；現況請以 `docs/README.md` 指向的 production summary
+> 為準。
+
 本文說明目前 production `poly_invntt` 的實際路徑。重點是幫助讀懂
 assembly，不討論 Slothy 產生流程。
 

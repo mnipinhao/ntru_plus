@@ -1,5 +1,9 @@
 # GT inverse NTT (`poly_invntt`) explanation
 
+> Historical pre-reorganization note. Several wrappers below no longer exist;
+> use the active production summary linked from `docs/README.md` for the current
+> inverse NTT path.
+
 This note describes the current GT inverse NTT implementation for
 NTRU+768/AArch64 and records the latest Pi 5 decision points.
 

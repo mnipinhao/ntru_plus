@@ -1,5 +1,9 @@
 # 🎯 NTRU+ Performance Profiling Results
 
+> Historical snapshot from February 2026. The measurements, source paths, and
+> recommendations below predate the current AArch64 GT production topology and
+> must not be treated as current benchmark evidence.
+
 ## Executive Summary
 
 **Performance analysis of `poly_cbd1`, `poly_sotp_encode`, and `poly_sotp_decode` optimization potential in NTRU+ Key Encapsulation Mechanism.**
