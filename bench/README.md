@@ -108,12 +108,9 @@ The comparison summary also reports aggregate KEM speedup over `keygen + encap +
 - Architecture-specific implementations still need a compatible host.
   For example, `aarch64` paths need an arm64/aarch64 machine, and `avx2` paths need an x86_64 host with AVX2 support.
 
-## Legacy Profilers
+## Historical one-off profilers
 
-Existing one-off profilers are still available:
-
-```bash
-make bottleneck-analysis
-make function-test
-make comprehensive-analysis
-```
+The February 2026 C profilers are preserved under `legacy/` for provenance but
+are no longer active Makefile targets. They duplicate the portable comparison
+flow, and one of them embeds machine-specific paths. Use `bench_impls.py`
+through the commands above for current comparisons.
