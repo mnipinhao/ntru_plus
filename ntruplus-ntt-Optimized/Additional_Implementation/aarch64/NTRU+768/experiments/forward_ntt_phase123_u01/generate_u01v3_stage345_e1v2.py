@@ -219,7 +219,7 @@ def emit_wrapper(symbol: str, body: list[str], frame_size: int = 160) -> str:
             f".global {symbol}_end",
             f"{symbol}_end:",
             "",
-            ".include \"asm/gt/experiment/u01_block_first_tables.inc\"",
+            ".include \"asm/gt/experiment/forward_ntt/u01_block_first_tables.inc\"",
             "",
         ]
     )
@@ -504,7 +504,7 @@ int main(void)
 
 
 def strip_table_include(wrapper: str) -> str:
-    return wrapper.replace('\n.include "asm/gt/experiment/u01_block_first_tables.inc"\n', "\n")
+    return wrapper.replace('\n.include "asm/gt/experiment/forward_ntt/u01_block_first_tables.inc"\n', "\n")
 
 
 def main() -> int:

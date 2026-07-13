@@ -47,22 +47,22 @@ VARIANTS = (
     Variant("A", "ntruplus/asm/gt/poly_ntt.s", PROD_NTT32),
     Variant(
         "G1",
-        "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_dropin.S",
+        "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_dropin.S",
         PROD_NTT32,
     ),
     Variant(
         "G1S2",
-        "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_s2_dropin.S",
+        "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_s2_dropin.S",
         PROD_NTT32,
     ),
     Variant(
         "G1R123",
-        "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_r123_dropin.S",
+        "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_dropin.S",
         PROD_NTT32,
     ),
     Variant(
         "G1R123S2",
-        "ntruplus/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2_dropin.S",
+        "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2_dropin.S",
         PROD_NTT32,
     ),
 )

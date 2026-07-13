@@ -2,7 +2,7 @@
  * Benchmark-only SAMPLE-PROD GT forward NTT body (triple_add1_prod).
  *
  * Experiment path:
- *   - Slothy-scheduled Phase123 (`asm/gt/experiment/my_ntt_phase123.triple_add1_prod.inc`)
+ *   - Slothy-scheduled Phase123 (`asm/gt/experiment/sample_ntt/my_ntt_phase123.triple_add1_prod.inc`)
  *   - three fused 8-way NTT32 row kernels
  *   - normal block-major output
  *
@@ -47,7 +47,7 @@
     add row1_ptr, sp, #544
     add row2_ptr, sp, #1056
 
-    .include "asm/gt/experiment/my_ntt_phase123.triple_add1_prod.inc"
+    .include "asm/gt/experiment/sample_ntt/my_ntt_phase123.triple_add1_prod.inc"
 
     # Phase 4 32-point NTT
     adr zetas_ptr, zetas

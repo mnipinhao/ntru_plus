@@ -32,8 +32,8 @@ poly_ntt(&g, &g);
 ## Files
 
 ```text
-asm/gt/experiment/poly_ntt_triple.S
-asm/gt/experiment/poly_ntt_triple_add1.S
+asm/gt/experiment/sample_ntt/poly_ntt_triple.S
+asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S
 aarch64-bench/bench_gt_keygen_sample_ntt_fusion_pmu.c
 aarch64-bench Makefile target: bench_gt_keygen_sample_ntt_fusion_pmu
 ```
@@ -205,12 +205,12 @@ poly_ntt_triple_add1_prod(out, a) == poly_ntt(3*a + 1 at coeff[0])
 Files:
 
 ```text
-asm/gt/experiment/poly_ntt_triple_prod.S
-asm/gt/experiment/poly_ntt_triple_add1_prod.S
-asm/gt/experiment/ntt_gt_body_triple_prod.inc
-asm/gt/experiment/ntt_gt_body_triple_add1_prod.inc
-asm/gt/experiment/my_ntt_phase123.triple_prod.inc
-asm/gt/experiment/my_ntt_phase123.triple_add1_prod.inc
+asm/gt/experiment/sample_ntt/poly_ntt_triple_prod.S
+asm/gt/experiment/sample_ntt/poly_ntt_triple_add1_prod.S
+asm/gt/experiment/sample_ntt/ntt_gt_body_triple_prod.inc
+asm/gt/experiment/sample_ntt/ntt_gt_body_triple_add1_prod.inc
+asm/gt/experiment/sample_ntt/my_ntt_phase123.triple_prod.inc
+asm/gt/experiment/sample_ntt/my_ntt_phase123.triple_add1_prod.inc
 aarch64-bench/bench_gt_keygen_sample_ntt_fusion_prod_pmu.c
 ```
 
@@ -254,10 +254,10 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_SOURCES = \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_prod.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1_prod.S
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_prod.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1_prod.S
 
 $(GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_TARGET): $(GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_SOURCES)
 	$(CC) $(CFLAGS_NO_RUNCOUNTS) \

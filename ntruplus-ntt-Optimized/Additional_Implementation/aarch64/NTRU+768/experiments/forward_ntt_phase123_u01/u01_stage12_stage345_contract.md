@@ -13,13 +13,13 @@ experiments/forward_ntt_phase123_u01/phase123_stage12_block0_first_allrows.sym.s
 Callable candidate:
 
 ```text
-asm/gt/experiment/u01_block_first_candidate.S
+asm/gt/experiment/forward_ntt/u01_block_first_candidate.S
 ```
 
 Generated table/vector artifacts:
 
 ```text
-asm/gt/experiment/u01_block_first_tables.inc
+asm/gt/experiment/forward_ntt/u01_block_first_tables.inc
 experiments/forward_ntt_phase123_u01/u01_block_first_vectors.inc
 experiments/forward_ntt_phase123_u01/generate_u01_block_first_artifacts.py
 ```

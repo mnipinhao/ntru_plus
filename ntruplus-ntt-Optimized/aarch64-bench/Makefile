@@ -50,7 +50,7 @@ GT_PRODUCTION_INVNTT_ASM ?= $(GT_PRODUCTION_INVNTT_SOURCE)
 ifeq ($(GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16),1)
 GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(GT_PRODUCTION_INVNTT_RMINUS1_SOURCE)
 else
-GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_baseline.S
+GT_PRODUCTION_INVNTT_RMINUS1_ASM ?= $(NTRUPLUS)/asm/gt/experiment/invntt/poly_invntt_rminus1_baseline.S
 endif
 GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM ?= \
 	$(NTRUPLUS)/asm/gt/bench/poly_invntt_rminus1_stage123scratch.S \
@@ -400,7 +400,7 @@ GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_SOURCES = \
 
 GT_KEYGEN_PUBLIC_ARITH_PAIR_ASM_PMU_SOURCES = \
 	$(GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_SOURCES) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_keygen_public_arith_pair.S
+	$(NTRUPLUS)/asm/gt/experiment/keygen/poly_keygen_public_arith_pair.S
 
 GT_KEYGEN_FINISH_TO_H_HINV_PMU_SOURCES = \
 	bench_gt_keygen_finish_to_h_hinv_pmu.c \
@@ -427,8 +427,8 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_SOURCES = \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S
 
 GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
 	bench_gt_keygen_sample_ntt_fusion_slothy_pmu.c \
@@ -439,8 +439,8 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_triple_add1.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S \
 	$(NTRUPLUS)/asm/gt/poly_ntt_triple_scheduled.S \
 	$(NTRUPLUS)/asm/gt/poly_ntt_triple_add1_scheduled.S
 
@@ -482,10 +482,10 @@ U01V3_G1_FULLPATH_PMU_SOURCES = \
 	bench_u01v3_g1_fullpath_pmu.c \
 	$(NTRUPLUS)/asm/gt/poly_ntt.s \
 	$(NTRUPLUS)/asm/slothy/production/my_32ntt.opt.s \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_s2.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1.S \
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_s2.S \
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123.S \
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 
 U01V3_G1_R123_PAIRED_KEM_SOURCES = \
 	bench_u01v3_g1_r123_paired_kem_pmu.c \
@@ -504,7 +504,7 @@ U01V3_G1_R123_PAIRED_KEM_SOURCES = \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 
 INVNTT_LAZY_LEN16_PAIRED_KEM_SOURCES = \
 	bench_u01v3_g1_r123_paired_kem_pmu.c \
@@ -520,11 +520,11 @@ INVNTT_LAZY_LEN16_PAIRED_KEM_SOURCES = \
 	$(GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM) \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_lazy_twiddle1_stage123_len16.S \
+	$(NTRUPLUS)/asm/gt/experiment/invntt/poly_invntt_rminus1_lazy_twiddle1_stage123_len16.S \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 
 INVNTT_PROMOTED_PAIRED_KEM_SOURCES = \
 	bench_u01v3_g1_r123_paired_kem_pmu.c \
@@ -540,11 +540,11 @@ INVNTT_PROMOTED_PAIRED_KEM_SOURCES = \
 	$(GT_PRODUCTION_SAMPLE_NTT_TRIPLE_ASM) \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(NTRUPLUS)/asm/gt/poly_invntt_rminus1.S \
-	$(NTRUPLUS)/asm/gt/experiment/poly_invntt_rminus1_baseline_namespaced.S \
+	$(NTRUPLUS)/asm/gt/experiment/invntt/poly_invntt_rminus1_baseline_namespaced.S \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/poly_ntt_u01v3_g1_r123_s2.S
+	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 
 GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	bench_gt_direct32_q31_release_guard.c \

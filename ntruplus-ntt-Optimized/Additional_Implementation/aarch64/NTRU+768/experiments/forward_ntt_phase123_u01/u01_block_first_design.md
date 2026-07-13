@@ -97,7 +97,7 @@ phase123_stage12_block0_first_allrows.sym.s
 The current callable candidate is:
 
 ```text
-asm/gt/experiment/u01_block_first_candidate.S
+asm/gt/experiment/forward_ntt/u01_block_first_candidate.S
 ```
 
 It does:

@@ -10,7 +10,7 @@ from verify_stage12_row0_symbolic import parse_ntt32_twiddle_mem
 from verify_u01_symbolic import ROOT, make_input, parse_hwords
 
 
-OUT_TABLES = ROOT / "asm/gt/experiment/u01_block_first_tables.inc"
+OUT_TABLES = ROOT / "asm/gt/experiment/forward_ntt/u01_block_first_tables.inc"
 OUT_VECTORS = (
     ROOT
     / "experiments/forward_ntt_phase123_u01/u01_block_first_vectors.inc"

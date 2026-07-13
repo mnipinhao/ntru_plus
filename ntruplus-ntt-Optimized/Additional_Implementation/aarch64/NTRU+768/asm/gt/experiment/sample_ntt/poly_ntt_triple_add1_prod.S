@@ -13,4 +13,4 @@
 .global _poly_ntt_triple_add1_prod
 poly_ntt_triple_add1_prod:
 _poly_ntt_triple_add1_prod:
-    .include "asm/gt/experiment/ntt_gt_body_triple_add1_prod.inc"
+    .include "asm/gt/experiment/sample_ntt/ntt_gt_body_triple_add1_prod.inc"
