@@ -1,19 +1,44 @@
-# NTRU+ (Implementation + Profiling)
-NTRU+: Compact Construction of NTRU
-Using Simple Encoding Method
+# NTRU+
 
-# Practical Optimization Priority
-Based on current profiling docs:
-1. NTT / inverse NTT
-2. base multiplication / inversion
-3. hashing path (SHAKE/Keccak)
-4. micro-kernels like poly_cbd1 / poly_sotp_* last
+This repository keeps a frozen KpqC baseline beside an active NTRU+
+optimization workspace. It supports parameter sets 768, 864, and 1152 across
+scalar, AVX2, AArch64, and preserved Cortex-M-oriented source lanes.
 
-That is: optimize the dominant path first, then polish specialized helpers.
+## Quick start
 
-# Directory Policy
-- `ntruplus-KpqC-Final`: frozen clean baseline
-- `ntruplus-ntt-Optimized/Reference_Implementation`: local baseline inside the optimization workspace
-- `ntruplus-ntt-Optimized/Optimized_Implementation`: main scalar optimization lane
-- `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation`: preserved older optimized/Cortex-M-oriented lane
-- `ntruplus-ntt-Optimized/Additional_Implementation`: architecture-specific AVX2/AArch64 implementations
+Run the portable scalar KAT comparison from the repository root:
+
+```sh
+make -C bench PARAM_SET=NTRU+768 compare-kat
+```
+
+Run the KAT-gated comparison and cycle harness:
+
+```sh
+make -C bench PARAM_SET=NTRU+768 compare
+```
+
+See [WORKFLOW.md](WORKFLOW.md) before editing an implementation, and see
+[bench/README.md](bench/README.md) for arbitrary implementation comparisons.
+
+## Directory policy
+
+- `ntruplus-KpqC-Final/`: frozen clean baseline; do not edit during optimization work.
+- `ntruplus-ntt-Optimized/Reference_Implementation/`: active workspace reference lane.
+- `ntruplus-ntt-Optimized/Optimized_Implementation/`: active scalar optimization lane.
+- `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation/`: preserved legacy/Cortex-M-oriented source lane; not a validated MCU build by itself.
+- `ntruplus-ntt-Optimized/Additional_Implementation/`: AVX2 and AArch64 implementations.
+- `bench/`: portable KAT and cycle comparison front door.
+- `ntruplus-ntt-Optimized/aarch64-bench/`: Pi 5 and PMU-specific benchmark harnesses.
+
+## Current optimization focus
+
+The most developed architecture-specific path is the NTRU+768 AArch64
+Good-Thomas implementation. Its current production status and comparison
+evidence live in:
+
+- `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/docs/gt-new-vs-kpqc-final-optimization-summary.md`
+- `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/experiments/optimization_scoreboard.md`
+
+Architecture-specific code must be built and timed on a compatible host.
+Correctness must be established before performance results are used.
