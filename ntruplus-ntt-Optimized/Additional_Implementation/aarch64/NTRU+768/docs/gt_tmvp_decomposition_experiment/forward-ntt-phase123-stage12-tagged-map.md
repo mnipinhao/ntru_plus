@@ -8,8 +8,8 @@ kernel.  This is a mapping document only; it does not change assembly.
 Source files:
 
 ```text
-asm/slothy/inputs/my_ntt_phase123_flat.sym.s
-asm/slothy/production/my_32ntt.opt.s
+asm/slothy/inputs/ntt768_gt_frontend.sym.S
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
 ## 1. Local terms
@@ -152,7 +152,7 @@ should start with a small tagged stripe or a temporary holding scratch.
 Columns:
 
 ```text
-line        source line in asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+line        source line in asm/slothy/inputs/ntt768_gt_frontend.sym.S
 iter        Phase123 iteration
 reg         q9/q10/q11 producer register
 row         GT row index

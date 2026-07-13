@@ -5,8 +5,8 @@ Date: 2026-07-09
 Scope:
 
 ```text
-asm/slothy/production/my_32ntt.opt.s
-_ntt32_stage345_block0..3
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
+_gt_ntt32_batch8_ct_stage345_block0..3
 ```
 
 This note explains which remaining costs in the Stage345 block are worth
@@ -32,7 +32,7 @@ promising boundary shape.
 Production block0:
 
 ```text
-source: asm/slothy/production/my_32ntt.opt.s:640
+source: asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S:640
 instructions: 167
 expected cycles: 55
 ```
@@ -140,7 +140,7 @@ Expected benefit:
 
 ```text
 remove 8 ext instructions per Stage345 block
-remove 32 ext instructions per _ntt32_8way call
+remove 32 ext instructions per _gt_ntt32_batch8_to_blockmajor call
 remove 96 ext instructions per full poly_ntt call, because there are 3 GT rows
 ```
 
@@ -182,7 +182,7 @@ Optimization candidates:
 1. Keep the common row kernel, but reschedule/allocate scalar temporaries better.
 2. Make row-specialized Stage345 entry points and use fixed `dst + #offset`
    stores.
-3. Inline `_ntt32_8way` into the three row calls and let each row use direct
+3. Inline `_gt_ntt32_batch8_to_blockmajor` into the three row calls and let each row use direct
    offsets.
 
 Risk:
@@ -238,7 +238,7 @@ Because each Stage12 stripe and each Stage345 block resets `x12` with `adr`,
 the final post-incremented value is usually not a useful live-out. Some loads
 exist only to advance the pointer.
 
-Static audit found nine potentially dead `x12` vector loads per `_ntt32_8way`:
+Static audit found nine potentially dead `x12` vector loads per `_gt_ntt32_batch8_to_blockmajor`:
 
 | region | load line | register | overwritten before use |
 |---|---:|---|---:|
@@ -270,7 +270,7 @@ ldr qB, [x12, #16]
 ldp qC, qD, [x12, #32]
 ```
 
-Expected benefit per `_ntt32_8way`:
+Expected benefit per `_gt_ntt32_batch8_to_blockmajor`:
 
 ```text
 twiddle q memory loads: 52 -> 43
@@ -281,7 +281,7 @@ post-increment dependency chain: removed
 Expected benefit per full `poly_ntt`:
 
 ```text
-three _ntt32_8way row calls
+three _gt_ntt32_batch8_to_blockmajor row calls
 dead twiddle q loads removed: 27
 load instruction count reduction could be larger if ldp q,q is used
 ```
@@ -295,7 +295,7 @@ Decision:
 
 ```text
 Best next real NTT32 candidate.
-Name: ntt32_twiddle_offset_ldp
+Name: gt_ntt32_batch8_twiddle_offset_ldp
 ```
 
 ## Recommended Order
@@ -304,7 +304,7 @@ Do not continue the isolated block0 live-in route as the main route.
 
 Next useful candidates:
 
-1. `ntt32_twiddle_offset_ldp`
+1. `gt_ntt32_batch8_twiddle_offset_ldp`
    - exact arithmetic contract
    - removes dead twiddle loads
    - removes post-increment dependency

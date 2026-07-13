@@ -76,8 +76,8 @@ the symbol/call-graph audit are retained in the same directory.
 The default GT build now links:
 
 ```text
-asm/gt/poly_ntt_g1_r123_s2.S
-asm/gt/poly_ntt_g1_r123_s2_tables.inc
+asm/gt/ntt/poly_ntt.n1.opt.S
+asm/gt/ntt/poly_ntt_tables.inc
 ```
 
 The promoted `.text` is byte-identical to the frozen G1R123+S2 candidate. The

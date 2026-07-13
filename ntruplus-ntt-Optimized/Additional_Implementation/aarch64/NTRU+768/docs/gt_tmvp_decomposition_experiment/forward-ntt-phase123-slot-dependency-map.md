@@ -10,7 +10,7 @@ This document is a design artifact only.  No assembly has been changed.
 Source file:
 
 ```text
-asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+asm/slothy/inputs/ntt768_gt_frontend.sym.S
 ```
 
 Related map:

@@ -18,19 +18,19 @@ This flag replaces only the public `poly_ntt` wrapper path with:
 
 ```text
 asm/gt/experiment/poly_ntt_rowspec_s2_b2a_umov_str_dropin.s
-asm/slothy/production/my_32ntt.opt.s
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 asm/slothy/experiments/ntt32_forward_ntt_aggressive_wave/s2_b2a_umov_str/row0_stage345_s2_b2a_umov_str.opt.s
 asm/slothy/experiments/ntt32_forward_ntt_aggressive_wave/s2_b2a_umov_str/row1_stage345_s2_b2a_umov_str.opt.s
 asm/slothy/experiments/ntt32_forward_ntt_aggressive_wave/s2_b2a_umov_str/row2_stage345_s2_b2a_umov_str.opt.s
 ```
 
-The production `_ntt32_8way` object is still linked because other wrappers,
+The production `_gt_ntt32_batch8_to_blockmajor` object is still linked because other wrappers,
 including keygen sample triple paths, still call the generic row kernel.
 
 Pi 5 correctness confirmation for this flag:
 
 ```text
-make test_ntt32_stage345_rowspec_s2_b2a_umov_str
+make test_gt_ntt32_batch8_ct_stage345_rowspec_s2_b2a_umov_str
   s2_b2a_umov_str_mismatches=0
 
 make test_kem_gt_production_default GT_PRODUCTION_USE_ROWSPEC_S2_NTT=1
@@ -188,7 +188,7 @@ experiments/ntt32_twiddle1_lazy_reduction/range_proof.md
 Keep these targets available:
 
 ```sh
-make test_ntt32_stage345_rowspec_s2_b2a_umov_str
+make test_gt_ntt32_batch8_ct_stage345_rowspec_s2_b2a_umov_str
 make test_s2_abi_sentinel
 make -C ../../../aarch64-bench bench_gt_ntt_wave_pmu
 python3 ../../../aarch64-bench/scripts/run_s2_selected_kem_context_pmu.py

@@ -13,10 +13,10 @@ Status: proposed cleanup, not implemented.
 Current production wrapper:
 
 ```text
-asm/gt/poly_ntt.s
-  includes asm/gt/ntt_gt_body.inc
-    includes asm/slothy/production/my_ntt_phase123.n1.opt.s
-    calls asm/slothy/production/my_32ntt.opt.s::_ntt32_8way three times
+asm/gt/ntt/poly_ntt.S
+  includes asm/gt/ntt/poly_ntt_body.inc
+    includes asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
+    calls asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S::_gt_ntt32_batch8_to_blockmajor three times
 ```
 
 Current `ntt_gt_body.inc` saves original `x0 = dst` beside `x30`:
@@ -56,17 +56,17 @@ sub sp, sp, #MY_NTT_FRAME_SIZE
 add row0_ptr, sp, #32
 mov dst, x19
 mov x10, x19
-CALL_NTT32_8WAY
+CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
 
 add row0_ptr, sp, #544
 mov dst, x19
 add x10, x19, #256
-CALL_NTT32_8WAY
+CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
 
 add row0_ptr, sp, #1056
 mov dst, x19
 add x10, x19, #512
-CALL_NTT32_8WAY
+CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
 
 ...
 
@@ -86,13 +86,13 @@ Risk:
 
 ```text
 - x19 is callee-saved, so it must be restored before return
-- _ntt32_8way must not clobber x19
+- _gt_ntt32_batch8_to_blockmajor must not clobber x19
 ```
 
 Current audit:
 
 ```text
-asm/slothy/production/my_32ntt.opt.s uses x0, x4, x10, x11, x12, x13, x14, x15
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S uses x0, x4, x10, x11, x12, x13, x14, x15
 and does not reference x19.
 ```
 
@@ -116,11 +116,11 @@ poly_ntt component non-regression on Pi5
 KEM keygen/encap/decap non-regression within noise
 ```
 
-## P1: remove `_ntt32_8way` `bl` boundary
+## P1: remove `_gt_ntt32_batch8_to_blockmajor` `bl` boundary
 
 Status: later prototype.
 
-Turn `_ntt32_8way` into an internal macro/include body and expand it at the
+Turn `_gt_ntt32_batch8_to_blockmajor` into an internal macro/include body and expand it at the
 three row call sites.  This is not required for constant-time safety; the
 current `bl` calls are fixed public control flow.  The reason to remove them is
 scheduling and ABI cleanup:
@@ -135,7 +135,7 @@ scheduling and ABI cleanup:
 Main blockers:
 
 ```text
-- labels in my_32ntt.opt.s must become macro-local or duplicated safely
+- labels in `ntt32_batch8_to_blockmajor.n1.opt.S` must become macro-local or duplicated safely
 - code size grows if the row kernel is expanded three times
 - larger scheduling regions increase Slothy register-allocation difficulty
 ```
@@ -268,7 +268,8 @@ Odd U23 scratch slice:
 Important stage12 detail:
 
 ```text
-my_32ntt.opt.s resets ntt32_twiddle_vecs before each stage12 stripe.
+`ntt32_batch8_to_blockmajor.n1.opt.S` resets
+`gt_ntt32_batch8_twiddle_vecs` before each stage12 stripe.
 So stripe0 and stripe1 both use lane 0 of the loaded stage12 twiddle vectors.
 The stripe number changes row_base offsets, not the twiddle lane.
 ```
@@ -454,7 +455,7 @@ Updated conclusion:
 Do not continue isolated Stage345 block0 live-in as the main route.
 The next exact-contract candidates should target NTT32 table-load/scatter costs:
 
-1. ntt32_twiddle_offset_ldp
+1. gt_ntt32_batch8_twiddle_offset_ldp
 2. ntt32_stage345_highhalf_st1_lane
 3. ntt32_stage345_scalar_scatter_cleanup
 4. ntt32_twiddle1_lazy_reduction only after range proof

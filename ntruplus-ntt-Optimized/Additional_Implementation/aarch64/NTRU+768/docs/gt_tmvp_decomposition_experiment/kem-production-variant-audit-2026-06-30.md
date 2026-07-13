@@ -28,20 +28,20 @@ Current `VARIANT=gt_production` in `aarch64-bench/Makefile` links:
 ```text
 GT_PRODUCTION_KEM_SOURCES + GT_PRODUCTION_Q31_ENCAP_ASM =
   ntruplus/ntt.c
-  ntruplus/asm/gt/support/poly_support_n1.S
-  ntruplus/asm/gt/poly_cbd_sotp.s
-  ntruplus/asm/gt/poly_ntt.s
-  ntruplus/asm/slothy/production/my_32ntt.opt.s
-  ntruplus/asm/gt/poly_invntt.s
-  ntruplus/asm/gt/poly_invntt_rminus1.S
+  ntruplus/asm/gt/support/poly_support.n1.opt.S
+  ntruplus/asm/gt/support/poly_cbd_sotp.S
+  ntruplus/asm/gt/ntt/poly_ntt.S
+  ntruplus/asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
+  ntruplus/asm/gt/invntt/poly_invntt.S
+  ntruplus/asm/gt/invntt/poly_invntt_rminus1.S
   ntruplus/poly_gt_baseinv_batch.c
-  ntruplus/asm/slothy/production/baseinv_batch_finish_loop_n1.S
-  ntruplus/asm/gt/poly_baseinv_fqinv15.S
-  ntruplus/asm/gt/poly_basemul.s
-  ntruplus/asm/gt/poly_basemul_add.s
-  ntruplus/asm/gt/poly_basemul_scaled_r_input.s
-  ntruplus/asm/gt/poly_basemul_rminus1.s
-  ntruplus/asm/gt/poly_basemul_add_encap_tobytes_q31.S
+  ntruplus/asm/gt/baseinv/poly_baseinv_batch_finish.n1.opt.S
+  ntruplus/asm/gt/baseinv/poly_baseinv_fqinv15.S
+  ntruplus/asm/gt/basemul/poly_basemul.S
+  ntruplus/asm/gt/basemul/poly_basemul_add.S
+  ntruplus/asm/gt/basemul/poly_basemul_scaled_r_input.S
+  ntruplus/asm/gt/basemul/poly_basemul_rminus1.S
+  ntruplus/asm/gt/basemul/poly_basemul_add_encap_tobytes_q31.S
 
 VARIANT_CFLAGS =
   -DGT_PRODUCTION_USE_SCALED_KEYPAIR
@@ -85,17 +85,17 @@ object column below is recorded as "linked binary only".
 
 | function | production symbol | source file | linked? | gate | notes |
 | --- | --- | --- | --- | --- | --- |
-| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/poly_ntt.s`, `asm/slothy/production/my_32ntt.opt.s` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
-| Generic InvNTT | `poly_invntt` | `asm/gt/poly_invntt.s` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
-| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/poly_invntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
-| Generic basemul | `poly_basemul` | `asm/gt/poly_basemul.s` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
-| Basemul add | `poly_basemul_add` | `asm/gt/poly_basemul_add.s` | yes | none | generic symbol remains the production arithmetic-correct implementation |
-| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/gt/poly_basemul_add_encap_tobytes_q31.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
-| rminus1 basemul | `poly_basemul_rminus1` | `asm/gt/poly_basemul_rminus1.s` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
-| Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/gt/poly_basemul_scaled_r_input.s` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
-| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `baseinv_batch_finish_loop_n1.S`, `poly_baseinv_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM`, `GT_BASEINV_USE_HIER_K8` | closed-form/batch baseinv path using hier_k8 denominator tree for current keygen |
-| pack | `poly_tobytes`, `poly_frombytes` | `asm/gt/support/poly_support_n1.S` | yes | none | stock support API replaced by Slothy support kernel in `gt_production` |
-| crepmod3 | `poly_crepmod3` | `asm/gt/support/poly_support_n1.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
+| Forward NTT | `poly_ntt`, `gt_block_major_poly_ntt` | `ntt.c`, `asm/gt/ntt/poly_ntt.S`, `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S` | yes | none beyond `VARIANT=gt_production` | GT block-major row-bitrev output; not tuple, rowpack, BPQ, or TMVP |
+| Generic InvNTT | `poly_invntt` | `asm/gt/invntt/poly_invntt.S` | yes | none beyond `VARIANT=gt_production` | linked for generic ABI; decap production path uses rminus1 entry |
+| rminus1 InvNTT | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1` | `asm/gt/invntt/poly_invntt_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | production decap first product consumes rminus1 contract |
+| Generic basemul | `poly_basemul` | `asm/gt/basemul/poly_basemul.S` | yes | none beyond `VARIANT=gt_production` | arithmetic-correct GT block-major basemul |
+| Basemul add | `poly_basemul_add` | `asm/gt/basemul/poly_basemul_add.S` | yes | none | generic symbol remains the production arithmetic-correct implementation |
+| Q31 encap byte-contract add | `poly_basemul_add_encap_direct32_q31_tobytes_contract` | `asm/gt/basemul/poly_basemul_add_encap_tobytes_q31.S` | yes in `gt_production`; absent in `gt_production_no_q31` | `GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP` | encap-only; output is immediately consumed by `poly_tobytes`; not a generic `poly_basemul_add` replacement |
+| rminus1 basemul | `poly_basemul_rminus1` | `asm/gt/basemul/poly_basemul_rminus1.S` | yes | `GT_PRODUCTION_USE_RMINUS1_DECAP` | paired only with `poly_invntt_from_rminus1` |
+| Scaled keypair basemul | `poly_basemul_scaled_r_input` | `asm/gt/basemul/poly_basemul_scaled_r_input.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR` | keygen-only scaled-r input contract |
+| Baseinv / polyinv path | `poly_baseinv_scaled_r` | `poly_gt_baseinv_batch.c`, `poly_baseinv_batch_finish.n1.opt.S`, `poly_baseinv_fqinv15.S` | yes | `GT_PRODUCTION_USE_SCALED_KEYPAIR`, `GT_BASEINV_BATCH_USE_ASM_FINISH`, `GT_BASEINV_USE_FQINV15_ASM`, `GT_BASEINV_USE_HIER_K8` | closed-form/batch baseinv path using hier_k8 denominator tree for current keygen |
+| pack | `poly_tobytes`, `poly_frombytes` | `asm/gt/support/poly_support.n1.opt.S` | yes | none | stock support API replaced by Slothy support kernel in `gt_production` |
+| crepmod3 | `poly_crepmod3` | `asm/gt/support/poly_support.n1.opt.S` | yes | none | separate decap recovery reduction; fused crep3 variants are not default |
 
 Default current GT production contains both `poly_basemul_add` and
 `poly_basemul_add_encap_direct32_q31_tobytes_contract` at distinct
@@ -138,7 +138,7 @@ wrappers.  They are not part of `GT_PRODUCTION_KEM_SOURCES`.
 | Q31 direct32 encap | production default encap byte-contract path | yes in `gt_production`; absent in `gt_production_no_q31` | release guard pass; KEM gate pass | direct add -417.952 cycles; full encap -468.065 cycles in Q31 gate harness | keep default, but do not use as generic basemul replacement |
 | KPQC final no-CE | historical comparison baseline | separate source, not GT production | pass in generic KEM bench | slower than current GT in all three KEM APIs | baseline only |
 | legacy/original `VARIANT=gt` | historical GT baseline | not current production | pass in previous audit | not rebenchmarked in the Q31 promotion matrix | baseline only |
-| `VARIANT=gt_opt` | unavailable historical variant in current tree | no | not buildable | GNU as rejects symbolic `base_gt_opt_body.inc` macro forms | not a valid current linked comparison |
+| `VARIANT=gt_opt` | unavailable historical variant in current tree | no | not buildable | GNU as rejects symbolic `poly_basemul_body.inc` macro forms | not a valid current linked comparison |
 | InvNTT Stage45 all4 Slothy candidate | removed experiment | no | correctness pass in prior campaign | PMU regression/non-reproducible | removed from benchmark wiring |
 | generic/rminus1 basemul one-loop Slothy | stopped/regression | no | correctness pass in prior campaign | PMU regression | needs new strategy, not active |
 | Forward NTT local Slothy candidates | needs structural strategy | no | no promoted correctness-passing production candidate | no production PMU win | not production |

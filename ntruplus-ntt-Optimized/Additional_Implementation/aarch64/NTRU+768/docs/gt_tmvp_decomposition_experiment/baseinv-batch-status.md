@@ -54,8 +54,8 @@ The block-major path loads lambda with contiguous `vld1q_s16`.
 
 `gt_production_opt` now uses `poly_gt_baseinv_batch.c` as the ABI
 `poly_baseinv()` provider, while the GT basemul symbols are owned by
-`asm/gt/poly_basemul.s` and
-`asm/gt/poly_basemul_add.s`.  Both draw from the promoted
+`asm/gt/basemul/poly_basemul.S` and
+`asm/gt/basemul/poly_basemul_add.S`.  Both draw from the promoted
 GT basemul body where applicable.
 
 ## Pi5 result

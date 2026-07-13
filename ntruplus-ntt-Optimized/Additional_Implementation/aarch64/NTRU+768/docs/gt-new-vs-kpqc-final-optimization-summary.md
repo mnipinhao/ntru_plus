@@ -45,7 +45,7 @@ GT_BASEINV_BATCH_USE_ASM_FINISH
 GT_BASEINV_USE_FQINV15_ASM
 GT_BASEINV_USE_HIER_K8
 GT_BASEINV_USE_HIER_K8_TREE
-GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
 GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16
 ```
@@ -251,8 +251,8 @@ baseinv 不需要先轉回 GT-natural order。
 
 ```text
 ntt.c
-asm/gt/poly_ntt_g1_r123_s2.S
-asm/gt/poly_ntt_g1_r123_s2_tables.inc
+asm/gt/ntt/poly_ntt.n1.opt.S
+asm/gt/ntt/poly_ntt_tables.inc
 ```
 
 ### 5.2 Generic forward NTT: G1 producer/consumer fusion
@@ -339,8 +339,8 @@ poly_ntt(a)
 GT keygen 專用 symbol 改為：
 
 ```text
-poly_ntt_triple_scheduled(a)      = NTT(3*a)
-poly_ntt_triple_add1_scheduled(a) = NTT(3*a + e0)
+poly_ntt_mul3(a)      = NTT(3*a)
+poly_ntt_mul3_add1(a) = NTT(3*a + e0)
 ```
 
 這不是單純 C wrapper。input scaling 和 add1 已進入新的 Phase123 symbolic DAG，
@@ -373,7 +373,7 @@ KPQC `poly.c` 的 `fqinv_neon` 是 16 次 `fqmul_neon` exponentiation chain。
 GT 使用：
 
 ```text
-asm/gt/poly_baseinv_fqinv15.S
+asm/gt/baseinv/poly_baseinv_fqinv15.S
 symbol: gt_fqinv15_asm
 ```
 
@@ -459,10 +459,10 @@ body直接 include 在 24-iteration loop 中，避免每個 stripe 額外 `bl/re
 主要 files：
 
 ```text
-asm/gt/base_gt_opt_body.inc
-asm/gt/poly_basemul.S
-asm/gt/poly_basemul_add.S
-asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
+asm/gt/basemul/poly_basemul_body.inc
+asm/gt/basemul/poly_basemul.S
+asm/gt/basemul/poly_basemul_add.S
+asm/gt/basemul/poly_basemul_add.n1.opt.inc
 ```
 
 必須注意：generic GT basemul 並不是每個 isolated ABI 都比 KPQC/stock 快。歷史
@@ -524,7 +524,7 @@ rminus1 basemul 節省較大，因此配對 data flow 才是正確的比較單�
 
 ### 5.12 InvNTT production pipeline
 
-normal 與 rminus1 wrapper共用 `invntt_opt.production.s`，active path 包含：
+normal 與 rminus1 wrapper共用 `poly_invntt.n1.opt.inc`，active path 包含：
 
 1. 直接從 physical block-major input load，不先 gather 完整 row。
 2. Stage123 output直接寫成 Stage45 consumption order 的 stripe scratch。
@@ -537,9 +537,9 @@ normal 與 rminus1 wrapper共用 `invntt_opt.production.s`，active path 包含�
 主要 files：
 
 ```text
-asm/gt/poly_invntt.s
-asm/gt/poly_invntt_rminus1.S
-asm/slothy/production/invntt_opt.production.s
+asm/gt/invntt/poly_invntt.S
+asm/gt/invntt/poly_invntt_rminus1.S
+asm/gt/invntt/poly_invntt.n1.opt.inc
 ```
 
 這些優化主要是讓 GT inverse pipeline 自己不被 gather、分離 reduction 與 final
@@ -550,11 +550,11 @@ scale 拖慢；它不是目前 GT 相對 KPQC 最大的 isolated win。
 目前 GT production link：
 
 ```text
-asm/gt/support/poly_support_n1.S
-asm/gt/poly_cbd_sotp.s
+asm/gt/support/poly_support.n1.opt.S
+asm/gt/support/poly_cbd_sotp.S
 ```
 
-`poly_support_n1.S` 包含 Slothy/N1 排程的：
+`poly_support.n1.opt.S` 包含 Slothy/N1 排程的：
 
 ```text
 poly_sub
@@ -659,17 +659,17 @@ kem.c
 Forward NTT：
 
 ```text
-asm/gt/poly_ntt_g1_r123_s2.S
-asm/gt/poly_ntt_g1_r123_s2_tables.inc
-asm/slothy/production/my_32ntt.opt.s          # legacy/sample row-kernel dependency
+asm/gt/ntt/poly_ntt.n1.opt.S
+asm/gt/ntt/poly_ntt_tables.inc
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S          # legacy/sample row-kernel dependency
 ```
 
 Keygen sample NTT：
 
 ```text
-asm/gt/poly_ntt_triple_scheduled.S
-asm/gt/poly_ntt_triple_add1_scheduled.S
-experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/
+asm/gt/ntt/poly_ntt_mul3.S
+asm/gt/ntt/poly_ntt_mul3_add1.S
+experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/
 ```
 
 注意：這兩個 file 仍在 `asm/gt/experiment/`，而檔頭註解也保留早期
@@ -679,35 +679,35 @@ benchmark-only 說法；但現在 Makefile確實會把它們 link 進 production
 Inverse NTT：
 
 ```text
-asm/gt/poly_invntt.s
-asm/gt/poly_invntt_rminus1.S
-asm/slothy/production/invntt_opt.production.s
+asm/gt/invntt/poly_invntt.S
+asm/gt/invntt/poly_invntt_rminus1.S
+asm/gt/invntt/poly_invntt.n1.opt.inc
 ```
 
 Base inverse：
 
 ```text
 poly_gt_baseinv_batch.c
-asm/gt/poly_baseinv_fqinv15.S
-asm/slothy/production/baseinv_batch_finish_loop_n1.S
+asm/gt/baseinv/poly_baseinv_fqinv15.S
+asm/gt/baseinv/poly_baseinv_batch_finish.n1.opt.S
 ```
 
 Base multiplication：
 
 ```text
-asm/gt/base_gt_opt_body.inc
-asm/gt/poly_basemul.S
-asm/gt/poly_basemul_add.S
-asm/gt/poly_basemul_scaled_r_input.S
-asm/gt/poly_basemul_rminus1.S
-asm/gt/poly_basemul_add_encap_tobytes_q31.S
+asm/gt/basemul/poly_basemul_body.inc
+asm/gt/basemul/poly_basemul.S
+asm/gt/basemul/poly_basemul_add.S
+asm/gt/basemul/poly_basemul_scaled_r_input.S
+asm/gt/basemul/poly_basemul_rminus1.S
+asm/gt/basemul/poly_basemul_add_encap_tobytes_q31.S
 ```
 
 Support：
 
 ```text
-asm/gt/support/poly_support_n1.S
-asm/gt/poly_cbd_sotp.s
+asm/gt/support/poly_support.n1.opt.S
+asm/gt/support/poly_cbd_sotp.S
 ```
 
 ## 10. Benchmark 與重現入口

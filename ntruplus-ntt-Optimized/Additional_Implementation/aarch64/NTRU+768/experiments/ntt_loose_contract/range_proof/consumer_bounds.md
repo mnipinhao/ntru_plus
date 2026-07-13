@@ -17,13 +17,13 @@ poly_ntt / gt_block_major_poly_ntt
 The production body is:
 
 ```text
-asm/gt/poly_ntt.s
-asm/gt/ntt_gt_body.inc
-asm/slothy/production/my_ntt_phase123.n1.opt.s
-asm/slothy/production/my_32ntt.opt.s
+asm/gt/ntt/poly_ntt.S
+asm/gt/ntt/poly_ntt_body.inc
+asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
-The NTT32 contract in `my_32ntt.opt.s` is the active source evidence:
+The NTT32 contract in `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S` is the active source evidence:
 
 ```text
 Phase123 feeds raw 3-point DFT outputs bounded by 3*(q-1).
@@ -125,7 +125,7 @@ Relevant keygen public arithmetic path:
 poly_basemul_scaled_r_input(&h, g, &finv);
 ```
 
-This kernel uses the shared `base_gt_opt_body.inc` path with `ld4/st4` quartic
+This kernel uses the shared `poly_basemul_body.inc` path with `ld4/st4` quartic
 blocks.  It widens variable products into 32-bit accumulators, so its immediate
 machine bound is not the first blocker for `keygen_g`.
 
@@ -189,7 +189,7 @@ poly_sub(&c, &c, &m2);
 poly_basemul(&r2, &c, &hinv);
 ```
 
-`poly_sub` in `asm/gt/support/poly_support_n1.S` performs plain 16-bit vector
+`poly_sub` in `asm/gt/support/poly_support.n1.opt.S` performs plain 16-bit vector
 subtractions:
 
 ```asm

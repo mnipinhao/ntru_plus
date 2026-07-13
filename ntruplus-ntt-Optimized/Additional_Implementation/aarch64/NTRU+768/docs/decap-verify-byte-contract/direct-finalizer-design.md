@@ -16,12 +16,12 @@ The linked symbol is:
 
 ```text
 symbol: poly_basemul
-wrapper: asm/gt/poly_basemul.s
-body: asm/gt/base_gt_opt_body.inc
+wrapper: asm/gt/basemul/poly_basemul.S
+body: asm/gt/basemul/poly_basemul_body.inc
 ```
 
 `poly_basemul.s` owns the public `poly_basemul` symbol and
-includes the shared `base_gt_opt_body.inc` basemul body.  The body include does
+includes the shared `poly_basemul_body.inc` basemul body.  The body include does
 not export a public ABI by itself.
 
 ### Input And Output Layout
@@ -50,7 +50,7 @@ There are 24 loops, so the full output is `24 * 64 = 1536` bytes.
 
 ### Final Reduction Before Store
 
-For the non-rminus1 plain `poly_basemul` path, `base_gt_opt_body.inc` finishes each
+For the non-rminus1 plain `poly_basemul` path, `poly_basemul_body.inc` finishes each
 loop with two reduction stages before the final `st4`.
 
 First, it applies the final Montgomery/factor correction to four output
@@ -119,7 +119,7 @@ The linked `poly_tobytes` symbol is:
 
 ```text
 symbol: poly_tobytes
-source: asm/gt/support/poly_support_n1.S
+source: asm/gt/support/poly_support.n1.opt.S
 ```
 
 This is the production support kernel, not the older `asm/stock/pack.s` path.
@@ -350,7 +350,7 @@ symbol: gt_decap_verify_basemul_tobytes_direct_candidate
 gate: GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT
 ```
 
-It compiles the current `base_gt_opt_body.inc` plain basemul body with a default-off
+It compiles the current `poly_basemul_body.inc` plain basemul body with a default-off
 final-store hook:
 
 ```text

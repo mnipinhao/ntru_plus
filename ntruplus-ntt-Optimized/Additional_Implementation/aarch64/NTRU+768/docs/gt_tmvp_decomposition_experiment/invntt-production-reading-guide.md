@@ -4,7 +4,7 @@
 inverse NTT 用的讀碼索引。production wrapper 現在 include 的主檔是：
 
 ```text
-asm/slothy/production/invntt_opt.production.s
+asm/gt/invntt/poly_invntt.n1.opt.inc
 ```
 
 舊的 legacy / rowstage45-post prototype assembly 已從 active `asm/` tree
@@ -15,8 +15,8 @@ asm/slothy/production/invntt_opt.production.s
 
 | wrapper | 產生的 symbol | 用途 |
 | --- | --- | --- |
-| `asm/gt/poly_invntt.s` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
-| `asm/gt/poly_invntt_rminus1.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
+| `asm/gt/invntt/poly_invntt.S` | `poly_invntt`, `gt_block_major_poly_invntt`, `gt_tuple_poly_invntt` | normal GT production inverse path |
+| `asm/gt/invntt/poly_invntt_rminus1.S` | `poly_invntt_from_rminus1`, `gt_block_major_poly_invntt_from_rminus1`, `gt_tuple_poly_invntt_from_rminus1` | paired with `poly_basemul_rminus1`; branchfold table 改成 rminus1 版本 |
 
 舊的 A72 opt-in prototype wrapper 已移除；目前 production 只保留上表兩個
 InvNTT wrapper 入口。
@@ -105,7 +105,7 @@ KEM benchmark 沒有比 standard rminus1 path 快，所以不視為 production d
 
 ## What is intentionally not in production
 
-`asm/slothy/production/invntt_opt.production.s` 不保留：
+`asm/gt/invntt/poly_invntt.n1.opt.inc` 不保留：
 
 - `INVNTT_USE_OLD_GATHER`
 - `INVNTT_USE_POST_FASTSCALE`

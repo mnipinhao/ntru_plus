@@ -48,7 +48,7 @@ do not continue conservative scratch conversion
 The reusable include:
 
 ```text
-asm/gt/base_gt_opt_body.inc
+asm/gt/basemul/poly_basemul_body.inc
 ```
 
 exposes only this hook:
@@ -69,7 +69,7 @@ direct pack needs two consecutive basemul loops.
 
 ## Register Lifetime Blocker
 
-Static scan of `Lgt_basemul_loop` in `base_gt_opt_body.inc`:
+Static scan of `Lgt_basemul_loop` in `poly_basemul_body.inc`:
 
 ```text
 vector_regs_used = v0..v31

@@ -348,7 +348,7 @@ iter 7 -> type B
 ```
 
 It parses `zetas` and `twist_table` from the production
-`asm/gt/ntt_gt_body.inc`, so the test does not depend on a copied table.
+`asm/gt/ntt/poly_ntt_body.inc`, so the test does not depend on a copied table.
 
 ## Stage12 handoff oracle
 
@@ -384,7 +384,7 @@ needed.
 Important production detail:
 
 ```text
-my_32ntt.opt.s resets ntt32_twiddle_vecs before each stage12 stripe.
+asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S resets gt_ntt32_batch8_twiddle_vecs before each stage12 stripe.
 Therefore stripe0 and stripe1 both use lane 0 of the loaded stage12 twiddle
 vectors; the stripe number changes row_base offsets, not the twiddle lane.
 ```

@@ -10,7 +10,7 @@ asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
 ```
 
 This V2 reuses the production GT `poly_basemul` arithmetic body through a
-final-store hook in `asm/gt/base_gt_opt_body.inc`.  The production wrappers do
+final-store hook in `asm/gt/basemul/poly_basemul_body.inc`.  The production wrappers do
 not define that hook, so their final `st4` contract is unchanged.
 
 ## Starting Point
@@ -113,7 +113,7 @@ Production `poly_tobytes` is:
 
 ```text
 symbol: poly_tobytes
-source: asm/gt/support/poly_support_n1.S
+source: asm/gt/support/poly_support.n1.opt.S
 ```
 
 Per 64-coefficient loop, the scheduled support kernel uses:

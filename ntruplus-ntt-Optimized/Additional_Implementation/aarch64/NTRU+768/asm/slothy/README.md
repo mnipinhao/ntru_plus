@@ -1,14 +1,12 @@
-# GT Production Slothy Sources
+# GT Slothy Sources
 
 This directory is kept narrow:
 
-- `production/`: Slothy outputs and include files wired into current GT
-  production builds.
 - `inputs/`: symbolic sources, contracts, DAG notes, and kernel-specific
   Slothy drivers used to regenerate selected production outputs.
 - `inputs/support_kernels/`: symbolic support-kernel source, contract files,
   and the local driver.  The generated production output lives in
-  `asm/gt/support/poly_support_n1.S`.
+  `asm/gt/support/poly_support.n1.opt.S`.
 
 Rejected rowpack, shadow-base, window, microkernel, A72 branchfold, oldstore,
 and rowstage45/post-fusion prototypes were removed from the active tree.  Use
@@ -16,29 +14,28 @@ git history for those artifacts.
 
 ## Forward NTT
 
-`asm/gt/poly_ntt.s` is the production public wrapper.  It exports
-the forward NTT symbols and includes `asm/gt/ntt_gt_body.inc`, which calls the
-fused-scatter `_ntt32_8way` row kernel in
-`asm/slothy/production/my_32ntt.opt.s`.
+`asm/gt/ntt/poly_ntt.n1.opt.S` is the production public implementation. It
+exports the forward NTT symbols and calls the fused-scatter
+`_gt_ntt32_batch8_to_blockmajor` row kernel in
+`asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S`.
 
-The first half of `asm/gt/ntt_gt_body.inc` is the N1 Slothy-scheduled Phase123
-path:
+Its first half is the N1 Slothy-scheduled GT frontend path:
 
-- symbolic source: `asm/slothy/inputs/my_ntt_phase123_flat.sym.s`
-- local driver: `asm/slothy/inputs/optimize_phase123_split.py`
-- scheduled include: `asm/slothy/production/my_ntt_phase123.n1.opt.s`
+- symbolic source: `asm/slothy/inputs/ntt768_gt_frontend.sym.S`
+- local driver: `asm/slothy/inputs/optimize_ntt768_gt_frontend.py`
+- scheduled include: `asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc`
 
 The default Makefile path uses:
 
 ```sh
-GT_NTT_ASM = asm/gt/poly_ntt.s asm/slothy/production/my_32ntt.opt.s
+GT_NTT_ASM = asm/gt/ntt/poly_ntt.n1.opt.S asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
 ## Basemul Add32
 
-`asm/gt/poly_basemul_add.s` includes
-`asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S` through
-`asm/gt/base_gt_opt_body.inc`.
+`asm/gt/basemul/poly_basemul_add.S` includes the generated
+`asm/gt/basemul/poly_basemul_add.n1.opt.inc`. The other basemul wrappers share
+`asm/gt/basemul/poly_basemul_body.inc`.
 
 The production regeneration sources are:
 
@@ -50,7 +47,7 @@ The production regeneration sources are:
 ## Baseinv Finish
 
 `poly_gt_baseinv_batch.c` calls the production finish loop in
-`asm/slothy/production/baseinv_batch_finish_loop_n1.S`.
+`asm/gt/baseinv/poly_baseinv_batch_finish.n1.opt.S`.
 
 The production regeneration sources are:
 
@@ -63,12 +60,12 @@ The production regeneration sources are:
 
 The active inverse NTT path is intentionally narrow:
 
-- `asm/gt/poly_invntt.s` is the normal production wrapper.
-- `asm/gt/poly_invntt_rminus1.S` is the decap rminus1
+- `asm/gt/invntt/poly_invntt.S` is the normal production wrapper.
+- `asm/gt/invntt/poly_invntt_rminus1.S` is the decap rminus1
   production wrapper.
 - `asm/gt/bench/poly_invntt_rminus1_stage123scratch.S` is the benchmark-only
   split stage123-scratch wrapper.
-- `asm/slothy/production/invntt_opt.production.s` is the current inverse
+- `asm/gt/invntt/poly_invntt.n1.opt.inc` is the current inverse
   implementation included by the production wrappers and, in scratch-only
   mode, by the benchmark-only split wrapper.
 

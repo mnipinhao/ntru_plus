@@ -1,19 +1,19 @@
-# Symbolic Phase123 Triple Input Fusion
+# Symbolic GT Frontend Mul3 Input Fusion
 
 This is the Wave 3 `SubAgent-SAMPLE-DAG` workspace. It keeps the Wave 1
-SAMPLE semantics but makes the Phase123 input-fusion path Slothy-owned instead
+SAMPLE semantics but makes the GT frontend input-fusion path Slothy-owned instead
 of patching already scheduled production assembly.
 
 ## Contract
 
 ```text
-poly_ntt_triple_scheduled(out, a)      == poly_ntt(3*a)
-poly_ntt_triple_add1_scheduled(out, a) == poly_ntt(3*a + e0)
+poly_ntt_mul3(out, a)      == poly_ntt(3*a)
+poly_ntt_mul3_add1(out, a) == poly_ntt(3*a + e0)
 ```
 
 `e0` means coefficient 0 is incremented by one after triple scaling. The output
 layout remains the production GT block-major row-bitrev layout because the
-production `_ntt32_8way` row kernels and final stores are unchanged.
+production `_gt_ntt32_batch8_to_blockmajor` row kernels and final stores are unchanged.
 
 ## Files
 
@@ -21,55 +21,56 @@ production `_ntt32_8way` row kernels and final stores are unchanged.
 kernel-contract.yml
 baseline-contract.yml
 instruction-dag.yml
-generate_phase123_triple_sources.py
-optimize_phase123_triple.py
-phase123_triple.sym.s
-phase123_triple_add1.sym.s
-my_ntt_phase123_triple.n1.opt.s
-my_ntt_phase123_triple_add1.n1.opt.s
+generate_ntt768_gt_frontend_mul3_sources.py
+optimize_ntt768_gt_frontend_mul3.py
+ntt768_gt_frontend_mul3.sym.S
+ntt768_gt_frontend_mul3_add1.sym.S
+ntt768_gt_frontend_mul3.n1.opt.inc
+ntt768_gt_frontend_mul3_add1.n1.opt.inc
 ```
 
-The `.sym.s` and `.n1.opt.s` files are generated artifacts. The source of truth
-for the normal Phase123 DAG is:
+The `.sym.S` files are generated symbolic inputs. The `.n1.opt.inc` files under
+`asm/gt/ntt/` are generated production artifacts. The source of truth for the
+normal GT frontend DAG is:
 
 ```text
-asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+asm/slothy/inputs/ntt768_gt_frontend.sym.S
 ```
 
 ## Reproducibility Map
 
 ```text
 source of truth:
-  asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+  asm/slothy/inputs/ntt768_gt_frontend.sym.S
 
 generator:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/generate_phase123_triple_sources.py
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/generate_ntt768_gt_frontend_mul3_sources.py
 
 generated symbolic sources:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple.sym.s
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple_add1.sym.s
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3.sym.S
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3_add1.sym.S
 
 Slothy script:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py
 
 generated Slothy ASM:
-  asm/slothy/production/my_ntt_phase123_triple.n1.opt.s
-  asm/slothy/production/my_ntt_phase123_triple_add1.n1.opt.s
+  asm/gt/ntt/ntt768_gt_frontend_mul3.n1.opt.inc
+  asm/gt/ntt/ntt768_gt_frontend_mul3_add1.n1.opt.inc
 
 benchmark integration ASM:
-  asm/gt/ntt_gt_body_triple_scheduled.inc
-  asm/gt/ntt_gt_body_triple_add1_scheduled.inc
-  asm/gt/poly_ntt_triple_scheduled.S
-  asm/gt/poly_ntt_triple_add1_scheduled.S
+  asm/gt/ntt/poly_ntt_mul3_body.inc
+  asm/gt/ntt/poly_ntt_mul3_add1_body.inc
+  asm/gt/ntt/poly_ntt_mul3.S
+  asm/gt/ntt/poly_ntt_mul3_add1.S
 ```
 
 Benchmark-only wrapper symbols:
 
 ```text
-poly_ntt_triple_scheduled
-_poly_ntt_triple_scheduled
-poly_ntt_triple_add1_scheduled
-_poly_ntt_triple_add1_scheduled
+poly_ntt_mul3
+_poly_ntt_mul3
+poly_ntt_mul3_add1
+_poly_ntt_mul3_add1
 ```
 
 The C harness calls the non-underscored labels. The symbols are not declared in
@@ -88,7 +89,7 @@ Expected command shape from the scheme directory:
 ```sh
 /usr/bin/timeout 3600 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
   /home/pinhao/slothy/venv/bin/python \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py \
   --variant both --target n1 --stalls 192
 ```
 
@@ -101,7 +102,7 @@ experiment-local `e0` mask through `x7`; this avoids unsupported
 Build gate and benchmark target:
 
 ```text
-macro gate: GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+macro gate: GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3
 target:     bench_gt_keygen_sample_ntt_fusion_slothy_pmu
 ```
 
@@ -127,14 +128,14 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES = \
         $(GT_BASEINV_BATCH_C) \
         $(GT_PRODUCTION_BASE_ASM) \
         $(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
-        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
-        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S \
-        $(NTRUPLUS)/asm/gt/poly_ntt_triple_scheduled.S \
-        $(NTRUPLUS)/asm/gt/poly_ntt_triple_add1_scheduled.S
+        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_reference.S \
+        $(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_add1_reference.S \
+        $(NTRUPLUS)/asm/gt/ntt/poly_ntt_mul3.S \
+        $(NTRUPLUS)/asm/gt/ntt/poly_ntt_mul3_add1.S
 
 $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET): $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_SOURCES)
         $(CC) $(CFLAGS_NO_RUNCOUNTS) \
-                -DGT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1 \
+                -DGT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3=1 \
                 -DNTESTS=$(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_NTESTS) \
                 -DNITERATIONS=$(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_NITERATIONS) \
                 -DNWARMUP=$(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_NWARMUP) \
@@ -164,18 +165,18 @@ decision: keep_and_refine
 Contract and static gates:
 
 ```sh
-python3 experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/generate_phase123_triple_sources.py
+python3 experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/generate_ntt768_gt_frontend_mul3_sources.py
 python3 /Users/chenpinhao/.codex/skills/slothy-symbolic-asm-authoring/scripts/check-kernel-contract.py \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/kernel-contract.yml
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/kernel-contract.yml
 python3 /Users/chenpinhao/.codex/skills/slothy-symbolic-asm-authoring/scripts/check-symbolic-asm.py \
   --candidate \
-  --kernel-contract experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/kernel-contract.yml \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple.sym.s \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple_add1.sym.s
+  --kernel-contract experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/kernel-contract.yml \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3.sym.S \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3_add1.sym.S
 python3 /Users/chenpinhao/.codex/skills/slothy-symbolic-asm-authoring/scripts/check-physical-reg-leaks.py \
-  --contract experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/kernel-contract.yml \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple.sym.s \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple_add1.sym.s
+  --contract experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/kernel-contract.yml \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3.sym.S \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3_add1.sym.S
 ```
 
 Results:
@@ -198,21 +199,21 @@ Commands:
 ```sh
 /usr/bin/timeout 900 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
   /home/pinhao/slothy/venv/bin/python \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py \
   --variant triple --target n1 --stalls 192 --solver-timeout 10
 
 /usr/bin/timeout 900 env SLOTHY_PATH=/home/pinhao/slothy PYTHONPATH=/home/pinhao/slothy \
   /home/pinhao/slothy/venv/bin/python \
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py \
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py \
   --variant add1 --target n1 --stalls 192 --solver-timeout 10
 ```
 
 Slothy status:
 
 ```text
-triple: parser pass, optimizer pass, output my_ntt_phase123_triple.n1.opt.s
+triple: parser pass, optimizer pass, output ntt768_gt_frontend_mul3.n1.opt.inc
 add1: parser pass after replacing unsupported ins v?.h[0], w? with x7 e0-mask load,
-      optimizer pass, output my_ntt_phase123_triple_add1.n1.opt.s
+      optimizer pass, output ntt768_gt_frontend_mul3_add1.n1.opt.inc
 logs: slothy_sample_dag_triple_timeout10.log,
       slothy_sample_dag_add1_timeout10_retry.log
 final status: split_heuristic_full:OK! for both variants
@@ -222,14 +223,14 @@ Manual patch status:
 
 ```text
 No manual patches were applied after Slothy to
-my_ntt_phase123_triple.n1.opt.s or
-my_ntt_phase123_triple_add1.n1.opt.s.
+ntt768_gt_frontend_mul3.n1.opt.inc or
+ntt768_gt_frontend_mul3_add1.n1.opt.inc.
 
 The input scaling and add1 e0-mask form are generated before Slothy by
-generate_phase123_triple_sources.py. The scheduled body includes and public
+generate_ntt768_gt_frontend_mul3_sources.py. The scheduled body includes and public
 wrappers are hand-written benchmark integration glue only: they set up the
 stack frame, provide the add1 mask pointer, include the generated Slothy output,
-and call the unchanged production _ntt32_8way row kernels.
+and call the unchanged production _gt_ntt32_batch8_to_blockmajor row kernels.
 ```
 
 Pi5 benchmark host:

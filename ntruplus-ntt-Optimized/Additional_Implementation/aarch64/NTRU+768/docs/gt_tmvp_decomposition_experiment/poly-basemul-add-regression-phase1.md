@@ -21,7 +21,7 @@ Live PMU binaries on Pi5:
 GT:
   /home/pi/ntruplus/ntruplus-ntt-Optimized/aarch64-bench/bench_gt_nonhash_substage_pmu_gt
   symbol: poly_basemul_add / poly_basemul_add32
-  object path: asm/gt/poly_basemul_add.s
+  object path: asm/gt/basemul/poly_basemul_add.S
   objdump region: 0x23150..0x23340
 
 stock_noce:

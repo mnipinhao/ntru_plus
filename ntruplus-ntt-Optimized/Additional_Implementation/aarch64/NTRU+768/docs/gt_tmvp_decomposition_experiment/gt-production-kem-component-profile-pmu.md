@@ -16,7 +16,7 @@ GT_PRODUCTION_USE_RMINUS1_DECAP
 GT_BASEINV_BATCH_USE_ASM_FINISH
 GT_BASEINV_USE_FQINV15_ASM
 GT_BASEINV_USE_HIER_K8
-GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
 GT_BASEINV_USE_HIER_K8_TREE
 GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 ```
@@ -42,7 +42,7 @@ symbols are not overwritten.
 Production kill switches:
 
 ```text
-GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3=1
 GT_PRODUCTION_DISABLE_HIERK8_TREE=1
 ```
 
@@ -68,8 +68,8 @@ sample_hierk8 hier-off release_guard_pass=1
 generic_poly_ntt_symbols=1
 generic_poly_baseinv_scaled_r_symbols=1
 sample_dag_call_sites=2
-sample_dag_call_site=gt_keygen_ntt_triple_add1: b _poly_ntt_triple_add1_scheduled
-sample_dag_call_site=gt_keygen_ntt_triple: b _poly_ntt_triple_scheduled
+sample_dag_call_site=gt_keygen_ntt_mul3_add1: b _poly_ntt_mul3_add1
+sample_dag_call_site=gt_keygen_ntt_mul3: b _poly_ntt_mul3
 experiment_tree_symbol_present=0
 public_headers_with_internal_symbols=0
 
@@ -125,7 +125,7 @@ GT_PRODUCTION_USE_SCALED_KEYPAIR=1
 GT_BASEINV_USE_FQINV15_ASM=1
 GT_BASEINV_BATCH_USE_ASM_FINISH=1
 GT_BASEINV_USE_HIER_K8=1
-GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1
+GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3=1
 GT_BASEINV_USE_HIER_K8_TREE=1
 ```
 

@@ -8,7 +8,7 @@ coverage, correctness, and Pi5/aarch64-bench evidence.
 
 | agent | track | write scope | expected output |
 | --- | --- | --- | --- |
-| Hypatia | `ntt32_twiddle_offset_slothy` | `experiments/ntt32_twiddle_offset_slothy/`, `asm/slothy/experiments/ntt32_twiddle_offset_slothy/` | symbolic Slothy candidate for fixed-offset x12 twiddle loads |
+| Hypatia | `gt_ntt32_batch8_twiddle_offset_slothy` | `experiments/gt_ntt32_batch8_twiddle_offset_slothy/`, `asm/slothy/experiments/gt_ntt32_batch8_twiddle_offset_slothy/` | symbolic Slothy candidate for fixed-offset x12 twiddle loads |
 | Bohr | `ntt32_stage345_highhalf_st1_lane` | `experiments/ntt32_stage345_highhalf_st1_lane/`, `asm/slothy/experiments/ntt32_stage345_highhalf_st1_lane/` | exact candidate replacing high-half `ext + str d` with lane stores |
 | Hume | `ntt32_stage345_scalar_scatter_cleanup` | read-only, optional `experiments/ntt32_stage345_scalar_scatter_cleanup/` | line map and first prototype recommendation |
 | Archimedes | `ntt32_twiddle1_lazy_reduction` | read-only, optional `experiments/ntt32_twiddle1_lazy_reduction/` | range proof status and representative-contract requirements |
@@ -48,14 +48,14 @@ as a Slothy-scheduled route.
 2. Is `st1 {vN.d}[1], [ptr]` faster than `ext + str d` on Pi5/A76 in the real
    Stage345 tail?
 3. How much of Stage345 scalar scatter is removable without row-specializing
-   the whole `_ntt32_8way` kernel?
+   the whole `_gt_ntt32_batch8_to_blockmajor` kernel?
 4. Which `twiddle=1` arithmetic reductions are range-safe to delete, if any?
 
 ## Subagent Results
 
 | track | result | status | next action |
 | --- | --- | --- | --- |
-| `ntt32_twiddle_offset_slothy` | Stage345 block0 symbolic candidate created; remote Slothy split infeasible, no-split reached `OPTIMAL` at 100 expected cycles but failed result extraction; no `.opt.s` emitted | blocked/investigate | do not integrate; either debug Slothy extraction or split smaller around the scatter tail |
+| `gt_ntt32_batch8_twiddle_offset_slothy` | Stage345 block0 symbolic candidate created; remote Slothy split infeasible, no-split reached `OPTIMAL` at 100 expected cycles but failed result extraction; no `.opt.s` emitted | blocked/investigate | do not integrate; either debug Slothy extraction or split smaller around the scatter tail |
 | `ntt32_stage345_highhalf_st1_lane` | physical benchmark prototype created; local KEM `count: 0`; Pi5 correctness pass; retired instructions down by 96 per full wrapper NTT; cycles mixed/noise-level | keep as benchmark-only evidence, not promotion | only repeat larger PMU if combining with another cleanup; not enough alone |
 | `ntt32_stage345_scalar_scatter_cleanup` | line map and address formula completed; row-specialized fixed-offset Stage345 generator recommended | ready for next prototype | generate row0/row1/row2 direct-offset Stage345 candidate; keep arithmetic and `ext + str d` unchanged first |
 | `ntt32_twiddle1_lazy_reduction` | arithmetic deletion proven unsafe under current NTT32 input bound; legal inputs can overflow int16 and change residue | reject current idea | do not write asm; only revisit with a stricter input contract or a machine-checked range model proving a narrower case |
@@ -67,8 +67,8 @@ as a Slothy-scheduled route.
 Artifacts:
 
 ```text
-experiments/ntt32_twiddle_offset_slothy/
-asm/slothy/experiments/ntt32_twiddle_offset_slothy/candidate-stage345-block0-twiddle-offset.sym.S
+experiments/gt_ntt32_batch8_twiddle_offset_slothy/
+asm/slothy/experiments/gt_ntt32_batch8_twiddle_offset_slothy/candidate-stage345-block0-twiddle-offset.sym.S
 ```
 
 Summary:
@@ -101,7 +101,7 @@ Summary:
 
 ```text
 replace 32 Stage345 high-half ext+str pairs with st1 {vsrc.d}[1], [addr]
-object instructions: 892 -> 860 per _ntt32_8way
+object instructions: 892 -> 860 per _gt_ntt32_batch8_to_blockmajor
 local KEM: count 0
 Pi5 PMU correctness: total_mismatches 0
 rough cycles: mixed/no clear win
@@ -135,7 +135,7 @@ Conclusion:
 
 The first real prototype should be a row-specialized generator that emits
 direct-offset Stage345 stores for row0/row1/row2.  Do not start by hand-deleting
-block0 stack spills, and do not inline the whole `_ntt32_8way` before the
+block0 stack spills, and do not inline the whole `_gt_ntt32_batch8_to_blockmajor` before the
 row-specialized direct-offset path has correctness and PMU data.
 
 ### Twiddle1 Lazy Reduction

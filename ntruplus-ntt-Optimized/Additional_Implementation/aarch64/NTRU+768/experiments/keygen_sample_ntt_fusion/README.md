@@ -5,15 +5,15 @@
 Prototype benchmark-only helpers for keygen sample input fusion:
 
 ```c
-void poly_ntt_triple(poly *out, const poly *small);
-void poly_ntt_triple_add1(poly *out, const poly *small);
+void poly_ntt_mul3_reference(poly *out, const poly *small);
+void poly_ntt_mul3_add1_reference(poly *out, const poly *small);
 ```
 
 Contracts:
 
 ```text
-poly_ntt_triple(out, a)      == poly_ntt(3*a)
-poly_ntt_triple_add1(out, a) == poly_ntt(3*a + 1 at coeff[0])
+poly_ntt_mul3_reference(out, a)      == poly_ntt(3*a)
+poly_ntt_mul3_add1_reference(out, a) == poly_ntt(3*a + 1 at coeff[0])
 ```
 
 This targets the keygen path after `poly_cbd1` and before baseinv:
@@ -32,8 +32,8 @@ poly_ntt(&g, &g);
 ## Files
 
 ```text
-asm/gt/experiment/sample_ntt/poly_ntt_triple.S
-asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S
+asm/gt/experiment/sample_ntt/poly_ntt_mul3_reference.S
+asm/gt/experiment/sample_ntt/poly_ntt_mul3_add1_reference.S
 aarch64-bench/bench_gt_keygen_sample_ntt_fusion_pmu.c
 aarch64-bench Makefile target: bench_gt_keygen_sample_ntt_fusion_pmu
 ```
@@ -52,7 +52,7 @@ small input load
 ```
 
 The candidate preserves the normal GT block-major row-bitrev output layout and
-calls the existing `_ntt32_8way` row kernel.
+calls the existing `_gt_ntt32_batch8_to_blockmajor` row kernel.
 
 Important limitation:
 
@@ -72,8 +72,8 @@ here does not by itself reject a later scheduled input-fusion candidate.
 The direct oracle compares:
 
 ```text
-poly_ntt_triple_add1(a) == poly_ntt(poly_triple(a) + 1 at coeff[0])
-poly_ntt_triple(a)      == poly_ntt(poly_triple(a))
+poly_ntt_mul3_add1_reference(a) == poly_ntt(poly_triple(a) + 1 at coeff[0])
+poly_ntt_mul3_reference(a)      == poly_ntt(poly_triple(a))
 ```
 
 Required:
@@ -191,22 +191,22 @@ Port the same input-fusion contract into a production-scheduled Phase123 base.
 New benchmark-only symbols:
 
 ```c
-void poly_ntt_triple_prod(poly *out, const poly *small);
-void poly_ntt_triple_add1_prod(poly *out, const poly *small);
+void poly_ntt_mul3_reference_prod(poly *out, const poly *small);
+void poly_ntt_mul3_add1_reference_prod(poly *out, const poly *small);
 ```
 
 Contracts:
 
 ```text
-poly_ntt_triple_prod(out, a)      == poly_ntt(3*a)
-poly_ntt_triple_add1_prod(out, a) == poly_ntt(3*a + 1 at coeff[0])
+poly_ntt_mul3_reference_prod(out, a)      == poly_ntt(3*a)
+poly_ntt_mul3_add1_reference_prod(out, a) == poly_ntt(3*a + 1 at coeff[0])
 ```
 
 Retired artifacts (available in Git history before the cleanup commit):
 
 ```text
-asm/gt/experiment/sample_ntt/poly_ntt_triple_prod.S
-asm/gt/experiment/sample_ntt/poly_ntt_triple_add1_prod.S
+asm/gt/experiment/sample_ntt/poly_ntt_mul3_reference_prod.S
+asm/gt/experiment/sample_ntt/poly_ntt_mul3_add1_reference_prod.S
 asm/gt/experiment/sample_ntt/ntt_gt_body_triple_prod.inc
 asm/gt/experiment/sample_ntt/ntt_gt_body_triple_add1_prod.inc
 asm/gt/experiment/sample_ntt/my_ntt_phase123.triple_prod.inc
@@ -217,13 +217,13 @@ aarch64-bench/bench_gt_keygen_sample_ntt_fusion_prod_pmu.c
 Implementation:
 
 ```text
-production ntt_gt_body.inc clone
-  -> production Slothy-scheduled my_ntt_phase123.n1.opt.s clone
+former production NTT body clone
+  -> former production Slothy-scheduled GT frontend clone
   -> insert input scaling immediately after every x1 input load
   -> local zetas lane v0.h[6] = 3
   -> each loaded input vector does: mul vD.8H, vD.8H, v0.H[6]
   -> add1 variant injects e0 into the first low-side input vector
-  -> production my_32ntt.opt.s remains unchanged
+  -> production asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S remains unchanged
   -> output layout remains GT block-major row-bitrev
 ```
 
@@ -254,10 +254,10 @@ GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_SOURCES = \
 	$(GT_BASEINV_BATCH_C) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
-	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple.S \
-	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1.S \
-	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_prod.S \
-	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_triple_add1_prod.S
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_reference.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_add1_reference.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_reference_prod.S \
+	$(NTRUPLUS)/asm/gt/experiment/sample_ntt/poly_ntt_mul3_add1_reference_prod.S
 
 $(GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_TARGET): $(GT_KEYGEN_SAMPLE_NTT_FUSION_PROD_PMU_SOURCES)
 	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
@@ -391,59 +391,59 @@ the 3x sample scaling instead of inserting muls into an existing schedule.
 Contracts:
 
 ```c
-void poly_ntt_triple_scheduled(poly *out, const poly *small);
-void poly_ntt_triple_add1_scheduled(poly *out, const poly *small);
+void poly_ntt_mul3(poly *out, const poly *small);
+void poly_ntt_mul3_add1(poly *out, const poly *small);
 ```
 
 ```text
-poly_ntt_triple_scheduled(out, a)      == poly_ntt(3*a)
-poly_ntt_triple_add1_scheduled(out, a) == poly_ntt(3*a + 1 at coeff[0])
+poly_ntt_mul3(out, a)      == poly_ntt(3*a)
+poly_ntt_mul3_add1(out, a) == poly_ntt(3*a + 1 at coeff[0])
 ```
 
 Reproducibility map:
 
 ```text
 symbolic source of truth:
-  asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+  asm/slothy/inputs/ntt768_gt_frontend.sym.S
 
 SAMPLE-DAG generator:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/generate_phase123_triple_sources.py
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/generate_ntt768_gt_frontend_mul3_sources.py
 
 generated symbolic sources:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple.sym.s
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/phase123_triple_add1.sym.s
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3.sym.S
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3_add1.sym.S
 
 Slothy driver:
-  experiments/keygen_sample_ntt_fusion/symbolic_phase123_triple/optimize_phase123_triple.py
+  experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py
 
 generated Slothy ASM:
-  asm/slothy/production/my_ntt_phase123_triple.n1.opt.s
-  asm/slothy/production/my_ntt_phase123_triple_add1.n1.opt.s
+  asm/gt/ntt/ntt768_gt_frontend_mul3.n1.opt.inc
+  asm/gt/ntt/ntt768_gt_frontend_mul3_add1.n1.opt.inc
 
 benchmark integration ASM:
-  asm/gt/ntt_gt_body_triple_scheduled.inc
-  asm/gt/ntt_gt_body_triple_add1_scheduled.inc
-  asm/gt/poly_ntt_triple_scheduled.S
-  asm/gt/poly_ntt_triple_add1_scheduled.S
+  asm/gt/ntt/poly_ntt_mul3_body.inc
+  asm/gt/ntt/poly_ntt_mul3_add1_body.inc
+  asm/gt/ntt/poly_ntt_mul3.S
+  asm/gt/ntt/poly_ntt_mul3_add1.S
 ```
 
 The wrapper labels exported by the benchmark-only ASM are:
 
 ```text
-poly_ntt_triple_scheduled
-_poly_ntt_triple_scheduled
-poly_ntt_triple_add1_scheduled
-_poly_ntt_triple_add1_scheduled
+poly_ntt_mul3
+_poly_ntt_mul3
+poly_ntt_mul3_add1
+_poly_ntt_mul3_add1
 ```
 
-The C harness uses `poly_ntt_triple_scheduled` and
-`poly_ntt_triple_add1_scheduled`. The symbols are not declared in `poly.h` and
+The C harness uses `poly_ntt_mul3` and
+`poly_ntt_mul3_add1`. The symbols are not declared in `poly.h` and
 are not used by production.
 
 Build gate and benchmark target:
 
 ```text
-macro gate: GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
+macro gate: GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3
 target:     bench_gt_keygen_sample_ntt_fusion_slothy_pmu
 ```
 
@@ -482,13 +482,13 @@ Manual patch status:
 
 ```text
 No manual patches were applied after Slothy to the generated
-my_ntt_phase123_triple*.n1.opt.s outputs.
+`asm/gt/ntt/ntt768_gt_frontend_mul3*.n1.opt.inc` outputs.
 
 The add1 parser workaround is scripted before Slothy by the source generator:
 it loads an experiment-local e0 mask through x7 instead of using unsupported
 half-lane scalar insertion. The scheduled body wrappers are hand-written
 benchmark integration glue that set up the frame, include the generated
-Slothy output, and call the unchanged production _ntt32_8way row kernels.
+Slothy output, and call the unchanged production _gt_ntt32_batch8_to_blockmajor row kernels.
 ```
 
 This keeps `gt_production_default` unchanged. The candidate remains a

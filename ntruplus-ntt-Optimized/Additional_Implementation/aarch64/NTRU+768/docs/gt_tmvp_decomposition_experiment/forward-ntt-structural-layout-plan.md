@@ -11,11 +11,11 @@ The active GT production Forward NTT is:
 
 ```text
 poly_ntt / gt_block_major_poly_ntt
-  asm/gt/poly_ntt.s
-    includes asm/gt/ntt_gt_body.inc
-      includes asm/slothy/production/my_ntt_phase123.n1.opt.s
-      calls _ntt32_8way three times
-        asm/slothy/production/my_32ntt.opt.s
+  asm/gt/ntt/poly_ntt.S
+    includes asm/gt/ntt/poly_ntt_body.inc
+      includes asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc
+      calls _gt_ntt32_batch8_to_blockmajor three times
+        asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 ```
 
 The active output contract is:
@@ -108,8 +108,9 @@ Slothy window is not expected to remove this cost.
 
 1. External output remains GT block-major row-bitrev unless a separate
    basemul/baseinv ABI redesign is approved.
-2. `my_32ntt.opt.s` is not a standalone arbitrary-int16 NTT32.  Phase123 feeds
-   bounded raw 3-point DFT outputs, and NTT32 relies on that lazy range.
+2. `asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S` is not a standalone
+   arbitrary-int16 NTT32. The GT frontend feeds bounded raw 3-point DFT
+   outputs, and NTT32 relies on that lazy range.
 3. Final stage345 reduction must preserve the representative contract consumed
    by `poly_basemul`, `poly_basemul_add`, `poly_baseinv_scaled_r`, and
    `poly_tobytes`.
@@ -123,7 +124,7 @@ Slothy window is not expected to remove this cost.
 
 Status: first implementation candidate.
 
-Keep the external Forward NTT layout unchanged.  Inside `_ntt32_8way`, compute
+Keep the external Forward NTT layout unchanged.  Inside `_gt_ntt32_batch8_to_blockmajor`, compute
 stage12 stripes in an order that keeps one stage345 block's eight Q-vectors in
 registers while the other three block outputs are stored to row scratch.  Then
 run the corresponding stage345 block directly from those live registers.
@@ -155,7 +156,7 @@ H1 targets a real memory boundary and keeps the same final store contract.
 Required next artifacts before candidate ASM:
 
 ```text
-baseline contract: current _ntt32_8way stage12/stage345 memory contract
+baseline contract: current _gt_ntt32_batch8_to_blockmajor stage12/stage345 memory contract
 kernel contract: block0-carry NTT32 row kernel
 instruction DAG: stage12 stripe outputs tagged by Q index, block0 live-through
 oracle: production poly_ntt vs prototype poly_ntt vs C reference/tagged input

@@ -640,7 +640,7 @@ Source:
 
 ```text
 asm/slothy/inputs/base_gt_add32_full_pipeline.sym.S
-asm/slothy/production/base_gt_add32_full_pipeline.n1.opt.S
+asm/gt/basemul/poly_basemul_add.n1.opt.inc
 ```
 
 Current allocated physical map at the P-boundary:
@@ -874,7 +874,7 @@ GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 ### ASM Contract
 
 The prototype is based on the current
-`base_gt_add32_full_pipeline.n1.opt.S` register allocation through the quartic
+`poly_basemul_add.n1.opt.inc` register allocation through the quartic
 product accumulator boundary.  It removes the interleaved Group2 product
 Montgomery fold and Group3 add32 finalizer, then applies the byte-contract Q31
 reducer directly to `P + c`.
