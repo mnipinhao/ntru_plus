@@ -3,8 +3,8 @@
  *
  * Candidate symbols are benchmark-only and are intentionally not declared in
  * poly.h:
- *   poly_ntt_triple(out, a)      == poly_ntt(3*a)
- *   poly_ntt_triple_add1(out, a) == poly_ntt(3*a + 1 at coeff 0)
+ *   poly_ntt_mul3_reference(out, a)      == poly_ntt(3*a)
+ *   poly_ntt_mul3_add1_reference(out, a) == poly_ntt(3*a + 1 at coeff 0)
  */
 #if !defined(__linux__)
 #error "bench_gt_keygen_sample_ntt_fusion_pmu requires Linux perf_event_open"
@@ -56,8 +56,8 @@
 #define NOINLINE
 #endif
 
-void poly_ntt_triple(poly *out, const poly *a);
-void poly_ntt_triple_add1(poly *out, const poly *a);
+void poly_ntt_mul3_reference(poly *out, const poly *a);
+void poly_ntt_mul3_add1_reference(poly *out, const poly *a);
 
 typedef void (*bench_target_fn)(size_t idx);
 
@@ -148,8 +148,8 @@ static void prepare_inputs(void)
 
     reference_ntt_triple_add1(&g_f_ref[i], &g_f_small[i]);
     reference_ntt_triple(&g_g_ref[i], &g_g_small[i]);
-    poly_ntt_triple_add1(&g_f_candidate[i], &g_f_small[i]);
-    poly_ntt_triple(&g_g_candidate[i], &g_g_small[i]);
+    poly_ntt_mul3_add1_reference(&g_f_candidate[i], &g_f_small[i]);
+    poly_ntt_mul3_reference(&g_g_candidate[i], &g_g_small[i]);
   }
 }
 
@@ -169,11 +169,11 @@ static int run_correctness(void)
     poly_cbd1(&small, buf);
 
     reference_ntt_triple_add1(&ref, &small);
-    poly_ntt_triple_add1(&cand, &small);
+    poly_ntt_mul3_add1_reference(&cand, &small);
     f_mismatches += poly_exact_mismatches(&ref, &cand);
 
     reference_ntt_triple(&ref, &small);
-    poly_ntt_triple(&cand, &small);
+    poly_ntt_mul3_reference(&cand, &small);
     g_mismatches += poly_exact_mismatches(&ref, &cand);
   }
 
@@ -197,7 +197,7 @@ static NOINLINE void target_candidate_ntt_triple_add1_f(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple_add1(&g_work0, &g_f_small[input_idx]);
+  poly_ntt_mul3_add1_reference(&g_work0, &g_f_small[input_idx]);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
 }
 
@@ -213,7 +213,7 @@ static NOINLINE void target_candidate_ntt_triple_g(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple(&g_work1, &g_g_small[input_idx]);
+  poly_ntt_mul3_reference(&g_work1, &g_g_small[input_idx]);
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
 }
 
@@ -238,8 +238,8 @@ static NOINLINE void target_post_cbd_x2_candidate(size_t idx)
 
   poly_cbd1(&g_work0, g_buf_f[input_idx]);
   poly_cbd1(&g_work1, g_buf_g[input_idx]);
-  poly_ntt_triple_add1(&g_work0, &g_work0);
-  poly_ntt_triple(&g_work1, &g_work1);
+  poly_ntt_mul3_add1_reference(&g_work0, &g_work0);
+  poly_ntt_mul3_reference(&g_work1, &g_work1);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 31) % NTRUPLUS_N];
 }

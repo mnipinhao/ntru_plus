@@ -30,7 +30,7 @@ _gt_block_major_poly_ntt:
     adr x2, u01_block_first_zetas
     ldr q0, [x2]
     adr x22, u01_block_first_twist_table
-    adr x23, u01_block_first_ntt32_twiddle_vecs
+    adr x23, u01_block_first_gt_ntt32_batch8_twiddle_vecs
 
     // Generated Track G G1 F0123 body.
     // E3/F012 is unchanged.  Block3 is consumed after block0/1/2

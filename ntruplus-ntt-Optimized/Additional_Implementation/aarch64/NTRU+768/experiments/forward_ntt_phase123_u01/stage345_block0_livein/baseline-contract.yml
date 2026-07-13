@@ -3,11 +3,11 @@ baseline_status: extracted
 
 baseline:
   id: ntt32_stage345_block0_production
-  source: asm/slothy/production/my_32ntt.opt.s
+  source: asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
   extracted_region: experiments/forward_ntt_phase123_u01/stage345_block0_livein/baseline-stage345-block0.s
-  function: _ntt32_8way
-  start_label: _ntt32_stage345_block0_slothy_start
-  end_label: _ntt32_stage345_block0_slothy_end
+  function: _gt_ntt32_batch8_to_blockmajor
+  start_label: _gt_ntt32_batch8_ct_stage345_block0_slothy_start
+  end_label: _gt_ntt32_batch8_ct_stage345_block0_slothy_end
   source_commit: d5ebaccd
 
 region:
@@ -103,7 +103,7 @@ range_contract:
   input_ranges:
     - Q0..Q7 match production NTT32 post-stage12 row scratch values for one row block
   intermediate_ranges:
-    - same lazy stage345 intermediate bounds as production my_32ntt.opt.s
+    - same lazy stage345 intermediate bounds as production asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
   output_ranges:
     - final d stores match production NTT32 stage345 block0 output representatives
   narrowing_points:

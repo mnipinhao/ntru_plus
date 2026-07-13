@@ -33,7 +33,7 @@ test_gt_basemul_add32_full_pipeline_inline: $(HEADERS) ntt.h ntt.c $(GT_BASE_REF
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -DGT_BASE_REF_NO_ABI_WRAPPERS -Wno-unused-function -I. -o $(BUILD_DIR)/test_gt_basemul_add32_full_pipeline_inline gt_test/test_gt_basemul_add32_asm.c ntt.c $(GT_BASE_REF_C) $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
 	./$(BUILD_DIR)/test_gt_basemul_add32_full_pipeline_inline
 
-test_invntt_production_abi: $(HEADERS) ntt.h ntt.c gt_test/test_invntt_production_abi.c $(GT_NTT_ASM_PHASE123_N1) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM)
+test_invntt_production_abi: $(HEADERS) ntt.h ntt.c gt_test/test_invntt_production_abi.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -Wno-unused-function -I. -o $(BUILD_DIR)/test_invntt_production_abi gt_test/test_invntt_production_abi.c ntt.c $(GT_NTT_ASM_PHASE123_N1) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -Wno-unused-function -I. -o $(BUILD_DIR)/test_invntt_production_abi gt_test/test_invntt_production_abi.c ntt.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM)
 	./$(BUILD_DIR)/test_invntt_production_abi

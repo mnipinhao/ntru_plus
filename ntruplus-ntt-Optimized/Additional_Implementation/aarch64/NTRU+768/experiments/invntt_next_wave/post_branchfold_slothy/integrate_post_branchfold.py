@@ -10,7 +10,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 SOURCE = ROOT / "asm/slothy/experiments/invntt_next_wave/post_branchfold_three_outputs.n1.opt.s"
-OUTPUT = ROOT / "asm/slothy/experiments/invntt_next_wave/post_branchfold_three_outputs.n1.inc"
+OUTPUT = ROOT / "asm/gt/invntt/poly_invntt_post_branchfold.n1.opt.inc"
 START = "slothy_start_invntt_post_branchfold_three_outputs:"
 END = "slothy_end_invntt_post_branchfold_three_outputs:"
 INSTRUCTION = re.compile(r"^\s+[a-z][a-z0-9.]*\s")

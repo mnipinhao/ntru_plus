@@ -13,9 +13,9 @@ inputs:
   - id: out_row0
     register: x4
     description: row0 post-stage12 output scratch base
-  - id: ntt32_twiddle_base
+  - id: gt_ntt32_batch8_twiddle_base
     register: x12
-    description: ntt32_twiddle_vecs base
+    description: gt_ntt32_batch8_twiddle_vecs base
   - id: constants
     register: v0
     description: q and reduction constants
@@ -73,8 +73,8 @@ nodes:
     must_precede: [stage12_stripe0, stage12_stripe1]
 
   - id: stage12_stripe0
-    op: production_ntt32_stage12_stripe
-    inputs: [raw_Q0, raw_Q8, raw_Q16, raw_Q24, ntt32_twiddle_base + 16/32/48, q]
+    op: production_gt_ntt32_batch8_ct_stage12_stripe
+    inputs: [raw_Q0, raw_Q8, raw_Q16, raw_Q24, gt_ntt32_batch8_twiddle_base + 16/32/48, q]
     outputs: [post_Q0, post_Q8, post_Q16, post_Q24]
     instruction_shape: add/sub, sqrdmulh, mul, mls, four q stores
     tied_operands: [mls destination is read/write]
@@ -84,8 +84,8 @@ nodes:
     must_precede: [store_post_Q0, store_post_Q8, store_post_Q16, store_post_Q24]
 
   - id: stage12_stripe1
-    op: production_ntt32_stage12_stripe
-    inputs: [raw_Q1, raw_Q9, raw_Q17, raw_Q25, ntt32_twiddle_base + 16/32/48, q]
+    op: production_gt_ntt32_batch8_ct_stage12_stripe
+    inputs: [raw_Q1, raw_Q9, raw_Q17, raw_Q25, gt_ntt32_batch8_twiddle_base + 16/32/48, q]
     outputs: [post_Q1, post_Q9, post_Q17, post_Q25]
     instruction_shape: add/sub, sqrdmulh, mul, mls, four q stores
     tied_operands: [mls destination is read/write]

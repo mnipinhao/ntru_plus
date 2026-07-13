@@ -49,7 +49,7 @@
 #endif
 
 #ifndef WRAPPER_A
-#define WRAPPER_A "ntruplus/asm/gt/poly_ntt.s"
+#define WRAPPER_A "ntruplus/asm/gt/ntt/poly_ntt.S"
 #endif
 #ifndef WRAPPER_B
 #define WRAPPER_B "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1.S"

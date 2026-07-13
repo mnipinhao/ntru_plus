@@ -216,7 +216,7 @@ def emit_wrapper(symbol: str, body: list[str], debug: bool, frame_size: int) -> 
             "    adr x2, u01_block_first_zetas",
             "    ldr q0, [x2]",
             "    adr x22, u01_block_first_twist_table",
-            "    adr x23, u01_block_first_ntt32_twiddle_vecs",
+            "    adr x23, u01_block_first_gt_ntt32_batch8_twiddle_vecs",
             "",
             *body,
             *(
@@ -547,7 +547,7 @@ def contract_json(allocator_report: dict[str, object]) -> dict[str, object]:
         "artifact": "stage345_block0_contract",
         "production_default_changed": False,
         "scope": "Track E F01 block0+block1 only",
-        "source": "asm/slothy/production/my_32ntt.opt.s:_ntt32_stage345_block0_slothy_start",
+        "source": "asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S:_gt_ntt32_batch8_ct_stage345_block0_slothy_start",
         "warning": "E1 failed correctness; this contract is the required input for the next no-spill allocator.",
         "stage345_block0_ssa": {
             "operation_count_including_comments": len(ops),

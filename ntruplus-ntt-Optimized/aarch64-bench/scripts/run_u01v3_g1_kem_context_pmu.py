@@ -28,7 +28,7 @@ class Variant:
     ntt32_asm: str
 
 
-PROD_NTT32 = "ntruplus/asm/slothy/production/my_32ntt.opt.s"
+PROD_NTT32 = "ntruplus/asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S"
 
 
 def rows(cid: str) -> str:
@@ -44,7 +44,7 @@ def rows(cid: str) -> str:
 
 
 VARIANTS = (
-    Variant("A", "ntruplus/asm/gt/poly_ntt.s", PROD_NTT32),
+    Variant("A", "ntruplus/asm/gt/ntt/poly_ntt.S", PROD_NTT32),
     Variant(
         "G1",
         "ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_dropin.S",

@@ -88,7 +88,7 @@ PRODUCERS = [
         output_bound=Bound(
             INT16_MIN + 1,
             INT16_MAX,
-            "my_32ntt comment: lazy CT stays below signed int16",
+            "ntt32_batch8_to_blockmajor contract: lazy CT stays below signed int16",
         ),
         expected_instr_reduction=(
             "192 reduction chains per full poly_ntt call "

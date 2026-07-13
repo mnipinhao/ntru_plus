@@ -20,7 +20,7 @@ from generate_stage12_block0_first import emit_stage12_stripe
 
 ROOT = Path(__file__).resolve().parent
 NTRU_ROOT = ROOT.parents[1]
-PHASE123 = NTRU_ROOT / "asm/slothy/inputs/my_ntt_phase123_flat.sym.s"
+PHASE123 = NTRU_ROOT / "asm/slothy/inputs/ntt768_gt_frontend.sym.S"
 OUT = ROOT / "phase123_shared_prefix_v2_allrows.sym.s"
 
 
@@ -83,7 +83,7 @@ def main() -> int:
         "// experiments/forward_ntt_phase123_u01/generate_phase123_shared_prefix_v2.py.",
         "//",
         "// Live-in: x14=input base, x15=Phase123 twist base,",
-        "//          x12=ntt32_twiddle_vecs, x13=row-major scratch,",
+        "//          x12=gt_ntt32_batch8_twiddle_vecs, x13=row-major scratch,",
         "//          v0=q/constants.",
         "// Live-out: x13 row-major post-stage12 Q0..Q31 for rows0/1/2.",
         "",

@@ -315,4 +315,4 @@ Linvntt_boundary_stage45_consts:
     .hword 9, 9, 6711, 0, 0, 0, 0, 0
 .align 4
 Linvntt_boundary_branchfold:
-    .include "asm/slothy/production/invntt_branchfold_vecs_rminus1.inc"
+    .include "asm/gt/invntt/poly_invntt_branchfold_constants_rminus1.inc"

@@ -11,9 +11,9 @@ void poly_basemul_add_encap_direct32_q31_tobytes_contract(
     poly *r, const poly *a, const poly *b, const poly *c);
 #endif
 
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-void poly_ntt_triple_scheduled(poly *out, const poly *a);
-void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+void poly_ntt_mul3(poly *out, const poly *a);
+void poly_ntt_mul3_add1(poly *out, const poly *a);
 #endif
 
 #if defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
@@ -161,10 +161,10 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
 #endif
 
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
-gt_keygen_ntt_triple_add1(poly *out, const poly *small)
+gt_keygen_ntt_mul3_add1(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-    poly_ntt_triple_add1_scheduled(out, small);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+    poly_ntt_mul3_add1(out, small);
 #else
     poly_triple(out, small);
     out->coeffs[0] += 1;
@@ -173,10 +173,10 @@ gt_keygen_ntt_triple_add1(poly *out, const poly *small)
 }
 
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
-gt_keygen_ntt_triple(poly *out, const poly *small)
+gt_keygen_ntt_mul3(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-    poly_ntt_triple_scheduled(out, small);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+    poly_ntt_mul3(out, small);
 #else
     poly_triple(out, small);
     poly_ntt(out, out);
@@ -227,7 +227,7 @@ static inline int genf_derand(poly *f, poly *finv, const uint8_t *coins)
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(f, buf);
-    gt_keygen_ntt_triple_add1(f, f);
+    gt_keygen_ntt_mul3_add1(f, f);
 
     return KEYPAIR_BASEINV(finv, f);
 }
@@ -252,7 +252,7 @@ static inline int geng_derand(poly *g, poly *ginv, const uint8_t *coins)
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(g, buf);
-    gt_keygen_ntt_triple(g, g);
+    gt_keygen_ntt_mul3(g, g);
 
     return KEYPAIR_BASEINV(ginv, g);
 }

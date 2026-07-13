@@ -88,10 +88,10 @@ def load_stage345_block0() -> list[str]:
     out: list[str] = []
     for line in lines:
         stripped = line.strip()
-        if stripped == "_ntt32_stage345_block0_slothy_start:":
+        if stripped == "_gt_ntt32_batch8_ct_stage345_block0_slothy_start:":
             inside = True
             continue
-        if stripped == "_ntt32_stage345_block0_slothy_end:":
+        if stripped == "_gt_ntt32_batch8_ct_stage345_block0_slothy_end:":
             break
         if inside:
             out.append(line.rstrip())

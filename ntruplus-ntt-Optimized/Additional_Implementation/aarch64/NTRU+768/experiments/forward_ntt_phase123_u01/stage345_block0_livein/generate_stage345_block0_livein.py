@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[3]
 BASELINE = ROOT / "experiments/forward_ntt_phase123_u01/stage345_block0_livein/baseline-stage345-block0.s"
 OUTPUT = ROOT / "experiments/forward_ntt_phase123_u01/stage345_block0_livein/candidate-stage345-block0-livein.sym.S"
 
-START_OLD = "_ntt32_stage345_block0_slothy_start:"
-END_OLD = "_ntt32_stage345_block0_slothy_end:"
+START_OLD = "_gt_ntt32_batch8_ct_stage345_block0_slothy_start:"
+END_OLD = "_gt_ntt32_batch8_ct_stage345_block0_slothy_end:"
 START_NEW = "slothy_start_stage345_block0_livein:"
 END_NEW = "slothy_end_stage345_block0_livein:"
 

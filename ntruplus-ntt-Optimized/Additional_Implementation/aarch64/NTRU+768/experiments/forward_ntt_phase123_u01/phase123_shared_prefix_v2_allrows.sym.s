@@ -4,7 +4,7 @@
 // experiments/forward_ntt_phase123_u01/generate_phase123_shared_prefix_v2.py.
 //
 // Live-in: x14=input base, x15=Phase123 twist base,
-//          x12=ntt32_twiddle_vecs, x13=row-major scratch,
+//          x12=gt_ntt32_batch8_twiddle_vecs, x13=row-major scratch,
 //          v0=q/constants.
 // Live-out: x13 row-major post-stage12 Q0..Q31 for rows0/1/2.
 

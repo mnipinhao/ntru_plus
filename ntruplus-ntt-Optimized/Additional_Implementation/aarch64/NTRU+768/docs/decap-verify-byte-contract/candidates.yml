@@ -115,7 +115,7 @@ candidates:
     prototype: asm/gt/bench/gt_decap_verify_basemul_tobytes_direct_candidate.S
     design_doc: docs/decap-verify-byte-contract/vector-finalizer-feasibility.md
     implementation:
-      source_basis: asm/gt/base_gt_opt_body.inc
+      source_basis: asm/gt/basemul/poly_basemul_body.inc
       strategy: "production GT basemul DAG with final-store hook"
       finalizer: "two 32-coeff basemul blocks -> st4-shape to ld1-shape register conversion -> vector poly_tobytes pack"
       scratch: "64-byte stack stage for the first 32-coeff half of each 64-coeff tobytes chunk"

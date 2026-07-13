@@ -1,4 +1,4 @@
-        _ntt32_stage345_block0_slothy_start:
+        _gt_ntt32_batch8_ct_stage345_block0_slothy_start:
                                                  // Instructions:    167
                                                  // Expected cycles: 55
                                                  // Expected IPC:    3.04
@@ -345,4 +345,4 @@
         // str d20, [x17]                                 // ......................................................*.
         // str d19, [x12]                                 // ...................................................*....
 
-        _ntt32_stage345_block0_slothy_end:
+        _gt_ntt32_batch8_ct_stage345_block0_slothy_end:

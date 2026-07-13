@@ -3,7 +3,7 @@
 
 The oracle interprets the small AArch64 Neon subset used by:
 
-  - asm/slothy/inputs/my_ntt_phase123_flat.sym.s
+  - asm/slothy/inputs/ntt768_gt_frontend.sym.S
   - experiments/forward_ntt_phase123_u01/phase123_u01.sym.s
 
 It compares production Phase123 iteration slots0+1 against the matching U01
@@ -20,9 +20,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PHASE123 = ROOT / "asm/slothy/inputs/my_ntt_phase123_flat.sym.s"
+PHASE123 = ROOT / "asm/slothy/inputs/ntt768_gt_frontend.sym.S"
 U01 = ROOT / "experiments/forward_ntt_phase123_u01/phase123_u01.sym.s"
-NTT_BODY = ROOT / "asm/gt/ntt_gt_body.inc"
+NTT_BODY = ROOT / "asm/gt/ntt/poly_ntt_body.inc"
 
 
 def u16(x: int) -> int:

@@ -7,7 +7,7 @@
 .text
 
 // Live-in: x1=input base, x3=Phase123 twist base, x4=row0 output base,
-//          x12=ntt32_twiddle_vecs base, v0=q/reduction constants.
+//          x12=gt_ntt32_batch8_twiddle_vecs base, v0=q/reduction constants.
 // Live-out: post-stage12 row0 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stores at x4
 //           offsets 0/16/128/144/256/272/384/400.
 // Range: same raw row0 U01 range as production Phase123, then same lazy
@@ -259,7 +259,7 @@ slothy_start_phase123_u01_stage12_row0_stripe01:
     add v15.8h, v15.8h, v31.8h
 
     // NTT32 stage12 twiddles. Production stage12 uses lane 0 after resetting
-    // ntt32_twiddle_vecs before each stripe.
+    // gt_ntt32_batch8_twiddle_vecs before each stripe.
     ldr q2, [x12, #16]
     ldr q3, [x12, #32]
     ldr q4, [x12, #48]
