@@ -62,9 +62,9 @@ void poly_basemul_scaled_r_input(poly *r, const poly *a,
 #define KEYPAIR_BASEMUL poly_basemul
 #endif
 
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-void poly_ntt_triple_scheduled(poly *out, const poly *a);
-void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+void poly_ntt_mul3(poly *out, const poly *a);
+void poly_ntt_mul3_add1(poly *out, const poly *a);
 #endif
 #endif
 
@@ -355,8 +355,8 @@ static uint8_t ct_verify(const uint8_t *a, const uint8_t *b, size_t len)
 
 static void keygen_ntt_triple_add1_bench(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-  poly_ntt_triple_add1_scheduled(out, small);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+  poly_ntt_mul3_add1(out, small);
 #else
   poly_triple(out, small);
   out->coeffs[0] += 1;
@@ -366,8 +366,8 @@ static void keygen_ntt_triple_add1_bench(poly *out, const poly *small)
 
 static void keygen_ntt_triple_bench(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-  poly_ntt_triple_scheduled(out, small);
+#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+  poly_ntt_mul3(out, small);
 #else
   poly_triple(out, small);
   poly_ntt(out, out);

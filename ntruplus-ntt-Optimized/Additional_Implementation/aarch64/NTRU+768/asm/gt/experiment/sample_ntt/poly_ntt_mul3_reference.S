@@ -1,0 +1,1990 @@
+/*
+ * Benchmark-only SAMPLE input-path fusion prototype.
+ *
+ * Symbol: poly_ntt_mul3_reference
+ * Contract: poly_ntt(3*a)
+ *
+ * This file is generated from the production GT NTT body plus the symbolic
+ * unscheduled GT frontend source.  It does not replace generic poly_ntt.
+ */
+
+.global poly_ntt_mul3_reference
+.global _poly_ntt_mul3_reference
+poly_ntt_mul3_reference:
+_poly_ntt_mul3_reference:
+/*
+ * Production GT forward NTT body.
+ *
+ * Active path:
+ *   - Slothy-scheduled GT frontend (`asm/gt/ntt/ntt768_gt_frontend.n1.opt.inc`)
+ *   - three fused 8-way NTT32 row kernels
+ *   - normal block-major output
+ *
+ * The old GAS PHASE123_ITER fallback, NTT32 row-buffer scatter fallback, and
+ * GT frontend A/B/C experiment selectors are intentionally not kept here.
+ *
+ * This include file intentionally does not export public symbols.  Public
+ * entry wrappers define the symbol contract before including this body.
+ *
+ * The flat symbolic GT frontend source used for Slothy regeneration remains in
+ * `asm/slothy/inputs/ntt768_gt_frontend.sym.S`.
+ */
+
+.macro CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
+    bl _gt_ntt32_batch8_to_blockmajor
+.endm
+
+    .equ GT_NTT_FRAME_SIZE, 1568
+    .equ GT_NTT_SAVED_DST_OFFSET, 1576
+
+    dst       .req x0
+    src       .req x1
+    zetas_ptr .req x2
+    twist_ptr .req x3
+    row0_ptr .req x4
+    row1_ptr .req x5
+    row2_ptr .req x6
+
+    adr zetas_ptr, zetas
+    ldr q0, [zetas_ptr]
+
+    // Preserve callee-saved SIMD lanes across the NTT32 row-kernel calls.
+    stp d8, d9, [sp, #-64]!
+    stp d10, d11, [sp, #16]
+    stp d12, d13, [sp, #32]
+    stp d14, d15, [sp, #48]
+    stp x30, x0, [sp, #-16]!
+    sub sp, sp, #GT_NTT_FRAME_SIZE
+
+    adr twist_ptr, twist_table
+    add row0_ptr, sp, #32
+    add row1_ptr, sp, #544
+    add row2_ptr, sp, #1056
+
+// Auto-generated from asm/gt/ntt/poly_ntt_body.inc PHASE123_ITER for Slothy.
+// Source keeps iteration boundaries so each chunk can be optimized with N1.
+slothy_start_ntt768_gt_frontend:
+slothy_start_ntt768_gt_frontend_iter0:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v30.8h, v26.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v22.8h, v30.8h
+    add      v9.8h,  v9.8h,  v26.8h
+    sub      v10.8h, v22.8h, v26.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v22.8h, v30.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v23.8h, v31.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v27.8h, v23.8h
+    add      v9.8h,  v9.8h,  v31.8h
+    sub      v10.8h, v27.8h, v31.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v27.8h, v23.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v28.8h, v24.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v4.8h, v28.8h
+    add      v9.8h,  v9.8h,  v24.8h
+    sub      v10.8h, v4.8h, v24.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v4.8h, v28.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v5.8h, v29.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v25.8h, v5.8h
+    add      v9.8h,  v9.8h,  v29.8h
+    sub      v10.8h, v25.8h, v29.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v25.8h, v5.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter0:
+slothy_start_ntt768_gt_frontend_iter1:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v22.8h, v30.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v26.8h, v22.8h
+    add      v9.8h,  v9.8h,  v30.8h
+    sub      v10.8h, v26.8h, v30.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v26.8h, v22.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v27.8h, v23.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v31.8h, v27.8h
+    add      v9.8h,  v9.8h,  v23.8h
+    sub      v10.8h, v31.8h, v23.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v31.8h, v27.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v4.8h, v28.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v24.8h, v4.8h
+    add      v9.8h,  v9.8h,  v28.8h
+    sub      v10.8h, v24.8h, v28.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v24.8h, v4.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v25.8h, v5.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v29.8h, v25.8h
+    add      v9.8h,  v9.8h,  v5.8h
+    sub      v10.8h, v29.8h, v5.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v29.8h, v25.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter1:
+slothy_start_ntt768_gt_frontend_iter2:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v26.8h, v22.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v30.8h, v26.8h
+    add      v9.8h,  v9.8h,  v22.8h
+    sub      v10.8h, v30.8h, v22.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v30.8h, v26.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v31.8h, v27.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v23.8h, v31.8h
+    add      v9.8h,  v9.8h,  v27.8h
+    sub      v10.8h, v23.8h, v27.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v23.8h, v31.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v24.8h, v4.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v28.8h, v24.8h
+    add      v9.8h,  v9.8h,  v4.8h
+    sub      v10.8h, v28.8h, v4.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v28.8h, v24.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v29.8h, v25.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v5.8h, v29.8h
+    add      v9.8h,  v9.8h,  v25.8h
+    sub      v10.8h, v5.8h, v25.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v5.8h, v29.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter2:
+slothy_start_ntt768_gt_frontend_iter3:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v30.8h, v26.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v22.8h, v30.8h
+    add      v9.8h,  v9.8h,  v26.8h
+    sub      v10.8h, v22.8h, v26.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v22.8h, v30.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v23.8h, v31.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v27.8h, v23.8h
+    add      v9.8h,  v9.8h,  v31.8h
+    sub      v10.8h, v27.8h, v31.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v27.8h, v23.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v28.8h, v24.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v4.8h, v28.8h
+    add      v9.8h,  v9.8h,  v24.8h
+    sub      v10.8h, v4.8h, v24.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v4.8h, v28.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v5.8h, v29.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v25.8h, v5.8h
+    add      v9.8h,  v9.8h,  v29.8h
+    sub      v10.8h, v25.8h, v29.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v25.8h, v5.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter3:
+slothy_start_ntt768_gt_frontend_iter4:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v22.8h, v30.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v26.8h, v22.8h
+    add      v9.8h,  v9.8h,  v30.8h
+    sub      v10.8h, v26.8h, v30.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v26.8h, v22.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v27.8h, v23.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v31.8h, v27.8h
+    add      v9.8h,  v9.8h,  v23.8h
+    sub      v10.8h, v31.8h, v23.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v31.8h, v27.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v4.8h, v28.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v24.8h, v4.8h
+    add      v9.8h,  v9.8h,  v28.8h
+    sub      v10.8h, v24.8h, v28.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v24.8h, v4.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v25.8h, v5.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v29.8h, v25.8h
+    add      v9.8h,  v9.8h,  v5.8h
+    sub      v10.8h, v29.8h, v5.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v29.8h, v25.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter4:
+slothy_start_ntt768_gt_frontend_iter5:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v26.8h, v22.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v30.8h, v26.8h
+    add      v9.8h,  v9.8h,  v22.8h
+    sub      v10.8h, v30.8h, v22.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v30.8h, v26.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v31.8h, v27.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v23.8h, v31.8h
+    add      v9.8h,  v9.8h,  v27.8h
+    sub      v10.8h, v23.8h, v27.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v23.8h, v31.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v24.8h, v4.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v28.8h, v24.8h
+    add      v9.8h,  v9.8h,  v4.8h
+    sub      v10.8h, v28.8h, v4.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v28.8h, v24.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v29.8h, v25.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v5.8h, v29.8h
+    add      v9.8h,  v9.8h,  v25.8h
+    sub      v10.8h, v5.8h, v25.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v5.8h, v29.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter5:
+slothy_start_ntt768_gt_frontend_iter6:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v30.8h, v26.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v22.8h, v30.8h
+    add      v9.8h,  v9.8h,  v26.8h
+    sub      v10.8h, v22.8h, v26.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v22.8h, v30.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v23.8h, v31.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v27.8h, v23.8h
+    add      v9.8h,  v9.8h,  v31.8h
+    sub      v10.8h, v27.8h, v31.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v27.8h, v23.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v28.8h, v24.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v4.8h, v28.8h
+    add      v9.8h,  v9.8h,  v24.8h
+    sub      v10.8h, v4.8h, v24.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v4.8h, v28.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v5.8h, v29.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v25.8h, v5.8h
+    add      v9.8h,  v9.8h,  v29.8h
+    sub      v10.8h, v25.8h, v29.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v25.8h, v5.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter6:
+slothy_start_ntt768_gt_frontend_iter7:
+    // high side
+    ldp q10, q11, [x1, #768]
+    ldr q12, [x1, #1024]
+    ldr q13, [x1, #1040]
+    ldr q14, [x1, #1280]
+    ldr q15, [x1, #1296]
+    // SAMPLE experiment: scale high-side input vectors by 3 before GT frontend arithmetic
+    add v16.8h, v10.8h, v10.8h
+    add v10.8h, v16.8h, v10.8h
+    add v16.8h, v11.8h, v11.8h
+    add v11.8h, v16.8h, v11.8h
+    add v16.8h, v12.8h, v12.8h
+    add v12.8h, v16.8h, v12.8h
+    add v16.8h, v13.8h, v13.8h
+    add v13.8h, v16.8h, v13.8h
+    add v16.8h, v14.8h, v14.8h
+    add v14.8h, v16.8h, v14.8h
+    add v16.8h, v15.8h, v15.8h
+    add v15.8h, v16.8h, v15.8h
+    mul v16.8h, v10.8h, v0.h[4]
+    mul v17.8h, v11.8h, v0.h[4]
+    mul v18.8h, v12.8h, v0.h[4]
+    mul v19.8h, v13.8h, v0.h[4]
+    mul v20.8h, v14.8h, v0.h[4]
+    mul v21.8h, v15.8h, v0.h[4]
+    sqrdmulh v4.8h, v10.8h, v0.h[5]
+    sqrdmulh v5.8h, v11.8h, v0.h[5]
+    sqrdmulh v6.8h, v12.8h, v0.h[5]
+    sqrdmulh v7.8h, v13.8h, v0.h[5]
+    sqrdmulh v8.8h, v14.8h, v0.h[5]
+    sqrdmulh v9.8h, v15.8h, v0.h[5]
+    mls v16.8h, v4.8h, v0.h[0]
+    mls v17.8h, v5.8h, v0.h[0]
+    mls v18.8h, v6.8h, v0.h[0]
+    mls v19.8h, v7.8h, v0.h[0]
+    mls v20.8h, v8.8h, v0.h[0]
+    mls v21.8h, v9.8h, v0.h[0]
+    sub v10.8h, v10.8h, v16.8h
+    sub v11.8h, v11.8h, v17.8h
+    sub v12.8h, v12.8h, v18.8h
+    sub v13.8h, v13.8h, v19.8h
+    sub v14.8h, v14.8h, v20.8h
+    sub v15.8h, v15.8h, v21.8h
+    ldp q4, q5, [x1, #0]
+    ldp q6, q7, [x1, #256]
+    ldp q8, q9, [x1, #512]
+    // SAMPLE experiment: scale low-side input vectors by 3 before GT frontend arithmetic
+    add v1.8h, v4.8h, v4.8h
+    add v4.8h, v1.8h, v4.8h
+    add v1.8h, v5.8h, v5.8h
+    add v5.8h, v1.8h, v5.8h
+    add v1.8h, v6.8h, v6.8h
+    add v6.8h, v1.8h, v6.8h
+    add v1.8h, v7.8h, v7.8h
+    add v7.8h, v1.8h, v7.8h
+    add v1.8h, v8.8h, v8.8h
+    add v8.8h, v1.8h, v8.8h
+    add v1.8h, v9.8h, v9.8h
+    add v9.8h, v1.8h, v9.8h
+    add v10.8h, v10.8h, v4.8h
+    add v11.8h, v11.8h, v5.8h
+    add v12.8h, v12.8h, v6.8h
+    add v13.8h, v13.8h, v7.8h
+    add v14.8h, v14.8h, v8.8h
+    add v15.8h, v15.8h, v9.8h
+    add v4.8h, v4.8h, v16.8h
+    add v5.8h, v5.8h, v17.8h
+    add v6.8h, v6.8h, v18.8h
+    add v7.8h, v7.8h, v19.8h
+    add v8.8h, v8.8h, v20.8h
+    add v9.8h, v9.8h, v21.8h
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v10.8h, v2.8h
+    mul      v10.8h, v10.8h, v1.8h
+    mls      v10.8h, v3.8h, v0.h[0]
+    // v11 = [B1[8]..B1[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v11.8h, v2.8h
+    mul      v11.8h, v11.8h, v1.8h
+    mls      v11.8h, v3.8h, v0.h[0]
+    // v12 = [B1[128]..B1[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v12.8h, v2.8h
+    mul      v12.8h, v12.8h, v1.8h
+    mls      v12.8h, v3.8h, v0.h[0]
+    // v13 = [B1[136]..B1[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v13.8h, v2.8h
+    mul      v13.8h, v13.8h, v1.8h
+    mls      v13.8h, v3.8h, v0.h[0]
+    // v14 = [B1[256]..B1[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v14.8h, v2.8h
+    mul      v14.8h, v14.8h, v1.8h
+    mls      v14.8h, v3.8h, v0.h[0]
+    // v15 = [B1[264]..B1[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v15.8h, v2.8h
+    mul      v15.8h, v15.8h, v1.8h
+    mls      v15.8h, v3.8h, v0.h[0]
+    // v4 = [B0[0]..B0[7]], blocks k=0,1
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v4.8h, v2.8h
+    mul      v4.8h, v4.8h, v1.8h
+    mls      v4.8h, v3.8h, v0.h[0]
+    // v5 = [B0[8]..B0[15]], blocks k=2,3
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v5.8h, v2.8h
+    mul      v5.8h, v5.8h, v1.8h
+    mls      v5.8h, v3.8h, v0.h[0]
+    // v6 = [B0[128]..B0[135]], blocks k=32,33
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v6.8h, v2.8h
+    mul      v6.8h, v6.8h, v1.8h
+    mls      v6.8h, v3.8h, v0.h[0]
+    // v7 = [B0[136]..B0[143]], blocks k=34,35
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v7.8h, v2.8h
+    mul      v7.8h, v7.8h, v1.8h
+    mls      v7.8h, v3.8h, v0.h[0]
+    // v8 = [B0[256]..B0[263]], blocks k=64,65
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v8.8h, v2.8h
+    mul      v8.8h, v8.8h, v1.8h
+    mls      v8.8h, v3.8h, v0.h[0]
+    // v9 = [B0[264]..B0[271]], blocks k=66,67
+    ldp q1, q2, [x3], #32
+    sqrdmulh v3.8h, v9.8h, v2.8h
+    mul      v9.8h, v9.8h, v1.8h
+    mls      v9.8h, v3.8h, v0.h[0]
+    zip1 v22.2d, v4.2d, v10.2d
+    zip2 v23.2d, v4.2d, v10.2d
+    zip1 v24.2d, v5.2d, v11.2d
+    zip2 v25.2d, v5.2d, v11.2d
+    zip1 v26.2d, v6.2d, v12.2d
+    zip2 v27.2d, v6.2d, v12.2d
+    zip1 v28.2d, v7.2d, v13.2d
+    zip2 v29.2d, v7.2d, v13.2d
+    zip1 v30.2d, v8.2d, v14.2d
+    zip2 v31.2d, v8.2d, v14.2d
+    zip1 v4.2d, v9.2d, v15.2d
+    zip2 v5.2d, v9.2d, v15.2d
+    sub      v6.8h, v22.8h, v30.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v26.8h, v22.8h
+    add      v9.8h,  v9.8h,  v30.8h
+    sub      v10.8h, v26.8h, v30.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v26.8h, v22.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #0]
+    str q10, [x5, #0]
+    str q11, [x6, #0]
+    sub      v6.8h, v27.8h, v23.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v31.8h, v27.8h
+    add      v9.8h,  v9.8h,  v23.8h
+    sub      v10.8h, v31.8h, v23.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v31.8h, v27.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #16]
+    str q10, [x5, #16]
+    str q11, [x6, #16]
+    sub      v6.8h, v4.8h, v28.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v24.8h, v4.8h
+    add      v9.8h,  v9.8h,  v28.8h
+    sub      v10.8h, v24.8h, v28.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v24.8h, v4.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #32]
+    str q10, [x5, #32]
+    str q11, [x6, #32]
+    sub      v6.8h, v25.8h, v5.8h
+    sqrdmulh v7.8h, v6.8h, v0.h[3]
+    mul      v8.8h, v6.8h, v0.h[2]
+    mls      v8.8h, v7.8h, v0.h[0]
+    add      v9.8h,  v29.8h, v25.8h
+    add      v9.8h,  v9.8h,  v5.8h
+    sub      v10.8h, v29.8h, v5.8h
+    add      v10.8h, v10.8h, v8.8h
+    sub      v11.8h, v29.8h, v25.8h
+    sub      v11.8h, v11.8h, v8.8h
+    str q9,  [x4, #48]
+    str q10, [x5, #48]
+    str q11, [x6, #48]
+    add x1, x1, #32
+    add x4, x4, #64
+    add x5, x5, #64
+    add x6, x6, #64
+slothy_end_ntt768_gt_frontend_iter7:
+slothy_end_ntt768_gt_frontend:
+
+
+    # Phase 4 32-point NTT
+    adr zetas_ptr, zetas
+    ldr q0, [zetas_ptr]
+
+    ldr dst, [sp, #GT_NTT_SAVED_DST_OFFSET]
+    add row0_ptr, sp, #32
+    mov x10, dst
+    CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
+
+    ldr dst, [sp, #GT_NTT_SAVED_DST_OFFSET]
+    add row0_ptr, sp, #544
+    add x10, dst, #256
+    CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
+
+    ldr dst, [sp, #GT_NTT_SAVED_DST_OFFSET]
+    add row0_ptr, sp, #1056
+    add x10, dst, #512
+    CALL_GT_NTT32_BATCH8_TO_BLOCKMAJOR
+
+    add sp, sp, #GT_NTT_FRAME_SIZE
+    ldp x30, x0, [sp], #16
+    ldp d14, d15, [sp, #48]
+    ldp d12, d13, [sp, #32]
+    ldp d10, d11, [sp, #16]
+    ldp d8, d9, [sp], #64
+    ret
+
+.align 4
+zetas:
+    .hword 0x0d81, 0x4bd4, 0xfd2d, 0xe53b, 0xfd2e, 0xe544, 0x0000, 0x0000
+
+.align 4
+twist_table:
+    // loop 0 group=0 half=0 B1 v10 coeff B1[0..7], blocks k=0,1
+    .hword 0x0001, 0x0001, 0x0001, 0x0001, 0x044c, 0x044c, 0x044c, 0x044c
+    .hword 0x0009, 0x0009, 0x0009, 0x0009, 0x28bb, 0x28bb, 0x28bb, 0x28bb
+    // loop 0 group=0 half=0 B1 v11 coeff B1[8..15], blocks k=2,3
+    .hword 0x0032, 0x0032, 0x0032, 0x0032, 0xfec8, 0xfec8, 0xfec8, 0xfec8
+    .hword 0x01da, 0x01da, 0x01da, 0x01da, 0xf473, 0xf473, 0xf473, 0xf473
+    // loop 0 group=0 half=0 B1 v12 coeff B1[128..135], blocks k=32,33
+    .hword 0x0363, 0x0363, 0x0363, 0x0363, 0xfe50, 0xfe50, 0xfe50, 0xfe50
+    .hword 0x201a, 0x201a, 0x201a, 0x201a, 0xf001, 0xf001, 0xf001, 0xf001
+    // loop 0 group=0 half=0 B1 v13 coeff B1[136..143], blocks k=34,35
+    .hword 0xf9c9, 0xf9c9, 0xf9c9, 0xf9c9, 0xfca6, 0xfca6, 0xfca6, 0xfca6
+    .hword 0xc517, 0xc517, 0xc517, 0xc517, 0xe03b, 0xe03b, 0xe03b, 0xe03b
+    // loop 0 group=0 half=0 B1 v14 coeff B1[256..263], blocks k=64,65
+    .hword 0x05f0, 0x05f0, 0x05f0, 0x05f0, 0xfb5c, 0xfb5c, 0xfb5c, 0xfb5c
+    .hword 0x3848, 0x3848, 0x3848, 0x3848, 0xd403, 0xd403, 0xd403, 0xd403
+    // loop 0 group=0 half=0 B1 v15 coeff B1[264..271], blocks k=66,67
+    .hword 0xffca, 0xffca, 0xffca, 0xffca, 0xfd89, 0xfd89, 0xfd89, 0xfd89
+    .hword 0xfe00, 0xfe00, 0xfe00, 0xfe00, 0xe8a3, 0xe8a3, 0xe8a3, 0xe8a3
+    // loop 0 group=0 half=0 B0 v4 coeff B0[0..7], blocks k=0,1
+    .hword 0x0001, 0x0001, 0x0001, 0x0001, 0xf940, 0xf940, 0xf940, 0xf940
+    .hword 0x0009, 0x0009, 0x0009, 0x0009, 0xc005, 0xc005, 0xc005, 0xc005
+    // loop 0 group=0 half=0 B0 v5 coeff B0[8..15], blocks k=2,3
+    .hword 0xfca0, 0xfca0, 0xfca0, 0xfca0, 0xfe50, 0xfe50, 0xfe50, 0xfe50
+    .hword 0xe002, 0xe002, 0xe002, 0xe002, 0xf001, 0xf001, 0xf001, 0xf001
+    // loop 0 group=0 half=0 B0 v6 coeff B0[128..135], blocks k=32,33
+    .hword 0xf9dd, 0xf9dd, 0xf9dd, 0xf9dd, 0x03af, 0x03af, 0x03af, 0x03af
+    .hword 0xc5d5, 0xc5d5, 0xc5d5, 0xc5d5, 0x22ea, 0x22ea, 0x22ea, 0x22ea
+    // loop 0 group=0 half=0 B0 v7 coeff B0[136..143], blocks k=34,35
+    .hword 0xfb17, 0xfb17, 0xfb17, 0xfb17, 0x044c, 0x044c, 0x044c, 0x044c
+    .hword 0xd175, 0xd175, 0xd175, 0xd175, 0x28bb, 0x28bb, 0x28bb, 0x28bb
+    // loop 0 group=0 half=0 B0 v8 coeff B0[256..263], blocks k=64,65
+    .hword 0xfeff, 0xfeff, 0xfeff, 0xfeff, 0x0640, 0x0640, 0x0640, 0x0640
+    .hword 0xf67c, 0xf67c, 0xf67c, 0xf67c, 0x3b3e, 0x3b3e, 0x3b3e, 0x3b3e
+    // loop 0 group=0 half=0 B0 v9 coeff B0[264..271], blocks k=66,67
+    .hword 0x0320, 0x0320, 0x0320, 0x0320, 0x0190, 0x0190, 0x0190, 0x0190
+    .hword 0x1d9f, 0x1d9f, 0x1d9f, 0x1d9f, 0x0ecf, 0x0ecf, 0x0ecf, 0x0ecf
+    // loop 1 group=0 half=1 B1 v10 coeff B1[16..23], blocks k=4,5
+    .hword 0xfc43, 0xfc43, 0xfc43, 0xfc43, 0x0695, 0x0695, 0x0695, 0x0695
+    .hword 0xdc91, 0xdc91, 0xdc91, 0xdc91, 0x3e64, 0x3e64, 0x3e64, 0x3e64
+    // loop 1 group=0 half=1 B1 v11 coeff B1[24..31], blocks k=6,7
+    .hword 0x0224, 0x0224, 0x0224, 0x0224, 0x0502, 0x0502, 0x0502, 0x0502
+    .hword 0x144a, 0x144a, 0x144a, 0x144a, 0x2f78, 0x2f78, 0x2f78, 0x2f78
+    // loop 1 group=0 half=1 B1 v12 coeff B1[144..151], blocks k=36,37
+    .hword 0xffd9, 0xffd9, 0xffd9, 0xffd9, 0xfa78, 0xfa78, 0xfa78, 0xfa78
+    .hword 0xfe8e, 0xfe8e, 0xfe8e, 0xfe8e, 0xcb92, 0xcb92, 0xcb92, 0xcb92
+    // loop 1 group=0 half=1 B1 v13 coeff B1[152..159], blocks k=38,39
+    .hword 0x05e3, 0x05e3, 0x05e3, 0x05e3, 0xf984, 0xf984, 0xf984, 0xf984
+    .hword 0x37cc, 0x37cc, 0x37cc, 0x37cc, 0xc289, 0xc289, 0xc289, 0xc289
+    // loop 1 group=0 half=1 B1 v14 coeff B1[272..279], blocks k=68,69
+    .hword 0x02f5, 0x02f5, 0x02f5, 0x02f5, 0xfe4b, 0xfe4b, 0xfe4b, 0xfe4b
+    .hword 0x1c07, 0x1c07, 0x1c07, 0x1c07, 0xefd2, 0xefd2, 0xefd2, 0xefd2
+    // loop 1 group=0 half=1 B1 v15 coeff B1[280..287], blocks k=70,71
+    .hword 0xff4f, 0xff4f, 0xff4f, 0xff4f, 0xfbac, 0xfbac, 0xfbac, 0xfbac
+    .hword 0xf972, 0xf972, 0xf972, 0xf972, 0xd6fa, 0xd6fa, 0xd6fa, 0xd6fa
+    // loop 1 group=0 half=1 B0 v4 coeff B0[16..23], blocks k=4,5
+    .hword 0xff28, 0xff28, 0xff28, 0xff28, 0xff94, 0xff94, 0xff94, 0xff94
+    .hword 0xf801, 0xf801, 0xf801, 0xf801, 0xfc00, 0xfc00, 0xfc00, 0xfc00
+    // loop 1 group=0 half=1 B0 v5 coeff B0[24..31], blocks k=6,7
+    .hword 0xffca, 0xffca, 0xffca, 0xffca, 0xffe5, 0xffe5, 0xffe5, 0xffe5
+    .hword 0xfe00, 0xfe00, 0xfe00, 0xfe00, 0xff00, 0xff00, 0xff00, 0xff00
+    // loop 1 group=0 half=1 B0 v6 coeff B0[144..151], blocks k=36,37
+    .hword 0x0226, 0x0226, 0x0226, 0x0226, 0x0113, 0x0113, 0x0113, 0x0113
+    .hword 0x145d, 0x145d, 0x145d, 0x145d, 0x0a2f, 0x0a2f, 0x0a2f, 0x0a2f
+    // loop 1 group=0 half=1 B0 v7 coeff B0[152..159], blocks k=38,39
+    .hword 0xf9c9, 0xf9c9, 0xf9c9, 0xf9c9, 0x03a5, 0x03a5, 0x03a5, 0x03a5
+    .hword 0xc517, 0xc517, 0xc517, 0xc517, 0x228c, 0x228c, 0x228c, 0x228c
+    // loop 1 group=0 half=1 B0 v8 coeff B0[272..279], blocks k=68,69
+    .hword 0x00c8, 0x00c8, 0x00c8, 0x00c8, 0x0064, 0x0064, 0x0064, 0x0064
+    .hword 0x0768, 0x0768, 0x0768, 0x0768, 0x03b4, 0x03b4, 0x03b4, 0x03b4
+    // loop 1 group=0 half=1 B0 v9 coeff B0[280..287], blocks k=70,71
+    .hword 0x0032, 0x0032, 0x0032, 0x0032, 0x0019, 0x0019, 0x0019, 0x0019
+    .hword 0x01da, 0x01da, 0x01da, 0x01da, 0x00ed, 0x00ed, 0x00ed, 0x00ed
+    // loop 2 group=1 half=0 B1 v10 coeff B1[32..39], blocks k=8,9
+    .hword 0xff00, 0xff00, 0xff00, 0xff00, 0xf9d1, 0xf9d1, 0xf9d1, 0xf9d1
+    .hword 0xf685, 0xf685, 0xf685, 0xf685, 0xc563, 0xc563, 0xc563, 0xc563
+    // loop 2 group=1 half=0 B1 v11 coeff B1[40..47], blocks k=10,11
+    .hword 0x0404, 0x0404, 0x0404, 0x0404, 0x0169, 0x0169, 0x0169, 0x0169
+    .hword 0x2610, 0x2610, 0x2610, 0x2610, 0x0d5e, 0x0d5e, 0x0d5e, 0x0d5e
+    // loop 2 group=1 half=0 B1 v12 coeff B1[160..167], blocks k=40,41
+    .hword 0xfd40, 0xfd40, 0xfd40, 0xfd40, 0xffe0, 0xffe0, 0xffe0, 0xffe0
+    .hword 0xe5ef, 0xe5ef, 0xe5ef, 0xe5ef, 0xfed1, 0xfed1, 0xfed1, 0xfed1
+    // loop 2 group=1 half=0 B1 v13 coeff B1[168..175], blocks k=42,43
+    .hword 0xfd8a, 0xfd8a, 0xfd8a, 0xfd8a, 0xf9c0, 0xf9c0, 0xf9c0, 0xf9c0
+    .hword 0xe8ac, 0xe8ac, 0xe8ac, 0xe8ac, 0xc4c2, 0xc4c2, 0xc4c2, 0xc4c2
+    // loop 2 group=1 half=0 B1 v14 coeff B1[288..295], blocks k=72,73
+    .hword 0x05f1, 0x05f1, 0x05f1, 0x05f1, 0xffa8, 0xffa8, 0xffa8, 0xffa8
+    .hword 0x3851, 0x3851, 0x3851, 0x3851, 0xfcbe, 0xfcbe, 0xfcbe, 0xfcbe
+    // loop 2 group=1 half=0 B1 v15 coeff B1[296..303], blocks k=74,75
+    .hword 0xfffc, 0xfffc, 0xfffc, 0xfffc, 0xfc51, 0xfc51, 0xfc51, 0xfc51
+    .hword 0xffda, 0xffda, 0xffda, 0xffda, 0xdd16, 0xdd16, 0xdd16, 0xdd16
+    // loop 2 group=1 half=0 B0 v4 coeff B0[32..39], blocks k=8,9
+    .hword 0x06b3, 0x06b3, 0x06b3, 0x06b3, 0xfc99, 0xfc99, 0xfc99, 0xfc99
+    .hword 0x3f80, 0x3f80, 0x3f80, 0x3f80, 0xdfc0, 0xdfc0, 0xdfc0, 0xdfc0
+    // loop 2 group=1 half=0 B0 v5 coeff B0[40..47], blocks k=10,11
+    .hword 0x050d, 0x050d, 0x050d, 0x050d, 0xfbc6, 0xfbc6, 0xfbc6, 0xfbc6
+    .hword 0x2fe0, 0x2fe0, 0x2fe0, 0x2fe0, 0xd7f0, 0xd7f0, 0xd7f0, 0xd7f0
+    // loop 2 group=1 half=0 B0 v6 coeff B0[160..167], blocks k=40,41
+    .hword 0xfb12, 0xfb12, 0xfb12, 0xfb12, 0xfd89, 0xfd89, 0xfd89, 0xfd89
+    .hword 0xd146, 0xd146, 0xd146, 0xd146, 0xe8a3, 0xe8a3, 0xe8a3, 0xe8a3
+    // loop 2 group=1 half=0 B0 v7 coeff B0[168..175], blocks k=42,43
+    .hword 0x0585, 0x0585, 0x0585, 0x0585, 0xfc02, 0xfc02, 0xfc02, 0xfc02
+    .hword 0x3451, 0x3451, 0x3451, 0x3451, 0xda29, 0xda29, 0xda29, 0xda29
+    // loop 2 group=1 half=0 B0 v8 coeff B0[288..295], blocks k=72,73
+    .hword 0xf94c, 0xf94c, 0xf94c, 0xf94c, 0xfca6, 0xfca6, 0xfca6, 0xfca6
+    .hword 0xc076, 0xc076, 0xc076, 0xc076, 0xe03b, 0xe03b, 0xe03b, 0xe03b
+    // loop 2 group=1 half=0 B0 v9 coeff B0[296..303], blocks k=74,75
+    .hword 0xfe53, 0xfe53, 0xfe53, 0xfe53, 0x05ea, 0x05ea, 0x05ea, 0x05ea
+    .hword 0xf01e, 0xf01e, 0xf01e, 0xf01e, 0x380f, 0x380f, 0x380f, 0x380f
+    // loop 3 group=1 half=1 B1 v10 coeff B1[48..55], blocks k=12,13
+    .hword 0xfe39, 0xfe39, 0xfe39, 0xfe39, 0x02fd, 0x02fd, 0x02fd, 0x02fd
+    .hword 0xef27, 0xef27, 0xef27, 0xef27, 0x1c53, 0x1c53, 0x1c53, 0x1c53
+    // loop 3 group=1 half=1 B1 v11 coeff B1[56..63], blocks k=14,15
+    .hword 0x05a9, 0x05a9, 0x05a9, 0x05a9, 0x00df, 0x00df, 0x00df, 0x00df
+    .hword 0x35a7, 0x35a7, 0x35a7, 0x35a7, 0x0842, 0x0842, 0x0842, 0x0842
+    // loop 3 group=1 half=1 B1 v12 coeff B1[176..183], blocks k=44,45
+    .hword 0xfe7d, 0xfe7d, 0xfe7d, 0xfe7d, 0xfe17, 0xfe17, 0xfe17, 0xfe17
+    .hword 0xf1ac, 0xf1ac, 0xf1ac, 0xf1ac, 0xede5, 0xede5, 0xede5, 0xede5
+    // loop 3 group=1 half=1 B1 v13 coeff B1[184..191], blocks k=46,47
+    .hword 0x0570, 0x0570, 0x0570, 0x0570, 0xff05, 0xff05, 0xff05, 0xff05
+    .hword 0x338a, 0x338a, 0x338a, 0x338a, 0xf6b5, 0xf6b5, 0xf6b5, 0xf6b5
+    // loop 3 group=1 half=1 B1 v14 coeff B1[304..311], blocks k=76,77
+    .hword 0xff38, 0xff38, 0xff38, 0xff38, 0x04e0, 0x04e0, 0x04e0, 0x04e0
+    .hword 0xf898, 0xf898, 0xf898, 0xf898, 0x2e35, 0x2e35, 0x2e35, 0x2e35
+    // loop 3 group=1 half=1 B1 v15 coeff B1[312..319], blocks k=78,79
+    .hword 0x0173, 0x0173, 0x0173, 0x0173, 0x00ae, 0x00ae, 0x00ae, 0x00ae
+    .hword 0x0dbd, 0x0dbd, 0x0dbd, 0x0dbd, 0x0671, 0x0671, 0x0671, 0x0671
+    // loop 3 group=1 half=1 B0 v4 coeff B0[48..55], blocks k=12,13
+    .hword 0xfde3, 0xfde3, 0xfde3, 0xfde3, 0x05b2, 0x05b2, 0x05b2, 0x05b2
+    .hword 0xebf8, 0xebf8, 0xebf8, 0xebf8, 0x35fc, 0x35fc, 0x35fc, 0x35fc
+    // loop 3 group=1 half=1 B0 v5 coeff B0[56..63], blocks k=14,15
+    .hword 0x02d9, 0x02d9, 0x02d9, 0x02d9, 0xfaac, 0xfaac, 0xfaac, 0xfaac
+    .hword 0x1afe, 0x1afe, 0x1afe, 0x1afe, 0xcd7f, 0xcd7f, 0xcd7f, 0xcd7f
+    // loop 3 group=1 half=1 B0 v6 coeff B0[176..183], blocks k=44,45
+    .hword 0xfe01, 0xfe01, 0xfe01, 0xfe01, 0x05c1, 0x05c1, 0x05c1, 0x05c1
+    .hword 0xed14, 0xed14, 0xed14, 0xed14, 0x368a, 0x368a, 0x368a, 0x368a
+    // loop 3 group=1 half=1 B0 v7 coeff B0[184..191], blocks k=46,47
+    .hword 0xfc20, 0xfc20, 0xfc20, 0xfc20, 0xfe10, 0xfe10, 0xfe10, 0xfe10
+    .hword 0xdb45, 0xdb45, 0xdb45, 0xdb45, 0xeda3, 0xeda3, 0xeda3, 0xeda3
+    // loop 3 group=1 half=1 B0 v8 coeff B0[304..311], blocks k=76,77
+    .hword 0x02f5, 0x02f5, 0x02f5, 0x02f5, 0xfaba, 0xfaba, 0xfaba, 0xfaba
+    .hword 0x1c07, 0x1c07, 0x1c07, 0x1c07, 0xce04, 0xce04, 0xce04, 0xce04
+    // loop 3 group=1 half=1 B0 v9 coeff B0[312..319], blocks k=78,79
+    .hword 0xfd5d, 0xfd5d, 0xfd5d, 0xfd5d, 0x056f, 0x056f, 0x056f, 0x056f
+    .hword 0xe702, 0xe702, 0xe702, 0xe702, 0x3381, 0x3381, 0x3381, 0x3381
+    // loop 4 group=2 half=0 B1 v10 coeff B1[64..71], blocks k=16,17
+    .hword 0xff6d, 0xff6d, 0xff6d, 0xff6d, 0x030b, 0x030b, 0x030b, 0x030b
+    .hword 0xfa8f, 0xfa8f, 0xfa8f, 0xfa8f, 0x1cd8, 0x1cd8, 0x1cd8, 0x1cd8
+    // loop 4 group=2 half=0 B1 v11 coeff B1[72..79], blocks k=18,19
+    .hword 0xfe4c, 0xfe4c, 0xfe4c, 0xfe4c, 0x039b, 0x039b, 0x039b, 0x039b
+    .hword 0xefdb, 0xefdb, 0xefdb, 0xefdb, 0x222d, 0x222d, 0x222d, 0x222d
+    // loop 4 group=2 half=0 B1 v12 coeff B1[192..199], blocks k=48,49
+    .hword 0x01cc, 0x01cc, 0x01cc, 0x01cc, 0x04fe, 0x04fe, 0x04fe, 0x04fe
+    .hword 0x1108, 0x1108, 0x1108, 0x1108, 0x2f52, 0x2f52, 0x2f52, 0x2f52
+    // loop 4 group=2 half=0 B1 v13 coeff B1[200..207], blocks k=50,51
+    .hword 0xfb51, 0xfb51, 0xfb51, 0xfb51, 0x068a, 0x068a, 0x068a, 0x068a
+    .hword 0xd39b, 0xd39b, 0xd39b, 0xd39b, 0x3dfb, 0x3dfb, 0x3dfb, 0x3dfb
+    // loop 4 group=2 half=0 B1 v14 coeff B1[320..327], blocks k=80,81
+    .hword 0x04f1, 0x04f1, 0x04f1, 0x04f1, 0xf979, 0xf979, 0xf979, 0xf979
+    .hword 0x2ed7, 0x2ed7, 0x2ed7, 0x2ed7, 0xc221, 0xc221, 0xc221, 0xc221
+    // loop 4 group=2 half=0 B1 v15 coeff B1[328..335], blocks k=82,83
+    .hword 0x0400, 0x0400, 0x0400, 0x0400, 0xfdba, 0xfdba, 0xfdba, 0xfdba
+    .hword 0x25ea, 0x25ea, 0x25ea, 0x25ea, 0xea73, 0xea73, 0xea73, 0xea73
+    // loop 4 group=2 half=0 B0 v4 coeff B0[64..71], blocks k=16,17
+    .hword 0xfd56, 0xfd56, 0xfd56, 0xfd56, 0xfeab, 0xfeab, 0xfeab, 0xfeab
+    .hword 0xe6c0, 0xe6c0, 0xe6c0, 0xe6c0, 0xf360, 0xf360, 0xf360, 0xf360
+    // loop 4 group=2 half=0 B0 v5 coeff B0[72..79], blocks k=18,19
+    .hword 0x0616, 0x0616, 0x0616, 0x0616, 0x030b, 0x030b, 0x030b, 0x030b
+    .hword 0x39b0, 0x39b0, 0x39b0, 0x39b0, 0x1cd8, 0x1cd8, 0x1cd8, 0x1cd8
+    // loop 4 group=2 half=0 B0 v6 coeff B0[192..199], blocks k=48,49
+    .hword 0xff08, 0xff08, 0xff08, 0xff08, 0xff84, 0xff84, 0xff84, 0xff84
+    .hword 0xf6d1, 0xf6d1, 0xf6d1, 0xf6d1, 0xfb69, 0xfb69, 0xfb69, 0xfb69
+    // loop 4 group=2 half=0 B0 v7 coeff B0[200..207], blocks k=50,51
+    .hword 0xffc2, 0xffc2, 0xffc2, 0xffc2, 0xffe1, 0xffe1, 0xffe1, 0xffe1
+    .hword 0xfdb4, 0xfdb4, 0xfdb4, 0xfdb4, 0xfeda, 0xfeda, 0xfeda, 0xfeda
+    // loop 4 group=2 half=0 B0 v8 coeff B0[320..327], blocks k=80,81
+    .hword 0xfbf7, 0xfbf7, 0xfbf7, 0xfbf7, 0x04bc, 0x04bc, 0x04bc, 0x04bc
+    .hword 0xd9c0, 0xd9c0, 0xd9c0, 0xd9c0, 0x2ce0, 0x2ce0, 0x2ce0, 0x2ce0
+    // loop 4 group=2 half=0 B0 v9 coeff B0[328..335], blocks k=82,83
+    .hword 0x025e, 0x025e, 0x025e, 0x025e, 0x012f, 0x012f, 0x012f, 0x012f
+    .hword 0x1670, 0x1670, 0x1670, 0x1670, 0x0b38, 0x0b38, 0x0b38, 0x0b38
+    // loop 5 group=2 half=1 B1 v10 coeff B1[80..87], blocks k=20,21
+    .hword 0xfbde, 0xfbde, 0xfbde, 0xfbde, 0x04b9, 0x04b9, 0x04b9, 0x04b9
+    .hword 0xd8d3, 0xd8d3, 0xd8d3, 0xd8d3, 0x2cc4, 0x2cc4, 0x2cc4, 0x2cc4
+    // loop 5 group=2 half=1 B1 v11 coeff B1[88..95], blocks k=22,23
+    .hword 0xfbeb, 0xfbeb, 0xfbeb, 0xfbeb, 0x0691, 0x0691, 0x0691, 0x0691
+    .hword 0xd94f, 0xd94f, 0xd94f, 0xd94f, 0x3e3e, 0x3e3e, 0x3e3e, 0x3e3e
+    // loop 5 group=2 half=1 B1 v12 coeff B1[208..215], blocks k=52,53
+    .hword 0xfb63, 0xfb63, 0xfb63, 0xfb63, 0x02dc, 0x02dc, 0x02dc, 0x02dc
+    .hword 0xd446, 0xd446, 0xd446, 0xd446, 0x1b1a, 0x1b1a, 0x1b1a, 0x1b1a
+    // loop 5 group=2 half=1 B1 v13 coeff B1[216..223], blocks k=54,55
+    .hword 0xfee7, 0xfee7, 0xfee7, 0xfee7, 0xfa6d, 0xfa6d, 0xfa6d, 0xfa6d
+    .hword 0xf598, 0xf598, 0xf598, 0xf598, 0xcb2a, 0xcb2a, 0xcb2a, 0xcb2a
+    // loop 5 group=2 half=1 B1 v14 coeff B1[336..343], blocks k=84,85
+    .hword 0xfd71, 0xfd71, 0xfd71, 0xfd71, 0xfa5c, 0xfa5c, 0xfa5c, 0xfa5c
+    .hword 0xe7bf, 0xe7bf, 0xe7bf, 0xe7bf, 0xca89, 0xca89, 0xca89, 0xca89
+    // loop 5 group=2 half=1 B1 v15 coeff B1[344..351], blocks k=86,87
+    .hword 0xf99b, 0xf99b, 0xf99b, 0xf99b, 0x018d, 0x018d, 0x018d, 0x018d
+    .hword 0xc363, 0xc363, 0xc363, 0xc363, 0x0eb3, 0x0eb3, 0x0eb3, 0x0eb3
+    // loop 5 group=2 half=1 B0 v4 coeff B0[80..87], blocks k=20,21
+    .hword 0xfac5, 0xfac5, 0xfac5, 0xfac5, 0x0423, 0x0423, 0x0423, 0x0423
+    .hword 0xce6c, 0xce6c, 0xce6c, 0xce6c, 0x2736, 0x2736, 0x2736, 0x2736
+    // loop 5 group=2 half=1 B0 v5 coeff B0[88..95], blocks k=22,23
+    .hword 0xfb51, 0xfb51, 0xfb51, 0xfb51, 0x0469, 0x0469, 0x0469, 0x0469
+    .hword 0xd39b, 0xd39b, 0xd39b, 0xd39b, 0x29cd, 0x29cd, 0x29cd, 0x29cd
+    // loop 5 group=2 half=1 B0 v6 coeff B0[208..215], blocks k=52,53
+    .hword 0x06b1, 0x06b1, 0x06b1, 0x06b1, 0xfc98, 0xfc98, 0xfc98, 0xfc98
+    .hword 0x3f6d, 0x3f6d, 0x3f6d, 0x3f6d, 0xdfb7, 0xdfb7, 0xdfb7, 0xdfb7
+    // loop 5 group=2 half=1 B0 v7 coeff B0[216..223], blocks k=54,55
+    .hword 0xfe4c, 0xfe4c, 0xfe4c, 0xfe4c, 0xff26, 0xff26, 0xff26, 0xff26
+    .hword 0xefdb, 0xefdb, 0xefdb, 0xefdb, 0xf7ee, 0xf7ee, 0xf7ee, 0xf7ee
+    // loop 5 group=2 half=1 B0 v8 coeff B0[336..343], blocks k=84,85
+    .hword 0xf9d7, 0xf9d7, 0xf9d7, 0xf9d7, 0x03ac, 0x03ac, 0x03ac, 0x03ac
+    .hword 0xc59c, 0xc59c, 0xc59c, 0xc59c, 0x22ce, 0x22ce, 0x22ce, 0x22ce
+    // loop 5 group=2 half=1 B0 v9 coeff B0[344..351], blocks k=86,87
+    .hword 0x01d6, 0x01d6, 0x01d6, 0x01d6, 0x00eb, 0x00eb, 0x00eb, 0x00eb
+    .hword 0x1167, 0x1167, 0x1167, 0x1167, 0x08b4, 0x08b4, 0x08b4, 0x08b4
+    // loop 6 group=3 half=0 B1 v10 coeff B1[96..103], blocks k=24,25
+    .hword 0xfe75, 0xfe75, 0xfe75, 0xfe75, 0x043a, 0x043a, 0x043a, 0x043a
+    .hword 0xf160, 0xf160, 0xf160, 0xf160, 0x2810, 0x2810, 0x2810, 0x2810
+    // loop 6 group=3 half=0 B1 v11 coeff B1[104..111], blocks k=26,27
+    .hword 0x03e0, 0x03e0, 0x03e0, 0x03e0, 0xfb44, 0xfb44, 0xfb44, 0xfb44
+    .hword 0x24bb, 0x24bb, 0x24bb, 0x24bb, 0xd320, 0xd320, 0xd320, 0xd320
+    // loop 6 group=3 half=0 B1 v12 coeff B1[224..231], blocks k=56,57
+    .hword 0xff22, 0xff22, 0xff22, 0xff22, 0x04df, 0x04df, 0x04df, 0x04df
+    .hword 0xf7c8, 0xf7c8, 0xf7c8, 0xf7c8, 0x2e2c, 0x2e2c, 0x2e2c, 0x2e2c
+    // loop 6 group=3 half=0 B1 v13 coeff B1[232..239], blocks k=58,59
+    .hword 0xfd27, 0xfd27, 0xfd27, 0xfd27, 0x007c, 0x007c, 0x007c, 0x007c
+    .hword 0xe502, 0xe502, 0xe502, 0xe502, 0x0497, 0x0497, 0x0497, 0x0497
+    // loop 6 group=3 half=0 B1 v14 coeff B1[352..359], blocks k=88,89
+    .hword 0x045e, 0x045e, 0x045e, 0x045e, 0xfc84, 0xfc84, 0xfc84, 0xfc84
+    .hword 0x2965, 0x2965, 0x2965, 0x2965, 0xdef9, 0xdef9, 0xdef9, 0xdef9
+    // loop 6 group=3 half=0 B1 v15 coeff B1[360..367], blocks k=90,91
+    .hword 0x024c, 0x024c, 0x024c, 0x024c, 0x0155, 0x0155, 0x0155, 0x0155
+    .hword 0x15c5, 0x15c5, 0x15c5, 0x15c5, 0x0ca0, 0x0ca0, 0x0ca0, 0x0ca0
+    // loop 6 group=3 half=0 B0 v4 coeff B0[96..103], blocks k=24,25
+    .hword 0xfb74, 0xfb74, 0xfb74, 0xfb74, 0xfdba, 0xfdba, 0xfdba, 0xfdba
+    .hword 0xd4e7, 0xd4e7, 0xd4e7, 0xd4e7, 0xea73, 0xea73, 0xea73, 0xea73
+    // loop 6 group=3 half=0 B0 v5 coeff B0[104..111], blocks k=26,27
+    .hword 0xfedd, 0xfedd, 0xfedd, 0xfedd, 0x062f, 0x062f, 0x062f, 0x062f
+    .hword 0xf53a, 0xf53a, 0xf53a, 0xf53a, 0x3a9d, 0x3a9d, 0x3a9d, 0x3a9d
+    // loop 6 group=3 half=0 B0 v6 coeff B0[224..231], blocks k=56,57
+    .hword 0xff93, 0xff93, 0xff93, 0xff93, 0x068a, 0x068a, 0x068a, 0x068a
+    .hword 0xfbf7, 0xfbf7, 0xfbf7, 0xfbf7, 0x3dfb, 0x3dfb, 0x3dfb, 0x3dfb
+    // loop 6 group=3 half=0 B0 v7 coeff B0[232..239], blocks k=58,59
+    .hword 0x0345, 0x0345, 0x0345, 0x0345, 0xfae2, 0xfae2, 0xfae2, 0xfae2
+    .hword 0x1efe, 0x1efe, 0x1efe, 0x1efe, 0xcf7f, 0xcf7f, 0xcf7f, 0xcf7f
+    // loop 6 group=3 half=0 B0 v8 coeff B0[352..359], blocks k=88,89
+    .hword 0xf9b5, 0xf9b5, 0xf9b5, 0xf9b5, 0x039b, 0x039b, 0x039b, 0x039b
+    .hword 0xc45a, 0xc45a, 0xc45a, 0xc45a, 0x222d, 0x222d, 0x222d, 0x222d
+    // loop 6 group=3 half=0 B0 v9 coeff B0[360..367], blocks k=90,91
+    .hword 0xfb0d, 0xfb0d, 0xfb0d, 0xfb0d, 0x0447, 0x0447, 0x0447, 0x0447
+    .hword 0xd116, 0xd116, 0xd116, 0xd116, 0x288b, 0x288b, 0x288b, 0x288b
+    // loop 7 group=3 half=1 B1 v10 coeff B1[112..119], blocks k=28,29
+    .hword 0x04b2, 0x04b2, 0x04b2, 0x04b2, 0x065a, 0x065a, 0x065a, 0x065a
+    .hword 0x2c81, 0x2c81, 0x2c81, 0x2c81, 0x3c34, 0x3c34, 0x3c34, 0x3c34
+    // loop 7 group=3 half=1 B1 v11 coeff B1[120..127], blocks k=30,31
+    .hword 0x0533, 0x0533, 0x0533, 0x0533, 0xf97c, 0xf97c, 0xf97c, 0xf97c
+    .hword 0x3148, 0x3148, 0x3148, 0x3148, 0xc23d, 0xc23d, 0xc23d, 0xc23d
+    // loop 7 group=3 half=1 B1 v12 coeff B1[240..247], blocks k=60,61
+    .hword 0x0629, 0x0629, 0x0629, 0x0629, 0xfd36, 0xfd36, 0xfd36, 0xfd36
+    .hword 0x3a64, 0x3a64, 0x3a64, 0x3a64, 0xe590, 0xe590, 0xe590, 0xe590
+    // loop 7 group=3 half=1 B1 v13 coeff B1[248..255], blocks k=62,63
+    .hword 0xfd6b, 0xfd6b, 0xfd6b, 0xfd6b, 0xfb96, 0xfb96, 0xfb96, 0xfb96
+    .hword 0xe787, 0xe787, 0xe787, 0xe787, 0xd629, 0xd629, 0xd629, 0xd629
+    // loop 7 group=3 half=1 B1 v14 coeff B1[368..375], blocks k=92,93
+    .hword 0xf94f, 0xf94f, 0xf94f, 0xf94f, 0xff15, 0xff15, 0xff15, 0xff15
+    .hword 0xc093, 0xc093, 0xc093, 0xc093, 0xf74c, 0xf74c, 0xf74c, 0xf74c
+    // loop 7 group=3 half=1 B1 v15 coeff B1[376..383], blocks k=94,95
+    .hword 0x0307, 0x0307, 0x0307, 0x0307, 0xfa9d, 0xfa9d, 0xfa9d, 0xfa9d
+    .hword 0x1cb2, 0x1cb2, 0x1cb2, 0x1cb2, 0xccf1, 0xccf1, 0xccf1, 0xccf1
+    // loop 7 group=3 half=1 B0 v4 coeff B0[112..119], blocks k=28,29
+    .hword 0xfc57, 0xfc57, 0xfc57, 0xfc57, 0x04ec, 0x04ec, 0x04ec, 0x04ec
+    .hword 0xdd4e, 0xdd4e, 0xdd4e, 0xdd4e, 0x2ea7, 0x2ea7, 0x2ea7, 0x2ea7
+    // loop 7 group=3 half=1 B0 v5 coeff B0[120..127], blocks k=30,31
+    .hword 0x0276, 0x0276, 0x0276, 0x0276, 0x013b, 0x013b, 0x013b, 0x013b
+    .hword 0x1754, 0x1754, 0x1754, 0x1754, 0x0baa, 0x0baa, 0x0baa, 0x0baa
+    // loop 7 group=3 half=1 B0 v6 coeff B0[240..247], blocks k=60,61
+    .hword 0xfd71, 0xfd71, 0xfd71, 0xfd71, 0x0579, 0x0579, 0x0579, 0x0579
+    .hword 0xe7bf, 0xe7bf, 0xe7bf, 0xe7bf, 0x33e0, 0x33e0, 0x33e0, 0x33e0
+    // loop 7 group=3 half=1 B0 v7 coeff B0[248..255], blocks k=62,63
+    .hword 0xfbfc, 0xfbfc, 0xfbfc, 0xfbfc, 0xfdfe, 0xfdfe, 0xfdfe, 0xfdfe
+    .hword 0xd9f0, 0xd9f0, 0xd9f0, 0xd9f0, 0xecf8, 0xecf8, 0xecf8, 0xecf8
+    // loop 7 group=3 half=1 B0 v8 coeff B0[368..375], blocks k=92,93
+    .hword 0xfb63, 0xfb63, 0xfb63, 0xfb63, 0x0472, 0x0472, 0x0472, 0x0472
+    .hword 0xd446, 0xd446, 0xd446, 0xd446, 0x2a23, 0x2a23, 0x2a23, 0x2a23
+    // loop 7 group=3 half=1 B0 v9 coeff B0[376..383], blocks k=94,95
+    .hword 0x0239, 0x0239, 0x0239, 0x0239, 0xfa5c, 0xfa5c, 0xfa5c, 0xfa5c
+    .hword 0x1511, 0x1511, 0x1511, 0x1511, 0xca89, 0xca89, 0xca89, 0xca89

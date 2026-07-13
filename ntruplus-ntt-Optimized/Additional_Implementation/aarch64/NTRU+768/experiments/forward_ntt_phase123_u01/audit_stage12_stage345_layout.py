@@ -2,7 +2,7 @@
 """Audit production NTT32 stage12 stores against stage345 loads.
 
 This intentionally checks the current assembly text instead of relying only on
-the design notes.  The contract under audit is one row of _ntt32_8way:
+the design notes.  The contract under audit is one row of _gt_ntt32_batch8_to_blockmajor:
 
   stage12 stripe s stores Q[s], Q[s+8], Q[s+16], Q[s+24]
   stage345 block b loads Q[8*b .. 8*b+7]
@@ -16,12 +16,12 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
-ASM = ROOT / "asm/slothy/production/my_32ntt.opt.s"
+ASM = ROOT / "asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S"
 
-LABEL_STAGE12_START = re.compile(r"^_ntt32_stage12_stripe(\d+)_slothy_start:$")
-LABEL_STAGE12_END = re.compile(r"^_ntt32_stage12_stripe(\d+)_slothy_end:$")
-LABEL_STAGE345_START = re.compile(r"^_ntt32_stage345_block(\d+)_slothy_start:$")
-LABEL_STAGE345_END = re.compile(r"^_ntt32_stage345_block(\d+)_slothy_end:$")
+LABEL_STAGE12_START = re.compile(r"^_gt_ntt32_batch8_ct_stage12_stripe(\d+)_slothy_start:$")
+LABEL_STAGE12_END = re.compile(r"^_gt_ntt32_batch8_ct_stage12_stripe(\d+)_slothy_end:$")
+LABEL_STAGE345_START = re.compile(r"^_gt_ntt32_batch8_ct_stage345_block(\d+)_slothy_start:$")
+LABEL_STAGE345_END = re.compile(r"^_gt_ntt32_batch8_ct_stage345_block(\d+)_slothy_end:$")
 STR_X4 = re.compile(r"\bstr\s+q\d+,\s*\[x4,\s*#(\d+)\]")
 LDR_X4 = re.compile(r"\bldr\s+q\d+,\s*\[x4,\s*#(\d+)\]")
 

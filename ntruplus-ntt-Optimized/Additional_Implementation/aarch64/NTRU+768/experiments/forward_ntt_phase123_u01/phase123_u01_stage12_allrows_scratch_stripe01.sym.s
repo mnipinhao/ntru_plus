@@ -14,7 +14,7 @@
 .text
 
 // Live-in: x1=input base, x3=Phase123 twist base,
-//          x4/x5/x6=row output bases, x12=ntt32_twiddle_vecs,
+//          x4/x5/x6=row output bases, x12=gt_ntt32_batch8_twiddle_vecs,
 //          x13=temporary stage12-order scratch, v0=q/constants.
 // Live-out: post-stage12 rows0/1/2 Q0/Q1/Q8/Q9/Q16/Q17/Q24/Q25 stores.
 slothy_start_phase123_u01_stage12_allrows_scratch_stripe01:
@@ -366,7 +366,7 @@ slothy_start_phase123_u01_stage12_allrows_scratch_stripe01:
     str q10, [x13, #240]
     str q11, [x13, #368]
 
-    // NTT32 stage12 twiddles. Production resets ntt32_twiddle_vecs
+    // NTT32 stage12 twiddles. Production resets gt_ntt32_batch8_twiddle_vecs
     // before each stripe, so stripe0/1 both use lane 0.
     ldr q2, [x12, #16]
     ldr q3, [x12, #32]

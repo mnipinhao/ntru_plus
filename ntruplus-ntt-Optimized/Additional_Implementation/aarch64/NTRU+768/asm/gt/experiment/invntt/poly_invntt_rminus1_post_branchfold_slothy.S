@@ -18,7 +18,7 @@
 .equ INVNTT_EXPERIMENT_POST_BRANCHFOLD_THREE_SLOTHY, 1
 .equ INVNTT_DARWIN_NO_WEAK, 1
 
-#include "../../slothy/production/invntt_opt.production.s"
+#include "../../invntt/poly_invntt.n1.opt.inc"
 
 .text
 .align 2

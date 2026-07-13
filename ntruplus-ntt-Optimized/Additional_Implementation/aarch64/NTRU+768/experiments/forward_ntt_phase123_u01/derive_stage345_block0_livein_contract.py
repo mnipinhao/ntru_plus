@@ -17,10 +17,10 @@ import re
 
 
 ROOT = Path(__file__).resolve().parents[2]
-ASM = ROOT / "asm/slothy/production/my_32ntt.opt.s"
+ASM = ROOT / "asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S"
 
-START = "_ntt32_stage345_block0_slothy_start:"
-END = "_ntt32_stage345_block0_slothy_end:"
+START = "_gt_ntt32_batch8_ct_stage345_block0_slothy_start:"
+END = "_gt_ntt32_batch8_ct_stage345_block0_slothy_end:"
 LOAD_RE = re.compile(r"\bldr\s+q(\d+),\s*\[x4,\s*#(\d+)\]")
 
 SLICE_FAMILY_BY_STRIPE = {

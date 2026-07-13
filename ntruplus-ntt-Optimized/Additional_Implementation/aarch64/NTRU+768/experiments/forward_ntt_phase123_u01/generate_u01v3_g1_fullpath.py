@@ -226,7 +226,7 @@ def emit_full_wrapper(symbol: str, body: list[str], public_dropin: bool) -> str:
             "    adr x2, u01_block_first_zetas",
             "    ldr q0, [x2]",
             "    adr x22, u01_block_first_twist_table",
-            "    adr x23, u01_block_first_ntt32_twiddle_vecs",
+            "    adr x23, u01_block_first_gt_ntt32_batch8_twiddle_vecs",
             "",
             *body,
             "    ldp d14, d15, [sp, #112]",

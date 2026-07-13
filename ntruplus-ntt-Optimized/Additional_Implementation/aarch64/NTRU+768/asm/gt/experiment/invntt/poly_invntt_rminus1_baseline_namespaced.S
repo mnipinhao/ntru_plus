@@ -16,4 +16,4 @@
 .equ INVNTT_POST_BRANCHFOLD_REDUCE_OUTPUTS, 1
 .equ INVNTT_DARWIN_NO_WEAK, 1
 
-#include "../../slothy/production/invntt_opt.production.s"
+#include "../../invntt/poly_invntt.n1.opt.inc"

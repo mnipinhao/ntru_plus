@@ -10,9 +10,9 @@ inputs:
   - id: twist_base
     register: x3
     description: Phase123 twist/precompute table base
-  - id: ntt32_twiddle_base
+  - id: gt_ntt32_batch8_twiddle_base
     register: x12
-    description: ntt32_twiddle_vecs base
+    description: gt_ntt32_batch8_twiddle_vecs base
   - id: scratch_base
     register: x13
     description: row-major raw and post-stage12 scratch
@@ -48,7 +48,7 @@ phase123_nodes:
 
 stage12_nodes:
   - id: stage12_stripes0_7_rows0_2
-    op: production_ntt32_stage12_stripe
+    op: production_gt_ntt32_batch8_ct_stage12_stripe
     rows: [row0, row1, row2]
     stripes: [0, 1, 2, 3, 4, 5, 6, 7]
     inputs: [x13 raw Qs, x12 stage12 twiddles, v0 q]

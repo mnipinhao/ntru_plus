@@ -10,12 +10,12 @@ from pathlib import Path
 
 
 SAMPLE_SYMBOLS = (
-    "poly_ntt_triple_scheduled",
-    "poly_ntt_triple_add1_scheduled",
+    "poly_ntt_mul3",
+    "poly_ntt_mul3_add1",
 )
 SAMPLE_HELPERS = (
-    "gt_keygen_ntt_triple",
-    "gt_keygen_ntt_triple_add1",
+    "gt_keygen_ntt_mul3",
+    "gt_keygen_ntt_mul3_add1",
 )
 GENERIC_NTT = "poly_ntt"
 GENERIC_BASEINV = "poly_baseinv_scaled_r"

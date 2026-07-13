@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 NTRU_ROOT = ROOT.parents[1]
 
-PHASE123_FLAT = NTRU_ROOT / "asm/slothy/inputs/my_ntt_phase123_flat.sym.s"
+PHASE123_FLAT = NTRU_ROOT / "asm/slothy/inputs/ntt768_gt_frontend.sym.S"
 U01V2_SYMBOLIC = ROOT / "phase123_shared_prefix_v2_allrows.sym.s"
 U01V2_GENERATOR = ROOT / "generate_phase123_shared_prefix_v2.py"
 E3_GENERATOR = ROOT / "generate_u01v3_stage345_e3_f012.py"

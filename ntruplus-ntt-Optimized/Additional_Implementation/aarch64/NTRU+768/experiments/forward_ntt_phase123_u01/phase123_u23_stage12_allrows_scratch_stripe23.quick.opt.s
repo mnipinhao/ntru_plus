@@ -14,7 +14,7 @@
 .text
 
 // Live-in: x1=input base, x3=Phase123 twist base,
-// x4/x5/x6=row output bases, x12=ntt32_twiddle_vecs,
+// x4/x5/x6=row output bases, x12=gt_ntt32_batch8_twiddle_vecs,
 // x13=temporary stage12-order scratch, v0=q/constants.
 // Live-out: post-stage12 rows0/1/2 Q2/Q3/Q10/Q11/Q18/Q19/Q26/Q27 stores.
         slothy_start_phase123_u23_stage12_allrows_scratch_stripe23:

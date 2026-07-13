@@ -76,8 +76,8 @@
 #define NOINLINE
 #endif
 
-void poly_ntt_triple_scheduled(poly *out, const poly *a);
-void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+void poly_ntt_mul3(poly *out, const poly *a);
+void poly_ntt_mul3_add1(poly *out, const poly *a);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 int poly_baseinv_scaled_r_hier_k8_tree_candidate(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
@@ -238,7 +238,7 @@ static int genf_derand_variant(poly *f, poly *finv, const uint8_t *coins,
   shake256(buf, sizeof buf, coins, 32);
   poly_cbd1(f, buf);
   if (use_sample(variant))
-    poly_ntt_triple_add1_scheduled(f, f);
+    poly_ntt_mul3_add1(f, f);
   else
   {
     poly_triple(f, f);
@@ -257,7 +257,7 @@ static int geng_derand_variant(poly *g, poly *ginv, const uint8_t *coins,
   shake256(buf, sizeof buf, coins, 32);
   poly_cbd1(g, buf);
   if (use_sample(variant))
-    poly_ntt_triple_scheduled(g, g);
+    poly_ntt_mul3(g, g);
   else
   {
     poly_triple(g, g);
@@ -330,9 +330,9 @@ static int make_keygen_ntt_secret(poly *a, poly *ainv, int add_one,
   if (use_sample(variant))
   {
     if (add_one)
-      poly_ntt_triple_add1_scheduled(a, a);
+      poly_ntt_mul3_add1(a, a);
     else
-      poly_ntt_triple_scheduled(a, a);
+      poly_ntt_mul3(a, a);
   }
   else
   {
@@ -579,8 +579,8 @@ static NOINLINE void target_sample_post_cbd_x2_sample_dag(size_t idx)
 
   poly_cbd1(&g_work0, g_buf_f[input_idx]);
   poly_cbd1(&g_work1, g_buf_g[input_idx]);
-  poly_ntt_triple_add1_scheduled(&g_work0, &g_work0);
-  poly_ntt_triple_scheduled(&g_work1, &g_work1);
+  poly_ntt_mul3_add1(&g_work0, &g_work0);
+  poly_ntt_mul3(&g_work1, &g_work1);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
 }
@@ -881,7 +881,7 @@ static void run_pmu(void)
          NTESTS, NITERATIONS, NWARMUP, NINPUTS, NKEYPAIR_ITERATIONS,
          NKEYPAIR_WARMUP);
   bench_print_gt_production_config();
-  printf("experiment,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1\n");
+  printf("experiment,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3=1\n");
   printf("experiment,GT_EXPERIMENT_USE_HIERK8_TREE_CANDIDATE=1\n");
 
   for (size_t i = 0; i < sizeof(variants) / sizeof(variants[0]); i++)

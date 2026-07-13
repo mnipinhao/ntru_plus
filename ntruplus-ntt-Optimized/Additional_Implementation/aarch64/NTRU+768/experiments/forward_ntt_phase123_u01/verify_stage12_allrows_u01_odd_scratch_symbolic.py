@@ -7,10 +7,10 @@ import argparse
 from pathlib import Path
 
 from verify_u01_symbolic import ROOT, NeonInterp, extract_region, make_input, parse_hwords
-from verify_stage12_row0_symbolic import parse_ntt32_twiddle_mem
+from verify_stage12_row0_symbolic import parse_gt_ntt32_batch8_twiddle_mem
 from verify_u01_stage12_stripe01 import (
     NTT32,
-    parse_ntt32_stage12_twiddles,
+    parse_gt_ntt32_batch8_ct_stage12_twiddles,
     production_phase123_rows,
     stage12_stripe,
 )
@@ -23,7 +23,7 @@ DEFAULT_SOURCE = (
 
 
 def expected_allrows(seed: int, zetas: list[int], twist: list[int]) -> dict[str, dict[int, list[int]]]:
-    p00_pre, p08_norm, p08_pre = parse_ntt32_stage12_twiddles(NTT32)
+    p00_pre, p08_norm, p08_pre = parse_gt_ntt32_batch8_ct_stage12_twiddles(NTT32)
     phase_rows = production_phase123_rows(seed, zetas, twist)
     out: dict[str, dict[int, list[int]]] = {}
     for row_base in ("x4", "x5", "x6"):
@@ -91,8 +91,8 @@ def main() -> int:
     if not source.is_absolute():
         source = ROOT / source
 
-    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt_gt_body.inc")
-    ntt32_twiddles = parse_ntt32_twiddle_mem()
+    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt/poly_ntt_body.inc")
+    ntt32_twiddles = parse_gt_ntt32_batch8_twiddle_mem()
     for seed in range(args.seeds):
         errors = compare_one(seed, zetas, twist, ntt32_twiddles, source)
         if errors:

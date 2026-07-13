@@ -3,10 +3,10 @@
  *
  * Candidate symbols are benchmark-only and are intentionally not declared in
  * poly.h:
- *   poly_ntt_triple(out, a)           == poly_ntt(3*a)
- *   poly_ntt_triple_add1(out, a)      == poly_ntt(3*a + 1 at coeff 0)
- *   poly_ntt_triple_scheduled(out, a)      == poly_ntt(3*a)
- *   poly_ntt_triple_add1_scheduled(out, a) == poly_ntt(3*a + 1 at coeff 0)
+ *   poly_ntt_mul3_reference(out, a)           == poly_ntt(3*a)
+ *   poly_ntt_mul3_add1_reference(out, a)      == poly_ntt(3*a + 1 at coeff 0)
+ *   poly_ntt_mul3(out, a)      == poly_ntt(3*a)
+ *   poly_ntt_mul3_add1(out, a) == poly_ntt(3*a + 1 at coeff 0)
  */
 #if !defined(__linux__)
 #error "bench_gt_keygen_sample_ntt_fusion_pmu requires Linux perf_event_open"
@@ -58,10 +58,10 @@
 #define NOINLINE
 #endif
 
-void poly_ntt_triple(poly *out, const poly *a);
-void poly_ntt_triple_add1(poly *out, const poly *a);
-void poly_ntt_triple_scheduled(poly *out, const poly *a);
-void poly_ntt_triple_add1_scheduled(poly *out, const poly *a);
+void poly_ntt_mul3_reference(poly *out, const poly *a);
+void poly_ntt_mul3_add1_reference(poly *out, const poly *a);
+void poly_ntt_mul3(poly *out, const poly *a);
+void poly_ntt_mul3_add1(poly *out, const poly *a);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 
 typedef void (*bench_target_fn)(size_t idx);
@@ -155,10 +155,10 @@ static void prepare_inputs(void)
 
     reference_ntt_triple_add1(&g_f_ref[i], &g_f_small[i]);
     reference_ntt_triple(&g_g_ref[i], &g_g_small[i]);
-    poly_ntt_triple_add1(&g_f_symbolic[i], &g_f_small[i]);
-    poly_ntt_triple(&g_g_symbolic[i], &g_g_small[i]);
-    poly_ntt_triple_add1_scheduled(&g_f_slothy[i], &g_f_small[i]);
-    poly_ntt_triple_scheduled(&g_g_slothy[i], &g_g_small[i]);
+    poly_ntt_mul3_add1_reference(&g_f_symbolic[i], &g_f_small[i]);
+    poly_ntt_mul3_reference(&g_g_symbolic[i], &g_g_small[i]);
+    poly_ntt_mul3_add1(&g_f_slothy[i], &g_f_small[i]);
+    poly_ntt_mul3(&g_g_slothy[i], &g_g_small[i]);
   }
 }
 
@@ -201,8 +201,8 @@ static int run_correctness(void)
     poly_cbd1(&small, buf);
 
     reference_ntt_triple_add1(&ref, &small);
-    poly_ntt_triple_add1(&symbolic, &small);
-    poly_ntt_triple_add1_scheduled(&slothy, &small);
+    poly_ntt_mul3_add1_reference(&symbolic, &small);
+    poly_ntt_mul3_add1(&slothy, &small);
     f_symbolic_mismatches += poly_exact_mismatches(&ref, &symbolic);
     f_slothy_mismatches += poly_exact_mismatches(&ref, &slothy);
     baseinv_symbolic_mismatches +=
@@ -211,8 +211,8 @@ static int run_correctness(void)
         baseinv_compare_mismatches(&ref, &slothy, &baseinv_checked_cases);
 
     reference_ntt_triple(&ref, &small);
-    poly_ntt_triple(&symbolic, &small);
-    poly_ntt_triple_scheduled(&slothy, &small);
+    poly_ntt_mul3_reference(&symbolic, &small);
+    poly_ntt_mul3(&slothy, &small);
     g_symbolic_mismatches += poly_exact_mismatches(&ref, &symbolic);
     g_slothy_mismatches += poly_exact_mismatches(&ref, &slothy);
     baseinv_symbolic_mismatches +=
@@ -251,7 +251,7 @@ static NOINLINE void target_symbolic_ntt_triple_add1_f(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple_add1(&g_work0, &g_f_small[input_idx]);
+  poly_ntt_mul3_add1_reference(&g_work0, &g_f_small[input_idx]);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
 }
 
@@ -259,7 +259,7 @@ static NOINLINE void target_slothy_ntt_triple_add1_f(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple_add1_scheduled(&g_work0, &g_f_small[input_idx]);
+  poly_ntt_mul3_add1(&g_work0, &g_f_small[input_idx]);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
 }
 
@@ -275,7 +275,7 @@ static NOINLINE void target_symbolic_ntt_triple_g(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple(&g_work1, &g_g_small[input_idx]);
+  poly_ntt_mul3_reference(&g_work1, &g_g_small[input_idx]);
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
 }
 
@@ -283,7 +283,7 @@ static NOINLINE void target_slothy_ntt_triple_g(size_t idx)
 {
   const size_t input_idx = idx % NINPUTS;
 
-  poly_ntt_triple_scheduled(&g_work1, &g_g_small[input_idx]);
+  poly_ntt_mul3(&g_work1, &g_g_small[input_idx]);
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
 }
 
@@ -308,8 +308,8 @@ static NOINLINE void target_post_cbd_x2_symbolic_candidate(size_t idx)
 
   poly_cbd1(&g_work0, g_buf_f[input_idx]);
   poly_cbd1(&g_work1, g_buf_g[input_idx]);
-  poly_ntt_triple_add1(&g_work0, &g_work0);
-  poly_ntt_triple(&g_work1, &g_work1);
+  poly_ntt_mul3_add1_reference(&g_work0, &g_work0);
+  poly_ntt_mul3_reference(&g_work1, &g_work1);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 31) % NTRUPLUS_N];
 }
@@ -320,8 +320,8 @@ static NOINLINE void target_post_cbd_x2_slothy_candidate(size_t idx)
 
   poly_cbd1(&g_work0, g_buf_f[input_idx]);
   poly_cbd1(&g_work1, g_buf_g[input_idx]);
-  poly_ntt_triple_add1_scheduled(&g_work0, &g_work0);
-  poly_ntt_triple_scheduled(&g_work1, &g_work1);
+  poly_ntt_mul3_add1(&g_work0, &g_work0);
+  poly_ntt_mul3(&g_work1, &g_work1);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 31) % NTRUPLUS_N];
 }
@@ -447,10 +447,10 @@ static void run_pmu(void)
   printf("pmu_settings,NTESTS=%d,NITERATIONS=%d,NWARMUP=%d,NINPUTS=%d\n",
          NTESTS, NITERATIONS, NWARMUP, NINPUTS);
   bench_print_gt_production_config();
-#ifdef GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY
-  printf("build_config,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=1\n");
+#ifdef GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3
+  printf("build_config,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3=1\n");
 #else
-  printf("build_config,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY=0\n");
+  printf("build_config,GT_EXPERIMENT_USE_KEYGEN_SAMPLE_NTT_MUL3=0\n");
 #endif
 
   for (size_t i = 0; i < sizeof(variants) / sizeof(variants[0]); i++)

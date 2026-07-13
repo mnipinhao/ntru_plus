@@ -33,15 +33,15 @@ from verify_u01_symbolic import (
 )
 
 
-NTT32 = ROOT / "asm/slothy/production/my_32ntt.opt.s"
+NTT32 = ROOT / "asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S"
 
 
-def parse_ntt32_stage12_twiddles(path: Path) -> tuple[list[int], list[int], list[int]]:
+def parse_gt_ntt32_batch8_ct_stage12_twiddles(path: Path) -> tuple[list[int], list[int], list[int]]:
     vals: list[int] = []
     inside = False
     for raw in path.read_text().splitlines():
         line = raw.split("//", 1)[0].strip()
-        if line == "ntt32_twiddle_vecs:":
+        if line == "gt_ntt32_batch8_twiddle_vecs:":
             inside = True
             continue
         if inside and line.startswith(".unreq"):
@@ -87,7 +87,7 @@ def stage12_stripe(
     q16 = row[off16]
     q24 = row[off24]
 
-    # Production resets ntt32_twiddle_vecs before every stage12 stripe and uses
+    # Production resets gt_ntt32_batch8_twiddle_vecs before every stage12 stripe and uses
     # lane 0 of the loaded twiddle vectors. The stripe number changes memory
     # offsets, not the twiddle lane.
     high_sum = reduce_identity(add_vec(q8, q24), p00_pre[0], q)
@@ -166,8 +166,8 @@ def main() -> int:
     ap.add_argument("--seeds", type=int, default=64)
     args = ap.parse_args()
 
-    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt_gt_body.inc")
-    p00_pre, p08_norm, p08_pre = parse_ntt32_stage12_twiddles(NTT32)
+    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt/poly_ntt_body.inc")
+    p00_pre, p08_norm, p08_pre = parse_gt_ntt32_batch8_ct_stage12_twiddles(NTT32)
 
     for seed in range(args.seeds):
         errors = compare_one(seed, zetas, twist, p00_pre, p08_norm, p08_pre)

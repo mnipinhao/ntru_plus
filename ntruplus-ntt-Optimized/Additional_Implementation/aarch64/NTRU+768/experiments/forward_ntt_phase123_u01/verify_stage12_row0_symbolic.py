@@ -17,7 +17,7 @@ from verify_u01_symbolic import (
 )
 from verify_u01_stage12_stripe01 import (
     NTT32,
-    parse_ntt32_stage12_twiddles,
+    parse_gt_ntt32_batch8_ct_stage12_twiddles,
     production_phase123_rows,
     stage12_stripe,
 )
@@ -26,12 +26,12 @@ from verify_u01_stage12_stripe01 import (
 DEFAULT_FUSED = ROOT / "experiments/forward_ntt_phase123_u01/phase123_u01_stage12_row0_stripe01.sym.s"
 
 
-def parse_ntt32_twiddle_mem() -> list[int]:
+def parse_gt_ntt32_batch8_twiddle_mem() -> list[int]:
     vals: list[int] = []
     inside = False
     for raw in NTT32.read_text().splitlines():
         line = raw.split("//", 1)[0].strip()
-        if line == "ntt32_twiddle_vecs:":
+        if line == "gt_ntt32_batch8_twiddle_vecs:":
             inside = True
             continue
         if inside and line.startswith(".unreq"):
@@ -39,12 +39,12 @@ def parse_ntt32_twiddle_mem() -> list[int]:
         if inside and ".hword" in line:
             vals.extend(s16(int(x, 0)) for x in re.findall(r"0x[0-9a-fA-F]+|-?\d+", line))
     if len(vals) < 32:
-        raise ValueError(f"failed to parse ntt32_twiddle_vecs: {len(vals)} hwords")
+        raise ValueError(f"failed to parse gt_ntt32_batch8_twiddle_vecs: {len(vals)} hwords")
     return vals
 
 
 def expected_row0(seed: int, zetas: list[int], twist: list[int]) -> dict[int, list[int]]:
-    p00_pre, p08_norm, p08_pre = parse_ntt32_stage12_twiddles(NTT32)
+    p00_pre, p08_norm, p08_pre = parse_gt_ntt32_batch8_ct_stage12_twiddles(NTT32)
     rows = production_phase123_rows(seed, zetas, twist)
     out: dict[int, list[int]] = {}
     for stripe in (0, 1):
@@ -89,8 +89,8 @@ def main() -> int:
     ap.add_argument("--source", default=str(DEFAULT_FUSED))
     args = ap.parse_args()
 
-    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt_gt_body.inc")
-    ntt32_twiddles = parse_ntt32_twiddle_mem()
+    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt/poly_ntt_body.inc")
+    ntt32_twiddles = parse_gt_ntt32_batch8_twiddle_mem()
     source = Path(args.source)
     if not source.is_absolute():
         source = ROOT / source

@@ -13,7 +13,7 @@ from generate_stage12_block0_first import qoff
 
 ROOT = Path(__file__).resolve().parent
 NTRU_ROOT = ROOT.parents[1]
-NTT32 = NTRU_ROOT / "asm/slothy/production/my_32ntt.opt.s"
+NTT32 = NTRU_ROOT / "asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S"
 
 OUT_B1_FUSED = ROOT / "phase123_shared_prefix_v3_block1_fuse_allrows.sym.s"
 OUT_B01_F0 = ROOT / "phase123_shared_prefix_v3_block01_f0_allrows.sym.s"
@@ -82,8 +82,8 @@ def emit_phase123_shared_prefix(lines: list[str], phase_lines: list[str]) -> Non
 
 def load_stage345_block(block: int) -> list[str]:
     lines = NTT32.read_text().splitlines()
-    start = f"_ntt32_stage345_block{block}_slothy_start:"
-    end = f"_ntt32_stage345_block{block}_slothy_end:"
+    start = f"_gt_ntt32_batch8_ct_stage345_block{block}_slothy_start:"
+    end = f"_gt_ntt32_batch8_ct_stage345_block{block}_slothy_end:"
     inside = False
     out: list[str] = []
     for line in lines:

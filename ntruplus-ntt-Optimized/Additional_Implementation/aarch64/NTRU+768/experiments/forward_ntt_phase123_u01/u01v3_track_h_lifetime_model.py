@@ -14,7 +14,7 @@ from generate_stage12_block0_first import qoff
 ROOT = Path(__file__).resolve().parent
 NTRU_ROOT = ROOT.parents[1]
 G1_ASM = NTRU_ROOT / "asm/gt/experiment/u01v3_f0123_g1_delayed_block3.S"
-PHASE123 = NTRU_ROOT / "asm/slothy/inputs/my_ntt_phase123_flat.sym.s"
+PHASE123 = NTRU_ROOT / "asm/slothy/inputs/ntt768_gt_frontend.sym.S"
 
 OUT_IR = ROOT / "u01v3_track_h_semantic_ir.json"
 OUT_OVERWRITE = ROOT / "u01v3_track_h_overwrite_map.json"

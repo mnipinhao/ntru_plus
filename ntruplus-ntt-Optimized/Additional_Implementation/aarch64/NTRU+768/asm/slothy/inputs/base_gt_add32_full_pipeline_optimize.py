@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Slothy driver for the full GT basemul_add32 one-stripe prototype.
+"""Slothy driver for the full GT basemul_add32 one-stripe body.
 
-This is intentionally prototype-only.  It writes a generated candidate file
-under asm/slothy and does not modify production assembly or Makefile wiring.
+The symbolic input remains under asm/slothy; the promoted generated include is
+written beside its production wrapper under asm/gt/basemul.
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ def load_target(name: str):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="base_gt_add32_full_pipeline.sym.S")
-    parser.add_argument("--output", default="../production/base_gt_add32_full_pipeline.n1.opt.S")
+    parser.add_argument("--output", default="../../gt/basemul/poly_basemul_add.n1.opt.inc")
     parser.add_argument("--target", default=os.environ.get("SLOTHY_TARGET", "n1"))
     parser.add_argument("--stalls", type=int, default=256)
     parser.add_argument("--allow-spills", action="store_true")

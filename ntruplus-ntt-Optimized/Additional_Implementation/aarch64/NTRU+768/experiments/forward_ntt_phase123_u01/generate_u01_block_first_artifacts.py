@@ -6,7 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from verify_stage12_block0_first_symbolic import expected_allrows
-from verify_stage12_row0_symbolic import parse_ntt32_twiddle_mem
+from verify_stage12_row0_symbolic import parse_gt_ntt32_batch8_twiddle_mem
 from verify_u01_symbolic import ROOT, make_input, parse_hwords
 
 
@@ -49,7 +49,7 @@ def write_tables(zetas: list[int], twist: list[int], ntt32_twiddles: list[int]) 
         [
             "",
             ".align 4",
-            "u01_block_first_ntt32_twiddle_vecs:",
+            "u01_block_first_gt_ntt32_batch8_twiddle_vecs:",
         ]
     )
     for i in range(0, len(ntt32_twiddles), 8):
@@ -98,8 +98,8 @@ def write_vectors(zetas: list[int], twist: list[int]) -> None:
 
 
 def main() -> int:
-    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt_gt_body.inc")
-    ntt32_twiddles = parse_ntt32_twiddle_mem()
+    zetas, twist = parse_hwords(ROOT / "asm/gt/ntt/poly_ntt_body.inc")
+    ntt32_twiddles = parse_gt_ntt32_batch8_twiddle_mem()
     write_tables(zetas, twist, ntt32_twiddles)
     write_vectors(zetas, twist)
     print(OUT_TABLES)

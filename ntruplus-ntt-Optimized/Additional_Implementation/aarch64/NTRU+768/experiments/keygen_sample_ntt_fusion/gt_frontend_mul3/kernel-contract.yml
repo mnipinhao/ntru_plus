@@ -1,0 +1,192 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: ntt768_gt_frontend_mul3
+  name: ntt768_gt_frontend_mul3
+  source: experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/ntt768_gt_frontend_mul3.sym.S
+  scheme: ntruplus768_gt
+  operation: keygen_sample_mul3_then_ntt768_gt_frontend
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: split-heuristic-per-gt-frontend-iteration
+  driver: experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/optimize_ntt768_gt_frontend_mul3.py
+  expected_outputs:
+    - asm/gt/ntt/ntt768_gt_frontend_mul3.n1.opt.inc
+    - asm/gt/ntt/ntt768_gt_frontend_mul3_add1.n1.opt.inc
+  allow_spills: false
+
+region:
+  start_label: slothy_start_ntt768_gt_frontend_iter0
+  end_label: slothy_end_ntt768_gt_frontend_iter0
+  expected_instruction_count: 184
+  live_in:
+    - x1 source pointer at current GT frontend iteration
+    - x3 public twist pointer
+    - x4 row0 scratch pointer
+    - x5 row1 scratch pointer
+    - x6 row2 scratch pointer
+    - x7 add1 e0 mask pointer, add1 variant only
+    - v0 q/reduction/DFT3 constant vector
+  live_out:
+    - x1 advanced by 32 bytes per iteration
+    - x3 advanced by public twist table consumption
+    - x4 advanced by 64 bytes per iteration
+    - x5 advanced by 64 bytes per iteration
+    - x6 advanced by 64 bytes per iteration
+    - row0/row1/row2 scratch stores matching the production GT frontend contract
+
+abi:
+  inputs:
+    - x0 output poly pointer outside the GT frontend region
+    - x1 input poly pointer
+  outputs:
+    - row scratch consumed by production _gt_ntt32_batch8_to_blockmajor
+    - final poly output produced by unchanged production NTT32 rows
+  clobbers:
+    - x1
+    - x3
+    - x4
+    - x5
+    - x6
+    - v1-v31
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - sp
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+    - v25
+    - v26
+    - v27
+    - v28
+    - v29
+    - v30
+    - v31
+  reserved_registers:
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+instruction_dag:
+  file: experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/instruction-dag.yml
+  summary: Load 12 input vectors per iteration, compute 3*x lane-wise, load and add e0 for add1 iter0 only, then execute the unchanged branch twist, Good-Thomas frontend DFT3, and row scratch stores.
+
+layout:
+  input_representation: natural coefficient poly after cbd1, signed int16 small coefficients
+  output_representation: production GT frontend row scratch for block-major row-bitrev forward NTT
+  vector_lanes: 8 signed 16-bit coefficients per Neon vector
+  packing: unchanged row0/row1/row2 scratch layout consumed by production _gt_ntt32_batch8_to_blockmajor
+
+memory_contract:
+  loads:
+    - 12 public-offset q loads from x1 per GT frontend iteration
+    - 12 public-order twist ldp loads from x3 per GT frontend iteration
+  stores:
+    - 12 q stores to row0/row1/row2 scratch per GT frontend iteration
+  aliasing: input poly and row scratch do not overlap in benchmark wrapper
+  alignment: input, twist table, and row scratch are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x1 += 32 per iteration
+    - x3 post-increments through public twist table
+    - x4 += 64 per iteration
+    - x5 += 64 per iteration
+    - x6 += 64 per iteration
+
+constant_contract:
+  constants:
+    - v0.h0 q for mls reduction
+    - v0.h2/v0.h3 DFT3 alpha reduction constants
+    - v0.h4/v0.h5 branch twist reduction constants
+    - experiment-local e0 mask vector for add1 iter0, loaded from x7
+  modulus: 3457
+  representation: signed int16 bounded residues with existing GT Montgomery-style twiddle reductions
+  reduction_method: unchanged production sqrdmulh/mul/mls known-factor reductions
+
+range_contract:
+  input_ranges:
+    - cbd1 sample coefficients are small signed values before triple scaling
+    - triple variant input to GT frontend equals 3*a
+    - add1 variant input to GT frontend equals 3*a plus one at coefficient 0
+  intermediate_ranges:
+    - scale-by-3 stays within signed int16 for cbd1 samples
+    - subsequent branch twist and DFT3 ranges follow the production GT frontend after equivalent poly_mul3 input
+  output_ranges:
+    - row scratch values exactly match poly_triple plus poly_ntt reference row scratch modulo q and as final full NTT output
+  narrowing_points:
+    - no new narrowing instructions
+
+constant_time_contract:
+  secret_inputs:
+    - sampled polynomial coefficients loaded from x1
+  public_inputs:
+    - fixed offsets
+    - twist table order
+    - add1 e0 mask address in x7 for add1 symbol only
+    - add1 variant selector at build-time symbol level
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -f /tmp/sampledag.mk -B bench_gt_keygen_sample_ntt_fusion_slothy_pmu VARIANT=gt_production_default SUDO= CORE=3
+  test_command: make -f /tmp/sampledag.mk -B bench_gt_keygen_sample_ntt_fusion_slothy_pmu VARIANT=gt_production_default SUDO= CORE=3
+  full_path_benchmark_command: optional full keygen wrapper after local PMU is non-regressing
+  benchmark_metric: cycles
+  lower_is_better: true

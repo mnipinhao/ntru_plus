@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Verify GT inverse NTT ASM constants.
 
-This script checks the normal-centered constants used by
-asm/slothy/legacy/invntt_opt.s.  These constants are deliberately not Montgomery-form;
-GT basemul lambda tables are Montgomery-form and are not accepted here.
+This script checks the normal-centered constants used by the production
+`asm/gt/invntt/poly_invntt.n1.opt.inc`. These constants are deliberately not
+Montgomery-form; GT basemul lambda tables are Montgomery-form and are not
+accepted here.
 """
 
 from __future__ import annotations
@@ -19,9 +20,11 @@ F1 = 22
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ASM = ROOT / "asm" / "slothy" / "legacy" / "invntt_opt.s"
-BRANCHFOLD = ROOT / "asm" / "slothy" / "production" / "invntt_branchfold_vecs.inc"
-BRANCHFOLD_RMINUS1 = ROOT / "asm" / "slothy" / "production" / "invntt_branchfold_vecs_rminus1.inc"
+ASM = ROOT / "asm" / "gt" / "invntt" / "poly_invntt.n1.opt.inc"
+BRANCHFOLD = ROOT / "asm" / "gt" / "invntt" / "poly_invntt_branchfold_constants.inc"
+BRANCHFOLD_RMINUS1 = (
+    ROOT / "asm" / "gt" / "invntt" / "poly_invntt_branchfold_constants_rminus1.inc"
+)
 
 
 def centered(x: int) -> int:
@@ -102,7 +105,7 @@ def check_pre(label: str, m: int, got: int) -> None:
 
 
 def check_inv_consts(text: str) -> None:
-    vals = hwords_from(section(text, "inv_consts:", "inv_gather_offsets:"))
+    vals = hwords_from(section(text, "inv_consts:", "invntt32_stage123_consts:"))
     want = [
         Q,
         19412,
@@ -148,7 +151,7 @@ def check_stage123(text: str) -> None:
 
 
 def check_stage45(text: str) -> None:
-    vals = hwords_from(section(text, "invntt32_stage45_consts:", "inv_untwist_vecs:"))
+    vals = hwords_from(section(text, "invntt32_stage45_consts:", "inv_branchfold_vecs:"))
     assert len(vals) == 8 * 16, f"stage45 length got {len(vals)}"
     root = pow(OMEGA96, -3, Q)
 
@@ -277,7 +280,8 @@ def main() -> int:
     check_inv_consts(text)
     check_stage123(text)
     check_stage45(text)
-    check_untwist(text)
+    if "inv_untwist_vecs:" in text:
+        check_untwist(text)
     check_branchfold(text)
     check_branchfold(text, BRANCHFOLD_RMINUS1, centered(pow(2, 16, Q)),
                      "branchfold_rminus1")

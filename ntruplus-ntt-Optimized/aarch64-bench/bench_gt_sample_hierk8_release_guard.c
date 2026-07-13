@@ -12,7 +12,7 @@ int bench_crypto_kem_enc_current(uint8_t *ct, uint8_t *ss,
 int bench_crypto_kem_dec_current(uint8_t *ss, const uint8_t *ct,
                                  const uint8_t *sk);
 
-#if defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY)
+#if defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
 int gt_release_guard_sample_dag_enabled = 1;
 #else
 int gt_release_guard_sample_dag_disabled = 1;
@@ -44,7 +44,7 @@ int main(void)
 {
     int marker = 0;
 
-#if defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_TRIPLE_SLOTHY)
+#if defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
     marker |= gt_release_guard_sample_dag_enabled;
 #else
     marker |= gt_release_guard_sample_dag_disabled;
