@@ -1,0 +1,26 @@
+baseline: gt_ntt_avx2.c
+compiler_surface: AVX2_intrinsics
+replacement_scope: none
+production_symbol_replaced: false
+production_file_untouched: asm/ntt.s
+reference: ../../../../aarch64/NTRU+768/ntt.c:ntt_gt_rowbitrevlayout
+required_gates:
+  - table_equality_with_reference
+  - montgomery_lane_test
+  - frontend_layout_test
+  - stage2_layout_test
+  - full_differential_test_mod_q
+  - boundary_input_test
+  - in_place_test
+  - x86_64_avx2_compile
+performance_claims_allowed: false
+slothy:
+  intended_mode: new_kernel_baseline_then_iterate
+  current_status: investigate
+  blocker: local_slothy_checkout_has_no_x86_architecture_or_target_model
+  promotion_requires:
+    - x86_architecture_model
+    - x86_target_model
+    - symbolic_assembly_extraction
+    - semantic_differential_revalidation
+    - spill_and_stack_audit

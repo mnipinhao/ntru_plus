@@ -1,0 +1,38 @@
+kernel: ntruplus768_forward_gt_avx2_prototype
+status: intrinsic_baseline
+ring:
+  modulus: 3457
+  polynomial: X^768-X^384+1
+operation: forward_ntt
+input:
+  type: int16[768]
+  aliasing: in_place_allowed_by_public_wrapper
+  proven_precondition: "abs(a[i]) <= 3456"
+output:
+  type: int16[768]
+  equivalence: coefficientwise_mod_3457
+  layout: gt_row_bitrev_block_major
+  canonical_range: "[-1729, 1729] after the reference-compatible rounded Barrett reduction"
+constant_time:
+  secret_dependent_branches: false
+  secret_dependent_addresses: false
+  table_indices: public_loop_indices_only
+dataflow:
+  - top_split
+  - branch_twist
+  - good_thomas_input_crt
+  - dft3
+  - row01_and_singleton_pack
+  - ntt32_stage12_stripes
+  - ntt32_stage345_blocks
+  - final_reduce_and_crt_scatter
+scratch:
+  frontend_bytes: 1536
+  stage2_bytes: 1536
+  wrapper_total_bytes: 3072
+  alignment: 32
+register_budget:
+  architectural_ymm: 16
+  max_long_lived_data: 8
+  reserved_constants: 4
+  transient_temporaries: 4

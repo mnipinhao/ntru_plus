@@ -1,0 +1,37 @@
+kernel: ntruplus768_forward_gt_avx2_prototype
+regions:
+  frontend_slot_pair:
+    repeats: 16
+    inputs: [Q_even, Q_odd]
+    nodes:
+      - "for n3=0..2: CRT-map and load four low/four high coefficients"
+      - "top split: t=Mont(high,zeta); b0=low+t; b1=low+high-t"
+      - "pack XMM streams=[b0.lane0..3,b1.lane0..3]"
+      - "twist each stream using [twist0[n]x4,twist1[n]x4]"
+      - "join Q_even/Q_odd XMM halves into three YMM inputs"
+      - "DFT3: d=x1-x2; t=Mont(d,omega3); produce r0,r1,r2"
+      - "permute2x128 r0/r1 into row01[Q_even],row01[Q_odd]"
+      - "extract/store r2 halves into singleton row2[Q_even/Q_odd]"
+    live_set_target: "3 DFT inputs + 3 outputs/temps, never all 32 slots"
+  stage12_stripe:
+    repeats: 8
+    row01:
+      vectors: [Q, Q+8, Q+16, Q+24]
+      nodes: [stage1_distance16, stage2_distance8, store_four_stage2_vectors]
+    singleton:
+      vectors: [packed_Q, packed_Q+8]
+      lane_halves: "[original Q | original Q+16]"
+      nodes: [stage1_pack, stage2_distance8, store_two_stage2_vectors]
+    live_set_target: 4
+  stage345_block:
+    row01_repeats: 4
+    singleton_repeats: 2
+    vectors_per_block: 8
+    nodes: [load8, stage3_distance4, stage4_distance2, stage5_distance1, store8]
+    live_set_target: 8
+  scatter:
+    nodes:
+      - final_barrett_reduce
+      - split_row01_YMM_into_two_rows
+      - split_each_stream_XMM_into_branch0_and_branch1_four-lane_groups
+      - "physical_block=(32*k3+3*k32)%96"

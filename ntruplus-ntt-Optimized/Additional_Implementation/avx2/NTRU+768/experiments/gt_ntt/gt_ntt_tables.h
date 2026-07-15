@@ -1,0 +1,9 @@
+#ifndef NTRUPLUS_GT_NTT_TABLES_H
+#define NTRUPLUS_GT_NTT_TABLES_H
+
+#include <stdint.h>
+
+extern const int16_t gt_twist[2][96];
+extern const int16_t gt_omega32[32];
+
+#endif
