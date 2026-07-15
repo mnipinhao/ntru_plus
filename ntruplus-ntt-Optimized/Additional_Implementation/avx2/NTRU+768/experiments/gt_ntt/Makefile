@@ -10,6 +10,9 @@ BUILD = build
 ifeq ($(shell uname -s),Darwin)
 ARCHFLAGS = -arch x86_64
 RUNNER = arch -x86_64
+else
+SOURCES += gt_ntt_stage345_soa.s
+CFLAGS += -DGT_HAVE_AVX2_ASM=1
 endif
 
 .PHONY: all test compile check sanitize asm clean

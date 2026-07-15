@@ -10,9 +10,16 @@ gate and setup work stays outside measured regions.
 | --- | --- | --- |
 | `ntt` | production AVX2 | one forward NTT |
 | `gt-ntt` | GT intrinsic prototype | one forward GT NTT |
+| `gt-ntt-asm-soa` | GT hybrid ASM prototype | intrinsic frontend/stage 1+2, hand-scheduled stage 3+4+5, and fused 16-block SoA store |
 | `basemul` | production AVX2 | one pointwise/base multiplication on prepared NTT inputs |
 | `invntt` | production AVX2 | one inverse NTT on a prepared valid NTT input |
 | `polymul` | production AVX2 | two NTTs, basemul, and inverse NTT |
+
+The GT ASM prototype uses the candidate SoA mapping
+`batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits
+a bounded `[0,q]` representative rather than the intrinsic path's centered
+representative; validation therefore compares modulo `q` after applying the
+mapping oracle.
 
 The GT prototype does not yet have a matching pointwise or inverse kernel, so
 there is intentionally no GT full-polymul number.  NTRU+768 also has no

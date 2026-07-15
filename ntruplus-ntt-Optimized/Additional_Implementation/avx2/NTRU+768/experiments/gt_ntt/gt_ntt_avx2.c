@@ -408,6 +408,59 @@ void gt_ntt_avx2(int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
 	gt_ntt_avx2_scatter(out, &stage2);
 }
 
+void gt_ntt_rowbitrev_to_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	for (unsigned k3 = 0; k3 < 3; k3++) {
+		for (unsigned q = 0; q < 32; q++) {
+			const unsigned block = gt_output_index(k3, q);
+			const unsigned batch = 4U * k3 + q / 8U;
+
+			for (unsigned branch = 0; branch < 2; branch++) {
+				const unsigned lane = 8U * branch + q % 8U;
+
+				for (unsigned c = 0; c < 4; c++) {
+					out[64U * batch + 16U * c + lane] =
+						in[384U * branch + 4U * block + c];
+				}
+			}
+		}
+	}
+}
+
+void gt_ntt_soa_to_rowbitrev(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	for (unsigned k3 = 0; k3 < 3; k3++) {
+		for (unsigned q = 0; q < 32; q++) {
+			const unsigned block = gt_output_index(k3, q);
+			const unsigned batch = 4U * k3 + q / 8U;
+
+			for (unsigned branch = 0; branch < 2; branch++) {
+				const unsigned lane = 8U * branch + q % 8U;
+
+				for (unsigned c = 0; c < 4; c++) {
+					out[384U * branch + 4U * block + c] =
+						in[64U * batch + 16U * c + lane];
+				}
+			}
+		}
+	}
+}
+
+#if defined(GT_HAVE_AVX2_ASM)
+void gt_ntt_avx2_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_frontend_scratch frontend;
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend(&frontend, in);
+	gt_ntt_avx2_stage12(&stage2, &frontend);
+	gt_ntt_avx2_stage345_soa_asm(out, &stage2);
+}
+#endif
+
 void gt_ntt_avx2_montgomery_test(int16_t out[16],
 	const int16_t a[16], const int16_t b[16])
 {

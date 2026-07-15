@@ -24,12 +24,22 @@ regions:
       nodes: [stage1_pack, stage2_distance8, store_two_stage2_vectors]
     live_set_target: 4
   stage345_block:
+    implementation: handwritten_avx2_asm
     row01_repeats: 4
     singleton_repeats: 2
     vectors_per_block: 8
-    nodes: [load8, stage3_distance4, stage4_distance2, stage5_distance1, store8]
+    nodes:
+      - load8
+      - stage3_distance4_four_interleaved_montgomery_chains
+      - stage4_distance2_four_interleaved_montgomery_chains
+      - stage5_distance1_four_interleaved_montgomery_chains
+      - packed_int16_barrett
+      - lane_local_transpose8x8
+      - eight_cross_half_permutes
+      - store_four_soa_vectors_per_batch
     live_set_target: 8
   scatter:
+    implementation: intrinsic_rowbitrev_comparison_path_only
     nodes:
       - final_barrett_reduce
       - split_row01_YMM_into_two_rows

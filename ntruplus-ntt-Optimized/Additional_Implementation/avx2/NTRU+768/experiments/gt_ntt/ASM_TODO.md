@@ -20,8 +20,9 @@ Status markers:
   register allocation must be designed and audited manually.
 - [x] The portable GT reference and intrinsic prototype define the forward-NTT
   mathematical relation.
-- [ ] Replace the prototype's widened int32 Barrett finalizer with a proven
-  packed-int16 reducer if that wins on Zen 5.
+- [x] The stage-3+4+5 ASM prototype uses a packed-int16 Barrett checkpoint.
+  Its full input interval and output range are exhaustively checked; the
+  centered widened reducer remains in the intrinsic comparison path.
 
 The implementation may use the high and low halves of a 16x16 product, but it
 should not widen persistent data to eight int32 lanes unless a measured region
@@ -54,12 +55,32 @@ shows a net benefit.
   YMM3 = c3 of terminal blocks 0..15
   ```
 
+- [x] The forward ASM prototype implements and tests the exact mapping.  For
+  DFT3 row `k3=0..2`, NTT32 slot `Q=0..31`, branch `b=0..1`, and quartic
+  coefficient `c=0..3`:
+
+  ```text
+  batch       = 4*k3 + floor(Q/8)             // 0..11
+  lane        = 8*b + (Q mod 8)               // 0..15
+  output word = 64*batch + 16*c + lane
+  ```
+
+  Thus one batch is exactly eight consecutive Q values from each of two
+  branches; its four YMM vectors hold `c0`, `c1`, `c2`, and `c3`.
+- [x] The mapping oracle relates this layout to the verified row-bitrev output:
+
+  ```text
+  j = (32*k3 + 3*Q) mod 96
+  soa[64*batch + 16*c + lane] = rowbitrev[384*b + 4*j + c]
+  ```
+
 - [~] Pack lambda and `lambda*qinv` in the same 16-block order.
 - [~] Pointwise multiplication consumes four YMM values directly and emits the
   same layout.
 - [~] Forward NTT fuses the required transpose into its final stores.
 - [~] Inverse NTT fuses the reverse mapping into its first loads.
-- [ ] Prove the complete coefficient-to-batch mapping for all 768 positions.
+- [x] Prove and exhaustively round-trip the complete coefficient-to-batch
+  mapping for all 768 positions.
 - [ ] Compare this SoA layout with the current GT row-bitrev block-major layout
   using total forward + basemul + inverse cycles.
 
@@ -70,10 +91,11 @@ inverse NTT.
 ## Arithmetic tables
 
 - [x] Forward twist and omega32 values match the AArch64 GT reference.
-- [ ] Prepack every fixed factor as `(factor, factor*qinv)`.
+- [~] Prepack every fixed factor as `(factor, factor*qinv)`: complete for the
+  ASM stage-3+4+5 tables, pending for the intrinsic frontend/stage-1+2 path.
 - [ ] Prepack GT input CRT indices; remove runtime `% 96` arithmetic.
-- [ ] Generate row01 twiddles as full-lane repeats.
-- [ ] Generate singleton twiddles as
+- [x] Encode row01 stage-3+4+5 twiddles as full-lane repeats.
+- [x] Encode singleton stage-3+4+5 twiddles as
   `[twiddle(Q) x8 | twiddle(Q+16) x8]`.
 - [ ] Generate the candidate SoA lambda table in physical batch order.
 - [ ] Add a generator/checker so table changes are reproducible rather than
@@ -104,8 +126,8 @@ inverse NTT.
 
 ### NTT32 stage 3+4+5
 
-- [ ] Keep eight data YMM registers live for one block.
-- [ ] For each stage, schedule its four independent butterflies together:
+- [x] Keep eight data YMM registers live for one block.
+- [x] For each stage, schedule its four independent butterflies together:
 
   ```text
   four mullo
@@ -115,19 +137,27 @@ inverse NTT.
   four butterfly add/sub pairs
   ```
 
-- [ ] Use destructive high operands after both product halves have been issued.
-- [ ] Target at most 8 data + 4 temporary + 1 q registers.
-- [ ] Audit the generated/handwritten region with `llvm-mca -mcpu=znver5`.
-- [ ] Confirm zero stack spill/reload instructions in the final object.
+- [x] Use destructive high operands after both product halves have been issued.
+- [x] Use 8 data + 4 temporary YMM registers; q and Barrett constants are
+  read-only memory operands rather than additional live registers.
+- [x] Audit the handwritten region with `llvm-mca -mcpu=znver5`.  A one-pass
+  whole-file static estimate reports 358 instructions, 180 cycles, and block
+  throughput 70; loops and the test-only reducer entry mean this is a scheduling
+  diagnostic, not a call-level cycle prediction.
+- [x] Confirm zero stack spill/reload instructions in the linked ASM symbol;
+  `gt_ntt_avx2_stage345_soa_asm` is 2037 bytes (`0x7f5`).
 
 ### Final store
 
-- [ ] Implement the candidate 16-block SoA transpose as part of the final
+- [x] Implement the candidate 16-block SoA transpose as part of the final
   stage/store schedule.
-- [ ] Account for every cross-128-bit-half instruction.
-- [ ] Compare a packed-int16 final reducer with the current widened intrinsic
-  reducer.
-- [ ] Preserve `out == in` behavior or explicitly change the API contract.
+- [x] Account for every cross-128-bit-half instruction: each eight-vector block
+  uses eight `vperm2i128` instructions after a lane-local 8x8 transpose.
+- [x] Compare a packed-int16 final reducer with the widened intrinsic reducer.
+  The packed form is modulo-equivalent and returns `[0,q]`, while the intrinsic
+  path returns centered representatives.
+- [x] Preserve and differential-test `out == in` behavior in the hybrid public
+  wrapper.
 
 ## Pointwise multiplication
 
@@ -152,27 +182,41 @@ inverse NTT.
 
 ## ABI, constant-time, and object audit
 
-- [ ] Record System V AMD64 argument, stack-alignment, and clobber contracts.
-- [ ] Emit `vzeroupper` at public boundaries if required by the caller mix.
-- [ ] Keep all branches, addresses, and table indices input-independent.
-- [ ] Check 32-byte alignment assumptions for every aligned load/store.
-- [ ] Record stack and scratch use; wipe secret scratch if the final caller
-  contract requires it.
-- [ ] Disassemble the linked object, not only the source `.S` file.
-- [ ] Reject any AVX-512 instruction in the AVX2 target object.
+- [x] Record the prototype System V AMD64 contract: `out` is in `rdi`, scratch
+  is in `rsi`; only caller-saved GPRs and YMM0..YMM15 are clobbered; the ASM
+  region does not touch the stack.
+- [x] Emit `vzeroupper` before returning from the public ASM boundary.
+- [x] Keep all branches, addresses, and table indices input-independent.
+- [x] Check alignment assumptions: the stage-2 scratch is 32-byte aligned and
+  uses `vmovdqa`; output has no alignment precondition and uses `vmovdqu`.
+- [~] Record stack and scratch use: the C hybrid wrapper currently owns 3072
+  bytes of aligned scratch, while the ASM region allocates zero bytes.  Decide
+  whether the production caller must wipe secret scratch.
+- [ ] Define the production scratch-lifetime policy and wipe secret scratch if
+  the final caller contract requires it.
+- [x] Disassemble and audit the linked object, not only the source `.s` file.
+- [x] Reject any AVX-512 instruction in the AVX2 target object.
 
 ## Validation and benchmark gates
 
 - [x] Intrinsic Montgomery and Barrett unit tests.
 - [x] Frontend and stage-2 representation-boundary tests.
 - [x] Full forward-NTT differential test against the portable GT reference.
-- [ ] SoA mapping oracle and inverse mapping oracle.
+- [x] SoA mapping oracle and inverse mapping oracle.
 - [ ] Pointwise differential tests.
 - [ ] Inverse and full-polymul differential tests.
-- [ ] Production NTRU+ test binary and KAT.
-- [ ] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication.
-- [ ] Record CPU model, pinned core, SMT sibling, governor, boost state,
+- [x] Production NTRU+ test binary.
+- [ ] Production KAT.
+- [~] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication.
+  The production path has all four measurements; the GT SoA path currently has
+  only forward NTT because matching basemul/inverse kernels do not exist yet.
+- [x] Record CPU model, pinned core, SMT sibling, governor, boost state,
   compiler, flags, TSC method, and perf events.
+
+Preliminary Ryzen 7 9700X results with boost enabled and CPU 2 pinned show a
+983-tick median for the hybrid ASM SoA forward transform versus 1476 for the
+intrinsic GT transform (33.4% lower).  This is not a release claim because the
+SMT sibling was not isolated and the remaining frontend/stage-1+2 is intrinsic.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

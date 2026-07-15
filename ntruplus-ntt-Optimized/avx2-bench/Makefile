@@ -7,6 +7,7 @@ BUILD_DIR := build
 TARGET := $(BUILD_DIR)/avx2_bench
 
 CPPFLAGS += -I$(NTRU_ROOT) -I$(GT_ROOT)
+CPPFLAGS += -DGT_HAVE_AVX2_ASM=1
 TARGET_FLAGS ?= -march=x86-64-v3 -mtune=znver5 -mprefer-vector-width=256
 CFLAGS ?= -O3 -g
 BENCH_CFLAGS := -Wall -Wextra -Wpedantic -Wshadow -Wconversion \
@@ -20,6 +21,7 @@ SOURCES := \
 	$(NTRU_ROOT)/asm/invntt.s \
 	$(NTRU_ROOT)/asm/basemul.s \
 	$(GT_ROOT)/gt_ntt_avx2.c \
+	$(GT_ROOT)/gt_ntt_stage345_soa.s \
 	$(GT_ROOT)/gt_ntt_tables.c \
 	$(AARCH64_REF)
 

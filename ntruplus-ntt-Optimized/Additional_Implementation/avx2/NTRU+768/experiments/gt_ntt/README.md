@@ -1,9 +1,10 @@
 # NTRU+768 AVX2 Good–Thomas forward-NTT prototype
 
-這個目錄是一個 opt-in、可差分驗證的 AVX2 intrinsic baseline。它沒有取代上層
-`asm/ntt.s`，而且目前輸出採用新的 GT row-bitrev layout，所以還不能直接接現有
-AVX2 `basemul`/`invntt`。第一階段的目的，是先把完整 forward NTT 的數學、packing、
-range 與 schedule boundary 做對，再決定後端 layout 和手排組語。
+這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
+上的 hybrid 手寫組語 prototype。Hybrid 版本保留 intrinsic frontend 和 NTT32
+stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 放進
+`gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`，而且新的 SoA layout 還沒有
+對應的 AVX2 `basemul`/`invntt`。
 
 ## 數學分解
 
@@ -131,6 +132,54 @@ row01 的兩個 128-bit half 是不同 row、相同 Q，所以 twiddle 相同；
 stage2 scratch 做明確 transpose，比讓 register allocator 猜跨 boundary 的 live
 range 更容易驗證，也更適合之後切成 scheduler region。
 
+Hybrid ASM 對每一 stage 的四個 Montgomery butterfly 依下列順序交錯排程：
+
+```text
+4 x vpmullw
+4 x vpmulhw(product high)
+4 x vpmulhw(correction)
+4 x vpsubw(Montgomery result)
+4 x butterfly subtract
+4 x butterfly add
+```
+
+八個資料向量固定佔 YMM0..YMM7，四個暫存佔 YMM8..YMM11；high operand 在兩個
+product half 都發出後才 destructive overwrite。整個 ASM symbol 不使用 stack，
+也沒有 spill/reload。
+
+## 16-block SoA output
+
+每個 terminal block 有四個係數 `c0..c3`。令 `k3=0..2` 是 DFT3 row、
+`Q=0..31` 是 NTT32 slot、`branch=0..1`，則 ASM output 的精確 mapping 是：
+
+```text
+batch       = 4*k3 + floor(Q/8)       // 12 batches
+lane        = 8*branch + (Q mod 8)    // 16 blocks per batch
+output word = 64*batch + 16*c + lane
+```
+
+所以每個 batch 的 64 words 正好是四個 YMM：
+
+```text
+YMM0 = c0 of [branch0 Q0..Q7 | branch1 Q0..Q7]
+YMM1 = c1 of [branch0 Q0..Q7 | branch1 Q0..Q7]
+YMM2 = c2 of [branch0 Q0..Q7 | branch1 Q0..Q7]
+YMM3 = c3 of [branch0 Q0..Q7 | branch1 Q0..Q7]
+```
+
+這裡的 `Q0..Q7` 是該 batch 的八個 Q；下一個 batch 是 Q8..Q15。和既有 GT
+row-bitrev layout 的關係是：
+
+```text
+j = (32*k3 + 3*Q) mod 96
+soa[64*batch + 16*c + lane] = rowbitrev[384*branch + 4*j + c]
+```
+
+最後一個 block 內先做 lane-local 8x8 int16 transpose。兩個 128-bit half 各自
+transpose，因此不需在 transpose 中跨 half；之後用八個 `vperm2i128` 把 stream
+`c` 與 `c+4` 的 half 配成四個 SoA YMM，直接 store，不另做 768-coefficient
+transpose pass。
+
 ## Montgomery 與 Barrett 的 AVX2 指令
 
 固定因子 `b` 的 16-bit Montgomery multiplication 使用 `B=b*qinv mod 2^16`：
@@ -145,18 +194,29 @@ result     = hi - correction
 DFT3 omega 已走 fixed-factor 版本；一般 NTT32 butterfly baseline 仍在 intrinsic
 內算 `B`，之後組語版應把 `(b,B)` 一起預先排進 twiddle table。
 
-最後 lazy NTT 的值先 sign-extend 成 int32，使用 `vpmulld`、加 rounding、
-`vpsrad` 做 reference-compatible Barrett，再以 `vpackssdw` 壓回 int16。這個
-reducer 的實際 range 是 `[-1729,1729]`，半模數邊界可能選擇 `-1729` 或
-`1729`。
+Intrinsic row-bitrev path 最後把 lazy NTT 值 sign-extend 成 int32，使用
+`vpmulld`、加 rounding、`vpsrad` 做 reference-compatible Barrett，再以
+`vpackssdw` 壓回 int16；其 range 是 `[-1729,1729]`。
+
+ASM SoA path 使用 packed int16 checkpoint：
+
+```text
+t = (vpmulhw(a, 19412)) >> 10
+r = a - t*3457
+```
+
+對完整 lazy interval `[-27648,27648]` exhaustive 驗證後，`r` 與輸入 modulo q
+相同且落在 `[0,3457]`。因此兩條 path 的 exact representative 不一定相同，測試
+以 modulo q 比較。
 
 其他關鍵指令/動作：
 
 - XMM 的八條 stream 由 `vpunpcklqdq` 組成。
 - 兩個 slot 以 `vinserti128` 填滿 YMM。
 - DFT3 後 `vperm2i128` 建立 `row01`。
-- AVX2 沒有 int16 scatter；最後把八條 stream 拆成兩組四 lane，依公開的
-  `physical=(32*k3+3*k32) mod 96` 做固定位置 store。
+- Intrinsic path 因 AVX2 沒有 int16 scatter，最後把八條 stream 拆成兩組四 lane，
+  依公開的 `physical=(32*k3+3*k32) mod 96` 做固定位置 store。
+- ASM path 則以 lane-local unpack 和 `vperm2i128` 直接形成連續 SoA store。
 
 ## Range 與 constant-time
 
@@ -181,8 +241,9 @@ secret stack data。
 = 16 architectural vector registers.
 ```
 
-Clang 產生的 stage1+2、stage3+4+5 和 scatter 目前沒有觀察到 vector spill/reload；
-stage3+4+5 正好把八個 data vector 保持在 register。Frontend 則仍會因為六次
+Clang 產生的 stage1+2 目前沒有觀察到 vector spill/reload；手寫 ASM
+stage3+4+5 正好把八個 data vector 保持在 register，而且 linked symbol 已確認
+沒有 stack access。Frontend 則仍會因為六次
 CRT-indexed load、twist construction 和 inlining 產生 stack spill/reload。這不是
 數學 layout 必然要求的 spill，而是下一輪應優先處理的 code-generation 問題：
 
@@ -197,12 +258,14 @@ CRT-indexed load、twist construction 和 inlining 產生 stack spill/reload。�
 architecture/target model，沒有 x86/AVX2 model。因此現在不能誠實地宣稱這份
 AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排。
 
-這個目錄先依 `new_kernel_baseline_then_iterate` 的 gate 方式準備：
+這個目錄依 `new_kernel_baseline_then_iterate` 的 gate 方式準備：
 
 - `kernel-contract.yml`：ring、I/O、layout、range、constant-time 與 scratch。
 - `baseline-contract.yml`：reference、驗證 gate、production replacement scope。
 - `instruction-dag.yml`：frontend pair、stage12 stripe、stage345 block、scatter DAG。
 - `gt_ntt_avx2.c`：可執行的 intrinsic semantics baseline。
+- `gt_ntt_stage345_soa.s`：依 DAG 手排的 stage3+4+5 與 fused SoA store。
+- `asm-soa-contract.yml`：hybrid ASM boundary、ABI、layout 與 output range。
 
 之後要走 Slothy，合理順序是先補 x86 architecture model（instruction semantics、
 latency/throughput、port model、register class），再把下列 region 各自抽成 symbolic
@@ -229,14 +292,23 @@ make sanitize
 make asm
 ```
 
-macOS arm64 會用 `clang -arch x86_64` cross-compile，並透過 Rosetta 執行。
+macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過 Rosetta
+執行；GNU ELF ASM path 目前只在 Linux x86-64 build 啟用。
 測試包含：
 
 - 1000 組、16 lanes 的 scalar/AVX2 Montgomery exact comparison；
 - 對完整 lazy range `[-27648,27648]` 的 exhaustive Barrett comparison；
+- 對同一完整 lazy range 的 packed ASM Barrett modulo/range exhaustive test；
 - frontend `row01/row2` packing differential；
 - stage2 `row01/row2_packed` differential；
 - impulse、boundary 與 200 組完整 random polynomial 對 AArch64 portable GT
   reference 的 modulo-q differential；
-- in-place `out==in`；
+- 768-word SoA mapping 的 forward/inverse exact round trip；
+- hybrid ASM SoA 對 mapping oracle 的 modulo-q differential 與 `[0,q]` range；
+- intrinsic 與 ASM 的 in-place `out==in`；
 - ASan/UBSan 可另外套在同一個 test binary。
+
+Ryzen 7 9700X 的 preliminary run（CPU 2 pinned、boost on、SMT sibling 未隔離）中，
+hybrid ASM SoA 的 serialized-TSC median 是 983，intrinsic GT 是 1476，約降低
+33.4%。Production forward NTT 是 444，所以目前主要剩餘成本仍在 intrinsic
+frontend/stage1+2，而不是把 prototype 直接升格成 production kernel。

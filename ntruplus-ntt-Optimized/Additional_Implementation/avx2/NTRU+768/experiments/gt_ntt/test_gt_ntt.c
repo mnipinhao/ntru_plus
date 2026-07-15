@@ -210,6 +210,40 @@ static int check_barrett(void)
 	return 0;
 }
 
+#if defined(GT_HAVE_AVX2_ASM)
+static int check_packed_barrett_asm(void)
+{
+	int16_t input[16];
+	int16_t got[16];
+
+	for (int base = -8 * (GT_NTT_Q - 1);
+	     base <= 8 * (GT_NTT_Q - 1); base += 16) {
+		for (unsigned lane = 0; lane < 16; lane++) {
+			const int value = base + (int)lane;
+
+			input[lane] = (int16_t)(value <= 8 * (GT_NTT_Q - 1)
+				? value : 8 * (GT_NTT_Q - 1));
+		}
+		gt_ntt_avx2_barrett_packed_asm(got, input);
+		for (unsigned lane = 0; lane < 16; lane++) {
+			const int value = base + (int)lane;
+
+			if (value > 8 * (GT_NTT_Q - 1)) {
+				continue;
+			}
+			if (!congruent(got[lane], input[lane]) || got[lane] < 0 ||
+			    got[lane] > GT_NTT_Q) {
+				fprintf(stderr,
+					"packed ASM Barrett failure input=%d output=%d\n",
+					value, got[lane]);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+#endif
+
 static int check_frontend(const int16_t input[GT_NTT_N])
 {
 	gt_frontend_scratch got;
@@ -314,11 +348,36 @@ static int check_stage5_range(const int16_t input[GT_NTT_N])
 	return 0;
 }
 
+static int check_soa_mapping(void)
+{
+	int16_t input[GT_NTT_N];
+	int16_t soa[GT_NTT_N];
+	int16_t roundtrip[GT_NTT_N];
+
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		input[i] = (int16_t)((int)i - GT_NTT_N / 2);
+	}
+	gt_ntt_rowbitrev_to_soa(soa, input);
+	gt_ntt_soa_to_rowbitrev(roundtrip, soa);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (roundtrip[i] != input[i]) {
+			fprintf(stderr, "SoA mapping round-trip mismatch i=%u\n", i);
+			return 1;
+		}
+	}
+	return 0;
+}
+
 static int check_full(const int16_t input[GT_NTT_N], const char *label)
 {
 	int16_t want[GT_NTT_N];
 	int16_t got[GT_NTT_N];
 	int16_t inplace[GT_NTT_N];
+#if defined(GT_HAVE_AVX2_ASM)
+	int16_t want_soa[GT_NTT_N];
+	int16_t got_soa[GT_NTT_N];
+	int16_t inplace_soa[GT_NTT_N];
+#endif
 
 	ntt_gt_rowbitrevlayout(want, input);
 	gt_ntt_avx2(got, input);
@@ -337,6 +396,28 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 			return 1;
 		}
 	}
+
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_ntt_rowbitrev_to_soa(want_soa, want);
+	gt_ntt_avx2_asm_soa(got_soa, input);
+	memcpy(inplace_soa, input, sizeof(inplace_soa));
+	gt_ntt_avx2_asm_soa(inplace_soa, inplace_soa);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(got_soa[i], want_soa[i]) ||
+		    got_soa[i] != inplace_soa[i]) {
+			fprintf(stderr,
+				"ASM SoA mismatch case=%s i=%u got=%d want=%d inplace=%d\n",
+				label, i, got_soa[i], want_soa[i], inplace_soa[i]);
+			return 1;
+		}
+		if (got_soa[i] < 0 || got_soa[i] > GT_NTT_Q) {
+			fprintf(stderr,
+				"ASM SoA range failure case=%s i=%u value=%d\n",
+				label, i, got_soa[i]);
+			return 1;
+		}
+	}
+#endif
 	return 0;
 }
 
@@ -344,9 +425,15 @@ int main(void)
 {
 	int16_t input[GT_NTT_N];
 
-	if (check_montgomery() != 0 || check_barrett() != 0) {
+	if (check_montgomery() != 0 || check_barrett() != 0 ||
+	    check_soa_mapping() != 0) {
 		return 1;
 	}
+#if defined(GT_HAVE_AVX2_ASM)
+	if (check_packed_barrett_asm() != 0) {
+		return 1;
+	}
+#endif
 
 	memset(input, 0, sizeof(input));
 	input[0] = 1;

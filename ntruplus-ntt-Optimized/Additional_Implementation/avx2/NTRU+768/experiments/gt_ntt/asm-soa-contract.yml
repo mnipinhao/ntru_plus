@@ -1,0 +1,67 @@
+kernel: ntruplus768_forward_gt_avx2_hybrid_asm_soa
+status: experimental_hybrid
+platform:
+  isa: AVX2
+  abi: System_V_AMD64
+  object_format: ELF
+operation: forward_ntt
+ring:
+  modulus: 3457
+  polynomial: X^768-X^384+1
+implementation_boundary:
+  intrinsic:
+    - top_split_and_twist
+    - good_thomas_dft3_frontend
+    - ntt32_stage1_and_stage2
+  assembly:
+    - ntt32_stage3_stage4_stage5
+    - packed_int16_barrett_checkpoint
+    - lane_local_8x8_transpose
+    - fused_16_block_soa_store
+input:
+  type: int16[768]
+  proven_precondition: "abs(a[i]) <= 3456"
+  public_wrapper_aliasing: out_may_equal_in
+assembly_arguments:
+  rdi: int16_out_768
+  rsi: aligned_stage2_scratch
+output:
+  type: int16[768]
+  equivalence: coefficientwise_mod_3457
+  range: "[0,3457]"
+  layout:
+    batches: 12
+    vectors_per_batch: 4
+    lanes_per_vector: 16
+    formula:
+      batch: "4*k3 + floor(Q/8)"
+      lane: "8*branch + (Q mod 8)"
+      word: "64*batch + 16*c + lane"
+    domains:
+      k3: "0..2"
+      Q: "0..31"
+      branch: "0..1"
+      c: "0..3"
+    rowbitrev_oracle:
+      physical_block: "(32*k3 + 3*Q) mod 96"
+      source_word: "384*branch + 4*physical_block + c"
+scratch:
+  wrapper_total_bytes: 3072
+  stage2_assembly_input_bytes: 1536
+  stage2_alignment: 32
+  assembly_stack_bytes: 0
+registers:
+  clobber_gpr: [rdx, rcx, r8, r9]
+  clobber_vector: [ymm0-ymm15]
+  callee_saved_clobbered: false
+constant_time:
+  secret_dependent_branches: false
+  secret_dependent_addresses: false
+  table_indices: public_loop_indices_only
+return_boundary:
+  vzeroupper: true
+promotion_limits:
+  - no_matching_soa_basemul_yet
+  - no_matching_soa_inverse_ntt_yet
+  - frontend_and_stage12_still_intrinsic
+  - does_not_replace_production_asm_ntt
