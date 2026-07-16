@@ -1,11 +1,11 @@
 # NTRU+768 AVX2 Good–Thomas NTT and pointwise prototype
 
 這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
-上的手寫組語 prototype。舊 hybrid 版本保留 intrinsic frontend 和 NTT32 stage
-1+2；新的 `gt_ntt_frontend_stage12_soa.S` 以 generated mapping/twist table 手排這
-兩段，並提供一個 single-entry producer。兩者共用 `gt_ntt_stage345_soa.s` 的
-stage 3+4+5、packed Barrett、transpose 與 16-block SoA store。它們都沒有取代
-上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
+上的手寫組語 prototype。`gt_ntt_frontend_stage12_soa.S` 以 generated mapping/twist
+table 手排 frontend 與 NTT32 stage 1+2，除 canonical single-entry producer 外，也
+保留 zero/half-handoff benchmark candidates。`gt_ntt_stage345_soa.s` 提供 canonical
+stage 3+4+5、packed Barrett、transpose、16-block SoA store，以及四個同語意 schedule
+candidates。它們都沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
 NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
@@ -99,12 +99,21 @@ input byte offsets:       16 pairs x 6 uint16 = 192 bytes
 twist/qinv/factor table:  16 pairs x 3 rows x 32 int16 = 3072 bytes
 ```
 
-六個 offset 依序是三個 `n3` 的 `(Q,Q+1)`，值已包含
-`8*((64*n3+33*Q) mod 96)`，所以 hot loop 不做除法、乘 33 或 `%96`。每個
-64-byte twist entry 是：
+同一個 generator 另產生等大小的 stripe-order tables：
 
 ```text
-[twist*qinv for Q,Q+1] | [twist for Q,Q+1]
+A(q)=(q,q+16), B(q)=(q+8,q+24), q=0..7
+gt_frontend_stripe_input_byte_offset[16][6]     = 192 bytes
+gt_frontend_stripe_twist_qinv_factor[16][3][32] = 3072 bytes
+```
+
+Canonical table 的六個 offset 依序是三個 `n3` 的 `(Q,Q+1)`；stripe table 則是
+同樣三組 `(Q_a,Q_b)`，但 pair 由上述 A/B order 決定。每個 offset 都已包含
+`8*((64*n3+33*Q) mod 96)`，所以 hot loop 不做除法、乘 33 或 `%96`。對任一
+table-selected pair，每個 64-byte twist entry 是：
+
+```text
+[twist*qinv for Qa,Qb] | [twist for Qa,Qb]
 ```
 
 其中每個 128-bit half 又是 `[branch0 x4 | branch1 x4]`。因此兩個 slot 能從
@@ -166,6 +175,26 @@ YMM9..YMM15，不再由 GCC 放到 stack/red-zone。這個 standalone linked sym
 且只有尾端一個 `vzeroupper`。這個 scratch 是 row01/row2 的數學 boundary，不是
 register spill。完整 input 在 stage1+2 寫回前已進 scratch，所以 `out==in` 安全。
 
+另外實作兩個 benchmark-only handoff candidate。`direct` 將 table 改成每個
+`q=0..7` 依序產生 stripe pair A=`(q,q+16)`、B=`(q+8,q+24)`；A 的三條
+stage-1 結果保留在 YMM13..YMM15，B 算完後立即完成三條 stage 2，直接寫入
+stage2 scratch，因此 frontend semantic handoff 是 0 bytes。`half` 使用相同
+stripe-first schedule，但先把 A 的三個 YMM 暫存在它們最後會佔用的 stage2
+slot，等 B 完成後 reload；它的 semantic handoff 是 768-byte store 加 768-byte
+reload，而不是原本 1536-byte store 加 1536-byte reload。
+
+兩個 low-level entry 都不碰 stack、沒有 call，並要求 1536-byte stage2 output 與
+768-coefficient input 完全不重疊。Public wrapper 仍用私有 stage2 scratch，所以
+對 caller 保留 `out==in`。算術 checkpoint 不變：DFT3、stage 1、stage 2 仍分別
+界在 `3(q-1)`、`4(q-1)`、`5(q-1)`，沒有多插 Barrett reduction。最後以 Ryzen
+7 9700X、每個 perf process 1,000,000 perf-loop iterations、forward/reverse
+sequential order 各十回確認：
+canonical 的 amortized cycles/iteration 是 425.40/425.71，`direct` 是
+497.41/497.49，`half` 是 499.46/499.48；
+也就是 direct 慢 16.86%--16.93%，half 慢 17.33%--17.41%。原因是 stripe-first
+packing、跨 128-bit half 組合及更緊的 live range 成本大於 1.5 KiB hot scratch
+流量，因此兩者保留作負結果，不取代 baseline。
+
 ## NTT32 stage 3+4+5：8-vector block consumer
 
 Stage 3、4、5 的 distance 是 4、2、1，因此 stage 2 之後可以一次只保留一個
@@ -196,9 +225,34 @@ Hybrid ASM 對每一 stage 的四個 Montgomery butterfly 依下列順序交錯�
 4 x butterfly add
 ```
 
-八個資料向量固定佔 YMM0..YMM7，四個暫存佔 YMM8..YMM11；high operand 在兩個
-product half 都發出後才 destructive overwrite。整個 ASM symbol 不使用 stack，
+Canonical serial schedule 的八個資料向量固定佔 YMM0..YMM7，四個暫存佔
+YMM8..YMM11；high operand 在兩個 product half 都發出後才 destructive overwrite。
+其他 candidate 允許 physical mapping 延續到後段。所有 ASM symbol 都不使用 stack，
 也沒有 spill/reload。
+
+同一個 source body 也產生四個 exact-output schedule candidate：
+
+- `interleaved`：把八條 Barrett chain 與 transpose 成對交錯，實測中性；
+- `remapped`：讓 butterfly 的 physical register mapping 直接流入 Barrett／transpose，
+  每 stage 消掉四個 register copy，六個 block 共消掉 72 個 `vmovdqa`；
+- `resident`：在 `remapped` 上把 q 與 Barrett reciprocal 整個 block 留在
+  YMM14/YMM15，雖減少 memory-source operands，但實測中性到稍慢；
+- `queued-store`：沿用 `remapped` 算術，先發出全部八個 `vperm2i128` 到
+  YMM0..YMM7，再連續發出八個 `vmovdqu` store。
+
+`queued-store` 是目前最佳候選。兩輪十回、forward/reverse sequential order 的
+`perf stat -e cycles` 的 amortized values 中，isolated stage3+4+5 從
+327.00/328.27 降到
+323.30/323.34（快 1.13%--1.50%），完整 forward 從 756.25/756.75 降到
+754.63/754.19（快 0.21%--0.34%）。Full polynomial multiplication 名目上在
+兩個順序都約慢 0.10%，但落在 perf variation 內，視為 neutral/no reliable win；
+所以此路徑仍是 default-off prototype，production 與
+canonical regression symbol 都不變。
+
+兩個方向也有實際合併：`direct+queued-store` 的完整 forward 是
+846.89/846.92，雖比 direct+serial 的 850.26/850.71 快 0.40%--0.45%，
+仍比 canonical 慢約 12%。Full polymul 在一個順序快 0.35%、反向順序慢 0.04%，
+同樣沒有穩定的 composition win。
 
 ## 16-block SoA output
 
@@ -342,9 +396,9 @@ correction = signed_mulhi(mullo(a, B), q)
 result     = hi - correction
 ```
 
-對應主要是 `vpmullw`、`vpmulhw`、`vpsubw`。Frontend 的 top-split、twist 與
-DFT3 omega 已走 fixed-factor 版本；一般 NTT32 butterfly baseline 仍在 intrinsic
-內算 `B`，之後組語版應把 `(b,B)` 一起預先排進 twiddle table。
+對應主要是 `vpmullw`、`vpmulhw`、`vpsubw`。手排 forward 的 top-split、twist、
+DFT3 omega 與五層 NTT32 butterfly 都使用預先打包的 `(b,B)`；intrinsic path 只作
+語意與 range oracle，不是目前的 scheduled forward path。
 
 Intrinsic row-bitrev path 最後把 lazy NTT 值 sign-extend 成 int32，使用
 `vpmulld`、加 rounding、`vpsrad` 做 reference-compatible Barrett，再以
@@ -377,8 +431,10 @@ DFT3 是 `3(q-1)`，五個 lazy NTT32 stage 每層最多再增加 `q-1`，最終
 `8(q-1)=27648 < 32768`。完整推導在 `range-proof.md`。
 
 所有 branch、table index 和 memory address 都只依賴公開 loop index；沒有
-secret-dependent branch 或 lookup。Prototype wrapper 在 stack 上配置兩個 1.5 KiB
-scratch，共 3 KiB。正式版本要再決定 caller-provided scratch、覆寫時機與是否清除
+secret-dependent branch 或 lookup。Canonical public wrapper 的 peak 是 frontend
+與 stage2 各 1.5 KiB，共 3 KiB；direct/half wrapper 只保留 canonical stage2
+scratch，peak 是 1.5 KiB。三者都需要 1536-byte stage2 scratch，zero-handoff 並不
+代表 zero-scratch。正式版本要再決定 caller-provided scratch、覆寫時機與是否清除
 secret stack data。
 
 SoA basemul 與 inverse 允許 NTT-domain operand 落在 `[-q,q]`。每個 Montgomery
@@ -409,10 +465,11 @@ construction。573-byte intrinsic stage1+2 才有 40-byte frame 加 red-zone win
 手排 standalone frontend 與 stage1+2 linked symbols 分別是 518 與 423 bytes；
 兩者都不讀寫 `%rsp`、不 call，並維持同一個 scratch/layout/range contract。融合
 producer 是 970 linked bytes，唯一 stack allocation 是精確 1536-byte semantic
-frontend scratch。Stage3+4+5 仍把八個 data vector 保持在 register，沒有
-spill/reload。也就是說目前完整 forward prototype 的 compiler-generated vector
-spill 已消除；保留的兩個 1.5 KiB scratch 是資料相依 boundary，而不是 allocator
-失敗。
+frontend scratch。Direct/half candidates 證實能把這個 handoff 降成 0/768 bytes，
+但實測退步，因此 canonical path 仍保留它。Stage3+4+5 把八個 data vector 保持在
+register，所有 schedule candidate 都沒有 spill/reload。也就是說目前完整 forward
+prototype 的 compiler-generated vector spill 已消除；保留的 frontend 與 stage2
+scratch 是經測量後選擇的資料相依 boundary，而不是 allocator 失敗。
 
 SoA basemul intrinsic 也刻意保留為 semantics baseline：Ryzen 的 GCC 16 linked
 symbol 是 773 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM spill。
@@ -499,6 +556,9 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - 對同一完整 lazy range 的 packed ASM Barrett modulo/range exhaustive test；
 - frontend `row01/row2` packing differential；
 - stage2 `row01/row2_packed` differential；
+- direct/half handoff 對 stage2 boundary 的 full-range、random exact differential；
+- canonical 與四個 stage3+4+5 candidate 對獨立 `±5(q-1)` scratch 的
+  modulo-q differential、`[0,q]` range 與 exact reachable-state regression；
 - impulse、boundary 與 200 組完整 random polynomial 對 AArch64 portable GT
   reference 的 modulo-q differential；
 - 768-word SoA mapping 的 forward/inverse exact round trip；
@@ -564,5 +624,12 @@ frontend/stage1+2，而不是 pointwise layout 或 inverse call fusion。
 stage1+2 `161.56 -> 133.40`（-17.4%）、完整 GT forward `1452.44 -> 774.76`
 （-46.7%），完整 GT polymul `4584.88 -> 3233.41`（-29.5%）。同 run 的
 KPQC Final／production 是 forward 668.996、polymul 2422.08，因此差距縮成
-1.16× 與 1.33×。下一個 forward 問題不再是 compiler spill，而是能否融合
-semantic frontend scratch handoff、以及 stage3+4+5/SoA store 的剩餘成本。
+1.16× 與 1.33×。
+
+接著實作的 zero-handoff 與 half-handoff producer 在最後 1M-call 雙順序確認中
+分別慢 16.86%--16.93% 與 17.33%--17.41%，所以 semantic frontend scratch 不是
+目前 bottleneck。Stage3+4+5 的 `queued-store` 則把 isolated region 降低
+1.13%--1.50%，完整 forward 降低 0.21%--0.34%，但 full polymul 沒有可靠改善。
+兩個實驗都保留作 regression／schedule evidence，沒有改 production 或 prototype
+default。下一個較高價值目標是 inverse/postprocess 或 stage2-to-stage345 boundary
+的結構性改寫，而不是再做相同的 scratch-copy elimination。

@@ -42,11 +42,58 @@ assembly_entries:
     rsi: int16_input_768
     stack_bytes: 1536
     internal_calls: 0
+    aliasing: out_may_overlap_input
+  frontend_stage12_direct_candidate:
+    symbol: gt_ntt_avx2_frontend_stage12_direct_asm
+    rdi: aligned_stage2_scratch
+    rsi: int16_input_768
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    gcc16_gnu_as_linked_symbol_bytes: 1194
+    semantic_frontend_handoff_bytes: 0
+    aliasing: full_regions_must_not_overlap
+    status: benchmark_only_regression_16_9_percent_slower
+  frontend_stage12_half_candidate:
+    symbol: gt_ntt_avx2_frontend_stage12_half_asm
+    rdi: aligned_stage2_scratch
+    rsi: int16_input_768
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    gcc16_gnu_as_linked_symbol_bytes: 1252
+    semantic_frontend_handoff_bytes: 768
+    aliasing: full_regions_must_not_overlap
+    status: benchmark_only_regression_17_4_percent_slower
   stage345_soa:
     symbol: gt_ntt_avx2_stage345_soa_asm
     rdi: int16_out_768
     rsi: aligned_stage2_scratch
     stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    gcc16_gnu_as_linked_symbol_bytes: 2037
+    aliasing: full_regions_must_not_overlap
+  stage345_candidates:
+    symbols:
+      - gt_ntt_avx2_stage345_soa_interleaved_asm
+      - gt_ntt_avx2_stage345_soa_remapped_asm
+      - gt_ntt_avx2_stage345_soa_resident_asm
+      - gt_ntt_avx2_stage345_soa_queued_store_asm
+    rdi: int16_out_768
+    rsi: aligned_stage2_scratch
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    aliasing: full_regions_must_not_overlap
+    arithmetic_and_output_contract: exact_match_to_canonical_serial
+    gcc16_gnu_as_linked_symbol_bytes:
+      interleaved: 2037
+      remapped: 1913
+      resident: 1797
+      queued_store: 1913
+    status: benchmark_only_default_off
+    selected_default_off: gt_ntt_avx2_stage345_soa_queued_store_asm
 output:
   type: int16[768]
   equivalence: coefficientwise_mod_3457
@@ -68,9 +115,15 @@ output:
       physical_block: "(32*k3 + 3*Q) mod 96"
       source_word: "384*branch + 4*physical_block + c"
 scratch:
-  full_wrapper_peak_bytes: 3072
-  fused_frontend_semantic_bytes: 1536
-  stage2_assembly_input_bytes: 1536
+  canonical_full_wrapper_peak_bytes: 3072
+  direct_or_half_full_wrapper_peak_bytes: 1536
+  canonical_frontend_semantic_handoff_bytes: 1536
+  canonical_frontend_handoff_traffic_bytes: 3072
+  direct_frontend_semantic_handoff_bytes: 0
+  direct_frontend_handoff_traffic_bytes: 0
+  half_frontend_semantic_handoff_bytes: 768
+  half_frontend_handoff_traffic_bytes: 1536
+  stage2_scratch_bytes_all_variants: 1536
   stage2_alignment: 32
   standalone_region_stack_bytes: 0
   compiler_spill_bytes: 0
@@ -86,5 +139,8 @@ return_boundary:
   vzeroupper: true
 promotion_limits:
   - matching_soa_basemul_is_intrinsic_only
-  - semantic_frontend_and_stage2_scratches_remain
+  - direct_and_half_handoff_candidates_are_measured_regressions
+  - queued_store_full_polymul_improvement_is_not_reproducible
+  - canonical_frontend_handoff_remains
+  - all_variants_retain_stage2_scratch
   - does_not_replace_production_asm_ntt

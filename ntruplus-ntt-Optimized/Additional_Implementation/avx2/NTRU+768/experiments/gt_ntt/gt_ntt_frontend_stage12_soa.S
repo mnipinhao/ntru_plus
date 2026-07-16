@@ -1,7 +1,7 @@
 .text
 
 /*
- * Load two adjacent Q slots for all three Good-Thomas rows.  The generated
+ * Load two table-selected Q slots for all three Good-Thomas rows.  The generated
  * offset table replaces six runtime modulo-96 calculations per iteration.
  * Low and high polynomial halves are kept separately until the top split.
  */
@@ -106,6 +106,321 @@
 	vmovdqa %ymm1,   32(%rdi,%r9,2)
 	vmovdqa %xmm8, 1024(%rdi,%r9)
 	vextracti128 $1, %ymm8, 1040(%rdi,%r9)
+.endm
+
+/*
+ * Stripe-first frontend for the no-handoff producer.  A pair is either
+ * (q,q+16) or (q+8,q+24), so its two 128-bit halves are already a stage-1
+ * butterfly.  ymm12 holds q; ymm13..ymm15 may hold the first pair's three
+ * stage-1 rows while the second pair uses ymm0..ymm11.
+ */
+.macro STRIPE_FRONTEND_LOADS
+	movzwl 0(%rdx), %eax
+	movzwl 2(%rdx), %ecx
+	vmovq   0(%rsi,%rax), %xmm0
+	vmovq   0(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm0, %ymm0
+	vmovq 768(%rsi,%rax), %xmm3
+	vmovq 768(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm3, %ymm3
+
+	movzwl 4(%rdx), %eax
+	movzwl 6(%rdx), %ecx
+	vmovq   0(%rsi,%rax), %xmm1
+	vmovq   0(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm1, %ymm1
+	vmovq 768(%rsi,%rax), %xmm4
+	vmovq 768(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm4, %ymm4
+
+	movzwl 8(%rdx), %eax
+	movzwl 10(%rdx), %ecx
+	vmovq   0(%rsi,%rax), %xmm2
+	vmovq   0(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm2, %ymm2
+	vmovq 768(%rsi,%rax), %xmm5
+	vmovq 768(%rsi,%rcx), %xmm6
+	vinserti128 $1, %xmm6, %ymm5, %ymm5
+.endm
+
+.macro STRIPE_FRONTEND_SPLIT_AND_TWIST
+	/* ymm11 keeps zeta*qinv; stagger the third product-high for one free YMM. */
+	vpmullw %ymm11, %ymm3, %ymm6
+	vpmullw %ymm11, %ymm4, %ymm7
+	vpmullw %ymm11, %ymm5, %ymm8
+	vpmulhw .Lfront_zeta_top(%rip), %ymm3, %ymm9
+	vpmulhw .Lfront_zeta_top(%rip), %ymm4, %ymm10
+	vpmulhw %ymm12, %ymm6, %ymm6
+	vpmulhw %ymm12, %ymm7, %ymm7
+	vpmulhw %ymm12, %ymm8, %ymm8
+	vpsubw %ymm6, %ymm9, %ymm9
+	vpsubw %ymm7, %ymm10, %ymm10
+	vpaddw %ymm9,  %ymm0, %ymm6
+	vpaddw %ymm10, %ymm1, %ymm7
+	vpaddw %ymm3, %ymm0, %ymm3
+	vpaddw %ymm4, %ymm1, %ymm4
+	vpsubw %ymm9,  %ymm3, %ymm3
+	vpsubw %ymm10, %ymm4, %ymm4
+	vpunpcklqdq %ymm3, %ymm6, %ymm6
+	vpunpcklqdq %ymm4, %ymm7, %ymm7
+
+	/* The first two streams released ymm9 for the third product-high. */
+	vpmulhw .Lfront_zeta_top(%rip), %ymm5, %ymm9
+	vpsubw %ymm8, %ymm9, %ymm9
+	vpaddw %ymm9, %ymm2, %ymm8
+	vpaddw %ymm5, %ymm2, %ymm5
+	vpsubw %ymm9, %ymm5, %ymm5
+	vpunpcklqdq %ymm5, %ymm8, %ymm8
+
+	/* Each generated stripe entry remains [twist*qinv | twist]. */
+	vpmullw   0(%r8), %ymm6, %ymm3
+	vpmullw  64(%r8), %ymm7, %ymm4
+	vpmullw 128(%r8), %ymm8, %ymm5
+	vpmulhw  32(%r8), %ymm6, %ymm0
+	vpmulhw  96(%r8), %ymm7, %ymm1
+	vpmulhw 160(%r8), %ymm8, %ymm2
+	vpmulhw %ymm12, %ymm3, %ymm3
+	vpmulhw %ymm12, %ymm4, %ymm4
+	vpmulhw %ymm12, %ymm5, %ymm5
+	vpsubw %ymm3, %ymm0, %ymm0
+	vpsubw %ymm4, %ymm1, %ymm1
+	vpsubw %ymm5, %ymm2, %ymm2
+.endm
+
+.macro STRIPE_FRONTEND_DFT3
+	/* Outputs are r0=ymm6, r1=ymm7, r2=ymm8. */
+	vpsubw %ymm2, %ymm1, %ymm3
+	vpmullw .Lfront_omega3_qinv(%rip), %ymm3, %ymm4
+	vpmulhw .Lfront_omega3(%rip), %ymm3, %ymm5
+	vpaddw %ymm1, %ymm0, %ymm6
+	vpsubw %ymm2, %ymm0, %ymm7
+	vpsubw %ymm1, %ymm0, %ymm8
+	vpmulhw %ymm12, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm4, %ymm5, %ymm5
+	vpaddw %ymm5, %ymm7, %ymm7
+	vpsubw %ymm5, %ymm8, %ymm8
+.endm
+
+/*
+ * Stage 1 for pair A.  Rejoin row0/row1 before the butterfly, so both rows
+ * share one full-YMM Montgomery chain.  Save row01 sums/differences plus the
+ * packed row2 result in ymm13..ymm15.
+ */
+.macro STRIPE_STAGE1_SAVE
+	vperm2i128 $0x20, %ymm7, %ymm6, %ymm0
+	vperm2i128 $0x31, %ymm7, %ymm6, %ymm1
+	vpmullw .Lstage12_r_qinv(%rip), %ymm1, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm1, %ymm1
+	vextracti128 $1, %ymm8, %xmm3
+	vpmullw .Lstage12_r_qinv(%rip), %xmm3, %xmm4
+	vpmulhw .Lstage12_r(%rip), %xmm3, %xmm3
+	vpmulhw %ymm12, %ymm2, %ymm2
+	vpmulhw %xmm12, %xmm4, %xmm4
+	vpsubw %ymm2, %ymm1, %ymm1
+	vpsubw %xmm4, %xmm3, %xmm3
+	vpaddw %ymm1, %ymm0, %ymm13
+	vpsubw %ymm1, %ymm0, %ymm14
+	vpaddw %xmm3, %xmm8, %xmm15
+	vpsubw %xmm3, %xmm8, %xmm5
+	vinserti128 $1, %xmm5, %ymm15, %ymm15
+.endm
+
+/*
+ * Stage 1 for pair B, then three interleaved packed stage-2 chains.  row0 and
+ * row1 are rejoined per canonical Q slot; row2 is already [Q|Q+16].
+ */
+.macro STRIPE_STAGE12_FINISH_STORE
+	/* Pair-B stage 1: row01 full YMM plus singleton row2 XMM. */
+	vperm2i128 $0x20, %ymm7, %ymm6, %ymm0
+	vperm2i128 $0x31, %ymm7, %ymm6, %ymm1
+	vpmullw .Lstage12_r_qinv(%rip), %ymm1, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm1, %ymm1
+	vextracti128 $1, %ymm8, %xmm3
+	vpmullw .Lstage12_r_qinv(%rip), %xmm3, %xmm4
+	vpmulhw .Lstage12_r(%rip), %xmm3, %xmm3
+	vpmulhw %ymm12, %ymm2, %ymm2
+	vpmulhw %xmm12, %xmm4, %xmm4
+	vpsubw %ymm2, %ymm1, %ymm1
+	vpsubw %xmm4, %xmm3, %xmm3
+	vpaddw %ymm1, %ymm0, %ymm9
+	vpsubw %ymm1, %ymm0, %ymm10
+	vpaddw %xmm3, %xmm8, %xmm11
+	vpsubw %xmm3, %xmm8, %xmm5
+	vinserti128 $1, %xmm5, %ymm11, %ymm11
+
+	/* Stage 2: identity, omega^8, and packed mixed-half chains. */
+	vpmullw .Lstage12_r_qinv(%rip), %ymm9, %ymm0
+	vpmullw .Lstage12_omega8_qinv(%rip), %ymm10, %ymm1
+	vpmullw .Lstage12_row2_qinv(%rip), %ymm11, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm9, %ymm9
+	vpmulhw .Lstage12_omega8(%rip), %ymm10, %ymm10
+	vpmulhw .Lstage12_row2_factor(%rip), %ymm11, %ymm11
+	vpmulhw %ymm12, %ymm0, %ymm0
+	vpmulhw %ymm12, %ymm1, %ymm1
+	vpmulhw %ymm12, %ymm2, %ymm2
+	vpsubw %ymm0, %ymm9, %ymm9
+	vpsubw %ymm1, %ymm10, %ymm10
+	vpsubw %ymm2, %ymm11, %ymm11
+
+	vpaddw %ymm9,  %ymm13, %ymm3
+	vpsubw %ymm9,  %ymm13, %ymm4
+	vpaddw %ymm10, %ymm14, %ymm5
+	vpsubw %ymm10, %ymm14, %ymm6
+	vpaddw %ymm11, %ymm15, %ymm7
+	vpsubw %ymm11, %ymm15, %ymm8
+	vmovdqa %ymm3,    0(%rdi,%r9)
+	vmovdqa %ymm4,  256(%rdi,%r9)
+	vmovdqa %ymm5,  512(%rdi,%r9)
+	vmovdqa %ymm6,  768(%rdi,%r9)
+	vmovdqa %ymm7, 1024(%rdi,%r9)
+	vmovdqa %ymm8, 1280(%rdi,%r9)
+.endm
+
+.macro STRIPE_FRONTEND_STAGE12_BODY
+	leaq gt_frontend_stripe_input_byte_offset(%rip), %rdx
+	leaq gt_frontend_stripe_twist_qinv_factor(%rip), %r8
+	vmovdqa .Lfront_q(%rip), %ymm12
+	xorl %r9d, %r9d
+.p2align 5
+.Lstripe_loop\@:
+	vmovdqa .Lfront_zeta_top_qinv(%rip), %ymm11
+	/* Pair A = (q,q+16). */
+	STRIPE_FRONTEND_LOADS
+	STRIPE_FRONTEND_SPLIT_AND_TWIST
+	STRIPE_FRONTEND_DFT3
+	STRIPE_STAGE1_SAVE
+	addq $12, %rdx
+	addq $192, %r8
+
+	/* Pair B = (q+8,q+24). */
+	STRIPE_FRONTEND_LOADS
+	STRIPE_FRONTEND_SPLIT_AND_TWIST
+	STRIPE_FRONTEND_DFT3
+	STRIPE_STAGE12_FINISH_STORE
+	addq $12, %rdx
+	addq $192, %r8
+	addq $32, %r9
+	cmpq $256, %r9
+	jne .Lstripe_loop\@
+.endm
+
+/*
+ * Lower-pressure stripe experiment.  It uses the original frontend schedule
+ * and temporarily writes pair A's three stage-1 vectors into their eventual
+ * stage2 output slots.  Pair B then reloads only those 768 bytes in total.
+ */
+.macro HALF_FRONTEND_DFT3
+	vpsubw %ymm2, %ymm1, %ymm3
+	vpmullw .Lfront_omega3_qinv(%rip), %ymm3, %ymm4
+	vpmulhw .Lfront_omega3(%rip), %ymm3, %ymm5
+	vpaddw %ymm1, %ymm0, %ymm6
+	vpsubw %ymm2, %ymm0, %ymm7
+	vpsubw %ymm1, %ymm0, %ymm8
+	vpmulhw %ymm15, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm4, %ymm5, %ymm5
+	vpaddw %ymm5, %ymm7, %ymm7
+	vpsubw %ymm5, %ymm8, %ymm8
+.endm
+
+.macro HALF_STAGE1_STORE
+	vperm2i128 $0x20, %ymm7, %ymm6, %ymm0
+	vperm2i128 $0x31, %ymm7, %ymm6, %ymm1
+	vpmullw .Lstage12_r_qinv(%rip), %ymm1, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm1, %ymm1
+	vextracti128 $1, %ymm8, %xmm3
+	vpmullw .Lstage12_r_qinv(%rip), %xmm3, %xmm4
+	vpmulhw .Lstage12_r(%rip), %xmm3, %xmm3
+	vpmulhw %ymm15, %ymm2, %ymm2
+	vpmulhw %xmm15, %xmm4, %xmm4
+	vpsubw %ymm2, %ymm1, %ymm1
+	vpsubw %xmm4, %xmm3, %xmm3
+	vpaddw %ymm1, %ymm0, %ymm9
+	vpsubw %ymm1, %ymm0, %ymm10
+	vpaddw %xmm3, %xmm8, %xmm11
+	vpsubw %xmm3, %xmm8, %xmm5
+	vinserti128 $1, %xmm5, %ymm11, %ymm11
+	vmovdqa %ymm9,     0(%rdi,%r9)
+	vmovdqa %ymm10,  512(%rdi,%r9)
+	vmovdqa %ymm11, 1024(%rdi,%r9)
+.endm
+
+.macro HALF_STAGE12_FINISH_STORE
+	/* Pair-B stage 1. */
+	vperm2i128 $0x20, %ymm7, %ymm6, %ymm0
+	vperm2i128 $0x31, %ymm7, %ymm6, %ymm1
+	vpmullw .Lstage12_r_qinv(%rip), %ymm1, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm1, %ymm1
+	vextracti128 $1, %ymm8, %xmm3
+	vpmullw .Lstage12_r_qinv(%rip), %xmm3, %xmm4
+	vpmulhw .Lstage12_r(%rip), %xmm3, %xmm3
+	vpmulhw %ymm15, %ymm2, %ymm2
+	vpmulhw %xmm15, %xmm4, %xmm4
+	vpsubw %ymm2, %ymm1, %ymm1
+	vpsubw %xmm4, %xmm3, %xmm3
+	vpaddw %ymm1, %ymm0, %ymm9
+	vpsubw %ymm1, %ymm0, %ymm10
+	vpaddw %xmm3, %xmm8, %xmm11
+	vpsubw %xmm3, %xmm8, %xmm5
+	vinserti128 $1, %xmm5, %ymm11, %ymm11
+
+	/* Reload pair A and issue the three stage-2 chains together. */
+	vmovdqa    0(%rdi,%r9), %ymm3
+	vmovdqa  512(%rdi,%r9), %ymm4
+	vmovdqa 1024(%rdi,%r9), %ymm5
+	vpmullw .Lstage12_r_qinv(%rip), %ymm9, %ymm0
+	vpmullw .Lstage12_omega8_qinv(%rip), %ymm10, %ymm1
+	vpmullw .Lstage12_row2_qinv(%rip), %ymm11, %ymm2
+	vpmulhw .Lstage12_r(%rip), %ymm9, %ymm9
+	vpmulhw .Lstage12_omega8(%rip), %ymm10, %ymm10
+	vpmulhw .Lstage12_row2_factor(%rip), %ymm11, %ymm11
+	vpmulhw %ymm15, %ymm0, %ymm0
+	vpmulhw %ymm15, %ymm1, %ymm1
+	vpmulhw %ymm15, %ymm2, %ymm2
+	vpsubw %ymm0, %ymm9, %ymm9
+	vpsubw %ymm1, %ymm10, %ymm10
+	vpsubw %ymm2, %ymm11, %ymm11
+
+	vpaddw %ymm9,  %ymm3, %ymm6
+	vpsubw %ymm9,  %ymm3, %ymm7
+	vpaddw %ymm10, %ymm4, %ymm8
+	vpsubw %ymm10, %ymm4, %ymm12
+	vpaddw %ymm11, %ymm5, %ymm0
+	vpsubw %ymm11, %ymm5, %ymm1
+	vmovdqa %ymm6,    0(%rdi,%r9)
+	vmovdqa %ymm7,  256(%rdi,%r9)
+	vmovdqa %ymm8,  512(%rdi,%r9)
+	vmovdqa %ymm12, 768(%rdi,%r9)
+	vmovdqa %ymm0, 1024(%rdi,%r9)
+	vmovdqa %ymm1, 1280(%rdi,%r9)
+.endm
+
+.macro HALF_FRONTEND_STAGE12_BODY
+	leaq gt_frontend_stripe_input_byte_offset(%rip), %rdx
+	leaq gt_frontend_stripe_twist_qinv_factor(%rip), %r8
+	vmovdqa .Lfront_zeta_top(%rip), %ymm13
+	vmovdqa .Lfront_zeta_top_qinv(%rip), %ymm14
+	vmovdqa .Lfront_q(%rip), %ymm15
+	xorl %r9d, %r9d
+.p2align 5
+.Lhalf_loop\@:
+	FRONTEND_LOADS
+	FRONTEND_SPLIT_AND_TWIST
+	HALF_FRONTEND_DFT3
+	HALF_STAGE1_STORE
+	addq $12, %rdx
+	addq $192, %r8
+
+	FRONTEND_LOADS
+	FRONTEND_SPLIT_AND_TWIST
+	HALF_FRONTEND_DFT3
+	HALF_STAGE12_FINISH_STORE
+	addq $12, %rdx
+	addq $192, %r8
+	addq $32, %r9
+	cmpq $256, %r9
+	jne .Lhalf_loop\@
 .endm
 
 .macro FRONTEND_BODY
@@ -263,6 +578,36 @@ gt_ntt_avx2_frontend_stage12_asm:
 	vzeroupper
 	ret
 .size gt_ntt_avx2_frontend_stage12_asm,.-gt_ntt_avx2_frontend_stage12_asm
+
+/*
+ * void gt_ntt_avx2_frontend_stage12_direct_asm(gt_stage2_scratch *out,
+ *                                              const int16_t in[768])
+ *
+ * Stripe-first producer with no frontend semantic scratch, stack access, or
+ * internal call.  out and in must not overlap.  The public forward wrapper
+ * supplies a private stage2 scratch, so its out==in contract remains safe.
+ */
+.p2align 5
+.globl gt_ntt_avx2_frontend_stage12_direct_asm
+.type gt_ntt_avx2_frontend_stage12_direct_asm,@function
+gt_ntt_avx2_frontend_stage12_direct_asm:
+	STRIPE_FRONTEND_STAGE12_BODY
+	vzeroupper
+	ret
+.size gt_ntt_avx2_frontend_stage12_direct_asm,.-gt_ntt_avx2_frontend_stage12_direct_asm
+
+/*
+ * 768-byte semantic-handoff candidate.  out and in must not overlap; no stack
+ * scratch or internal call is used.
+ */
+.p2align 5
+.globl gt_ntt_avx2_frontend_stage12_half_asm
+.type gt_ntt_avx2_frontend_stage12_half_asm,@function
+gt_ntt_avx2_frontend_stage12_half_asm:
+	HALF_FRONTEND_STAGE12_BODY
+	vzeroupper
+	ret
+.size gt_ntt_avx2_frontend_stage12_half_asm,.-gt_ntt_avx2_frontend_stage12_half_asm
 
 .section .rodata
 .p2align 5

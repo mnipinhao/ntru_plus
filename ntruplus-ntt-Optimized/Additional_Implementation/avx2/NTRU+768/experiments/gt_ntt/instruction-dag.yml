@@ -68,6 +68,35 @@ regions:
     internal_calls: 0
     terminal_vzeroupper: 1
     linked_symbol_bytes: 970
+  frontend_stage12_stripe_candidates:
+    implementation: handwritten_avx2_asm_benchmark_only
+    repeats: 8
+    stripe_order:
+      pair_a: [q, q+16]
+      pair_b: [q+8, q+24]
+    common_nodes:
+      - generate_pair_a_frontend_and_dft3
+      - stage1_pair_a
+      - generate_pair_b_frontend_and_dft3
+      - stage1_pair_b
+      - three_interleaved_stage2_chains
+      - store_six_canonical_stage2_vectors
+    direct:
+      pair_a_residency: ymm13_ymm15
+      semantic_handoff_bytes: 0
+      performance: 16_86_to_16_93_percent_slower_than_canonical
+    half:
+      pair_a_residency: three_eventual_stage2_slots
+      semantic_handoff_bytes: 768
+      handoff_traffic: 768_byte_store_plus_768_byte_reload
+      performance: 17_33_to_17_41_percent_slower_than_canonical
+    lazy_reduction:
+      after_dft3: "3*(q-1)"
+      after_stage1: "4*(q-1)"
+      after_stage2: "5*(q-1)"
+      barrett_checkpoint: none
+    low_level_aliasing: input_and_stage2_output_must_not_overlap
+    public_wrapper_aliasing: out_may_equal_in_via_private_stage2_scratch
   stage345_block:
     implementation: handwritten_avx2_asm
     row01_repeats: 4
@@ -83,6 +112,31 @@ regions:
       - eight_cross_half_permutes
       - store_four_soa_vectors_per_batch
     live_set_target: 8
+    scheduling_candidates:
+      canonical_serial:
+        gcc16_gnu_as_linked_symbol_bytes: 2037
+        physical_mapping: normalized_to_ymm0_ymm7_after_each_stage
+        performance_disposition: canonical_regression_path
+      interleaved:
+        gcc16_gnu_as_linked_symbol_bytes: 2037
+        change: pair_barrett_chains_with_first_transpose_layer
+        performance_disposition: neutral_default_off
+      remapped:
+        gcc16_gnu_as_linked_symbol_bytes: 1913
+        change: carry_physical_butterfly_mapping_into_barrett_and_transpose
+        final_logical_mapping: [ymm0, ymm2, ymm4, ymm3, ymm8, ymm10, ymm6, ymm11]
+        removed_runtime_moves: 72
+        performance_disposition: small_micro_win_default_off
+      resident:
+        gcc16_gnu_as_linked_symbol_bytes: 1797
+        change: keep_q_and_barrett_reciprocal_in_ymm14_ymm15_per_block
+        performance_disposition: neutral_to_slower_default_off
+      queued_store:
+        gcc16_gnu_as_linked_symbol_bytes: 1913
+        change: issue_all_eight_vperm2i128_before_all_eight_vmovdqu_stores
+        performance_disposition: selected_micro_candidate_default_off
+        measured_result: isolated_1_13_to_1_50_percent_faster_full_forward_0_21_to_0_34_percent_faster_full_polymul_0_10_percent_slower
+    low_level_aliasing: aligned_stage2_scratch_and_output_must_not_overlap
   scatter:
     implementation: intrinsic_rowbitrev_comparison_path_only
     nodes:

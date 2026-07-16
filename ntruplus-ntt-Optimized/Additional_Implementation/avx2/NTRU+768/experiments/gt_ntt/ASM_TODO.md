@@ -135,6 +135,21 @@ inverse NTT.
 - [x] Fuse frontend and stage1+2 behind a 970-byte linked entry with one aligned
   1536-byte semantic scratch, no internal calls, and one terminal
   `vzeroupper`.
+- [x] Evaluate a stripe-first zero-handoff producer.  It generates pair
+  A=`(q,q+16)` and pair B=`(q+8,q+24)`, keeps A's three stage-1 values live,
+  and writes stage2 directly.  Its GCC 16/GNU-as linked symbol is 1194 bytes
+  (`0x4aa`); it is
+  exact and stack-free, but the final forward/reverse 1M-iteration check is
+  497.41/497.49 versus 425.40/425.71 cycles, 16.86%--16.93% slower.
+- [x] Evaluate a 768-byte half-handoff producer.  It temporarily stores only
+  pair A's three YMM values in their eventual stage2 slots and reloads them
+  after pair B.  Its GCC 16/GNU-as linked symbol is 1252 bytes (`0x4e4`); it is exact and
+  stack-free, but 499.46/499.48 cycles is 17.33%--17.41% slower than
+  canonical.
+- [x] Close the copy-elimination candidate at the current packing.  The hot
+  1536-byte L1 handoff is cheaper than the extra cross-half packing and live
+  range pressure.  Do not reopen it without a materially different mapping or
+  a producer/consumer fusion that also removes those costs.
 
 ### NTT32 stage 3+4+5
 
@@ -150,14 +165,25 @@ inverse NTT.
   ```
 
 - [x] Use destructive high operands after both product halves have been issued.
-- [x] Use 8 data + 4 temporary YMM registers; q and Barrett constants are
-  read-only memory operands rather than additional live registers.
-- [x] Audit the handwritten region with `llvm-mca -mcpu=znver5`.  A one-pass
-  whole-file static estimate reports 358 instructions, 180 cycles, and block
-  throughput 70; loops and the test-only reducer entry mean this is a scheduling
-  diagnostic, not a call-level cycle prediction.
+- [x] The canonical serial path uses 8 data + 4 temporary YMM registers; q and
+  Barrett constants are read-only memory operands.  Remapped/resident candidates
+  intentionally use different physical ownership.
+- [x] Audit the original serial handwritten extraction with
+  `llvm-mca -mcpu=znver5`.  Its historical one-pass estimate is 358
+  instructions, 180 cycles, and block throughput 70.  This does not describe
+  the later multi-symbol file and is only a scheduling diagnostic, not a
+  call-level cycle prediction.
 - [x] Confirm zero stack spill/reload instructions in the linked ASM symbol;
   `gt_ntt_avx2_stage345_soa_asm` is 2037 bytes (`0x7f5`).
+- [x] Evaluate pairwise-interleaved Barrett/transpose scheduling; it is exact
+  but performance-neutral.
+- [x] Implement a no-copy physical register mapping.  It removes four
+  `vmovdqa` per stage, 72 moves over six blocks, and reduces the linked symbol
+  to 1913 bytes (`0x779`).
+- [x] Evaluate keeping q and the packed Barrett reciprocal resident for a full
+  block.  The GCC 16/GNU-as linked candidate is 1797 bytes (`0x705`) and
+  replaces 28 memory-source constant
+  operands with two loads per block, but is neutral to slower on Zen 5.
 
 ### Final store
 
@@ -170,6 +196,18 @@ inverse NTT.
   path returns centered representatives.
 - [x] Preserve and differential-test `out == in` behavior in the hybrid public
   wrapper.
+- [~] `queued-store` is the selected default-off schedule candidate.  It uses
+  the no-copy arithmetic, issues all eight `vperm2i128` outputs before the
+  eight stores, and is 1913 bytes (`0x779`).  Forward- and reversed-order
+  ten-repeat, 1M-iteration checks improve isolated stage3+4+5 by 1.13%--1.50% and full
+  forward by 0.21%--0.34%; full polynomial multiplication is nominally about
+  0.10% slower but within perf variation, hence neutral.
+- [x] Keep the canonical symbol and production path unchanged.  A sub-1% local
+  win is schedule evidence, not enough to promote a full pipeline whose
+  polynomial-multiplication result does not improve reliably.
+- [x] Compose direct+queued explicitly.  It improves direct full forward by
+  0.40%--0.45% but remains about 12% slower than canonical; its full-polymul
+  result flips from 0.35% faster to 0.04% slower with operation order.
 
 ## Pointwise multiplication
 
@@ -246,15 +284,21 @@ inverse NTT.
 ## ABI, constant-time, and object audit
 
 - [x] Record the prototype System V AMD64 contract: `out` is in `rdi`, scratch
-  is in `rsi`; only caller-saved GPRs and YMM0..YMM15 are clobbered; the ASM
-  region does not touch the stack.
+  is in `rsi`; only caller-saved GPRs and YMM0..YMM15 are clobbered.  Standalone
+  regions plus direct/half entries do not touch the stack; the canonical fused
+  producer deliberately owns its 1536-byte semantic frame.
 - [x] Emit `vzeroupper` before returning from the public ASM boundary.
 - [x] Keep all branches, addresses, and table indices input-independent.
 - [x] Check alignment assumptions: the stage-2 scratch is 32-byte aligned and
   uses `vmovdqa`; output has no alignment precondition and uses `vmovdqu`.
-- [~] Record stack and scratch use: the C hybrid wrapper currently owns 1536
-  bytes of aligned scratch, while each ASM region allocates zero bytes.  Decide
-  whether the production caller must wipe secret scratch.
+- [~] Record stack and scratch use: canonical public forward peak use is 3072
+  bytes (caller stage2 plus fused producer frontend), while direct/half public
+  wrappers peak at 1536 bytes.  Decide whether the production caller must wipe
+  secret scratch.
+- [x] Record candidate alias boundaries: low-level direct/half producers require
+  disjoint input and 1536-byte stage2 output; low-level Stage345 entries require
+  a 32-byte-aligned, non-overlapping 1536-byte scratch region and output.  The
+  public forward wrappers use private stage2 storage and remain `out==in` safe.
 - [ ] Define the production scratch-lifetime policy and wipe secret scratch if
   the final caller contract requires it.
 - [x] Disassemble and audit the linked object, not only the source `.s` file.
@@ -264,6 +308,9 @@ inverse NTT.
 
 - [x] Intrinsic Montgomery and Barrett unit tests.
 - [x] Frontend and stage-2 representation-boundary tests.
+- [x] Independent Stage345 boundary tests at alternating and random values in
+  `[-5(q-1),5(q-1)]`, including modulo-q oracle, `[0,q]` output range, and
+  exact equality across all five ASM schedules.
 - [x] Full forward-NTT differential test against the portable GT reference.
 - [x] SoA mapping oracle and inverse mapping oracle.
 - [x] Pointwise differential tests.
@@ -339,10 +386,16 @@ That forward milestone is now complete.  In the ten-repeat reversed-order
 cycles (66.3%), stage1+2 from 161.56 to 133.40 (17.4%), full GT forward from
 1452.44 to 774.76 (46.7%), and full GT polynomial multiplication from 4584.88
 to 3233.41 (29.5%).  KPQC Final/production in the same run is 669.00 forward
-and 2422.08 polynomial multiplication, leaving 1.16x and 1.33x gaps.  The next
-candidate is a different producer/consumer boundary that reduces the semantic
-frontend-scratch handoff or the remaining stage3+4+5/SoA-store cost; do not
-reopen runtime twist construction or compiler-spill work.
+and 2422.08 polynomial multiplication, leaving 1.16x and 1.33x gaps.
+
+Both proposed follow-ups have now been measured.  Zero/half frontend handoff
+regresses the producer by 16.86%--16.93%/17.33%--17.41%, so the semantic
+scratch is retained.  The queued Stage345/SoA store lowers its isolated region
+by 1.13%--1.50% and full forward by 0.21%--0.34%, but full-polymul has no
+reliable improvement.
+The next high-value targets are a structural stage2-to-stage345 boundary change
+or the still-dominant inverse/postprocess path.  Do not reopen runtime twist
+construction, compiler-spill work, or the same scratch-copy elimination.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

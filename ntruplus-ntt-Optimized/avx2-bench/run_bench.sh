@@ -10,7 +10,30 @@ PERF_CORE_EVENTS=${PERF_CORE_EVENTS:-cycles}
 PERF_CACHE_EVENTS=${PERF_CACHE_EVENTS:-}
 RUN_TSC=${RUN_TSC:-0}
 STRICT_ENV=${STRICT_ENV:-0}
-OPERATIONS=${OPERATIONS:-"ntt gt-ntt gt-ntt-asm-soa gt-frontend gt-frontend-asm gt-stage12 gt-stage12-asm gt-frontend-stage12-asm gt-ntt-frontend-asm-soa basemul gt-basemul-soa invntt gt-invntt32 gt-invntt32-asm gt-invdft3 gt-invdft3-asm gt-invpost gt-invpost-asm gt-invntt-soa gt-invntt-soa-hybrid gt-invntt-soa-dft3-hybrid gt-invntt-soa-postprocess-hybrid gt-invntt-soa-fused-asm polymul gt-polymul-soa gt-polymul-soa-hybrid gt-polymul-soa-dft3-hybrid gt-polymul-soa-postprocess-hybrid gt-polymul-soa-fused-asm gt-polymul-frontend-fused-asm"}
+DEFAULT_OPERATIONS="ntt gt-ntt gt-ntt-asm-soa \
+gt-frontend gt-frontend-asm gt-stage12 gt-stage12-asm \
+gt-frontend-stage12-asm gt-frontend-stage12-direct-asm \
+gt-frontend-stage12-half-asm gt-stage345-serial-asm \
+gt-stage345-interleaved-asm gt-stage345-remapped-asm \
+gt-stage345-resident-asm gt-stage345-queued-store-asm \
+gt-ntt-frontend-asm-soa gt-ntt-direct-asm-soa \
+gt-ntt-direct-interleaved-asm-soa gt-ntt-direct-queued-store-asm-soa \
+gt-ntt-half-asm-soa \
+gt-ntt-remapped-asm-soa gt-ntt-half-remapped-asm-soa \
+gt-ntt-resident-asm-soa gt-ntt-queued-store-asm-soa \
+basemul gt-basemul-soa invntt gt-invntt32 gt-invntt32-asm \
+gt-invdft3 gt-invdft3-asm gt-invpost gt-invpost-asm \
+gt-invntt-soa gt-invntt-soa-hybrid gt-invntt-soa-dft3-hybrid \
+gt-invntt-soa-postprocess-hybrid gt-invntt-soa-fused-asm \
+polymul gt-polymul-soa gt-polymul-soa-hybrid \
+gt-polymul-soa-dft3-hybrid gt-polymul-soa-postprocess-hybrid \
+gt-polymul-soa-fused-asm gt-polymul-frontend-fused-asm \
+gt-polymul-direct-fused-asm gt-polymul-direct-interleaved-fused-asm \
+gt-polymul-direct-queued-store-fused-asm \
+gt-polymul-half-fused-asm gt-polymul-remapped-fused-asm \
+gt-polymul-half-remapped-fused-asm gt-polymul-resident-fused-asm \
+gt-polymul-queued-store-fused-asm"
+OPERATIONS=${OPERATIONS:-$DEFAULT_OPERATIONS}
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 RESULT_DIR=${RESULT_DIR:-"$ROOT/results/$STAMP"}
 TARGET="$ROOT/build/avx2_bench"
@@ -30,6 +53,7 @@ fi
   echo "timestamp_utc=$STAMP"
   echo "core=$CORE"
   echo "operations=$OPERATIONS"
+  echo "perf_repetitions=$PERF_REPETITIONS"
   echo "perf_core_events=$PERF_CORE_EVENTS"
   echo "perf_cache_events=$PERF_CACHE_EVENTS"
   echo "run_tsc=$RUN_TSC"

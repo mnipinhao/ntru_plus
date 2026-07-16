@@ -469,6 +469,79 @@ void gt_ntt_avx2_frontend_asm_soa(int16_t out[GT_NTT_N],
 	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
 	gt_ntt_avx2_stage345_soa_asm(out, &stage2);
 }
+
+void gt_ntt_avx2_frontend_direct_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	/* stage2 is disjoint from in, even when the public out aliases in. */
+	gt_ntt_avx2_frontend_stage12_direct_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_direct_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_interleaved_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_direct_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_queued_store_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_half_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_half_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_remapped_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_remapped_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_half_remapped_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_half_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_remapped_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_resident_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_resident_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_queued_store_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_queued_store_asm(out, &stage2);
+}
 #endif
 
 void gt_ntt_avx2_montgomery_test(int16_t out[16],

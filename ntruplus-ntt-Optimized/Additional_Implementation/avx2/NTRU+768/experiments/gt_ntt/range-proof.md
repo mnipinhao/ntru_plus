@@ -33,6 +33,22 @@ stack, and the fused symbol contains no additional spill slot.  Exact boundary
 tests compare all 768 int16 words against the intrinsic producer, including
 full-range and in-place inputs.
 
+The direct and half-handoff candidates are only dependency-order changes to
+the same arithmetic.  For stripe `q`, they generate pair A=`(q,q+16)` and pair
+B=`(q+8,q+24)`.  Direct keeps A's three stage-1 values live until B is ready;
+half-handoff temporarily stores and reloads those three values.  Neither path
+adds, removes, or moves a Montgomery/Barrett checkpoint, so their bounds remain
+`3(q-1)`, `4(q-1)`, and `5(q-1)` at the same semantic points.  Exact stage2
+boundary tests cover full-range and random inputs.
+
+The low-level direct and half-handoff entries may begin writing stage2 before
+all input coefficients have been loaded, so their 1536-byte output and
+768-coefficient input regions must not overlap.  Their public wrappers allocate
+a private stage2 scratch, preserving the public `out==in` contract without a
+secret-dependent alias check.  The non-overlap requirement is an API
+precondition, not a constant-time branch; every direct/half address still
+depends only on the public stripe index and generated public offset tables.
+
 The forward argument is followed by separate SoA basemul and inverse arguments
 below.  Together they cover the complete prototype polynomial multiplication.
 
@@ -62,6 +78,21 @@ not change bounds or residues.  For DFT3 row `k3`, NTT32 index `Q`, branch `b`,
 and quartic coefficient `c`, the output word is
 `64*(4*k3+Q/8) + 16*c + 8*b + Q%8`.  Both directions of this 768-word mapping
 are tested against the verified GT row-bitrev reference.
+
+The interleaved, no-copy remapped, resident-constant, and queued-store
+Stage345 entries use the same three butterfly layers and the same packed
+Barrett expression.  They change only instruction order, physical register
+names, constant residency, and the order in which the eight final permutations
+and stores are issued.  Besides reachable forward states, standalone tests fill
+the stage2 boundary independently at alternating endpoints and random values in
+`[-5(q-1),5(q-1)]`; every candidate is compared modulo q with the intrinsic
+Stage345/scatter oracle and every output is checked to lie in `[0,q]`.
+
+All low-level Stage345 entries load from a 32-byte-aligned 1536-byte scratch
+while writing a separate 1536-byte output.  The two regions must not overlap:
+an early SoA store can otherwise overwrite a later scratch block.  Public
+forward wrappers own a private stage2 scratch and therefore remain safe when
+their polynomial output aliases their polynomial input.
 
 ## SoA quartic basemul
 

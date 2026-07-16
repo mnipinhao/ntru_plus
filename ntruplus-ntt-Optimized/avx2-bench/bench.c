@@ -64,6 +64,44 @@ static int16_t gt_frontend_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_frontend_asm_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static int16_t gt_direct_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_direct_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_direct_interleaved_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_direct_interleaved_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_half_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_half_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_remapped_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_remapped_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_half_remapped_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_half_remapped_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_resident_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_resident_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_queued_store_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_queued_store_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_serial_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_interleaved_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_remapped_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_resident_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_queued_store_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
 static int16_t gt_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static gt_frontend_scratch gt_frontend_inputs[BENCH_NINPUTS];
@@ -72,6 +110,8 @@ static gt_frontend_scratch gt_frontend_asm_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_stage12_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_stage12_asm_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_frontend_stage12_asm_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_direct_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_half_outputs[BENCH_NINPUTS];
 static int16_t gt_invntt32_rows[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_invntt32_rows_asm[BENCH_NINPUTS][NTRUPLUS_N]
@@ -198,6 +238,12 @@ static void prepare_inputs(void)
     gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_b[i],
                                  inputs_b[i].coeffs);
     gt_ntt_avx2_frontend(&gt_frontend_inputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_asm(&gt_frontend_stage12_asm_outputs[i],
+                                     inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_direct_asm(
+        &gt_frontend_stage12_direct_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_half_asm(
+        &gt_frontend_stage12_half_outputs[i], inputs_a[i].coeffs);
     gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
                         gt_asm_soa_b[i]);
     gt_invntt_soa_ntt32_intrinsic(gt_invdft3_rows[i],
@@ -239,6 +285,8 @@ static int validate_all(void)
   int16_t gt_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_product_want[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_product_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_direct_queued_a[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_direct_queued_b[NTRUPLUS_N] __attribute__((aligned(32)));
   unsigned i;
 
   for (i = 0; i < 8; i++) {
@@ -286,18 +334,88 @@ static int validate_all(void)
                             &gt_frontend_inputs[i]);
     gt_ntt_avx2_frontend_stage12_asm(&gt_frontend_stage12_asm_outputs[i],
                                      inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_direct_asm(
+        &gt_frontend_stage12_direct_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_half_asm(
+        &gt_frontend_stage12_half_outputs[i], inputs_a[i].coeffs);
     if (memcmp(&gt_stage12_outputs[i], &gt_stage12_asm_outputs[i],
                sizeof(gt_stage12_outputs[i])) != 0 ||
         memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_asm_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0 ||
+        memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_direct_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0 ||
+        memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_half_outputs[i],
                sizeof(gt_stage12_outputs[i])) != 0) {
       fputs("GT frontend/stage12 ASM exact boundary differential failed\n",
             stderr);
       return 0;
     }
 
+    gt_ntt_avx2_stage345_soa_asm(gt_stage345_serial_outputs[i],
+                                 &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_interleaved_asm(
+        gt_stage345_interleaved_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_remapped_asm(
+        gt_stage345_remapped_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_resident_asm(
+        gt_stage345_resident_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_queued_store_asm(
+        gt_stage345_queued_store_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
+    if (memcmp(gt_stage345_serial_outputs[i],
+               gt_stage345_interleaved_outputs[i],
+               sizeof(gt_stage345_serial_outputs[i])) != 0 ||
+        memcmp(gt_stage345_serial_outputs[i], gt_stage345_remapped_outputs[i],
+               sizeof(gt_stage345_serial_outputs[i])) != 0 ||
+        memcmp(gt_stage345_serial_outputs[i], gt_stage345_resident_outputs[i],
+               sizeof(gt_stage345_serial_outputs[i])) != 0 ||
+        memcmp(gt_stage345_serial_outputs[i],
+               gt_stage345_queued_store_outputs[i],
+               sizeof(gt_stage345_serial_outputs[i])) != 0) {
+      fputs("GT stage345 candidate ASM exact differential failed\n", stderr);
+      return 0;
+    }
+
     gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[i],
                                  inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_direct_asm_soa(gt_direct_asm_soa_outputs[i],
+                                        inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+        gt_direct_interleaved_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+        gt_direct_queued_a, inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_half_asm_soa(gt_half_asm_soa_outputs[i],
+                                      inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_remapped_asm_soa(gt_remapped_asm_soa_outputs[i],
+                                          inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_half_remapped_asm_soa(
+        gt_half_remapped_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_resident_asm_soa(gt_resident_asm_soa_outputs[i],
+                                          inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_queued_store_asm_soa(
+        gt_queued_store_asm_soa_outputs[i], inputs_a[i].coeffs);
     if (memcmp(gt_asm_soa_outputs[i], gt_frontend_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_direct_queued_a,
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_direct_interleaved_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_direct_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_half_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_remapped_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_half_remapped_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_resident_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_queued_store_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_asm_soa_outputs[i], gt_stage345_serial_outputs[i],
                sizeof(gt_asm_soa_outputs[i])) != 0) {
       fputs("GT frontend ASM SoA forward exact differential failed\n", stderr);
       return 0;
@@ -323,6 +441,35 @@ static int validate_all(void)
                                  gt_frontend_asm_soa_products[i]);
     if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
       fputs("GT frontend ASM fused polynomial multiplication failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+        gt_direct_interleaved_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+        gt_direct_interleaved_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_direct_interleaved_asm_soa_outputs[i],
+                        gt_direct_interleaved_asm_soa_b[i]);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT direct/interleaved ASM polynomial multiplication failed\n",
+            stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+        gt_direct_queued_a, inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+        gt_direct_queued_b, inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_direct_queued_a, gt_direct_queued_b);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT direct/queued-store ASM polynomial multiplication failed\n",
+            stderr);
       return 0;
     }
 
@@ -467,10 +614,106 @@ static void target_gt_frontend_stage12_asm(unsigned index)
       &gt_frontend_stage12_asm_outputs[index], inputs_a[index].coeffs);
 }
 
+static void target_gt_frontend_stage12_direct_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_direct_asm(
+      &gt_frontend_stage12_direct_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_half_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_half_asm(
+      &gt_frontend_stage12_half_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_stage345_serial_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_asm(
+      gt_stage345_serial_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_interleaved_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_interleaved_asm(
+      gt_stage345_interleaved_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_remapped_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_remapped_asm(
+      gt_stage345_remapped_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_resident_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_resident_asm(
+      gt_stage345_resident_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_queued_store_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_queued_store_asm(
+      gt_stage345_queued_store_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
 static void target_gt_ntt_frontend_asm_soa(unsigned index)
 {
   gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[index],
                                inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_direct_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_asm_soa(gt_direct_asm_soa_outputs[index],
+                                      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_direct_interleaved_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+      gt_direct_interleaved_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_direct_queued_store_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+      gt_direct_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_half_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_half_asm_soa(gt_half_asm_soa_outputs[index],
+                                    inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_remapped_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_remapped_asm_soa(gt_remapped_asm_soa_outputs[index],
+                                        inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_half_remapped_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_half_remapped_asm_soa(
+      gt_half_remapped_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_resident_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_resident_asm_soa(gt_resident_asm_soa_outputs[index],
+                                        inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_queued_store_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_queued_store_asm_soa(
+      gt_queued_store_asm_soa_outputs[index], inputs_a[index].coeffs);
 }
 
 static void target_basemul(unsigned index)
@@ -621,6 +864,111 @@ static void target_gt_polymul_frontend_fused_asm(unsigned index)
                                gt_frontend_asm_soa_products[index]);
 }
 
+static void target_gt_polymul_direct_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_asm_soa(gt_direct_asm_soa_outputs[index],
+                                      inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_direct_asm_soa(gt_direct_asm_soa_b[index],
+                                      inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_direct_asm_soa_outputs[index],
+                      gt_direct_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_direct_interleaved_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+      gt_direct_interleaved_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+      gt_direct_interleaved_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_direct_interleaved_asm_soa_outputs[index],
+                      gt_direct_interleaved_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_direct_queued_store_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+      gt_direct_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+      gt_direct_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_direct_asm_soa_outputs[index],
+                      gt_direct_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_half_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_half_asm_soa(gt_half_asm_soa_outputs[index],
+                                    inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_half_asm_soa(gt_half_asm_soa_b[index],
+                                    inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_half_asm_soa_outputs[index],
+                      gt_half_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_remapped_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_remapped_asm_soa(gt_remapped_asm_soa_outputs[index],
+                                        inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_remapped_asm_soa(gt_remapped_asm_soa_b[index],
+                                        inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_remapped_asm_soa_outputs[index],
+                      gt_remapped_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_half_remapped_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_half_remapped_asm_soa(
+      gt_half_remapped_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_half_remapped_asm_soa(
+      gt_half_remapped_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_half_remapped_asm_soa_outputs[index],
+                      gt_half_remapped_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_resident_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_resident_asm_soa(gt_resident_asm_soa_outputs[index],
+                                        inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_resident_asm_soa(gt_resident_asm_soa_b[index],
+                                        inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_resident_asm_soa_outputs[index],
+                      gt_resident_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_queued_store_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_queued_store_asm_soa(
+      gt_queued_store_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_queued_store_asm_soa(
+      gt_queued_store_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_queued_store_asm_soa_outputs[index],
+                      gt_queued_store_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
 static const struct operation operations[] = {
   {"ntt", target_ntt},
   {"gt-ntt", target_gt_ntt},
@@ -630,7 +978,24 @@ static const struct operation operations[] = {
   {"gt-stage12", target_gt_stage12},
   {"gt-stage12-asm", target_gt_stage12_asm},
   {"gt-frontend-stage12-asm", target_gt_frontend_stage12_asm},
+  {"gt-frontend-stage12-direct-asm", target_gt_frontend_stage12_direct_asm},
+  {"gt-frontend-stage12-half-asm", target_gt_frontend_stage12_half_asm},
+  {"gt-stage345-serial-asm", target_gt_stage345_serial_asm},
+  {"gt-stage345-interleaved-asm", target_gt_stage345_interleaved_asm},
+  {"gt-stage345-remapped-asm", target_gt_stage345_remapped_asm},
+  {"gt-stage345-resident-asm", target_gt_stage345_resident_asm},
+  {"gt-stage345-queued-store-asm", target_gt_stage345_queued_store_asm},
   {"gt-ntt-frontend-asm-soa", target_gt_ntt_frontend_asm_soa},
+  {"gt-ntt-direct-asm-soa", target_gt_ntt_direct_asm_soa},
+  {"gt-ntt-direct-interleaved-asm-soa",
+   target_gt_ntt_direct_interleaved_asm_soa},
+  {"gt-ntt-direct-queued-store-asm-soa",
+   target_gt_ntt_direct_queued_store_asm_soa},
+  {"gt-ntt-half-asm-soa", target_gt_ntt_half_asm_soa},
+  {"gt-ntt-remapped-asm-soa", target_gt_ntt_remapped_asm_soa},
+  {"gt-ntt-half-remapped-asm-soa", target_gt_ntt_half_remapped_asm_soa},
+  {"gt-ntt-resident-asm-soa", target_gt_ntt_resident_asm_soa},
+  {"gt-ntt-queued-store-asm-soa", target_gt_ntt_queued_store_asm_soa},
   {"basemul", target_basemul},
   {"gt-basemul-soa", target_gt_basemul_soa},
   {"invntt", target_invntt},
@@ -655,6 +1020,18 @@ static const struct operation operations[] = {
   {"gt-polymul-soa-fused-asm", target_gt_polymul_soa_fused_asm},
   {"gt-polymul-frontend-fused-asm",
    target_gt_polymul_frontend_fused_asm},
+  {"gt-polymul-direct-fused-asm", target_gt_polymul_direct_fused_asm},
+  {"gt-polymul-direct-interleaved-fused-asm",
+   target_gt_polymul_direct_interleaved_fused_asm},
+  {"gt-polymul-direct-queued-store-fused-asm",
+   target_gt_polymul_direct_queued_store_fused_asm},
+  {"gt-polymul-half-fused-asm", target_gt_polymul_half_fused_asm},
+  {"gt-polymul-remapped-fused-asm", target_gt_polymul_remapped_fused_asm},
+  {"gt-polymul-half-remapped-fused-asm",
+   target_gt_polymul_half_remapped_fused_asm},
+  {"gt-polymul-resident-fused-asm", target_gt_polymul_resident_fused_asm},
+  {"gt-polymul-queued-store-fused-asm",
+   target_gt_polymul_queued_store_fused_asm},
 };
 
 static const struct operation *find_operation(const char *name)
@@ -703,6 +1080,22 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_asm_soa_outputs[i]);
     } else if (operation->run == target_gt_ntt_frontend_asm_soa) {
       sink ^= checksum_i16(gt_frontend_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_direct_asm_soa) {
+      sink ^= checksum_i16(gt_direct_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_direct_interleaved_asm_soa) {
+      sink ^= checksum_i16(gt_direct_interleaved_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_direct_queued_store_asm_soa) {
+      sink ^= checksum_i16(gt_direct_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_half_asm_soa) {
+      sink ^= checksum_i16(gt_half_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_remapped_asm_soa) {
+      sink ^= checksum_i16(gt_remapped_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_half_remapped_asm_soa) {
+      sink ^= checksum_i16(gt_half_remapped_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_resident_asm_soa) {
+      sink ^= checksum_i16(gt_resident_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_queued_store_asm_soa) {
+      sink ^= checksum_i16(gt_queued_store_asm_soa_outputs[i]);
     } else if (operation->run == target_gt_frontend) {
       sink ^= checksum_i16((const int16_t *)(const void *)&gt_frontend_outputs[i]);
     } else if (operation->run == target_gt_frontend_asm) {
@@ -716,6 +1109,22 @@ static void consume_outputs(const struct operation *operation)
     } else if (operation->run == target_gt_frontend_stage12_asm) {
       sink ^= checksum_i16((const int16_t *)(const void *)
                                &gt_frontend_stage12_asm_outputs[i]);
+    } else if (operation->run == target_gt_frontend_stage12_direct_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_direct_outputs[i]);
+    } else if (operation->run == target_gt_frontend_stage12_half_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_half_outputs[i]);
+    } else if (operation->run == target_gt_stage345_serial_asm) {
+      sink ^= checksum_i16(gt_stage345_serial_outputs[i]);
+    } else if (operation->run == target_gt_stage345_interleaved_asm) {
+      sink ^= checksum_i16(gt_stage345_interleaved_outputs[i]);
+    } else if (operation->run == target_gt_stage345_remapped_asm) {
+      sink ^= checksum_i16(gt_stage345_remapped_outputs[i]);
+    } else if (operation->run == target_gt_stage345_resident_asm) {
+      sink ^= checksum_i16(gt_stage345_resident_outputs[i]);
+    } else if (operation->run == target_gt_stage345_queued_store_asm) {
+      sink ^= checksum_i16(gt_stage345_queued_store_outputs[i]);
     } else if (operation->run == target_basemul) {
       sink ^= checksum_i16(freq_out[i].coeffs);
     } else if (operation->run == target_gt_basemul_soa) {
@@ -796,19 +1205,15 @@ static void print_build_metadata(void)
 
 static void print_usage(const char *program)
 {
-  fprintf(stderr,
-          "usage: %s --validate | "
-          "<ntt|gt-ntt|gt-ntt-asm-soa|gt-frontend|gt-frontend-asm|"
-          "gt-stage12|gt-stage12-asm|gt-frontend-stage12-asm|"
-          "gt-ntt-frontend-asm-soa|basemul|gt-basemul-soa|invntt|"
-          "gt-invntt32|gt-invntt32-asm|gt-invntt-soa|"
-          "gt-invdft3|gt-invdft3-asm|gt-invpost|gt-invpost-asm|"
-          "gt-invntt-soa-hybrid|gt-invntt-soa-dft3-hybrid|"
-          "gt-invntt-soa-postprocess-hybrid|polymul|gt-polymul-soa|"
-          "gt-polymul-soa-hybrid|gt-polymul-soa-dft3-hybrid|"
-          "gt-polymul-soa-postprocess-hybrid|gt-polymul-soa-fused-asm|"
-          "gt-invntt-soa-fused-asm|gt-polymul-frontend-fused-asm> "
-          "[--perf-loop]\n", program);
+  unsigned i;
+
+  fprintf(stderr, "usage: %s --validate | <operation> [--perf-loop]\n",
+          program);
+  fputs("operations:", stderr);
+  for (i = 0; i < sizeof(operations) / sizeof(operations[0]); i++) {
+    fprintf(stderr, " %s", operations[i].name);
+  }
+  fputc('\n', stderr);
 }
 
 int main(int argc, char **argv)

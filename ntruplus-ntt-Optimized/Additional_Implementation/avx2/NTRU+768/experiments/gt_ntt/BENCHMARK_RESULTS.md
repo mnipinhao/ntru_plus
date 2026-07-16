@@ -334,6 +334,83 @@ In that confirmation, KPQC Final/production forward NTT is 669.00 cycles and
 polynomial multiplication is 2422.08 cycles.  The GT/KPQC gaps therefore move
 from 2.17x to 1.16x for forward NTT and from 1.89x to 1.33x for full polynomial
 multiplication.  The prepacked mapping, scheduling, and spill-removal milestone
-is complete.  The next forward experiment should change the semantic scratch
-handoff or the remaining stage3+4+5/SoA-store schedule rather than revisit
-runtime twist construction.
+was complete.  At that point the next forward experiments were defined as the
+semantic scratch handoff and the remaining stage3+4+5/SoA-store schedule; the
+following section records both results.
+
+## 2026-07-16 frontend handoff and Stage345/SoA-store experiments
+
+This milestone evaluates both proposed follow-ups without changing the
+canonical prototype or production symbols.  Every operation is selectable in
+the same linked benchmark binary.  The environment remains the Ryzen 7 9700X,
+CPU 2 pinned, performance governor, enabled boost, non-isolated sibling CPU 10,
+GCC 16.1.1, 64 rotating inputs, 100 warmups, and `perf stat -e cycles`.
+
+The final remote host's separate `ntruplus-KpqC-Final` checkout is stale, so a
+remote `make kpqc-audit` correctly reports a mismatch.  It is not used for the
+measurement.  Local `make kpqc-audit` passes, and SHA-256 for the five remote
+production files actually linked by the benchmark (`ntt.s`, `invntt.s`,
+`basemul.s`, `consts.c`, and `poly.c`) exactly matches those locally audited
+KPQC Final-equivalent files.
+
+The frontend experiment changes the producer order from adjacent slot pairs to
+eight stripes.  Each stripe generates pair A=`(q,q+16)` then pair
+B=`(q+8,q+24)`.  The direct entry keeps A's three stage-1 values live and has
+zero frontend semantic handoff.  The half-handoff entry temporarily stores
+only A's three YMM values, for a 768-byte handoff.  Both are stack-free and
+byte-exact at the stage2 boundary, but their low-level input/output arrays must
+not overlap; the public wrappers retain `out==in` using private stage2 storage.
+
+The final forward/reverse sequential-order runs use 1,000,000 perf-loop
+iterations per process to further amortize setup.  Each table value is
+whole-process `cycles:u` divided by 1,000,000, so it is an amortized
+same-harness value rather than a kernel-only counter.  Each order has ten
+repetitions and is
+stored as `results/20260716-handoff-stage345-final1m-forward` and
+`results/20260716-handoff-stage345-final1m-reversed`.
+
+| Run | Canonical 1536 B | Direct 0 B | Direct delta | Half 768 B | Half delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Forward order | 425.395814 | 497.407774 | 16.93% slower | 499.461141 | 17.41% slower |
+| Reversed order | 425.710304 | 497.492812 | 16.86% slower | 499.481887 | 17.33% slower |
+
+The repeatedly reused 1.5 KiB stack scratch is expected to remain L1-resident.
+Under this mapping and harness, the net cost of the stripe-first cross-half
+packing/live-range schedule exceeds the cost saved by removing the handoff.
+Both entries remain useful exact regression cases, but neither is a promotion
+candidate.
+
+For Stage345, four exact-output candidates isolate separate scheduling ideas:
+pairwise Barrett/transpose interleaving; no-copy physical-register remapping;
+resident q/Barrett constants; and queued SoA stores.  The queued path combines
+the no-copy arithmetic with all eight `vperm2i128` operations before the eight
+stores.  It is the only candidate with a small repeatable isolated and full-
+forward improvement.
+
+| Run | Serial Stage345 | Remapped | Queued | Canonical forward | Queued forward | Direct forward | Direct+queued |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Forward order | 326.999958 | 324.480578 | 323.303934 | 756.246226 | 754.631715 | 850.261317 | 846.891427 |
+| Reversed order | 328.268590 | 324.520849 | 323.336113 | 756.753051 | 754.192704 | 850.714451 | 846.921425 |
+
+The queued path saves 3.70--4.93 isolated cycles (1.13%--1.50%) and
+1.61--2.56 full-forward cycles (0.21%--0.34%).  It also saves 3.37--3.79 cycles
+when composed with the direct producer, but that combined forward remains
+about 12% slower than canonical because the producer regression dominates.
+The full-forward delta is a repeatable same-harness scheduling signal, not a
+claim of exact kernel-only cost.
+
+| Run | Production polymul | Canonical GT | Queued GT | Direct GT | Direct+queued GT |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Forward order | 2399.703081 | 3219.658860 | 3223.006987 | 3413.359553 | 3401.354759 |
+| Reversed order | 2408.091341 | 3218.598082 | 3221.893210 | 3402.267046 | 3403.517537 |
+
+Queued full polymul is nominally about 0.10% slower than canonical in both
+orders, but that delta is within the reported perf variation and is treated as
+neutral/no reliable full-path win.
+Direct+queued is 0.35% faster than direct in forward order but 0.04% slower in
+reversed order, so combining the two candidates also has no stable full-path
+win.  Production forward is 649.837737/649.579494 cycles in these runs; the
+best queued GT forward remains about 1.16x production, while canonical GT
+polymul remains about 1.34x production.  The queued symbol therefore stays
+default-off; the canonical GT symbol, production `asm/ntt.s`, and KPQC
+Final-equivalent baseline are unchanged.

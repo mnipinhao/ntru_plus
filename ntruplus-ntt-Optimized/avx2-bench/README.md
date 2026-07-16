@@ -16,7 +16,10 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `gt-stage12` | GT AVX2 intrinsic region | prepared frontend scratch through NTT32 stage 1+2 |
 | `gt-stage12-asm` | GT hand-scheduled ASM region | the same exact stage2 boundary with interleaved Montgomery chains and no stack traffic |
 | `gt-frontend-stage12-asm` | GT fused forward producer | one ASM entry and one 1536-byte semantic frontend scratch; no internal calls or compiler spill slots |
+| `gt-frontend-stage12-direct-asm`, `gt-frontend-stage12-half-asm` | GT handoff candidates | stripe-first stage2 producers with zero or 768-byte frontend semantic handoff; both retain canonical 1536-byte stage2 output |
+| `gt-stage345-{serial,interleaved,remapped,resident,queued-store}-asm` | GT isolated Stage345 schedules | consume a prepared canonical stage2 scratch and compare butterfly/Barrett/transpose/SoA-store schedules without producer work |
 | `gt-ntt-frontend-asm-soa` | GT forward ASM prototype | fused frontend/stage1+2 followed by the existing hand-scheduled stage3+4+5/SoA store |
+| `gt-ntt-{direct,direct-interleaved,direct-queued-store,half,remapped,half-remapped,resident,queued-store}-asm-soa` | GT full-forward candidates | compose the listed producer and Stage345 schedules; `direct-queued-store` combines both experiment families |
 | `basemul` | production AVX2 | one pointwise/base multiplication on prepared NTT inputs |
 | `gt-basemul-soa` | GT AVX2 intrinsic prototype | 192 quartic products as 12 batches of 16 blocks; prepared SoA inputs and lambda-table generation are excluded |
 | `invntt` | production AVX2 | one inverse NTT on a prepared valid NTT input |
@@ -38,6 +41,7 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `gt-polymul-soa-postprocess-hybrid` | GT three-region ASM inverse pipeline | the same GT path with all three inverse regions hand-scheduled |
 | `gt-polymul-soa-fused-asm` | GT fused inverse pipeline | the same GT path using the single-entry inverse ASM |
 | `gt-polymul-frontend-fused-asm` | GT forward+inverse ASM pipeline | hand-scheduled frontend/stage1+2 and stage3+4+5, SoA basemul, and fused inverse ASM |
+| `gt-polymul-{direct,direct-interleaved,direct-queued-store,half,remapped,half-remapped,resident,queued-store}-fused-asm` | GT full-polymul candidates | two matching candidate forwards, SoA basemul, and fused inverse ASM |
 
 The GT ASM prototype uses the candidate SoA mapping
 `batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits
@@ -47,8 +51,11 @@ mapping oracle.
 
 The GT prototype now has matching intrinsic pointwise and inverse kernels, so
 the harness measures the complete GT polynomial multiplication.  The isolated
-SoA basemul and isolated inverse-region operations use prepared inputs and
-exclude their producers.  NTRU+768 also has no
+Stage345, SoA basemul, and inverse-region operations use prepared inputs and
+exclude their producers.  `--validate` compares all Stage345 candidates exactly
+at the reachable boundary; the prototype test also covers independently filled
+`±5*(q-1)` stage2 scratch, public-wrapper in-place calls, and the combined
+direct/queued full-polymul path.  NTRU+768 also has no
 scheme-level matrix-vector multiplication; `basemul_add` and KEM components are
 the relevant future caller benchmarks.
 
@@ -105,6 +112,13 @@ for prototype comparisons.  Extra counter groups remain opt-in through
 `PERF_CORE_EVENTS` and `PERF_CACHE_EVENTS`, and run in separate passes to avoid
 unnecessary multiplexing.
 
+`perf stat` wraps the whole benchmark process, so the count also includes fixed
+input preparation, warmups, checksum, and reporting.  Reported cycles/call are
+therefore amortized whole-process values.  Same-binary candidates share almost
+all of that setup; for sub-1% comparisons, rebuild with a larger
+`BENCH_PERF_ITERATIONS` (the final Stage345 checks use 1,000,000), repeat both
+sequential operation orders, and describe the result as a same-harness signal.
+
 The older serialized-TSC sampler remains available as a diagnostic with
 `RUN_TSC=1`, but it is disabled by default and is not used for performance
 conclusions.
@@ -124,3 +138,10 @@ Turbo/boost state; use `STRICT_ENV=1` to reject an active boost setting instead
 of merely warning.
 
 Results are written under `results/<UTC timestamp>/` and are ignored by git.
+
+For same-binary, explicitly ordered subsets, override `OPERATIONS`, for example:
+
+```sh
+OPERATIONS='gt-stage345-serial-asm gt-stage345-queued-store-asm gt-ntt-frontend-asm-soa gt-ntt-queued-store-asm-soa' \
+PERF_REPETITIONS=10 CORE=2 ./run_bench.sh
+```

@@ -92,6 +92,33 @@ asm-audit: $(TARGET)
 	else \
 		echo "fused frontend/stage12 vzeroupper count mismatch" >&2; exit 1; \
 	fi
+	@for symbol in gt_ntt_avx2_frontend_stage12_direct_asm \
+		gt_ntt_avx2_frontend_stage12_half_asm; do \
+		if objdump -d --disassemble=$$symbol $(TARGET) | \
+			grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \
+			echo "stack traffic or call found in $$symbol" >&2; exit 1; \
+		fi; \
+		if test "$$(objdump -d --disassemble=$$symbol $(TARGET) | \
+			grep -c vzeroupper)" -ne 1; then \
+			echo "vzeroupper count mismatch in $$symbol" >&2; exit 1; \
+		fi; \
+	done
+	@echo "direct/half frontend-stage12 audit: zero stack traffic/calls and one vzeroupper"
+	@for symbol in gt_ntt_avx2_stage345_soa_asm \
+		gt_ntt_avx2_stage345_soa_interleaved_asm \
+		gt_ntt_avx2_stage345_soa_remapped_asm \
+		gt_ntt_avx2_stage345_soa_resident_asm \
+		gt_ntt_avx2_stage345_soa_queued_store_asm; do \
+		if objdump -d --disassemble=$$symbol $(TARGET) | \
+			grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \
+			echo "stack traffic or call found in $$symbol" >&2; exit 1; \
+		fi; \
+		if test "$$(objdump -d --disassemble=$$symbol $(TARGET) | \
+			grep -c vzeroupper)" -ne 1; then \
+			echo "vzeroupper count mismatch in $$symbol" >&2; exit 1; \
+		fi; \
+	done
+	@echo "stage345 candidates audit: zero stack traffic/calls and one vzeroupper"
 	@if objdump -d --disassemble=gt_invntt_soa_ntt32_asm $(TARGET) | \
 		grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \
 		echo "stack traffic or call found in inverse NTT32 ASM region" >&2; \

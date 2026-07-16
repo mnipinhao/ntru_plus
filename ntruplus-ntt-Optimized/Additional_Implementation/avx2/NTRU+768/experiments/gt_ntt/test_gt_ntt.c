@@ -317,6 +317,8 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 	gt_stage2_scratch asm_got;
 	gt_stage2_scratch fused_got;
 	gt_stage2_scratch fused_inplace;
+	gt_stage2_scratch direct_got;
+	gt_stage2_scratch half_got;
 #endif
 	int16_t want[3][32][8];
 
@@ -328,6 +330,8 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 	memcpy(&fused_inplace, input, sizeof(fused_inplace));
 	gt_ntt_avx2_frontend_stage12_asm(&fused_inplace,
 		(const int16_t *)(const void *)&fused_inplace);
+	gt_ntt_avx2_frontend_stage12_direct_asm(&direct_got, input);
+	gt_ntt_avx2_frontend_stage12_half_asm(&half_got, input);
 #endif
 	scalar_frontend(want, input);
 	scalar_stages12(want);
@@ -342,6 +346,12 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 				got.row01[q][8 + stream] ||
 			    fused_inplace.row01[q][stream] != got.row01[q][stream] ||
 			    fused_inplace.row01[q][8 + stream] !=
+				got.row01[q][8 + stream] ||
+			    direct_got.row01[q][stream] != got.row01[q][stream] ||
+			    direct_got.row01[q][8 + stream] !=
+				got.row01[q][8 + stream] ||
+			    half_got.row01[q][stream] != got.row01[q][stream] ||
+			    half_got.row01[q][8 + stream] !=
 				got.row01[q][8 + stream]) {
 				fprintf(stderr,
 					"stage12 ASM exact mismatch Q=%u stream=%u\n",
@@ -377,6 +387,14 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 			    fused_inplace.row2_packed[q][stream] !=
 				got.row2_packed[q][stream] ||
 			    fused_inplace.row2_packed[q][8 + stream] !=
+				got.row2_packed[q][8 + stream] ||
+			    direct_got.row2_packed[q][stream] !=
+				got.row2_packed[q][stream] ||
+			    direct_got.row2_packed[q][8 + stream] !=
+				got.row2_packed[q][8 + stream] ||
+			    half_got.row2_packed[q][stream] !=
+				got.row2_packed[q][stream] ||
+			    half_got.row2_packed[q][8 + stream] !=
 				got.row2_packed[q][8 + stream]) {
 				fprintf(stderr,
 					"row2 stage12 ASM exact mismatch Q=%u stream=%u\n",
@@ -431,6 +449,112 @@ static int check_stage5_range(const int16_t input[GT_NTT_N])
 	}
 	return 0;
 }
+
+#if defined(GT_HAVE_AVX2_ASM)
+static int check_stage345_candidate_scratch(
+	const gt_stage2_scratch *input, const char *label)
+{
+	gt_stage2_scratch oracle_scratch;
+	int16_t oracle_rowbitrev[GT_NTT_N];
+	int16_t oracle_soa[GT_NTT_N];
+	int16_t got[5][GT_NTT_N] __attribute__((aligned(32)));
+	static const char *const names[5] = {
+		"serial", "interleaved", "remapped", "resident", "queued-store"
+	};
+
+	memcpy(&oracle_scratch, input, sizeof(oracle_scratch));
+	gt_ntt_avx2_stage345(&oracle_scratch);
+	gt_ntt_avx2_scatter(oracle_rowbitrev, &oracle_scratch);
+	gt_ntt_rowbitrev_to_soa(oracle_soa, oracle_rowbitrev);
+
+	gt_ntt_avx2_stage345_soa_asm(got[0], input);
+	gt_ntt_avx2_stage345_soa_interleaved_asm(got[1], input);
+	gt_ntt_avx2_stage345_soa_remapped_asm(got[2], input);
+	gt_ntt_avx2_stage345_soa_resident_asm(got[3], input);
+	gt_ntt_avx2_stage345_soa_queued_store_asm(got[4], input);
+
+	for (unsigned candidate = 0; candidate < 5; candidate++) {
+		for (unsigned i = 0; i < GT_NTT_N; i++) {
+			if (!congruent(got[candidate][i], oracle_soa[i])) {
+				fprintf(stderr,
+					"stage345 boundary mismatch case=%s candidate=%s i=%u got=%d want=%d\n",
+					label, names[candidate], i, got[candidate][i],
+					oracle_soa[i]);
+				return 1;
+			}
+			if (got[candidate][i] < 0 || got[candidate][i] > GT_NTT_Q) {
+				fprintf(stderr,
+					"stage345 boundary range failure case=%s candidate=%s i=%u value=%d\n",
+					label, names[candidate], i, got[candidate][i]);
+				return 1;
+			}
+			if (candidate != 0 && got[candidate][i] != got[0][i]) {
+				fprintf(stderr,
+					"stage345 candidate exact mismatch case=%s candidate=%s i=%u got=%d serial=%d\n",
+					label, names[candidate], i, got[candidate][i], got[0][i]);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+static int check_stage345_candidate_boundaries(void)
+{
+	gt_stage2_scratch scratch;
+	const int bound = 5 * (GT_NTT_Q - 1);
+	const uint32_t saved_rng_state = rng_state;
+
+	rng_state = UINT32_C(0x6a09e667);
+
+	for (unsigned q = 0; q < 32; q++) {
+		for (unsigned lane = 0; lane < 16; lane++) {
+			const unsigned index = 16U * q + lane;
+
+			scratch.row01[q][lane] =
+				(int16_t)((index & 1U) != 0 ? bound : -bound);
+		}
+	}
+	for (unsigned q = 0; q < 16; q++) {
+		for (unsigned lane = 0; lane < 16; lane++) {
+			const unsigned index = 512U + 16U * q + lane;
+
+			scratch.row2_packed[q][lane] =
+				(int16_t)((index & 1U) != 0 ? bound : -bound);
+		}
+	}
+	if (check_stage345_candidate_scratch(&scratch,
+		"alternating-stage2-bound") != 0) {
+		rng_state = saved_rng_state;
+		return 1;
+	}
+
+	for (unsigned round = 0; round < 100; round++) {
+		char label[40];
+
+		for (unsigned q = 0; q < 32; q++) {
+			for (unsigned lane = 0; lane < 16; lane++) {
+				scratch.row01[q][lane] = (int16_t)(
+					(int)(next_u32() % (unsigned)(2 * bound + 1)) - bound);
+			}
+		}
+		for (unsigned q = 0; q < 16; q++) {
+			for (unsigned lane = 0; lane < 16; lane++) {
+				scratch.row2_packed[q][lane] = (int16_t)(
+					(int)(next_u32() % (unsigned)(2 * bound + 1)) - bound);
+			}
+		}
+		(void)snprintf(label, sizeof(label),
+			"random-stage2-bound-%u", round);
+		if (check_stage345_candidate_scratch(&scratch, label) != 0) {
+			rng_state = saved_rng_state;
+			return 1;
+		}
+	}
+	rng_state = saved_rng_state;
+	return 0;
+}
+#endif
 
 static int check_soa_mapping(void)
 {
@@ -858,6 +982,22 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	int16_t inplace_soa[GT_NTT_N];
 	int16_t frontend_asm_soa[GT_NTT_N];
 	int16_t frontend_asm_inplace_soa[GT_NTT_N];
+	int16_t direct_asm_soa[GT_NTT_N];
+	int16_t direct_asm_inplace_soa[GT_NTT_N];
+	int16_t direct_interleaved_asm_soa[GT_NTT_N];
+	int16_t direct_interleaved_asm_inplace_soa[GT_NTT_N];
+	int16_t direct_queued_asm_soa[GT_NTT_N];
+	int16_t direct_queued_asm_inplace_soa[GT_NTT_N];
+	int16_t half_asm_soa[GT_NTT_N];
+	int16_t half_asm_inplace_soa[GT_NTT_N];
+	int16_t remapped_asm_soa[GT_NTT_N];
+	int16_t remapped_asm_inplace_soa[GT_NTT_N];
+	int16_t half_remapped_asm_soa[GT_NTT_N];
+	int16_t half_remapped_asm_inplace_soa[GT_NTT_N];
+	int16_t resident_asm_soa[GT_NTT_N];
+	int16_t resident_asm_inplace_soa[GT_NTT_N];
+	int16_t queued_store_asm_soa[GT_NTT_N];
+	int16_t queued_store_asm_inplace_soa[GT_NTT_N];
 #endif
 	int16_t inverse_input[GT_NTT_N] __attribute__((aligned(32)));
 	int16_t inverse_output[GT_NTT_N];
@@ -896,15 +1036,84 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 		sizeof(frontend_asm_inplace_soa));
 	gt_ntt_avx2_frontend_asm_soa(frontend_asm_inplace_soa,
 		frontend_asm_inplace_soa);
+	gt_ntt_avx2_frontend_direct_asm_soa(direct_asm_soa, input);
+	memcpy(direct_asm_inplace_soa, input,
+		sizeof(direct_asm_inplace_soa));
+	gt_ntt_avx2_frontend_direct_asm_soa(direct_asm_inplace_soa,
+		direct_asm_inplace_soa);
+	gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+		direct_interleaved_asm_soa, input);
+	memcpy(direct_interleaved_asm_inplace_soa, input,
+		sizeof(direct_interleaved_asm_inplace_soa));
+	gt_ntt_avx2_frontend_direct_interleaved_asm_soa(
+		direct_interleaved_asm_inplace_soa,
+		direct_interleaved_asm_inplace_soa);
+	gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+		direct_queued_asm_soa, input);
+	memcpy(direct_queued_asm_inplace_soa, input,
+		sizeof(direct_queued_asm_inplace_soa));
+	gt_ntt_avx2_frontend_direct_queued_store_asm_soa(
+		direct_queued_asm_inplace_soa, direct_queued_asm_inplace_soa);
+	gt_ntt_avx2_frontend_half_asm_soa(half_asm_soa, input);
+	memcpy(half_asm_inplace_soa, input, sizeof(half_asm_inplace_soa));
+	gt_ntt_avx2_frontend_half_asm_soa(half_asm_inplace_soa,
+		half_asm_inplace_soa);
+	gt_ntt_avx2_frontend_remapped_asm_soa(remapped_asm_soa, input);
+	memcpy(remapped_asm_inplace_soa, input,
+		sizeof(remapped_asm_inplace_soa));
+	gt_ntt_avx2_frontend_remapped_asm_soa(remapped_asm_inplace_soa,
+		remapped_asm_inplace_soa);
+	gt_ntt_avx2_frontend_half_remapped_asm_soa(half_remapped_asm_soa,
+		input);
+	memcpy(half_remapped_asm_inplace_soa, input,
+		sizeof(half_remapped_asm_inplace_soa));
+	gt_ntt_avx2_frontend_half_remapped_asm_soa(
+		half_remapped_asm_inplace_soa, half_remapped_asm_inplace_soa);
+	gt_ntt_avx2_frontend_resident_asm_soa(resident_asm_soa, input);
+	memcpy(resident_asm_inplace_soa, input,
+		sizeof(resident_asm_inplace_soa));
+	gt_ntt_avx2_frontend_resident_asm_soa(resident_asm_inplace_soa,
+		resident_asm_inplace_soa);
+	gt_ntt_avx2_frontend_queued_store_asm_soa(queued_store_asm_soa, input);
+	memcpy(queued_store_asm_inplace_soa, input,
+		sizeof(queued_store_asm_inplace_soa));
+	gt_ntt_avx2_frontend_queued_store_asm_soa(
+		queued_store_asm_inplace_soa, queued_store_asm_inplace_soa);
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got_soa[i], want_soa[i]) ||
 		    got_soa[i] != inplace_soa[i] ||
 		    frontend_asm_soa[i] != got_soa[i] ||
-		    frontend_asm_inplace_soa[i] != got_soa[i]) {
+		    frontend_asm_inplace_soa[i] != got_soa[i] ||
+		    direct_asm_soa[i] != got_soa[i] ||
+		    direct_asm_inplace_soa[i] != got_soa[i] ||
+		    direct_interleaved_asm_soa[i] != got_soa[i] ||
+		    direct_interleaved_asm_inplace_soa[i] != got_soa[i] ||
+		    direct_queued_asm_soa[i] != got_soa[i] ||
+		    direct_queued_asm_inplace_soa[i] != got_soa[i] ||
+		    half_asm_soa[i] != got_soa[i] ||
+		    half_asm_inplace_soa[i] != got_soa[i] ||
+		    remapped_asm_soa[i] != got_soa[i] ||
+		    remapped_asm_inplace_soa[i] != got_soa[i] ||
+		    half_remapped_asm_soa[i] != got_soa[i] ||
+		    half_remapped_asm_inplace_soa[i] != got_soa[i] ||
+		    resident_asm_soa[i] != got_soa[i] ||
+		    resident_asm_inplace_soa[i] != got_soa[i] ||
+		    queued_store_asm_soa[i] != got_soa[i] ||
+		    queued_store_asm_inplace_soa[i] != got_soa[i]) {
 			fprintf(stderr,
-				"ASM SoA mismatch case=%s i=%u got=%d want=%d inplace=%d frontend-asm=%d frontend-asm-inplace=%d\n",
+				"ASM SoA mismatch case=%s i=%u got=%d want=%d inplace=%d frontend-asm=%d frontend-asm-inplace=%d direct=%d direct-inplace=%d direct-interleaved=%d direct-interleaved-inplace=%d direct-queued=%d direct-queued-inplace=%d half=%d half-inplace=%d remapped=%d remapped-inplace=%d half-remapped=%d half-remapped-inplace=%d resident=%d resident-inplace=%d queued-store=%d queued-store-inplace=%d\n",
 				label, i, got_soa[i], want_soa[i], inplace_soa[i],
-				frontend_asm_soa[i], frontend_asm_inplace_soa[i]);
+				frontend_asm_soa[i], frontend_asm_inplace_soa[i],
+				direct_asm_soa[i], direct_asm_inplace_soa[i],
+				direct_interleaved_asm_soa[i],
+				direct_interleaved_asm_inplace_soa[i],
+				direct_queued_asm_soa[i], direct_queued_asm_inplace_soa[i],
+				half_asm_soa[i],
+				half_asm_inplace_soa[i], remapped_asm_soa[i],
+				remapped_asm_inplace_soa[i], half_remapped_asm_soa[i],
+				half_remapped_asm_inplace_soa[i], resident_asm_soa[i],
+				resident_asm_inplace_soa[i], queued_store_asm_soa[i],
+				queued_store_asm_inplace_soa[i]);
 			return 1;
 		}
 		if (got_soa[i] < 0 || got_soa[i] > GT_NTT_Q) {
@@ -981,7 +1190,8 @@ int main(void)
 		return 1;
 	}
 #if defined(GT_HAVE_AVX2_ASM)
-	if (check_packed_barrett_asm() != 0) {
+	if (check_packed_barrett_asm() != 0 ||
+	    check_stage345_candidate_boundaries() != 0) {
 		return 1;
 	}
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
