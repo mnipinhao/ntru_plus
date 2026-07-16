@@ -7,6 +7,7 @@ KPQC_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/avx2/NTRU+768
 BUILD_DIR := build
 TARGET := $(BUILD_DIR)/avx2_bench
 GT_GENERATED := \
+	$(GT_ROOT)/gt_ntt_frontend_tables.inc \
 	$(GT_ROOT)/gt_basemul_soa_tables.inc \
 	$(GT_ROOT)/gt_invntt_soa_tables.inc
 
@@ -28,6 +29,7 @@ SOURCES := \
 	$(GT_ROOT)/gt_basemul_soa.c \
 	$(GT_ROOT)/gt_invntt_soa.c \
 	$(GT_ROOT)/gt_invntt_fused_soa.S \
+	$(GT_ROOT)/gt_ntt_frontend_stage12_soa.S \
 	$(GT_ROOT)/gt_ntt_stage345_soa.s \
 	$(GT_ROOT)/gt_ntt_tables.c \
 	$(AARCH64_REF)
@@ -64,6 +66,31 @@ asm-audit: $(TARGET)
 		echo "AVX-512 register found in AVX2 benchmark binary" >&2; exit 1; \
 	else \
 		echo "AVX2 binary audit: no zmm/opmask register found"; \
+	fi
+	@for symbol in gt_ntt_avx2_frontend_asm gt_ntt_avx2_stage12_asm; do \
+		if objdump -d --disassemble=$$symbol $(TARGET) | \
+			grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \
+			echo "stack traffic or call found in $$symbol" >&2; exit 1; \
+		fi; \
+	done
+	@echo "forward frontend/stage12 ASM audit: zero stack traffic and calls"
+	@if objdump -d --disassemble=gt_ntt_avx2_frontend_stage12_asm \
+		$(TARGET) | grep -Eq '[[:space:]](push|pop|call)[[:space:]]'; then \
+		echo "push, pop, or call found in fused frontend/stage12" >&2; exit 1; \
+	else \
+		echo "fused frontend/stage12 audit: no push, pop, or internal call"; \
+	fi
+	@if objdump -d --disassemble=gt_ntt_avx2_frontend_stage12_asm \
+		$(TARGET) | grep -Eq 'sub[[:space:]]+\$$0x600,%rsp'; then \
+		echo "fused frontend/stage12 audit: exact 1536-byte semantic scratch"; \
+	else \
+		echo "fused frontend/stage12 scratch allocation mismatch" >&2; exit 1; \
+	fi
+	@if test "$$(objdump -d --disassemble=gt_ntt_avx2_frontend_stage12_asm \
+		$(TARGET) | grep -c vzeroupper)" -eq 1; then \
+		echo "fused frontend/stage12 audit: one terminal vzeroupper"; \
+	else \
+		echo "fused frontend/stage12 vzeroupper count mismatch" >&2; exit 1; \
 	fi
 	@if objdump -d --disassemble=gt_invntt_soa_ntt32_asm $(TARGET) | \
 		grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \

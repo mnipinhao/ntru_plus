@@ -277,3 +277,63 @@ to two inverse cycles, and the full-polymul delta is smaller than 0.5%.  The
 next optimization priority is the GT forward frontend and stage-1+2 schedule:
 pointwise multiplication already matches KPQC Final, while forward NTT is the
 largest relative gap.  Further inverse call-overhead tuning is not a priority.
+
+## 2026-07-16 hand-scheduled forward frontend and stage1+2
+
+This milestone replaces runtime CRT-index arithmetic and scalar twist/qinv
+construction with generated tables, then hand-schedules the frontend and first
+two NTT32 layers.  The 192-byte input table contains six byte offsets for each
+of 16 slot pairs.  The 3072-byte twist table contains one packed
+`[factor*qinv | factor]` entry for each slot pair and each of three DFT3 inputs.
+
+The standalone linked frontend and stage1+2 symbols are 518 and 423 bytes and
+have no stack access or calls.  The 970-byte fused producer owns one aligned
+1536-byte semantic frontend scratch, contains no `push`, `pop`, or internal
+`call`, and has one terminal `vzeroupper`.  The intrinsic frontend's linked
+symbol was stack-free but 1484 bytes and performed runtime mapping/constant
+construction.  The intrinsic stage1+2 symbol was 573 bytes and spilled five
+YMM constants through a 40-byte frame plus red-zone addresses.  The new ASM
+eliminates those compiler spills; its 1536-byte scratch is a mathematical
+producer/consumer boundary, not a spill area.
+
+Top split and twist each retain their Montgomery reduction.  DFT3 remains lazy
+at `3(q-1)`, stage 1 at `4(q-1)`, and stage 2 at `5(q-1)`; no extra Barrett pass
+was inserted.  The frontend interleaves three independent Montgomery chains,
+while stage1+2 interleaves the two fixed-factor chains at each dependency level.
+Exact standalone, fused, full-range, in-place, round-trip, schoolbook-polymul,
+scheme, benchmark-validation, sanitizer, and linked-object gates pass.
+
+The first run is `results/20260716-forward-asm`: five `perf stat -e cycles`
+repetitions, 100000 calls, with the same Ryzen 7 9700X, CPU 2, performance
+governor, enabled boost, non-isolated CPU 10 sibling, GCC 16.1.1, and rotating
+64-input corpus as the preceding runs.
+
+| Operation | Intrinsic/old GT cycles | Scheduled GT cycles | Improvement |
+| --- | ---: | ---: | ---: |
+| Frontend | 993.29 | 335.22 | 66.25% |
+| NTT32 stage1+2 | 169.26 | 133.02 | 21.41% |
+| Fused frontend+stage1+2 | — | 443.86 | — |
+| Full forward NTT | 1456.49 | 775.89 | 46.73% |
+| Full polynomial multiplication | 4589.75 | 3235.89 | 29.50% |
+
+The order-controlled confirmation is
+`results/20260716-forward-asm-confirm-reversed`: ten repetitions with the
+operation order reversed.  The intrinsic stage1+2 counter remains the noisiest
+isolated row at 1.74% variation, so the full-pipeline rows are the primary
+conclusion.
+
+| Operation | Intrinsic/old GT cycles | Scheduled GT cycles | Improvement |
+| --- | ---: | ---: | ---: |
+| Frontend | 993.73 | 334.82 | 66.31% |
+| NTT32 stage1+2 | 161.56 | 133.40 | 17.43% |
+| Fused frontend+stage1+2 | — | 445.15 | — |
+| Full forward NTT | 1452.44 | 774.76 | 46.66% |
+| Full polynomial multiplication | 4584.88 | 3233.41 | 29.48% |
+
+In that confirmation, KPQC Final/production forward NTT is 669.00 cycles and
+polynomial multiplication is 2422.08 cycles.  The GT/KPQC gaps therefore move
+from 2.17x to 1.16x for forward NTT and from 1.89x to 1.33x for full polynomial
+multiplication.  The prepacked mapping, scheduling, and spill-removal milestone
+is complete.  The next forward experiment should change the semantic scratch
+handoff or the remaining stage3+4+5/SoA-store schedule rather than revisit
+runtime twist construction.

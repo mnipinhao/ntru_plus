@@ -1,9 +1,11 @@
 # NTRU+768 AVX2 Good–Thomas NTT and pointwise prototype
 
 這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
-上的 hybrid 手寫組語 prototype。Hybrid 版本保留 intrinsic frontend 和 NTT32
-stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 放進
-`gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
+上的手寫組語 prototype。舊 hybrid 版本保留 intrinsic frontend 和 NTT32 stage
+1+2；新的 `gt_ntt_frontend_stage12_soa.S` 以 generated mapping/twist table 手排這
+兩段，並提供一個 single-entry producer。兩者共用 `gt_ntt_stage345_soa.s` 的
+stage 3+4+5、packed Barrett、transpose 與 16-block SoA store。它們都沒有取代
+上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
 NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
@@ -88,6 +90,41 @@ row01[Q+1] = [ row0.(Q+1).s0..s7 | row1.(Q+1).s0..s7 ]
 `R2` 則拆成兩個 XMM，先存成 `row2[Q]`、`row2[Q+1]`。所以「packed row2」
 不是宣稱 row2 有不同的數學性質；它只是 `row0/row1` 成對後留下的 singleton。
 
+### Hand-scheduled frontend
+
+`generate_gt_frontend_tables.py` 把每個 slot-pair 所需的資料預先排成：
+
+```text
+input byte offsets:       16 pairs x 6 uint16 = 192 bytes
+twist/qinv/factor table:  16 pairs x 3 rows x 32 int16 = 3072 bytes
+```
+
+六個 offset 依序是三個 `n3` 的 `(Q,Q+1)`，值已包含
+`8*((64*n3+33*Q) mod 96)`，所以 hot loop 不做除法、乘 33 或 `%96`。每個
+64-byte twist entry 是：
+
+```text
+[twist*qinv for Q,Q+1] | [twist for Q,Q+1]
+```
+
+其中每個 128-bit half 又是 `[branch0 x4 | branch1 x4]`。因此兩個 slot 能從
+一開始就以一個 YMM 做完全相同的運算，不需要 runtime `setr` 或 scalar
+`factor*qinv`。
+
+一輪同時載入三組 low/high YMM，接著交錯發出三條 top-split Montgomery chain：
+
+```text
+3 x vpmullw(high, zeta*qinv)
+3 x vpmulhw(high, zeta)
+3 x vpmulhw(correction, q)
+3 x Montgomery subtract
+```
+
+之後立即形成 branch0/branch1、做三條 twist chain，再利用 DFT3 Montgomery
+latency 同時算 `x0+x1+x2`、`x0-x2`、`x0-x1`。輸出立即 transpose/store，不跨
+slot-pair 保留 live value。Standalone frontend 使用全部 16 個 architectural
+vector register，但 linked symbol 沒有 stack access 或 call。
+
 ## NTT32 stage 1+2：stripe producer
 
 CT stage 1 的 distance 是 16，stage 2 是 8。對每個 `q=0..7`，一個 row01
@@ -117,6 +154,17 @@ twiddle 本身也是 `[twiddle_low x8 | twiddle_high x8]`。
 具體 toy example：stage1+2 的 stripe `q=5` 讀 `Q={5,13,21,29}`。完成後
 `row2_packed[5]` 的低 half 是 stage-2 `Q=5`，高 half 是 stage-2 `Q=21`；
 `row2_packed[13]` 則是 `Q=13 | Q=29`。
+
+手排 stage1+2 一次只保留上述一個 stripe。Stage 1 的兩條 identity-Montgomery
+chain 一起發出；stage 2 的 identity 與 `omega32^8` chain 也交錯發出。row01
+寫回後立即重用相同 data/temporary registers 處理 row2，七個常數固定留在
+YMM9..YMM15，不再由 GCC 放到 stack/red-zone。這個 standalone linked symbol
+同樣沒有 stack access 或 call。
+
+`gt_ntt_avx2_frontend_stage12_asm` 把兩個 region inline 在同一個 ASM entry，擁有
+一個 1536-byte、32-byte aligned frontend scratch，沒有 internal call、push、pop，
+且只有尾端一個 `vzeroupper`。這個 scratch 是 row01/row2 的數學 boundary，不是
+register spill。完整 input 在 stage1+2 寫回前已進 scratch，所以 `out==in` 安全。
 
 ## NTT32 stage 3+4+5：8-vector block consumer
 
@@ -341,7 +389,7 @@ product 回到 `[-(q-1),q-1]`；最大的 quartic accumulator 是 `4(q-1)=13824`
 intrinsic linked symbol 另以 SysV red zone 保存兩個 vector constants，three-region
 ASM wrapper 已沒有這兩個 spill。所有 input 都先進 scratch，因此 `out==in` 安全。
 
-## Register pressure 現況
+## Register pressure 與 spill audit
 
 設計上的目標 budget 是：
 
@@ -353,16 +401,18 @@ ASM wrapper 已沒有這兩個 spill。所有 input 都先進 scratch，因此 `
 = 16 architectural vector registers.
 ```
 
-Clang 產生的 stage1+2 目前沒有觀察到 vector spill/reload；手寫 ASM
-stage3+4+5 正好把八個 data vector 保持在 register，而且 linked symbol 已確認
-沒有 stack access。Frontend 則仍會因為六次
-CRT-indexed load、twist construction 和 inlining 產生 stack spill/reload。這不是
-數學 layout 必然要求的 spill，而是下一輪應優先處理的 code-generation 問題：
+實際 GCC 16 linked-object audit 修正了早期推測：1484-byte intrinsic frontend
+本身沒有 stack spill；其主要成本是 runtime CRT arithmetic 與 scalar twist/qinv
+construction。573-byte intrinsic stage1+2 才有 40-byte frame 加 red-zone window，
+共五個 YMM constant spill/reload。
 
-1. 預先打包 `(twist, twist*qinv)`，避免 runtime `setr` 與 factor 建構。
-2. 預先打包 GT input mapping，減少 `%96` address arithmetic。
-3. 把「一個 slot-pair frontend」抽成固定 symbolic region，再排 live range。
-4. 比較 `row01 + packed row2` 和改配對 `row12 + packed row0`，但不改數學輸出。
+手排 standalone frontend 與 stage1+2 linked symbols 分別是 518 與 423 bytes；
+兩者都不讀寫 `%rsp`、不 call，並維持同一個 scratch/layout/range contract。融合
+producer 是 970 linked bytes，唯一 stack allocation 是精確 1536-byte semantic
+frontend scratch。Stage3+4+5 仍把八個 data vector 保持在 register，沒有
+spill/reload。也就是說目前完整 forward prototype 的 compiler-generated vector
+spill 已消除；保留的兩個 1.5 KiB scratch 是資料相依 boundary，而不是 allocator
+失敗。
 
 SoA basemul intrinsic 也刻意保留為 semantics baseline：Ryzen 的 GCC 16 linked
 symbol 是 773 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM spill。
@@ -397,6 +447,8 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `baseline-contract.yml`：reference、驗證 gate、production replacement scope。
 - `instruction-dag.yml`：frontend pair、stage12 stripe、stage345 block、scatter DAG。
 - `gt_ntt_avx2.c`：可執行的 intrinsic semantics baseline。
+- `generate_gt_frontend_tables.py`：CRT byte-offset 與 packed twist/qinv generator。
+- `gt_ntt_frontend_stage12_soa.S`：手排 frontend、stage1+2 與 single-entry producer。
 - `gt_ntt_stage345_soa.s`：依 DAG 手排的 stage3+4+5 與 fused SoA store。
 - `asm-soa-contract.yml`：hybrid ASM boundary、ABI、layout 與 output range。
 - `gt_basemul_soa.c`：16-block SoA quartic intrinsic semantics baseline。
@@ -504,5 +556,13 @@ KPQC Final 的 AVX2 NTRU+768 arithmetic sources 與這裡的 production baseline
 逐檔相同。相同 Ryzen run 中，KPQC Final／production forward NTT 是 667.04
 cycles，GT hybrid forward 是 1454.02（2.18×）；basemul 是 480.64 對 479.75，
 實質相同；inverse 是 651.61 對 fused GT 1252.94（1.92×）；full polymul 是
-2420.73 對 4585.62（1.89×）。下一個主要瓶頸應回到 forward frontend/stage1+2，
-不是 pointwise layout 或 inverse call fusion。
+2420.73 對 4585.62（1.89×）。這組結果把下一個里程碑鎖定為 forward
+frontend/stage1+2，而不是 pointwise layout 或 inverse call fusion。
+
+完成 prepacked table 與手排 frontend/stage1+2 後，十回、反向 operation 順序的
+`perf stat -e cycles` 確認結果是：frontend `993.73 -> 334.82`（-66.3%）、
+stage1+2 `161.56 -> 133.40`（-17.4%）、完整 GT forward `1452.44 -> 774.76`
+（-46.7%），完整 GT polymul `4584.88 -> 3233.41`（-29.5%）。同 run 的
+KPQC Final／production 是 forward 668.996、polymul 2422.08，因此差距縮成
+1.16× 與 1.33×。下一個 forward 問題不再是 compiler spill，而是能否融合
+semantic frontend scratch handoff、以及 stage3+4+5/SoA store 的剩餘成本。

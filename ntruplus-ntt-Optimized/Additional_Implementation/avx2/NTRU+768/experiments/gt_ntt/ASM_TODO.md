@@ -77,13 +77,14 @@ shows a net benefit.
 - [x] Pack lambda and `lambda*qinv` in the same 16-block order.
 - [x] Pointwise multiplication consumes four YMM values directly and emits the
   same layout.
-- [~] Forward NTT fuses the required transpose into its final stores.
-- [x] The intrinsic inverse prototype consumes SoA directly and fuses the
-  reverse mapping into its first loads; ASM scheduling remains open.
+- [x] Forward NTT fuses the required transpose into its final stores.
+- [x] The scheduled inverse consumes SoA directly and fuses the reverse mapping
+  into its first loads/final stores.
 - [x] Prove and exhaustively round-trip the complete coefficient-to-batch
   mapping for all 768 positions.
-- [ ] Compare this SoA layout with the current GT row-bitrev block-major layout
-  using total forward + basemul + inverse cycles.
+- [x] Compare total forward + basemul + inverse cycles against the production
+  row-bitrev pipeline and KPQC Final baseline; the latest GT full-polymul gap is
+  1.33x.
 
 There must not be a standalone 768-coefficient transpose pass between forward
 NTT and pointwise multiplication, or between pointwise multiplication and the
@@ -92,9 +93,10 @@ inverse NTT.
 ## Arithmetic tables
 
 - [x] Forward twist and omega32 values match the AArch64 GT reference.
-- [~] Prepack every fixed factor as `(factor, factor*qinv)`: complete for the
-  ASM stage-3+4+5 tables, pending for the intrinsic frontend/stage-1+2 path.
-- [ ] Prepack GT input CRT indices; remove runtime `% 96` arithmetic.
+- [x] Prepack every forward fixed factor as `(factor*qinv, factor)`, including
+  the 16 slot-pair x 3-row frontend table.
+- [x] Prepack GT input CRT byte offsets as `16 x 6 uint16`; the ASM hot loop has
+  no runtime `% 96` arithmetic.
 - [x] Encode row01 stage-3+4+5 twiddles as full-lane repeats.
 - [x] Encode singleton stage-3+4+5 twiddles as
   `[twiddle(Q) x8 | twiddle(Q+16) x8]`.
@@ -106,24 +108,33 @@ inverse NTT.
 
 ### Frontend slot-pair
 
-- [ ] Implement top split and twist for one `(Q,Q+1)` pair.
-- [ ] Interleave the two XMM Montgomery chains to hide multiply latency.
-- [ ] Form one `x_n3` YMM before proceeding to the next `n3`; do not keep six
-  independent slot values live.
-- [ ] Schedule the DFT3 Montgomery chain while computing `r0`, `x0-x2`, and
+- [x] Implement top split and twist for one `(Q,Q+1)` pair.
+- [x] Process the two slots in the two 128-bit halves of each YMM and interleave
+  all three independent `n3` Montgomery chains.
+- [x] Keep three low and three high YMM live through top split, then reuse their
+  registers for packed branch streams and twist corrections.
+- [x] Schedule the DFT3 Montgomery chain while computing `r0`, `x0-x2`, and
   `x0-x1`.
-- [ ] Store/transpose DFT3 results immediately; do not carry outputs across
+- [x] Store/transpose DFT3 results immediately; do not carry outputs across
   frontend iterations.
-- [ ] Eliminate the vector spills currently emitted for the intrinsic frontend.
+- [x] Audit the actual GCC 16 object: intrinsic frontend has no stack spill but
+  spends work on runtime mapping/twist construction; the 518-byte linked ASM
+  frontend has zero stack traffic/calls and removes that construction.
 
 ### NTT32 stage 1+2
 
-- [ ] Process one four-vector row01 stripe at a time.
-- [ ] Interleave row01 and singleton Montgomery work where it reduces multiply
+- [x] Process one four-vector row01 stripe at a time.
+- [x] Interleave independent Montgomery chains at each dependency level to hide
   latency without exceeding the register budget.
-- [ ] Keep the Montgomery `R` multiplication: it is congruent to identity but
+- [x] Keep the Montgomery `R` multiplication: it is congruent to identity but
   also reduces the lazy high operand.
-- [ ] Store stage-2 results in the consumer's block order.
+- [x] Store stage-2 results in the consumer's block order.
+- [x] Replace the GCC 16 stage1+2 symbol's five constant spill/reloads with
+  YMM9..YMM15 constants.  The 423-byte linked ASM symbol has zero stack
+  traffic/calls and is byte-exact at the scratch boundary.
+- [x] Fuse frontend and stage1+2 behind a 970-byte linked entry with one aligned
+  1536-byte semantic scratch, no internal calls, and one terminal
+  `vzeroupper`.
 
 ### NTT32 stage 3+4+5
 
@@ -322,6 +333,16 @@ On the same five-repeat hardware-cycle run, KPQC Final/production versus GT is:
 versus 1252.94 for inverse, and 2420.73 versus 4585.62 for full polynomial
 multiplication.  This moves the next priority to the GT forward
 frontend/stage-1+2 schedule.
+
+That forward milestone is now complete.  In the ten-repeat reversed-order
+`perf stat -e cycles` confirmation, frontend falls from 993.73 to 334.82
+cycles (66.3%), stage1+2 from 161.56 to 133.40 (17.4%), full GT forward from
+1452.44 to 774.76 (46.7%), and full GT polynomial multiplication from 4584.88
+to 3233.41 (29.5%).  KPQC Final/production in the same run is 669.00 forward
+and 2422.08 polynomial multiplication, leaving 1.16x and 1.33x gaps.  The next
+candidate is a different producer/consumer boundary that reduces the semantic
+frontend-scratch handoff or the remaining stage3+4+5/SoA-store cost; do not
+reopen runtime twist construction or compiler-spill work.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

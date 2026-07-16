@@ -1,5 +1,5 @@
-kernel: ntruplus768_forward_gt_avx2_hybrid_asm_soa
-status: experimental_hybrid
+kernel: ntruplus768_forward_gt_avx2_scheduled_asm_soa
+status: experimental_forward_asm
 platform:
   isa: AVX2
   abi: System_V_AMD64
@@ -9,11 +9,14 @@ ring:
   modulus: 3457
   polynomial: X^768-X^384+1
 implementation_boundary:
-  intrinsic:
+  intrinsic_oracle:
     - top_split_and_twist
     - good_thomas_dft3_frontend
     - ntt32_stage1_and_stage2
   assembly:
+    - generated_crt_load_and_twist_frontend
+    - good_thomas_dft3_frontend
+    - ntt32_stage1_and_stage2
     - ntt32_stage3_stage4_stage5
     - packed_int16_barrett_checkpoint
     - lane_local_8x8_transpose
@@ -22,9 +25,28 @@ input:
   type: int16[768]
   proven_precondition: "abs(a[i]) <= 3456"
   public_wrapper_aliasing: out_may_equal_in
-assembly_arguments:
-  rdi: int16_out_768
-  rsi: aligned_stage2_scratch
+assembly_entries:
+  frontend:
+    symbol: gt_ntt_avx2_frontend_asm
+    rdi: aligned_frontend_scratch
+    rsi: int16_input_768
+    stack_bytes: 0
+  stage12:
+    symbol: gt_ntt_avx2_stage12_asm
+    rdi: aligned_stage2_scratch
+    rsi: aligned_frontend_scratch
+    stack_bytes: 0
+  frontend_stage12_fused:
+    symbol: gt_ntt_avx2_frontend_stage12_asm
+    rdi: aligned_stage2_scratch
+    rsi: int16_input_768
+    stack_bytes: 1536
+    internal_calls: 0
+  stage345_soa:
+    symbol: gt_ntt_avx2_stage345_soa_asm
+    rdi: int16_out_768
+    rsi: aligned_stage2_scratch
+    stack_bytes: 0
 output:
   type: int16[768]
   equivalence: coefficientwise_mod_3457
@@ -46,12 +68,14 @@ output:
       physical_block: "(32*k3 + 3*Q) mod 96"
       source_word: "384*branch + 4*physical_block + c"
 scratch:
-  wrapper_total_bytes: 3072
+  full_wrapper_peak_bytes: 3072
+  fused_frontend_semantic_bytes: 1536
   stage2_assembly_input_bytes: 1536
   stage2_alignment: 32
-  assembly_stack_bytes: 0
+  standalone_region_stack_bytes: 0
+  compiler_spill_bytes: 0
 registers:
-  clobber_gpr: [rdx, rcx, r8, r9]
+  clobber_gpr: [rax, rcx, rdx, r8, r9, r10, r11]
   clobber_vector: [ymm0-ymm15]
   callee_saved_clobbered: false
 constant_time:
@@ -62,6 +86,5 @@ return_boundary:
   vzeroupper: true
 promotion_limits:
   - matching_soa_basemul_is_intrinsic_only
-  - matching_soa_inverse_ntt_is_intrinsic_only
-  - frontend_and_stage12_still_intrinsic
+  - semantic_frontend_and_stage2_scratches_remain
   - does_not_replace_production_asm_ntt

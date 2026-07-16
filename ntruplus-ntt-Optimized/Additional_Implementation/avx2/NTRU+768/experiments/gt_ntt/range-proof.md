@@ -17,6 +17,22 @@ All statements below assume the explicit prototype precondition
 5. The largest bound is `8(q-1)=27648 < 32768`, so every lazy signed-int16
    add/sub remains representable.
 
+The hand-scheduled frontend/stage1+2 preserves these exact reduction points.
+Prepacked CRT byte offsets and twist/qinv vectors change only addressing and
+constant construction.  Top split and twist still each perform a fixed-factor
+Montgomery reduction before the lazy DFT3 sums.  Stage 1 reduces the distance-16
+high operand by Montgomery identity `R`; stage 2 reduces its distance-8 high
+operand by either `R` or `omega32^8`.  There is deliberately no Barrett pass at
+the frontend, stage-1, or stage-2 boundary: outputs remain within `3(q-1)`,
+`4(q-1)`, and `5(q-1)`, respectively, and the existing stage3+4+5 proof reaches
+only `8(q-1)` before its packed Barrett checkpoint.
+
+The fused producer's 1536-byte stack allocation is the complete frontend
+`row01/row2` semantic scratch.  Standalone frontend and stage1+2 symbols use no
+stack, and the fused symbol contains no additional spill slot.  Exact boundary
+tests compare all 768 int16 words against the intrinsic producer, including
+full-range and in-place inputs.
+
 The forward argument is followed by separate SoA basemul and inverse arguments
 below.  Together they cover the complete prototype polynomial multiplication.
 

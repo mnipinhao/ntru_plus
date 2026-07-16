@@ -1,19 +1,37 @@
 kernel: ntruplus768_gt_avx2_pipeline_prototype
 regions:
   frontend_slot_pair:
+    implementation: handwritten_avx2_asm_with_intrinsic_oracle
     repeats: 16
     inputs: [Q_even, Q_odd]
     nodes:
-      - "for n3=0..2: CRT-map and load four low/four high coefficients"
+      - "load six generated CRT byte offsets; form three low/high Q-pair YMMs"
       - "top split: t=Mont(high,zeta); b0=low+t; b1=low+high-t"
       - "pack XMM streams=[b0.lane0..3,b1.lane0..3]"
-      - "twist each stream using [twist0[n]x4,twist1[n]x4]"
+      - "twist each stream using generated [qinv-vector|factor-vector] entries"
       - "join Q_even/Q_odd XMM halves into three YMM inputs"
       - "DFT3: d=x1-x2; t=Mont(d,omega3); produce r0,r1,r2"
       - "permute2x128 r0/r1 into row01[Q_even],row01[Q_odd]"
       - "extract/store r2 halves into singleton row2[Q_even/Q_odd]"
     live_set_target: "3 DFT inputs + 3 outputs/temps, never all 32 slots"
+    scheduling:
+      - three_top_split_montgomery_chains_issued_together
+      - three_twist_montgomery_chains_issued_together
+      - dft3_multiply_overlapped_with_three_add_sub_chains
+      - immediate_transpose_and_store
+    register_allocation:
+      ymm0_ymm5: three_low_and_three_high_inputs_then_dft_values
+      ymm6_ymm11: three_corrections_and_three_product_highs_then_outputs
+      ymm12: pair_load_temporary
+      ymm13: zeta_top
+      ymm14: zeta_top_qinv
+      ymm15: q
+    linked_object_audit:
+      symbol_bytes: 518
+      stack_accesses: 0
+      calls: 0
   stage12_stripe:
+    implementation: handwritten_avx2_asm_with_intrinsic_oracle
     repeats: 8
     row01:
       vectors: [Q, Q+8, Q+16, Q+24]
@@ -23,6 +41,33 @@ regions:
       lane_halves: "[original Q | original Q+16]"
       nodes: [stage1_pack, stage2_distance8, store_two_stage2_vectors]
     live_set_target: 4
+    scheduling:
+      - stage1_two_identity_montgomery_chains_interleaved
+      - stage2_identity_and_omega8_chains_interleaved
+      - row01_stored_before_register_reuse_for_singleton
+      - singleton_two_stage1_chains_then_one_mixed_half_stage2_chain
+    lazy_reduction:
+      frontend_input_bound: "3*(q-1)"
+      after_stage1: "4*(q-1)"
+      after_stage2: "5*(q-1)"
+      barrett_checkpoint: none
+    register_allocation:
+      ymm0_ymm8: data_and_montgomery_temporaries
+      ymm9_ymm10: packed_row2_factor_and_qinv
+      ymm11_ymm12: omega8_and_qinv
+      ymm13_ymm14: montgomery_identity_and_qinv
+      ymm15: q
+    linked_object_audit:
+      symbol_bytes: 423
+      stack_accesses: 0
+      calls: 0
+  frontend_stage12_fused:
+    implementation: handwritten_avx2_asm
+    scratch_bytes: 1536
+    scratch_meaning: semantic_row01_row2_boundary_not_spill
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    linked_symbol_bytes: 970
   stage345_block:
     implementation: handwritten_avx2_asm
     row01_repeats: 4

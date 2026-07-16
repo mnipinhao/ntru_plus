@@ -11,6 +11,12 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `ntt` | production AVX2 | one forward NTT |
 | `gt-ntt` | GT intrinsic prototype | one forward GT NTT |
 | `gt-ntt-asm-soa` | GT hybrid ASM prototype | intrinsic frontend/stage 1+2, hand-scheduled stage 3+4+5, and fused 16-block SoA store |
+| `gt-frontend` | GT AVX2 intrinsic region | CRT-indexed loads, top split, branch twist, and DFT3 into frontend scratch |
+| `gt-frontend-asm` | GT hand-scheduled ASM region | the same exact frontend boundary using generated input-offset and packed twist/qinv tables, with no stack traffic |
+| `gt-stage12` | GT AVX2 intrinsic region | prepared frontend scratch through NTT32 stage 1+2 |
+| `gt-stage12-asm` | GT hand-scheduled ASM region | the same exact stage2 boundary with interleaved Montgomery chains and no stack traffic |
+| `gt-frontend-stage12-asm` | GT fused forward producer | one ASM entry and one 1536-byte semantic frontend scratch; no internal calls or compiler spill slots |
+| `gt-ntt-frontend-asm-soa` | GT forward ASM prototype | fused frontend/stage1+2 followed by the existing hand-scheduled stage3+4+5/SoA store |
 | `basemul` | production AVX2 | one pointwise/base multiplication on prepared NTT inputs |
 | `gt-basemul-soa` | GT AVX2 intrinsic prototype | 192 quartic products as 12 batches of 16 blocks; prepared SoA inputs and lambda-table generation are excluded |
 | `invntt` | production AVX2 | one inverse NTT on a prepared valid NTT input |
@@ -31,6 +37,7 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `gt-polymul-soa-dft3-hybrid` | GT two-region ASM inverse pipeline | the same GT path with hand-scheduled inverse NTT32 and DFT3 regions |
 | `gt-polymul-soa-postprocess-hybrid` | GT three-region ASM inverse pipeline | the same GT path with all three inverse regions hand-scheduled |
 | `gt-polymul-soa-fused-asm` | GT fused inverse pipeline | the same GT path using the single-entry inverse ASM |
+| `gt-polymul-frontend-fused-asm` | GT forward+inverse ASM pipeline | hand-scheduled frontend/stage1+2 and stage3+4+5, SoA basemul, and fused inverse ASM |
 
 The GT ASM prototype uses the candidate SoA mapping
 `batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits

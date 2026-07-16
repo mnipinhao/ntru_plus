@@ -267,12 +267,29 @@ static int check_packed_barrett_asm(void)
 static int check_frontend(const int16_t input[GT_NTT_N])
 {
 	gt_frontend_scratch got;
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_frontend_scratch asm_got;
+#endif
 	int16_t want[3][32][8];
 
 	gt_ntt_avx2_frontend(&got, input);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_ntt_avx2_frontend_asm(&asm_got, input);
+#endif
 	scalar_frontend(want, input);
 	for (unsigned q = 0; q < 32; q++) {
 		for (unsigned stream = 0; stream < 8; stream++) {
+#if defined(GT_HAVE_AVX2_ASM)
+			if (asm_got.row01[q][stream] != got.row01[q][stream] ||
+			    asm_got.row01[q][8 + stream] !=
+				got.row01[q][8 + stream] ||
+			    asm_got.row2[q][stream] != got.row2[q][stream]) {
+				fprintf(stderr,
+					"frontend ASM exact mismatch Q=%u stream=%u\n",
+					q, stream);
+				return 1;
+			}
+#endif
 			if (!in_symmetric_bound(got.row01[q][stream], 3 * 3456) ||
 			    !in_symmetric_bound(got.row01[q][8 + stream], 3 * 3456) ||
 			    !in_symmetric_bound(got.row2[q][stream], 3 * 3456)) {
@@ -296,14 +313,42 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 {
 	gt_frontend_scratch frontend;
 	gt_stage2_scratch got;
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_stage2_scratch asm_got;
+	gt_stage2_scratch fused_got;
+	gt_stage2_scratch fused_inplace;
+#endif
 	int16_t want[3][32][8];
 
 	gt_ntt_avx2_frontend(&frontend, input);
 	gt_ntt_avx2_stage12(&got, &frontend);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_ntt_avx2_stage12_asm(&asm_got, &frontend);
+	gt_ntt_avx2_frontend_stage12_asm(&fused_got, input);
+	memcpy(&fused_inplace, input, sizeof(fused_inplace));
+	gt_ntt_avx2_frontend_stage12_asm(&fused_inplace,
+		(const int16_t *)(const void *)&fused_inplace);
+#endif
 	scalar_frontend(want, input);
 	scalar_stages12(want);
 	for (unsigned q = 0; q < 32; q++) {
 		for (unsigned stream = 0; stream < 8; stream++) {
+#if defined(GT_HAVE_AVX2_ASM)
+			if (asm_got.row01[q][stream] != got.row01[q][stream] ||
+			    asm_got.row01[q][8 + stream] !=
+				got.row01[q][8 + stream] ||
+			    fused_got.row01[q][stream] != got.row01[q][stream] ||
+			    fused_got.row01[q][8 + stream] !=
+				got.row01[q][8 + stream] ||
+			    fused_inplace.row01[q][stream] != got.row01[q][stream] ||
+			    fused_inplace.row01[q][8 + stream] !=
+				got.row01[q][8 + stream]) {
+				fprintf(stderr,
+					"stage12 ASM exact mismatch Q=%u stream=%u\n",
+					q, stream);
+				return 1;
+			}
+#endif
 			if (!in_symmetric_bound(got.row01[q][stream], 5 * 3456) ||
 			    !in_symmetric_bound(got.row01[q][8 + stream], 5 * 3456)) {
 				fprintf(stderr, "row01 stage2 range failure Q=%u stream=%u\n",
@@ -320,6 +365,25 @@ static int check_stage2(const int16_t input[GT_NTT_N])
 	}
 	for (unsigned q = 0; q < 16; q++) {
 		for (unsigned stream = 0; stream < 8; stream++) {
+#if defined(GT_HAVE_AVX2_ASM)
+			if (asm_got.row2_packed[q][stream] !=
+				got.row2_packed[q][stream] ||
+			    asm_got.row2_packed[q][8 + stream] !=
+				got.row2_packed[q][8 + stream] ||
+			    fused_got.row2_packed[q][stream] !=
+				got.row2_packed[q][stream] ||
+			    fused_got.row2_packed[q][8 + stream] !=
+				got.row2_packed[q][8 + stream] ||
+			    fused_inplace.row2_packed[q][stream] !=
+				got.row2_packed[q][stream] ||
+			    fused_inplace.row2_packed[q][8 + stream] !=
+				got.row2_packed[q][8 + stream]) {
+				fprintf(stderr,
+					"row2 stage12 ASM exact mismatch Q=%u stream=%u\n",
+					q, stream);
+				return 1;
+			}
+#endif
 			if (!in_symmetric_bound(got.row2_packed[q][stream], 5 * 3456) ||
 			    !in_symmetric_bound(got.row2_packed[q][8 + stream], 5 * 3456)) {
 				fprintf(stderr, "row2 stage2 range failure Q=%u stream=%u\n",
@@ -792,6 +856,8 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	int16_t want_soa[GT_NTT_N];
 	int16_t got_soa[GT_NTT_N];
 	int16_t inplace_soa[GT_NTT_N];
+	int16_t frontend_asm_soa[GT_NTT_N];
+	int16_t frontend_asm_inplace_soa[GT_NTT_N];
 #endif
 	int16_t inverse_input[GT_NTT_N] __attribute__((aligned(32)));
 	int16_t inverse_output[GT_NTT_N];
@@ -825,12 +891,20 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	gt_ntt_avx2_asm_soa(got_soa, input);
 	memcpy(inplace_soa, input, sizeof(inplace_soa));
 	gt_ntt_avx2_asm_soa(inplace_soa, inplace_soa);
+	gt_ntt_avx2_frontend_asm_soa(frontend_asm_soa, input);
+	memcpy(frontend_asm_inplace_soa, input,
+		sizeof(frontend_asm_inplace_soa));
+	gt_ntt_avx2_frontend_asm_soa(frontend_asm_inplace_soa,
+		frontend_asm_inplace_soa);
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got_soa[i], want_soa[i]) ||
-		    got_soa[i] != inplace_soa[i]) {
+		    got_soa[i] != inplace_soa[i] ||
+		    frontend_asm_soa[i] != got_soa[i] ||
+		    frontend_asm_inplace_soa[i] != got_soa[i]) {
 			fprintf(stderr,
-				"ASM SoA mismatch case=%s i=%u got=%d want=%d inplace=%d\n",
-				label, i, got_soa[i], want_soa[i], inplace_soa[i]);
+				"ASM SoA mismatch case=%s i=%u got=%d want=%d inplace=%d frontend-asm=%d frontend-asm-inplace=%d\n",
+				label, i, got_soa[i], want_soa[i], inplace_soa[i],
+				frontend_asm_soa[i], frontend_asm_inplace_soa[i]);
 			return 1;
 		}
 		if (got_soa[i] < 0 || got_soa[i] > GT_NTT_Q) {

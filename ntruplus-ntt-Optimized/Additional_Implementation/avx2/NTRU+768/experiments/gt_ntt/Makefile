@@ -8,6 +8,7 @@ SOURCES = gt_ntt_avx2.c gt_basemul_soa.c gt_invntt_soa.c gt_ntt_tables.c \
 	test_gt_ntt.c $(REFERENCE)
 HEADERS = gt_ntt_avx2.h gt_basemul_soa.h gt_basemul_soa_tables.inc \
 	gt_invntt_soa.h gt_invntt_soa_tables.inc gt_ntt_tables.h \
+	gt_ntt_frontend_tables.inc \
 	gt_invntt_ntt32_soa.s gt_invntt_dft3_soa.s \
 	gt_invntt_postprocess_soa.s
 BUILD = build
@@ -16,7 +17,8 @@ ifeq ($(shell uname -s),Darwin)
 ARCHFLAGS = -arch x86_64
 RUNNER = arch -x86_64
 else
-SOURCES += gt_ntt_stage345_soa.s gt_invntt_fused_soa.S
+SOURCES += gt_ntt_frontend_stage12_soa.S gt_ntt_stage345_soa.s \
+	gt_invntt_fused_soa.S
 CFLAGS += -DGT_HAVE_AVX2_ASM=1
 endif
 
@@ -35,6 +37,7 @@ check: check-tables
 		test_gt_ntt.c
 
 check-tables:
+	$(PYTHON) generate_gt_frontend_tables.py --check gt_ntt_frontend_tables.inc
 	$(PYTHON) generate_gt_soa_tables.py --check gt_basemul_soa_tables.inc
 	$(PYTHON) generate_gt_invntt_tables.py --check gt_invntt_soa_tables.inc
 

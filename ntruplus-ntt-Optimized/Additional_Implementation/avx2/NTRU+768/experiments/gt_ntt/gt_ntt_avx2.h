@@ -34,6 +34,15 @@ typedef struct __attribute__((aligned(32))) {
 /* Hybrid prototype: intrinsic frontend/stage12, hand-scheduled ASM stage345. */
 void gt_ntt_avx2_asm_soa(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
+/* Hand-scheduled frontend/stage12, with the same ASM stage345 consumer. */
+void gt_ntt_avx2_frontend_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_asm(gt_frontend_scratch *scratch,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_stage12_asm(gt_stage2_scratch *out,
+	const gt_frontend_scratch *in);
+void gt_ntt_avx2_frontend_stage12_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
 void gt_ntt_avx2_stage345_soa_asm(int16_t out[GT_NTT_N],
 	const gt_stage2_scratch *scratch);
 void gt_ntt_avx2_barrett_packed_asm(int16_t out[16],

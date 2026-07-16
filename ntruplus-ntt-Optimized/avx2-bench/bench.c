@@ -58,8 +58,20 @@ static int16_t gt_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static int16_t gt_frontend_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_frontend_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_frontend_asm_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
 static int16_t gt_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static gt_frontend_scratch gt_frontend_inputs[BENCH_NINPUTS];
+static gt_frontend_scratch gt_frontend_outputs[BENCH_NINPUTS];
+static gt_frontend_scratch gt_frontend_asm_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_stage12_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_stage12_asm_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_asm_outputs[BENCH_NINPUTS];
 static int16_t gt_invntt32_rows[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_invntt32_rows_asm[BENCH_NINPUTS][NTRUPLUS_N]
@@ -181,6 +193,11 @@ static void prepare_inputs(void)
     poly_basemul(&freq_out[i], &ntt_a[i], &ntt_b[i]);
     gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[i], inputs_a[i].coeffs);
     gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[i],
+                                 inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_b[i],
+                                 inputs_b[i].coeffs);
+    gt_ntt_avx2_frontend(&gt_frontend_inputs[i], inputs_a[i].coeffs);
     gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
                         gt_asm_soa_b[i]);
     gt_invntt_soa_ntt32_intrinsic(gt_invdft3_rows[i],
@@ -256,6 +273,36 @@ static int validate_all(void)
       return 0;
     }
 
+    gt_ntt_avx2_frontend_asm(&gt_frontend_asm_outputs[i],
+                             inputs_a[i].coeffs);
+    if (memcmp(&gt_frontend_inputs[i], &gt_frontend_asm_outputs[i],
+               sizeof(gt_frontend_inputs[i])) != 0) {
+      fputs("GT frontend ASM exact boundary differential failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_stage12(&gt_stage12_outputs[i], &gt_frontend_inputs[i]);
+    gt_ntt_avx2_stage12_asm(&gt_stage12_asm_outputs[i],
+                            &gt_frontend_inputs[i]);
+    gt_ntt_avx2_frontend_stage12_asm(&gt_frontend_stage12_asm_outputs[i],
+                                     inputs_a[i].coeffs);
+    if (memcmp(&gt_stage12_outputs[i], &gt_stage12_asm_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0 ||
+        memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_asm_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0) {
+      fputs("GT frontend/stage12 ASM exact boundary differential failed\n",
+            stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[i],
+                                 inputs_a[i].coeffs);
+    if (memcmp(gt_asm_soa_outputs[i], gt_frontend_asm_soa_outputs[i],
+               sizeof(gt_asm_soa_outputs[i])) != 0) {
+      fputs("GT frontend ASM SoA forward exact differential failed\n", stderr);
+      return 0;
+    }
+
     ntt_gt_rowbitrevlayout(gt_b_want, inputs_b[i].coeffs);
     gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
     gt_basemul_rowbitrev_reference(gt_product_want, gt_want, gt_b_want);
@@ -264,6 +311,18 @@ static int validate_all(void)
                         gt_asm_soa_b[i]);
     if (!equal_poly_mod_q(gt_soa_products[i], gt_product_soa_want)) {
       fputs("GT SoA basemul differential failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_b[i],
+                                 inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_frontend_asm_soa_outputs[i],
+                        gt_frontend_asm_soa_b[i]);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT frontend ASM fused polynomial multiplication failed\n", stderr);
       return 0;
     }
 
@@ -377,6 +436,41 @@ static void target_gt_ntt(unsigned index)
 static void target_gt_ntt_asm_soa(unsigned index)
 {
   gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend(unsigned index)
+{
+  gt_ntt_avx2_frontend(&gt_frontend_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_asm(&gt_frontend_asm_outputs[index],
+                           inputs_a[index].coeffs);
+}
+
+static void target_gt_stage12(unsigned index)
+{
+  gt_ntt_avx2_stage12(&gt_stage12_outputs[index],
+                      &gt_frontend_inputs[index]);
+}
+
+static void target_gt_stage12_asm(unsigned index)
+{
+  gt_ntt_avx2_stage12_asm(&gt_stage12_asm_outputs[index],
+                          &gt_frontend_inputs[index]);
+}
+
+static void target_gt_frontend_stage12_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_asm(
+      &gt_frontend_stage12_asm_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_frontend_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[index],
+                               inputs_a[index].coeffs);
 }
 
 static void target_basemul(unsigned index)
@@ -514,10 +608,29 @@ static void target_gt_polymul_soa_fused_asm(unsigned index)
                                gt_soa_products[index]);
 }
 
+static void target_gt_polymul_frontend_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[index],
+                               inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_b[index],
+                               inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_frontend_asm_soa_outputs[index],
+                      gt_frontend_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
 static const struct operation operations[] = {
   {"ntt", target_ntt},
   {"gt-ntt", target_gt_ntt},
   {"gt-ntt-asm-soa", target_gt_ntt_asm_soa},
+  {"gt-frontend", target_gt_frontend},
+  {"gt-frontend-asm", target_gt_frontend_asm},
+  {"gt-stage12", target_gt_stage12},
+  {"gt-stage12-asm", target_gt_stage12_asm},
+  {"gt-frontend-stage12-asm", target_gt_frontend_stage12_asm},
+  {"gt-ntt-frontend-asm-soa", target_gt_ntt_frontend_asm_soa},
   {"basemul", target_basemul},
   {"gt-basemul-soa", target_gt_basemul_soa},
   {"invntt", target_invntt},
@@ -540,6 +653,8 @@ static const struct operation operations[] = {
   {"gt-polymul-soa-postprocess-hybrid",
    target_gt_polymul_soa_postprocess_hybrid},
   {"gt-polymul-soa-fused-asm", target_gt_polymul_soa_fused_asm},
+  {"gt-polymul-frontend-fused-asm",
+   target_gt_polymul_frontend_fused_asm},
 };
 
 static const struct operation *find_operation(const char *name)
@@ -586,6 +701,21 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_outputs[i]);
     } else if (operation->run == target_gt_ntt_asm_soa) {
       sink ^= checksum_i16(gt_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_frontend_asm_soa) {
+      sink ^= checksum_i16(gt_frontend_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_frontend) {
+      sink ^= checksum_i16((const int16_t *)(const void *)&gt_frontend_outputs[i]);
+    } else if (operation->run == target_gt_frontend_asm) {
+      sink ^= checksum_i16(
+          (const int16_t *)(const void *)&gt_frontend_asm_outputs[i]);
+    } else if (operation->run == target_gt_stage12) {
+      sink ^= checksum_i16((const int16_t *)(const void *)&gt_stage12_outputs[i]);
+    } else if (operation->run == target_gt_stage12_asm) {
+      sink ^= checksum_i16(
+          (const int16_t *)(const void *)&gt_stage12_asm_outputs[i]);
+    } else if (operation->run == target_gt_frontend_stage12_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_asm_outputs[i]);
     } else if (operation->run == target_basemul) {
       sink ^= checksum_i16(freq_out[i].coeffs);
     } else if (operation->run == target_gt_basemul_soa) {
@@ -668,14 +798,16 @@ static void print_usage(const char *program)
 {
   fprintf(stderr,
           "usage: %s --validate | "
-          "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|gt-basemul-soa|invntt|"
+          "<ntt|gt-ntt|gt-ntt-asm-soa|gt-frontend|gt-frontend-asm|"
+          "gt-stage12|gt-stage12-asm|gt-frontend-stage12-asm|"
+          "gt-ntt-frontend-asm-soa|basemul|gt-basemul-soa|invntt|"
           "gt-invntt32|gt-invntt32-asm|gt-invntt-soa|"
           "gt-invdft3|gt-invdft3-asm|gt-invpost|gt-invpost-asm|"
           "gt-invntt-soa-hybrid|gt-invntt-soa-dft3-hybrid|"
           "gt-invntt-soa-postprocess-hybrid|polymul|gt-polymul-soa|"
           "gt-polymul-soa-hybrid|gt-polymul-soa-dft3-hybrid|"
           "gt-polymul-soa-postprocess-hybrid|gt-polymul-soa-fused-asm|"
-          "gt-invntt-soa-fused-asm> "
+          "gt-invntt-soa-fused-asm|gt-polymul-frontend-fused-asm> "
           "[--perf-loop]\n", program);
 }
 
