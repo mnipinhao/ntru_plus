@@ -1,0 +1,60 @@
+kernel: ntruplus768_gt_basemul_soa_avx2_intrinsic
+status: experimental_semantics_baseline
+platform:
+  isa: AVX2
+  target_cpu: AMD_Ryzen_7_9700X
+operation:
+  type: pointwise_quartic_multiplication
+  count: 192
+  quotient: Z_3457[X]/(X^4-lambda)
+input:
+  operands: 2
+  type: int16[768]
+  coefficient_range: "[-3457,3457]"
+  domain: normal_residue
+  aliasing: all_three_arrays_must_not_overlap
+layout:
+  batches: 12
+  vectors_per_batch: 4
+  lanes_per_vector: 16
+  formula:
+    batch: "4*k3 + floor(Q/8)"
+    lane: "8*branch + (Q mod 8)"
+    word: "64*batch + 16*c + lane"
+output:
+  type: int16[768]
+  coefficient_range: "[-3456,3456]"
+  domain: normal_residue
+  layout_preserved: true
+arithmetic:
+  runtime_products:
+    count_per_lane: 16
+    reduction: packed_int16_montgomery
+    post_domain: R^-1
+  lambda_folds:
+    count_per_lane: 3
+    table_domain: lambda_times_R
+    table_pair: [lambda, lambda_times_qinv_mod_2^16]
+  finalizers:
+    count_per_lane: 4
+    factor: R^2
+    output_domain: normal_residue
+  largest_add_accumulator: "4*(q-1)=13824"
+tables:
+  generator: generate_gt_soa_tables.py
+  logical_exponent: "(32*k3 + 3*bitreverse5(Q)) mod 96"
+  branch_scale: [2, 22]
+  bytes: 768
+constant_time:
+  secret_dependent_branches: false
+  secret_dependent_addresses: false
+  table_indices: public_batch_only
+compiler_audit:
+  compiler: GCC_16.1.1
+  symbol_bytes: 773
+  explicit_stack_adjustment_bytes: 72
+  vector_spills_present: true
+promotion_limits:
+  - intrinsic_schedule_has_vector_spills
+  - no_basemul_add_variant
+  - no_matching_soa_inverse_ntt

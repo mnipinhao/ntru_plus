@@ -5,6 +5,7 @@
 #include <string.h>
 #include <x86intrin.h>
 
+#include "gt_basemul_soa.h"
 #include "gt_ntt_avx2.h"
 #include "params.h"
 #include "poly.h"
@@ -33,6 +34,9 @@ _Static_assert((BENCH_NTESTS & 1) == 1, "BENCH_NTESTS must be odd");
 
 void ntt_gt_rowbitrevlayout(int16_t out[NTRUPLUS_N],
                             const int16_t in[NTRUPLUS_N]);
+void basemul(int16_t r[4], const int16_t a[4], const int16_t b[4],
+             int16_t zeta);
+extern const int16_t gt_rowbitrev_lambda[2][96];
 
 typedef void (*bench_fn)(unsigned index);
 
@@ -50,6 +54,10 @@ static poly outputs[BENCH_NINPUTS];
 static int16_t gt_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static volatile uint64_t sink;
 
@@ -156,6 +164,27 @@ static void prepare_inputs(void)
     poly_ntt(&ntt_a[i], &inputs_a[i]);
     poly_ntt(&ntt_b[i], &inputs_b[i]);
     poly_basemul(&freq_out[i], &ntt_a[i], &ntt_b[i]);
+    gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
+                        gt_asm_soa_b[i]);
+  }
+}
+
+static void gt_basemul_rowbitrev_reference(int16_t out[NTRUPLUS_N],
+                                           const int16_t a[NTRUPLUS_N],
+                                           const int16_t b[NTRUPLUS_N])
+{
+  unsigned branch;
+  unsigned block;
+
+  for (branch = 0; branch < 2; branch++) {
+    for (block = 0; block < 96; block++) {
+      const unsigned offset = 384U * branch + 4U * block;
+
+      basemul(out + offset, a + offset, b + offset,
+              gt_rowbitrev_lambda[branch][block]);
+    }
   }
 }
 
@@ -167,7 +196,10 @@ static int validate_all(void)
   poly frequency_b;
   poly frequency_product;
   int16_t gt_want[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_b_want[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_product_want[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_product_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
   unsigned i;
 
   for (i = 0; i < 8; i++) {
@@ -201,6 +233,17 @@ static int validate_all(void)
       fputs("GT ASM SoA forward NTT differential failed\n", stderr);
       return 0;
     }
+
+    ntt_gt_rowbitrevlayout(gt_b_want, inputs_b[i].coeffs);
+    gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_rowbitrev_reference(gt_product_want, gt_want, gt_b_want);
+    gt_ntt_rowbitrev_to_soa(gt_product_soa_want, gt_product_want);
+    gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
+                        gt_asm_soa_b[i]);
+    if (!equal_poly_mod_q(gt_soa_products[i], gt_product_soa_want)) {
+      fputs("GT SoA basemul differential failed\n", stderr);
+      return 0;
+    }
   }
   puts("validation=passed");
   return 1;
@@ -226,6 +269,12 @@ static void target_basemul(unsigned index)
   poly_basemul(&freq_out[index], &ntt_a[index], &ntt_b[index]);
 }
 
+static void target_gt_basemul_soa(unsigned index)
+{
+  gt_basemul_soa_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+                      gt_asm_soa_b[index]);
+}
+
 static void target_invntt(unsigned index)
 {
   poly_invntt(&outputs[index], &ntt_a[index]);
@@ -244,6 +293,7 @@ static const struct operation operations[] = {
   {"gt-ntt", target_gt_ntt},
   {"gt-ntt-asm-soa", target_gt_ntt_asm_soa},
   {"basemul", target_basemul},
+  {"gt-basemul-soa", target_gt_basemul_soa},
   {"invntt", target_invntt},
   {"polymul", target_polymul},
 };
@@ -294,6 +344,8 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_asm_soa_outputs[i]);
     } else if (operation->run == target_basemul) {
       sink ^= checksum_i16(freq_out[i].coeffs);
+    } else if (operation->run == target_gt_basemul_soa) {
+      sink ^= checksum_i16(gt_soa_products[i]);
     } else {
       sink ^= checksum_i16(outputs[i].coeffs);
     }
@@ -360,7 +412,7 @@ static void print_usage(const char *program)
 {
   fprintf(stderr,
           "usage: %s --validate | "
-          "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|invntt|polymul> "
+          "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|gt-basemul-soa|invntt|polymul> "
           "[--perf-loop]\n", program);
 }
 

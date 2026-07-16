@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "gt_basemul_soa.h"
 #include "gt_ntt_avx2.h"
 #include "gt_ntt_tables.h"
 
@@ -17,6 +18,9 @@ _Static_assert(sizeof(gt_stage2_scratch) == 1536,
 /* Linked from the verified AArch64 portable GT reference. */
 void ntt_gt_rowbitrevlayout(int16_t r[GT_NTT_N],
 	const int16_t a[GT_NTT_N]);
+void basemul(int16_t r[4], const int16_t a[4], const int16_t b[4],
+	int16_t zeta);
+extern const int16_t gt_rowbitrev_lambda[2][96];
 
 static uint32_t rng_state = 1;
 
@@ -368,6 +372,117 @@ static int check_soa_mapping(void)
 	return 0;
 }
 
+static int16_t factor_qinv_ref(int16_t factor)
+{
+	return (int16_t)(uint16_t)((uint32_t)(uint16_t)factor * QINV);
+}
+
+static int check_soa_lambda_table(void)
+{
+	for (unsigned k3 = 0; k3 < 3; k3++) {
+		for (unsigned q = 0; q < 32; q++) {
+			const unsigned block = (32U * k3 + 3U * q) % 96U;
+			const unsigned batch = 4U * k3 + q / 8U;
+
+			for (unsigned branch = 0; branch < 2; branch++) {
+				const unsigned lane = 8U * branch + q % 8U;
+				const int16_t want =
+					gt_rowbitrev_lambda[branch][block];
+
+				if (gt_soa_lambda[batch][lane] != want ||
+				    gt_soa_lambda_qinv[batch][lane] !=
+					factor_qinv_ref(want)) {
+					fprintf(stderr,
+						"SoA lambda mismatch k3=%u Q=%u branch=%u\n",
+						k3, q, branch);
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+static void basemul_rowbitrev_reference(int16_t out[GT_NTT_N],
+	const int16_t a[GT_NTT_N], const int16_t b[GT_NTT_N])
+{
+	for (unsigned branch = 0; branch < 2; branch++) {
+		for (unsigned block = 0; block < 96; block++) {
+			const unsigned offset = 384U * branch + 4U * block;
+
+			basemul(out + offset, a + offset, b + offset,
+				gt_rowbitrev_lambda[branch][block]);
+		}
+	}
+}
+
+static int check_basemul_soa_case(const int16_t a[GT_NTT_N],
+	const int16_t b[GT_NTT_N], const char *label)
+{
+	int16_t a_rowbitrev[GT_NTT_N];
+	int16_t b_rowbitrev[GT_NTT_N];
+	int16_t want_rowbitrev[GT_NTT_N];
+	int16_t want[GT_NTT_N];
+	int16_t got[GT_NTT_N];
+
+	gt_ntt_soa_to_rowbitrev(a_rowbitrev, a);
+	gt_ntt_soa_to_rowbitrev(b_rowbitrev, b);
+	basemul_rowbitrev_reference(want_rowbitrev, a_rowbitrev, b_rowbitrev);
+	gt_ntt_rowbitrev_to_soa(want, want_rowbitrev);
+	gt_basemul_soa_avx2(got, a, b);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(got[i], want[i])) {
+			fprintf(stderr,
+				"SoA basemul mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, got[i], want[i]);
+			return 1;
+		}
+		if (!in_symmetric_bound(got[i], GT_NTT_Q - 1)) {
+			fprintf(stderr,
+				"SoA basemul range failure case=%s i=%u value=%d\n",
+				label, i, got[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int check_forward_basemul_case(const int16_t a[GT_NTT_N],
+	const int16_t b[GT_NTT_N], const char *label)
+{
+	int16_t a_rowbitrev[GT_NTT_N];
+	int16_t b_rowbitrev[GT_NTT_N];
+	int16_t want_rowbitrev[GT_NTT_N];
+	int16_t want[GT_NTT_N];
+	int16_t a_soa[GT_NTT_N];
+	int16_t b_soa[GT_NTT_N];
+	int16_t got[GT_NTT_N];
+
+	ntt_gt_rowbitrevlayout(a_rowbitrev, a);
+	ntt_gt_rowbitrevlayout(b_rowbitrev, b);
+	basemul_rowbitrev_reference(want_rowbitrev, a_rowbitrev, b_rowbitrev);
+	gt_ntt_rowbitrev_to_soa(want, want_rowbitrev);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_ntt_avx2_asm_soa(a_soa, a);
+	gt_ntt_avx2_asm_soa(b_soa, b);
+#else
+	gt_ntt_avx2(a_rowbitrev, a);
+	gt_ntt_avx2(b_rowbitrev, b);
+	gt_ntt_rowbitrev_to_soa(a_soa, a_rowbitrev);
+	gt_ntt_rowbitrev_to_soa(b_soa, b_rowbitrev);
+#endif
+	gt_basemul_soa_avx2(got, a_soa, b_soa);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(got[i], want[i])) {
+			fprintf(stderr,
+				"forward+SoA basemul mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, got[i], want[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
 static int check_full(const int16_t input[GT_NTT_N], const char *label)
 {
 	int16_t want[GT_NTT_N];
@@ -424,9 +539,14 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 int main(void)
 {
 	int16_t input[GT_NTT_N];
+	int16_t basemul_a[GT_NTT_N];
+	int16_t basemul_b[GT_NTT_N];
+	static const int16_t basemul_boundaries[] = {
+		0, 1, -1, 1728, -1728, 3456, -3456, 3457, -3457
+	};
 
 	if (check_montgomery() != 0 || check_barrett() != 0 ||
-	    check_soa_mapping() != 0) {
+	    check_soa_mapping() != 0 || check_soa_lambda_table() != 0) {
 		return 1;
 	}
 #if defined(GT_HAVE_AVX2_ASM)
@@ -434,6 +554,59 @@ int main(void)
 		return 1;
 	}
 #endif
+
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		const unsigned count = sizeof(basemul_boundaries) /
+			sizeof(basemul_boundaries[0]);
+
+		basemul_a[i] = basemul_boundaries[i % count];
+		basemul_b[i] = basemul_boundaries[(3U * i + 1U) % count];
+	}
+	if (check_basemul_soa_case(basemul_a, basemul_b, "boundary") != 0) {
+		return 1;
+	}
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (basemul_a[i] == GT_NTT_Q || basemul_a[i] == -GT_NTT_Q) {
+			basemul_a[i] = 0;
+		}
+		if (basemul_b[i] == GT_NTT_Q || basemul_b[i] == -GT_NTT_Q) {
+			basemul_b[i] = 0;
+		}
+	}
+	if (check_forward_basemul_case(basemul_a, basemul_b,
+		"forward-boundary") != 0) {
+		return 1;
+	}
+	for (unsigned round = 0; round < 200; round++) {
+		char label[32];
+
+		for (unsigned i = 0; i < GT_NTT_N; i++) {
+			basemul_a[i] =
+				(int16_t)((int)(next_u32() % 6915U) - 3457);
+			basemul_b[i] =
+				(int16_t)((int)(next_u32() % 6915U) - 3457);
+		}
+		(void)snprintf(label, sizeof(label), "basemul-random-%u", round);
+		if (check_basemul_soa_case(basemul_a, basemul_b, label) != 0) {
+			return 1;
+		}
+		if (round < 16) {
+			for (unsigned i = 0; i < GT_NTT_N; i++) {
+				if (basemul_a[i] == GT_NTT_Q ||
+				    basemul_a[i] == -GT_NTT_Q) {
+					basemul_a[i] = 0;
+				}
+				if (basemul_b[i] == GT_NTT_Q ||
+				    basemul_b[i] == -GT_NTT_Q) {
+					basemul_b[i] = 0;
+				}
+			}
+			if (check_forward_basemul_case(
+				basemul_a, basemul_b, label) != 0) {
+				return 1;
+			}
+		}
+	}
 
 	memset(input, 0, sizeof(input));
 	input[0] = 1;
@@ -482,6 +655,6 @@ int main(void)
 		}
 	}
 
-	puts("GT AVX2 prototype: all differential and layout tests passed");
+	puts("GT AVX2 NTT/SoA basemul: all differential and layout tests passed");
 	return 0;
 }

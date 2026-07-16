@@ -17,9 +17,9 @@ All statements below assume the explicit prototype precondition
 5. The largest bound is `8(q-1)=27648 < 32768`, so every lazy signed-int16
    add/sub remains representable.
 
-The proof deliberately stops at the forward transform boundary.  It does not
-yet claim compatibility of the new layout with the existing AVX2 basemul or
-inverse kernels.
+The transform argument stops at the forward boundary.  The separate SoA
+basemul argument below extends the prototype through pointwise multiplication;
+it does not yet cover a matching inverse kernel.
 
 ## Final reducers
 
@@ -47,3 +47,47 @@ not change bounds or residues.  For DFT3 row `k3`, NTT32 index `Q`, branch `b`,
 and quartic coefficient `c`, the output word is
 `64*(4*k3+Q/8) + 16*c + 8*b + Q%8`.  Both directions of this 768-word mapping
 are tested against the verified GT row-bitrev reference.
+
+## SoA quartic basemul
+
+The intrinsic pointwise prototype accepts normal-domain representatives
+`|a_i|,|b_i| <= q`.  Define
+
+```text
+p_ij = Mont(a_i*b_j)
+```
+
+for each of the 16 runtime products.  Since `|a_i*b_j| <= q^2` and
+`q^2 < q*2^15`, the scalar Montgomery precondition holds and every `p_ij` is
+in `[-(q-1),q-1]` in the `R^-1` domain.
+
+The quartic wrap accumulators are:
+
+| Value | Expression | Bound before lambda |
+| --- | --- | ---: |
+| `w0` | `p13+p22+p31` | `3(q-1)` |
+| `w1` | `p23+p32` | `2(q-1)` |
+| `w2` | `p33` | `q-1` |
+
+Each `lambda` is a centered Montgomery-form constant with magnitude at most
+1728.  Therefore the largest fixed-factor input product is bounded by
+`3(q-1)*1728 < q*2^15`; `Mont(w_i*lambda)` returns to one modulus in the same
+`R^-1` domain.  Adding the non-wrapped products gives these conservative
+bounds:
+
+| Output accumulator | Bound before finalization |
+| --- | ---: |
+| `u0` | `2(q-1)` |
+| `u1` | `3(q-1)` |
+| `u2` | `4(q-1)` |
+| `u3` | `4(q-1)` |
+
+The maximum packed addition magnitude is therefore
+`4(q-1)=13824 < 32768`, so no `vpaddw` wraps.  Finally, `R^2=867` in centered
+Montgomery form and `4(q-1)*867 < q*2^15`; `Mont(u_i*R^2)` returns a normal-
+domain representative in `[-(q-1),q-1]`.
+
+All 12 batch iterations and table addresses depend only on public indices.
+There are no value-dependent branches, corrections, or memory accesses.  The
+three API arrays are required not to overlap; this is an optimization contract,
+not a secret-dependent condition.

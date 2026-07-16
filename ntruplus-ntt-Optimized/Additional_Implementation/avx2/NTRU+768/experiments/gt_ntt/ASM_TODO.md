@@ -74,8 +74,8 @@ shows a net benefit.
   soa[64*batch + 16*c + lane] = rowbitrev[384*b + 4*j + c]
   ```
 
-- [~] Pack lambda and `lambda*qinv` in the same 16-block order.
-- [~] Pointwise multiplication consumes four YMM values directly and emits the
+- [x] Pack lambda and `lambda*qinv` in the same 16-block order.
+- [x] Pointwise multiplication consumes four YMM values directly and emits the
   same layout.
 - [~] Forward NTT fuses the required transpose into its final stores.
 - [~] Inverse NTT fuses the reverse mapping into its first loads.
@@ -97,8 +97,8 @@ inverse NTT.
 - [x] Encode row01 stage-3+4+5 twiddles as full-lane repeats.
 - [x] Encode singleton stage-3+4+5 twiddles as
   `[twiddle(Q) x8 | twiddle(Q+16) x8]`.
-- [ ] Generate the candidate SoA lambda table in physical batch order.
-- [ ] Add a generator/checker so table changes are reproducible rather than
+- [x] Generate the candidate SoA lambda table in physical batch order.
+- [x] Add a generator/checker so table changes are reproducible rather than
   hand-edited.
 
 ## Forward NTT assembly regions
@@ -161,14 +161,19 @@ inverse NTT.
 
 ## Pointwise multiplication
 
-- [ ] Write the quartic base-multiplication formula for one 16-block SoA batch.
-- [ ] Load `a0..a3`, `b0..b3`, and lambda without an input transpose.
+- [x] Write and differential-test the quartic base-multiplication formula for
+  one 16-block SoA batch.
+- [x] Load `a0..a3`, `b0..b3`, and lambda without an input transpose.
 - [ ] Schedule independent 16x16 Montgomery products in groups that hide the
   Zen 5 three-cycle multiply latency.
-- [ ] Keep accumulated bounds within signed int16 or document every reduction.
-- [ ] Preserve the SoA layout at output.
+- [x] Keep accumulated bounds within signed int16 and document every reduction.
+- [x] Preserve the SoA layout at output.
+- [ ] Replace the semantics intrinsic with a zero-spill scheduled ASM kernel.
+  GCC 16 currently emits a 773-byte symbol, a 72-byte frame, and YMM spill/
+  reload traffic; this is measured baseline evidence, not a final schedule.
 - [ ] Add `basemul_add` because it is used by encapsulation.
-- [ ] Differential-test every batch against the scalar quartic reference.
+- [x] Differential-test every batch against the scalar quartic reference and
+  test forward-NTT-to-basemul composition.
 
 ## Inverse NTT
 
@@ -203,13 +208,13 @@ inverse NTT.
 - [x] Frontend and stage-2 representation-boundary tests.
 - [x] Full forward-NTT differential test against the portable GT reference.
 - [x] SoA mapping oracle and inverse mapping oracle.
-- [ ] Pointwise differential tests.
+- [x] Pointwise differential tests.
 - [ ] Inverse and full-polymul differential tests.
 - [x] Production NTRU+ test binary.
 - [ ] Production KAT.
 - [~] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication.
-  The production path has all four measurements; the GT SoA path currently has
-  only forward NTT because matching basemul/inverse kernels do not exist yet.
+  The production path has all four measurements; the GT SoA path has forward
+  NTT and intrinsic basemul, but no inverse/full-polymul measurement yet.
 - [x] Record CPU model, pinned core, SMT sibling, governor, boost state,
   compiler, flags, TSC method, and perf events.
 
@@ -217,6 +222,10 @@ Preliminary Ryzen 7 9700X results with boost enabled and CPU 2 pinned show a
 983-tick median for the hybrid ASM SoA forward transform versus 1476 for the
 intrinsic GT transform (33.4% lower).  This is not a release claim because the
 SMT sibling was not isolated and the remaining frontend/stage-1+2 is intrinsic.
+The matching SoA intrinsic basemul records 318 TSC ticks and 478.83 hardware
+cycles/call versus production's 318 ticks and 480.43 cycles/call.  Its current
+spill traffic still has to be removed before treating this as a scheduled
+pointwise result.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

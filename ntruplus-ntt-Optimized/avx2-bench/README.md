@@ -12,6 +12,7 @@ gate and setup work stays outside measured regions.
 | `gt-ntt` | GT intrinsic prototype | one forward GT NTT |
 | `gt-ntt-asm-soa` | GT hybrid ASM prototype | intrinsic frontend/stage 1+2, hand-scheduled stage 3+4+5, and fused 16-block SoA store |
 | `basemul` | production AVX2 | one pointwise/base multiplication on prepared NTT inputs |
+| `gt-basemul-soa` | GT AVX2 intrinsic prototype | 192 quartic products as 12 batches of 16 blocks; prepared SoA inputs and lambda-table generation are excluded |
 | `invntt` | production AVX2 | one inverse NTT on a prepared valid NTT input |
 | `polymul` | production AVX2 | two NTTs, basemul, and inverse NTT |
 
@@ -21,8 +22,10 @@ a bounded `[0,q]` representative rather than the intrinsic path's centered
 representative; validation therefore compares modulo `q` after applying the
 mapping oracle.
 
-The GT prototype does not yet have a matching pointwise or inverse kernel, so
-there is intentionally no GT full-polymul number.  NTRU+768 also has no
+The GT prototype now has a matching intrinsic pointwise kernel, but no matching
+inverse kernel, so there is intentionally no GT full-polymul number.  The SoA
+basemul benchmark excludes both forward transforms and measures only the
+pointwise kernel.  NTRU+768 also has no
 scheme-level matrix-vector multiplication; `basemul_add` and KEM components are
 the relevant future caller benchmarks.
 

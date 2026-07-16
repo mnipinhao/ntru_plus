@@ -47,10 +47,9 @@ not evidence that this prototype should replace production.
 | Production inverse NTT | 436 | 434 | 442 | 447 |
 | Production full polynomial multiplication | 1656 | 1646 | 1664 | 1676 |
 
-There is no GT SoA basemul, inverse NTT, or full-polymul number yet.  The new
-forward output cannot be fed into the existing production kernels without a
-layout conversion, and adding a standalone conversion would defeat the chosen
-fused-layout design.
+At this timestamp there was no GT SoA basemul, inverse NTT, or full-polymul
+number.  The 2026-07-16 section below adds the intrinsic SoA basemul baseline;
+inverse and full-polymul remain open.
 
 ### Measurement limitations
 
@@ -59,3 +58,30 @@ fused-layout design.
   disabled.
 - This result should be repeated with boost controlled and both SMT siblings
   isolated before making promotion or microarchitecture claims.
+
+## 2026-07-16 SoA basemul intrinsic baseline
+
+This run adds `gt-basemul-soa` to the same harness and host.  Its inputs are
+prepared GT forward outputs; forward transforms, lambda generation, and layout
+conversion are outside the measured region.  Correctness includes generated-
+table checking, 192-lane mapping comparison, boundary and 200-random quartic
+differential tests, and forward-NTT-to-basemul composition tests.
+
+Environment differences from the previous run: timestamp
+`20260716T013219Z`; all other relevant CPU, compiler, flags, core, governor,
+boost, corpus, and sample settings are unchanged.
+
+| Pointwise implementation | TSC median | p10 | p90 | p99 | Hardware cycles/call | Instructions/call | Branches/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Production AVX2 basemul | 318 | 316 | 320 | 327 | 480.43 | 1839.52 | 24.19 |
+| GT 16-block SoA intrinsic | 318 | 316 | 319 | 328 | 478.83 | 1662.35 | 18.19 |
+
+The SoA intrinsic matches the production TSC median, lowers measured hardware
+cycles by 0.3%, and retires 9.6% fewer instructions.  Cache references are
+effectively equal in this run (72.58 versus 72.58 per call).
+
+This is evidence that the four-vector SoA representation can feed quartic
+basemul without a transpose penalty.  It is not yet a final schedule: GCC emits
+a 773-byte symbol with a 72-byte frame and YMM spill/reload traffic.  A hand-
+scheduled zero-spill kernel is the next pointwise comparison, and no GT full-
+polymul claim is possible until the inverse consumes SoA directly.

@@ -1,10 +1,11 @@
-# NTRU+768 AVX2 Good–Thomas forward-NTT prototype
+# NTRU+768 AVX2 Good–Thomas NTT and pointwise prototype
 
 這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
 上的 hybrid 手寫組語 prototype。Hybrid 版本保留 intrinsic frontend 和 NTT32
 stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 放進
 `gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`，而且新的 SoA layout 還沒有
-對應的 AVX2 `basemul`/`invntt`。
+對應的 inverse NTT。`gt_basemul_soa.c` 已提供可差分驗證的 AVX2 intrinsic
+pointwise baseline，但尚未手排成 zero-spill ASM。
 
 ## 數學分解
 
@@ -180,6 +181,36 @@ transpose，因此不需在 transpose 中跨 half；之後用八個 `vperm2i128`
 `c` 與 `c+4` 的 half 配成四個 SoA YMM，直接 store，不另做 768-coefficient
 transpose pass。
 
+## 16-block SoA quartic basemul
+
+每個 batch 直接載入 `a0..a3`、`b0..b3` 四組 SoA YMM，16 lanes 同時計算
+16 個 `Zq[X]/(X^4-lambda)` 乘法：
+
+```text
+c0 = a0*b0 + lambda*(a1*b3 + a2*b2 + a3*b1)
+c1 = a0*b1 + a1*b0 + lambda*(a2*b3 + a3*b2)
+c2 = a0*b2 + a1*b1 + a2*b0 + lambda*a3*b3
+c3 = a0*b3 + a1*b2 + a2*b1 + a3*b0
+```
+
+`gt_basemul_soa_avx2()` 對每個 runtime product 先做 packed Montgomery
+reduction，讓 product 留在 `R^-1` domain；三個 wrapped accumulator 再乘
+Montgomery-form lambda，最後四個 coefficient 乘 `R^2` 回到 normal domain。
+輸出仍是相同四-YMM SoA layout，不需要 input/output transpose。
+
+lambda table 的精確關係是：
+
+```text
+logical = (32*k3 + 3*bitreverse5(Q)) mod 96
+lambda  = omega96^logical / F_branch * R mod q
+F_0=2, F_1=22
+```
+
+`generate_gt_soa_tables.py` 產生 12×16 的 `lambda` 和 `lambda*qinv`；Makefile
+每次 test 都用 `--check` 拒絕 stale table。測試另將 192 lanes 全部對照既有
+`gt_rowbitrev_lambda[branch][physical_block]`，避免混用 input CRT `(64,33)` 與
+正確的 output CRT `(32,3)`。
+
 ## Montgomery 與 Barrett 的 AVX2 指令
 
 固定因子 `b` 的 16-bit Montgomery multiplication 使用 `B=b*qinv mod 2^16`：
@@ -229,6 +260,12 @@ secret-dependent branch 或 lookup。Prototype wrapper 在 stack 上配置兩個
 scratch，共 3 KiB。正式版本要再決定 caller-provided scratch、覆寫時機與是否清除
 secret stack data。
 
+SoA basemul 另允許兩個 NTT-domain operand 落在 `[-q,q]`。每個 Montgomery
+product 回到 `[-(q-1),q-1]`；最大的 quartic accumulator 是 `4(q-1)=13824`，
+所以所有 packed `vpaddw` 都不會 wrap。乘 `R^2` finalizer 後回到
+`[-(q-1),q-1]` normal-domain representative。完整逐步推導同樣記錄在
+`range-proof.md`。
+
 ## Register pressure 現況
 
 設計上的目標 budget 是：
@@ -252,6 +289,12 @@ CRT-indexed load、twist construction 和 inlining 產生 stack spill/reload。�
 3. 把「一個 slot-pair frontend」抽成固定 symbolic region，再排 live range。
 4. 比較 `row01 + packed row2` 和改配對 `row12 + packed row0`，但不改數學輸出。
 
+SoA basemul intrinsic 也刻意保留為 semantics baseline：Ryzen 的 GCC 16 linked
+symbol 是 773 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM spill。
+儘管如此，實測 TSC median 與 production basemul 同為 318，retired instructions
+則少約 9.6%。下一個 pointwise optimization gate 是手排成 zero-spill ASM，再比較
+是否真的降低 hardware cycles；不能只根據 intrinsic source 的運算數決定。
+
 ## Slothy handoff
 
 本機 Slothy checkout 的 core 雖然 architecture-agnostic，目前只有 Arm
@@ -266,6 +309,9 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `gt_ntt_avx2.c`：可執行的 intrinsic semantics baseline。
 - `gt_ntt_stage345_soa.s`：依 DAG 手排的 stage3+4+5 與 fused SoA store。
 - `asm-soa-contract.yml`：hybrid ASM boundary、ABI、layout 與 output range。
+- `gt_basemul_soa.c`：16-block SoA quartic intrinsic semantics baseline。
+- `basemul-soa-contract.yml`：pointwise representation、range 與 alias contract。
+- `generate_gt_soa_tables.py`：lambda／lambda-qinv table generator/checker。
 
 之後要走 Slothy，合理順序是先補 x86 architecture model（instruction semantics、
 latency/throughput、port model、register class），再把下列 region 各自抽成 symbolic
@@ -276,6 +322,7 @@ assembly，而不是一次排完整 768-point function：
 3. singleton stage1+2 stripe；
 4. row01 stage3+4+5 block；
 5. singleton stage3+4+5 block。
+6. one 16-block SoA quartic basemul batch。
 
 每個 region 都要保留既有 boundary test，檢查 ABI、stack alignment、callee-saved
 register、spill、constant table address 和 modulo-q differential correctness；排程成功
@@ -305,6 +352,9 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
   reference 的 modulo-q differential；
 - 768-word SoA mapping 的 forward/inverse exact round trip；
 - hybrid ASM SoA 對 mapping oracle 的 modulo-q differential 與 `[0,q]` range；
+- 192-entry lambda mapping 與 generated table exact comparison；
+- SoA quartic basemul 的 boundary、200 random、output-range differential；
+- 16 組 forward NTT → SoA basemul composition differential；
 - intrinsic 與 ASM 的 in-place `out==in`；
 - ASan/UBSan 可另外套在同一個 test binary。
 
@@ -312,3 +362,8 @@ Ryzen 7 9700X 的 preliminary run（CPU 2 pinned、boost on、SMT sibling 未隔
 hybrid ASM SoA 的 serialized-TSC median 是 983，intrinsic GT 是 1476，約降低
 33.4%。Production forward NTT 是 444，所以目前主要剩餘成本仍在 intrinsic
 frontend/stage1+2，而不是把 prototype 直接升格成 production kernel。
+
+同一主機 2026-07-16 的 pointwise run 中，production 與 SoA intrinsic basemul
+median 都是 318 TSC ticks；hardware cycles/call 分別為 480.43 與 478.83，
+instructions/call 分別為 1839.52 與 1662.35。這只證明 SoA 沒有因 layout 付出
+transpose 成本；inverse 尚未完成前，不能推導 GT full-polymul 效能。

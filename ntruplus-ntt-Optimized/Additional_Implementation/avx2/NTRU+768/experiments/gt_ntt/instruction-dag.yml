@@ -45,3 +45,16 @@ regions:
       - split_row01_YMM_into_two_rows
       - split_each_stream_XMM_into_branch0_and_branch1_four-lane_groups
       - "physical_block=(32*k3+3*k32)%96"
+  basemul_soa_batch:
+    implementation: intrinsic_semantics_baseline
+    repeats: 12
+    vectors_per_operand: 4
+    lanes: 16_independent_quartics
+    nodes:
+      - load_a0_a1_a2_a3
+      - load_b0_b1_b2_b3
+      - sixteen_runtime_montgomery_products
+      - three_lambda_montgomery_folds
+      - four_r_squared_montgomery_finalizers
+      - store_c0_c1_c2_c3_same_soa_layout
+    current_object_audit: gcc16_has_ymm_spills
