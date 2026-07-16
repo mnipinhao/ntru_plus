@@ -1,5 +1,5 @@
 kernel: ntruplus768_gt_invntt_soa_avx2_three_region_asm_hybrid
-status: experimental_three_region_asm_hybrid
+status: experimental_fused_asm_benchmark
 platform:
   isa: AVX2
   target_cpu: AMD_Ryzen_7_9700X
@@ -103,7 +103,18 @@ three_region_wrapper_audit:
   row_scratch_bytes: 1536
   region_calls: 3
   constant_spills: 0
+fused_asm_audit:
+  symbol: gt_invntt_soa_avx2_fused_asm
+  symbol_bytes: 1968
+  row_scratch_bytes: 1536
+  stack_alignment: 32
+  internal_calls: 0
+  push_pop: 0
+  terminal_vzeroupper: 1
+  exact_output_matches_three_region: true
+  inplace_supported: true
+  hardware_cycles_range_improvement_percent: "0.07..0.16"
 promotion_limits:
-  - three_inverse_regions_remain_separate_calls
   - production_row_scratch_abi_is_undecided
-  - full_gt_polymul_is_1_89x_production_cycles_on_preliminary_host_run
+  - fusion_has_no_material_full_pipeline_speedup
+  - full_gt_polymul_is_1_89x_kpqc_final_cycles_on_preliminary_host_run

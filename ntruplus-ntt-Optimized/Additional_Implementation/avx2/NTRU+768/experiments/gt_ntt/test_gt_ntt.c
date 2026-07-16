@@ -580,6 +580,8 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 	int16_t dft3_hybrid_inplace[GT_NTT_N];
 	int16_t postprocess_hybrid[GT_NTT_N];
 	int16_t postprocess_hybrid_inplace[GT_NTT_N];
+	int16_t fused[GT_NTT_N];
+	int16_t fused_inplace[GT_NTT_N];
 #endif
 
 	gt_ntt_soa_to_rowbitrev(rowbitrev, input);
@@ -600,6 +602,9 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 		sizeof(postprocess_hybrid_inplace));
 	gt_invntt_soa_avx2_postprocess_hybrid(postprocess_hybrid_inplace,
 		postprocess_hybrid_inplace);
+	gt_invntt_soa_avx2_fused_asm(fused, input);
+	memcpy(fused_inplace, input, sizeof(fused_inplace));
+	gt_invntt_soa_avx2_fused_asm(fused_inplace, fused_inplace);
 #endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got[i], want[i]) || got[i] != inplace[i]) {
@@ -637,6 +642,12 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 				postprocess_hybrid_inplace[i]);
 			return 1;
 		}
+		if (fused[i] != got[i] || fused[i] != fused_inplace[i]) {
+			fprintf(stderr,
+				"fused ASM inverse mismatch case=%s i=%u fused=%d intrinsic=%d inplace=%d\n",
+				label, i, fused[i], got[i], fused_inplace[i]);
+			return 1;
+		}
 #endif
 	}
 	return 0;
@@ -654,6 +665,7 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 	int16_t hybrid[GT_NTT_N];
 	int16_t dft3_hybrid[GT_NTT_N];
 	int16_t postprocess_hybrid[GT_NTT_N];
+	int16_t fused[GT_NTT_N];
 #endif
 
 	forward_soa(a_soa, a);
@@ -664,6 +676,7 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 	gt_invntt_soa_avx2_hybrid(hybrid, product_soa);
 	gt_invntt_soa_avx2_dft3_hybrid(dft3_hybrid, product_soa);
 	gt_invntt_soa_avx2_postprocess_hybrid(postprocess_hybrid, product_soa);
+	gt_invntt_soa_avx2_fused_asm(fused, product_soa);
 #endif
 	schoolbook_mul(want, a, b);
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
@@ -690,6 +703,12 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 			fprintf(stderr,
 				"postprocess hybrid polynomial multiplication mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
 				label, i, postprocess_hybrid[i], got[i]);
+			return 1;
+		}
+		if (fused[i] != got[i]) {
+			fprintf(stderr,
+				"fused ASM polynomial multiplication mismatch case=%s i=%u fused=%d intrinsic=%d\n",
+				label, i, fused[i], got[i]);
 			return 1;
 		}
 #endif
@@ -780,6 +799,7 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	int16_t hybrid_inverse_output[GT_NTT_N];
 	int16_t dft3_hybrid_inverse_output[GT_NTT_N];
 	int16_t postprocess_hybrid_inverse_output[GT_NTT_N];
+	int16_t fused_inverse_output[GT_NTT_N];
 #endif
 
 	ntt_gt_rowbitrevlayout(want, input);
@@ -829,6 +849,7 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 		inverse_input);
 	gt_invntt_soa_avx2_postprocess_hybrid(
 		postprocess_hybrid_inverse_output, inverse_input);
+	gt_invntt_soa_avx2_fused_asm(fused_inverse_output, inverse_input);
 #endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(inverse_output[i], input[i])) {
@@ -856,6 +877,12 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 				"postprocess hybrid SoA round-trip mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
 				label, i, postprocess_hybrid_inverse_output[i],
 				inverse_output[i]);
+			return 1;
+		}
+		if (fused_inverse_output[i] != inverse_output[i]) {
+			fprintf(stderr,
+				"fused ASM SoA round-trip mismatch case=%s i=%u fused=%d intrinsic=%d\n",
+				label, i, fused_inverse_output[i], inverse_output[i]);
 			return 1;
 		}
 #endif

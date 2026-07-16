@@ -292,6 +292,12 @@ static int validate_all(void)
       return 0;
     }
 
+    gt_invntt_soa_avx2_fused_asm(got.coeffs, gt_asm_soa_outputs[i]);
+    if (!equal_poly_mod_q(got.coeffs, inputs_a[i].coeffs)) {
+      fputs("GT SoA fused ASM inverse round-trip failed\n", stderr);
+      return 0;
+    }
+
     gt_invntt_soa_ntt32_intrinsic(gt_invntt32_rows[i],
                                    gt_asm_soa_outputs[i]);
     gt_invntt_soa_ntt32_asm(gt_invntt32_rows_asm[i],
@@ -346,6 +352,13 @@ static int validate_all(void)
             stderr);
       return 0;
     }
+
+
+    gt_invntt_soa_avx2_fused_asm(got.coeffs, gt_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT SoA fused ASM polynomial multiplication failed\n", stderr);
+      return 0;
+    }
   }
   puts("validation=passed");
   return 1;
@@ -398,6 +411,12 @@ static void target_gt_invntt_soa_postprocess_hybrid(unsigned index)
 {
   gt_invntt_soa_avx2_postprocess_hybrid(outputs[index].coeffs,
                                         gt_asm_soa_outputs[index]);
+}
+
+static void target_gt_invntt_soa_fused_asm(unsigned index)
+{
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_asm_soa_outputs[index]);
 }
 
 static void target_gt_invntt32_intrinsic(unsigned index)
@@ -485,6 +504,16 @@ static void target_gt_polymul_soa_postprocess_hybrid(unsigned index)
                                         gt_soa_products[index]);
 }
 
+static void target_gt_polymul_soa_fused_asm(unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+                      gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_soa_products[index]);
+}
+
 static const struct operation operations[] = {
   {"ntt", target_ntt},
   {"gt-ntt", target_gt_ntt},
@@ -503,12 +532,14 @@ static const struct operation operations[] = {
   {"gt-invntt-soa-dft3-hybrid", target_gt_invntt_soa_dft3_hybrid},
   {"gt-invntt-soa-postprocess-hybrid",
    target_gt_invntt_soa_postprocess_hybrid},
+  {"gt-invntt-soa-fused-asm", target_gt_invntt_soa_fused_asm},
   {"polymul", target_polymul},
   {"gt-polymul-soa", target_gt_polymul_soa},
   {"gt-polymul-soa-hybrid", target_gt_polymul_soa_hybrid},
   {"gt-polymul-soa-dft3-hybrid", target_gt_polymul_soa_dft3_hybrid},
   {"gt-polymul-soa-postprocess-hybrid",
    target_gt_polymul_soa_postprocess_hybrid},
+  {"gt-polymul-soa-fused-asm", target_gt_polymul_soa_fused_asm},
 };
 
 static const struct operation *find_operation(const char *name)
@@ -643,7 +674,8 @@ static void print_usage(const char *program)
           "gt-invntt-soa-hybrid|gt-invntt-soa-dft3-hybrid|"
           "gt-invntt-soa-postprocess-hybrid|polymul|gt-polymul-soa|"
           "gt-polymul-soa-hybrid|gt-polymul-soa-dft3-hybrid|"
-          "gt-polymul-soa-postprocess-hybrid> "
+          "gt-polymul-soa-postprocess-hybrid|gt-polymul-soa-fused-asm|"
+          "gt-invntt-soa-fused-asm> "
           "[--perf-loop]\n", program);
 }
 

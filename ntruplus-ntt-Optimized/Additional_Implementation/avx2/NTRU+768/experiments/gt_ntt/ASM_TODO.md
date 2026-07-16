@@ -223,6 +223,14 @@ inverse NTT.
   scratch is caller-provided or stack-owned in the production ABI.  The
   three-region wrapper has no constant spills and owns exactly 1536 stack
   bytes, but the production scratch ABI remains undecided.
+- [x] Fuse the three inverse regions behind one benchmark-only ASM entry.
+  `gt_invntt_soa_avx2_fused_asm` is 1968 linked bytes, owns one aligned
+  1536-byte stack scratch, contains no push/pop/call, and emits one terminal
+  `vzeroupper`.  It reuses the standalone region macros and passes exact,
+  in-place, round-trip, and full-polymul tests.
+- [x] Measure region fusion in both operation orders.  Isolated inverse improves
+  only 0.07%--0.16%; full-polymul deltas range from -0.05% to +0.48%, so pure
+  call-boundary fusion is performance-neutral and should not receive more work.
 
 ## ABI, constant-time, and object audit
 
@@ -299,8 +307,21 @@ The third hand-scheduled inverse region lowers isolated postprocess from
 `perf stat -e cycles` run, full inverse falls from 1307.52 to 1254.70 cycles
 (4.04%), and full GT polynomial multiplication falls from 4645.01 to 4584.06
 cycles (1.31%).  Production polynomial multiplication is 2426.09 cycles, so
-the three-region path remains 1.89x production.  The next inverse task is
-region fusion, not another representation change.
+the three-region path remains 1.89x production.  Region fusion was therefore
+evaluated next without changing the representation.
+
+The fused inverse does not materially change that result.  Across one
+five-repeat comparison and two ten-repeat order checks, inverse improves by
+0.07%--0.16%, while the full-polymul delta ranges from 0.05% slower to 0.48%
+faster.  The exact fused ABI is useful, but further call-overhead tuning is not
+a priority.
+
+The active production AVX2 arithmetic files are byte-identical to KPQC Final.
+On the same five-repeat hardware-cycle run, KPQC Final/production versus GT is:
+667.04 versus 1454.02 for forward NTT, 480.64 versus 479.75 for basemul, 651.61
+versus 1252.94 for inverse, and 2420.73 versus 4585.62 for full polynomial
+multiplication.  This moves the next priority to the GT forward
+frontend/stage-1+2 schedule.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

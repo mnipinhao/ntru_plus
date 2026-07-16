@@ -261,4 +261,6 @@ gt_invntt_soa_ntt32_asm:
 	.short -366,554,446,-864,-109,-874,794,-484
 	.short -366,554,446,-864,-109,-874,794,-484
 
+#ifndef GT_INVNTT_FUSED_INCLUDE
 .section .note.GNU-stack,"",@progbits
+#endif

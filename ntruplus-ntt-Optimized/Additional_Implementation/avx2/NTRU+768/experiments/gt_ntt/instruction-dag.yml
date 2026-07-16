@@ -131,3 +131,15 @@ regions:
       stack_accesses: 0
       calls: 0
       avx512_registers: 0
+  inverse_fused_entry:
+    implementation: handwritten_avx2_asm_benchmark_only
+    composition:
+      - inverse_ntt32_stream
+      - inverse_dft3_group
+      - inverse_postprocess_group
+    scratch_bytes: 1536
+    scratch_alignment: 32
+    internal_calls: 0
+    vzeroupper: one_at_function_exit
+    linked_symbol_bytes: 1968
+    performance_conclusion: call_boundary_fusion_is_neutral

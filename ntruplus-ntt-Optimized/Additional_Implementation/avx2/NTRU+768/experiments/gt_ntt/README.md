@@ -8,7 +8,8 @@ AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 S
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
 NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
 `gt_invntt_postprocess_soa.s` 已手排 untwist/merge/store region。三段目前仍由 C
-wrapper 分開呼叫，尚未融合，也沒有取代 production ASM。
+wrapper 分開呼叫；`gt_invntt_fused_soa.S` 另外提供單一 ASM entry 做融合比較。
+它仍是 opt-in prototype，沒有取代 production ASM。
 
 ## 數學分解
 
@@ -374,7 +375,15 @@ Inverse intrinsic 的 GCC 16 linked symbol 是 2681 bytes。Explicit stack adjus
 兩個 YMM constant spill 是 compiler live-range artifact。最值得抽成 ASM 的三個
 region 是：四-group lazy inverse NTT32、in-place inverse DFT3/checkpoint，以及
 untwist/merge/4×8 final block store。三個 region 都已成為 zero-stack ASM；目前
-wrapper 仍配置 1536-byte row scratch 並做三次 call，下一步是融合三段。
+保留配置 1536-byte row scratch 並做三次 call 的 regression wrapper，並另有下述
+單一入口融合版可測量函式邊界成本。
+
+融合版透過同一組 region macro 建立 standalone regression symbols 和
+`gt_invntt_soa_avx2_fused_asm`，不是複製第二份數學 schedule。Fused entry 在 stack
+配置一個 1536-byte、32-byte aligned scratch，以 `r10` 保留 output、`r11` 保留
+原始 stack pointer；內部沒有 call、push、pop，只有函式尾端一個 `vzeroupper`。
+Linked fused symbol 是 1968 bytes，full inverse exact output 與 `out==in` 都和
+three-call/intrinsic path 相同。
 
 ## Slothy handoff
 
@@ -397,6 +406,7 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `gt_invntt_ntt32_soa.s`：手排的 direct-SoA inverse NTT32 與 packed checkpoint。
 - `gt_invntt_dft3_soa.s`：手排的 in-place inverse DFT3 與三路 packed checkpoint。
 - `gt_invntt_postprocess_soa.s`：手排的 untwist/merge/normalization/final-store。
+- `gt_invntt_fused_soa.S`：共用上述 macro 的 single-entry inverse benchmark。
 - `invntt-soa-contract.yml`：inverse scaling、scratch、range 與 final-store contract。
 - `generate_gt_invntt_tables.py`：inverse fixed-factor/CRT table generator/checker。
 
@@ -485,3 +495,14 @@ hardware cycles/call（10.21%）；完整 three-region inverse 從 1307.52 降�
 1254.70（4.04%）；full GT polymul 從 4645.01 降到 4584.06（1.31%）。Production
 polymul 同 run 是 2426.09 cycles，因此 GT 仍是 1.89×。下一步先融合三個 inverse
 ASM region，移除中間的 call／`vzeroupper`，再決定 pointwise 或 frontend。
+
+融合比較的三輪 `perf cycles` 顯示 inverse 只降低 0.07%–0.16%；full polymul 的
+差異則介於 fused 慢 0.05% 到快 0.48%，反向順序確認是快 0.19%。因此單純移除
+region boundary 對完整 pipeline 視為效能中性，不再繼續壓 call overhead。
+
+KPQC Final 的 AVX2 NTRU+768 arithmetic sources 與這裡的 production baseline
+逐檔相同。相同 Ryzen run 中，KPQC Final／production forward NTT 是 667.04
+cycles，GT hybrid forward 是 1454.02（2.18×）；basemul 是 480.64 對 479.75，
+實質相同；inverse 是 651.61 對 fused GT 1252.94（1.92×）；full polymul 是
+2420.73 對 4585.62（1.89×）。下一個主要瓶頸應回到 forward frontend/stage1+2，
+不是 pointwise layout 或 inverse call fusion。

@@ -100,4 +100,6 @@ gt_invntt_soa_dft3_asm:
 	.short -886
 	.endr
 
+#ifndef GT_INVNTT_FUSED_INCLUDE
 .section .note.GNU-stack,"",@progbits
+#endif

@@ -24,11 +24,13 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `gt-invntt-soa-hybrid` | GT partial ASM inverse | hand-scheduled inverse NTT32 followed by intrinsic inverse DFT3 and postprocess |
 | `gt-invntt-soa-dft3-hybrid` | GT two-region ASM inverse | hand-scheduled inverse NTT32 and DFT3 followed by intrinsic postprocess |
 | `gt-invntt-soa-postprocess-hybrid` | GT three-region ASM inverse | three separately callable hand-scheduled regions with C-owned row scratch |
+| `gt-invntt-soa-fused-asm` | GT fused ASM inverse | one ASM entry, one 1536-byte scratch, no internal calls, and one terminal `vzeroupper` |
 | `polymul` | production AVX2 | two NTTs, basemul, and inverse NTT |
 | `gt-polymul-soa` | GT hybrid/intrinsic prototype | two hybrid ASM SoA NTTs, SoA basemul, and direct SoA inverse |
 | `gt-polymul-soa-hybrid` | GT partial ASM inverse pipeline | the same GT path with the hand-scheduled inverse NTT32 region |
 | `gt-polymul-soa-dft3-hybrid` | GT two-region ASM inverse pipeline | the same GT path with hand-scheduled inverse NTT32 and DFT3 regions |
 | `gt-polymul-soa-postprocess-hybrid` | GT three-region ASM inverse pipeline | the same GT path with all three inverse regions hand-scheduled |
+| `gt-polymul-soa-fused-asm` | GT fused inverse pipeline | the same GT path using the single-entry inverse ASM |
 
 The GT ASM prototype uses the candidate SoA mapping
 `batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits
@@ -52,6 +54,7 @@ AVX-512:
 make build
 make asm-audit
 make validate
+make kpqc-audit
 ```
 
 Default target flags:
@@ -63,6 +66,12 @@ Default target flags:
 `make validate` runs the production AVX2 scheme test, the GT prototype's
 boundary/differential tests, and the benchmark harness's round-trip,
 schoolbook-polymul, and GT-reference checks.
+
+`make kpqc-audit` verifies that the production arithmetic sources linked here
+(`ntt.s`, `invntt.s`, `basemul.s`, `consts.c`, and `poly.c`) are byte-identical
+to `ntruplus-KpqC-Final/Additional_Implementation/avx2/NTRU+768`.  Therefore
+the production NTT/basemul/inverse/polymul rows are also the KPQC Final AVX2
+baseline when compiler and target flags are held fixed.
 
 ## Reproducible benchmark run
 

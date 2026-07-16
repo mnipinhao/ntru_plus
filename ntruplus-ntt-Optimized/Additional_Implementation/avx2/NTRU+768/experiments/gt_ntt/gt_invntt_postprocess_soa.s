@@ -215,4 +215,6 @@ gt_invntt_soa_postprocess_asm:
 	.short -1622
 	.endr
 
+#ifndef GT_INVNTT_FUSED_INCLUDE
 .section .note.GNU-stack,"",@progbits
+#endif

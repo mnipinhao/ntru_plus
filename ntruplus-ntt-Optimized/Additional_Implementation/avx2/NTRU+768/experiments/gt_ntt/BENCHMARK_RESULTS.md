@@ -230,3 +230,50 @@ by 4.04%, and full GT polynomial multiplication by 1.31%.  The three-region GT
 path remains 1.89x production in hardware cycles.  The next inverse milestone
 is to fuse the three ASM regions and remove intermediate call/`vzeroupper`
 boundaries while preserving the same scratch and exact-output contracts.
+
+## 2026-07-16 fused inverse and KPQC Final AVX2 comparison
+
+The three inverse regions are now also exposed through one fused ASM entry.
+The 1968-byte linked symbol owns one 1536-byte, 32-byte-aligned scratch frame,
+contains no `call`, `push`, or `pop`, and issues one terminal `vzeroupper`.
+Standalone region symbols remain available for exact boundary regression tests;
+both paths are generated from the same region macros.  Exact full inverse,
+`out == in`, round trip, and schoolbook polynomial multiplication tests pass.
+
+`make kpqc-audit` verifies that the active production `asm/ntt.s`,
+`asm/invntt.s`, `asm/basemul.s`, `consts.c`, and `poly.c` are byte-identical to
+the corresponding KPQC Final NTRU+768 AVX2 files.  Consequently the existing
+production operations are also a same-compiler, same-flags KPQC Final arithmetic
+baseline; no differently built executable is being compared.
+
+The first comparison is stored as `results/20260716-fused-kpqc`.  It uses the
+same Ryzen 7 9700X, CPU 2 pinning, performance governor, enabled boost,
+non-isolated sibling CPU 10, GCC 16.1.1, 64 rotating inputs, 100 warmups, 100000
+measured calls, and five `perf stat -e cycles` repetitions as the preceding
+runs.
+
+| Operation | KPQC Final / production cycles | GT cycles | GT / KPQC Final |
+| --- | ---: | ---: | ---: |
+| Forward NTT | 667.04 | 1454.02 | 2.18x |
+| Pointwise multiplication | 480.64 | 479.75 | 1.00x |
+| Inverse NTT | 651.61 | 1252.94 fused | 1.92x |
+| Full polynomial multiplication | 2420.73 | 4585.62 fused | 1.89x |
+
+The fused and three-call inverse paths were then checked in both benchmark
+orders.  Positive deltas below mean that fusion is faster.  Each row reports
+hardware cycles/call from `perf stat -e cycles`; the ten-repeat runs are stored
+as `results/20260716-fused-confirm` and
+`results/20260716-fused-confirm-reversed`.
+
+| Run | Three-call inverse | Fused inverse | Delta | Three-call polymul | Fused polymul | Delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 5 repeats | 1253.86 | 1252.94 | +0.07% | 4583.48 | 4585.62 | -0.05% |
+| 10 repeats | 1254.38 | 1252.57 | +0.14% | 4611.15 | 4588.97 | +0.48% |
+| 10 repeats, reversed order | 1254.91 | 1252.96 | +0.16% | 4599.58 | 4590.99 | +0.19% |
+
+Fusion therefore succeeds as an ABI and scheduling boundary, but removing the
+calls is performance-neutral at full-pipeline scale.  It saves only about one
+to two inverse cycles, and the full-polymul delta is smaller than 0.5%.  The
+next optimization priority is the GT forward frontend and stage-1+2 schedule:
+pointwise multiplication already matches KPQC Final, while forward NTT is the
+largest relative gap.  Further inverse call-overhead tuning is not a priority.
