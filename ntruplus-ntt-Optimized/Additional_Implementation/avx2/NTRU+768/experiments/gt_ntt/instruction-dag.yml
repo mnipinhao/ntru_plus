@@ -1,4 +1,4 @@
-kernel: ntruplus768_forward_gt_avx2_prototype
+kernel: ntruplus768_gt_avx2_pipeline_prototype
 regions:
   frontend_slot_pair:
     repeats: 16
@@ -58,3 +58,49 @@ regions:
       - four_r_squared_montgomery_finalizers
       - store_c0_c1_c2_c3_same_soa_layout
     current_object_audit: gcc16_has_ymm_spills
+  inverse_ntt32_stream:
+    implementation: intrinsic_direct_consumer_baseline
+    repeats: 12
+    identity: one_k3_and_one_quartic_coefficient
+    vectors: [Q0_7, Q8_15, Q16_23, Q24_31]
+    nodes:
+      - four_direct_soa_loads
+      - len2_lane_local_vpshufb_butterflies
+      - len4_lane_local_vpshufb_montgomery_butterflies
+      - len8_lane_local_vpshufb_montgomery_butterflies
+      - len16_group01_and_group23_montgomery_butterflies
+      - len32_group02_and_group13_montgomery_butterflies
+      - four_packed_int16_barrett_checkpoints
+      - store_four_natural_q_groups
+    dependency_notes:
+      - len2_len4_len8_are_independent_per_group
+      - len16_requires_group_pairs_01_and_23
+      - len32_requires_group_pairs_02_and_13
+    live_set_target: 4_data_plus_montgomery_temporaries
+  inverse_dft3_group:
+    implementation: intrinsic_in_place_baseline
+    repeats: 16
+    identity: one_q_group_and_one_quartic_coefficient
+    nodes:
+      - load_k3_rows_y0_y1_y2
+      - difference_y2_minus_y1
+      - one_omega3_montgomery_product
+      - form_x0_x1_x2
+      - three_packed_int16_barrett_checkpoints
+      - store_n3_rows_in_place
+    live_set_target: 3_data_plus_3_outputs_or_temporaries
+  inverse_postprocess_group:
+    implementation: intrinsic_block_store_baseline
+    repeats: 12
+    identity: one_n3_and_one_q_group
+    nodes:
+      - load_four_coefficient_vectors
+      - four_packed_untwist_montgomery_products
+      - four_branch_sum_difference_merges
+      - four_zminusz5inv_montgomery_products
+      - eight_normalization_montgomery_products
+      - lane_local_4x8_coefficient_to_quartic_transpose
+      - load_eight_public_crt_block_indices
+      - sixteen_low_high_64_bit_stores
+    live_set_target: 4_final_data_plus_unpack_temporaries
+    current_object_audit: gcc16_uses_row_scratch_and_two_constant_spills

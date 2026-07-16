@@ -6,6 +6,7 @@
 #include <x86intrin.h>
 
 #include "gt_basemul_soa.h"
+#include "gt_invntt_soa.h"
 #include "gt_ntt_avx2.h"
 #include "params.h"
 #include "poly.h"
@@ -244,6 +245,18 @@ static int validate_all(void)
       fputs("GT SoA basemul differential failed\n", stderr);
       return 0;
     }
+
+    gt_invntt_soa_avx2(got.coeffs, gt_asm_soa_outputs[i]);
+    if (!equal_poly_mod_q(got.coeffs, inputs_a[i].coeffs)) {
+      fputs("GT SoA inverse round-trip failed\n", stderr);
+      return 0;
+    }
+
+    gt_invntt_soa_avx2(got.coeffs, gt_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT SoA polynomial multiplication failed\n", stderr);
+      return 0;
+    }
   }
   puts("validation=passed");
   return 1;
@@ -275,6 +288,11 @@ static void target_gt_basemul_soa(unsigned index)
                       gt_asm_soa_b[index]);
 }
 
+static void target_gt_invntt_soa(unsigned index)
+{
+  gt_invntt_soa_avx2(outputs[index].coeffs, gt_asm_soa_outputs[index]);
+}
+
 static void target_invntt(unsigned index)
 {
   poly_invntt(&outputs[index], &ntt_a[index]);
@@ -288,6 +306,15 @@ static void target_polymul(unsigned index)
   poly_invntt(&outputs[index], &freq_out[index]);
 }
 
+static void target_gt_polymul_soa(unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+                      gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2(outputs[index].coeffs, gt_soa_products[index]);
+}
+
 static const struct operation operations[] = {
   {"ntt", target_ntt},
   {"gt-ntt", target_gt_ntt},
@@ -295,7 +322,9 @@ static const struct operation operations[] = {
   {"basemul", target_basemul},
   {"gt-basemul-soa", target_gt_basemul_soa},
   {"invntt", target_invntt},
+  {"gt-invntt-soa", target_gt_invntt_soa},
   {"polymul", target_polymul},
+  {"gt-polymul-soa", target_gt_polymul_soa},
 };
 
 static const struct operation *find_operation(const char *name)
@@ -412,7 +441,8 @@ static void print_usage(const char *program)
 {
   fprintf(stderr,
           "usage: %s --validate | "
-          "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|gt-basemul-soa|invntt|polymul> "
+          "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|gt-basemul-soa|invntt|"
+          "gt-invntt-soa|polymul|gt-polymul-soa> "
           "[--perf-loop]\n", program);
 }
 

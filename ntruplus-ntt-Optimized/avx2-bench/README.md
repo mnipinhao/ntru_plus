@@ -1,8 +1,8 @@
 # NTRU+768 AVX2 benchmark harness
 
-This directory benchmarks the existing production AVX2 pipeline and the new GT
-forward-NTT intrinsic prototype on an x86-64 host.  Correctness is a mandatory
-gate and setup work stays outside measured regions.
+This directory benchmarks the existing production AVX2 pipeline and the GT SoA
+forward, pointwise, inverse, and full-polynomial prototypes on an x86-64 host.
+Correctness is a mandatory gate and setup work stays outside measured regions.
 
 ## Operations
 
@@ -14,7 +14,9 @@ gate and setup work stays outside measured regions.
 | `basemul` | production AVX2 | one pointwise/base multiplication on prepared NTT inputs |
 | `gt-basemul-soa` | GT AVX2 intrinsic prototype | 192 quartic products as 12 batches of 16 blocks; prepared SoA inputs and lambda-table generation are excluded |
 | `invntt` | production AVX2 | one inverse NTT on a prepared valid NTT input |
+| `gt-invntt-soa` | GT AVX2 intrinsic prototype | direct SoA inverse NTT32, inverse DFT3, untwist, normalization, branch merge, and canonical stores |
 | `polymul` | production AVX2 | two NTTs, basemul, and inverse NTT |
+| `gt-polymul-soa` | GT hybrid/intrinsic prototype | two hybrid ASM SoA NTTs, SoA basemul, and direct SoA inverse |
 
 The GT ASM prototype uses the candidate SoA mapping
 `batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits
@@ -22,10 +24,10 @@ a bounded `[0,q]` representative rather than the intrinsic path's centered
 representative; validation therefore compares modulo `q` after applying the
 mapping oracle.
 
-The GT prototype now has a matching intrinsic pointwise kernel, but no matching
-inverse kernel, so there is intentionally no GT full-polymul number.  The SoA
-basemul benchmark excludes both forward transforms and measures only the
-pointwise kernel.  NTRU+768 also has no
+The GT prototype now has matching intrinsic pointwise and inverse kernels, so
+the harness measures the complete GT polynomial multiplication.  The isolated
+SoA basemul and inverse operations use prepared inputs and exclude their
+producers.  NTRU+768 also has no
 scheme-level matrix-vector multiplication; `basemul_add` and KEM components are
 the relevant future caller benchmarks.
 

@@ -85,3 +85,47 @@ basemul without a transpose penalty.  It is not yet a final schedule: GCC emits
 a 773-byte symbol with a 72-byte frame and YMM spill/reload traffic.  A hand-
 scheduled zero-spill kernel is the next pointwise comparison, and no GT full-
 polymul claim is possible until the inverse consumes SoA directly.
+
+## 2026-07-16 SoA direct-consumer inverse and full pipeline
+
+This run adds an intrinsic inverse that consumes the pointwise SoA output
+directly.  There is no row-bitrev buffer or standalone 768-coefficient layout
+pass.  The measured inverse includes inverse NTT32, inverse DFT3, untwist,
+normalization, branch merge, 4x8 coefficient-to-quartic transpose, and canonical
+output stores.  The full GT operation includes two hybrid ASM SoA forward
+transforms, SoA basemul, and this inverse.
+
+Environment is the same Ryzen 7 9700X setup above.  Timestamp is
+`20260716T021414Z`; CPU 2 is pinned, governor is `performance`, boost remains
+enabled, and SMT sibling CPU 10 is not isolated.  Validation passed the scheme
+test, generated-table checks, inverse differential and in-place tests,
+forward/inverse round trips, schoolbook polynomial multiplication, and linked
+AVX2-only audit.
+
+| Operation | TSC median | p10 | p90 | p99 | Hardware cycles/call | Instructions/call | Branches/call | Cache refs/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Production inverse | 432 | 432 | 438 | 441 | 651.01 | 2600.29 | 44.21 | 49.40 |
+| GT SoA direct inverse | 1013 | 1012 | 1019 | 1024 | 1494.44 | 4621.31 | 42.21 | 49.23 |
+| Production polynomial multiplication | 1652 | 1644 | 1659 | 1669 | 2413.69 | 8984.67 | 144.31 | 267.53 |
+| GT SoA polynomial multiplication | 3323 | 3318 | 3328 | 3341 | 4827.90 | 18285.97 | 132.30 | 197.22 |
+
+The direct inverse is 2.35x the production TSC median and 2.30x its hardware
+cycles.  The full GT path is 2.01x the production TSC median and 2.00x its
+hardware cycles.  Therefore the SoA representation now has a complete measured
+pipeline, but it does not meet the promotion threshold.
+
+The inverse development sequence also demonstrates why the reduction and
+store schedule matter:
+
+| Inverse prototype | TSC median | Full GT polynomial multiplication |
+| --- | ---: | ---: |
+| Correctness-first, widened Barrett after every layer | 4051 | 6342 |
+| Five lazy layers, packed boundary checkpoints | 1465 | 3780 |
+| Packed checkpoints plus 4x8 quartic block stores | 1013 | 3323 |
+
+The final variant lowers inverse TSC by 75.0% relative to the first correct
+version.  GCC 16 emits a 2681-byte inverse symbol.  It reserves 1480 bytes
+explicitly and uses a 120-byte red-zone window; the semantic row scratch is
+1536 bytes and two vector constants are spilled.  The next valid comparison is
+a hand-scheduled inverse split into lazy NTT32, inverse DFT3 checkpoint, and
+untwist/merge/final-store regions, not another layout conversion pass.

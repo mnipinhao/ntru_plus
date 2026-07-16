@@ -78,7 +78,8 @@ shows a net benefit.
 - [x] Pointwise multiplication consumes four YMM values directly and emits the
   same layout.
 - [~] Forward NTT fuses the required transpose into its final stores.
-- [~] Inverse NTT fuses the reverse mapping into its first loads.
+- [x] The intrinsic inverse prototype consumes SoA directly and fuses the
+  reverse mapping into its first loads; ASM scheduling remains open.
 - [x] Prove and exhaustively round-trip the complete coefficient-to-batch
   mapping for all 768 positions.
 - [ ] Compare this SoA layout with the current GT row-bitrev block-major layout
@@ -177,13 +178,40 @@ inverse NTT.
 
 ## Inverse NTT
 
-- [ ] Consume pointwise SoA output directly.
-- [ ] Fuse SoA-to-internal mapping into the first inverse loads.
-- [ ] Define inverse NTT32 row packing and stage schedule.
-- [ ] Define inverse DFT3, untwist, normalization, and final top merge.
-- [ ] Prove inverse lazy ranges and scaling-domain transitions.
-- [ ] Verify `invNTT(NTT(a)) == a mod q` for boundary and random inputs.
-- [ ] Verify the complete forward + basemul + inverse polynomial product.
+- [x] Consume pointwise SoA output directly without a row-bitrev buffer or
+  standalone 768-word transpose.
+- [x] Fuse the first inverse mapping into four Q-group loads for each `(k3,c)`.
+- [x] Define the inverse NTT32 schedule:
+
+  ```text
+  four YMM = Q[0..7], Q[8..15], Q[16..23], Q[24..31]
+  len2/4/8 = vpshufb inside each 128-bit branch half
+  len16    = group0/1 and group2/3
+  len32    = group0/2 and group1/3
+  ```
+
+- [x] Keep all five inverse NTT32 stages lazy.  Bounds grow from `q` to `6q`,
+  then one packed-int16 Barrett checkpoint returns every row to `[0,q]`.
+- [x] Define inverse DFT3, untwist, 96-folded normalization, and branch merge.
+- [x] Replace scalar word scatter with four-coefficient 4x8 transpose and
+  public CRT block table; final output uses 192 low/high 64-bit block stores.
+- [x] Prove inverse lazy ranges and scaling-domain transitions in
+  `range-proof.md`.
+- [x] Verify `invNTT(NTT(a)) == a mod q` for boundary and random inputs.
+- [x] Verify the complete forward + basemul + inverse polynomial product
+  against schoolbook multiplication, including a full-range boundary case.
+- [ ] Extract and hand-schedule three inverse ASM regions:
+
+  1. one `(k3,c)` four-group lazy inverse NTT32;
+  2. one Q-group inverse DFT3 plus packed checkpoint;
+  3. one `(n3,Qgroup)` untwist/merge/4x8 final-store group.
+
+- [ ] Keep inverse ASM within the 16-register budget.  Process one stream in
+  region 1 (4 data + multiply temporaries), and four coefficients in region 3
+  (4 final data + unpack temporaries); do not retain multiple Q-groups across
+  the scratch boundary.
+- [ ] Remove the two GCC constant spills and define whether the 1536-byte row
+  scratch is caller-provided or stack-owned in the production ABI.
 
 ## ABI, constant-time, and object audit
 
@@ -209,12 +237,11 @@ inverse NTT.
 - [x] Full forward-NTT differential test against the portable GT reference.
 - [x] SoA mapping oracle and inverse mapping oracle.
 - [x] Pointwise differential tests.
-- [ ] Inverse and full-polymul differential tests.
+- [x] Inverse and full-polymul differential tests.
 - [x] Production NTRU+ test binary.
 - [ ] Production KAT.
-- [~] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication.
-  The production path has all four measurements; the GT SoA path has forward
-  NTT and intrinsic basemul, but no inverse/full-polymul measurement yet.
+- [x] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication
+  for both production and GT SoA prototype paths.
 - [x] Record CPU model, pinned core, SMT sibling, governor, boost state,
   compiler, flags, TSC method, and perf events.
 
@@ -226,6 +253,19 @@ The matching SoA intrinsic basemul records 318 TSC ticks and 478.83 hardware
 cycles/call versus production's 318 ticks and 480.43 cycles/call.  Its current
 spill traffic still has to be removed before treating this as a scheduled
 pointwise result.
+
+The final direct-consumer inverse intrinsic records 1013 TSC ticks, 1494.44
+hardware cycles/call, and 4621.31 instructions/call versus production inverse's
+432, 651.01, and 2600.29.  Full GT SoA polynomial multiplication records 3323
+TSC ticks versus production's 1652.  The initial correctness-first inverse was
+4051 TSC; lazy checkpoints reduced it to 1465, and the 4x8 block store reduced
+it to 1013.  This validates the schedule boundaries but does not pass the
+production performance gate.
+
+GCC 16 emits a 2681-byte inverse symbol with a 1480-byte explicit stack
+adjustment plus a 120-byte red-zone window.  The semantic row scratch is 1536
+bytes; two vector constants are also spilled.  The linked AVX2 binary contains
+no ZMM/opmask instructions.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

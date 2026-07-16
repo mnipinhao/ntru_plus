@@ -3,9 +3,9 @@
 這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
 上的 hybrid 手寫組語 prototype。Hybrid 版本保留 intrinsic frontend 和 NTT32
 stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 放進
-`gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`，而且新的 SoA layout 還沒有
-對應的 inverse NTT。`gt_basemul_soa.c` 已提供可差分驗證的 AVX2 intrinsic
-pointwise baseline，但尚未手排成 zero-spill ASM。
+`gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
+AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
+inverse 與 full polynomial multiplication，但兩者都還沒有手排成 production ASM。
 
 ## 數學分解
 
@@ -211,6 +211,51 @@ F_0=2, F_1=22
 `gt_rowbitrev_lambda[branch][physical_block]`，避免混用 input CRT `(64,33)` 與
 正確的 output CRT `(32,3)`。
 
+## SoA direct-consumer inverse NTT
+
+Forward 的 `row01 / row2_packed` 是配合 CT distance `16,8,4,2,1` 的 producer
+packing，不適合直接反過來使用。Inverse DIT 的順序是 `len=2,4,8,16,32`；SoA
+每個 YMM 已經是：
+
+```text
+[ branch0 Qbase+0..7 | branch1 Qbase+0..7 ]
+```
+
+所以 `len=2,4,8` 以 `vpshufb` 在兩個 128-bit half 內各自形成 low/high operand，
+不跨 half。每個 `(k3,c)` 只保留四個 Q-group YMM；`len=16` 配
+`group0/1, group2/3`，`len=32` 配 `group0/2, group1/3`。這就是 inverse 的
+first-load mapping；不先建立 row-bitrev buffer，也沒有獨立 768-word transpose。
+
+五層採 lazy schedule。若 API input 滿足 `|a|<=q`：
+
+```text
+input -> len2 -> len4 -> len8 -> len16 -> len32
+  q       2q      3q      4q       5q       6q
+```
+
+Montgomery high operand 每層都回到一個 modulus，最大 `6q=20742` 仍可安全留在
+signed int16。只有 NTT32→DFT3 boundary 使用一次 packed Barrett，將 row 收回
+`[0,q]`；inverse DFT3 三個輸出再各做一次 packed checkpoint。這取代最初每層
+widen-to-int32 Barrett 的語意版。
+
+Inverse DFT3 之後的 natural `n3,n32` 以
+
+```text
+n = (64*n3 + 33*n32) mod 96
+```
+
+回到 96-point coefficient block。Untwist table 已照
+`[branch0 n32=Q..Q+7 | branch1 n32=Q..Q+7]` 打包；接著同一 YMM 內完成兩個
+branch 的 merge 與 `1/192,1/96` normalization。四個 `c` 的結果再做 lane-local
+4×8 transpose，將逐 coefficient vectors 變成完整 quartic blocks。每兩個 Q block
+共用一個 YMM，低/高 128-bit half 分別對應 output 的前/後 384 coefficients，最後
+用四次 64-bit store 寫出，不再用 768 次 `vpextrw`。
+
+`generate_gt_invntt_tables.py` 產生 inverse twiddle、`twiddle*qinv`、packed
+untwist、`untwist*qinv` 與 96-entry public CRT output-block map。Generator check、
+row-bitrev inverse differential、in-place、round-trip、boundary/full polynomial product
+都屬於 mandatory test gate。
+
 ## Montgomery 與 Barrett 的 AVX2 指令
 
 固定因子 `b` 的 16-bit Montgomery multiplication 使用 `B=b*qinv mod 2^16`：
@@ -260,11 +305,13 @@ secret-dependent branch 或 lookup。Prototype wrapper 在 stack 上配置兩個
 scratch，共 3 KiB。正式版本要再決定 caller-provided scratch、覆寫時機與是否清除
 secret stack data。
 
-SoA basemul 另允許兩個 NTT-domain operand 落在 `[-q,q]`。每個 Montgomery
+SoA basemul 與 inverse 允許 NTT-domain operand 落在 `[-q,q]`。每個 Montgomery
 product 回到 `[-(q-1),q-1]`；最大的 quartic accumulator 是 `4(q-1)=13824`，
 所以所有 packed `vpaddw` 都不會 wrap。乘 `R^2` finalizer 後回到
 `[-(q-1),q-1]` normal-domain representative。完整逐步推導同樣記錄在
-`range-proof.md`。
+`range-proof.md`。Inverse 使用 1536-byte aligned row scratch；GCC 16 linked symbol
+另以 SysV red zone 保存兩個 vector constants。所有 input 都先進 scratch，因此
+`out==in` 安全。
 
 ## Register pressure 現況
 
@@ -295,6 +342,12 @@ symbol 是 773 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM s
 則少約 9.6%。下一個 pointwise optimization gate 是手排成 zero-spill ASM，再比較
 是否真的降低 hardware cycles；不能只根據 intrinsic source 的運算數決定。
 
+Inverse intrinsic 的 GCC 16 linked symbol 是 2681 bytes。Explicit stack adjustment
+為 1480 bytes，另使用 120-byte red-zone window；其中 1536 bytes 是 row scratch，
+兩個 YMM constant spill 是 compiler live-range artifact。最值得抽成 ASM 的三個
+region 是：四-group lazy inverse NTT32、in-place inverse DFT3/checkpoint，以及
+untwist/merge/4×8 final block store。
+
 ## Slothy handoff
 
 本機 Slothy checkout 的 core 雖然 architecture-agnostic，目前只有 Arm
@@ -312,6 +365,9 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `gt_basemul_soa.c`：16-block SoA quartic intrinsic semantics baseline。
 - `basemul-soa-contract.yml`：pointwise representation、range 與 alias contract。
 - `generate_gt_soa_tables.py`：lambda／lambda-qinv table generator/checker。
+- `gt_invntt_soa.c`：直接消費 SoA 的 lazy inverse/full-pipeline prototype。
+- `invntt-soa-contract.yml`：inverse scaling、scratch、range 與 final-store contract。
+- `generate_gt_invntt_tables.py`：inverse fixed-factor/CRT table generator/checker。
 
 之後要走 Slothy，合理順序是先補 x86 architecture model（instruction semantics、
 latency/throughput、port model、register class），再把下列 region 各自抽成 symbolic
@@ -323,6 +379,9 @@ assembly，而不是一次排完整 768-point function：
 4. row01 stage3+4+5 block；
 5. singleton stage3+4+5 block。
 6. one 16-block SoA quartic basemul batch。
+7. one `(k3,c)` four-group lazy inverse NTT32；
+8. one inverse DFT3 group；
+9. one `n3,Qgroup` untwist/merge/4×8 final-store group。
 
 每個 region 都要保留既有 boundary test，檢查 ABI、stack alignment、callee-saved
 register、spill、constant table address 和 modulo-q differential correctness；排程成功
@@ -355,6 +414,10 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - 192-entry lambda mapping 與 generated table exact comparison；
 - SoA quartic basemul 的 boundary、200 random、output-range differential；
 - 16 組 forward NTT → SoA basemul composition differential；
+- SoA inverse 對 row-bitrev inverse 的 boundary 與 100 random differential；
+- forward → inverse 的 impulse、full-range boundary 與 200 random round trip；
+- forward → basemul → inverse 對 schoolbook 的 full-range boundary 與 16 random
+  ternary polynomial products；
 - intrinsic 與 ASM 的 in-place `out==in`；
 - ASan/UBSan 可另外套在同一個 test binary。
 
@@ -366,4 +429,11 @@ frontend/stage1+2，而不是把 prototype 直接升格成 production kernel。
 同一主機 2026-07-16 的 pointwise run 中，production 與 SoA intrinsic basemul
 median 都是 318 TSC ticks；hardware cycles/call 分別為 480.43 與 478.83，
 instructions/call 分別為 1839.52 與 1662.35。這只證明 SoA 沒有因 layout 付出
-transpose 成本；inverse 尚未完成前，不能推導 GT full-polymul 效能。
+transpose 成本。
+
+同一主機的 direct-consumer inverse 最終 intrinsic run 是 1013 TSC ticks、
+1494.44 hardware cycles 和 4621.31 instructions；production inverse 是 432、
+651.01 和 2600.29。完整 GT SoA polynomial multiplication 是 3323 TSC，production
+是 1652。SoA inverse mapping 已經可以工作，但 full path 仍約 2.01× production，
+因此 promotion gate 仍未通過；下一步是依上述三個 region 手排 inverse ASM，並將
+pointwise/frontend 的 compiler spill 一併移除。

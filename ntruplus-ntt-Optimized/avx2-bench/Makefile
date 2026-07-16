@@ -5,7 +5,9 @@ AARCH64_REF ?= ../Additional_Implementation/aarch64/NTRU+768/ntt.c
 
 BUILD_DIR := build
 TARGET := $(BUILD_DIR)/avx2_bench
-GT_GENERATED := $(GT_ROOT)/gt_basemul_soa_tables.inc
+GT_GENERATED := \
+	$(GT_ROOT)/gt_basemul_soa_tables.inc \
+	$(GT_ROOT)/gt_invntt_soa_tables.inc
 
 CPPFLAGS += -I$(NTRU_ROOT) -I$(GT_ROOT)
 CPPFLAGS += -DGT_HAVE_AVX2_ASM=1
@@ -23,6 +25,7 @@ SOURCES := \
 	$(NTRU_ROOT)/asm/basemul.s \
 	$(GT_ROOT)/gt_ntt_avx2.c \
 	$(GT_ROOT)/gt_basemul_soa.c \
+	$(GT_ROOT)/gt_invntt_soa.c \
 	$(GT_ROOT)/gt_ntt_stage345_soa.s \
 	$(GT_ROOT)/gt_ntt_tables.c \
 	$(AARCH64_REF)

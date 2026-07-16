@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "gt_basemul_soa.h"
+#include "gt_invntt_soa.h"
 #include "gt_ntt_avx2.h"
 #include "gt_ntt_tables.h"
 
@@ -17,6 +18,8 @@ _Static_assert(sizeof(gt_stage2_scratch) == 1536,
 
 /* Linked from the verified AArch64 portable GT reference. */
 void ntt_gt_rowbitrevlayout(int16_t r[GT_NTT_N],
+	const int16_t a[GT_NTT_N]);
+void invntt_gt_rowbitrevlayout_exact(int16_t r[GT_NTT_N],
 	const int16_t a[GT_NTT_N]);
 void basemul(int16_t r[4], const int16_t a[4], const int16_t b[4],
 	int16_t zeta);
@@ -71,6 +74,19 @@ static int16_t barrett_reduce(int16_t a)
 static int congruent(int16_t a, int16_t b)
 {
 	return centered((int32_t)a - b) == 0;
+}
+
+static int16_t centered_i64(int64_t a)
+{
+	int64_t r = a % GT_NTT_Q;
+
+	if (r > GT_NTT_Q / 2) {
+		r -= GT_NTT_Q;
+	}
+	if (r < -(GT_NTT_Q / 2)) {
+		r += GT_NTT_Q;
+	}
+	return (int16_t)r;
 }
 
 static int in_symmetric_bound(int16_t value, int bound)
@@ -416,6 +432,96 @@ static void basemul_rowbitrev_reference(int16_t out[GT_NTT_N],
 	}
 }
 
+static void forward_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_ntt_avx2_asm_soa(out, in);
+#else
+	int16_t rowbitrev[GT_NTT_N];
+
+	gt_ntt_avx2(rowbitrev, in);
+	gt_ntt_rowbitrev_to_soa(out, rowbitrev);
+#endif
+}
+
+static void schoolbook_mul(int16_t out[GT_NTT_N],
+	const int16_t a[GT_NTT_N], const int16_t b[GT_NTT_N])
+{
+	int64_t temporary[2 * GT_NTT_N - 1] = {0};
+
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		for (unsigned j = 0; j < GT_NTT_N; j++) {
+			temporary[i + j] += (int64_t)a[i] * b[j];
+		}
+	}
+	/* X^768 = X^384 - 1. */
+	for (int i = 2 * GT_NTT_N - 2; i >= GT_NTT_N; i--) {
+		const int64_t value = temporary[i];
+
+		temporary[i - GT_NTT_N / 2] += value;
+		temporary[i - GT_NTT_N] -= value;
+	}
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		out[i] = centered_i64(temporary[i]);
+	}
+}
+
+static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
+	const char *label)
+{
+	int16_t rowbitrev[GT_NTT_N];
+	int16_t want[GT_NTT_N];
+	int16_t got[GT_NTT_N];
+	int16_t inplace[GT_NTT_N];
+
+	gt_ntt_soa_to_rowbitrev(rowbitrev, input);
+	invntt_gt_rowbitrevlayout_exact(want, rowbitrev);
+	gt_invntt_soa_avx2(got, input);
+	memcpy(inplace, input, sizeof(inplace));
+	gt_invntt_soa_avx2(inplace, inplace);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(got[i], want[i]) || got[i] != inplace[i]) {
+			fprintf(stderr,
+				"SoA inverse mismatch case=%s i=%u got=%d want=%d inplace=%d\n",
+				label, i, got[i], want[i], inplace[i]);
+			return 1;
+		}
+		if (!in_symmetric_bound(got[i], GT_NTT_Q - 1)) {
+			fprintf(stderr,
+				"SoA inverse range failure case=%s i=%u value=%d\n",
+				label, i, got[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
+	const int16_t b[GT_NTT_N], const char *label)
+{
+	int16_t a_soa[GT_NTT_N] __attribute__((aligned(32)));
+	int16_t b_soa[GT_NTT_N] __attribute__((aligned(32)));
+	int16_t product_soa[GT_NTT_N] __attribute__((aligned(32)));
+	int16_t got[GT_NTT_N];
+	int16_t want[GT_NTT_N];
+
+	forward_soa(a_soa, a);
+	forward_soa(b_soa, b);
+	gt_basemul_soa_avx2(product_soa, a_soa, b_soa);
+	gt_invntt_soa_avx2(got, product_soa);
+	schoolbook_mul(want, a, b);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(got[i], want[i])) {
+			fprintf(stderr,
+				"SoA polynomial multiplication mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, got[i], want[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
 static int check_basemul_soa_case(const int16_t a[GT_NTT_N],
 	const int16_t b[GT_NTT_N], const char *label)
 {
@@ -493,6 +599,8 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	int16_t got_soa[GT_NTT_N];
 	int16_t inplace_soa[GT_NTT_N];
 #endif
+	int16_t inverse_input[GT_NTT_N] __attribute__((aligned(32)));
+	int16_t inverse_output[GT_NTT_N];
 
 	ntt_gt_rowbitrevlayout(want, input);
 	gt_ntt_avx2(got, input);
@@ -533,6 +641,16 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 		}
 	}
 #endif
+	forward_soa(inverse_input, input);
+	gt_invntt_soa_avx2(inverse_output, inverse_input);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (!congruent(inverse_output[i], input[i])) {
+			fprintf(stderr,
+				"SoA round-trip mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, inverse_output[i], input[i]);
+			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -565,6 +683,9 @@ int main(void)
 	if (check_basemul_soa_case(basemul_a, basemul_b, "boundary") != 0) {
 		return 1;
 	}
+	if (check_inverse_soa_case(basemul_a, "inverse-boundary") != 0) {
+		return 1;
+	}
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (basemul_a[i] == GT_NTT_Q || basemul_a[i] == -GT_NTT_Q) {
 			basemul_a[i] = 0;
@@ -588,6 +709,9 @@ int main(void)
 		}
 		(void)snprintf(label, sizeof(label), "basemul-random-%u", round);
 		if (check_basemul_soa_case(basemul_a, basemul_b, label) != 0) {
+			return 1;
+		}
+		if (round < 100 && check_inverse_soa_case(basemul_a, label) != 0) {
 			return 1;
 		}
 		if (round < 16) {
@@ -655,6 +779,28 @@ int main(void)
 		}
 	}
 
-	puts("GT AVX2 NTT/SoA basemul: all differential and layout tests passed");
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		basemul_a[i] = (i & 1U) != 0 ? 3456 : -3456;
+		basemul_b[i] = i % 3U == 0 ? 3456 : (i % 3U == 1 ? -3456 : 0);
+	}
+	if (check_polymul_soa_case(basemul_a, basemul_b,
+		"polymul-boundary") != 0) {
+		return 1;
+	}
+
+	for (unsigned round = 0; round < 16; round++) {
+		char label[32];
+
+		for (unsigned i = 0; i < GT_NTT_N; i++) {
+			basemul_a[i] = (int16_t)((int)(next_u32() % 3U) - 1);
+			basemul_b[i] = (int16_t)((int)(next_u32() % 3U) - 1);
+		}
+		(void)snprintf(label, sizeof(label), "polymul-random-%u", round);
+		if (check_polymul_soa_case(basemul_a, basemul_b, label) != 0) {
+			return 1;
+		}
+	}
+
+	puts("GT AVX2 forward/basemul/inverse: all differential, layout, and polynomial-product tests passed");
 	return 0;
 }

@@ -1,0 +1,71 @@
+kernel: ntruplus768_gt_invntt_soa_avx2_intrinsic
+status: experimental_direct_consumer
+platform:
+  isa: AVX2
+  target_cpu: AMD_Ryzen_7_9700X
+operation: inverse_ntt
+input:
+  type: int16[768]
+  coefficient_range: "[-3457,3457]"
+  domain: normal_residue_ntt_domain
+  layout:
+    batch: "4*k3 + floor(Q/8)"
+    lane: "8*branch + (Q mod 8)"
+    word: "64*batch + 16*c + lane"
+  aliasing: out_may_equal_in
+inverse_ntt32:
+  order: bit_reversed_frequency_to_natural_coefficient
+  stages: [len2, len4, len8, len16, len32]
+  lane_local_stages: [len2, len4, len8]
+  cross_group_stages: [len16, len32]
+  maximum_lazy_bound: "6*q=20742"
+  boundary_reduction: packed_int16_barrett_to_0_q
+inverse_dft3:
+  scaling: 3
+  output_checkpoint: packed_int16_barrett_to_0_q
+postprocess:
+  inverse_ntt32_scaling: 32
+  combined_gt_scaling: 96
+  untwist: packed_montgomery_fixed_factor
+  branch_merge_constants:
+    zminusz5inv_montgomery: -1665
+    one_over_192_montgomery: -811
+    one_over_96_montgomery: -1622
+  final_layout:
+    transform: lane_local_4x8_coefficient_to_quartic_blocks
+    stores: 192_unaligned_64_bit_stores
+    output_block: "(64*n3 + 33*n32) mod 96"
+output:
+  type: int16[768]
+  coefficient_range: "[-3456,3456]"
+  equivalence: coefficientwise_mod_3457
+  layout: canonical_polynomial_coefficient_order
+scratch:
+  semantic_rows_bytes: 1536
+  alignment: 32
+  gcc16_explicit_stack_adjustment_bytes: 1480
+  gcc16_red_zone_window_bytes: 120
+tables:
+  generator: generate_gt_invntt_tables.py
+  contents:
+    - inverse_ntt32_twiddle_and_qinv
+    - packed_untwist_and_qinv
+    - public_gt_output_block_map
+constant_time:
+  secret_dependent_branches: false
+  secret_dependent_addresses: false
+  table_indices: public_loop_indices_only
+validation:
+  - generated_table_check
+  - rowbitrev_inverse_differential
+  - inplace_differential
+  - forward_inverse_roundtrip
+  - forward_basemul_inverse_schoolbook
+compiler_audit:
+  compiler: GCC_16.1.1
+  symbol_bytes: 2681
+  avx512_registers_present: false
+promotion_limits:
+  - intrinsic_not_hand_scheduled
+  - row_scratch_and_two_constant_spills_remain
+  - full_gt_polymul_is_2_01x_production_tsc_on_preliminary_host_run
