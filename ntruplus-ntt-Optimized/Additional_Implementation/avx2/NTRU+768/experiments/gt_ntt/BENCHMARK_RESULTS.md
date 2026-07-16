@@ -162,3 +162,34 @@ count.  At pipeline level, the hybrid lowers inverse TSC by 11.2% and full GT
 polynomial multiplication by 3.7%.  The hybrid full path is still 1.93x the
 production TSC median, so the next region is inverse DFT3 plus its packed
 checkpoint.
+
+## 2026-07-16 hand-scheduled inverse DFT3 region
+
+This run adds a second handwritten AVX2 inverse region: the in-place inverse
+DFT3 plus three packed Barrett checkpoints.  The preceding inverse NTT32 region
+remains ASM; untwist, normalization, branch merge, 4x8 transpose, and final
+stores remain intrinsic.  Performance conclusions in this and subsequent runs
+use only `perf stat -e cycles` hardware cycles.
+
+The environment is the same Ryzen 7 9700X, CPU 2 pinning, performance governor,
+enabled boost, non-isolated sibling CPU 10, GCC 16.1.1, 64 rotating inputs, 100
+warmups, and 100000 measured calls.  `perf stat -r 5` reports the mean counter;
+the run is stored as `results/20260716-invdft3-asm` on the benchmark host.
+
+| Operation | Hardware cycles/call | perf variation |
+| --- | ---: | ---: |
+| Inverse DFT3/checkpoint intrinsic | 131.62 | 0.57% |
+| Inverse DFT3/checkpoint ASM | 125.09 | 0.80% |
+| GT inverse, inverse-NTT32 ASM only | 1315.90 | 0.04% |
+| GT inverse, inverse-NTT32 + DFT3 ASM | 1306.74 | 0.05% |
+| Production inverse | 651.27 | 0.06% |
+| GT polynomial multiplication, inverse-NTT32 ASM only | 4671.29 | 0.09% |
+| GT polynomial multiplication, inverse-NTT32 + DFT3 ASM | 4640.95 | 0.10% |
+| Production polynomial multiplication | 2414.32 | 0.04% |
+
+The 230-byte linked DFT3 symbol uses YMM0..YMM14, has no stack access or calls,
+and matches the intrinsic 768-word scratch output exactly for boundary and 100
+random cases.  It lowers the isolated region by 4.96%, full inverse by 0.70%,
+and full GT polynomial multiplication by 0.65%.  The two-region GT path remains
+1.92x production in hardware cycles, so the next inverse ASM boundary is the
+untwist/merge/4x8 final-store postprocess.

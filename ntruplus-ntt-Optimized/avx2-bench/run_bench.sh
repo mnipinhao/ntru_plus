@@ -6,10 +6,11 @@ CC=${CC:-gcc}
 CORE=${CORE:-2}
 PERF_PREFIX=${PERF_PREFIX:-}
 PERF_REPETITIONS=${PERF_REPETITIONS:-5}
-PERF_CORE_EVENTS=${PERF_CORE_EVENTS:-cycles,instructions,branches,branch-misses}
-PERF_CACHE_EVENTS=${PERF_CACHE_EVENTS:-cache-references,cache-misses}
+PERF_CORE_EVENTS=${PERF_CORE_EVENTS:-cycles}
+PERF_CACHE_EVENTS=${PERF_CACHE_EVENTS:-}
+RUN_TSC=${RUN_TSC:-0}
 STRICT_ENV=${STRICT_ENV:-0}
-OPERATIONS=${OPERATIONS:-"ntt gt-ntt gt-ntt-asm-soa basemul gt-basemul-soa invntt gt-invntt32 gt-invntt32-asm gt-invntt-soa gt-invntt-soa-hybrid polymul gt-polymul-soa gt-polymul-soa-hybrid"}
+OPERATIONS=${OPERATIONS:-"ntt gt-ntt gt-ntt-asm-soa basemul gt-basemul-soa invntt gt-invntt32 gt-invntt32-asm gt-invdft3 gt-invdft3-asm gt-invntt-soa gt-invntt-soa-hybrid gt-invntt-soa-dft3-hybrid polymul gt-polymul-soa gt-polymul-soa-hybrid gt-polymul-soa-dft3-hybrid"}
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 RESULT_DIR=${RESULT_DIR:-"$ROOT/results/$STAMP"}
 TARGET="$ROOT/build/avx2_bench"
@@ -31,6 +32,7 @@ fi
   echo "operations=$OPERATIONS"
   echo "perf_core_events=$PERF_CORE_EVENTS"
   echo "perf_cache_events=$PERF_CACHE_EVENTS"
+  echo "run_tsc=$RUN_TSC"
   uname -a
   lscpu
   "$CC" --version 2>/dev/null | head -n 1 || true
@@ -60,8 +62,10 @@ fi
 "$TARGET" --validate | tee "$RESULT_DIR/validation.txt"
 
 for operation in $OPERATIONS; do
-  taskset -c "$CORE" "$TARGET" "$operation" \
-    | tee "$RESULT_DIR/${operation}.tsc.txt"
+  if [[ "$RUN_TSC" == 1 ]]; then
+    taskset -c "$CORE" "$TARGET" "$operation" \
+      | tee "$RESULT_DIR/${operation}.tsc.txt"
+  fi
 
   # Keep the core and cache events in separate passes.  Requesting all six at
   # once can multiplex the general-purpose counters on the target host.
@@ -72,12 +76,14 @@ for operation in $OPERATIONS; do
     taskset -c "$CORE" "$TARGET" "$operation" --perf-loop \
     >"$RESULT_DIR/${operation}.core.perf.stdout.txt"
 
-  # shellcheck disable=SC2086
-  $PERF_PREFIX perf stat -x, -r "$PERF_REPETITIONS" \
-    -e "$PERF_CACHE_EVENTS" \
-    -o "$RESULT_DIR/${operation}.cache.perf.csv" \
-    taskset -c "$CORE" "$TARGET" "$operation" --perf-loop \
-    >"$RESULT_DIR/${operation}.cache.perf.stdout.txt"
+  if [[ -n "$PERF_CACHE_EVENTS" ]]; then
+    # shellcheck disable=SC2086
+    $PERF_PREFIX perf stat -x, -r "$PERF_REPETITIONS" \
+      -e "$PERF_CACHE_EVENTS" \
+      -o "$RESULT_DIR/${operation}.cache.perf.csv" \
+      taskset -c "$CORE" "$TARGET" "$operation" --perf-loop \
+      >"$RESULT_DIR/${operation}.cache.perf.stdout.txt"
+  fi
 done
 
 echo "results=$RESULT_DIR"

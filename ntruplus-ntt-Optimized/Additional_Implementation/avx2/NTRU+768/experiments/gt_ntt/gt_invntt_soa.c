@@ -236,8 +236,7 @@ static inline void store_final_group(int16_t out[GT_NTT_N],
 		blocks, 6);
 }
 
-static void invntt_finish_from_rows(int16_t out[GT_NTT_N],
-	int16_t rows[GT_NTT_N])
+void gt_invntt_soa_dft3_intrinsic(int16_t rows[GT_NTT_N])
 {
 	const __m256i omega3 = _mm256_set1_epi16(GT_OMEGA3);
 	const __m256i omega3_qinv = _mm256_set1_epi16(factor_qinv(GT_OMEGA3));
@@ -269,7 +268,11 @@ static void invntt_finish_from_rows(int16_t out[GT_NTT_N],
 			_mm256_store_si256((__m256i *)(void *)(rows + offset2), x2);
 		}
 	}
+}
 
+static void invntt_postprocess_from_rows(int16_t out[GT_NTT_N],
+	const int16_t rows[GT_NTT_N])
+{
 	for (unsigned n3 = 0; n3 < 3; n3++) {
 		for (unsigned group = 0; group < 4; group++) {
 			const unsigned base = 64U * (4U * n3 + group);
@@ -285,6 +288,13 @@ static void invntt_finish_from_rows(int16_t out[GT_NTT_N],
 			store_final_group(out, c0, c1, c2, c3, n3, group);
 		}
 	}
+}
+
+static void invntt_finish_from_rows(int16_t out[GT_NTT_N],
+	int16_t rows[GT_NTT_N])
+{
+	gt_invntt_soa_dft3_intrinsic(rows);
+	invntt_postprocess_from_rows(out, rows);
 }
 
 void gt_invntt_soa_avx2(int16_t out[GT_NTT_N],
@@ -306,5 +316,15 @@ void gt_invntt_soa_avx2_hybrid(int16_t out[GT_NTT_N],
 	/* The ASM region consumes all SoA input before final output stores. */
 	gt_invntt_soa_ntt32_asm(rows, in);
 	invntt_finish_from_rows(out, rows);
+}
+
+void gt_invntt_soa_avx2_dft3_hybrid(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
+
+	gt_invntt_soa_ntt32_asm(rows, in);
+	gt_invntt_soa_dft3_asm(rows);
+	invntt_postprocess_from_rows(out, rows);
 }
 #endif

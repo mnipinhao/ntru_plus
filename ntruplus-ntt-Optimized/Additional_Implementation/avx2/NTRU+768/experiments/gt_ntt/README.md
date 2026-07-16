@@ -6,7 +6,8 @@ stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 
 `gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
-NTT32 region；inverse DFT3 與 postprocess 仍是 intrinsic，整體仍不是 production ASM。
+NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
+untwist/merge/store postprocess 仍是 intrinsic，整體仍不是 production ASM。
 
 ## 數學分解
 
@@ -246,6 +247,14 @@ Q-group，`ymm4..ymm11` 作 shuffle/Montgomery temporary，`ymm12..ymm13` 先保
 call、ZMM 或 opmask。ASM scratch output 對 intrinsic boundary 做 768-word exact
 comparison，不只比較 modulo q。
 
+第二個 inverse ASM region 在 `gt_invntt_dft3_soa.s`。每次 iteration 直接載入相距
+512 bytes 的 `y0/y1/y2`，不改 scratch layout；`y2-y1` 的固定因子 Montgomery chain
+啟動後，先排獨立的三條 DFT3 sum/difference，再完成 correction。三個結果各自需要
+packed Barrett，因此以 `ymm8..ymm10` 交錯三條 quotient chain。四個常數常駐
+`ymm11..ymm14`，`ymm15` 保持空閒。GCC linked symbol 是 230 bytes，沒有 stack
+access、call、ZMM 或 opmask；16 次 in-place iteration 對 intrinsic scratch boundary
+做 768-word exact comparison。
+
 Inverse DFT3 之後的 natural `n3,n32` 以
 
 ```text
@@ -376,6 +385,7 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `generate_gt_soa_tables.py`：lambda／lambda-qinv table generator/checker。
 - `gt_invntt_soa.c`：直接消費 SoA 的 lazy inverse/full-pipeline prototype。
 - `gt_invntt_ntt32_soa.s`：手排的 direct-SoA inverse NTT32 與 packed checkpoint。
+- `gt_invntt_dft3_soa.s`：手排的 in-place inverse DFT3 與三路 packed checkpoint。
 - `invntt-soa-contract.yml`：inverse scaling、scratch、range 與 final-store contract。
 - `generate_gt_invntt_tables.py`：inverse fixed-factor/CRT table generator/checker。
 
@@ -425,6 +435,7 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - 16 組 forward NTT → SoA basemul composition differential；
 - SoA inverse 對 row-bitrev inverse 的 boundary 與 100 random differential；
 - inverse NTT32 ASM scratch 對 intrinsic 的 boundary 與 100 random exact differential；
+- inverse DFT3 ASM scratch 對 intrinsic 的 boundary 與 100 random exact differential；
 - forward → inverse 的 impulse、full-range boundary 與 200 random round trip；
 - forward → basemul → inverse 對 schoolbook 的 full-range boundary 與 16 random
   ternary polynomial products；
@@ -448,5 +459,11 @@ hardware cycles 和 4621.31 instructions；production inverse 是 432、651.01 �
 加入第一個 inverse ASM region 後，同 run 的 inverse NTT32 boundary 從 537 降到
 422 TSC、hardware cycles 從 801.49 降到 633.95，分別降低 21.4% 與 20.9%。完整
 hybrid inverse 從 998 降到 886 TSC，完整 GT polymul 從 3301 降到 3179。Hybrid
-full path 仍是 production 的 1.93×，所以 promotion gate 尚未通過；下一步是手排
-inverse DFT3/checkpoint region，再處理 postprocess、pointwise 與 frontend spill。
+full path 仍是 production 的 1.93×，所以 promotion gate 尚未通過。
+
+加入第二個 inverse ASM region 後，之後的結論統一採 `perf stat -e cycles`。同主機
+同一次五回重複測量中，isolated inverse DFT3/checkpoint 從 131.62 降到 125.09
+cycles/call（4.96%）；完整 hybrid inverse 從 1315.90 降到 1306.74（0.70%）；完整
+GT polymul 從 4671.29 降到 4640.95（0.65%）。兩-region full path 仍是 production
+polymul 2414.32 cycles 的 1.92×；下一步是手排 untwist/merge/4×8 final-store
+postprocess，再處理 pointwise 與 frontend spill。

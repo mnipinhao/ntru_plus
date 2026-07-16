@@ -204,7 +204,11 @@ inverse NTT.
   `gt_invntt_soa_ntt32_asm` is a 955-byte linked symbol with no stack access
   or calls.  It uses all 16 YMM registers and matches the intrinsic scratch
   boundary exactly for boundary and 100 random inputs.
-- [ ] Hand-schedule one Q-group inverse DFT3 plus packed checkpoint region.
+- [x] Hand-schedule one Q-group inverse DFT3 plus packed checkpoint region.
+  `gt_invntt_soa_dft3_asm` is a 230-byte linked symbol with no stack access or
+  calls.  Its 16 in-place iterations interleave three independent Barrett
+  chains, use YMM0..YMM14, and match the intrinsic scratch exactly for the
+  boundary and 100 random inputs.
 - [ ] Hand-schedule one `(n3,Qgroup)` untwist/merge/4x8 final-store region.
 - [x] Keep inverse NTT32 ASM within the 16-register budget: 4 data, 8
   shuffle/Montgomery temporaries, 2 reusable mask/twiddle registers, q, and
@@ -244,7 +248,8 @@ inverse NTT.
 - [x] Benchmark NTT, basemul, inverse NTT, and full polynomial multiplication
   for both production and GT SoA prototype paths.
 - [x] Record CPU model, pinned core, SMT sibling, governor, boost state,
-  compiler, flags, TSC method, and perf events.
+  compiler, flags, and perf events.  New conclusions use hardware `cycles`
+  only; the TSC sampler is retained as an opt-in historical diagnostic.
 
 Preliminary Ryzen 7 9700X results with boost enabled and CPU 2 pinned show a
 983-tick median for the hybrid ASM SoA forward transform versus 1476 for the
@@ -274,6 +279,14 @@ from 537 to 422 TSC ticks (21.4%) and hardware cycles from 801.49 to 633.95
 the win is scheduling rather than instruction-count reduction.  The hybrid
 full inverse falls from 998 to 886 TSC ticks, and full GT polynomial
 multiplication falls from 3301 to 3179.  The latter remains 1.93x production.
+
+The second hand-scheduled inverse region lowers isolated inverse DFT3 plus
+checkpoint from 131.62 to 125.09 hardware cycles/call (4.96%).  In the same
+five-repeat `perf stat -e cycles` run, full inverse falls from 1315.90 to
+1306.74 cycles (0.70%), and full GT polynomial multiplication falls from
+4671.29 to 4640.95 cycles (0.65%).  The two-region path remains 1.92x the
+production polynomial multiplication result of 2414.32 cycles, so the next
+inverse target is untwist/merge/4x8 final store.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the

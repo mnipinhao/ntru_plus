@@ -17,13 +17,23 @@ void gt_invntt_soa_avx2(int16_t out[GT_NTT_N],
 void gt_invntt_soa_ntt32_intrinsic(int16_t rows[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
 
+/* Exact in-place oracle for inverse DFT3 and its packed checkpoints. */
+void gt_invntt_soa_dft3_intrinsic(int16_t rows[GT_NTT_N]);
+
 #if defined(GT_HAVE_AVX2_ASM)
 /* Testable ASM region; rows must be 32-byte aligned and separate from in. */
 void gt_invntt_soa_ntt32_asm(int16_t rows[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
 
+/* In-place inverse DFT3 ASM region; rows must be 32-byte aligned. */
+void gt_invntt_soa_dft3_asm(int16_t rows[GT_NTT_N]);
+
 /* Hybrid milestone: ASM inverse NTT32, intrinsic DFT3 and postprocess. */
 void gt_invntt_soa_avx2_hybrid(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N]);
+
+/* Two-region hybrid: ASM inverse NTT32 and DFT3, intrinsic postprocess. */
+void gt_invntt_soa_avx2_dft3_hybrid(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
 #endif
 

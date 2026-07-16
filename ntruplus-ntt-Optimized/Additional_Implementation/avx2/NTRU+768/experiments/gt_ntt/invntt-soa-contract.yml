@@ -1,5 +1,5 @@
 kernel: ntruplus768_gt_invntt_soa_avx2_intrinsic
-status: experimental_direct_consumer
+status: experimental_two_region_asm_hybrid
 platform:
   isa: AVX2
   target_cpu: AMD_Ryzen_7_9700X
@@ -58,6 +58,7 @@ constant_time:
 validation:
   - generated_table_check
   - inverse_ntt32_asm_exact_scratch_boundary
+  - inverse_dft3_asm_exact_scratch_boundary
   - rowbitrev_inverse_differential
   - inplace_differential
   - forward_inverse_roundtrip
@@ -77,7 +78,17 @@ inverse_ntt32_asm_audit:
   tsc_ticks_asm: 422
   hardware_cycles_intrinsic: 801.49
   hardware_cycles_asm: 633.95
+inverse_dft3_asm_audit:
+  symbol: gt_invntt_soa_dft3_asm
+  symbol_bytes: 230
+  ymm_registers: 15
+  stack_accesses: 0
+  calls: 0
+  avx512_registers_present: false
+  perf_event: cycles
+  hardware_cycles_intrinsic: 131.62
+  hardware_cycles_asm: 125.09
 promotion_limits:
-  - inverse_dft3_and_postprocess_remain_intrinsic
+  - postprocess_remains_intrinsic
   - row_scratch_and_two_constant_spills_remain
-  - full_gt_polymul_is_1_93x_production_tsc_on_preliminary_host_run
+  - full_gt_polymul_is_1_92x_production_cycles_on_preliminary_host_run
