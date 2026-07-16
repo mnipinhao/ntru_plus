@@ -129,3 +129,36 @@ explicitly and uses a 120-byte red-zone window; the semantic row scratch is
 1536 bytes and two vector constants are spilled.  The next valid comparison is
 a hand-scheduled inverse split into lazy NTT32, inverse DFT3 checkpoint, and
 untwist/merge/final-store regions, not another layout conversion pass.
+
+## 2026-07-16 hand-scheduled inverse NTT32 region
+
+This run replaces only the direct-SoA inverse NTT32 region with handwritten
+AVX2.  Inverse DFT3 and postprocess remain intrinsic.  Timestamp is
+`20260716T030551Z`; the Ryzen 7 9700X environment, CPU 2 pinning, performance
+governor, enabled boost, non-isolated sibling CPU 10, GCC 16.1.1, corpus, and
+sample sizes match the preceding runs.
+
+The ASM region uses all 16 YMM registers, has no stack access or calls, and is
+955 bytes in the linked binary.  Its 1536-byte output scratch matches the
+intrinsic boundary exactly for the full-range boundary input and 100 random
+inputs.  Full inverse, in-place, round-trip, schoolbook polynomial
+multiplication, scheme, benchmark validation, and linked AVX2-only gates pass.
+
+| Operation | TSC median | p10 | p90 | p99 | Hardware cycles/call | Instructions/call | Branches/call | Cache refs/call |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Production inverse | 433 | 430 | 437 | 447 | 650.63 | 2600.29 | 44.21 | 48.83 |
+| GT inverse NTT32 intrinsic region | 537 | 535 | 541 | 568 | 801.49 | 1967.65 | 21.19 | 50.83 |
+| GT inverse NTT32 ASM region | 422 | 419 | 430 | 436 | 633.95 | 2051.74 | 21.19 | 52.45 |
+| GT full inverse intrinsic | 998 | 998 | 1007 | 1024 | 1478.51 | 4645.33 | 46.21 | 49.51 |
+| GT hybrid inverse | 886 | 885 | 892 | 898 | 1313.82 | 4731.42 | 46.21 | 49.64 |
+| Production polynomial multiplication | 1648 | 1639 | 1655 | 1672 | 2411.13 | 8984.67 | 144.31 | 267.25 |
+| GT polynomial multiplication, intrinsic inverse | 3301 | 3296 | 3308 | 3327 | 4814.06 | 18309.98 | 136.31 | 197.15 |
+| GT polynomial multiplication, hybrid inverse | 3179 | 3175 | 3184 | 3220 | 4646.74 | 18396.07 | 136.31 | 200.88 |
+
+The scheduled region lowers median TSC by 21.4% and hardware cycles by 20.9%.
+It retires 4.3% more instructions, while IPC rises from 2.45 to 3.24; the gain
+comes from the explicit dependency schedule rather than a smaller instruction
+count.  At pipeline level, the hybrid lowers inverse TSC by 11.2% and full GT
+polynomial multiplication by 3.7%.  The hybrid full path is still 1.93x the
+production TSC median, so the next region is inverse DFT3 plus its packed
+checkpoint.

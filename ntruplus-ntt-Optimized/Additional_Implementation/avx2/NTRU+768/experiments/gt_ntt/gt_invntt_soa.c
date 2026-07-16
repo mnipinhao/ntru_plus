@@ -12,7 +12,7 @@
 
 #include "gt_invntt_soa_tables.inc"
 
-/* Byte shuffles are duplicated into both 128-bit halves by vpbroadcastq. */
+/* Byte-shuffle masks are duplicated into both 128-bit halves. */
 static const uint8_t duplicate_low_len2[16] __attribute__((aligned(16))) = {
 	0, 1, 0, 1, 4, 5, 4, 5, 8, 9, 8, 9, 12, 13, 12, 13
 };
@@ -163,6 +163,16 @@ static void intt32_one_stream(int16_t scratch[GT_NTT_N],
 	}
 }
 
+void gt_invntt_soa_ntt32_intrinsic(int16_t rows[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	for (unsigned k3 = 0; k3 < 3; k3++) {
+		for (unsigned coefficient = 0; coefficient < 4; coefficient++) {
+			intt32_one_stream(rows, in, k3, coefficient);
+		}
+	}
+}
+
 static inline __m256i final_merge_vector(__m256i value,
 	unsigned n3, unsigned group)
 {
@@ -226,19 +236,11 @@ static inline void store_final_group(int16_t out[GT_NTT_N],
 		blocks, 6);
 }
 
-void gt_invntt_soa_avx2(int16_t out[GT_NTT_N],
-	const int16_t in[GT_NTT_N])
+static void invntt_finish_from_rows(int16_t out[GT_NTT_N],
+	int16_t rows[GT_NTT_N])
 {
-	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
 	const __m256i omega3 = _mm256_set1_epi16(GT_OMEGA3);
 	const __m256i omega3_qinv = _mm256_set1_epi16(factor_qinv(GT_OMEGA3));
-
-	/* All SoA input is consumed before final stores, so out==in is safe. */
-	for (unsigned k3 = 0; k3 < 3; k3++) {
-		for (unsigned coefficient = 0; coefficient < 4; coefficient++) {
-			intt32_one_stream(rows, in, k3, coefficient);
-		}
-	}
 
 	/* Inverse DFT3 in place: k3 rows become natural-order n3 rows. */
 	for (unsigned group = 0; group < 4; group++) {
@@ -284,3 +286,25 @@ void gt_invntt_soa_avx2(int16_t out[GT_NTT_N],
 		}
 	}
 }
+
+void gt_invntt_soa_avx2(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
+
+	/* All SoA input is consumed before final stores, so out==in is safe. */
+	gt_invntt_soa_ntt32_intrinsic(rows, in);
+	invntt_finish_from_rows(out, rows);
+}
+
+#if defined(GT_HAVE_AVX2_ASM)
+void gt_invntt_soa_avx2_hybrid(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
+
+	/* The ASM region consumes all SoA input before final output stores. */
+	gt_invntt_soa_ntt32_asm(rows, in);
+	invntt_finish_from_rows(out, rows);
+}
+#endif

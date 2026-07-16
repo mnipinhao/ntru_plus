@@ -467,6 +467,33 @@ static void schoolbook_mul(int16_t out[GT_NTT_N],
 	}
 }
 
+#if defined(GT_HAVE_AVX2_ASM)
+static int check_invntt_ntt32_asm_case(const int16_t input[GT_NTT_N],
+	const char *label)
+{
+	int16_t want[GT_NTT_N] __attribute__((aligned(32)));
+	int16_t got[GT_NTT_N] __attribute__((aligned(32)));
+
+	gt_invntt_soa_ntt32_intrinsic(want, input);
+	gt_invntt_soa_ntt32_asm(got, input);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (got[i] != want[i]) {
+			fprintf(stderr,
+				"inverse NTT32 ASM boundary mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, got[i], want[i]);
+			return 1;
+		}
+		if (got[i] < 0 || got[i] > GT_NTT_Q) {
+			fprintf(stderr,
+				"inverse NTT32 ASM range failure case=%s i=%u value=%d\n",
+				label, i, got[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+#endif
+
 static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 	const char *label)
 {
@@ -474,12 +501,21 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 	int16_t want[GT_NTT_N];
 	int16_t got[GT_NTT_N];
 	int16_t inplace[GT_NTT_N];
+#if defined(GT_HAVE_AVX2_ASM)
+	int16_t hybrid[GT_NTT_N];
+	int16_t hybrid_inplace[GT_NTT_N];
+#endif
 
 	gt_ntt_soa_to_rowbitrev(rowbitrev, input);
 	invntt_gt_rowbitrevlayout_exact(want, rowbitrev);
 	gt_invntt_soa_avx2(got, input);
 	memcpy(inplace, input, sizeof(inplace));
 	gt_invntt_soa_avx2(inplace, inplace);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_invntt_soa_avx2_hybrid(hybrid, input);
+	memcpy(hybrid_inplace, input, sizeof(hybrid_inplace));
+	gt_invntt_soa_avx2_hybrid(hybrid_inplace, hybrid_inplace);
+#endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got[i], want[i]) || got[i] != inplace[i]) {
 			fprintf(stderr,
@@ -493,6 +529,14 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 				label, i, got[i]);
 			return 1;
 		}
+#if defined(GT_HAVE_AVX2_ASM)
+		if (hybrid[i] != got[i] || hybrid[i] != hybrid_inplace[i]) {
+			fprintf(stderr,
+				"hybrid inverse mismatch case=%s i=%u hybrid=%d intrinsic=%d inplace=%d\n",
+				label, i, hybrid[i], got[i], hybrid_inplace[i]);
+			return 1;
+		}
+#endif
 	}
 	return 0;
 }
@@ -505,11 +549,17 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 	int16_t product_soa[GT_NTT_N] __attribute__((aligned(32)));
 	int16_t got[GT_NTT_N];
 	int16_t want[GT_NTT_N];
+#if defined(GT_HAVE_AVX2_ASM)
+	int16_t hybrid[GT_NTT_N];
+#endif
 
 	forward_soa(a_soa, a);
 	forward_soa(b_soa, b);
 	gt_basemul_soa_avx2(product_soa, a_soa, b_soa);
 	gt_invntt_soa_avx2(got, product_soa);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_invntt_soa_avx2_hybrid(hybrid, product_soa);
+#endif
 	schoolbook_mul(want, a, b);
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got[i], want[i])) {
@@ -518,6 +568,14 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 				label, i, got[i], want[i]);
 			return 1;
 		}
+#if defined(GT_HAVE_AVX2_ASM)
+		if (hybrid[i] != got[i]) {
+			fprintf(stderr,
+				"hybrid polynomial multiplication mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
+				label, i, hybrid[i], got[i]);
+			return 1;
+		}
+#endif
 	}
 	return 0;
 }
@@ -601,6 +659,9 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 #endif
 	int16_t inverse_input[GT_NTT_N] __attribute__((aligned(32)));
 	int16_t inverse_output[GT_NTT_N];
+#if defined(GT_HAVE_AVX2_ASM)
+	int16_t hybrid_inverse_output[GT_NTT_N];
+#endif
 
 	ntt_gt_rowbitrevlayout(want, input);
 	gt_ntt_avx2(got, input);
@@ -643,6 +704,9 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 #endif
 	forward_soa(inverse_input, input);
 	gt_invntt_soa_avx2(inverse_output, inverse_input);
+#if defined(GT_HAVE_AVX2_ASM)
+	gt_invntt_soa_avx2_hybrid(hybrid_inverse_output, inverse_input);
+#endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(inverse_output[i], input[i])) {
 			fprintf(stderr,
@@ -650,6 +714,14 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 				label, i, inverse_output[i], input[i]);
 			return 1;
 		}
+#if defined(GT_HAVE_AVX2_ASM)
+		if (hybrid_inverse_output[i] != inverse_output[i]) {
+			fprintf(stderr,
+				"hybrid SoA round-trip mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
+				label, i, hybrid_inverse_output[i], inverse_output[i]);
+			return 1;
+		}
+#endif
 	}
 	return 0;
 }
@@ -686,6 +758,12 @@ int main(void)
 	if (check_inverse_soa_case(basemul_a, "inverse-boundary") != 0) {
 		return 1;
 	}
+#if defined(GT_HAVE_AVX2_ASM)
+	if (check_invntt_ntt32_asm_case(basemul_a,
+		"inverse-ntt32-boundary") != 0) {
+		return 1;
+	}
+#endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (basemul_a[i] == GT_NTT_Q || basemul_a[i] == -GT_NTT_Q) {
 			basemul_a[i] = 0;
@@ -714,6 +792,12 @@ int main(void)
 		if (round < 100 && check_inverse_soa_case(basemul_a, label) != 0) {
 			return 1;
 		}
+#if defined(GT_HAVE_AVX2_ASM)
+		if (round < 100 &&
+		    check_invntt_ntt32_asm_case(basemul_a, label) != 0) {
+			return 1;
+		}
+#endif
 		if (round < 16) {
 			for (unsigned i = 0; i < GT_NTT_N; i++) {
 				if (basemul_a[i] == GT_NTT_Q ||

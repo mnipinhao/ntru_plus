@@ -5,7 +5,8 @@
 stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 放進
 `gt_ntt_stage345_soa.s`。它沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
-inverse 與 full polynomial multiplication，但兩者都還沒有手排成 production ASM。
+inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
+NTT32 region；inverse DFT3 與 postprocess 仍是 intrinsic，整體仍不是 production ASM。
 
 ## 數學分解
 
@@ -238,6 +239,13 @@ signed int16。只有 NTT32→DFT3 boundary 使用一次 packed Barrett，將 ro
 `[0,q]`；inverse DFT3 三個輸出再各做一次 packed checkpoint。這取代最初每層
 widen-to-int32 Barrett 的語意版。
 
+第一個 inverse ASM region 在 `gt_invntt_ntt32_soa.s`。它以 `ymm0..ymm3` 保存四個
+Q-group，`ymm4..ymm11` 作 shuffle/Montgomery temporary，`ymm12..ymm13` 先保存
+兩個 `vpshufb` mask、mask 死後再重用為 qinv/factor，`ymm14` 保存 q，`ymm15`
+保存 packed Barrett reciprocal。Linked symbol 是 955 bytes，沒有 stack access、
+call、ZMM 或 opmask。ASM scratch output 對 intrinsic boundary 做 768-word exact
+comparison，不只比較 modulo q。
+
 Inverse DFT3 之後的 natural `n3,n32` 以
 
 ```text
@@ -346,7 +354,8 @@ Inverse intrinsic 的 GCC 16 linked symbol 是 2681 bytes。Explicit stack adjus
 為 1480 bytes，另使用 120-byte red-zone window；其中 1536 bytes 是 row scratch，
 兩個 YMM constant spill 是 compiler live-range artifact。最值得抽成 ASM 的三個
 region 是：四-group lazy inverse NTT32、in-place inverse DFT3/checkpoint，以及
-untwist/merge/4×8 final block store。
+untwist/merge/4×8 final block store。第一個 region 已成為 zero-stack ASM；後兩個
+region 與 wrapper-owned row scratch 仍待處理。
 
 ## Slothy handoff
 
@@ -366,6 +375,7 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `basemul-soa-contract.yml`：pointwise representation、range 與 alias contract。
 - `generate_gt_soa_tables.py`：lambda／lambda-qinv table generator/checker。
 - `gt_invntt_soa.c`：直接消費 SoA 的 lazy inverse/full-pipeline prototype。
+- `gt_invntt_ntt32_soa.s`：手排的 direct-SoA inverse NTT32 與 packed checkpoint。
 - `invntt-soa-contract.yml`：inverse scaling、scratch、range 與 final-store contract。
 - `generate_gt_invntt_tables.py`：inverse fixed-factor/CRT table generator/checker。
 
@@ -377,7 +387,6 @@ assembly，而不是一次排完整 768-point function：
 2. row01 stage1+2 stripe；
 3. singleton stage1+2 stripe；
 4. row01 stage3+4+5 block；
-5. singleton stage3+4+5 block。
 6. one 16-block SoA quartic basemul batch。
 7. one `(k3,c)` four-group lazy inverse NTT32；
 8. one inverse DFT3 group；
@@ -415,6 +424,7 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - SoA quartic basemul 的 boundary、200 random、output-range differential；
 - 16 組 forward NTT → SoA basemul composition differential；
 - SoA inverse 對 row-bitrev inverse 的 boundary 與 100 random differential；
+- inverse NTT32 ASM scratch 對 intrinsic 的 boundary 與 100 random exact differential；
 - forward → inverse 的 impulse、full-range boundary 與 200 random round trip；
 - forward → basemul → inverse 對 schoolbook 的 full-range boundary 與 16 random
   ternary polynomial products；
@@ -431,9 +441,12 @@ median 都是 318 TSC ticks；hardware cycles/call 分別為 480.43 與 478.83�
 instructions/call 分別為 1839.52 與 1662.35。這只證明 SoA 沒有因 layout 付出
 transpose 成本。
 
-同一主機的 direct-consumer inverse 最終 intrinsic run 是 1013 TSC ticks、
-1494.44 hardware cycles 和 4621.31 instructions；production inverse 是 432、
-651.01 和 2600.29。完整 GT SoA polynomial multiplication 是 3323 TSC，production
-是 1652。SoA inverse mapping 已經可以工作，但 full path 仍約 2.01× production，
-因此 promotion gate 仍未通過；下一步是依上述三個 region 手排 inverse ASM，並將
-pointwise/frontend 的 compiler spill 一併移除。
+同一主機先前的 direct-consumer inverse intrinsic run 是 1013 TSC ticks、1494.44
+hardware cycles 和 4621.31 instructions；production inverse 是 432、651.01 和
+2600.29。完整 GT SoA polynomial multiplication是 3323 TSC，production 是 1652。
+
+加入第一個 inverse ASM region 後，同 run 的 inverse NTT32 boundary 從 537 降到
+422 TSC、hardware cycles 從 801.49 降到 633.95，分別降低 21.4% 與 20.9%。完整
+hybrid inverse 從 998 降到 886 TSC，完整 GT polymul 從 3301 降到 3179。Hybrid
+full path 仍是 production 的 1.93×，所以 promotion gate 尚未通過；下一步是手排
+inverse DFT3/checkpoint region，再處理 postprocess、pointwise 與 frontend spill。

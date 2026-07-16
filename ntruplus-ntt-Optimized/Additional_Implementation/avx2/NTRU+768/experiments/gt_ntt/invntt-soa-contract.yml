@@ -57,6 +57,7 @@ constant_time:
   table_indices: public_loop_indices_only
 validation:
   - generated_table_check
+  - inverse_ntt32_asm_exact_scratch_boundary
   - rowbitrev_inverse_differential
   - inplace_differential
   - forward_inverse_roundtrip
@@ -65,7 +66,18 @@ compiler_audit:
   compiler: GCC_16.1.1
   symbol_bytes: 2681
   avx512_registers_present: false
+inverse_ntt32_asm_audit:
+  symbol: gt_invntt_soa_ntt32_asm
+  symbol_bytes: 955
+  ymm_registers: 16
+  stack_accesses: 0
+  calls: 0
+  avx512_registers_present: false
+  tsc_ticks_intrinsic: 537
+  tsc_ticks_asm: 422
+  hardware_cycles_intrinsic: 801.49
+  hardware_cycles_asm: 633.95
 promotion_limits:
-  - intrinsic_not_hand_scheduled
+  - inverse_dft3_and_postprocess_remain_intrinsic
   - row_scratch_and_two_constant_spills_remain
-  - full_gt_polymul_is_2_01x_production_tsc_on_preliminary_host_run
+  - full_gt_polymul_is_1_93x_production_tsc_on_preliminary_host_run

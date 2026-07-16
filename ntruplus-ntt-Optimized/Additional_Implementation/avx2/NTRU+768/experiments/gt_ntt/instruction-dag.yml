@@ -59,7 +59,7 @@ regions:
       - store_c0_c1_c2_c3_same_soa_layout
     current_object_audit: gcc16_has_ymm_spills
   inverse_ntt32_stream:
-    implementation: intrinsic_direct_consumer_baseline
+    implementation: handwritten_avx2_asm_with_intrinsic_oracle
     repeats: 12
     identity: one_k3_and_one_quartic_coefficient
     vectors: [Q0_7, Q8_15, Q16_23, Q24_31]
@@ -77,6 +77,17 @@ regions:
       - len16_requires_group_pairs_01_and_23
       - len32_requires_group_pairs_02_and_13
     live_set_target: 4_data_plus_montgomery_temporaries
+    register_allocation:
+      ymm0_ymm3: four_q_group_data
+      ymm4_ymm11: shuffle_and_montgomery_temporaries
+      ymm12_ymm13: shuffle_masks_then_qinv_factor
+      ymm14: q
+      ymm15: packed_barrett_reciprocal
+    linked_object_audit:
+      symbol_bytes: 955
+      stack_accesses: 0
+      calls: 0
+      avx512_registers: 0
   inverse_dft3_group:
     implementation: intrinsic_in_place_baseline
     repeats: 16

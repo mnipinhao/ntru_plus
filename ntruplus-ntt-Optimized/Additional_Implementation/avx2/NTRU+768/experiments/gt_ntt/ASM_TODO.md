@@ -200,16 +200,17 @@ inverse NTT.
 - [x] Verify `invNTT(NTT(a)) == a mod q` for boundary and random inputs.
 - [x] Verify the complete forward + basemul + inverse polynomial product
   against schoolbook multiplication, including a full-range boundary case.
-- [ ] Extract and hand-schedule three inverse ASM regions:
-
-  1. one `(k3,c)` four-group lazy inverse NTT32;
-  2. one Q-group inverse DFT3 plus packed checkpoint;
-  3. one `(n3,Qgroup)` untwist/merge/4x8 final-store group.
-
-- [ ] Keep inverse ASM within the 16-register budget.  Process one stream in
-  region 1 (4 data + multiply temporaries), and four coefficients in region 3
-  (4 final data + unpack temporaries); do not retain multiple Q-groups across
-  the scratch boundary.
+- [x] Hand-schedule one `(k3,c)` four-group lazy inverse NTT32 region.
+  `gt_invntt_soa_ntt32_asm` is a 955-byte linked symbol with no stack access
+  or calls.  It uses all 16 YMM registers and matches the intrinsic scratch
+  boundary exactly for boundary and 100 random inputs.
+- [ ] Hand-schedule one Q-group inverse DFT3 plus packed checkpoint region.
+- [ ] Hand-schedule one `(n3,Qgroup)` untwist/merge/4x8 final-store region.
+- [x] Keep inverse NTT32 ASM within the 16-register budget: 4 data, 8
+  shuffle/Montgomery temporaries, 2 reusable mask/twiddle registers, q, and
+  Barrett reciprocal.
+- [ ] Keep postprocess ASM within the 16-register budget: four final data plus
+  unpack temporaries; do not retain multiple Q-groups across scratch boundaries.
 - [ ] Remove the two GCC constant spills and define whether the 1536-byte row
   scratch is caller-provided or stack-owned in the production ABI.
 
@@ -266,6 +267,13 @@ GCC 16 emits a 2681-byte inverse symbol with a 1480-byte explicit stack
 adjustment plus a 120-byte red-zone window.  The semantic row scratch is 1536
 bytes; two vector constants are also spilled.  The linked AVX2 binary contains
 no ZMM/opmask instructions.
+
+The first hand-scheduled inverse region lowers isolated inverse NTT32 median
+from 537 to 422 TSC ticks (21.4%) and hardware cycles from 801.49 to 633.95
+(20.9%).  It retires 4.3% more instructions, but IPC rises from 2.45 to 3.24;
+the win is scheduling rather than instruction-count reduction.  The hybrid
+full inverse falls from 998 to 886 TSC ticks, and full GT polynomial
+multiplication falls from 3301 to 3179.  The latter remains 1.93x production.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the
