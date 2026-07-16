@@ -28,6 +28,7 @@ SOURCES := \
 	$(GT_ROOT)/gt_invntt_soa.c \
 	$(GT_ROOT)/gt_invntt_ntt32_soa.s \
 	$(GT_ROOT)/gt_invntt_dft3_soa.s \
+	$(GT_ROOT)/gt_invntt_postprocess_soa.s \
 	$(GT_ROOT)/gt_ntt_stage345_soa.s \
 	$(GT_ROOT)/gt_ntt_tables.c \
 	$(AARCH64_REF)
@@ -74,6 +75,13 @@ asm-audit: $(TARGET)
 		exit 1; \
 	else \
 		echo "inverse DFT3 ASM audit: zero stack traffic and calls"; \
+	fi
+	@if objdump -d --disassemble=gt_invntt_soa_postprocess_asm $(TARGET) | \
+		grep -Eq '%rsp|[[:space:]](push|pop|call)[[:space:]]'; then \
+		echo "stack traffic or call found in inverse postprocess ASM region" >&2; \
+		exit 1; \
+	else \
+		echo "inverse postprocess ASM audit: zero stack traffic and calls"; \
 	fi
 
 clean:

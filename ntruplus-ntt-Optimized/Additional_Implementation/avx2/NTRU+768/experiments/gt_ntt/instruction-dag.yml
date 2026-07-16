@@ -89,7 +89,7 @@ regions:
       calls: 0
       avx512_registers: 0
   inverse_dft3_group:
-    implementation: intrinsic_in_place_baseline
+    implementation: handwritten_avx2_asm_with_intrinsic_oracle
     repeats: 16
     identity: one_q_group_and_one_quartic_coefficient
     nodes:
@@ -100,8 +100,13 @@ regions:
       - three_packed_int16_barrett_checkpoints
       - store_n3_rows_in_place
     live_set_target: 3_data_plus_3_outputs_or_temporaries
+    linked_object_audit:
+      symbol_bytes: 230
+      stack_accesses: 0
+      calls: 0
+      avx512_registers: 0
   inverse_postprocess_group:
-    implementation: intrinsic_block_store_baseline
+    implementation: handwritten_avx2_asm_with_intrinsic_oracle
     repeats: 12
     identity: one_n3_and_one_q_group
     nodes:
@@ -114,4 +119,15 @@ regions:
       - load_eight_public_crt_block_indices
       - sixteen_low_high_64_bit_stores
     live_set_target: 4_final_data_plus_unpack_temporaries
-    current_object_audit: gcc16_uses_row_scratch_and_two_constant_spills
+    register_allocation:
+      ymm0_ymm3: four_coefficient_or_high_output_vectors
+      ymm4_ymm7: montgomery_then_transpose_temporaries
+      ymm8_ymm11: branch_sum_then_low_output_vectors
+      ymm12_ymm13: lifetime_reused_factor_pair
+      ymm14: free
+      ymm15: q
+    linked_object_audit:
+      symbol_bytes: 781
+      stack_accesses: 0
+      calls: 0
+      avx512_registers: 0

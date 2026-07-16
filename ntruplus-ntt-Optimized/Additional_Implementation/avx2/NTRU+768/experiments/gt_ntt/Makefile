@@ -15,7 +15,7 @@ ARCHFLAGS = -arch x86_64
 RUNNER = arch -x86_64
 else
 SOURCES += gt_ntt_stage345_soa.s gt_invntt_ntt32_soa.s \
-	gt_invntt_dft3_soa.s
+	gt_invntt_dft3_soa.s gt_invntt_postprocess_soa.s
 CFLAGS += -DGT_HAVE_AVX2_ASM=1
 endif
 

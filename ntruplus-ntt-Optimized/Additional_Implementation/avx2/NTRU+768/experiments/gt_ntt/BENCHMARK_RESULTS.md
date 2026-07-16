@@ -193,3 +193,40 @@ random cases.  It lowers the isolated region by 4.96%, full inverse by 0.70%,
 and full GT polynomial multiplication by 0.65%.  The two-region GT path remains
 1.92x production in hardware cycles, so the next inverse ASM boundary is the
 untwist/merge/4x8 final-store postprocess.
+
+## 2026-07-16 hand-scheduled inverse postprocess region
+
+This run adds the third handwritten inverse region: fixed-factor untwist,
+branch merge, normalization, lane-local 4x8 transpose, public CRT block lookup,
+and canonical 64-bit stores.  The three regions remain separate calls from a C
+wrapper that owns the 1536-byte aligned row scratch.  All performance results
+below use only `perf stat -e cycles` hardware cycles.
+
+The environment remains the Ryzen 7 9700X with CPU 2 pinned, performance
+governor, enabled boost, non-isolated sibling CPU 10, GCC 16.1.1, 64 rotating
+inputs, 100 warmups, and 100000 measured calls.  `perf stat -r 5` reports the
+mean counter; the run is stored as `results/20260716-invpost-asm` on the host.
+
+| Operation | Hardware cycles/call | perf variation |
+| --- | ---: | ---: |
+| Inverse postprocess intrinsic | 580.83 | 0.19% |
+| Inverse postprocess ASM | 521.51 | 0.02% |
+| GT inverse, NTT32 + DFT3 ASM | 1307.52 | 0.05% |
+| GT inverse, all three regions ASM | 1254.70 | 0.01% |
+| Production inverse | 651.82 | 0.06% |
+| GT polynomial multiplication, NTT32 + DFT3 ASM | 4645.01 | 0.08% |
+| GT polynomial multiplication, all three inverse regions ASM | 4584.06 | 0.05% |
+| Production polynomial multiplication | 2426.09 | 0.02% |
+
+The 781-byte linked postprocess symbol uses 15 YMM registers, has no stack
+access or calls, and contains no AVX-512 registers.  Generated untwist and
+public output-block tables are the only data-dependent address sources, and all
+indices are public loop state.  Direct `[0,q]` boundary scratch, 100 random
+valid scratch inputs, in-place full inverse, round trip, schoolbook polynomial
+multiplication, scheme validation, and linked-object audits pass.
+
+The scheduled postprocess lowers the isolated region by 10.21%, full inverse
+by 4.04%, and full GT polynomial multiplication by 1.31%.  The three-region GT
+path remains 1.89x production in hardware cycles.  The next inverse milestone
+is to fuse the three ASM regions and remove intermediate call/`vzeroupper`
+boundaries while preserving the same scratch and exact-output contracts.

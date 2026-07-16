@@ -82,9 +82,12 @@ def make_output_blocks() -> list[list[int]]:
     ]
 
 
-def format_vector_table(name: str, table: list[list[int]]) -> str:
+def format_vector_table(
+    name: str, table: list[list[int]], *, external: bool = False
+) -> str:
+    storage = "" if external else "static "
     lines = [
-        f"static const int16_t {name}[{len(table)}][16]",
+        f"{storage}const int16_t {name}[{len(table)}][16]",
         "\t__attribute__((aligned(32))) = {",
     ]
     for row in table:
@@ -94,8 +97,11 @@ def format_vector_table(name: str, table: list[list[int]]) -> str:
     return "\n".join(lines)
 
 
-def format_index_table(name: str, table: list[list[int]]) -> str:
-    lines = [f"static const uint8_t {name}[{len(table)}][8] = {{"]
+def format_index_table(
+    name: str, table: list[list[int]], *, external: bool = False
+) -> str:
+    storage = "" if external else "static "
+    lines = [f"{storage}const uint8_t {name}[{len(table)}][8] = {{"]
     for row in table:
         values = ", ".join(f"{value:2d}" for value in row)
         lines.append(f"\t{{ {values} }},")
@@ -116,14 +122,17 @@ def render() -> str:
                 [[factor_qinv(value) for value in row] for row in twiddles],
             ),
             "",
-            format_vector_table("gt_inv_untwist", untwist),
+            format_vector_table("gt_inv_untwist", untwist, external=True),
             "",
             format_vector_table(
                 "gt_inv_untwist_qinv",
                 [[factor_qinv(value) for value in row] for row in untwist],
+                external=True,
             ),
             "",
-            format_index_table("gt_inv_output_block", make_output_blocks()),
+            format_index_table(
+                "gt_inv_output_block", make_output_blocks(), external=True
+            ),
             "",
         ]
     )

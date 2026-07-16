@@ -18,13 +18,17 @@ Correctness is a mandatory gate and setup work stays outside measured regions.
 | `gt-invntt32-asm` | GT hand-scheduled ASM region | the same inverse NTT32 scratch boundary, using all 16 YMM registers and no stack |
 | `gt-invdft3` | GT AVX2 intrinsic region | prepared inverse-NTT32 scratch through inverse DFT3 and three packed Barrett checkpoints |
 | `gt-invdft3-asm` | GT hand-scheduled ASM region | the same in-place DFT3 boundary, with three interleaved Barrett chains and no stack |
+| `gt-invpost` | GT AVX2 intrinsic region | prepared inverse-DFT3 scratch through untwist, branch merge, normalization, 4×8 transpose, and final stores |
+| `gt-invpost-asm` | GT hand-scheduled ASM region | the same postprocess boundary with four interleaved coefficient chains and no stack |
 | `gt-invntt-soa` | GT AVX2 intrinsic prototype | direct SoA inverse NTT32, inverse DFT3, untwist, normalization, branch merge, and canonical stores |
 | `gt-invntt-soa-hybrid` | GT partial ASM inverse | hand-scheduled inverse NTT32 followed by intrinsic inverse DFT3 and postprocess |
 | `gt-invntt-soa-dft3-hybrid` | GT two-region ASM inverse | hand-scheduled inverse NTT32 and DFT3 followed by intrinsic postprocess |
+| `gt-invntt-soa-postprocess-hybrid` | GT three-region ASM inverse | three separately callable hand-scheduled regions with C-owned row scratch |
 | `polymul` | production AVX2 | two NTTs, basemul, and inverse NTT |
 | `gt-polymul-soa` | GT hybrid/intrinsic prototype | two hybrid ASM SoA NTTs, SoA basemul, and direct SoA inverse |
 | `gt-polymul-soa-hybrid` | GT partial ASM inverse pipeline | the same GT path with the hand-scheduled inverse NTT32 region |
 | `gt-polymul-soa-dft3-hybrid` | GT two-region ASM inverse pipeline | the same GT path with hand-scheduled inverse NTT32 and DFT3 regions |
+| `gt-polymul-soa-postprocess-hybrid` | GT three-region ASM inverse pipeline | the same GT path with all three inverse regions hand-scheduled |
 
 The GT ASM prototype uses the candidate SoA mapping
 `batch=4*k3+Q/8, lane=8*branch+Q%8`.  Its packed int16 Barrett checkpoint emits
@@ -34,7 +38,7 @@ mapping oracle.
 
 The GT prototype now has matching intrinsic pointwise and inverse kernels, so
 the harness measures the complete GT polynomial multiplication.  The isolated
-SoA basemul, inverse NTT32, and full inverse operations use prepared inputs and
+SoA basemul and isolated inverse-region operations use prepared inputs and
 exclude their producers.  NTRU+768 also has no
 scheme-level matrix-vector multiplication; `basemul_add` and KEM components are
 the relevant future caller benchmarks.

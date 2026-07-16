@@ -7,7 +7,8 @@ stage 1+2，將 stage 3+4+5、packed Barrett、transpose 與 16-block SoA store 
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
 NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
-untwist/merge/store postprocess 仍是 intrinsic，整體仍不是 production ASM。
+`gt_invntt_postprocess_soa.s` 已手排 untwist/merge/store region。三段目前仍由 C
+wrapper 分開呼叫，尚未融合，也沒有取代 production ASM。
 
 ## 數學分解
 
@@ -268,6 +269,15 @@ branch 的 merge 與 `1/192,1/96` normalization。四個 `c` 的結果再做 lan
 共用一個 YMM，低/高 128-bit half 分別對應 output 的前/後 384 coefficients，最後
 用四次 64-bit store 寫出，不再用 768 次 `vpextrw`。
 
+第三個 inverse ASM region 在 `gt_invntt_postprocess_soa.s`。每個 loop iteration
+同時保留四個 coefficient vector：先平行完成四條 untwist Montgomery chain，再把
+branch0/branch1 拆成 XMM，交錯四條 `(z-z^5)^-1` correction，以及低 branch 的
+`1/192`、高 branch 的 `1/96` normalization。`ymm12..ymm13` 依生命期重用為
+untwist、correction 與 normalization factor pair，`ymm15` 常駐 q，`ymm14` 空閒。
+最後的 4×8 transpose 留在 register 中；八個 output block index 由 generated public
+table 讀入 GPR，直接形成 16 個 64-bit stores。Linked symbol 是 781 bytes，沒有
+stack access、call、ZMM 或 opmask。
+
 `generate_gt_invntt_tables.py` 產生 inverse twiddle、`twiddle*qinv`、packed
 untwist、`untwist*qinv` 與 96-entry public CRT output-block map。Generator check、
 row-bitrev inverse differential、in-place、round-trip、boundary/full polynomial product
@@ -326,9 +336,9 @@ SoA basemul 與 inverse 允許 NTT-domain operand 落在 `[-q,q]`。每個 Montg
 product 回到 `[-(q-1),q-1]`；最大的 quartic accumulator 是 `4(q-1)=13824`，
 所以所有 packed `vpaddw` 都不會 wrap。乘 `R^2` finalizer 後回到
 `[-(q-1),q-1]` normal-domain representative。完整逐步推導同樣記錄在
-`range-proof.md`。Inverse 使用 1536-byte aligned row scratch；GCC 16 linked symbol
-另以 SysV red zone 保存兩個 vector constants。所有 input 都先進 scratch，因此
-`out==in` 安全。
+`range-proof.md`。Inverse 使用 1536-byte aligned row scratch；舊的 GCC 16
+intrinsic linked symbol 另以 SysV red zone 保存兩個 vector constants，three-region
+ASM wrapper 已沒有這兩個 spill。所有 input 都先進 scratch，因此 `out==in` 安全。
 
 ## Register pressure 現況
 
@@ -363,8 +373,8 @@ Inverse intrinsic 的 GCC 16 linked symbol 是 2681 bytes。Explicit stack adjus
 為 1480 bytes，另使用 120-byte red-zone window；其中 1536 bytes 是 row scratch，
 兩個 YMM constant spill 是 compiler live-range artifact。最值得抽成 ASM 的三個
 region 是：四-group lazy inverse NTT32、in-place inverse DFT3/checkpoint，以及
-untwist/merge/4×8 final block store。第一個 region 已成為 zero-stack ASM；後兩個
-region 與 wrapper-owned row scratch 仍待處理。
+untwist/merge/4×8 final block store。三個 region 都已成為 zero-stack ASM；目前
+wrapper 仍配置 1536-byte row scratch 並做三次 call，下一步是融合三段。
 
 ## Slothy handoff
 
@@ -386,6 +396,7 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `gt_invntt_soa.c`：直接消費 SoA 的 lazy inverse/full-pipeline prototype。
 - `gt_invntt_ntt32_soa.s`：手排的 direct-SoA inverse NTT32 與 packed checkpoint。
 - `gt_invntt_dft3_soa.s`：手排的 in-place inverse DFT3 與三路 packed checkpoint。
+- `gt_invntt_postprocess_soa.s`：手排的 untwist/merge/normalization/final-store。
 - `invntt-soa-contract.yml`：inverse scaling、scratch、range 與 final-store contract。
 - `generate_gt_invntt_tables.py`：inverse fixed-factor/CRT table generator/checker。
 
@@ -436,6 +447,7 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - SoA inverse 對 row-bitrev inverse 的 boundary 與 100 random differential；
 - inverse NTT32 ASM scratch 對 intrinsic 的 boundary 與 100 random exact differential；
 - inverse DFT3 ASM scratch 對 intrinsic 的 boundary 與 100 random exact differential；
+- inverse postprocess ASM output 對 intrinsic 的 boundary 與 100 random exact differential；
 - forward → inverse 的 impulse、full-range boundary 與 200 random round trip；
 - forward → basemul → inverse 對 schoolbook 的 full-range boundary 與 16 random
   ternary polynomial products；
@@ -467,3 +479,9 @@ cycles/call（4.96%）；完整 hybrid inverse 從 1315.90 降到 1306.74（0.70
 GT polymul 從 4671.29 降到 4640.95（0.65%）。兩-region full path 仍是 production
 polymul 2414.32 cycles 的 1.92×；下一步是手排 untwist/merge/4×8 final-store
 postprocess，再處理 pointwise 與 frontend spill。
+
+加入第三個 inverse ASM region 後，isolated postprocess 從 580.83 降到 521.51
+hardware cycles/call（10.21%）；完整 three-region inverse 從 1307.52 降到
+1254.70（4.04%）；full GT polymul 從 4645.01 降到 4584.06（1.31%）。Production
+polymul 同 run 是 2426.09 cycles，因此 GT 仍是 1.89×。下一步先融合三個 inverse
+ASM region，移除中間的 call／`vzeroupper`，再決定 pointwise 或 frontend。

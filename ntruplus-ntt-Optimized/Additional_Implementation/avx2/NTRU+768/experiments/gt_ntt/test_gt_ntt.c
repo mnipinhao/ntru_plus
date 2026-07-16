@@ -529,6 +529,41 @@ static int check_invntt_dft3_asm_case(const int16_t input[GT_NTT_N],
 	gt_invntt_soa_ntt32_intrinsic(rows, input);
 	return check_invntt_dft3_asm_rows(rows, label);
 }
+
+static int check_invntt_postprocess_asm_rows(
+	const int16_t rows[GT_NTT_N], const char *label)
+{
+	int16_t want[GT_NTT_N];
+	int16_t got[GT_NTT_N];
+
+	gt_invntt_soa_postprocess_intrinsic(want, rows);
+	gt_invntt_soa_postprocess_asm(got, rows);
+	for (unsigned i = 0; i < GT_NTT_N; i++) {
+		if (got[i] != want[i]) {
+			fprintf(stderr,
+				"inverse postprocess ASM mismatch case=%s i=%u got=%d want=%d\n",
+				label, i, got[i], want[i]);
+			return 1;
+		}
+		if (!in_symmetric_bound(got[i], GT_NTT_Q - 1)) {
+			fprintf(stderr,
+				"inverse postprocess ASM range failure case=%s i=%u value=%d\n",
+				label, i, got[i]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int check_invntt_postprocess_asm_case(
+	const int16_t input[GT_NTT_N], const char *label)
+{
+	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
+
+	gt_invntt_soa_ntt32_intrinsic(rows, input);
+	gt_invntt_soa_dft3_intrinsic(rows);
+	return check_invntt_postprocess_asm_rows(rows, label);
+}
 #endif
 
 static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
@@ -543,6 +578,8 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 	int16_t hybrid_inplace[GT_NTT_N];
 	int16_t dft3_hybrid[GT_NTT_N];
 	int16_t dft3_hybrid_inplace[GT_NTT_N];
+	int16_t postprocess_hybrid[GT_NTT_N];
+	int16_t postprocess_hybrid_inplace[GT_NTT_N];
 #endif
 
 	gt_ntt_soa_to_rowbitrev(rowbitrev, input);
@@ -558,6 +595,11 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 	memcpy(dft3_hybrid_inplace, input, sizeof(dft3_hybrid_inplace));
 	gt_invntt_soa_avx2_dft3_hybrid(dft3_hybrid_inplace,
 		dft3_hybrid_inplace);
+	gt_invntt_soa_avx2_postprocess_hybrid(postprocess_hybrid, input);
+	memcpy(postprocess_hybrid_inplace, input,
+		sizeof(postprocess_hybrid_inplace));
+	gt_invntt_soa_avx2_postprocess_hybrid(postprocess_hybrid_inplace,
+		postprocess_hybrid_inplace);
 #endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(got[i], want[i]) || got[i] != inplace[i]) {
@@ -587,6 +629,14 @@ static int check_inverse_soa_case(const int16_t input[GT_NTT_N],
 				dft3_hybrid_inplace[i]);
 			return 1;
 		}
+		if (postprocess_hybrid[i] != got[i] ||
+		    postprocess_hybrid[i] != postprocess_hybrid_inplace[i]) {
+			fprintf(stderr,
+				"postprocess hybrid inverse mismatch case=%s i=%u hybrid=%d intrinsic=%d inplace=%d\n",
+				label, i, postprocess_hybrid[i], got[i],
+				postprocess_hybrid_inplace[i]);
+			return 1;
+		}
 #endif
 	}
 	return 0;
@@ -603,6 +653,7 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 #if defined(GT_HAVE_AVX2_ASM)
 	int16_t hybrid[GT_NTT_N];
 	int16_t dft3_hybrid[GT_NTT_N];
+	int16_t postprocess_hybrid[GT_NTT_N];
 #endif
 
 	forward_soa(a_soa, a);
@@ -612,6 +663,7 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 #if defined(GT_HAVE_AVX2_ASM)
 	gt_invntt_soa_avx2_hybrid(hybrid, product_soa);
 	gt_invntt_soa_avx2_dft3_hybrid(dft3_hybrid, product_soa);
+	gt_invntt_soa_avx2_postprocess_hybrid(postprocess_hybrid, product_soa);
 #endif
 	schoolbook_mul(want, a, b);
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
@@ -632,6 +684,12 @@ static int check_polymul_soa_case(const int16_t a[GT_NTT_N],
 			fprintf(stderr,
 				"DFT3 hybrid polynomial multiplication mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
 				label, i, dft3_hybrid[i], got[i]);
+			return 1;
+		}
+		if (postprocess_hybrid[i] != got[i]) {
+			fprintf(stderr,
+				"postprocess hybrid polynomial multiplication mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
+				label, i, postprocess_hybrid[i], got[i]);
 			return 1;
 		}
 #endif
@@ -721,6 +779,7 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 #if defined(GT_HAVE_AVX2_ASM)
 	int16_t hybrid_inverse_output[GT_NTT_N];
 	int16_t dft3_hybrid_inverse_output[GT_NTT_N];
+	int16_t postprocess_hybrid_inverse_output[GT_NTT_N];
 #endif
 
 	ntt_gt_rowbitrevlayout(want, input);
@@ -768,6 +827,8 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 	gt_invntt_soa_avx2_hybrid(hybrid_inverse_output, inverse_input);
 	gt_invntt_soa_avx2_dft3_hybrid(dft3_hybrid_inverse_output,
 		inverse_input);
+	gt_invntt_soa_avx2_postprocess_hybrid(
+		postprocess_hybrid_inverse_output, inverse_input);
 #endif
 	for (unsigned i = 0; i < GT_NTT_N; i++) {
 		if (!congruent(inverse_output[i], input[i])) {
@@ -787,6 +848,13 @@ static int check_full(const int16_t input[GT_NTT_N], const char *label)
 			fprintf(stderr,
 				"DFT3 hybrid SoA round-trip mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
 				label, i, dft3_hybrid_inverse_output[i],
+				inverse_output[i]);
+			return 1;
+		}
+		if (postprocess_hybrid_inverse_output[i] != inverse_output[i]) {
+			fprintf(stderr,
+				"postprocess hybrid SoA round-trip mismatch case=%s i=%u hybrid=%d intrinsic=%d\n",
+				label, i, postprocess_hybrid_inverse_output[i],
 				inverse_output[i]);
 			return 1;
 		}
@@ -822,7 +890,9 @@ int main(void)
 		dft3_boundary[i] = boundaries[(5U * i + row) % 4U];
 	}
 	if (check_invntt_dft3_asm_rows(dft3_boundary,
-		"inverse-dft3-direct-boundary") != 0) {
+		"inverse-dft3-direct-boundary") != 0 ||
+	    check_invntt_postprocess_asm_rows(dft3_boundary,
+		"inverse-postprocess-direct-boundary") != 0) {
 		return 1;
 	}
 #endif
@@ -844,7 +914,9 @@ int main(void)
 	if (check_invntt_ntt32_asm_case(basemul_a,
 		"inverse-ntt32-boundary") != 0 ||
 	    check_invntt_dft3_asm_case(basemul_a,
-		"inverse-dft3-boundary") != 0) {
+		"inverse-dft3-boundary") != 0 ||
+	    check_invntt_postprocess_asm_case(basemul_a,
+		"inverse-postprocess-boundary") != 0) {
 		return 1;
 	}
 #endif
@@ -883,6 +955,10 @@ int main(void)
 		}
 		if (round < 100 &&
 		    check_invntt_dft3_asm_case(basemul_a, label) != 0) {
+			return 1;
+		}
+		if (round < 100 &&
+		    check_invntt_postprocess_asm_case(basemul_a, label) != 0) {
 			return 1;
 		}
 #endif

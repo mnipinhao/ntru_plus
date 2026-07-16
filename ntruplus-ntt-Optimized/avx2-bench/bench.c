@@ -68,6 +68,12 @@ static int16_t gt_invdft3_rows[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_invdft3_rows_asm[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static int16_t gt_invpost_rows[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_invpost_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_invpost_outputs_asm[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
 static volatile uint64_t sink;
 
 static uint32_t next_u32(uint32_t *state)
@@ -181,6 +187,9 @@ static void prepare_inputs(void)
                                   gt_asm_soa_outputs[i]);
     memcpy(gt_invdft3_rows_asm[i], gt_invdft3_rows[i],
            sizeof(gt_invdft3_rows[i]));
+    memcpy(gt_invpost_rows[i], gt_invdft3_rows[i],
+           sizeof(gt_invpost_rows[i]));
+    gt_invntt_soa_dft3_intrinsic(gt_invpost_rows[i]);
   }
 }
 
@@ -276,6 +285,13 @@ static int validate_all(void)
       return 0;
     }
 
+    gt_invntt_soa_avx2_postprocess_hybrid(got.coeffs,
+                                          gt_asm_soa_outputs[i]);
+    if (!equal_poly_mod_q(got.coeffs, inputs_a[i].coeffs)) {
+      fputs("GT SoA postprocess hybrid inverse round-trip failed\n", stderr);
+      return 0;
+    }
+
     gt_invntt_soa_ntt32_intrinsic(gt_invntt32_rows[i],
                                    gt_asm_soa_outputs[i]);
     gt_invntt_soa_ntt32_asm(gt_invntt32_rows_asm[i],
@@ -294,6 +310,17 @@ static int validate_all(void)
       return 0;
     }
 
+    gt_invntt_soa_postprocess_intrinsic(gt_invpost_outputs[i],
+                                        gt_invpost_rows[i]);
+    gt_invntt_soa_postprocess_asm(gt_invpost_outputs_asm[i],
+                                  gt_invpost_rows[i]);
+    if (memcmp(gt_invpost_outputs[i], gt_invpost_outputs_asm[i],
+               sizeof(gt_invpost_outputs[i])) != 0) {
+      fputs("GT inverse postprocess ASM boundary differential failed\n",
+            stderr);
+      return 0;
+    }
+
     gt_invntt_soa_avx2(got.coeffs, gt_soa_products[i]);
     if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
       fputs("GT SoA polynomial multiplication failed\n", stderr);
@@ -309,6 +336,14 @@ static int validate_all(void)
     gt_invntt_soa_avx2_dft3_hybrid(got.coeffs, gt_soa_products[i]);
     if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
       fputs("GT SoA DFT3 hybrid polynomial multiplication failed\n", stderr);
+      return 0;
+    }
+
+    gt_invntt_soa_avx2_postprocess_hybrid(got.coeffs,
+                                          gt_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT SoA postprocess hybrid polynomial multiplication failed\n",
+            stderr);
       return 0;
     }
   }
@@ -359,6 +394,12 @@ static void target_gt_invntt_soa_dft3_hybrid(unsigned index)
                                  gt_asm_soa_outputs[index]);
 }
 
+static void target_gt_invntt_soa_postprocess_hybrid(unsigned index)
+{
+  gt_invntt_soa_avx2_postprocess_hybrid(outputs[index].coeffs,
+                                        gt_asm_soa_outputs[index]);
+}
+
 static void target_gt_invntt32_intrinsic(unsigned index)
 {
   gt_invntt_soa_ntt32_intrinsic(gt_invntt32_rows[index],
@@ -379,6 +420,18 @@ static void target_gt_invdft3_intrinsic(unsigned index)
 static void target_gt_invdft3_asm(unsigned index)
 {
   gt_invntt_soa_dft3_asm(gt_invdft3_rows_asm[index]);
+}
+
+static void target_gt_invpost_intrinsic(unsigned index)
+{
+  gt_invntt_soa_postprocess_intrinsic(gt_invpost_outputs[index],
+                                      gt_invpost_rows[index]);
+}
+
+static void target_gt_invpost_asm(unsigned index)
+{
+  gt_invntt_soa_postprocess_asm(gt_invpost_outputs_asm[index],
+                                gt_invpost_rows[index]);
 }
 
 static void target_invntt(unsigned index)
@@ -422,6 +475,16 @@ static void target_gt_polymul_soa_dft3_hybrid(unsigned index)
                                  gt_soa_products[index]);
 }
 
+static void target_gt_polymul_soa_postprocess_hybrid(unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+                      gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2_postprocess_hybrid(outputs[index].coeffs,
+                                        gt_soa_products[index]);
+}
+
 static const struct operation operations[] = {
   {"ntt", target_ntt},
   {"gt-ntt", target_gt_ntt},
@@ -433,13 +496,19 @@ static const struct operation operations[] = {
   {"gt-invntt32-asm", target_gt_invntt32_asm},
   {"gt-invdft3", target_gt_invdft3_intrinsic},
   {"gt-invdft3-asm", target_gt_invdft3_asm},
+  {"gt-invpost", target_gt_invpost_intrinsic},
+  {"gt-invpost-asm", target_gt_invpost_asm},
   {"gt-invntt-soa", target_gt_invntt_soa},
   {"gt-invntt-soa-hybrid", target_gt_invntt_soa_hybrid},
   {"gt-invntt-soa-dft3-hybrid", target_gt_invntt_soa_dft3_hybrid},
+  {"gt-invntt-soa-postprocess-hybrid",
+   target_gt_invntt_soa_postprocess_hybrid},
   {"polymul", target_polymul},
   {"gt-polymul-soa", target_gt_polymul_soa},
   {"gt-polymul-soa-hybrid", target_gt_polymul_soa_hybrid},
   {"gt-polymul-soa-dft3-hybrid", target_gt_polymul_soa_dft3_hybrid},
+  {"gt-polymul-soa-postprocess-hybrid",
+   target_gt_polymul_soa_postprocess_hybrid},
 };
 
 static const struct operation *find_operation(const char *name)
@@ -498,6 +567,10 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_invdft3_rows[i]);
     } else if (operation->run == target_gt_invdft3_asm) {
       sink ^= checksum_i16(gt_invdft3_rows_asm[i]);
+    } else if (operation->run == target_gt_invpost_intrinsic) {
+      sink ^= checksum_i16(gt_invpost_outputs[i]);
+    } else if (operation->run == target_gt_invpost_asm) {
+      sink ^= checksum_i16(gt_invpost_outputs_asm[i]);
     } else {
       sink ^= checksum_i16(outputs[i].coeffs);
     }
@@ -566,9 +639,11 @@ static void print_usage(const char *program)
           "usage: %s --validate | "
           "<ntt|gt-ntt|gt-ntt-asm-soa|basemul|gt-basemul-soa|invntt|"
           "gt-invntt32|gt-invntt32-asm|gt-invntt-soa|"
-          "gt-invdft3|gt-invdft3-asm|gt-invntt-soa-hybrid|"
-          "gt-invntt-soa-dft3-hybrid|polymul|gt-polymul-soa|"
-          "gt-polymul-soa-hybrid|gt-polymul-soa-dft3-hybrid> "
+          "gt-invdft3|gt-invdft3-asm|gt-invpost|gt-invpost-asm|"
+          "gt-invntt-soa-hybrid|gt-invntt-soa-dft3-hybrid|"
+          "gt-invntt-soa-postprocess-hybrid|polymul|gt-polymul-soa|"
+          "gt-polymul-soa-hybrid|gt-polymul-soa-dft3-hybrid|"
+          "gt-polymul-soa-postprocess-hybrid> "
           "[--perf-loop]\n", program);
 }
 

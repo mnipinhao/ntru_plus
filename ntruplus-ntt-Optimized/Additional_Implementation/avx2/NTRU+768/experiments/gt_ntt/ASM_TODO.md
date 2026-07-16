@@ -209,14 +209,20 @@ inverse NTT.
   calls.  Its 16 in-place iterations interleave three independent Barrett
   chains, use YMM0..YMM14, and match the intrinsic scratch exactly for the
   boundary and 100 random inputs.
-- [ ] Hand-schedule one `(n3,Qgroup)` untwist/merge/4x8 final-store region.
+- [x] Hand-schedule one `(n3,Qgroup)` untwist/merge/4x8 final-store region.
+  `gt_invntt_soa_postprocess_asm` is a 781-byte linked symbol with no stack
+  access or calls.  Its 12 iterations use generated public factor/block tables
+  and match the intrinsic 768-word output exactly for direct boundary and 100
+  random valid scratch inputs.
 - [x] Keep inverse NTT32 ASM within the 16-register budget: 4 data, 8
   shuffle/Montgomery temporaries, 2 reusable mask/twiddle registers, q, and
   Barrett reciprocal.
-- [ ] Keep postprocess ASM within the 16-register budget: four final data plus
+- [x] Keep postprocess ASM within the 16-register budget: four final data plus
   unpack temporaries; do not retain multiple Q-groups across scratch boundaries.
-- [ ] Remove the two GCC constant spills and define whether the 1536-byte row
-  scratch is caller-provided or stack-owned in the production ABI.
+- [~] Remove the two GCC constant spills and define whether the 1536-byte row
+  scratch is caller-provided or stack-owned in the production ABI.  The
+  three-region wrapper has no constant spills and owns exactly 1536 stack
+  bytes, but the production scratch ABI remains undecided.
 
 ## ABI, constant-time, and object audit
 
@@ -227,8 +233,8 @@ inverse NTT.
 - [x] Keep all branches, addresses, and table indices input-independent.
 - [x] Check alignment assumptions: the stage-2 scratch is 32-byte aligned and
   uses `vmovdqa`; output has no alignment precondition and uses `vmovdqu`.
-- [~] Record stack and scratch use: the C hybrid wrapper currently owns 3072
-  bytes of aligned scratch, while the ASM region allocates zero bytes.  Decide
+- [~] Record stack and scratch use: the C hybrid wrapper currently owns 1536
+  bytes of aligned scratch, while each ASM region allocates zero bytes.  Decide
   whether the production caller must wipe secret scratch.
 - [ ] Define the production scratch-lifetime policy and wipe secret scratch if
   the final caller contract requires it.
@@ -287,6 +293,14 @@ five-repeat `perf stat -e cycles` run, full inverse falls from 1315.90 to
 4671.29 to 4640.95 cycles (0.65%).  The two-region path remains 1.92x the
 production polynomial multiplication result of 2414.32 cycles, so the next
 inverse target is untwist/merge/4x8 final store.
+
+The third hand-scheduled inverse region lowers isolated postprocess from
+580.83 to 521.51 hardware cycles/call (10.21%).  In the same five-repeat
+`perf stat -e cycles` run, full inverse falls from 1307.52 to 1254.70 cycles
+(4.04%), and full GT polynomial multiplication falls from 4645.01 to 4584.06
+cycles (1.31%).  Production polynomial multiplication is 2426.09 cycles, so
+the three-region path remains 1.89x production.  The next inverse task is
+region fusion, not another representation change.
 
 NTRU+768 has no scheme-level matrix-vector multiplication.  That benchmark is
 not applicable; `basemul_add` and full KEM component measurements are the
