@@ -9,7 +9,7 @@ RM = /bin/rm -f
 
 BUILD_DIR = build
 
-HEADERS = api.h params.h poly.h symmetric.h
+HEADERS = api.h params.h poly.h symmetric.h gt_keygen_bpq_cq.h
 KEM_COMMON_C = kem.c symmetric.c
 SHAKE_NOCE_SOURCES = NO_CE/fips202.c
 SHAKE_CE_SOURCES = CE/fips202.c CE/f1600.S
@@ -19,6 +19,7 @@ include gt_production_sources.mk
 GT_PRODUCTION_FLAGS = $(GT_PRODUCTION_DEFAULT_FLAGS)
 
 GT_SUPPORT_ASM = $(GT_PRODUCTION_SUPPORT_SOURCES)
+GT_CANONICAL_PACK_ASM = asm/gt/support/poly_canonical_pack.S
 GT_NTT_ASM_PRODUCTION = $(GT_PRODUCTION_NTT_SOURCES)
 GT_NTT_ASM_LEGACY = asm/gt/ntt/poly_ntt.S asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 GT_PRODUCTION_USE_LEGACY_NTT ?= 0
@@ -35,10 +36,21 @@ U01V3_G1_R123_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r12
 U01V3_G1_R123_S2_FULLPATH_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 U01V3_G1_R123_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_abi_sentinel.S
 U01V3_G1_R123_S2_ABI_SENTINEL_ASM = asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2_abi_sentinel.S
+GT_FRONTEND_DCE_SLOTHY_ASM = \
+	asm/gt/experiment/forward_ntt/poly_ntt_frontend_dce_slothy_fixed.S \
+	asm/gt/experiment/forward_ntt/poly_ntt_frontend_dce_slothy_rename.S
+GT_FRONTEND_DCE_SLOTHY_ABI_SENTINEL_ASM = gt_test/frontend_dce_abi_sentinel.S
 ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3),1)
+GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM =
+else ifeq ($(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),1)
 GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM =
 else
 GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM = $(GT_PRODUCTION_SAMPLE_NTT_MUL3_SOURCES)
+endif
+ifeq ($(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),1)
+GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND = $(GT_PRODUCTION_BPQ_CQ_KEYGEN_SOURCES)
+else
+GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND =
 endif
 GT_INVNTT_ASM = $(GT_PRODUCTION_INVNTT_SOURCE)
 GT_INVNTT_RMINUS1_PRODUCTION_ASM = $(GT_PRODUCTION_INVNTT_RMINUS1_SOURCE)
@@ -58,6 +70,9 @@ GT_INVNTT_RMINUS1_ASM = $(GT_INVNTT_RMINUS1_BASELINE_ASM)
 endif
 GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM = \
 	asm/gt/experiment/invntt/poly_invntt_rminus1_post_branchfold_slothy.S
+GT_INVNTT_STAGE123_PAIR_PIPELINE_ASM = \
+	asm/gt/experiment/invntt/poly_invntt_rminus1_stage123_pair_pipeline.S \
+	asm/gt/experiment/invntt/poly_invntt_rminus1_stage123_pair_pipeline_abi_sentinel.S
 GT_INVNTT_LAZY_TWIDDLE1_KEM_SOURCES = \
 	$(filter-out $(GT_INVNTT_RMINUS1_ASM),$(GT_PRODUCTION_DEFAULT_KEM_SOURCES)) \
 	$(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_DROPIN_ASM)
@@ -69,9 +84,23 @@ GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM = \
 	asm/gt/bench/poly_basemul_rminus1_to_stage123scratch_split.S
 GT_BASEINV_BATCH_FINISH_ASM = $(GT_PRODUCTION_BASEINV_FINISH_SOURCE)
 GT_BASEINV_FQINV_ASM = $(GT_PRODUCTION_BASEINV_FQINV_SOURCE)
-GT_BASEINV_BATCH_C = poly_gt_baseinv_batch.c $(GT_BASEINV_BATCH_FINISH_ASM) $(GT_BASEINV_FQINV_ASM)
+ifeq ($(GT_PRODUCTION_USE_PAPER_HIER_K8),1)
+GT_BASEINV_HIER_BACKEND_C = $(GT_PRODUCTION_BASEINV_PAPER_HIER_K8_SOURCE)
+else
+GT_BASEINV_HIER_BACKEND_C = $(GT_PRODUCTION_BASEINV_TREE_SOURCE)
+endif
+GT_BASEINV_BATCH_C = \
+	poly_gt_baseinv_batch.c \
+	$(GT_BASEINV_HIER_BACKEND_C) \
+	$(GT_BASEINV_BATCH_FINISH_ASM) \
+	$(GT_BASEINV_FQINV_ASM)
 GT_BASE_REF_C = gt_test/poly_gt_base_ref.c
 GT_PRODUCTION_Q31_ENCAP_ASM = $(GT_PRODUCTION_Q31_ENCAP_SOURCE)
+GT_Q31_PAIR_PIPELINE_ASM = \
+	asm/gt/basemul/poly_basemul_add_encap_tobytes_q31.S \
+	experiments/q31_basemul_add_pair_pipeline/q31_pair_u2.S \
+	experiments/q31_basemul_add_pair_pipeline/q31_pair_pipeline.opt.S \
+	gt_test/q31_pair_pipeline_abi_sentinel.S
 GT_BASE_OPT_NOADD_ASM = $(word 1,$(GT_PRODUCTION_BASE_SOURCES))
 GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM = $(word 2,$(GT_PRODUCTION_BASE_SOURCES))
 GT_BASE_ADD32_ASM = $(GT_BASE_ADD32_FULL_PIPELINE_INLINE_ASM)
@@ -94,11 +123,13 @@ else
 endif
 
 GT_PRODUCTION_KEM_COMMON_SOURCES = \
-	$(KEM_COMMON_C) \
-	ntt.c \
-	$(GT_SUPPORT_ASM) \
+		$(KEM_COMMON_C) \
+		ntt.c \
+		$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
+		$(GT_SUPPORT_ASM) \
 	$(GT_NTT_ASM) \
 	$(GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM) \
+	$(GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND) \
 	$(GT_INVNTT_ASM) \
 	$(GT_INVNTT_RMINUS1_ASM) \
 	$(SHAKE_SOURCES)

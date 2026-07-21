@@ -1,4 +1,5 @@
 /* Neoverse-N1 optimized production GT forward NTT. */
+/* Frontend DCE is Slothy-scheduled with the production register allocation. */
 /* ABI: x0=dst, x1=src. The 1536-byte row scratch is stack-local. */
 
 .text
@@ -44,177 +45,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #512
     add x6, x21, #1024
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v30.8h, v26.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v22.8h, v30.8h
-    add      v9.8h,  v9.8h,  v26.8h
-    sub      v10.8h, v22.8h, v26.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v22.8h, v30.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v23.8h, v31.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v27.8h, v23.8h
-    add      v9.8h,  v9.8h,  v31.8h
-    sub      v10.8h, v27.8h, v31.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v27.8h, v23.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v28.8h, v24.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v4.8h, v28.8h
-    add      v9.8h,  v9.8h,  v24.8h
-    sub      v10.8h, v4.8h, v24.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v4.8h, v28.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v5.8h, v29.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v25.8h, v5.8h
-    add      v9.8h,  v9.8h,  v29.8h
-    sub      v10.8h, v25.8h, v29.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v25.8h, v5.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 0, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
 
     // Production GT frontend iter2, shared prefix once.
     add x1, x20, #64
@@ -223,177 +210,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #640
     add x6, x21, #1152
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v26.8h, v22.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v30.8h, v26.8h
-    add      v9.8h,  v9.8h,  v22.8h
-    sub      v10.8h, v30.8h, v22.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v30.8h, v26.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v31.8h, v27.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v23.8h, v31.8h
-    add      v9.8h,  v9.8h,  v27.8h
-    sub      v10.8h, v23.8h, v27.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v23.8h, v31.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v24.8h, v4.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v28.8h, v24.8h
-    add      v9.8h,  v9.8h,  v4.8h
-    sub      v10.8h, v28.8h, v4.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v28.8h, v24.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v29.8h, v25.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v5.8h, v29.8h
-    add      v9.8h,  v9.8h,  v25.8h
-    sub      v10.8h, v5.8h, v25.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v5.8h, v29.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 2, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        ldr q14, [x1, #1280]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        sub v11.8H, v11.8H, v17.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q4, q5, [x1, #0]
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        add v10.8H, v10.8H, v4.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        add v5.8H, v5.8H, v17.8H
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        add v12.8H, v12.8H, v6.8H
+        mls v20.8H, v8.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        mul v21.8H, v15.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        sub v15.8H, v15.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sub v6.8H, v26.8H, v22.8H
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        mls v8.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        zip2 v31.2D, v8.2D, v14.2D
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v11.8H, v30.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        sub v6.8H, v31.8H, v27.8H
+        sub v10.8H, v30.8H, v22.8H
+        mls v9.8H, v3.8H, v0.H[0]
+        mls v8.8H, v7.8H, v0.H[0]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        zip1 v4.2D, v9.2D, v15.2D
+        zip2 v5.2D, v9.2D, v15.2D
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v23.8H, v31.8H
+        sub v6.8H, v24.8H, v4.8H
+        add v9.8H, v9.8H, v27.8H
+        sub v11.8H, v23.8H, v31.8H
+        sub v10.8H, v23.8H, v27.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        str q9, [x4, #16]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v30.8H, v26.8H
+        str q10, [x5, #16]
+        sub v10.8H, v28.8H, v4.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v22.8H
+        str q9, [x4, #0]
+        sub v6.8H, v29.8H, v25.8H
+        str q11, [x6, #16]
+        sub v11.8H, v28.8H, v24.8H
+        add v10.8H, v10.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v5.8H, v29.8H
+        str q11, [x6, #32]
+        sub v11.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v25.8H
+        str q10, [x5, #32]
+        sub v10.8H, v5.8H, v25.8H
+        str q9, [x4, #48]
+        add v9.8H, v28.8H, v24.8H
+        add v9.8H, v9.8H, v4.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #32]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
 
     // Production GT frontend iter4, shared prefix once.
     add x1, x20, #128
@@ -402,177 +375,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #768
     add x6, x21, #1280
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v22.8h, v30.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v26.8h, v22.8h
-    add      v9.8h,  v9.8h,  v30.8h
-    sub      v10.8h, v26.8h, v30.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v26.8h, v22.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v27.8h, v23.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v31.8h, v27.8h
-    add      v9.8h,  v9.8h,  v23.8h
-    sub      v10.8h, v31.8h, v23.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v31.8h, v27.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v4.8h, v28.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v24.8h, v4.8h
-    add      v9.8h,  v9.8h,  v28.8h
-    sub      v10.8h, v24.8h, v28.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v24.8h, v4.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v25.8h, v5.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v29.8h, v25.8h
-    add      v9.8h,  v9.8h,  v5.8h
-    sub      v10.8h, v29.8h, v5.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v29.8h, v25.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 1, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        sub v15.8H, v15.8H, v21.8H
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
 
     // Production GT frontend iter6, shared prefix once.
     add x1, x20, #192
@@ -581,177 +540,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #896
     add x6, x21, #1408
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v30.8h, v26.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v22.8h, v30.8h
-    add      v9.8h,  v9.8h,  v26.8h
-    sub      v10.8h, v22.8h, v26.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v22.8h, v30.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v23.8h, v31.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v27.8h, v23.8h
-    add      v9.8h,  v9.8h,  v31.8h
-    sub      v10.8h, v27.8h, v31.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v27.8h, v23.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v28.8h, v24.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v4.8h, v28.8h
-    add      v9.8h,  v9.8h,  v24.8h
-    sub      v10.8h, v4.8h, v24.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v4.8h, v28.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v5.8h, v29.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v25.8h, v5.8h
-    add      v9.8h,  v9.8h,  v29.8h
-    sub      v10.8h, v25.8h, v29.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v25.8h, v5.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 0, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
 
     // Production GT frontend iter1, shared prefix once.
     add x1, x20, #32
@@ -760,177 +705,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #576
     add x6, x21, #1088
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v22.8h, v30.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v26.8h, v22.8h
-    add      v9.8h,  v9.8h,  v30.8h
-    sub      v10.8h, v26.8h, v30.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v26.8h, v22.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v27.8h, v23.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v31.8h, v27.8h
-    add      v9.8h,  v9.8h,  v23.8h
-    sub      v10.8h, v31.8h, v23.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v31.8h, v27.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v4.8h, v28.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v24.8h, v4.8h
-    add      v9.8h,  v9.8h,  v28.8h
-    sub      v10.8h, v24.8h, v28.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v24.8h, v4.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v25.8h, v5.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v29.8h, v25.8h
-    add      v9.8h,  v9.8h,  v5.8h
-    sub      v10.8h, v29.8h, v5.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v29.8h, v25.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 1, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        sub v15.8H, v15.8H, v21.8H
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
 
     // Production GT frontend iter3, shared prefix once.
     add x1, x20, #96
@@ -939,177 +870,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #704
     add x6, x21, #1216
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v30.8h, v26.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v22.8h, v30.8h
-    add      v9.8h,  v9.8h,  v26.8h
-    sub      v10.8h, v22.8h, v26.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v22.8h, v30.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v23.8h, v31.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v27.8h, v23.8h
-    add      v9.8h,  v9.8h,  v31.8h
-    sub      v10.8h, v27.8h, v31.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v27.8h, v23.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v28.8h, v24.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v4.8h, v28.8h
-    add      v9.8h,  v9.8h,  v24.8h
-    sub      v10.8h, v4.8h, v24.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v4.8h, v28.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v5.8h, v29.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v25.8h, v5.8h
-    add      v9.8h,  v9.8h,  v29.8h
-    sub      v10.8h, v25.8h, v29.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v25.8h, v5.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 0, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
 
     // Production GT frontend iter5, shared prefix once.
     add x1, x20, #160
@@ -1118,177 +1035,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #832
     add x6, x21, #1344
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v26.8h, v22.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v30.8h, v26.8h
-    add      v9.8h,  v9.8h,  v22.8h
-    sub      v10.8h, v30.8h, v22.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v30.8h, v26.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v31.8h, v27.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v23.8h, v31.8h
-    add      v9.8h,  v9.8h,  v27.8h
-    sub      v10.8h, v23.8h, v27.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v23.8h, v31.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v24.8h, v4.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v28.8h, v24.8h
-    add      v9.8h,  v9.8h,  v4.8h
-    sub      v10.8h, v28.8h, v4.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v28.8h, v24.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v29.8h, v25.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v5.8h, v29.8h
-    add      v9.8h,  v9.8h,  v25.8h
-    sub      v10.8h, v5.8h, v25.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v5.8h, v29.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 2, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        ldr q14, [x1, #1280]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        sub v11.8H, v11.8H, v17.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q4, q5, [x1, #0]
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        add v10.8H, v10.8H, v4.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        add v5.8H, v5.8H, v17.8H
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        add v12.8H, v12.8H, v6.8H
+        mls v20.8H, v8.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        mul v21.8H, v15.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        sub v15.8H, v15.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sub v6.8H, v26.8H, v22.8H
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        mls v8.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        zip2 v31.2D, v8.2D, v14.2D
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v11.8H, v30.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        sub v6.8H, v31.8H, v27.8H
+        sub v10.8H, v30.8H, v22.8H
+        mls v9.8H, v3.8H, v0.H[0]
+        mls v8.8H, v7.8H, v0.H[0]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        zip1 v4.2D, v9.2D, v15.2D
+        zip2 v5.2D, v9.2D, v15.2D
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v23.8H, v31.8H
+        sub v6.8H, v24.8H, v4.8H
+        add v9.8H, v9.8H, v27.8H
+        sub v11.8H, v23.8H, v31.8H
+        sub v10.8H, v23.8H, v27.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        str q9, [x4, #16]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v30.8H, v26.8H
+        str q10, [x5, #16]
+        sub v10.8H, v28.8H, v4.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v22.8H
+        str q9, [x4, #0]
+        sub v6.8H, v29.8H, v25.8H
+        str q11, [x6, #16]
+        sub v11.8H, v28.8H, v24.8H
+        add v10.8H, v10.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v5.8H, v29.8H
+        str q11, [x6, #32]
+        sub v11.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v25.8H
+        str q10, [x5, #32]
+        sub v10.8H, v5.8H, v25.8H
+        str q9, [x4, #48]
+        add v9.8H, v28.8H, v24.8H
+        add v9.8H, v9.8H, v4.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #32]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
 
     // Production GT frontend iter7, shared prefix once.
     add x1, x20, #224
@@ -1297,177 +1200,163 @@ _gt_block_major_poly_ntt:
     add x5, x21, #960
     add x6, x21, #1472
     // high side
-    ldp q10, q11, [x1, #768]
-    ldr q12, [x1, #1024]
-    ldr q13, [x1, #1040]
-    ldr q14, [x1, #1280]
-    ldr q15, [x1, #1296]
-    mul v16.8h, v10.8h, v0.h[4]
-    mul v17.8h, v11.8h, v0.h[4]
-    mul v18.8h, v12.8h, v0.h[4]
-    mul v19.8h, v13.8h, v0.h[4]
-    mul v20.8h, v14.8h, v0.h[4]
-    mul v21.8h, v15.8h, v0.h[4]
-    sqrdmulh v4.8h, v10.8h, v0.h[5]
-    sqrdmulh v5.8h, v11.8h, v0.h[5]
-    sqrdmulh v6.8h, v12.8h, v0.h[5]
-    sqrdmulh v7.8h, v13.8h, v0.h[5]
-    sqrdmulh v8.8h, v14.8h, v0.h[5]
-    sqrdmulh v9.8h, v15.8h, v0.h[5]
-    mls v16.8h, v4.8h, v0.h[0]
-    mls v17.8h, v5.8h, v0.h[0]
-    mls v18.8h, v6.8h, v0.h[0]
-    mls v19.8h, v7.8h, v0.h[0]
-    mls v20.8h, v8.8h, v0.h[0]
-    mls v21.8h, v9.8h, v0.h[0]
-    sub v10.8h, v10.8h, v16.8h
-    sub v11.8h, v11.8h, v17.8h
-    sub v12.8h, v12.8h, v18.8h
-    sub v13.8h, v13.8h, v19.8h
-    sub v14.8h, v14.8h, v20.8h
-    sub v15.8h, v15.8h, v21.8h
-    ldp q4, q5, [x1, #0]
-    ldp q6, q7, [x1, #256]
-    ldp q8, q9, [x1, #512]
-    add v10.8h, v10.8h, v4.8h
-    add v11.8h, v11.8h, v5.8h
-    add v12.8h, v12.8h, v6.8h
-    add v13.8h, v13.8h, v7.8h
-    add v14.8h, v14.8h, v8.8h
-    add v15.8h, v15.8h, v9.8h
-    add v4.8h, v4.8h, v16.8h
-    add v5.8h, v5.8h, v17.8h
-    add v6.8h, v6.8h, v18.8h
-    add v7.8h, v7.8h, v19.8h
-    add v8.8h, v8.8h, v20.8h
-    add v9.8h, v9.8h, v21.8h
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v10.8h, v2.8h
-    mul      v10.8h, v10.8h, v1.8h
-    mls      v10.8h, v3.8h, v0.h[0]
-    // v11 = [B1[8]..B1[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v11.8h, v2.8h
-    mul      v11.8h, v11.8h, v1.8h
-    mls      v11.8h, v3.8h, v0.h[0]
-    // v12 = [B1[128]..B1[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v12.8h, v2.8h
-    mul      v12.8h, v12.8h, v1.8h
-    mls      v12.8h, v3.8h, v0.h[0]
-    // v13 = [B1[136]..B1[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v13.8h, v2.8h
-    mul      v13.8h, v13.8h, v1.8h
-    mls      v13.8h, v3.8h, v0.h[0]
-    // v14 = [B1[256]..B1[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v14.8h, v2.8h
-    mul      v14.8h, v14.8h, v1.8h
-    mls      v14.8h, v3.8h, v0.h[0]
-    // v15 = [B1[264]..B1[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v15.8h, v2.8h
-    mul      v15.8h, v15.8h, v1.8h
-    mls      v15.8h, v3.8h, v0.h[0]
-    // v4 = [B0[0]..B0[7]], blocks k=0,1
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v4.8h, v2.8h
-    mul      v4.8h, v4.8h, v1.8h
-    mls      v4.8h, v3.8h, v0.h[0]
-    // v5 = [B0[8]..B0[15]], blocks k=2,3
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v5.8h, v2.8h
-    mul      v5.8h, v5.8h, v1.8h
-    mls      v5.8h, v3.8h, v0.h[0]
-    // v6 = [B0[128]..B0[135]], blocks k=32,33
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v6.8h, v2.8h
-    mul      v6.8h, v6.8h, v1.8h
-    mls      v6.8h, v3.8h, v0.h[0]
-    // v7 = [B0[136]..B0[143]], blocks k=34,35
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v7.8h, v2.8h
-    mul      v7.8h, v7.8h, v1.8h
-    mls      v7.8h, v3.8h, v0.h[0]
-    // v8 = [B0[256]..B0[263]], blocks k=64,65
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v8.8h, v2.8h
-    mul      v8.8h, v8.8h, v1.8h
-    mls      v8.8h, v3.8h, v0.h[0]
-    // v9 = [B0[264]..B0[271]], blocks k=66,67
-    ldp q1, q2, [x3], #32
-    sqrdmulh v3.8h, v9.8h, v2.8h
-    mul      v9.8h, v9.8h, v1.8h
-    mls      v9.8h, v3.8h, v0.h[0]
-    zip1 v22.2d, v4.2d, v10.2d
-    zip2 v23.2d, v4.2d, v10.2d
-    zip1 v24.2d, v5.2d, v11.2d
-    zip2 v25.2d, v5.2d, v11.2d
-    zip1 v26.2d, v6.2d, v12.2d
-    zip2 v27.2d, v6.2d, v12.2d
-    zip1 v28.2d, v7.2d, v13.2d
-    zip2 v29.2d, v7.2d, v13.2d
-    zip1 v30.2d, v8.2d, v14.2d
-    zip2 v31.2d, v8.2d, v14.2d
-    zip1 v4.2d, v9.2d, v15.2d
-    zip2 v5.2d, v9.2d, v15.2d
-    sub      v6.8h, v22.8h, v30.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v26.8h, v22.8h
-    add      v9.8h,  v9.8h,  v30.8h
-    sub      v10.8h, v26.8h, v30.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v26.8h, v22.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #0]
-    str q10, [x5, #0]
-    str q11, [x6, #0]
-    sub      v6.8h, v27.8h, v23.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v31.8h, v27.8h
-    add      v9.8h,  v9.8h,  v23.8h
-    sub      v10.8h, v31.8h, v23.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v31.8h, v27.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #16]
-    str q10, [x5, #16]
-    str q11, [x6, #16]
-    sub      v6.8h, v4.8h, v28.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v24.8h, v4.8h
-    add      v9.8h,  v9.8h,  v28.8h
-    sub      v10.8h, v24.8h, v28.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v24.8h, v4.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #32]
-    str q10, [x5, #32]
-    str q11, [x6, #32]
-    sub      v6.8h, v25.8h, v5.8h
-    sqrdmulh v7.8h, v6.8h, v0.h[3]
-    mul      v8.8h, v6.8h, v0.h[2]
-    mls      v8.8h, v7.8h, v0.h[0]
-    add      v9.8h,  v29.8h, v25.8h
-    add      v9.8h,  v9.8h,  v5.8h
-    sub      v10.8h, v29.8h, v5.8h
-    add      v10.8h, v10.8h, v8.8h
-    sub      v11.8h, v29.8h, v25.8h
-    sub      v11.8h, v11.8h, v8.8h
-    str q9,  [x4, #48]
-    str q10, [x5, #48]
-    str q11, [x6, #48]
-    add x1, x1, #32
-    add x4, x4, #64
-    add x5, x5, #64
-    add x6, x6, #64
+    // Slothy frontend DCE class 1, fixed allocation.
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        sqrdmulh v6.8H, v12.8H, v0.H[5]
+        sqrdmulh v4.8H, v10.8H, v0.H[5]
+        sqrdmulh v5.8H, v11.8H, v0.H[5]
+        mul v16.8H, v10.8H, v0.H[4]
+        mls v16.8H, v4.8H, v0.H[0]
+        mul v18.8H, v12.8H, v0.H[4]
+        mls v18.8H, v6.8H, v0.H[0]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        mls v17.8H, v5.8H, v0.H[0]
+        sub v12.8H, v12.8H, v18.8H
+        sqrdmulh v9.8H, v15.8H, v0.H[5]
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        sqrdmulh v7.8H, v13.8H, v0.H[5]
+        add v11.8H, v11.8H, v5.8H
+        mls v21.8H, v9.8H, v0.H[0]
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sqrdmulh v8.8H, v14.8H, v0.H[5]
+        sub v15.8H, v15.8H, v21.8H
+        mls v19.8H, v7.8H, v0.H[0]
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        mls v20.8H, v8.8H, v0.H[0]
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
 
     // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]

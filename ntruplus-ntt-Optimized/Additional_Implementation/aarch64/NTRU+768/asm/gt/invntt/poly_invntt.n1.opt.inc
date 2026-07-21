@@ -297,11 +297,75 @@
 	     * k32 = 0..31, so the offsets are simply 16*k32.
 	     */
 	    DIRECT_STAGE123_CONSTS
-	    BPQ_STAGE123_BLOCK_TO_SCRATCH 0,   0,  16,  32,  48,  64,  80,  96, 112
+	    /* Direct-BPQ block0 physical order is [3,2,5,0,7,6,4,1]. */
+	    BPQ_STAGE123_BLOCK_TO_SCRATCH 0,  48, 112,  16,   0,  96,  32,  80,  64
 	    BPQ_STAGE123_BLOCK_TO_SCRATCH 1, 128, 144, 160, 176, 192, 208, 224, 240
 	    BPQ_STAGE123_BLOCK_TO_SCRATCH 2, 256, 272, 288, 304, 320, 336, 352, 368
 	    BPQ_STAGE123_BLOCK_TO_SCRATCH 3, 384, 400, 416, 432, 448, 464, 480, 496
 	.endm
+
+	.ifdef INVNTT_EXPOSE_BPQ_CQ
+	.macro BPQ_CQ_LOAD4 out0, out1, out2, out3, base
+	    ldp q\out0, q\out1, [x3, #(\base + 0)]
+	    ldp q\out2, q\out3, [x3, #(\base + 32)]
+	    trn1 v11.8h, v\out0\().8h, v\out1\().8h
+	    trn2 v12.8h, v\out0\().8h, v\out1\().8h
+	    trn1 v13.8h, v\out2\().8h, v\out3\().8h
+	    trn2 v14.8h, v\out2\().8h, v\out3\().8h
+	    trn1 v\out0\().4s, v11.4s, v13.4s
+	    trn2 v\out2\().4s, v11.4s, v13.4s
+	    trn1 v\out1\().4s, v12.4s, v14.4s
+	    trn2 v\out3\().4s, v12.4s, v14.4s
+	.endm
+
+	.macro BPQ_CQ_STAGE123_REGS_TO_SCRATCH group
+	    /* len=2 */
+	    INV_BUTTERFLY_LANE v3, v4, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v5, v6, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v7, v8, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v9, v10, v1, 0, v2, 0, v11, v12
+
+	    /* len=4 */
+	    INV_BUTTERFLY_LANE v3, v5, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+	    INV_BUTTERFLY_LANE v7, v9, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+
+	    /* len=8 */
+	    INV_BUTTERFLY_LANE v3, v7, v1, 0, v2, 0, v11, v12
+	    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+	    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+	    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+
+	    STORE_STAGE123_STRIPE_SCRATCH \group
+	.endm
+
+	.macro BPQ_CQ_STAGE123_BLOCK_TO_SCRATCH group, base
+	    /* Undo two adjacent 4x4 CQ tiles entirely in registers. */
+	    BPQ_CQ_LOAD4 3, 4, 5, 6, \base
+	    BPQ_CQ_LOAD4 7, 8, 9, 10, (\base + 64)
+	    BPQ_CQ_STAGE123_REGS_TO_SCRATCH \group
+	.endm
+
+	.macro BPQ_CQ_STAGE123_BLOCK0_TO_SCRATCH
+	    /*
+	     * Map BPQ slots [0..7] directly to inverse k32 register order
+	     * [3,7,1,0,6,2,5,4] while undoing the two CQ transposes.
+	     */
+	    BPQ_CQ_LOAD4 6, 5, 8, 3, 0
+	    BPQ_CQ_LOAD4 10, 9, 7, 4, 64
+	    BPQ_CQ_STAGE123_REGS_TO_SCRATCH 0
+	.endm
+
+	.macro BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    /* 32 k32 values are stored as eight consecutive 4x4 CQ tiles. */
+	    DIRECT_STAGE123_CONSTS
+	    BPQ_CQ_STAGE123_BLOCK0_TO_SCRATCH
+	    BPQ_CQ_STAGE123_BLOCK_TO_SCRATCH 1, 128
+	    BPQ_CQ_STAGE123_BLOCK_TO_SCRATCH 2, 256
+	    BPQ_CQ_STAGE123_BLOCK_TO_SCRATCH 3, 384
+	.endm
+	.endif
 
 .macro RUN_INVNTT32_STAGE45_SCRATCH_ROW
     /*
@@ -842,6 +906,10 @@
 	.global _gt_tuple_poly_invntt
 	.global gt_bpq_poly_invntt
 	.global _gt_bpq_poly_invntt
+	.ifdef INVNTT_EXPOSE_BPQ_CQ
+	.global gt_bpq_cq_poly_invntt
+	.global _gt_bpq_cq_poly_invntt
+	.endif
 
 .ifndef INVNTT_NO_POLY_ALIAS
 poly_invntt:
@@ -868,7 +936,11 @@ _gt_block_major_poly_invntt:
      * branchfold post code into a first Slothy pass.
      */
 slothy_start_invntt_block_row0_stage123:
+.ifdef INVNTT_USE_STAGE123_PAIR_PIPELINE
+    INVNTT_STAGE123_PAIR_ROW0_BODY
+.else
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+.endif
 slothy_end_invntt_block_row0_stage123:
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
@@ -884,7 +956,11 @@ slothy_end_invntt_block_row0_stage45:
     add x4, x1, #768
     add x2, sp, #544
 slothy_start_invntt_block_row1_stage123:
+.ifdef INVNTT_USE_STAGE123_PAIR_PIPELINE
+    INVNTT_STAGE123_PAIR_ROW1_BODY
+.else
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+.endif
 slothy_end_invntt_block_row1_stage123:
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
@@ -900,7 +976,11 @@ slothy_end_invntt_block_row1_stage45:
     add x4, x1, #768
     add x2, sp, #1056
 slothy_start_invntt_block_row2_stage123:
+.ifdef INVNTT_USE_STAGE123_PAIR_PIPELINE
+    INVNTT_STAGE123_PAIR_ROW2_BODY
+.else
     DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+.endif
 slothy_end_invntt_block_row2_stage123:
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
@@ -970,6 +1050,38 @@ _gt_tuple_poly_invntt:
 	    add x14, sp, #1568
 	    BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
 	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+	.ifdef INVNTT_EXPOSE_BPQ_CQ
+	    b L_invntt_post_tail
+	.endif
+
+	.ifdef INVNTT_EXPOSE_BPQ_CQ
+	gt_bpq_cq_poly_invntt:
+	_gt_bpq_cq_poly_invntt:
+	    stp x30, x0, [sp, #-16]!
+	    sub sp, sp, #INVNTT_STACK_SIZE
+	    INVNTT_SAVE_CALLEE_SAVED_SIMD
+
+	    adr x3, inv_consts
+	    ldr q0, [x3]
+
+	    add x3, x1, #0
+	    add x2, sp, #32
+	    add x14, sp, #1568
+	    BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+	    add x3, x1, #512
+	    add x2, sp, #544
+	    add x14, sp, #1568
+	    BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+
+	    add x3, x1, #1024
+	    add x2, sp, #1056
+	    add x14, sp, #1568
+	    BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+	.endif
 
 	L_invntt_post_tail:
     adr x3, inv_consts
@@ -1144,6 +1256,16 @@ inv_branchfold_vecs:
 .purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
 .purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
 .purgem TUPLE_STAGE123_STRIPE_SCRATCH_ROW_BODY
+.purgem BPQ_STAGE123_VEC
+.purgem BPQ_STAGE123_BLOCK_TO_SCRATCH
+.purgem BPQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+.ifdef INVNTT_EXPOSE_BPQ_CQ
+.purgem BPQ_CQ_LOAD4
+.purgem BPQ_CQ_STAGE123_REGS_TO_SCRATCH
+.purgem BPQ_CQ_STAGE123_BLOCK_TO_SCRATCH
+.purgem BPQ_CQ_STAGE123_BLOCK0_TO_SCRATCH
+.purgem BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
+.endif
 .purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
 .purgem POST_STORE_PTR
 .purgem LOAD_BRANCHFOLD_CONSTS
