@@ -1,3 +1,5 @@
+#include "../asm/gt/support/common.inc"
+
 .text
 .align 2
 
@@ -25,13 +27,18 @@
     orr x0, x0, x11
 .endm
 
-.macro DEFINE_INVNTT_ABI_SENTINEL name, target
-.global \name
-.type \name, %function
-\name:
+/*
+ * x0=BPQ work, x1=CQ inverse, x2=CQ product, x3=bytes, x4=small input.
+ * The chain calls every public entry in the production-only keygen backend.
+ */
+.global C_SYM(gt_keygen_bpq_cq_abi_sentinel)
+#ifndef __APPLE__
+.type C_SYM(gt_keygen_bpq_cq_abi_sentinel), %function
+#endif
+C_SYM(gt_keygen_bpq_cq_abi_sentinel):
     stp x29, x30, [sp, #-16]!
     mov x29, sp
-    sub sp, sp, #160
+    sub sp, sp, #192
     stp x19, x20, [sp, #0]
     stp x21, x22, [sp, #16]
     stp x23, x24, [sp, #32]
@@ -42,6 +49,8 @@
     stp d12, d13, [sp, #112]
     stp d14, d15, [sp, #128]
     stp x0, x1, [sp, #144]
+    stp x2, x3, [sp, #160]
+    str x4, [sp, #176]
 
     LOAD_CANARY x19, 0x1919
     LOAD_CANARY x20, 0x2020
@@ -70,8 +79,25 @@
     LOAD_CANARY x9, 0xdfdf
     fmov d15, x9
 
-    ldp x0, x1, [sp, #144]
-    bl \target
+    ldr x0, [sp, #144]
+    ldr x1, [sp, #176]
+    bl C_SYM(gt_keygen_ntt_bpq_mul3)
+    ldr x0, [sp, #144]
+    ldr x1, [sp, #176]
+    bl C_SYM(gt_keygen_ntt_bpq_mul3_add1)
+    ldr x0, [sp, #152]
+    ldr x1, [sp, #144]
+    bl C_SYM(gt_keygen_baseinv_bpq_to_cq_scaled_r)
+    ldr x0, [sp, #160]
+    ldr x1, [sp, #144]
+    ldr x2, [sp, #152]
+    bl C_SYM(gt_keygen_basemul_bpq_cq_to_cq_scaled_r)
+    ldr x0, [sp, #168]
+    ldr x1, [sp, #160]
+    bl C_SYM(gt_keygen_tobytes_cq)
+    ldr x0, [sp, #168]
+    ldr x1, [sp, #144]
+    bl C_SYM(gt_keygen_tobytes_bpq_p1)
 
     mov x0, xzr
     CHECK_X x19, 0x1919, 0
@@ -102,15 +128,10 @@
     ldp x23, x24, [sp, #32]
     ldp x21, x22, [sp, #16]
     ldp x19, x20, [sp, #0]
-    add sp, sp, #160
+    add sp, sp, #192
     ldp x29, x30, [sp], #16
     ret
-.size \name, .-\name
-.endm
-
-#ifndef INVNTT_ABI_SENTINEL_MACROS_ONLY
-DEFINE_INVNTT_ABI_SENTINEL poly_invntt_rminus1_lazy_twiddle1_stage123_abi_sentinel, poly_invntt_rminus1_lazy_twiddle1_stage123
-DEFINE_INVNTT_ABI_SENTINEL poly_invntt_rminus1_lazy_twiddle1_stage123_len16_abi_sentinel, poly_invntt_rminus1_lazy_twiddle1_stage123_len16
-DEFINE_INVNTT_ABI_SENTINEL poly_invntt_rminus1_post_branchfold_slothy_abi_sentinel, poly_invntt_rminus1_post_branchfold_slothy
-DEFINE_INVNTT_ABI_SENTINEL poly_invntt_from_rminus1_production_abi_sentinel, poly_invntt_from_rminus1
+#ifndef __APPLE__
+.size C_SYM(gt_keygen_bpq_cq_abi_sentinel), \
+    .-C_SYM(gt_keygen_bpq_cq_abi_sentinel)
 #endif

@@ -5,4 +5,4 @@
 .global _gt_keygen_ntt_bpq_mul3_add1
 gt_keygen_ntt_bpq_mul3_add1:
 _gt_keygen_ntt_bpq_mul3_add1:
-    .include "asm/gt/ntt/poly_ntt_bpq_mul3_add1_body.inc"
+    .include "asm/gt/keygen_bpq_cq/ntt_mul3_add1_body.inc"
