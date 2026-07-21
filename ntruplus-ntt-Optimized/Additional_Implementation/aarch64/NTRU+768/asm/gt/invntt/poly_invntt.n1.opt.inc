@@ -902,6 +902,7 @@
 .endif
 	.global gt_block_major_poly_invntt
 	.global _gt_block_major_poly_invntt
+	.ifndef INVNTT_BLOCK_MAJOR_ONLY
 	.global gt_tuple_poly_invntt
 	.global _gt_tuple_poly_invntt
 	.global gt_bpq_poly_invntt
@@ -909,6 +910,7 @@
 	.ifdef INVNTT_EXPOSE_BPQ_CQ
 	.global gt_bpq_cq_poly_invntt
 	.global _gt_bpq_cq_poly_invntt
+	.endif
 	.endif
 
 .ifndef INVNTT_NO_POLY_ALIAS
@@ -993,6 +995,7 @@ slothy_start_invntt_block_row2_stage45:
 slothy_end_invntt_block_row2_stage45:
     b L_invntt_post_tail
 
+	.ifndef INVNTT_BLOCK_MAJOR_ONLY
 gt_tuple_poly_invntt:
 _gt_tuple_poly_invntt:
     stp x30, x0, [sp, #-16]!
@@ -1081,6 +1084,7 @@ _gt_tuple_poly_invntt:
 	    add x14, sp, #1568
 	    BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
 	    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+	.endif
 	.endif
 
 	L_invntt_post_tail:

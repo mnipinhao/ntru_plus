@@ -21,6 +21,79 @@
 #include "params.h"
 #include "poly.h"
 
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#include "gt/keygen_bpq_cq.h"
+
+/* The profiler keeps one poly-sized fixture pool; adapters name each layout. */
+static void bench_keygen_ntt_bpq_mul3(poly *out, const poly *small)
+{
+  gt_keygen_ntt_bpq_mul3((gt_bpq_poly *)(void *)out, small);
+}
+
+static void bench_keygen_ntt_bpq_mul3_add1(poly *out, const poly *small)
+{
+  gt_keygen_ntt_bpq_mul3_add1((gt_bpq_poly *)(void *)out, small);
+}
+
+static int bench_keygen_baseinv_bpq_cq(poly *out, const poly *in)
+{
+  return gt_keygen_baseinv_bpq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out, (const gt_bpq_poly *)(const void *)in);
+}
+
+static void bench_keygen_basemul_bpq_cq(poly *out, const poly *bpq,
+                                        const poly *cq)
+{
+  gt_keygen_basemul_bpq_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_bpq_poly *)(const void *)bpq,
+      (const gt_cq_poly *)(const void *)cq);
+}
+
+static void bench_keygen_tobytes_cq(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_cq(out, (const gt_cq_poly *)(const void *)in);
+}
+
+static void bench_keygen_tobytes_bpq_p1(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_bpq_p1(out,
+                           (const gt_bpq_poly *)(const void *)in);
+}
+
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_ntt_bpq_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_ntt_bpq_mul3_add1
+#define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv_bpq_cq
+#define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul_bpq_cq
+#define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_F bench_keygen_tobytes_bpq_p1
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV bench_keygen_tobytes_cq
+#endif
+
+#if defined(BENCH_VARIANT_GT) && BENCH_VARIANT_GT
+#define BENCH_NTT_TOBYTES poly_tobytes_gt_canonical
+#define BENCH_NTT_FROMBYTES poly_frombytes_gt_canonical
+#else
+#define BENCH_NTT_TOBYTES poly_tobytes
+#define BENCH_NTT_FROMBYTES poly_frombytes
+#endif
+
+#ifndef BENCH_KEYGEN_TOBYTES_PUBLIC
+#if defined(GT_PRODUCTION_USE_KEYGEN_CANONICAL_PACK_P1)
+#define BENCH_KEYGEN_TOBYTES_PUBLIC poly_tobytes_gt_canonical_p1
+#else
+#define BENCH_KEYGEN_TOBYTES_PUBLIC BENCH_NTT_TOBYTES
+#endif
+#endif
+
+#ifndef BENCH_KEYGEN_TOBYTES_SECRET_F
+#define BENCH_KEYGEN_TOBYTES_SECRET_F BENCH_KEYGEN_TOBYTES_PUBLIC
+#endif
+
+#ifndef BENCH_KEYGEN_TOBYTES_SECRET_HINV
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV BENCH_KEYGEN_TOBYTES_PUBLIC
+#endif
+
 #ifndef BENCH_ENABLE_KEM
 #define BENCH_ENABLE_KEM 0
 #endif
@@ -51,20 +124,38 @@ void poly_basemul_to_tuple(poly *r, const poly *a, const poly *b);
 void gt_tuple_poly_invntt(poly *r, const poly *a);
 #endif
 
-#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+#if defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+#elif defined(GT_PRODUCTION_USE_SCALED_KEYPAIR)
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
-#define KEYPAIR_BASEINV poly_baseinv_scaled_r
-#define KEYPAIR_BASEMUL poly_basemul_scaled_r_input
+#ifndef BENCH_KEYPAIR_BASEINV
+#define BENCH_KEYPAIR_BASEINV poly_baseinv_scaled_r
+#endif
+#ifndef BENCH_KEYPAIR_BASEMUL
+#define BENCH_KEYPAIR_BASEMUL poly_basemul_scaled_r_input
+#endif
 #else
-#define KEYPAIR_BASEINV poly_baseinv
-#define KEYPAIR_BASEMUL poly_basemul
+#ifndef BENCH_KEYPAIR_BASEINV
+#define BENCH_KEYPAIR_BASEINV poly_baseinv
+#endif
+#ifndef BENCH_KEYPAIR_BASEMUL
+#define BENCH_KEYPAIR_BASEMUL poly_basemul
+#endif
 #endif
 
 #ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
 void poly_ntt_mul3(poly *out, const poly *a);
 void poly_ntt_mul3_add1(poly *out, const poly *a);
+#endif
+
+#ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+void poly_basemul_add_encap_direct32_q31_tobytes_contract(
+    poly *r, const poly *a, const poly *b, const poly *c);
+#endif
+
+#ifdef GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
+#include "gt/decap_backend.h"
 #endif
 #endif
 
@@ -138,8 +229,12 @@ static uint8_t g_ct[NTRUPLUS_CIPHERTEXTBYTES];
 static uint8_t g_ss_enc[NTRUPLUS_SSBYTES];
 static uint8_t g_ss_dec[NTRUPLUS_SSBYTES];
 static uint8_t g_sample_buf[NTRUPLUS_N / 4];
+static uint8_t g_sample_buf_g[NTRUPLUS_N / 4];
+static uint8_t g_hash_h_buf[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
 static uint8_t g_msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
 static uint8_t g_polybytes[NTRUPLUS_POLYBYTES];
+static uint8_t g_dec_verify_bytes[NTRUPLUS_POLYBYTES];
+static uint8_t g_dec_r1_bytes[NTRUPLUS_POLYBYTES];
 static poly g_small;
 static poly g_small_triple;
 static poly g_ntt_poly;
@@ -150,6 +245,24 @@ static poly g_base_inv_keypair;
 #endif
 static poly g_product;
 static poly g_decoded;
+static poly g_key_small_f;
+static poly g_key_small_g;
+static poly g_key_f;
+static poly g_key_finv;
+static poly g_key_g;
+static poly g_key_ginv;
+static poly g_enc_h;
+static poly g_enc_r_coeff;
+static poly g_enc_r;
+static poly g_enc_m_coeff;
+static poly g_enc_m;
+static poly g_dec_c;
+static poly g_dec_f;
+static poly g_dec_hinv;
+static poly g_dec_m1;
+static poly g_dec_m1_coeff;
+static poly g_dec_r1_coeff;
+static poly g_dec_c_minus_m2;
 #endif
 
 static volatile uint64_t g_sink;
@@ -355,7 +468,9 @@ static uint8_t ct_verify(const uint8_t *a, const uint8_t *b, size_t len)
 
 static void keygen_ntt_triple_add1_bench(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+#ifdef BENCH_KEYGEN_NTT_MUL3_ADD1
+  BENCH_KEYGEN_NTT_MUL3_ADD1(out, small);
+#elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
   poly_ntt_mul3_add1(out, small);
 #else
   poly_triple(out, small);
@@ -366,7 +481,9 @@ static void keygen_ntt_triple_add1_bench(poly *out, const poly *small)
 
 static void keygen_ntt_triple_bench(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+#ifdef BENCH_KEYGEN_NTT_MUL3
+  BENCH_KEYGEN_NTT_MUL3(out, small);
+#elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
   poly_ntt_mul3(out, small);
 #else
   poly_triple(out, small);
@@ -382,7 +499,7 @@ static int genf_derand_bench(poly *f, poly *finv, const uint8_t *coins)
 
   poly_cbd1(f, buf);
   keygen_ntt_triple_add1_bench(f, f);
-  return KEYPAIR_BASEINV(finv, f);
+  return BENCH_KEYPAIR_BASEINV(finv, f);
 }
 
 static int geng_derand_bench(poly *g, poly *ginv, const uint8_t *coins)
@@ -393,7 +510,7 @@ static int geng_derand_bench(poly *g, poly *ginv, const uint8_t *coins)
 
   poly_cbd1(g, buf);
   keygen_ntt_triple_bench(g, g);
-  return KEYPAIR_BASEINV(ginv, g);
+  return BENCH_KEYPAIR_BASEINV(ginv, g);
 }
 
 static void keypair_derand_bench(uint8_t *pk, uint8_t *sk,
@@ -414,12 +531,12 @@ static void keypair_derand_bench(uint8_t *pk, uint8_t *sk,
     abort();
   }
 
-  KEYPAIR_BASEMUL(&h, &g, &finv);
-  KEYPAIR_BASEMUL(&hinv, &f, &ginv);
+  BENCH_KEYPAIR_BASEMUL(&h, &g, &finv);
+  BENCH_KEYPAIR_BASEMUL(&hinv, &f, &ginv);
 
-  poly_tobytes(pk, &h);
-  poly_tobytes(sk, &f);
-  poly_tobytes(sk + NTRUPLUS_POLYBYTES, &hinv);
+  BENCH_KEYGEN_TOBYTES_PUBLIC(pk, &h);
+  BENCH_KEYGEN_TOBYTES_SECRET_F(sk, &f);
+  BENCH_KEYGEN_TOBYTES_SECRET_HINV(sk + NTRUPLUS_POLYBYTES, &hinv);
   hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
 }
 
@@ -446,14 +563,18 @@ static void enc_derand_bench(uint8_t *ct, uint8_t *ss, const uint8_t *pk,
   poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
   poly_ntt(&r, &r);
 
-  poly_tobytes(buf2, &r);
+  BENCH_NTT_TOBYTES(buf2, &r);
   hash_g(buf2, buf2);
   poly_sotp_encode(&m, msg, buf2);
   poly_ntt(&m, &m);
 
-  poly_frombytes(&h, pk);
+  BENCH_NTT_FROMBYTES(&h, pk);
+#ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+  poly_basemul_add_encap_direct32_q31_tobytes_contract(&c, &h, &r, &m);
+#else
   poly_basemul_add(&c, &h, &r, &m);
-  poly_tobytes(ct, &c);
+#endif
+  BENCH_NTT_TOBYTES(ct, &c);
 
   for (i = 0; i < NTRUPLUS_SSBYTES; i++)
   {
@@ -508,6 +629,7 @@ static void checksum_outputs(void)
   g_sink ^= checksum_bytes(g_ss_enc, sizeof(g_ss_enc));
   g_sink ^= checksum_bytes(g_ss_dec, sizeof(g_ss_dec));
   g_sink ^= checksum_bytes(g_sample_buf, sizeof(g_sample_buf));
+  g_sink ^= checksum_bytes(g_hash_h_buf, sizeof(g_hash_h_buf));
   g_sink ^= checksum_bytes(g_msg, sizeof(g_msg));
   g_sink ^= checksum_bytes(g_polybytes, sizeof(g_polybytes));
   g_sink ^= checksum_poly(&g_small);
@@ -585,35 +707,105 @@ static void prepare_poly_inputs(void)
 #if BENCH_ENABLE_KEM
 static int prepare_kem_inputs(void)
 {
+  uint8_t enc_hash[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
+  uint8_t enc_r_bytes[NTRUPLUS_POLYBYTES];
+  poly dec_product;
+  poly dec_m2;
+#ifndef GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
+  poly dec_verify_product;
+#endif
+  poly dec_r1_ntt;
+
   find_invertible_coins(g_fcoins, 1, 1);
   find_invertible_coins(g_gcoins, 0, 1001);
   fill_bytes(g_ecoins, sizeof g_ecoins, 2001);
   fill_bytes(g_msg, sizeof g_msg, 3001);
 
   shake256(g_sample_buf, sizeof g_sample_buf, g_fcoins, sizeof g_fcoins);
-  poly_cbd1(&g_small, g_sample_buf);
+  shake256(g_sample_buf_g, sizeof g_sample_buf_g,
+           g_gcoins, sizeof g_gcoins);
+  poly_cbd1(&g_key_small_f, g_sample_buf);
+  poly_cbd1(&g_key_small_g, g_sample_buf_g);
+  keygen_ntt_triple_add1_bench(&g_key_f, &g_key_small_f);
+  keygen_ntt_triple_bench(&g_key_g, &g_key_small_g);
+  if (BENCH_KEYPAIR_BASEINV(&g_key_finv, &g_key_f) != 0 ||
+      BENCH_KEYPAIR_BASEINV(&g_key_ginv, &g_key_g) != 0)
+  {
+    fprintf(stderr, "KEM setup key inputs unexpectedly non-invertible\n");
+    return 0;
+  }
+
+  g_small = g_key_small_f;
   poly_triple(&g_small_triple, &g_small);
   g_small_triple.coeffs[0] += 1;
-  poly_ntt(&g_ntt_poly, &g_small_triple);
+  g_ntt_poly = g_key_f;
   if (poly_baseinv(&g_base_inv, &g_ntt_poly) != 0)
   {
     fprintf(stderr, "KEM setup prepared non-invertible baseinv input\n");
     return 0;
   }
 #ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
-  if (poly_baseinv_scaled_r(&g_base_inv_keypair, &g_ntt_poly) != 0)
-  {
-    fprintf(stderr, "KEM setup prepared non-invertible scaled baseinv input\n");
-    return 0;
-  }
+  g_base_inv_keypair = g_key_finv;
 #endif
   poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
   poly_invntt(&g_inv_poly, &g_product);
   poly_crepmod3(&g_decoded, &g_inv_poly);
-  poly_tobytes(g_polybytes, &g_ntt_poly);
+  BENCH_NTT_TOBYTES(g_polybytes, &g_ntt_poly);
 
   keypair_derand_bench(g_pk, g_sk, g_fcoins, g_gcoins);
+
+  memcpy(g_msg, g_ecoins, NTRUPLUS_N / 8);
+  hash_f(g_msg + NTRUPLUS_N / 8, g_pk);
+  hash_h(enc_hash, g_msg);
+  poly_cbd1(&g_enc_r_coeff, enc_hash + NTRUPLUS_SYMBYTES);
+  g_enc_r = g_enc_r_coeff;
+  poly_ntt(&g_enc_r, &g_enc_r);
+  BENCH_NTT_TOBYTES(enc_r_bytes, &g_enc_r);
+  hash_g(enc_r_bytes, enc_r_bytes);
+  poly_sotp_encode(&g_enc_m_coeff, g_msg, enc_r_bytes);
+  g_enc_m = g_enc_m_coeff;
+  poly_ntt(&g_enc_m, &g_enc_m);
+  BENCH_NTT_FROMBYTES(&g_enc_h, g_pk);
+
   enc_derand_bench(g_ct, g_ss_enc, g_pk, g_ecoins);
+
+  BENCH_NTT_FROMBYTES(&g_dec_c, g_ct);
+  BENCH_NTT_FROMBYTES(&g_dec_f, g_sk);
+  BENCH_NTT_FROMBYTES(&g_dec_hinv, g_sk + NTRUPLUS_POLYBYTES);
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+  poly_basemul_rminus1_to_stage123scratch(dec_product.coeffs,
+                                          &g_dec_c, &g_dec_f);
+  poly_invntt_from_rminus1_stage45scratch(&g_dec_m1,
+                                          dec_product.coeffs);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+  poly_basemul_rminus1(&dec_product, &g_dec_c, &g_dec_f);
+  poly_invntt_from_rminus1(&g_dec_m1, &dec_product);
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+  poly_basemul_to_tuple(&dec_product, &g_dec_c, &g_dec_f);
+  gt_tuple_poly_invntt(&g_dec_m1, &dec_product);
+#else
+  poly_basemul(&dec_product, &g_dec_c, &g_dec_f);
+  poly_invntt(&g_dec_m1, &dec_product);
+#endif
+#if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \
+    !defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP)
+  poly_crepmod3(&g_dec_m1, &g_dec_m1);
+#endif
+  g_dec_m1_coeff = g_dec_m1;
+  g_dec_r1_coeff = g_enc_r_coeff;
+  poly_ntt(&dec_m2, &g_dec_m1);
+  poly_sub(&g_dec_c_minus_m2, &g_dec_c, &dec_m2);
+#ifdef GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
+  gt_decap_verify_to_bytes(
+      g_dec_verify_bytes, &g_dec_c_minus_m2,
+      g_sk + NTRUPLUS_POLYBYTES);
+#else
+  poly_basemul(&dec_verify_product, &g_dec_c_minus_m2, &g_dec_hinv);
+  BENCH_NTT_TOBYTES(g_dec_verify_bytes, &dec_verify_product);
+#endif
+  poly_ntt(&dec_r1_ntt, &g_dec_r1_coeff);
+  BENCH_NTT_TOBYTES(g_dec_r1_bytes, &dec_r1_ntt);
+
   if (crypto_kem_dec(g_ss_dec, g_ct, g_sk) != 0)
   {
     fprintf(stderr, "kem_dec setup failed\n");
@@ -771,6 +963,17 @@ static int check_correctness(const char *mode)
   }
 #endif
 
+  if (strcmp(mode, "kernel_components") == 0)
+  {
+#if BENCH_VARIANT_GT
+    if (!check_gt_invntt_exact())
+    {
+      return 0;
+    }
+#endif
+    return check_ntt_roundtrip() && check_mul_pipeline() &&
+           check_add_pipeline();
+  }
   if (strcmp(mode, "kem_keygen") == 0 || strcmp(mode, "kem_enc") == 0 ||
       strcmp(mode, "kem_dec") == 0 || strcmp(mode, "kem_components") == 0)
   {
@@ -927,10 +1130,40 @@ static void component_poly_triple_secret(int idx)
   poly_triple(&g_small_triple, &g_small);
 }
 
-static void component_poly_ntt_secret(int idx)
+static void component_enc_poly_ntt_r(int idx)
 {
   (void)idx;
-  poly_ntt(&g_ntt_poly, &g_small_triple);
+  poly_ntt(&g_enc_r, &g_enc_r_coeff);
+}
+
+static void component_enc_poly_ntt_m(int idx)
+{
+  (void)idx;
+  poly_ntt(&g_enc_m, &g_enc_m_coeff);
+}
+
+static void component_dec_poly_ntt_m1(int idx)
+{
+  (void)idx;
+  poly_ntt(&g_ntt_poly, &g_decoded);
+}
+
+static void component_dec_poly_ntt_r1(int idx)
+{
+  (void)idx;
+  poly_ntt(&g_ntt_poly, &g_dec_r1_coeff);
+}
+
+static void component_keygen_sample_ntt_f(int idx)
+{
+  (void)idx;
+  keygen_ntt_triple_add1_bench(&g_key_f, &g_small);
+}
+
+static void component_keygen_sample_ntt_g(int idx)
+{
+  (void)idx;
+  keygen_ntt_triple_bench(&g_key_g, &g_key_small_g);
 }
 
 static void component_poly_baseinv_secret(int idx)
@@ -939,27 +1172,88 @@ static void component_poly_baseinv_secret(int idx)
   (void)poly_baseinv(&g_base_inv, &g_ntt_poly);
 }
 
+static void component_keygen_baseinv_actual(int idx)
+{
+  (void)idx;
 #ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
-static void component_poly_baseinv_scaled_r_secret(int idx)
-{
-  (void)idx;
-  (void)poly_baseinv_scaled_r(&g_base_inv_keypair, &g_ntt_poly);
-}
-
-static void component_poly_basemul_scaled_keypair(int idx)
-{
-  (void)idx;
-  poly_basemul_scaled_r_input(&g_product, &g_ntt_poly, &g_base_inv_keypair);
-}
+  (void)BENCH_KEYPAIR_BASEINV(&g_base_inv_keypair, &g_key_f);
+#else
+  (void)BENCH_KEYPAIR_BASEINV(&g_base_inv, &g_key_f);
 #endif
+}
 
-static void component_poly_basemul_keypair(int idx)
+static void component_keygen_basemul_actual(int idx)
 {
   (void)idx;
-  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+  BENCH_KEYPAIR_BASEMUL(&g_product, &g_key_g, &g_base_inv_keypair);
+#else
+  BENCH_KEYPAIR_BASEMUL(&g_product, &g_key_g, &g_base_inv);
+#endif
+}
+
+static void component_keygen_baseinv_basemul_contract(int idx)
+{
+  (void)idx;
+#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+  (void)BENCH_KEYPAIR_BASEINV(&g_base_inv_keypair, &g_key_f);
+  BENCH_KEYPAIR_BASEMUL(&g_product, &g_key_g, &g_base_inv_keypair);
+#else
+  (void)BENCH_KEYPAIR_BASEINV(&g_base_inv, &g_key_f);
+  BENCH_KEYPAIR_BASEMUL(&g_product, &g_key_g, &g_base_inv);
+#endif
 }
 
 static void component_poly_tobytes(int idx)
+{
+  (void)idx;
+  BENCH_NTT_TOBYTES(g_polybytes, &g_ntt_poly);
+}
+
+static void component_keygen_poly_tobytes_public(int idx)
+{
+  (void)idx;
+  BENCH_KEYGEN_TOBYTES_PUBLIC(g_pk, &g_product);
+}
+
+static void component_keygen_poly_tobytes_secret_f(int idx)
+{
+  (void)idx;
+  BENCH_KEYGEN_TOBYTES_SECRET_F(g_sk, &g_key_f);
+}
+
+static void component_keygen_poly_tobytes_secret_hinv(int idx)
+{
+  (void)idx;
+  BENCH_KEYGEN_TOBYTES_SECRET_HINV(
+      g_sk + NTRUPLUS_POLYBYTES, &g_product);
+}
+
+static void component_enc_poly_tobytes_r(int idx)
+{
+  (void)idx;
+  BENCH_NTT_TOBYTES(g_polybytes, &g_enc_r);
+}
+
+static void component_enc_poly_tobytes_ct(int idx)
+{
+  (void)idx;
+  BENCH_NTT_TOBYTES(g_ct, &g_product);
+}
+
+static void component_dec_poly_tobytes_verify(int idx)
+{
+  (void)idx;
+  BENCH_NTT_TOBYTES(g_dec_verify_bytes, &g_product);
+}
+
+static void component_dec_poly_tobytes_r1(int idx)
+{
+  (void)idx;
+  BENCH_NTT_TOBYTES(g_dec_r1_bytes, &g_ntt_poly);
+}
+
+static void component_poly_tobytes_internal_layout(int idx)
 {
   (void)idx;
   poly_tobytes(g_polybytes, &g_ntt_poly);
@@ -968,13 +1262,19 @@ static void component_poly_tobytes(int idx)
 static void component_hash_f_pk(int idx)
 {
   (void)idx;
-  hash_f(g_sample_buf, g_pk);
+  hash_f(g_msg + NTRUPLUS_N / 8, g_pk);
 }
 
 static void component_hash_h_msg(int idx)
 {
   (void)idx;
-  hash_h(g_sample_buf, g_msg);
+  hash_h(g_hash_h_buf, g_msg);
+}
+
+static void component_poly_cbd1_enc_r(int idx)
+{
+  (void)idx;
+  poly_cbd1(&g_enc_r_coeff, g_hash_h_buf + NTRUPLUS_SYMBYTES);
 }
 
 static void component_hash_g_polybytes(int idx)
@@ -983,73 +1283,112 @@ static void component_hash_g_polybytes(int idx)
   hash_g(g_sample_buf, g_polybytes);
 }
 
+static void component_dec_hash_g_verifybytes(int idx)
+{
+  (void)idx;
+  hash_g(g_sample_buf, g_dec_verify_bytes);
+}
+
 static void component_poly_sotp_encode(int idx)
 {
   (void)idx;
-  poly_sotp_encode(&g_decoded, g_msg, g_sample_buf);
+  poly_sotp_encode(&g_enc_m_coeff, g_msg, g_sample_buf);
 }
 
 static void component_poly_frombytes(int idx)
 {
   (void)idx;
+  BENCH_NTT_FROMBYTES(&g_decoded, g_polybytes);
+}
+
+static void component_enc_poly_frombytes_pk(int idx)
+{
+  (void)idx;
+  BENCH_NTT_FROMBYTES(&g_enc_h, g_pk);
+}
+
+static void component_dec_poly_frombytes(int idx)
+{
+  (void)idx;
+  BENCH_NTT_FROMBYTES(&g_dec_c, g_ct);
+}
+
+static void component_poly_frombytes_internal_layout(int idx)
+{
+  (void)idx;
   poly_frombytes(&g_decoded, g_polybytes);
 }
 
-static void component_poly_basemul_add(int idx)
+static void component_encap_basemul_add_actual(int idx)
 {
   (void)idx;
-  poly_basemul_add(&g_product, &g_ntt_poly, &g_base_inv, &g_ntt_poly);
-}
-
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
-static void component_poly_basemul_rminus1_to_stage123scratch(int idx)
-{
-  (void)idx;
-  poly_basemul_rminus1_to_stage123scratch(g_product.coeffs, &g_ntt_poly,
-                                          &g_base_inv);
-}
-
-static void component_poly_invntt_from_rminus1_stage45scratch(int idx)
-{
-  (void)idx;
-  poly_invntt_from_rminus1_stage45scratch(&g_inv_poly, g_product.coeffs);
-}
-#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-static void component_poly_basemul_rminus1(int idx)
-{
-  (void)idx;
-  poly_basemul_rminus1(&g_product, &g_ntt_poly, &g_base_inv);
-}
-
-static void component_poly_invntt_from_rminus1(int idx)
-{
-  (void)idx;
-  poly_invntt_from_rminus1(&g_inv_poly, &g_product);
-}
-#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
-static void component_poly_basemul_to_tuple(int idx)
-{
-  (void)idx;
-  poly_basemul_to_tuple(&g_product, &g_ntt_poly, &g_base_inv);
-}
-
-static void component_gt_tuple_poly_invntt(int idx)
-{
-  (void)idx;
-  gt_tuple_poly_invntt(&g_inv_poly, &g_product);
-}
+#ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
+  poly_basemul_add_encap_direct32_q31_tobytes_contract(
+      &g_product, &g_enc_h, &g_enc_r, &g_enc_m);
+#else
+  poly_basemul_add(&g_product, &g_enc_h, &g_enc_r, &g_enc_m);
 #endif
+}
+
+static void component_encap_basemul_add_pack_actual(int idx)
+{
+  component_encap_basemul_add_actual(idx);
+  BENCH_NTT_TOBYTES(g_ct, &g_product);
+}
+
+static void component_decap_first_basemul_actual(int idx)
+{
+  (void)idx;
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+  poly_basemul_rminus1_to_stage123scratch(g_product.coeffs,
+                                          &g_dec_c, &g_dec_f);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+  poly_basemul_rminus1(&g_product, &g_dec_c, &g_dec_f);
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+  poly_basemul_to_tuple(&g_product, &g_dec_c, &g_dec_f);
+#else
+  poly_basemul(&g_product, &g_dec_c, &g_dec_f);
+#endif
+}
+
+static void component_decap_first_invntt_actual(int idx)
+{
+  (void)idx;
+#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+  poly_invntt_from_rminus1_stage45scratch(&g_inv_poly, g_product.coeffs);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
+  poly_invntt_from_rminus1(&g_inv_poly, &g_product);
+#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
+  gt_tuple_poly_invntt(&g_inv_poly, &g_product);
+#else
+  poly_invntt(&g_inv_poly, &g_product);
+#endif
+}
+
+static void component_decap_first_pair_actual(int idx)
+{
+  component_decap_first_basemul_actual(idx);
+  component_decap_first_invntt_actual(idx);
+}
 
 static void component_poly_basemul(int idx)
 {
   (void)idx;
-  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
+  poly_basemul(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
 }
 
-static void component_poly_invntt(int idx)
+static void component_decap_verify_basemul_pack(int idx)
 {
   (void)idx;
-  poly_invntt(&g_inv_poly, &g_product);
+#ifdef GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
+  gt_decap_verify_to_bytes(
+      g_dec_verify_bytes, &g_dec_c_minus_m2,
+      g_sk + NTRUPLUS_POLYBYTES);
+#else
+  BENCH_NTT_FROMBYTES(&g_dec_hinv, g_sk + NTRUPLUS_POLYBYTES);
+  poly_basemul(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
+  BENCH_NTT_TOBYTES(g_dec_verify_bytes, &g_product);
+#endif
 }
 
 static void component_poly_crepmod3(int idx)
@@ -1061,7 +1400,7 @@ static void component_poly_crepmod3(int idx)
 static void component_poly_sub(int idx)
 {
   (void)idx;
-  poly_sub(&g_product, &g_ntt_poly, &g_base_inv);
+  poly_sub(&g_dec_c_minus_m2, &g_dec_c, &g_ntt_poly);
 }
 
 static void component_poly_sotp_decode(int idx)
@@ -1073,13 +1412,14 @@ static void component_poly_sotp_decode(int idx)
 static void component_poly_cbd1_r1(int idx)
 {
   (void)idx;
-  poly_cbd1(&g_small, g_sample_buf);
+  poly_cbd1(&g_dec_r1_coeff, g_hash_h_buf + NTRUPLUS_SSBYTES);
 }
 
 static void component_verify_polybytes(int idx)
 {
   (void)idx;
-  (void)ct_verify(g_polybytes, g_polybytes, NTRUPLUS_POLYBYTES);
+  g_sink ^= ct_verify(g_dec_verify_bytes, g_dec_r1_bytes,
+                      NTRUPLUS_POLYBYTES);
 }
 #endif
 
@@ -1212,93 +1552,191 @@ static int bench(const char *name, const char *mode, target_fn target)
 }
 
 #if BENCH_ENABLE_KEM
-struct kem_component_case
+struct component_case
 {
   const char *group;
+  const char *kind;
   const char *name;
   unsigned count;
   target_fn target;
+  const char *mode;
 };
 
-static int run_kem_component_benches(void)
+static int run_component_cases(const struct component_case *cases,
+                               size_t count)
 {
-  static const struct kem_component_case cases[] = {
-      {"KEYGEN", "keygen_shake256_sample", 2, component_shake256_sample},
-      {"KEYGEN", "keygen_poly_cbd1_secret", 2, component_poly_cbd1_secret},
-      {"KEYGEN", "keygen_poly_triple_secret", 2, component_poly_triple_secret},
-      {"KEYGEN", "keygen_poly_ntt_secret", 2, component_poly_ntt_secret},
-#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
-      {"KEYGEN", "keygen_poly_baseinv_scaled_r_secret", 2,
-       component_poly_baseinv_scaled_r_secret},
-      {"KEYGEN", "keygen_poly_basemul_scaled_keypair", 2,
-       component_poly_basemul_scaled_keypair},
-#else
-      {"KEYGEN", "keygen_poly_baseinv_secret", 2,
-       component_poly_baseinv_secret},
-      {"KEYGEN", "keygen_poly_basemul_keypair", 2,
-       component_poly_basemul_keypair},
-#endif
-      {"KEYGEN", "keygen_poly_tobytes_key", 3, component_poly_tobytes},
-      {"KEYGEN", "keygen_hash_f_pk", 1, component_hash_f_pk},
-
-      {"ENCAP", "enc_hash_f_pk", 1, component_hash_f_pk},
-      {"ENCAP", "enc_hash_h_msg", 1, component_hash_h_msg},
-      {"ENCAP", "enc_poly_cbd1_r", 1, component_poly_cbd1_secret},
-      {"ENCAP", "enc_poly_ntt_r", 1, component_poly_ntt_secret},
-      {"ENCAP", "enc_poly_tobytes_r", 1, component_poly_tobytes},
-      {"ENCAP", "enc_hash_g_polybytes", 1, component_hash_g_polybytes},
-      {"ENCAP", "enc_poly_sotp_encode", 1, component_poly_sotp_encode},
-      {"ENCAP", "enc_poly_ntt_m", 1, component_poly_ntt_secret},
-      {"ENCAP", "enc_poly_frombytes_pk", 1, component_poly_frombytes},
-      {"ENCAP", "enc_poly_basemul_add", 1, component_poly_basemul_add},
-      {"ENCAP", "enc_poly_tobytes_ct", 1, component_poly_tobytes},
-
-      {"DECAP", "dec_poly_frombytes", 3, component_poly_frombytes},
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
-      {"DECAP", "dec_poly_basemul_rminus1_to_stage123scratch", 1,
-       component_poly_basemul_rminus1_to_stage123scratch},
-      {"DECAP", "dec_poly_invntt_from_rminus1_stage45scratch", 1,
-       component_poly_invntt_from_rminus1_stage45scratch},
-      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
-#elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-      {"DECAP", "dec_poly_basemul_rminus1", 1,
-       component_poly_basemul_rminus1},
-      {"DECAP", "dec_poly_invntt_from_rminus1", 1,
-       component_poly_invntt_from_rminus1},
-      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
-#elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
-      {"DECAP", "dec_poly_basemul_to_tuple", 1,
-       component_poly_basemul_to_tuple},
-      {"DECAP", "dec_gt_tuple_poly_invntt", 1,
-       component_gt_tuple_poly_invntt},
-      {"DECAP", "dec_poly_basemul_r2", 1, component_poly_basemul},
-#else
-      {"DECAP", "dec_poly_basemul", 2, component_poly_basemul},
-      {"DECAP", "dec_poly_invntt", 1, component_poly_invntt},
-#endif
-      {"DECAP", "dec_poly_crepmod3", 1, component_poly_crepmod3},
-      {"DECAP", "dec_poly_ntt_m1", 1, component_poly_ntt_secret},
-      {"DECAP", "dec_poly_sub", 1, component_poly_sub},
-      {"DECAP", "dec_poly_tobytes", 2, component_poly_tobytes},
-      {"DECAP", "dec_hash_g_polybytes", 1, component_hash_g_polybytes},
-      {"DECAP", "dec_poly_sotp_decode", 1, component_poly_sotp_decode},
-      {"DECAP", "dec_hash_h_msg", 1, component_hash_h_msg},
-      {"DECAP", "dec_poly_cbd1_r1", 1, component_poly_cbd1_r1},
-      {"DECAP", "dec_poly_ntt_r1", 1, component_poly_ntt_secret},
-      {"DECAP", "dec_verify_polybytes", 1, component_verify_polybytes},
-  };
   size_t i;
 
-  for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++)
+  for (i = 0; i < count; i++)
   {
     printf("\ncomponent_group = %s\n", cases[i].group);
+    printf("component_kind = %s\n", cases[i].kind);
     printf("component_count = %u\n", cases[i].count);
-    if (bench(cases[i].name, cases[i].name, cases[i].target) != 0)
+    if (bench(cases[i].name, cases[i].mode, cases[i].target) != 0)
     {
       return 1;
     }
   }
 
+  return 0;
+}
+
+static int run_kernel_component_benches(void)
+{
+  static const struct component_case cases[] = {
+      {"TRANSFORM", "primitive", "forward_ntt", 1, target_ntt, "ntt"},
+      {"TRANSFORM", "primitive", "inverse_ntt_generic", 1,
+       target_invntt, "invntt"},
+      {"POINTWISE", "primitive", "basemul", 1, target_basemul, "basemul"},
+      {"POINTWISE", "primitive", "basemul_add", 1,
+       target_basemul_add, "basemul_add"},
+      {"POINTWISE", "primitive", "baseinv_generic", 1,
+       component_poly_baseinv_secret, "baseinv_generic"},
+      {"PIPELINE", "primitive", "polymul_2ntt_basemul_invntt", 1,
+       target_pipeline, "ntt_mul_pipeline"},
+      {"PIPELINE", "primitive", "polymul_add_3ntt_basemuladd_invntt", 1,
+       target_add_pipeline, "ntt_basemul_add_pipeline"},
+      {"SERIALIZE", "diagnostic", "ntt_tobytes_internal_layout", 1,
+       component_poly_tobytes_internal_layout,
+       "ntt_tobytes_internal_layout"},
+      {"SERIALIZE", "diagnostic", "ntt_frombytes_internal_layout", 1,
+       component_poly_frombytes_internal_layout,
+       "ntt_frombytes_internal_layout"},
+      {"SERIALIZE", "primitive", "ntt_tobytes_canonical", 1,
+       component_poly_tobytes, "ntt_tobytes"},
+      {"SERIALIZE", "primitive", "ntt_frombytes_canonical", 1,
+       component_poly_frombytes, "ntt_frombytes"},
+      {"SUPPORT", "primitive", "cbd1", 1,
+       component_poly_cbd1_secret, "cbd1"},
+      {"SUPPORT", "primitive", "triple", 1,
+       component_poly_triple_secret, "triple"},
+      {"SUPPORT", "primitive", "crepmod3", 1,
+       component_poly_crepmod3, "crepmod3"},
+      {"SUPPORT", "primitive", "poly_sub", 1,
+       component_poly_sub, "poly_sub"},
+      {"SUPPORT", "primitive", "sotp_encode", 1,
+       component_poly_sotp_encode, "sotp_encode"},
+      {"SUPPORT", "primitive", "sotp_decode", 1,
+       component_poly_sotp_decode, "sotp_decode"},
+  };
+
+  return run_component_cases(cases, sizeof(cases) / sizeof(cases[0]));
+}
+
+static int run_kem_component_benches(void)
+{
+  static const struct component_case cases[] = {
+      {"KEYGEN", "path", "keygen_shake256_sample", 2,
+       component_shake256_sample, "keygen_shake256_sample"},
+      {"KEYGEN", "path", "keygen_poly_cbd1_secret", 2,
+       component_poly_cbd1_secret, "keygen_poly_cbd1_secret"},
+      {"KEYGEN", "path", "keygen_sample_ntt_f", 1,
+       component_keygen_sample_ntt_f, "keygen_sample_ntt_f"},
+      {"KEYGEN", "path", "keygen_sample_ntt_g", 1,
+       component_keygen_sample_ntt_g, "keygen_sample_ntt_g"},
+      {"KEYGEN", "path", "keygen_baseinv_actual", 2,
+       component_keygen_baseinv_actual, "keygen_baseinv_actual"},
+      {"KEYGEN", "path", "keygen_basemul_actual", 2,
+       component_keygen_basemul_actual, "keygen_basemul_actual"},
+      {"KEYGEN", "combined", "keygen_baseinv_plus_basemul_contract", 2,
+       component_keygen_baseinv_basemul_contract,
+       "keygen_baseinv_plus_basemul_contract"},
+      {"KEYGEN", "path", "keygen_poly_tobytes_public", 1,
+       component_keygen_poly_tobytes_public, "keygen_poly_tobytes_public"},
+      {"KEYGEN", "path", "keygen_poly_tobytes_secret_f", 1,
+       component_keygen_poly_tobytes_secret_f,
+       "keygen_poly_tobytes_secret_f"},
+      {"KEYGEN", "path", "keygen_poly_tobytes_secret_hinv", 1,
+       component_keygen_poly_tobytes_secret_hinv,
+       "keygen_poly_tobytes_secret_hinv"},
+      {"KEYGEN", "path", "keygen_hash_f_pk", 1,
+       component_hash_f_pk, "keygen_hash_f_pk"},
+
+      {"ENCAP", "path", "enc_hash_f_pk", 1,
+       component_hash_f_pk, "enc_hash_f_pk"},
+      {"ENCAP", "path", "enc_hash_h_msg", 1,
+       component_hash_h_msg, "enc_hash_h_msg"},
+      {"ENCAP", "path", "enc_poly_cbd1_r", 1,
+       component_poly_cbd1_enc_r, "enc_poly_cbd1_r"},
+      {"ENCAP", "path", "enc_poly_ntt_r", 1,
+       component_enc_poly_ntt_r, "enc_poly_ntt_r"},
+      {"ENCAP", "path", "enc_poly_tobytes_r", 1,
+       component_enc_poly_tobytes_r, "enc_poly_tobytes_r"},
+      {"ENCAP", "path", "enc_hash_g_polybytes", 1,
+       component_hash_g_polybytes, "enc_hash_g_polybytes"},
+      {"ENCAP", "path", "enc_poly_sotp_encode", 1,
+       component_poly_sotp_encode, "enc_poly_sotp_encode"},
+      {"ENCAP", "path", "enc_poly_ntt_m", 1,
+       component_enc_poly_ntt_m, "enc_poly_ntt_m"},
+      {"ENCAP", "path", "enc_poly_frombytes_pk", 1,
+       component_enc_poly_frombytes_pk, "enc_poly_frombytes_pk"},
+      {"ENCAP", "path", "enc_basemul_add_actual", 1,
+       component_encap_basemul_add_actual, "enc_basemul_add_actual"},
+      {"ENCAP", "path", "enc_poly_tobytes_ct", 1,
+       component_enc_poly_tobytes_ct, "enc_poly_tobytes_ct"},
+      {"ENCAP", "combined", "enc_basemul_add_plus_pack", 1,
+       component_encap_basemul_add_pack_actual,
+       "enc_basemul_add_plus_pack"},
+
+      {"DECAP", "path", "dec_poly_frombytes", 2,
+       component_dec_poly_frombytes, "dec_poly_frombytes"},
+      {"DECAP", "path", "dec_first_basemul_actual", 1,
+       component_decap_first_basemul_actual, "dec_first_basemul_actual"},
+      {"DECAP", "path", "dec_first_invntt_actual", 1,
+       component_decap_first_invntt_actual, "dec_first_invntt_actual"},
+      {"DECAP", "combined", "dec_first_basemul_plus_invntt", 1,
+       component_decap_first_pair_actual,
+       "dec_first_basemul_plus_invntt"},
+      {"DECAP", "path", "dec_poly_crepmod3", 1,
+       component_poly_crepmod3, "dec_poly_crepmod3"},
+      {"DECAP", "path", "dec_poly_ntt_m1", 1,
+       component_dec_poly_ntt_m1, "dec_poly_ntt_m1"},
+      {"DECAP", "path", "dec_poly_sub", 1,
+       component_poly_sub, "dec_poly_sub"},
+      {"DECAP", "diagnostic", "dec_verify_generic_basemul", 1,
+       component_poly_basemul, "dec_verify_generic_basemul"},
+      {"DECAP", "diagnostic", "dec_verify_generic_pack", 1,
+       component_dec_poly_tobytes_verify, "dec_verify_generic_pack"},
+      {"DECAP", "path", "dec_verify_product_to_bytes_actual", 1,
+       component_decap_verify_basemul_pack,
+       "dec_verify_product_to_bytes_actual"},
+      {"DECAP", "path", "dec_hash_g_polybytes", 1,
+       component_dec_hash_g_verifybytes, "dec_hash_g_polybytes"},
+      {"DECAP", "path", "dec_poly_sotp_decode", 1,
+       component_poly_sotp_decode, "dec_poly_sotp_decode"},
+      {"DECAP", "path", "dec_hash_h_msg", 1,
+       component_hash_h_msg, "dec_hash_h_msg"},
+      {"DECAP", "path", "dec_poly_cbd1_r1", 1,
+       component_poly_cbd1_r1, "dec_poly_cbd1_r1"},
+      {"DECAP", "path", "dec_poly_ntt_r1", 1,
+       component_dec_poly_ntt_r1, "dec_poly_ntt_r1"},
+      {"DECAP", "path", "dec_poly_tobytes_r1", 1,
+       component_dec_poly_tobytes_r1, "dec_poly_tobytes_r1"},
+      {"DECAP", "path", "dec_verify_polybytes", 1,
+       component_verify_polybytes, "dec_verify_polybytes"},
+  };
+
+  if (run_component_cases(cases, sizeof(cases) / sizeof(cases[0])) != 0)
+  {
+    return 1;
+  }
+  /* Component targets intentionally reuse and overwrite the fixture buffers. */
+  if (!prepare_kem_inputs())
+  {
+    return 1;
+  }
+  if (ct_verify(g_dec_verify_bytes, g_dec_r1_bytes,
+                NTRUPLUS_POLYBYTES) != 0)
+  {
+    fprintf(stderr, "KEM component postflight ciphertext verification failed\n");
+    return 1;
+  }
+  if (crypto_kem_dec(g_ss_dec, g_ct, g_sk) != 0 ||
+      memcmp(g_ss_enc, g_ss_dec, sizeof(g_ss_enc)) != 0)
+  {
+    fprintf(stderr, "KEM component postflight decapsulation failed\n");
+    return 1;
+  }
   return 0;
 }
 #endif
@@ -1320,7 +1758,8 @@ int main(void)
   if (target == NULL)
   {
 #if BENCH_ENABLE_KEM
-    if (strcmp(mode, "kem_components") == 0)
+    if (strcmp(mode, "kem_components") == 0 ||
+        strcmp(mode, "kernel_components") == 0)
     {
       target = target_kem_dec;
     }
@@ -1331,7 +1770,8 @@ int main(void)
             "unknown BENCH_MODE=%s "
             "(use ntt, invntt, basemul, basemul_add, ntt_mul_pipeline, "
             "ntt_basemul_add_pipeline, kem_keygen, kem_enc, kem_dec, "
-            "kem_components, invntt_rows, invntt_row0, invntt_row1, "
+            "kem_components, kernel_components, invntt_rows, invntt_row0, "
+            "invntt_row1, "
             "invntt_row2, invntt_post, invntt_post_dft3_raw, "
             "invntt_post_dft3_reduce, invntt_post_untwist, "
             "invntt_post_finalmerge)\n",
@@ -1353,6 +1793,12 @@ int main(void)
   if (strcmp(mode, "kem_components") == 0)
   {
     int rc = run_kem_component_benches();
+    disable_cyclecounter();
+    return rc;
+  }
+  if (strcmp(mode, "kernel_components") == 0)
+  {
+    int rc = run_kernel_component_benches();
     disable_cyclecounter();
     return rc;
   }

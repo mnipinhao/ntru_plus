@@ -45,14 +45,14 @@ KPQC final 相同的 canonical wire serialization 時：
 
 | Operation | KPQC final cycles | GT cycles | Cycle reduction |
 |---|---:|---:|---:|
-| keygen | 39948 | 36373 | 8.95% |
-| encapsulation | 39011 | 37574 | 3.68% |
-| decapsulation | 35181 | 32904 | 6.47% |
+| keygen | 39979 | 36357 | 9.06% |
+| encapsulation | 39057 | 37582 | 3.78% |
+| decapsulation | 35182 | 32860 | 6.60% |
 
 目前 full-KEM 是穩定的 single-digit speedup，尚未達到 20% 的 scheme-level 目標。
-Mixed BPQ/CQ promotion 前的 GT keygen 是 `38264` cycles；新 backend 是 `36373`
-cycles，減少 `1891` cycles（`4.94%`）。Encap/decap 與 promotion 前 GT 的差異低於
-`0.1%`，符合這是 keygen-only contract 的預期。
+獨立的 Mixed BPQ/CQ promotion A/B 量測由 `38264` 降到 `36373` cycles，減少
+`1891` cycles（`4.94%`）。Encap/decap 與 promotion 前 GT 的差異低於 `0.1%`，
+符合這是 keygen-only contract 的預期。
 
 ## 2. Forward NTT
 
@@ -158,7 +158,7 @@ warmup:        100
 |---|---:|---:|---:|
 | encapsulation `poly_ntt(r)` | 3458 | 2589 | 25.13% |
 | encapsulation `poly_ntt(m)` | 3441 | 2588 | 24.79% |
-| rotating-buffer generic `poly_ntt` | 3610 | 2869 | 20.53% |
+| rotating-buffer generic `poly_ntt` | 3614 | 2873 | 20.50% |
 
 這裡量到完整 generic `poly_ntt`，不包含 CBD、hash、base multiplication 或 inverse
 NTT。Rotating-buffer benchmark 約快 20.5%，固定 KEM-component buffer 約快 24.8%-25.1%；

@@ -1,6 +1,6 @@
 # GT new 相對 KPQC final 的 production 優化總覽
 
-更新日期：2026-07-10
+更新日期：2026-07-21
 
 > 這份是 internal production audit。面向 KPQC 作者、以演算法與實作概念為主的
 > 短版請看 `gt-ntruplus768-optimization-summary-for-kpqc.md`。
@@ -22,14 +22,16 @@ KPQC final：
 
 | KEM operation | KPQC final | GT new | 少掉的 cycles | cycle reduction | speedup |
 |---|---:|---:|---:|---:|---:|
-| keygen | 39966 | 37966 | 2000 | 5.004% | 1.053x |
-| encap | 39013 | 37590 | 1423 | 3.648% | 1.038x |
-| decap | 35180 | 32482 | 2698 | 7.669% | 1.083x |
+| keygen | 39979 | 36357 | 3622 | 9.06% | 1.100x |
+| encap | 39057 | 37582 | 1475 | 3.78% | 1.039x |
+| decap | 35182 | 32860 | 2322 | 6.60% | 1.071x |
 
-GT new 現在確實三項都快於 KPQC final，但還沒有達到原先的 scheme-level
-`20%` 目標。更重要的是，GT new 的 retired instructions 仍比 KPQC 多
-`0.4%` 到 `2.4%`；目前的 cycle 優勢主要來自 Cortex-A76 上較高的執行效率，
-不是整體指令數已經顯著少於 KPQC。
+GT new 現在三項都快於 KPQC final，但還沒有達到原先的 scheme-level `20%`
+目標。這次 cleanup 的 final run只量 cycles；retired-instruction/CPI 表保留為
+2026-07-19 的歷史診斷，不能當成目前 Mixed BPQ/CQ binary 的 current 數據。
+
+先前文件使用的 `37966/37590/32482` 是 canonical wire serialization 完整接入前
+的 internal-layout historical run。它不再作為 current production benchmark。
 
 ## 2. 比較對象與量測方法
 
@@ -39,15 +41,12 @@ GT new 現在確實三項都快於 KPQC final，但還沒有達到原先的 sche
 `gt_production_variants.mk` 定義：
 
 ```text
-GT_PRODUCTION_USE_SCALED_KEYPAIR
+GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
 GT_PRODUCTION_USE_RMINUS1_DECAP
-GT_BASEINV_BATCH_USE_ASM_FINISH
-GT_BASEINV_USE_FQINV15_ASM
-GT_BASEINV_USE_HIER_K8
-GT_BASEINV_USE_HIER_K8_TREE
-GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
 GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16
+GT_PRODUCTION_USE_CANONICAL_UNPACK_U1
 ```
 
 此外，generic forward NTT default 已經是：
@@ -89,18 +88,18 @@ closed-form quartic numerator/determinant 加 24-vector batch inversion。因此
 
 ### 2.3 Full-KEM benchmark contract
 
-最新三方 benchmark 條件：
+最新 GT/KPQC profiler 條件：
 
 ```text
 host:          Raspberry Pi 5, Cortex-A76
 core:          core 3 pinned
 hash backend:  portable NO_CE for all variants
-NTESTS:        61
+NTESTS:        31
 NITERATIONS:   2000 calls/sample
 NWARMUP:       100
 input:         deterministic derand setup
-counter:       Linux perf cycle/instruction counter
-date:          2026-07-10
+counter:       Linux perf cycle counter
+date:          2026-07-21
 ```
 
 每個 binary 在量測前都先跑 keygen/encap/decap correctness。表中的「時間」以
@@ -111,7 +110,7 @@ date:          2026-07-10
 
 本文使用三種數據，不能混為同一種比較：
 
-1. `2026-07-10 current three-way`：GT new、GT legacy、未修改 KPQC final 的
+1. `2026-07-21 current component profile`：GT new 與未修改 KPQC final 的
    current full-KEM separate-binary 比較。只有這一組用來回答「現在 GT 比 KPQC
    快多少」。
 2. `same-binary promotion A/B`：同一 binary、相同 input、交替 call order，
@@ -124,37 +123,36 @@ date:          2026-07-10
 
 ### 3.1 Cycles
 
-| Operation | KPQC final | GT legacy | GT new | New vs KPQC | New vs legacy |
-|---|---:|---:|---:|---:|---:|
-| keygen | 39966 | 37982 | 37966 | -5.004% | -0.042% |
-| encap | 39013 | 37755 | 37590 | -3.648% | -0.437% |
-| decap | 35180 | 32629 | 32482 | -7.669% | -0.451% |
+| Operation | KPQC final | GT new | New vs KPQC |
+|---|---:|---:|---:|
+| keygen | 39979 | 36357 | -9.06% |
+| encap | 39057 | 37582 | -3.78% |
+| decap | 35182 | 32860 | -6.60% |
 
-這裡的 `GT legacy` 只把 generic forward NTT 換回舊 GT 版本；SAMPLE-DAG、
-HIERK8、Q31、rminus1 與其他 GT production 選項都和 GT new 相同。
-
-keygen 不會呼叫 generic `poly_ntt`，而是走 keygen-only triple NTT。因此 new 與
-legacy 的 16-cycle 差不能歸因給 G1R123+S2，應視為 separate-binary layout/cache
-差異。
+舊的 `GT source-order` run 仍可用來判斷 forward scheduling，但它使用 promotion
+前的 baseinv binary，不能再和這張 current full-KEM 表相減來歸因單一 kernel。
 
 Cycle distribution 很窄：
 
 | Operation | Variant | p10 | p50 | p90 |
 |---|---|---:|---:|---:|
-| keygen | KPQC final | 39963 | 39966 | 39970 |
-| keygen | GT new | 37960 | 37966 | 37973 |
-| encap | KPQC final | 39010 | 39013 | 39018 |
-| encap | GT new | 37584 | 37590 | 37599 |
-| decap | KPQC final | 35179 | 35180 | 35182 |
-| decap | GT new | 32476 | 32482 | 32490 |
+| keygen | KPQC final | 39973 | 39979 | 39991 |
+| keygen | GT new | 36354 | 36357 | 36362 |
+| encap | KPQC final | 39053 | 39057 | 39060 |
+| encap | GT new | 37562 | 37582 | 37588 |
+| decap | KPQC final | 35179 | 35182 | 35185 |
+| decap | GT new | 32855 | 32860 | 32868 |
 
-### 3.2 Retired instructions 與 CPI
+### 3.2 Historical retired instructions and CPI
+
+下表來自 2026-07-19、Mixed BPQ/CQ promotion 前的 profiler，僅保留作為舊 binary
+的 microarchitectural 診斷；它不是 2026-07-21 current production 的配對數據。
 
 | Operation | KPQC instr | GT new instr | GT vs KPQC | KPQC CPI | GT CPI |
 |---|---:|---:|---:|---:|---:|
-| keygen | 80801 | 81147 | +0.428% | 0.4946 | 0.4679 |
-| encap | 103980 | 105124 | +1.100% | 0.3752 | 0.3576 |
-| decap | 72677 | 74406 | +2.379% | 0.4841 | 0.4365 |
+| keygen | 80801 | 82520 | +2.127% | 0.4946 | 0.4642 |
+| encap | 103980 | 106191 | +2.126% | 0.3753 | 0.3547 |
+| decap | 72677 | 76429 | +5.162% | 0.4841 | 0.4300 |
 
 這是目前結果最重要的判讀：GT new 做的 instruction 比 KPQC 多，但 CPI 較低。
 GT 的 Good-Thomas/block-major pipeline 使用更多結構化 vector work，卻能在 A76 上
@@ -216,16 +214,21 @@ frombytes(c, f, hinv)
   -> poly_crepmod3
   -> G1R123+S2 poly_ntt(m1)
   -> poly_sub
-  -> generic poly_basemul(c-m1, hinv)
-  -> tobytes/hash_g/sotp_decode
+  -> canonical verify pointwise F2
+       unpack hinv bytes directly to canonical QSoA
+       gather c-m1 from GT physical order
+       two-group scheduled quartic basemul
+       ordinary QSoA pack
+  -> hash_g/sotp_decode
   -> cbd1(r1)
   -> G1R123+S2 poly_ntt(r1)
   -> tobytes/constant-time verify
 ```
 
-Decap 的第一個 basemul/InvNTT 使用配對的 rminus1 Montgomery contract；後面的
-verify basemul 仍需要一般 arithmetic-correct output，不能使用 encap Q31 byte
-contract。
+Decap 的第一個 basemul/InvNTT 使用配對的 rminus1 Montgomery contract。後面的
+verify product 仍需要一般 arithmetic-correct output，不能使用 encap Q31 byte
+contract；F2 改的是固定 layout conversion 與跨 group scheduling，不改 arithmetic
+語意。
 
 ## 5. 所有目前 production 優化
 
@@ -392,14 +395,27 @@ normalization。這是 production linked ASM，不是 C prototype。
 inverse 分配回每組三個 denominator。它仍只有一次真正的 `fqinv15`，不是做八次
 scalar inversion。
 
-不同 multiplication order 可能得到不同 int16 representative，但 KEM pk/sk byte
-differential 已通過，因此 production 不額外插入每步 canonicalization。
+Tree core 的 vector field multiplication count 是 `16` 次 group products、`21`
+次 8-group batch、`32` 次 group recovery，合計 `69`；這和 24-element linear
+Montgomery batch 的 `3n-3 = 69` 相同。改動目標是 dependency depth 與 ILP，
+不是減少 batch multiplication count。
+
+不同 multiplication order 可能得到不同 int16 representative，但 canonical
+serialization 會在 wire boundary 固定 representative 與 permutation；promoted GT
+產生的 `.rsp` hash 與 KPQC final 完全相同。Production 不在每個 arithmetic step
+插入 canonicalization。
 
 #### C. HIERK8 tree scheduling
 
 `GT_BASEINV_USE_HIER_K8_TREE` 選擇固定 8-group tree shape，減少一般 flat prefix/
 suffix chain 的 dependency 與 instruction cost。tree 本身目前是 C/NEON；真正的
 inverse core 與 finish loop 是 ASM。
+
+Production default 現在由 `poly_gt_baseinv_hier_k8_tree.c` 直接提供唯一的
+`poly_baseinv_scaled_r` body。舊 generic/HIER wrapper 只在 tree kill-switch 或
+benchmark-helper build 中保留，避免 production 同時連入兩份 baseinv code 而造成
+不必要的 code-placement/I-cache 變動。linked symbol audit 顯示 production body
+為 2008 bytes，且不含 experiment replacement symbol。
 
 #### D. ASM finish
 
@@ -437,6 +453,17 @@ basemul 內部會得到 `a*b*R^-1`，再做 final correction；當第二個 oper
 省掉 final correction。
 
 這是跨 kernel 的 contract 優化，不是兩個 ABI-compatible kernel 的單獨替換。
+Current KEM profiler 的公平比較是：
+
+```text
+KPQC baseinv + basemul: 6693 cycles
+GT scaled-R pair:       6534 cycles
+delta:                  -159 cycles/call (-2.38%)
+```
+
+所以 scaled-R 讓 GT 後半段 basemul 明顯較快；promotion 後的整組 contract 也已
+小幅快於 KPQC。單看 GT baseinv 的 `4514` cycles 仍比 KPQC `4056` 慢，不能忽略
+matching basemul 的 factor placement 而把兩個數字當成 ABI-equivalent drop-in 比較。
 歷史 production-vs-stock logical-stage PMU：
 
 ```text
@@ -545,7 +572,39 @@ asm/gt/invntt/poly_invntt.n1.opt.inc
 這些優化主要是讓 GT inverse pipeline 自己不被 gather、分離 reduction 與 final
 scale 拖慢；它不是目前 GT 相對 KPQC 最大的 isolated win。
 
-### 5.13 Support kernels
+### 5.13 Decap verify canonical pointwise F2
+
+第二個 decap product 的左 operand `c-m1` 已是 GT row-bitrev physical order，但
+`hinv` 來自 canonical secret-key bytes。舊 production 會先把 `hinv` unpack 成 GT
+layout，做 generic basemul，再把 GT output canonical pack。F2 改成 caller-specific
+pipeline：
+
+```text
+hinv canonical bytes -> ordinary QSoA unpack
+c-m1 GT blocks       -> fixed public-offset gather
+                    -> 24 quartic groups
+                    -> Slothy schedule 12 two-group windows
+                    -> ordinary QSoA pack -> verification bytes
+```
+
+每個 two-group window 讓 group `N+1` gather loads 與 group `N` 的
+arithmetic/final reduction 交錯。Slothy 固定 physical vector registers、禁止 rename
+與 spill，並驗證每個 window 保留 F1 arithmetic instruction multiset。這條路徑不改
+quartic arithmetic、lambda order、reduction 或 API bytes。
+
+Pi 5 same-binary promotion evidence：
+
+```text
+F1 compact candidate decap: 33144.3 cycles
+F2 scheduled candidate:     33036.5 cycles
+F2 vs old production:        -648.5 cycles, 61/61 wins
+```
+
+F2 kernel 約 11984 text bytes，F1 約 2880 bytes。較大的 code size 是明確代價，
+但 replacement-only Cortex-A76 benchmark 仍由 35183-cycle KPQC final 降到
+32868-cycle GT production。
+
+### 5.14 Support kernels
 
 目前 GT production link：
 
@@ -581,7 +640,17 @@ crepmod3:                       約 -3.1%，但總共只有約 383 cycles
 SOTP encode/decode:             幾乎持平
 ```
 
-因此 support ASM 有穩定的小收益，但不是 full KEM 差距的主要來源。
+這兩個 symbols處理 GT internal layout。Canonical wire boundary另外使用：
+
+```text
+asm/gt/support/poly_canonical_pack.S
+asm/gt/support/poly_canonical_pack_p1.S
+asm/gt/support/poly_canonical_unpack_u1.S
+```
+
+Production policy 是 keygen pack 使用 P1、其他 pack 使用原 canonical pack、所有
+unpack 使用 U1。這些 boundary 保證 `.rsp` 與 KPQC final 相同，也帶來額外
+permutation cost；因此早期 internal-layout full-KEM 數字不能當 current result。
 
 ## 6. 每項優化的 production status 與已知收益
 
@@ -599,7 +668,10 @@ SOTP encode/decode:             幾乎持平
 | Q31 direct32 | encap only | byte-contract reduction | full encap -468 cycles (-1.21%) | yes |
 | rminus1 | decap first product | basemul 留 R^-1，InvNTT constants補回 | first basemul 歷史 -23.2% | yes |
 | InvNTT fused path | decap | stripe scratch、stage45 reduce fusion、branchfold | GT internal optimization；isolated vs stock非主要 win | yes |
-| support N1 ASM | all KEM paths | pack/unpack/sub/crepmod3 scheduling | pack約 -12% 到 -13% | yes |
+| canonical pointwise F2 | decap verify | GT gather + QSoA arithmetic，跨 two-group Slothy schedule | full decap paired -648.5 cycles | yes |
+| support N1 ASM | all KEM paths | internal pack/unpack/sub/crepmod3 scheduling | internal pack約 -12% 到 -13% | yes |
+| canonical pack P1 | keygen | pre-transpose normalization schedule | paired keygen -72.1 cycles | yes, keygen only |
+| canonical unpack U1 | encap/decap | whole-DAG Slothy schedule | paired encap -43、decap -101.6 cycles | yes |
 
 ## 7. 目前不是 production 的路線
 
@@ -688,6 +760,7 @@ Base inverse：
 
 ```text
 poly_gt_baseinv_batch.c
+poly_gt_baseinv_hier_k8_tree.c
 asm/gt/baseinv/poly_baseinv_fqinv15.S
 asm/gt/baseinv/poly_baseinv_batch_finish.n1.opt.S
 ```
@@ -712,12 +785,16 @@ asm/gt/support/poly_cbd_sotp.S
 
 ## 10. Benchmark 與重現入口
 
-Current 三方 raw results：
+Current GT/KPQC detailed profiler：
 
 ```text
-aarch64-bench/results/gt_production_g1r123s2_threeway/summary.md
-aarch64-bench/results/gt_production_g1r123s2_threeway/summary.json
+aarch64-bench/results/gt_kpqc_component_profile_baseinv_tree_promoted_2026-07-19/summary.md
+aarch64-bench/results/gt_kpqc_component_profile_baseinv_tree_promoted_2026-07-19/summary.json
 ```
+
+舊的 forward source-order three-way 與 promotion A/B 證據仍分別保留在
+`gt_production_g1r123s2_threeway/` 與
+`experiments/baseinv_hier_k8/replacement-binary-pmu-2026-07-19.md`。
 
 G1R123+S2 same-binary paired results：
 
@@ -731,29 +808,23 @@ aarch64-bench/results/u01v3_g1_r123_paired_kem/summary.json
 ```sh
 cd ntruplus-ntt-Optimized/aarch64-bench
 
-make -B bench VARIANT=gt_production_default \
-  BENCH_MODE=kem_keygen CYCLES=PERF NTESTS=61 NITERATIONS=2000 NWARMUP=100
-
-make -B bench VARIANT=gt_production_default \
-  BENCH_MODE=kem_enc CYCLES=PERF NTESTS=61 NITERATIONS=2000 NWARMUP=100
-
-make -B bench VARIANT=gt_production_default \
-  BENCH_MODE=kem_dec CYCLES=PERF NTESTS=61 NITERATIONS=2000 NWARMUP=100
-
-make -B bench VARIANT=kpqc_final \
-  BENCH_MODE=<kem_keygen|kem_enc|kem_dec> \
-  CYCLES=PERF NTESTS=61 NITERATIONS=2000 NWARMUP=100
+python3 scripts/run_gt_kpqc_component_profile.py \
+  --output results/gt_kpqc_component_profile_baseinv_tree_promoted_2026-07-19 \
+  --core 3 \
+  --ntests 31 \
+  --niterations 2000 \
+  --nwarmup 100
 ```
 
-執行時仍要用 `taskset -c 3` pin 到同一個 Pi 5 core，並確保兩邊都維持
-`USE_SHAKE_ASM=0`，否則這份比較就不再是同一個 hash backend。
+script 會用 `taskset -c 3` pin 到同一個 Pi 5 core，並讓兩邊維持 portable
+`NO_CE` hash backend。
 
 ## 11. 現況判讀
 
 目前能確定的事：
 
 1. GT new 對 KPQC final 的 full-KEM cycle win 是真實且穩定的，範圍約
-   `3.6%` 到 `7.7%`。
+   `3.46%` 到 `4.78%`。
 2. keygen 的主要 GT-specific 收益來自 SAMPLE-DAG、HIERK8 與 scaled-R。
 3. encap 的 arithmetic 收益主要來自兩次 forward NTT 加 Q31 byte contract，
    但 hash 仍占大部分時間。
@@ -762,5 +833,5 @@ make -B bench VARIANT=kpqc_final \
 5. generic basemul、InvNTT、baseinv並非每個 isolated window 都勝過 KPQC；
    caller-specific scale/layout contract 才是 GT 整體變快的關鍵。
 6. 距離 20% 目標仍有明顯差距。只再省幾十 cycle 的 NTT/store peephole 不足以
-   把 3.6%-7.7% 推到 20%；後續若仍鎖定 polynomial path，需要更大的 algorithm/
+   把 3.46%-4.78% 推到 20%；後續若仍鎖定 polynomial path，需要更大的 algorithm/
    cross-kernel change，或重新評估 hash backend 在完整 KEM 中的占比。
