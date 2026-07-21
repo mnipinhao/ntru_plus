@@ -20,11 +20,38 @@
 #define GT_BASEINV_ROW_N 32
 #define GT_BASEINV_QUARTIC_LANES 4
 
+#if defined(GT_BASEINV_USE_HIER_K8) && \
+    !defined(GT_BASEINV_SCALED_R_EXTERNAL_BACKEND)
+#define GT_BASEINV_USE_INTERNAL_HIER_K8
+#endif
+
 int poly_baseinv_gt_batch(poly *r, const poly *a);
 int poly_baseinv_gt_batch_scaled_r(poly *r, const poly *a);
 int poly_baseinv_gt_tuple_batch(poly *r, const poly *a);
 int poly_baseinv_scaled_r(poly *r, const poly *a);
-#if defined(GT_BASEINV_USE_HIER_K8) || \
+#if defined(GT_BASEINV_PAPER_HIER_BENCH_HELPERS) || \
+    (defined(GT_BASEINV_USE_PAPER_HIER_K8) && \
+     !defined(GT_BASEINV_SCALED_R_EXTERNAL_BACKEND))
+#if defined(__aarch64__)
+int gt_baseinv_paper_hier_k8_vec(int16x8_t den[24], int16x8_t con);
+#endif
+int poly_baseinv_scaled_r_paper_hier_k8_candidate(poly *r, const poly *a);
+#if defined(GT_BASEINV_PAPER_HIER_BENCH_HELPERS)
+int gt_baseinv_paper_hier_k6_den_for_bench(int16_t den[24 * 8]);
+int gt_baseinv_paper_hier_k8_den_for_bench(int16_t den[24 * 8]);
+int gt_baseinv_paper_hier_k12_den_for_bench(int16_t den[24 * 8]);
+#if defined(__aarch64__)
+int gt_baseinv_paper_hier_k6_vec_for_bench(int16x8_t den[24], int16x8_t con);
+int gt_baseinv_paper_hier_k8_vec_for_bench(int16x8_t den[24], int16x8_t con);
+int gt_baseinv_paper_hier_k12_vec_for_bench(int16x8_t den[24],
+					     int16x8_t con);
+#endif
+int poly_baseinv_scaled_r_paper_hier_k6_for_bench(poly *r, const poly *a);
+int poly_baseinv_scaled_r_paper_hier_k8_for_bench(poly *r, const poly *a);
+int poly_baseinv_scaled_r_paper_hier_k12_for_bench(poly *r, const poly *a);
+#endif
+#endif
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8) || \
     defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
     defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
 int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a);
@@ -144,6 +171,16 @@ int poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(poly *r,
 
 #if defined(GT_BASEINV_USE_HIER_K8_TREE) && !defined(GT_BASEINV_USE_HIER_K8)
 #error "GT_BASEINV_USE_HIER_K8_TREE requires GT_BASEINV_USE_HIER_K8"
+#endif
+
+#if defined(GT_BASEINV_USE_PAPER_HIER_K8) && \
+    !defined(GT_BASEINV_USE_HIER_K8)
+#error "GT_BASEINV_USE_PAPER_HIER_K8 requires GT_BASEINV_USE_HIER_K8"
+#endif
+
+#if defined(GT_BASEINV_USE_PAPER_HIER_K8) && \
+    !defined(GT_BASEINV_USE_FQINV15_ASM)
+#error "GT_BASEINV_USE_PAPER_HIER_K8 requires GT_BASEINV_USE_FQINV15_ASM"
 #endif
 
 #if defined(GT_BASEINV_USE_HIER_K8) && \
@@ -796,7 +833,7 @@ static int poly_fqinv_batch_neon(int16x8_t r[24], int16x8_t con)
 	return 0;
 }
 
-#if defined(GT_BASEINV_USE_HIER_K8) || \
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8) || \
     defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
     defined(GT_BASEINV_KWAY_BENCH_HELPERS) || \
     defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS) || \
@@ -877,7 +914,7 @@ static int poly_fqinv_flat_kway_current_neon(int16x8_t *r, int m, int k,
 }
 #endif
 
-#if defined(GT_BASEINV_USE_HIER_K8) || \
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8) || \
     defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
     defined(GT_BASEINV_KWAY_BENCH_HELPERS) || \
     defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS) || \
@@ -1435,7 +1472,7 @@ static int poly_baseinv_batch_block_major_hier_kway_divstep_neon(
 
 #endif
 
-#if defined(GT_BASEINV_USE_HIER_K8) || \
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8) || \
     defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
     defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
 #if defined(GT_BASEINV_USE_HIER_K8_TREE)
@@ -1644,6 +1681,32 @@ int poly_baseinv_scaled_r_hier_k8_tree_for_bench(int16_t den_buf[24 * 8])
 	return ret;
 }
 
+/*
+ * Benchmark-only normal-representation companion for layout experiments.
+ * The QSoA prepare/finish path uses the stock KPQC Montgomery contract, so its
+ * denominator tree must return normal inverses rather than scaled-R inverses.
+ */
+int poly_baseinv_normal_hier_k8_tree_for_bench(int16_t den_buf[24 * 8]);
+int poly_baseinv_normal_hier_k8_tree_for_bench(int16_t den_buf[24 * 8])
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	int ret;
+
+	for (int i = 0; i < 24; i++)
+		den[i] = vld1q_s16(den_buf + 8 * i);
+
+#if defined(GT_BASEINV_USE_HIER_K8_TREE)
+	ret = poly_fqinv_hier_k8_tree_neon(den, con);
+#else
+	ret = poly_fqinv_hier_kway_current_neon(den, 24, 8, con);
+#endif
+
+	for (int i = 0; i < 24; i++)
+		vst1q_s16(den_buf + 8 * i, den[i]);
+	return ret;
+}
+
 void poly_baseinv_scaled_r_finish_for_bench(poly *out, const poly *num,
                                             const int16_t den_inv[24 * 8])
 {
@@ -1678,6 +1741,76 @@ void gt_baseinv_fqinv15_x2_for_bench(int16_t f[8], int16_t g[8])
 	(void)g;
 #endif
 }
+#endif
+
+#if defined(__aarch64__) && \
+    (defined(GT_BASEINV_PAPER_HIER_BENCH_HELPERS) || \
+     (defined(GT_BASEINV_USE_PAPER_HIER_K8) && \
+      !defined(GT_BASEINV_SCALED_R_EXTERNAL_BACKEND)))
+typedef int (*gt_paper_hier_vec_fn)(int16x8_t den[24], int16x8_t con);
+
+static int poly_baseinv_scaled_r_paper_hier(
+	poly *r, const poly *a, gt_paper_hier_vec_fn invert_den)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[24] __attribute__((aligned(16)));
+	const int16_t *src = a->coeffs;
+	int16_t *dst = r->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int i = 0; i < 24; i++)
+	{
+		int16x8_t zeta = vld1q_s16(lambda);
+
+		baseinv_8_prepare(dst, &den[i], src, zeta, con);
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+	}
+
+	if (invert_den(den, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+#ifdef GT_BASEINV_BATCH_USE_ASM_FINISH
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+#else
+	dst = r->coeffs;
+	for (int i = 0; i < 24; i++)
+	{
+		baseinv_8_finish(dst, den[i], con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+	}
+#endif
+	return 0;
+}
+
+int poly_baseinv_scaled_r_paper_hier_k8_candidate(poly *r, const poly *a)
+{
+	return poly_baseinv_scaled_r_paper_hier(
+		r, a, gt_baseinv_paper_hier_k8_vec);
+}
+
+#if defined(GT_BASEINV_PAPER_HIER_BENCH_HELPERS)
+int poly_baseinv_scaled_r_paper_hier_k6_for_bench(poly *r, const poly *a)
+{
+	return poly_baseinv_scaled_r_paper_hier(
+		r, a, gt_baseinv_paper_hier_k6_vec_for_bench);
+}
+
+int poly_baseinv_scaled_r_paper_hier_k8_for_bench(poly *r, const poly *a)
+{
+	return poly_baseinv_scaled_r_paper_hier_k8_candidate(r, a);
+}
+
+int poly_baseinv_scaled_r_paper_hier_k12_for_bench(poly *r, const poly *a)
+{
+	return poly_baseinv_scaled_r_paper_hier(
+		r, a, gt_baseinv_paper_hier_k12_vec_for_bench);
+}
+#endif
 #endif
 
 #if defined(__aarch64__) && defined(GT_KEYGEN_DIRECT_H_HINV_MODEL_HELPERS)
@@ -2017,9 +2150,10 @@ int poly_baseinv(poly *r, const poly *a)
 }
 #endif
 
+#ifndef GT_BASEINV_SCALED_R_EXTERNAL_BACKEND
 int poly_baseinv_scaled_r(poly *r, const poly *a)
 {
-#if defined(GT_BASEINV_USE_HIER_K8)
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8)
 	return poly_baseinv_scaled_r_hier_k8_candidate(r, a);
 #elif defined(GT_BASEINV_SCALED_R_USE_HIER_KWAY_CURRENT)
 #if defined(__aarch64__) && defined(GT_BASEINV_HIER_K8_DIFF_HELPERS)
@@ -2039,8 +2173,9 @@ int poly_baseinv_scaled_r(poly *r, const poly *a)
 	return poly_baseinv_gt_batch_scaled_r(r, a);
 #endif
 }
+#endif
 
-#if defined(GT_BASEINV_USE_HIER_K8) || \
+#if defined(GT_BASEINV_USE_INTERNAL_HIER_K8) || \
     defined(GT_BASEINV_HIER_K8_DIFF_HELPERS) || \
     defined(GT_BASEINV_HIER_K8_DECOMPOSE_HELPERS)
 /*
@@ -2057,8 +2192,12 @@ int poly_baseinv_scaled_r(poly *r, const poly *a)
 int poly_baseinv_scaled_r_hier_k8_candidate(poly *r, const poly *a)
 {
 #if defined(__aarch64__)
+#if defined(GT_BASEINV_USE_PAPER_HIER_K8)
+	return poly_baseinv_scaled_r_paper_hier_k8_candidate(r, a);
+#else
 	return poly_baseinv_batch_block_major_hier_k8_neon(
 		r, a, gt_baseinv_scaled_r_consts, 0);
+#endif
 #else
 	(void)r;
 	(void)a;

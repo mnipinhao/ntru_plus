@@ -3,8 +3,39 @@
 #include "api.h"
 #include "params.h"
 #include "symmetric.h"
+
+/* Production spelling for the audited cross-group scheduled backend. */
+#if defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE)
+#define GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE
+#endif
 #include "poly.h"
 #include "randombytes.h"
+
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#include "gt_keygen_bpq_cq.h"
+#endif
+
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#define GT_KEYGEN_POLY_TOBYTES_PUBLIC gt_keygen_tobytes_cq
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_F gt_keygen_tobytes_bpq_p1
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_HINV gt_keygen_tobytes_cq
+#elif defined(GT_PRODUCTION_USE_KEYGEN_CANONICAL_PACK_P1)
+#define GT_KEYGEN_POLY_TOBYTES poly_tobytes_gt_canonical_p1
+#elif !defined(GT_KEYGEN_POLY_TOBYTES)
+#define GT_KEYGEN_POLY_TOBYTES poly_tobytes_gt_canonical
+#endif
+
+/* Default-identical seams for benchmark-only keygen layout experiments. */
+#ifndef GT_KEYGEN_POLY_TOBYTES_PUBLIC
+#define GT_KEYGEN_POLY_TOBYTES_PUBLIC GT_KEYGEN_POLY_TOBYTES
+#endif
+#ifndef GT_KEYGEN_POLY_TOBYTES_SECRET_F
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_F GT_KEYGEN_POLY_TOBYTES
+#endif
+#ifndef GT_KEYGEN_POLY_TOBYTES_SECRET_HINV
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_HINV GT_KEYGEN_POLY_TOBYTES
+#endif
 
 #ifdef GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
 void poly_basemul_add_encap_direct32_q31_tobytes_contract(
@@ -27,6 +58,38 @@ void poly_ntt_mul3_add1(poly *out, const poly *a);
 #error "select only one decap verify basemul->tobytes contract helper"
 #endif
 
+#if defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER)
+#error "select only one canonical decap verify pointwise helper"
+#endif
+
+#if defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE) && \
+    (defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) || \
+     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER))
+#error "select only one canonical decap verify pointwise helper"
+#endif
+
+#if (defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) || \
+     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) || \
+     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE)) && \
+    (defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) || \
+     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C) || \
+     defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT))
+#error "select only one decap verify pointwise->bytes helper"
+#endif
+
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER
+void gt_decap_verify_canonical_fused_gather_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const uint8_t hinv_bytes[NTRUPLUS_POLYBYTES]);
+#endif
+
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE
+void gt_decap_verify_canonical_f2_pair_pipeline_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const uint8_t hinv_bytes[NTRUPLUS_POLYBYTES]);
+#endif
+
 #ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
 void gt_decap_verify_basemul_tobytes_contract_ref(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
@@ -43,6 +106,12 @@ void gt_decap_verify_basemul_tobytes_contract_c_candidate(
 void gt_decap_verify_basemul_tobytes_direct_candidate(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
     const poly *hinv);
+#endif
+
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE
+void gt_decap_verify_canonical_bridge_candidate(
+    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
+    const uint8_t hinv_bytes[NTRUPLUS_POLYBYTES]);
 #endif
 
 #ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
@@ -102,7 +171,10 @@ static void gt_block_major_to_tuple_c(poly *tuple,
 }
 #endif
 
-#ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#define KEYPAIR_BASEINV gt_keygen_baseinv_bpq_to_cq_scaled_r
+#define KEYPAIR_BASEMUL gt_keygen_basemul_bpq_cq_to_cq_scaled_r
+#elif defined(GT_PRODUCTION_USE_SCALED_KEYPAIR)
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
@@ -142,7 +214,7 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
 #else
     poly_basemul_add(&c, h, r, m);
 #endif
-    poly_tobytes(ct, &c);
+    poly_tobytes_gt_canonical(ct, &c);
 }
 
 #undef GT_ENCAP_TOBYTES_CONTRACT_INLINE
@@ -163,7 +235,9 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
 gt_keygen_ntt_mul3_add1(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+    gt_keygen_ntt_bpq_mul3_add1(out, small);
+#elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
     poly_ntt_mul3_add1(out, small);
 #else
     poly_triple(out, small);
@@ -175,7 +249,9 @@ gt_keygen_ntt_mul3_add1(poly *out, const poly *small)
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
 gt_keygen_ntt_mul3(poly *out, const poly *small)
 {
-#ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
+#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+    gt_keygen_ntt_bpq_mul3(out, small);
+#elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
     poly_ntt_mul3(out, small);
 #else
     poly_triple(out, small);
@@ -282,9 +358,10 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
     KEYPAIR_BASEMUL(&h, g, finv);
     KEYPAIR_BASEMUL(&hinv, f, ginv);
 
-    poly_tobytes(pk, &h);
-    poly_tobytes(sk, f);
-    poly_tobytes(sk + NTRUPLUS_POLYBYTES, &hinv);
+    GT_KEYGEN_POLY_TOBYTES_PUBLIC(pk, &h);
+    GT_KEYGEN_POLY_TOBYTES_SECRET_F(sk, f);
+    GT_KEYGEN_POLY_TOBYTES_SECRET_HINV(
+        sk + NTRUPLUS_POLYBYTES, &hinv);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
 }
 
@@ -356,12 +433,12 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
     poly_ntt(&r, &r);
     
-    poly_tobytes(buf2, &r);
+    poly_tobytes_gt_canonical(buf2, &r);
     hash_g(buf2, buf2);
     poly_sotp_encode(&m, msg, buf2);
     poly_ntt(&m, &m);
     
-    poly_frombytes(&h, pk);
+    poly_frombytes_gt_canonical(&h, pk);
     gt_encap_basemul_add_tobytes_contract(ct, &h, &r, &m);
     
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
@@ -419,18 +496,30 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     int8_t fail;
     
-    poly c, f, hinv;
+    poly c, f;
+#if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE)
+    poly hinv;
+#endif
     poly r1;
 #if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
     !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C) && \
-    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT)
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE)
     poly r2;
 #endif
     poly m1, m2;
     
-    poly_frombytes(&c, ct);
-    poly_frombytes(&f, sk);
-    poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
+    poly_frombytes_gt_canonical(&c, ct);
+    poly_frombytes_gt_canonical(&f, sk);
+#if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE)
+    poly_frombytes_gt_canonical(&hinv, sk + NTRUPLUS_POLYBYTES);
+#endif
     
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
     poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
@@ -457,7 +546,16 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     poly_ntt(&m2, &m1);
     poly_sub(&c, &c, &m2);
-#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT
+#ifdef GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_F2_PAIR_PIPELINE
+    gt_decap_verify_canonical_f2_pair_pipeline_candidate(
+        buf1, &c, sk + NTRUPLUS_POLYBYTES);
+#elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER)
+    gt_decap_verify_canonical_fused_gather_candidate(
+        buf1, &c, sk + NTRUPLUS_POLYBYTES);
+#elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE)
+    gt_decap_verify_canonical_bridge_candidate(
+        buf1, &c, sk + NTRUPLUS_POLYBYTES);
+#elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT)
     gt_decap_verify_basemul_tobytes_contract_ref(buf1, &c, &hinv);
 #elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C)
     gt_decap_verify_basemul_tobytes_contract_c_candidate(buf1, &c, &hinv);
@@ -465,7 +563,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     gt_decap_verify_basemul_tobytes_direct_candidate(buf1, &c, &hinv);
 #else
     poly_basemul(&r2, &c, &hinv);
-    poly_tobytes(buf1, &r2);
+    poly_tobytes_gt_canonical(buf1, &r2);
 #endif
     hash_g(buf2, buf1);
     fail = poly_sotp_decode(msg, &m1, buf2);
@@ -477,7 +575,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     poly_cbd1(&r1, buf3 + NTRUPLUS_SSBYTES);
     poly_ntt(&r1, &r1);
-    poly_tobytes(buf2, &r1);
+    poly_tobytes_gt_canonical(buf2, &r1);
     
     fail |= verify(buf1, buf2, NTRUPLUS_POLYBYTES);
     

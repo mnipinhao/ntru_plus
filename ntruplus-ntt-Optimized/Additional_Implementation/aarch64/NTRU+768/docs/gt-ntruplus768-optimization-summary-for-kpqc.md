@@ -1,8 +1,8 @@
 # NTRU+768 AArch64 優化說明：GT 實作與 KPQC final 的差異
 
-更新日期：2026-07-10
+更新日期：2026-07-21
 
-這份文件面向已熟悉 NTRU+ 與 KPQC final 的讀者，說明目前 GT 實作的三個主要
+這份文件面向已熟悉 NTRU+ 與 KPQC final 的讀者，說明目前 GT 實作的主要
 改動、演算法結構，以及 Raspberry Pi 5 上的效能結果。精確 ASM、register allocation、
 prototype 與歷史 benchmark 留在內部 audit 文件。
 
@@ -27,15 +27,32 @@ C 與 AVX2 實作；本工作將相同方法映射到 AArch64 Neon，並另外�
 field-inversion chain。15-step chain 與 hierarchical batching 是兩項不同改動，
 不能把 hierarchical batching 的 full-keygen cycle delta 歸因於少一次 multiplication。
 
-Raspberry Pi 5 Cortex-A76、兩邊都使用 portable `NO_CE` SHAKE 時：
+Key generation 另外使用一條 private mixed-layout contract。Fused sample NTT 將
+`f/g` 直接存成 branch-pair quartic (BPQ)；baseinv prepare 在第一次需要
+coefficient-wise arithmetic 時轉成 coefficient-major quartic (CQ)，hierarchical
+inversion 與 finish 維持 CQ；public products 使用 BPQ x CQ mixed basemul 並直接
+輸出 CQ。最後 `h/hinv` 由 CQ pack、`f` 由 BPQ P1 pack 產生 canonical bytes。
+這條 contract 只用於 keygen；generic polynomial API 與 encap/decap layout 不變。
+
+Decapsulation verification 的最後一個 product 使用 caller-specific canonical
+pointwise path：右 operand 直接解成 canonical QSoA，左 operand 從 GT physical
+order 以固定 public offsets gather，並將相鄰兩組 quartic products 交錯排程。這避免
+先轉成 GT polynomial、做 generic basemul、再轉回 canonical bytes；內部 NTT layout
+仍維持 GT order，API-visible bytes 不變。
+
+Raspberry Pi 5 Cortex-A76、兩邊都使用 portable `NO_CE` SHAKE，且 GT 使用與
+KPQC final 相同的 canonical wire serialization 時：
 
 | Operation | KPQC final cycles | GT cycles | Cycle reduction |
 |---|---:|---:|---:|
-| keygen | 39966 | 37966 | 5.00% |
-| encapsulation | 39013 | 37590 | 3.65% |
-| decapsulation | 35180 | 32482 | 7.67% |
+| keygen | 39948 | 36373 | 8.95% |
+| encapsulation | 39011 | 37574 | 3.68% |
+| decapsulation | 35181 | 32904 | 6.47% |
 
 目前 full-KEM 是穩定的 single-digit speedup，尚未達到 20% 的 scheme-level 目標。
+Mixed BPQ/CQ promotion 前的 GT keygen 是 `38264` cycles；新 backend 是 `36373`
+cycles，減少 `1891` cycles（`4.94%`）。Encap/decap 與 promotion 前 GT 的差異低於
+`0.1%`，符合這是 keygen-only contract 的預期。
 
 ## 2. Forward NTT
 
@@ -127,23 +144,24 @@ ASM 也讓多個 NTT32 intermediates直接由 producer registers 交給後續 st
 不必要的 scratch store/load；這是 scheduling 與 register handoff 的實作收益，
 不是新的 NTT 數學。
 
-2026-07-10 Pi 5 KEM-component harness 重測：
+2026-07-19 Pi 5 KEM-component harness 重測：
 
 ```text
 core:          3, pinned
 hash backend:  portable NO_CE
-samples:       61
+samples:       31
 calls/sample:  2000
 warmup:        100
 ```
 
 | Forward NTT measurement | KPQC final | GT | Cycle reduction |
 |---|---:|---:|---:|
-| run 1, one `poly_ntt` | 3441 | 2633 | 23.48% |
-| run 2, one `poly_ntt` | 3441 | 2625 | 23.71% |
+| encapsulation `poly_ntt(r)` | 3458 | 2589 | 25.13% |
+| encapsulation `poly_ntt(m)` | 3441 | 2588 | 24.79% |
+| rotating-buffer generic `poly_ntt` | 3610 | 2869 | 20.53% |
 
 這裡量到完整 generic `poly_ntt`，不包含 CBD、hash、base multiplication 或 inverse
-NTT。Rotating-buffer benchmark 約快 19%，固定 KEM-component buffer 約快 23.6%；
+NTT。Rotating-buffer benchmark 約快 20.5%，固定 KEM-component buffer 約快 24.8%-25.1%；
 兩者的差異包含 memory hierarchy 與 cache working set。完整 KEM 結果仍是最終依據。
 
 ## 3. Inverse NTT
@@ -203,6 +221,18 @@ poly_basemul_rminus1
 也就是 basemul 不先正規化 representation，再讓 inverse 重做 normalization；
 inverse final constants 一次吸收 `R^-1` compensation 與原有 final factors。
 
+目前 default KEM 只有 decapsulation 呼叫 inverse，而且直接走上述 paired path；
+keygen 與 encapsulation 都沒有 InvNTT。Repository 仍保留 normal `poly_invntt`，
+是為了 `poly_ntt -> poly_invntt` roundtrip、generic polynomial multiplication、
+fallback 與測試 API，不是因為 default KEM 還有第二個 inverse hot path。因此
+standalone generic inverse benchmark 不應被當成 production decapsulation 的數字。
+
+省略 basemul final correction 並不是單獨成立的近似：若 raw `R^-1` product 送進
+normal `poly_invntt`，結果與 KAT 都會錯。現在 KAT bytes 不變，是因為
+`poly_invntt_from_rminus1` 的 adjusted final constants 在 coefficient-domain output
+與 serialization 之前精確補回該 factor；normal pair 與 rminus pair 已做 exact
+representative、full KEM、canonical `.rsp` 與 cross-vector 驗證。
+
 ### 3.2 Current limitation
 
 Standalone GT inverse 目前接近但仍略慢於 KPQC，所以不應把 decapsulation gain
@@ -235,6 +265,25 @@ shape：
 這保留一次真正的 field inversion，但把長度 24 的 sequential product/recovery
 chain 改成多條較短且可平行的 chains，以增加 ILP。
 
+這種改寫主要縮短 dependency depth、提高 ILP。Current K=8 tree 的 batch core
+仍是 `16 + 21 + 32 = 69` 次 modular vector multiplications 加一次 field
+inversion，與 24-element linear Montgomery batch 的 `3n-3 = 69` 相同；它不是
+靠減少 multiplication count 取勝。再加上 GT 將一個 Montgomery factor 留給
+後續 `poly_basemul_scaled_r_input`，所以 standalone baseinv 不是公平的 drop-in
+比較。Current KEM-path measurement 是：
+
+| Keygen contract | KPQC final | GT | Delta |
+|---|---:|---:|---:|
+| standalone baseinv | 4056 | 4514 | +11.29% |
+| matching basemul | 2641 | 2022 | -23.44% |
+| baseinv + matching basemul | 6693 | 6534 | -2.38% |
+
+因此 hierarchical + batch inversion 確實是 production；目前相對 KPQC 的 paired
+contract 已快 `2.38%`，但不能改寫成 GT standalone baseinv 本身較快。Production
+default 只連入一份 2008-byte HIER-K8 tree backend；舊 wrapper 只保留給 kill-switch
+與 benchmark-helper build，避免 duplicated KEM/backend code 造成 I-cache 與
+code-placement 干擾。
+
 第二層 total product 使用一條 15-step exponentiation chain；KPQC 使用的 chain
 有 16 次 modular vector multiplications。這只證明 arithmetic chain 少一次
 multiplication，不能直接推論 cycle 一定較少。現有 isolated measurement 中，
@@ -257,11 +306,11 @@ credit；本工作的貢獻是 Neon realization 與目前使用的 AArch64 kerne
 Full-KEM 與 forward component 數據都來自 Raspberry Pi 5 Cortex-A76、固定 core、
 portable `NO_CE` SHAKE。對外解讀應維持以下界線：
 
-- Forward NTT 在固定 KEM-component harness 約快 23.6%，不代表 full KEM 快 23.6%。
-- Rotating-buffer forward benchmark 約快 19%，顯示 cache context 會影響比例。
+- Forward NTT 在固定 KEM-component harness 約快 24.6%-25.1%，不代表 full KEM 快相同比例。
+- Rotating-buffer forward benchmark 約快 20.5%，顯示 cache context 會影響比例。
 - Standalone inverse 尚未快於 KPQC；decapsulation收益來自跨 kernel factor fusion。
 - 15-step chain 少一次 multiplication，但目前沒有獨立 cycle win 或 full-KEM delta。
-- Full KEM 目前快約 3.6%-6.25%，尚未達到 20% 目標。
+- Full KEM canonical production 目前快約 3.46%-4.78%，尚未達到 20% 目標。
 
 ## 6. References
 
