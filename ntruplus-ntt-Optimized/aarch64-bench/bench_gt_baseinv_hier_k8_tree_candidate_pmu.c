@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "bench_build_config.h"
+#include "ntt.h"
 #include "params.h"
 #include "poly.h"
 
@@ -66,8 +67,34 @@ int poly_baseinv_scaled_r_hier_k8_prepare_for_bench(poly *num,
                                                     const poly *a);
 int poly_baseinv_scaled_r_hier_k8_tree_for_bench(int16_t den[GT_DEN_WORDS]);
 int poly_baseinv_scaled_r_hier_k8_tree_candidate(poly *r, const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(poly *r,
+                                                          const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(poly *r,
+                                                              const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(poly *r,
+                                                               const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(poly *r,
+                                                            const poly *a);
+int poly_baseinv_scaled_r_hier_k8_full_asm_candidate(poly *r,
+                                                     const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+    poly *r, const poly *a);
+int poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(poly *r,
+                                                           const poly *a);
+int baseinv_prepare_hier_k8_prepare2_slothy_diff_for_bench(
+    const poly *a, int *kind, int *index, int16_t *baseline,
+    int16_t *candidate);
+void baseinv_prepare_hier_k8_group_products_prepare2_asm(
+    int16_t *dst, int16_t *den, int16_t *c01, int16_t *group_prod,
+    const int16_t *src, const int16_t *lambda, const int16_t *con);
+void baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+    int16_t *dst, int16_t *den, int16_t *c01, int16_t *group_prod,
+    const int16_t *src, const int16_t *lambda, const int16_t *con);
 int poly_baseinv_scaled_r_hier_k8_tree_candidate_for_bench(
     int16_t den[GT_DEN_WORDS]);
+int kpqc_final_poly_baseinv_for_bench(poly *r, const poly *a);
+void kpqc_final_poly_basemul_for_bench(poly *r, const poly *a,
+                                       const poly *b);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
 
@@ -99,10 +126,32 @@ static poly g_finv[NINPUTS] __attribute__((aligned(64)));
 static poly g_ginv[NINPUTS] __attribute__((aligned(64)));
 static poly g_finv_candidate[NINPUTS] __attribute__((aligned(64)));
 static poly g_ginv_candidate[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_fused[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_fused[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_fused_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_fused_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_prepare2_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_prepare2_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_prepare2_slothy[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_prepare2_slothy[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_full_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_full_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_prepare2_paper[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_prepare2_paper[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_paper_full_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_paper_full_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_finv_kpqc[NINPUTS] __attribute__((aligned(64)));
+static poly g_ginv_kpqc[NINPUTS] __attribute__((aligned(64)));
+static poly g_fproduct_kpqc[NINPUTS] __attribute__((aligned(64)));
+static poly g_gproduct_kpqc[NINPUTS] __attribute__((aligned(64)));
 static poly g_h[NINPUTS] __attribute__((aligned(64)));
 static poly g_hinv[NINPUTS] __attribute__((aligned(64)));
 static poly g_h_candidate[NINPUTS] __attribute__((aligned(64)));
 static poly g_hinv_candidate[NINPUTS] __attribute__((aligned(64)));
+static poly g_h_fused[NINPUTS] __attribute__((aligned(64)));
+static poly g_hinv_fused[NINPUTS] __attribute__((aligned(64)));
+static poly g_h_fused_asm[NINPUTS] __attribute__((aligned(64)));
+static poly g_hinv_fused_asm[NINPUTS] __attribute__((aligned(64)));
 static int16_t g_fden[NINPUTS][GT_DEN_WORDS] __attribute__((aligned(64)));
 static int16_t g_gden[NINPUTS][GT_DEN_WORDS] __attribute__((aligned(64)));
 static int16_t g_fden_current[NINPUTS][GT_DEN_WORDS]
@@ -121,8 +170,30 @@ static uint8_t g_h_candidate_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
     __attribute__((aligned(64)));
 static uint8_t g_hinv_candidate_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
     __attribute__((aligned(64)));
+static uint8_t g_h_fused_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
+    __attribute__((aligned(64)));
+static uint8_t g_hinv_fused_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
+    __attribute__((aligned(64)));
+static uint8_t g_h_fused_asm_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
+    __attribute__((aligned(64)));
+static uint8_t g_hinv_fused_asm_bytes[NINPUTS][NTRUPLUS_POLYBYTES]
+    __attribute__((aligned(64)));
 static poly g_work0 __attribute__((aligned(64)));
 static poly g_work1 __attribute__((aligned(64)));
+static poly g_prepare_num0 __attribute__((aligned(64)));
+static poly g_prepare_num1 __attribute__((aligned(64)));
+static int16_t g_prepare_den0[GT_DEN_WORDS] __attribute__((aligned(64)));
+static int16_t g_prepare_den1[GT_DEN_WORDS] __attribute__((aligned(64)));
+static int16_t g_prepare_c01_0[8 * GT_DEN_LANES]
+    __attribute__((aligned(64)));
+static int16_t g_prepare_c01_1[8 * GT_DEN_LANES]
+    __attribute__((aligned(64)));
+static int16_t g_prepare_group0[8 * GT_DEN_LANES]
+    __attribute__((aligned(64)));
+static int16_t g_prepare_group1[8 * GT_DEN_LANES]
+    __attribute__((aligned(64)));
+static const int16_t g_prepare_consts[8] __attribute__((aligned(16))) = {
+    3457, 19412, -12929, -147, -1393, -682, -6464, 0};
 static int16_t g_den_work0[GT_DEN_WORDS] __attribute__((aligned(64)));
 static int16_t g_den_work1[GT_DEN_WORDS] __attribute__((aligned(64)));
 static volatile uint64_t g_sink;
@@ -210,16 +281,110 @@ static void prepare_one(size_t i)
     exit(1);
   }
 
+  if (poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(
+          &g_finv_fused[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(
+          &g_ginv_fused[i], &g_g[i]))
+  {
+    fprintf(stderr, "hier_k8 prepare-fused candidate failed on input\n");
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(
+          &g_finv_fused_asm[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(
+          &g_ginv_fused_asm[i], &g_g[i]))
+  {
+    fprintf(stderr, "hier_k8 prepare-fused ASM candidate failed on input\n");
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(
+          &g_finv_prepare2_asm[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(
+          &g_ginv_prepare2_asm[i], &g_g[i]))
+  {
+    fprintf(stderr, "hier_k8 prepare2-fused ASM candidate failed on input\n");
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(
+          &g_finv_prepare2_slothy[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(
+          &g_ginv_prepare2_slothy[i], &g_g[i]))
+  {
+    int kind = 0;
+    int index = 0;
+    int16_t baseline = 0;
+    int16_t candidate = 0;
+
+    (void)baseinv_prepare_hier_k8_prepare2_slothy_diff_for_bench(
+        &g_f[i], &kind, &index, &baseline, &candidate);
+    fprintf(stderr,
+            "hier_k8 prepare2 Slothy candidate failed: input=%zu "
+            "buffer_kind=%d index=%d baseline=%d candidate=%d\n",
+            i, kind, index, baseline, candidate);
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_full_asm_candidate(
+          &g_finv_full_asm[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_full_asm_candidate(
+          &g_ginv_full_asm[i], &g_g[i]))
+  {
+    fprintf(stderr, "complete hier_k8 ASM candidate failed on input\n");
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+          &g_finv_prepare2_paper[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+          &g_ginv_prepare2_paper[i], &g_g[i]))
+  {
+    fprintf(stderr, "prepare2 Slothy plus paper-k8 candidate failed\n");
+    exit(1);
+  }
+
+  if (poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(
+          &g_finv_paper_full_asm[i], &g_f[i]) ||
+      poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(
+          &g_ginv_paper_full_asm[i], &g_g[i]))
+  {
+    fprintf(stderr, "complete paper-HIER_K8 ASM candidate failed\n");
+    exit(1);
+  }
+
+  if (kpqc_final_poly_baseinv_for_bench(&g_finv_kpqc[i], &g_f[i]) ||
+      kpqc_final_poly_baseinv_for_bench(&g_ginv_kpqc[i], &g_g[i]))
+  {
+    fprintf(stderr, "KPQC-final baseinv failed on GT-shaped raw input\n");
+    exit(1);
+  }
+  kpqc_final_poly_basemul_for_bench(&g_fproduct_kpqc[i], &g_f[i],
+                                    &g_finv_kpqc[i]);
+  kpqc_final_poly_basemul_for_bench(&g_gproduct_kpqc[i], &g_g[i],
+                                    &g_ginv_kpqc[i]);
+
   poly_basemul_scaled_r_input(&g_h[i], &g_g[i], &g_finv[i]);
   poly_basemul_scaled_r_input(&g_hinv[i], &g_f[i], &g_ginv[i]);
   poly_basemul_scaled_r_input(&g_h_candidate[i], &g_g[i],
                               &g_finv_candidate[i]);
   poly_basemul_scaled_r_input(&g_hinv_candidate[i], &g_f[i],
                               &g_ginv_candidate[i]);
+  poly_basemul_scaled_r_input(&g_h_fused[i], &g_g[i], &g_finv_fused[i]);
+  poly_basemul_scaled_r_input(&g_hinv_fused[i], &g_f[i], &g_ginv_fused[i]);
+  poly_basemul_scaled_r_input(&g_h_fused_asm[i], &g_g[i],
+                              &g_finv_fused_asm[i]);
+  poly_basemul_scaled_r_input(&g_hinv_fused_asm[i], &g_f[i],
+                              &g_ginv_fused_asm[i]);
   poly_tobytes(g_h_bytes[i], &g_h[i]);
   poly_tobytes(g_hinv_bytes[i], &g_hinv[i]);
   poly_tobytes(g_h_candidate_bytes[i], &g_h_candidate[i]);
   poly_tobytes(g_hinv_candidate_bytes[i], &g_hinv_candidate[i]);
+  poly_tobytes(g_h_fused_bytes[i], &g_h_fused[i]);
+  poly_tobytes(g_hinv_fused_bytes[i], &g_hinv_fused[i]);
+  poly_tobytes(g_h_fused_asm_bytes[i], &g_h_fused_asm[i]);
+  poly_tobytes(g_hinv_fused_asm_bytes[i], &g_hinv_fused_asm[i]);
 
   if (poly_baseinv_scaled_r_hier_k8_prepare_for_bench(
           &fnum, g_fden[i], &g_f[i]) ||
@@ -255,6 +420,8 @@ static void prepare_inputs(void)
 
 static int run_correctness(void)
 {
+  poly zero_input = {{0}};
+  poly zero_output;
   int total = 0;
   int finv_exact = 0;
   int ginv_exact = 0;
@@ -264,6 +431,53 @@ static int run_correctness(void)
   int hinv_bytes = 0;
   int fden_exact = 0;
   int gden_exact = 0;
+  int fused_finv_exact = 0;
+  int fused_ginv_exact = 0;
+  int fused_h_exact = 0;
+  int fused_hinv_exact = 0;
+  int fused_h_bytes = 0;
+  int fused_hinv_bytes = 0;
+  int fused_asm_finv_exact = 0;
+  int fused_asm_ginv_exact = 0;
+  int fused_asm_h_exact = 0;
+  int fused_asm_hinv_exact = 0;
+  int fused_asm_h_bytes = 0;
+  int fused_asm_hinv_bytes = 0;
+  int kpqc_product_mismatches = 0;
+  int prepare2_finv_exact = 0;
+  int prepare2_ginv_exact = 0;
+  int prepare2_slothy_finv_exact = 0;
+  int prepare2_slothy_ginv_exact = 0;
+  int full_asm_finv_exact = 0;
+  int full_asm_ginv_exact = 0;
+  int full_asm_zero_failure_mismatches = 0;
+  int prepare2_paper_zero_failure_mismatches = 0;
+  int prepare2_paper_finv_exact = 0;
+  int prepare2_paper_ginv_exact = 0;
+  int paper_full_asm_zero_failure_mismatches = 0;
+  int paper_full_asm_finv_exact = 0;
+  int paper_full_asm_ginv_exact = 0;
+
+  memset(&zero_output, 0x5a, sizeof(zero_output));
+  full_asm_zero_failure_mismatches +=
+      poly_baseinv_scaled_r_hier_k8_full_asm_candidate(&zero_output,
+                                                       &zero_input) != 1;
+  for (size_t i = 0; i < NTRUPLUS_N; i++)
+    full_asm_zero_failure_mismatches += zero_output.coeffs[i] != 0;
+
+  memset(&zero_output, 0x5a, sizeof(zero_output));
+  prepare2_paper_zero_failure_mismatches +=
+      poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+          &zero_output, &zero_input) != 1;
+  for (size_t i = 0; i < NTRUPLUS_N; i++)
+    prepare2_paper_zero_failure_mismatches += zero_output.coeffs[i] != 0;
+
+  memset(&zero_output, 0x5a, sizeof(zero_output));
+  paper_full_asm_zero_failure_mismatches +=
+      poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(
+          &zero_output, &zero_input) != 1;
+  for (size_t i = 0; i < NTRUPLUS_N; i++)
+    paper_full_asm_zero_failure_mismatches += zero_output.coeffs[i] != 0;
 
   for (size_t i = 0; i < NVALID_ORACLE; i++)
   {
@@ -285,10 +499,89 @@ static int run_correctness(void)
                                  g_fden_candidate[slot]);
     gden_exact += den_mismatches(g_gden_current[slot],
                                  g_gden_candidate[slot]);
+    fused_finv_exact += poly_exact_mismatches(&g_finv[slot],
+                                              &g_finv_fused[slot]);
+    fused_ginv_exact += poly_exact_mismatches(&g_ginv[slot],
+                                              &g_ginv_fused[slot]);
+    fused_h_exact += poly_exact_mismatches(&g_h[slot], &g_h_fused[slot]);
+    fused_hinv_exact += poly_exact_mismatches(&g_hinv[slot],
+                                              &g_hinv_fused[slot]);
+    fused_h_bytes += byte_mismatches(g_h_bytes[slot], g_h_fused_bytes[slot],
+                                     NTRUPLUS_POLYBYTES);
+    fused_hinv_bytes += byte_mismatches(g_hinv_bytes[slot],
+                                        g_hinv_fused_bytes[slot],
+                                        NTRUPLUS_POLYBYTES);
+    fused_asm_finv_exact += poly_exact_mismatches(&g_finv[slot],
+                                                  &g_finv_fused_asm[slot]);
+    fused_asm_ginv_exact += poly_exact_mismatches(&g_ginv[slot],
+                                                  &g_ginv_fused_asm[slot]);
+    fused_asm_h_exact += poly_exact_mismatches(&g_h[slot],
+                                               &g_h_fused_asm[slot]);
+    fused_asm_hinv_exact += poly_exact_mismatches(&g_hinv[slot],
+                                                  &g_hinv_fused_asm[slot]);
+    fused_asm_h_bytes += byte_mismatches(g_h_bytes[slot],
+                                         g_h_fused_asm_bytes[slot],
+                                         NTRUPLUS_POLYBYTES);
+    fused_asm_hinv_bytes += byte_mismatches(g_hinv_bytes[slot],
+                                            g_hinv_fused_asm_bytes[slot],
+                                            NTRUPLUS_POLYBYTES);
+    prepare2_finv_exact += poly_exact_mismatches(&g_finv[slot],
+                                                 &g_finv_prepare2_asm[slot]);
+    prepare2_ginv_exact += poly_exact_mismatches(&g_ginv[slot],
+                                                 &g_ginv_prepare2_asm[slot]);
+    prepare2_slothy_finv_exact +=
+        poly_exact_mismatches(&g_finv[slot],
+                              &g_finv_prepare2_slothy[slot]);
+    prepare2_slothy_ginv_exact +=
+        poly_exact_mismatches(&g_ginv[slot],
+                              &g_ginv_prepare2_slothy[slot]);
+    full_asm_finv_exact +=
+        poly_exact_mismatches(&g_finv[slot], &g_finv_full_asm[slot]);
+    full_asm_ginv_exact +=
+        poly_exact_mismatches(&g_ginv[slot], &g_ginv_full_asm[slot]);
+    prepare2_paper_finv_exact +=
+        poly_exact_mismatches(&g_finv[slot], &g_finv_prepare2_paper[slot]);
+    prepare2_paper_ginv_exact +=
+        poly_exact_mismatches(&g_ginv[slot], &g_ginv_prepare2_paper[slot]);
+    paper_full_asm_finv_exact +=
+        poly_exact_mismatches(&g_finv[slot], &g_finv_paper_full_asm[slot]);
+    paper_full_asm_ginv_exact +=
+        poly_exact_mismatches(&g_ginv[slot], &g_ginv_paper_full_asm[slot]);
+    for (size_t block = 0; block < 24; block++)
+    {
+      const size_t offset = 32 * block;
+
+      for (size_t lane = 0; lane < 8; lane++)
+      {
+        kpqc_product_mismatches +=
+            g_fproduct_kpqc[slot].coeffs[offset + lane] != 1;
+        kpqc_product_mismatches +=
+            g_gproduct_kpqc[slot].coeffs[offset + lane] != 1;
+      }
+      for (size_t lane = 8; lane < 32; lane++)
+      {
+        kpqc_product_mismatches +=
+            g_fproduct_kpqc[slot].coeffs[offset + lane] != 0;
+        kpqc_product_mismatches +=
+            g_gproduct_kpqc[slot].coeffs[offset + lane] != 0;
+      }
+    }
   }
 
   total = finv_exact + ginv_exact + h_exact + hinv_exact + h_bytes +
-          hinv_bytes + fden_exact + gden_exact;
+          hinv_bytes + fden_exact + gden_exact + fused_finv_exact +
+          fused_ginv_exact + fused_h_exact + fused_hinv_exact +
+          fused_h_bytes + fused_hinv_bytes + fused_asm_finv_exact +
+          fused_asm_ginv_exact + fused_asm_h_exact + fused_asm_hinv_exact +
+          fused_asm_h_bytes + fused_asm_hinv_bytes + kpqc_product_mismatches +
+          prepare2_finv_exact + prepare2_ginv_exact +
+          prepare2_slothy_finv_exact + prepare2_slothy_ginv_exact +
+          full_asm_finv_exact + full_asm_ginv_exact +
+          full_asm_zero_failure_mismatches +
+          prepare2_paper_zero_failure_mismatches +
+          prepare2_paper_finv_exact + prepare2_paper_ginv_exact +
+          paper_full_asm_zero_failure_mismatches +
+          paper_full_asm_finv_exact + paper_full_asm_ginv_exact;
 
   printf("oracle,oracle_current_hier_k8=1\n");
   printf("correctness,valid_cases=%d\n", NVALID_ORACLE);
@@ -300,6 +593,48 @@ static int run_correctness(void)
   printf("tree_candidate_hinv_bytes_mismatches=%d\n", hinv_bytes);
   printf("tree_candidate_fden_exact_mismatches=%d\n", fden_exact);
   printf("tree_candidate_gden_exact_mismatches=%d\n", gden_exact);
+  printf("prepare_fused_finv_exact_mismatches=%d\n", fused_finv_exact);
+  printf("prepare_fused_ginv_exact_mismatches=%d\n", fused_ginv_exact);
+  printf("prepare_fused_h_exact_mismatches=%d\n", fused_h_exact);
+  printf("prepare_fused_hinv_exact_mismatches=%d\n", fused_hinv_exact);
+  printf("prepare_fused_h_bytes_mismatches=%d\n", fused_h_bytes);
+  printf("prepare_fused_hinv_bytes_mismatches=%d\n", fused_hinv_bytes);
+  printf("prepare_fused_asm_finv_exact_mismatches=%d\n",
+         fused_asm_finv_exact);
+  printf("prepare_fused_asm_ginv_exact_mismatches=%d\n",
+         fused_asm_ginv_exact);
+  printf("prepare_fused_asm_h_exact_mismatches=%d\n", fused_asm_h_exact);
+  printf("prepare_fused_asm_hinv_exact_mismatches=%d\n",
+         fused_asm_hinv_exact);
+  printf("prepare_fused_asm_h_bytes_mismatches=%d\n", fused_asm_h_bytes);
+  printf("prepare_fused_asm_hinv_bytes_mismatches=%d\n",
+         fused_asm_hinv_bytes);
+  printf("kpqc_final_product_identity_mismatches=%d\n",
+         kpqc_product_mismatches);
+  printf("prepare2_fused_asm_finv_exact_mismatches=%d\n",
+         prepare2_finv_exact);
+  printf("prepare2_fused_asm_ginv_exact_mismatches=%d\n",
+         prepare2_ginv_exact);
+  printf("prepare2_slothy_finv_exact_mismatches=%d\n",
+         prepare2_slothy_finv_exact);
+  printf("prepare2_slothy_ginv_exact_mismatches=%d\n",
+         prepare2_slothy_ginv_exact);
+  printf("full_asm_finv_exact_mismatches=%d\n", full_asm_finv_exact);
+  printf("full_asm_ginv_exact_mismatches=%d\n", full_asm_ginv_exact);
+  printf("full_asm_zero_failure_mismatches=%d\n",
+         full_asm_zero_failure_mismatches);
+  printf("prepare2_paper_zero_failure_mismatches=%d\n",
+         prepare2_paper_zero_failure_mismatches);
+  printf("prepare2_paper_finv_exact_mismatches=%d\n",
+         prepare2_paper_finv_exact);
+  printf("prepare2_paper_ginv_exact_mismatches=%d\n",
+         prepare2_paper_ginv_exact);
+  printf("paper_full_asm_zero_failure_mismatches=%d\n",
+         paper_full_asm_zero_failure_mismatches);
+  printf("paper_full_asm_finv_exact_mismatches=%d\n",
+         paper_full_asm_finv_exact);
+  printf("paper_full_asm_ginv_exact_mismatches=%d\n",
+         paper_full_asm_ginv_exact);
   printf("baseinv_hier_k8_tree_candidate_correctness,total_mismatches=%d\n",
          total);
 
@@ -326,6 +661,132 @@ static NOINLINE void target_candidate_hier_k8_baseinv_x2(size_t idx)
       &g_work1, &g_g[input_idx]);
   g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
   g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare_fused_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare_fused_asm_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_kpqc_final_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)kpqc_final_poly_baseinv_for_bench(&g_work0, &g_f[input_idx]);
+  (void)kpqc_final_poly_baseinv_for_bench(&g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare2_fused_asm_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare2_slothy_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_full_asm_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_full_asm_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_full_asm_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare2_paper_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_paper_full_asm_hier_k8_baseinv_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  (void)poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(
+      &g_work0, &g_f[input_idx]);
+  (void)poly_baseinv_scaled_r_hier_k8_paper_full_asm_candidate(
+      &g_work1, &g_g[input_idx]);
+  g_sink ^= (uint16_t)g_work0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_work1.coeffs[(idx + 17) % NTRUPLUS_N];
+}
+
+static NOINLINE void target_prepare2_fused_asm_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  baseinv_prepare_hier_k8_group_products_prepare2_asm(
+      g_prepare_num0.coeffs, g_prepare_den0, g_prepare_c01_0,
+      g_prepare_group0, g_f[input_idx].coeffs, &gt_rowbitrev_lambda[0][0],
+      g_prepare_consts);
+  baseinv_prepare_hier_k8_group_products_prepare2_asm(
+      g_prepare_num1.coeffs, g_prepare_den1, g_prepare_c01_1,
+      g_prepare_group1, g_g[input_idx].coeffs, &gt_rowbitrev_lambda[0][0],
+      g_prepare_consts);
+  g_sink ^= (uint16_t)g_prepare_num0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_prepare_group1[(idx + 17) % (8 * GT_DEN_LANES)];
+}
+
+static NOINLINE void target_prepare2_slothy_asm_x2(size_t idx)
+{
+  const size_t input_idx = idx % NINPUTS;
+
+  baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+      g_prepare_num0.coeffs, g_prepare_den0, g_prepare_c01_0,
+      g_prepare_group0, g_f[input_idx].coeffs, &gt_rowbitrev_lambda[0][0],
+      g_prepare_consts);
+  baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+      g_prepare_num1.coeffs, g_prepare_den1, g_prepare_c01_1,
+      g_prepare_group1, g_g[input_idx].coeffs, &gt_rowbitrev_lambda[0][0],
+      g_prepare_consts);
+  g_sink ^= (uint16_t)g_prepare_num0.coeffs[idx % NTRUPLUS_N];
+  g_sink ^= (uint16_t)g_prepare_group1[(idx + 17) % (8 * GT_DEN_LANES)];
 }
 
 static NOINLINE void target_current_tree_x2(size_t idx)
@@ -458,10 +919,27 @@ static void run_one_variant(const struct variant *variant)
 static void run_pmu(void)
 {
   static const struct variant variants[] = {
+      {"prepare2_fused_asm_x2", target_prepare2_fused_asm_x2},
+      {"prepare2_slothy_asm_x2", target_prepare2_slothy_asm_x2},
       {"baseinv_scaled_x2_current_hier_k8",
        target_current_hier_k8_baseinv_x2},
       {"baseinv_scaled_x2_tree_candidate",
        target_candidate_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_prepare_fused_candidate",
+       target_prepare_fused_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_prepare_fused_asm_candidate",
+       target_prepare_fused_asm_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_prepare2_fused_asm_candidate",
+       target_prepare2_fused_asm_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_prepare2_slothy_candidate",
+       target_prepare2_slothy_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_hier_k8_full_asm_candidate",
+       target_full_asm_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_prepare2_slothy_paper_candidate",
+       target_prepare2_paper_hier_k8_baseinv_x2},
+      {"baseinv_scaled_x2_paper_full_asm_candidate",
+       target_paper_full_asm_hier_k8_baseinv_x2},
+      {"kpqc_final_baseinv_x2", target_kpqc_final_baseinv_x2},
       {"hier_k8_tree_current_x2", target_current_tree_x2},
       {"hier_k8_tree_candidate_x2", target_candidate_tree_x2},
   };

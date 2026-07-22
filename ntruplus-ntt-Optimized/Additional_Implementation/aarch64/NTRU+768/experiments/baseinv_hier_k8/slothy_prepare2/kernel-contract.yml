@@ -1,0 +1,130 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt_baseinv_hier_k8_prepare2_group_slothy
+  name: GT HIERK8 prepare2 plus third prepare and group-product Slothy region
+  source: experiments/baseinv_hier_k8/slothy_prepare2/prepare2_group.sym.S
+  scheme: NTRU+768
+  operation: prepare three quartic inverse numerator and denominator vectors then form c01 and one HIERK8 group product
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: allocate-and-optimize
+  driver: experiments/baseinv_hier_k8/slothy_prepare2/optimize_prepare2_group.py
+  expected_outputs:
+    - experiments/baseinv_hier_k8/slothy_prepare2/prepare2_group.alloc.S
+    - experiments/baseinv_hier_k8/slothy_prepare2/prepare2_group.full.alloc.S
+    - experiments/baseinv_hier_k8/slothy_prepare2/prepare2_group.opt.S
+  allow_spills: false
+
+region:
+  start_label: slothy_start_gt_baseinv_prepare2_group
+  end_label: slothy_end_gt_baseinv_prepare2_group
+  expected_instruction_count: 307 before pointer-loop scaffolding
+  live_in:
+    - x0 numerator output pointer
+    - x1 denominator output pointer
+    - x2 c01 output pointer
+    - x3 group-product output pointer
+    - x4 block-major source pointer
+    - x5 lambda pointer
+    - v0 scaled-R Montgomery constants
+  live_out:
+    - exact baseline stores and pointer advances
+    - v0 scaled-R Montgomery constants preserved
+
+abi:
+  inputs:
+    - x0-x5 pointers described by the region live-ins
+    - v0 scaled-R Montgomery constants
+  outputs:
+    - x0 plus 192 bytes
+    - x1 plus 48 bytes
+    - x2 plus 16 bytes
+    - x3 plus 16 bytes
+    - x4 plus 192 bytes
+    - x5 plus 48 bytes
+    - exact numerator denominator c01 and group-product stores
+  clobbers:
+    - symbolic vector temporaries
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x6-x30
+    - sp
+
+instruction_dag:
+  file: experiments/baseinv_hier_k8/slothy_prepare2/instruction-dag.yml
+  summary: three independent closed-form quartic prepare DAGs with c01 after d0/d1 and group product after c01/d2
+
+layout:
+  input_representation: three consecutive GT block-major quartic blocks loaded with ld4 plus three lambda vectors
+  output_representation: three GT block-major numerator blocks, d0/d1/d2, c01, and c01*d2
+  vector_lanes: eight independent signed int16 field elements per vector
+  packing: st4 preserves the exact baseline quartic block-major order
+
+memory_contract:
+  loads:
+    - three sequential 64-byte ld4 source blocks
+    - three sequential 16-byte lambda vectors
+  stores:
+    - three sequential 64-byte st4 numerator blocks
+    - three sequential 16-byte denominator vectors
+    - one 16-byte c01 vector
+    - one 16-byte group-product vector
+  aliasing: source and lambda do not alias numerator, denominator, c01, or group-product outputs; output regions are pairwise disjoint
+  alignment: all pointers are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x0 plus 192
+    - x1 plus 48
+    - x2 plus 16
+    - x3 plus 16
+    - x4 plus 192
+    - x5 plus 48
+
+constant_contract:
+  constants:
+    - v0.h[0] is q equals 3457
+    - v0.h[2] is qinv equals -12929
+  modulus: 3457
+  representation: signed int16 Montgomery-domain representatives using R equals 2^16 modulo q
+  reduction_method: unchanged baseline widening Montgomery reduction using qinv and q
+
+range_contract:
+  input_ranges:
+    - source and lambda lanes satisfy the existing GT baseinv signed-int16 precondition
+  intermediate_ranges:
+    - widened int32 products and sums preserve the baseline arithmetic DAG and overflow contract
+  output_ranges:
+    - every stored int16 representative must exactly match the baseline group
+  narrowing_points:
+    - Montgomery reductions narrow through uzp2 after the q correction
+
+constant_time_contract:
+  secret_inputs:
+    - source coefficient lanes
+  public_inputs:
+    - fixed group count and fixed sequential offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_baseinv_hier_k8_tree_candidate_pmu SUDO= CORE=3
+  test_command: make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_baseinv_hier_k8_tree_candidate_pmu SUDO= CORE=3
+  full_path_benchmark_command: make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu SUDO= CORE=3
+  benchmark_metric: cycles instructions IPC
+  lower_is_better: true
