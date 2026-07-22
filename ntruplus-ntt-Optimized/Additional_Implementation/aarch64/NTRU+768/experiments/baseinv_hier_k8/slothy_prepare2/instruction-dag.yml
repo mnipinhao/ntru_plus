@@ -1,0 +1,116 @@
+dag:
+  id: gt_baseinv_hier_k8_prepare2_group_dag
+  kernel_contract: kernel-contract.yml
+  description: Three closed-form quartic base-inverse prepares and the two HIERK8 group products for one fixed group.
+
+inputs:
+  - a0_0 through a0_3 from source block 0
+  - a1_0 through a1_3 from source block 1
+  - a2_0 through a2_3 from source block 2
+  - lambda0 lambda1 lambda2
+  - q and qinv from fixed v0
+
+constants:
+  - q equals 3457
+  - qinv equals -12929
+  - Montgomery radix R equals 2^16 modulo q
+
+nodes:
+  - id: load_blocks
+    op: load and deinterleave three independent quartic blocks
+    inputs: [x4, x5]
+    outputs: [a0_0-a0_3, a1_0-a1_3, a2_0-a2_3, lambda0-lambda2]
+    instruction_shape: three ld4 and lambda ldp plus ldr
+    tied_operands: [x4 post-increment chain, x5 post-increment chain]
+    range_before: aligned bytes
+    range_after: signed int16 field representatives
+    may_reorder_with: [independent arithmetic after each corresponding load]
+    must_precede: [prepare_block_0, prepare_block_1, prepare_block_2]
+  - id: prepare_block_0
+    op: closed-form quartic numerator and denominator for block 0
+    inputs: [a0_0-a0_3, lambda0, q, qinv]
+    outputs: [n0_0-n0_3, d0]
+    instruction_shape: neg and shift plus reduce_mul2 reduce_mul3 fqmul Montgomery DAG
+    tied_operands: [smlal accumulators, narrowing reductions]
+    range_before: signed int16 representatives
+    range_after: exact baseline int16 numerator and denominator representatives
+    may_reorder_with: [prepare_block_1, prepare_block_2]
+    must_precede: [form_c01, store_block_0, store_denominators]
+  - id: prepare_block_1
+    op: closed-form quartic numerator and denominator for block 1
+    inputs: [a1_0-a1_3, lambda1, q, qinv]
+    outputs: [n1_0-n1_3, d1]
+    instruction_shape: neg and shift plus reduce_mul2 reduce_mul3 fqmul Montgomery DAG
+    tied_operands: [smlal accumulators, narrowing reductions]
+    range_before: signed int16 representatives
+    range_after: exact baseline int16 numerator and denominator representatives
+    may_reorder_with: [prepare_block_0, prepare_block_2]
+    must_precede: [form_c01, store_block_1, store_denominators]
+  - id: form_c01
+    op: Montgomery field multiply d0 times d1
+    inputs: [d0, d1, q, qinv]
+    outputs: [c01]
+    instruction_shape: smull smull2 uzp1 mul smlal smlal2 uzp2
+    tied_operands: [smlal accumulators]
+    range_before: two int16 Montgomery representatives
+    range_after: exact baseline c01 int16 representative
+    may_reorder_with: [numerator stores, prepare_block_2]
+    must_precede: [form_group_product, store_c01]
+  - id: prepare_block_2
+    op: closed-form quartic numerator and denominator for block 2
+    inputs: [a2_0-a2_3, lambda2, q, qinv]
+    outputs: [n2_0-n2_3, d2]
+    instruction_shape: neg and shift plus reduce_mul2 reduce_mul3 fqmul Montgomery DAG
+    tied_operands: [smlal accumulators, narrowing reductions]
+    range_before: signed int16 representatives
+    range_after: exact baseline int16 numerator and denominator representatives
+    may_reorder_with: [prepare_block_0, prepare_block_1, form_c01]
+    must_precede: [form_group_product, store_block_2, store_denominators]
+  - id: form_group_product
+    op: Montgomery field multiply c01 times d2
+    inputs: [c01, d2, q, qinv]
+    outputs: [group_product]
+    instruction_shape: smull smull2 uzp1 mul smlal smlal2 uzp2
+    tied_operands: [smlal accumulators]
+    range_before: two int16 Montgomery representatives
+    range_after: exact baseline group-product int16 representative
+    may_reorder_with: [completed numerator and denominator stores]
+    must_precede: [store_group_product]
+  - id: stores
+    op: preserve exact baseline output layouts and pointer advances
+    inputs: [n0_0-n2_3, d0, d1, d2, c01, group_product]
+    outputs: [numerator_memory, denominator_memory, c01_memory, group_product_memory]
+    instruction_shape: three st4 plus stp str str str
+    tied_operands: [x0-x3 post-increment chains]
+    range_before: exact baseline int16 representatives
+    range_after: exact baseline memory image
+    may_reorder_with: [other stores after their values are ready]
+    must_precede: []
+
+memory:
+  loads:
+    - source block 0 then block 1 then block 2 through public sequential x4 updates
+    - lambda 0 then lambda 1 then lambda 2 through public sequential x5 updates
+  stores:
+    - numerator blocks preserve block order through x0
+    - denominators preserve d0 d1 d2 order through x1
+    - c01 and group product use independent x2 and x3 streams
+  ordering_constraints:
+    - each post-increment pointer stream retains program order
+    - distinct non-aliasing streams may interleave
+
+outputs:
+  - exact numerator blocks 0 through 2
+  - exact d0 d1 d2
+  - exact c01
+  - exact c01 times d2
+
+live_out:
+  - x0-x5 advanced by their contract amounts
+  - v0 unchanged
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

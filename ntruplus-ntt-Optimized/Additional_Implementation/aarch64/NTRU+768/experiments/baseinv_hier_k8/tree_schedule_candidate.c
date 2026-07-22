@@ -18,10 +18,47 @@
 
 void baseinv_batch_finish24_n1_asm(int16_t *dst, const int16_t *den_inv);
 int16x8_t gt_fqinv15_asm(int16x8_t a, int16x8_t con);
+#ifdef GT_BASEINV_HIER_K8_EXTENDED_CANDIDATES
+void baseinv_prepare_hier_k8_group_products_asm(
+	int16_t *dst, int16_t *den, int16_t *c01, int16_t *group_prod,
+	const int16_t *src, const int16_t *lambda, const int16_t *con);
+void baseinv_prepare_hier_k8_group_products_prepare2_asm(
+	int16_t *dst, int16_t *den, int16_t *c01, int16_t *group_prod,
+	const int16_t *src, const int16_t *lambda, const int16_t *con);
+void baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+	int16_t *dst, int16_t *den, int16_t *c01, int16_t *group_prod,
+	const int16_t *src, const int16_t *lambda, const int16_t *con);
+int gt_baseinv_paper_hier_k8_preformed_vec(
+	int16x8_t den[GT_DEN_VECTORS], int16x8_t c01[8],
+	int16x8_t group_prod[8], int16x8_t con);
+#endif
 
-int poly_baseinv_scaled_r_hier_k8_tree_candidate(poly *r, const poly *a);
+#ifdef GT_BASEINV_HIER_K8_TREE_REPLACEMENT_BACKEND
+#define GT_HIER_K8_TREE_ENTRY poly_baseinv_scaled_r
+#else
+#define GT_HIER_K8_TREE_ENTRY poly_baseinv_scaled_r_hier_k8_tree_candidate
+#endif
+
+int GT_HIER_K8_TREE_ENTRY(poly *r, const poly *a);
+#ifdef GT_BASEINV_HIER_K8_EXTENDED_CANDIDATES
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(poly *r,
+                                                          const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(poly *r,
+	                                                          const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(poly *r,
+	                                                           const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(poly *r,
+	                                                        const poly *a);
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+	poly *r, const poly *a);
+int baseinv_prepare_hier_k8_prepare2_slothy_diff_for_bench(
+	const poly *a, int *kind, int *index, int16_t *baseline,
+	int16_t *candidate);
+#endif
+#ifdef GT_BASEINV_HIER_K8_TREE_BENCH_HELPERS
 int poly_baseinv_scaled_r_hier_k8_tree_candidate_for_bench(
 	int16_t den_buf[GT_DEN_WORDS]);
+#endif
 
 static const int16_t gt_baseinv_scaled_r_consts[8]
 	__attribute__((aligned(16))) = {
@@ -206,6 +243,7 @@ static int hier_k8_tree_candidate_neon(int16x8_t den[GT_DEN_VECTORS],
 	return 0;
 }
 
+#ifdef GT_BASEINV_HIER_K8_TREE_BENCH_HELPERS
 int poly_baseinv_scaled_r_hier_k8_tree_candidate_for_bench(
 	int16_t den_buf[GT_DEN_WORDS])
 {
@@ -222,8 +260,9 @@ int poly_baseinv_scaled_r_hier_k8_tree_candidate_for_bench(
 		vst1q_s16(den_buf + GT_DEN_LANES * i, den[i]);
 	return ret;
 }
+#endif
 
-int poly_baseinv_scaled_r_hier_k8_tree_candidate(poly *r, const poly *a)
+int GT_HIER_K8_TREE_ENTRY(poly *r, const poly *a)
 {
 	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
 	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
@@ -250,3 +289,239 @@ int poly_baseinv_scaled_r_hier_k8_tree_candidate(poly *r, const poly *a)
 	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
 	return 0;
 }
+
+#undef GT_HIER_K8_TREE_ENTRY
+
+#ifdef GT_BASEINV_HIER_K8_EXTENDED_CANDIDATES
+/*
+ * Keep each three-denominator group live through its first two tree products.
+ * This removes the prepare-all -> reload-denominators boundary while preserving
+ * the exact numerator, denominator, recovery, and scaled-R contracts.
+ */
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_candidate(poly *r,
+                                                          const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
+	int16x8_t c01[8];
+	int16x8_t group_prod[8];
+	const int16_t *src = a->coeffs;
+	int16_t *dst = r->coeffs;
+	const int16_t *lambda = &gt_rowbitrev_lambda[0][0];
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+		int16x8_t d0, d1, d2;
+
+		baseinv_8_prepare_candidate(dst, &d0, src,
+		                            vld1q_s16(lambda), con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+
+		baseinv_8_prepare_candidate(dst, &d1, src,
+		                            vld1q_s16(lambda), con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+
+		c01[group] = fqmul_neon(d0, d1, con);
+
+		baseinv_8_prepare_candidate(dst, &d2, src,
+		                            vld1q_s16(lambda), con);
+		dst += 8 * GT_BASEINV_QUARTIC_LANES;
+		src += 8 * GT_BASEINV_QUARTIC_LANES;
+		lambda += 8;
+
+		group_prod[group] = fqmul_neon(c01[group], d2, con);
+		den[start] = d0;
+		den[start + 1] = d1;
+		den[start + 2] = d2;
+	}
+
+	if (batch_inverse_8_candidate(group_prod, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		recover_group3_candidate(&den[start], &den[start + 1],
+		                         &den[start + 2], c01[group],
+		                         group_prod[group], con);
+	}
+
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+	return 0;
+}
+
+int poly_baseinv_scaled_r_hier_k8_prepare_fused_asm_candidate(poly *r,
+	                                                          const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
+	int16x8_t c01[8] __attribute__((aligned(16)));
+	int16x8_t group_prod[8] __attribute__((aligned(16)));
+
+	baseinv_prepare_hier_k8_group_products_asm(
+		r->coeffs, (int16_t *)den, (int16_t *)c01,
+		(int16_t *)group_prod, a->coeffs, &gt_rowbitrev_lambda[0][0],
+		gt_baseinv_scaled_r_consts);
+
+	if (batch_inverse_8_candidate(group_prod, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		recover_group3_candidate(&den[start], &den[start + 1],
+		                         &den[start + 2], c01[group],
+		                         group_prod[group], con);
+	}
+
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+	return 0;
+}
+
+int poly_baseinv_scaled_r_hier_k8_prepare2_fused_asm_candidate(poly *r,
+	                                                           const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
+	int16x8_t c01[8] __attribute__((aligned(16)));
+	int16x8_t group_prod[8] __attribute__((aligned(16)));
+
+	baseinv_prepare_hier_k8_group_products_prepare2_asm(
+		r->coeffs, (int16_t *)den, (int16_t *)c01,
+		(int16_t *)group_prod, a->coeffs, &gt_rowbitrev_lambda[0][0],
+		gt_baseinv_scaled_r_consts);
+
+	if (batch_inverse_8_candidate(group_prod, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		recover_group3_candidate(&den[start], &den[start + 1],
+		                         &den[start + 2], c01[group],
+		                         group_prod[group], con);
+	}
+
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+	return 0;
+}
+
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_candidate(poly *r,
+	                                                        const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
+	int16x8_t c01[8] __attribute__((aligned(16)));
+	int16x8_t group_prod[8] __attribute__((aligned(16)));
+
+	baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+		r->coeffs, (int16_t *)den, (int16_t *)c01,
+		(int16_t *)group_prod, a->coeffs, &gt_rowbitrev_lambda[0][0],
+		gt_baseinv_scaled_r_consts);
+
+	if (batch_inverse_8_candidate(group_prod, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+	for (int group = 0; group < 8; group++)
+	{
+		const int start = group * 3;
+
+		recover_group3_candidate(&den[start], &den[start + 1],
+		                         &den[start + 2], c01[group],
+		                         group_prod[group], con);
+	}
+
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+	return 0;
+}
+
+int poly_baseinv_scaled_r_hier_k8_prepare2_slothy_paper_candidate(
+	poly *r, const poly *a)
+{
+	int16x8_t con = vld1q_s16(gt_baseinv_scaled_r_consts);
+	int16x8_t den[GT_DEN_VECTORS] __attribute__((aligned(16)));
+	int16x8_t c01[8] __attribute__((aligned(16)));
+	int16x8_t group_prod[8] __attribute__((aligned(16)));
+
+	baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+		r->coeffs, (int16_t *)den, (int16_t *)c01,
+		(int16_t *)group_prod, a->coeffs, &gt_rowbitrev_lambda[0][0],
+		gt_baseinv_scaled_r_consts);
+
+	if (gt_baseinv_paper_hier_k8_preformed_vec(den, c01, group_prod, con))
+	{
+		memset(r->coeffs, 0, sizeof(r->coeffs));
+		return 1;
+	}
+
+	baseinv_batch_finish24_n1_asm(r->coeffs, (const int16_t *)den);
+	return 0;
+}
+
+int baseinv_prepare_hier_k8_prepare2_slothy_diff_for_bench(
+	const poly *a, int *kind, int *index, int16_t *baseline,
+	int16_t *candidate)
+{
+	poly num_baseline;
+	poly num_candidate;
+	int16_t den_baseline[GT_DEN_WORDS] __attribute__((aligned(16)));
+	int16_t den_candidate[GT_DEN_WORDS] __attribute__((aligned(16)));
+	int16_t c01_baseline[8 * GT_DEN_LANES] __attribute__((aligned(16)));
+	int16_t c01_candidate[8 * GT_DEN_LANES] __attribute__((aligned(16)));
+	int16_t group_baseline[8 * GT_DEN_LANES] __attribute__((aligned(16)));
+	int16_t group_candidate[8 * GT_DEN_LANES] __attribute__((aligned(16)));
+	const int16_t *lhs[] = {
+		num_baseline.coeffs, den_baseline, c01_baseline, group_baseline
+	};
+	const int16_t *rhs[] = {
+		num_candidate.coeffs, den_candidate, c01_candidate, group_candidate
+	};
+	const int lengths[] = {
+		NTRUPLUS_N, GT_DEN_WORDS, 8 * GT_DEN_LANES, 8 * GT_DEN_LANES
+	};
+
+	baseinv_prepare_hier_k8_group_products_prepare2_asm(
+		num_baseline.coeffs, den_baseline, c01_baseline, group_baseline,
+		a->coeffs, &gt_rowbitrev_lambda[0][0], gt_baseinv_scaled_r_consts);
+	baseinv_prepare_hier_k8_group_products_prepare2_slothy_asm(
+		num_candidate.coeffs, den_candidate, c01_candidate, group_candidate,
+		a->coeffs, &gt_rowbitrev_lambda[0][0], gt_baseinv_scaled_r_consts);
+
+	for (int buffer = 0; buffer < 4; buffer++)
+	{
+		for (int i = 0; i < lengths[buffer]; i++)
+		{
+			if (lhs[buffer][i] != rhs[buffer][i])
+			{
+				*kind = buffer + 1;
+				*index = i;
+				*baseline = lhs[buffer][i];
+				*candidate = rhs[buffer][i];
+				return 1;
+			}
+		}
+	}
+
+	return 0;
+}
+#endif

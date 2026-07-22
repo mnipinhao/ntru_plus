@@ -1,0 +1,104 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: gt_baseinv_hier_k8_prepare2_group_baseline
+  source: asm/gt/experiment/baseinv_prepare_hier_k8_fused.S
+  extracted_region: experiments/baseinv_hier_k8/slothy_prepare2/baseline-region.S
+  function: baseinv_prepare_hier_k8_group_products_prepare2_asm
+  start_label: slothy_start_baseinv_prepare2_group_baseline
+  end_label: slothy_end_baseinv_prepare2_group_baseline
+  source_commit: a0c2e981501a8f758ec0ede968c7af997ab2aaef plus benchmark-only working-tree candidate
+
+region:
+  instruction_count: 314 after assembler macro expansion
+  live_in:
+    - x0 numerator output pointer
+    - x1 denominator output pointer
+    - x2 c01 output pointer
+    - x3 group-product output pointer
+    - x4 block-major source pointer
+    - x5 lambda pointer
+    - v0 scaled-R Montgomery constants
+  live_out:
+    - x0 advanced by 192 bytes
+    - x1 advanced by 48 bytes
+    - x2 advanced by 16 bytes
+    - x3 advanced by 16 bytes
+    - x4 advanced by 192 bytes
+    - x5 advanced by 48 bytes
+    - three numerator blocks and five product vectors stored
+    - v0 scaled-R Montgomery constants preserved
+  clobbers:
+    - v1-v31
+
+abi:
+  inputs:
+    - x0-x5 pointers described by the region live-ins
+    - v0 scaled-R Montgomery constants
+  outputs:
+    - exact baseline stores and pointer advances
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x6-x30
+    - sp
+
+memory_contract:
+  loads:
+    - 192 source bytes as three ld4 quartic blocks
+    - 48 lambda bytes as three int16x8 vectors
+  stores:
+    - 192 numerator bytes as three st4 quartic blocks
+    - 48 denominator bytes
+    - 16 c01 bytes
+    - 16 group-product bytes
+  aliasing: source and lambda do not alias numerator, denominator, c01, or group-product outputs; output regions are pairwise disjoint
+  alignment: all pointers are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x0 plus 192
+    - x1 plus 48
+    - x2 plus 16
+    - x3 plus 16
+    - x4 plus 192
+    - x5 plus 48
+
+constant_contract:
+  constants:
+    - v0.h[0] is q equals 3457
+    - v0.h[2] is qinv equals -12929
+  modulus: 3457
+  representation: signed int16 Montgomery-domain representatives using R equals 2^16 modulo q
+  reduction_method: smull or smlal accumulation followed by low-half qinv Montgomery reduction and uzp2 narrowing
+
+range_contract:
+  input_ranges:
+    - source and lambda lanes satisfy the existing GT baseinv signed-int16 precondition
+  intermediate_ranges:
+    - products and sums use the same int32 widening operations as the baseline and do not overflow int32 under the existing contract
+  output_ranges:
+    - exact int16 representatives must match the baseline prepare2 group
+  narrowing_points:
+    - each Montgomery reduction narrows only through uzp2 after adding low-half times q
+
+constant_time_contract:
+  secret_inputs:
+    - source coefficient lanes
+  public_inputs:
+    - fixed group count and fixed sequential offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 314 per group after macro expansion; function text size 1312 bytes
+  slothy_expected_cycles: not measured
+  full_path_benchmark: Pi5 baseinv scaled x2 equals 8741 cycles and 8066 instructions; full keygen equals 38145 cycles
+  benchmark_command: make -C ntruplus-ntt-Optimized/aarch64-bench -B bench_gt_baseinv_hier_k8_tree_candidate_pmu SUDO= CORE=3
