@@ -1,0 +1,121 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt_frontend_iter_dce_slothy
+  name: GT forward frontend iteration after dead-pointer DCE
+  source: experiments/forward_ntt_frontend_dce_slothy/frontend_dce.input.s
+  scheme: NTRU+768
+  operation: top split, twist, lane packing, and eight-way DFT3 for one frontend iteration
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: optimize-existing-allocation
+  driver: experiments/forward_ntt_frontend_dce_slothy/optimize_frontend_dce.py
+  expected_outputs:
+    - experiments/forward_ntt_frontend_dce_slothy/frontend_iter_dce.fixed.opt.s
+    - experiments/forward_ntt_frontend_dce_slothy/frontend_iter_dce.rename.opt.s
+  allow_spills: false
+
+region:
+  start_label: slothy_start_gt_frontend_dce_class0
+  end_label: slothy_end_gt_frontend_dce_class2
+  expected_instruction_count: 468
+  live_in:
+    - x1 input pointer for this public iteration
+    - x3 twist-table pointer for this public iteration
+    - x4 row0 output pointer
+    - x5 row1 output pointer
+    - x6 row2 output pointer
+    - v0 modulus and Montgomery constants
+  live_out:
+    - twelve 16-byte row-scratch stores
+
+abi:
+  inputs:
+    - x1 input pointer
+    - x3 twist-table pointer
+    - x4 row0 output pointer
+    - x5 row1 output pointer
+    - x6 row2 output pointer
+    - v0 constant vector
+  outputs:
+    - row0 q vectors at x4 offsets 0, 16, 32, 48
+    - row1 q vectors at x5 offsets 0, 16, 32, 48
+    - row2 q vectors at x6 offsets 0, 16, 32, 48
+  clobbers:
+    - v1-v31
+  concrete_gprs_allowed:
+    - x1
+    - x3
+    - x4
+    - x5
+    - x6
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x0
+    - x2
+    - x7-x30
+    - sp
+
+instruction_dag:
+  file: experiments/forward_ntt_frontend_dce_slothy/instruction-dag.yml
+  summary: Three iteration classes preserve their distinct DFT3 operand permutations; each class has four independent output groups after the shared top-split and twist chains.
+
+layout:
+  input_representation: production GT coefficient vectors addressed by fixed public offsets
+  output_representation: three row-major Stage12 scratch streams with four q vectors per row
+  vector_lanes: eight signed int16 coefficients per Neon q register
+  packing: zip operations assemble the two GT branches into the eight transform lanes
+
+memory_contract:
+  loads:
+    - input vectors from x1 at the existing fixed public offsets
+    - twist and DFT3 constants from x3 in the existing order
+  stores:
+    - twelve distinct 16-byte stores at x4, x5, and x6 offsets 0, 16, 32, 48
+  aliasing: input, constant table, and three row-scratch streams do not alias
+  alignment: x1, x3, x4, x5, and x6 are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: none inside the DCE candidate region
+
+constant_contract:
+  constants:
+    - modulus q in v0.h[0]
+    - top-split Montgomery constants in v0.h[4] and v0.h[5]
+    - iteration twist constants loaded from x3
+  modulus: 3457
+  representation: signed int16 coefficients with Montgomery multipliers
+  reduction_method: sqrdmulh plus mls Montgomery reduction, unchanged from production
+
+range_contract:
+  input_ranges:
+    - production poly_ntt int16 input contract
+  intermediate_ranges:
+    - identical to the current production frontend because arithmetic is unchanged
+  output_ranges:
+    - identical Stage12 row-scratch representatives to the current production frontend
+  narrowing_points:
+    - all arithmetic remains in 16-bit Neon lanes exactly as in production
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - fixed iteration number
+    - fixed input, constant, and scratch offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -B test_gt_frontend_dce_slothy
+  test_command: make -B test_gt_frontend_dce_slothy
+  full_path_benchmark_command: make -B bench_gt_frontend_dce_slothy_pmu
+  benchmark_metric: cycles
+  lower_is_better: true

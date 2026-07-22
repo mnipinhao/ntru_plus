@@ -1,0 +1,54 @@
+{
+  "source": "asm/slothy/inputs/ntt768_gt_frontend.sym.S",
+  "dead_tail": [
+    "add x1, x1, #32",
+    "add x4, x4, #64",
+    "add x5, x5, #64",
+    "add x6, x6, #64"
+  ],
+  "removed_per_iteration": 4,
+  "removed_per_poly_ntt": 32,
+  "classes": [
+    {
+      "class": 0,
+      "iterations": [
+        0,
+        3,
+        6
+      ],
+      "baseline_instructions": 160,
+      "candidate_instructions": 156,
+      "baseline_instruction_sha256": "21e176e9f9b2eb624eba9d0a7daaeeea81f1f1b04f153e854f32a961fe226843",
+      "candidate_instruction_sha256": "f06d2561c69356615c804756a09b36de7cd1989fb24ccf8e96d63ab5bdfcd879",
+      "start_label": "slothy_start_gt_frontend_dce_class0",
+      "end_label": "slothy_end_gt_frontend_dce_class0"
+    },
+    {
+      "class": 1,
+      "iterations": [
+        1,
+        4,
+        7
+      ],
+      "baseline_instructions": 160,
+      "candidate_instructions": 156,
+      "baseline_instruction_sha256": "ea4a98ce236dac633387333d63a36dfa2dd73481b2f84860c725bf281b99940e",
+      "candidate_instruction_sha256": "e75c0c588d34b87d1e313a87cd3cdf19ad453e1080dd0003f3a0cc68e5a0c7ac",
+      "start_label": "slothy_start_gt_frontend_dce_class1",
+      "end_label": "slothy_end_gt_frontend_dce_class1"
+    },
+    {
+      "class": 2,
+      "iterations": [
+        2,
+        5
+      ],
+      "baseline_instructions": 160,
+      "candidate_instructions": 156,
+      "baseline_instruction_sha256": "88b40bd878f95075e87bc0b5c0aaf6fd0648fb30aa6c65a075325a0836cbfde6",
+      "candidate_instruction_sha256": "ca87a5956d49fddf895a7c2bca6180be736c95b0e9069d850cb024815cc2ff4a",
+      "start_label": "slothy_start_gt_frontend_dce_class2",
+      "end_label": "slothy_end_gt_frontend_dce_class2"
+    }
+  ]
+}
