@@ -1,0 +1,28 @@
+mode: existing_region_extraction
+baseline_status: production_selected_keygen_pack
+
+baseline:
+  id: gt_canonical_pack_p1_expanded
+  source: asm/gt/support/poly_canonical_pack_p1.S
+  function: poly_tobytes_gt_canonical_p1
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+
+region:
+  repeated_chunks: 12
+  per_chunk_instruction_count: 108
+  total_symbol_size_bytes: 5264
+  live_in:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+    - v0 modulus vector
+  live_out:
+    - 1152 canonical bytes stored
+
+semantic_contract:
+  input_range: signed int16 lanes in [-3457, 3456]
+  normalization: add q once exactly when the lane is negative
+  output: KPQC canonical 12-bit coefficient byte order
+  constant_time: fixed public offsets and no secret-dependent control flow

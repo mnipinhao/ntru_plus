@@ -1,0 +1,120 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+baseline:
+  id: gt_canonical_pack_p1_pair_cross_chunk_candidate
+  source: experiments/canonical_serialization_cross_chunk/pack_p1_pair.sym.S
+  extracted_region: experiments/canonical_serialization_cross_chunk/pack_p1_pair.sym.S
+  function: poly_tobytes_gt_canonical_cross_chunk
+  start_label: slothy_start_gt_canonical_pack_p1_pair
+  end_label: slothy_end_gt_canonical_pack_p1_pair
+  source_commit: generated from the validated P1 semantic DAG
+
+kernel:
+  id: gt_canonical_pack_p1_pair_cross_chunk_candidate
+  name: GT canonical P1 pack cross-chunk candidate
+  source: experiments/canonical_serialization_cross_chunk/pack_p1_pair.sym.S
+  scheme: NTRU+768
+  operation: two consecutive fixed-offset gather, canonicalize, transpose, pack, and store chunks
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: optimize
+  driver: experiments/canonical_serialization_cross_chunk/optimize_pack_p1_pair.py
+  expected_outputs:
+    - experiments/canonical_serialization_cross_chunk/pack_p1_pair.rename.opt.s
+  allow_spills: false
+
+region:
+  instruction_count: 216
+  live_in:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+    - v0 eight lanes of q equals 3457
+  live_out:
+    - x0 advanced by 192 bytes
+    - canonical byte blocks 0 through 31 stored
+  clobbers:
+    - v1-v31
+
+abi:
+  inputs:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+    - v0 modulus vector
+  outputs:
+    - x0 advanced by 192 bytes
+    - 192 output bytes
+  clobbers:
+    - v1-v31
+  concrete_gprs_allowed:
+    - x0
+    - x1
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x2-x30
+    - sp
+
+instruction_dag:
+  file: experiments/canonical_serialization_cross_chunk/instruction-dag.yml
+  summary: two independent P1 chunk DAGs share only the public output pointer order
+
+layout:
+  input_representation: GT physical quartic block-major order
+  output_representation: KPQC canonical byte blocks 0 through 31
+  vector_lanes: signed int16 before packing
+  packing: each four 12-bit coefficients become six consecutive bytes
+
+memory_contract:
+  loads:
+    - same thirty-two distinct fixed-offset 8-byte loads as P1 chunks 0 and 1
+  stores:
+    - same 192 consecutive output bytes as P1 chunks 0 and 1
+  aliasing: source polynomial and output byte buffer do not alias
+  alignment: source is at least 8-byte aligned and output is at least byte aligned
+  public_offsets_only: true
+  pointer_updates: x0 advances by 192 bytes and x1 is unchanged
+
+constant_contract:
+  constants:
+    - q equals 3457 in every v0 halfword lane
+  modulus: 3457
+  representation: signed representative in the inclusive range -3457 through 3456
+  reduction_method: add q exactly once when the sign bit is set
+
+range_contract:
+  input_ranges:
+    - each int16 lane is between -3457 and 3456 inclusive
+  intermediate_ranges:
+    - normalized lanes are between 0 and 3456 inclusive
+  output_ranges:
+    - each encoded field is a canonical 12-bit residue between 0 and 3456
+  narrowing_points:
+    - 12-bit fields are interleaved into bytes without arithmetic narrowing
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - fixed permutation offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -B test_gt_canonical_pack_full_candidates
+  test_command: make -B test_gt_canonical_pack_cross_chunk
+  full_path_benchmark_command: make -B bench_gt_canonical_serialization_next_pmu
+  benchmark_metric: cycles
+  lower_is_better: true
+
+baseline_cost:
+  static_instruction_count: 216
+  slothy_expected_cycles: pending
+  full_path_benchmark: pending
+  benchmark_command: make -B bench_gt_canonical_serialization_next_pmu

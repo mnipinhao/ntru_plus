@@ -1,0 +1,123 @@
+candidate:
+  id: gt_canonical_pack_compact_shared_core
+  status: investigate
+  kernel_contract: experiments/canonical_serialization_compact/kernel-contract.yml
+  symbolic_source: experiments/canonical_serialization_compact/pack_compact_core.sym.S
+  slothy_driver: experiments/canonical_serialization_compact/optimize_pack_compact_core.py
+  generated_asm: asm/gt/experiment/poly_canonical_pack_compact.S
+  function: poly_tobytes_gt_canonical_compact
+
+contract_preservation:
+  preserved:
+    - fixed source offsets
+    - canonical output bytes
+    - x0 pointer advancement
+    - input range and constant-time memory behavior
+    - P1 arithmetic multiset after the gather
+  approved_changes:
+    - move the repeated arithmetic DAG into one shared internal subroutine
+    - add one bl and ret per chunk
+    - reschedule and rename the shared arithmetic core
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: optimize
+  driver: experiments/canonical_serialization_compact/optimize_pack_compact_core.py
+  allow_spills: false
+  allow_renaming: true
+
+region:
+  start_label: slothy_start_gt_canonical_pack_compact_core
+  end_label: slothy_end_gt_canonical_pack_compact_core
+  shared_core_instruction_count: 84
+  repeated_gather_instruction_count: 24
+  repeated_chunks: 12
+  live_in:
+    - x0 output byte pointer
+    - v0 eight lanes of q equals 3457
+    - fixed input vectors v1 through v8
+  live_out:
+    - x0 advanced by 96 bytes
+    - one canonical 96-byte chunk stored
+  clobbers:
+    - v1-v31
+
+abi:
+  inputs:
+    - x0 output byte pointer
+    - v0 modulus vector
+    - eight gathered input vectors
+  outputs:
+    - x0 advanced by 96 bytes
+    - 96 canonical output bytes
+  clobbers:
+    - v1-v31
+  concrete_gprs_allowed:
+    - x0
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+  reserved_registers:
+    - x1-x30
+    - sp
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+  wrapper_inputs:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+  wrapper_preserves:
+    - x19-x28
+    - d8-d15 low 64-bit lanes
+    - x29
+    - x30
+  forbidden_gprs:
+    - x18
+    - x19-x30 except saved x30 return address
+    - sp except explicit aligned frame
+
+memory_contract:
+  loads: same 192 distinct fixed-offset 8-byte source loads as P1
+  stores: same twelve consecutive 96-byte output chunks as P1
+  aliasing: source polynomial and output byte buffer do not alias
+  public_offsets_only: true
+
+semantic_contract:
+  arithmetic_multiset: identical per chunk to P1 after gather
+  input_range: signed int16 lanes in [-3457, 3456]
+  normalization: add q once exactly when the lane is negative
+  output: KPQC canonical 12-bit coefficient byte order
+  constant_time: fixed public offsets and no secret-dependent control flow
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - fixed permutation offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  differential: full 1152-byte output equals poly_tobytes_gt_canonical_p1
+  abi_sentinel: x19-x28 and d8-d15 low halves preserved
+  pmu: cycles and retired instructions
+  code_size: symbol size and total binary text size
+  l1i: L1I refill event when available on Pi5

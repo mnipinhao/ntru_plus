@@ -1,0 +1,121 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt_canonical_pack_compact_shared_core
+  name: GT canonical pack compact shared vector core
+  source: experiments/canonical_serialization_compact/pack_compact_core.sym.S
+  scheme: NTRU+768
+  operation: normalize eight gathered vectors, transpose, pack 12-bit coefficients, and store one canonical byte chunk
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: optimize
+  driver: experiments/canonical_serialization_compact/optimize_pack_compact_core.py
+  expected_outputs:
+    - experiments/canonical_serialization_compact/pack_compact_core.rename.opt.s
+  allow_spills: false
+
+region:
+  start_label: slothy_start_gt_canonical_pack_compact_core
+  end_label: slothy_end_gt_canonical_pack_compact_core
+  expected_instruction_count: 84
+  live_in:
+    - x0 output byte pointer
+    - v0 eight lanes of q equals 3457
+    - fixed input vectors v1 through v8
+  live_out:
+    - x0 advanced by 96 bytes
+    - one canonical 96-byte chunk stored
+
+abi:
+  inputs:
+    - x0 output byte pointer
+    - v0 modulus vector
+    - eight gathered input vectors
+  outputs:
+    - x0 advanced by 96 bytes
+    - 96 canonical output bytes
+  clobbers:
+    - symbolic vector temporaries
+  concrete_gprs_allowed:
+    - x0
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+  reserved_registers:
+    - x1-x30
+    - sp
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+
+instruction_dag:
+  file: experiments/canonical_serialization_compact/instruction-dag.yml
+  summary: verified P1 normalize, transpose, and 12-bit pack DAG with gather values supplied as live-ins
+
+layout:
+  input_representation: eight full vectors gathered from GT physical quartic block-major order
+  output_representation: one KPQC canonical 96-byte chunk
+  vector_lanes: eight signed int16 lanes per vector
+  packing: unchanged P1 transpose and 12-bit bit-interleave
+
+memory_contract:
+  loads:
+    - none inside the shared core
+  stores:
+    - 96 consecutive bytes through two post-increment st1 instructions
+  aliasing: gathered inputs are registers and output does not alias core state
+  alignment: output is at least byte aligned
+  public_offsets_only: true
+  pointer_updates: x0 advances by 96
+
+constant_contract:
+  constants:
+    - q equals 3457 in every v0 halfword lane
+  modulus: 3457
+  representation: signed representative in the inclusive range -3457 through 3456
+  reduction_method: add q exactly once when the sign bit is set
+
+range_contract:
+  input_ranges:
+    - each int16 lane is between -3457 and 3456 inclusive
+  intermediate_ranges:
+    - normalized lanes are between 0 and 3456 inclusive
+  output_ranges:
+    - each encoded field is a canonical 12-bit residue between 0 and 3456
+  narrowing_points:
+    - 12-bit fields are interleaved into bytes without arithmetic narrowing
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - none inside the shared core
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -B test_gt_canonical_pack_full_candidates
+  test_command: make -B test_gt_canonical_pack_compact
+  full_path_benchmark_command: make -B bench_gt_canonical_serialization_next_pmu
+  benchmark_metric: cycles
+  lower_is_better: true

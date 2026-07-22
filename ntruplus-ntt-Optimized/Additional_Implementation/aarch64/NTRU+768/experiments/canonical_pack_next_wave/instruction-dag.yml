@@ -1,0 +1,46 @@
+dag_id: gt_canonical_pack_chunk0_pre_normalize
+operation: canonical pack of sixteen quartic blocks
+
+inputs:
+  - x0 output pointer
+  - x1 GT physical polynomial base
+  - v0 modulus q vector
+
+nodes:
+  - id: gather
+    operation: load sixteen public-permutation quartic blocks and assemble eight q vectors
+    dependencies: x1
+  - id: normalize_p1
+    operation: arithmetic sign shift, mask by q, and add
+    dependencies: gather, v0
+  - id: normalize_p2
+    operation: arithmetic sign shift followed by destructive mls with q
+    dependencies: gather, v0
+    tied_operands: normalized destination is the gathered source value
+  - id: normalize_p3
+    operation: logical sign-bit shift followed by destructive mla with q
+    dependencies: gather, v0
+    tied_operands: normalized destination is the gathered source value
+  - id: transpose
+    operation: pure 8x8 permutation of normalized 16-bit lanes
+    dependencies: one selected normalization variant
+  - id: pack12
+    operation: shifts and bitwise interleave of four 12-bit values into six bytes
+    dependencies: transpose
+  - id: store
+    operation: store 96 consecutive canonical bytes and advance x0
+    dependencies: pack12, x0
+
+outputs:
+  - canonical byte blocks 0 through 15
+  - x0 advanced by 96 bytes
+
+memory_ordering:
+  - all source offsets are distinct and public
+  - output stores are consecutive and preserve byte order
+  - source and destination do not alias
+
+equivalences:
+  - lane-wise normalization commutes with transpose
+  - sshr mask plus mls equals conditional add q for signed int16 input
+  - ushr sign bit plus mla equals conditional add q for signed int16 input

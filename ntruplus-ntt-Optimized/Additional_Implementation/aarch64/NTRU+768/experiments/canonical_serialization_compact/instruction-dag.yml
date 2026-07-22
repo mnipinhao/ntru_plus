@@ -1,0 +1,43 @@
+kernel: gt_canonical_pack_compact_shared_core
+
+live_in:
+  - x0 output pointer
+  - v0 modulus q
+  - v1 as g0
+  - v2 as g1
+  - v3 as g2
+  - v4 as g3
+  - v5 as g4
+  - v6 as g5
+  - v7 as g6
+  - v8 as g7
+
+stages:
+  - name: normalize
+    operation: for each gi compute gi plus q when gi is negative
+    instruction_count: 24
+  - name: transpose_h_s_n
+    operation: three-level 8x8 halfword transpose
+    instruction_count: 24
+  - name: pack_12bit
+    operation: shift and xor adjacent canonical 12-bit fields into byte groups
+    instruction_count: 20
+  - name: output_transpose
+    operation: transpose packed groups into six output vectors
+    instruction_count: 14
+  - name: store
+    operation: two ordered 48-byte post-increment stores
+    instruction_count: 2
+
+dependencies:
+  - normalize precedes transpose for each input value
+  - transpose_h_s_n produces n0 through n7
+  - pack_12bit consumes n0 through n7 and produces u0 through u5
+  - output_transpose consumes u0 through u5 and produces out0 through out5
+  - stores preserve canonical output order and advance x0 by 96
+
+equivalence:
+  source: experiments/canonical_pack_next_wave/pack_chunk_candidates.sym.S
+  source_region: slothy_start_gt_canonical_pack_chunk_p1 through slothy_end_gt_canonical_pack_chunk_p1
+  removed_prefix: exactly eight ldr plus ldr plus mov gather groups
+  retained_suffix_instruction_count: 84

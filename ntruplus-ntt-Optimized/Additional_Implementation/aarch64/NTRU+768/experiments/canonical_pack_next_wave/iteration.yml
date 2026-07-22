@@ -1,0 +1,19 @@
+iteration_id: canonical_pack_next_wave_01
+mode: existing_region_replacement
+candidate_status: investigate
+hypothesis: move lane-wise normalization before transpose, then schedule the complete fixed-offset pack chunk without spills
+production_default_changed: false
+repo_probe:
+  local_slothy_checkout: none_found
+  local_interpreter: python3
+  remote_execution: not_run
+baseline:
+  source: asm/gt/support/poly_canonical_pack.S
+  region: canonical blocks 0..15
+  instructions: 112
+  output_bytes: 96
+validation:
+  correctness: pending
+  abi: pending
+  slothy: pending
+  pmu: pending

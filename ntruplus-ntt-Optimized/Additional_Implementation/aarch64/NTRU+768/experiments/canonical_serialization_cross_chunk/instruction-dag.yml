@@ -1,0 +1,40 @@
+dag_id: gt_canonical_pack_p1_pair_cross_chunk
+operation: two consecutive canonical P1 pack chunks
+
+inputs:
+  - x0 output pointer
+  - x1 GT physical polynomial base
+  - v0 modulus q vector
+
+nodes:
+  - id: gather_chunk0
+    operation: load sixteen public-permutation quartic blocks for canonical blocks 0 through 15
+    dependencies: x1
+  - id: pack_chunk0
+    operation: P1 normalize, transpose, and 12-bit pack
+    dependencies: gather_chunk0, v0
+  - id: store_chunk0
+    operation: store canonical bytes 0 through 95
+    dependencies: pack_chunk0, x0
+  - id: gather_chunk1
+    operation: load sixteen public-permutation quartic blocks for canonical blocks 16 through 31
+    dependencies: x1
+  - id: pack_chunk1
+    operation: P1 normalize, transpose, and 12-bit pack
+    dependencies: gather_chunk1, v0
+  - id: store_chunk1
+    operation: store canonical bytes 96 through 191
+    dependencies: pack_chunk1, store_chunk0
+
+outputs:
+  - canonical byte blocks 0 through 31
+  - x0 advanced by 192 bytes
+
+memory_ordering:
+  - all source offsets are distinct and public
+  - source and destination do not alias
+  - stores within and between chunks preserve canonical byte order
+
+equivalences:
+  - chunk1 loads and arithmetic may move before chunk0 arithmetic or stores
+  - chunk0 and chunk1 arithmetic values remain semantically disjoint
