@@ -37,3 +37,6 @@ test_invntt_production_abi: $(HEADERS) ntt.h ntt.c gt_test/test_invntt_productio
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 -Wno-unused-function -I. -o $(BUILD_DIR)/test_invntt_production_abi gt_test/test_invntt_production_abi.c ntt.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM)
 	./$(BUILD_DIR)/test_invntt_production_abi
+
+include make/tests/serialization.mk
+include make/tests/transform-contract.mk

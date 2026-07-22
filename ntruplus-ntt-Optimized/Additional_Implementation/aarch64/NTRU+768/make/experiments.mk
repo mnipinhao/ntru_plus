@@ -24,9 +24,9 @@ test_invntt_boundary_experiments: $(HEADERS) ntt.h ntt.c gt_test/test_invntt_bou
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c11 -Wno-unused-function -I. -o $(BUILD_DIR)/test_invntt_boundary_experiments gt_test/test_invntt_boundary_experiments.c ntt.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) asm/gt/experiment/invntt/invntt_boundary_experiments.S
 	./$(BUILD_DIR)/test_invntt_boundary_experiments
 
-bench_invntt_next_wave_pmu: $(HEADERS) ntt.h ntt.c gt_bench/bench_invntt_next_wave_pmu.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) asm/gt/experiment/invntt/poly_invntt_rminus1_baseline_namespaced.S $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM) asm/gt/experiment/invntt/invntt_boundary_experiments.S
+bench_invntt_next_wave_pmu: $(HEADERS) ntt.h ntt.c gt_bench/bench_invntt_next_wave_pmu.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) asm/gt/experiment/invntt/poly_invntt_rminus1_baseline_namespaced.S $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM) $(GT_INVNTT_STAGE123_PAIR_PIPELINE_ASM) asm/gt/experiment/invntt/invntt_boundary_experiments.S
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c11 -Wno-unused-function -I. -o $(BUILD_DIR)/bench_invntt_next_wave_pmu gt_bench/bench_invntt_next_wave_pmu.c ntt.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) asm/gt/experiment/invntt/poly_invntt_rminus1_baseline_namespaced.S $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM) asm/gt/experiment/invntt/invntt_boundary_experiments.S
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c11 -Wno-unused-function -I. -o $(BUILD_DIR)/bench_invntt_next_wave_pmu gt_bench/bench_invntt_next_wave_pmu.c ntt.c $(GT_NTT_ASM_LEGACY) $(GT_BASE_RMINUS1_OPT_ASM) $(GT_INVNTT_RMINUS1_PRODUCTION_ASM) asm/gt/experiment/invntt/poly_invntt_rminus1_baseline_namespaced.S $(GT_INVNTT_LAZY_TWIDDLE1_STAGE123_ASM) $(GT_INVNTT_POST_BRANCHFOLD_SLOTHY_ASM) $(GT_INVNTT_STAGE123_PAIR_PIPELINE_ASM) asm/gt/experiment/invntt/invntt_boundary_experiments.S
 
 test_kem_invntt_lazy_twiddle1_stage123: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c test/test.c ntt.h $(GT_INVNTT_LAZY_TWIDDLE1_KEM_SOURCES)
 	@mkdir -p $(BUILD_DIR)
@@ -38,8 +38,12 @@ test_kem_invntt_lazy_twiddle1_stage123_len16: $(HEADERS) $(SHAKE_HEADERS) random
 	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_DEFAULT_FLAGS) -Wno-unused-function -I. -o $(BUILD_DIR)/test_kem_invntt_lazy_twiddle1_stage123_len16 randombytes.c test/test.c $(GT_INVNTT_LAZY_TWIDDLE1_LEN16_KEM_SOURCES)
 	./$(BUILD_DIR)/test_kem_invntt_lazy_twiddle1_stage123_len16
 
-profile_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c gt_bench/kem_component_profiler.c ntt.h $(GT_PRODUCTION_DEFAULT_KEM_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
+profile_kem_gt_production_opt: $(HEADERS) $(SHAKE_HEADERS) randombytes.h randombytes.c gt_bench/kem_component_profiler.c ntt.h $(GT_PRODUCTION_DEFAULT_KEM_SOURCES) $(GT_PRODUCTION_GENERIC_API_ADDITIONAL_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_DEFAULT_FLAGS) -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_default\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_gt_production_opt randombytes.c gt_bench/kem_component_profiler.c $(GT_PRODUCTION_DEFAULT_KEM_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -std=c99 $(GT_PRODUCTION_DEFAULT_FLAGS) $(GT_PRODUCTION_GENERIC_API_FLAGS) -DKEM_COMPONENT_PROFILE_TARGET=\"gt_production_default\" -Wno-unused-function -I. -o $(BUILD_DIR)/profile_kem_gt_production_opt randombytes.c gt_bench/kem_component_profiler.c $(GT_PRODUCTION_DEFAULT_KEM_SOURCES) $(GT_PRODUCTION_GENERIC_API_ADDITIONAL_SOURCES) $(GT_RMINUS1_STAGE123SCRATCH_BENCH_ASM)
 
 profile_kem_gt_production_opt_rminus1: profile_kem_gt_production_opt
+
+include make/experiments/forward-ntt.mk
+include make/experiments/invntt-stage123.mk
+include make/experiments/q31-pointwise.mk
