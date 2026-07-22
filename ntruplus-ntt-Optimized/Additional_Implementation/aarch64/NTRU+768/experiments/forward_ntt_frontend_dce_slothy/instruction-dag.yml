@@ -1,0 +1,28 @@
+dag: one GT forward frontend iteration
+inputs:
+  - input coefficient vectors at public x1 offsets
+  - twist/precompute vectors streamed from x3
+  - Montgomery and DFT3 constants in v0
+outputs:
+  - row0 q vectors at x4 offsets 0,16,32,48
+  - row1 q vectors at x5 offsets 0,16,32,48
+  - row2 q vectors at x6 offsets 0,16,32,48
+dependencies:
+  - top split Montgomery products feed branch sums and differences
+  - branch values feed twelve twist Montgomery products
+  - paired branch products feed zip-based lane packing
+  - packed values feed four independent 8-way DFT3 groups
+  - each DFT3 group feeds three distinct q stores
+memory_order:
+  loads: preserve addresses and values; independent loads may move after their bases are live
+  stores: all twelve ranges are distinct and may reorder after their producer
+optimization_goal:
+  - overlap top-split and twist multiply latency with independent loads
+  - overlap four independent DFT3 groups and stores
+  - delete only the four proven dead pointer updates
+forbidden:
+  - arithmetic changes
+  - reduction changes
+  - load or store elimination
+  - new spills
+  - changed output addresses

@@ -1,0 +1,103 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: gt_production_frontend_iteration_source_order
+  source: asm/gt/ntt/poly_ntt.n1.opt.S
+  extracted_region: experiments/forward_ntt_frontend_dce_slothy/frontend_iter0.baseline.s
+  function: poly_ntt
+  start_label: slothy_start_ntt768_gt_frontend_iter0
+  end_label: slothy_end_ntt768_gt_frontend_iter0
+  source_commit: a0c2e981501a8f758ec0ede968c7af997ab2aaef
+
+region:
+  instruction_count: 160
+  live_in:
+    - x1 input pointer for this public iteration
+    - x3 twist-table pointer for this public iteration
+    - x4 row0 output pointer
+    - x5 row1 output pointer
+    - x6 row2 output pointer
+    - v0 modulus and Montgomery constants
+  live_out:
+    - twelve 16-byte row-scratch stores
+  clobbers:
+    - x1
+    - x4
+    - x5
+    - x6
+    - v1-v31
+
+abi:
+  inputs:
+    - x1 input pointer
+    - x3 twist-table pointer
+    - x4 row0 output pointer
+    - x5 row1 output pointer
+    - x6 row2 output pointer
+    - v0 constant vector
+  outputs:
+    - row0 q vectors at x4 offsets 0, 16, 32, 48
+    - row1 q vectors at x5 offsets 0, 16, 32, 48
+    - row2 q vectors at x6 offsets 0, 16, 32, 48
+  clobbers:
+    - v1-v31
+  concrete_gprs_allowed:
+    - x1
+    - x3
+    - x4
+    - x5
+    - x6
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x0
+    - x2
+    - x7-x30
+    - sp
+
+memory_contract:
+  loads:
+    - input vectors from x1 at the existing fixed public offsets
+    - twist and DFT3 constants from x3 in the existing order
+  stores:
+    - twelve distinct 16-byte stores at x4, x5, and x6 offsets 0, 16, 32, 48
+  aliasing: input, constant table, and three row-scratch streams do not alias
+  alignment: x1, x3, x4, x5, and x6 are 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - four dead post-region updates to x1, x4, x5, and x6
+
+constant_contract:
+  constants:
+    - modulus q in v0.h[0]
+    - top-split Montgomery constants in v0.h[4] and v0.h[5]
+    - iteration twist constants loaded from x3
+  modulus: 3457
+  representation: signed int16 coefficients with Montgomery multipliers
+  reduction_method: sqrdmulh plus mls Montgomery reduction, unchanged from production
+
+range_contract:
+  input_ranges:
+    - production poly_ntt int16 input contract
+  intermediate_ranges:
+    - identical to the current production frontend because arithmetic is unchanged
+  output_ranges:
+    - identical Stage12 row-scratch representatives to the current production frontend
+  narrowing_points:
+    - all arithmetic remains in 16-bit Neon lanes exactly as in production
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - fixed iteration number
+    - fixed input, constant, and scratch offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 160
+  slothy_expected_cycles:
+  full_path_benchmark: 2662 median cycles for the complete production poly_ntt in the last paired Pi5 run
+  benchmark_command: make -B bench_gt_frontend_dce_slothy_pmu
