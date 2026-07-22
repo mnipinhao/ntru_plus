@@ -24,7 +24,9 @@ layout to an endpoint expecting the other without an explicit conversion.
 
 The implementation is split as follows:
 
-- `keygen_bpq_cq.c`: hierarchical baseinv orchestration and lambda table.
+- `keygen_bpq_cq.c`: hierarchical baseinv orchestration.
+- `rowbitrev_lambda.c`: minimal production copy of the shared pointwise
+  lambda-table contract.
 - `../asm/gt/keygen_bpq_cq/ntt_*.S`: fused sample-to-NTT BPQ producers.
 - `../asm/gt/keygen_bpq_cq/baseinv_*.S`: BPQ prepare, CQ inversion tree, and
   CQ finish.
@@ -89,6 +91,8 @@ Run on AArch64:
 make -B test_kem_gt_production_default
 make -B PQCgenKAT_kem
 make -B check_gt_bpq_cq_keygen_backend
+make -B check-production-symbol-closure
+make -B build_gt_kem_vector_decoder
 make -B test_gt_decap_backend
 make -B test_invntt_production_abi
 make check-production-layout

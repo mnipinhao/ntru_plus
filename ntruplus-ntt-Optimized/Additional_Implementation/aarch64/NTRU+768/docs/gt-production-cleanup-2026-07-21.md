@@ -129,3 +129,7 @@ many default-off optimization experiments and historical result directories.
 They should be pruned or archived by experiment family in separate commits so
 that unrelated AVX2, baseinv, serialization, and forward-NTT work is not mixed
 with this production cleanup.
+
+The follow-up source/symbol closure audit, explicit KPQC-to-GT cross-decap
+test, and post-trim code-size benchmark are recorded in
+`gt-production-source-closure-audit-2026-07-22.md`.

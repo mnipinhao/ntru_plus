@@ -88,6 +88,7 @@ _support_loop_sub:
  b.ne _support_loop_sub
  ret
 
+#ifndef GT_PRODUCTION_KEM_MINIMAL_SUPPORT
 .global poly_triple
 .global _poly_triple
 poly_triple:
@@ -169,6 +170,7 @@ _support_loop_triple:
  subs x8, x8, #192
  b.ne _support_loop_triple
  ret
+#endif
 
 .global poly_crepmod3
 .global _poly_crepmod3

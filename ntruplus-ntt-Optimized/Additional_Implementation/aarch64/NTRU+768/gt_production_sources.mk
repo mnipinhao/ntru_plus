@@ -4,13 +4,40 @@
 # Makefile uses "." while aarch64-bench uses its "ntruplus" symlink.
 GT_SOURCE_ROOT ?= .
 
-GT_PRODUCTION_SUPPORT_SOURCES = \
+GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE = \
+	$(GT_SOURCE_ROOT)/poly_gt_canonical.c
+GT_PRODUCTION_CANONICAL_PACK_SOURCE = \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_pack.S
+GT_PRODUCTION_CANONICAL_PACK_P1_SOURCE = \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_pack_p1.S
+GT_PRODUCTION_CANONICAL_UNPACK_U1_SOURCE = \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_unpack_u1.S
+GT_PRODUCTION_POLY_SUPPORT_SOURCE = \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_support.n1.opt.S
+GT_PRODUCTION_POLY_SUPPORT_KEM_SOURCE = \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_support_kem.S
+
+# Generic tests and profilers keep every public/reference serialization path.
+GT_PRODUCTION_GENERIC_SUPPORT_SOURCES = \
 	$(GT_SOURCE_ROOT)/poly_gt_canonical.c \
 	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_pack.S \
 	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_pack_p1.S \
 	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_unpack_u1.S \
-	$(GT_SOURCE_ROOT)/asm/gt/support/poly_support.n1.opt.S \
+	$(GT_PRODUCTION_POLY_SUPPORT_SOURCE) \
 	$(GT_SOURCE_ROOT)/asm/gt/support/poly_cbd_sotp.S
+
+# The selected BPQ/CQ KEM does not call the portable canonical reference,
+# legacy P1 pack, or the inactive poly_triple support entry point.
+GT_PRODUCTION_KEM_SUPPORT_SOURCES = \
+	$(GT_SOURCE_ROOT)/gt/rowbitrev_lambda.c \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_pack.S \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_canonical_unpack_u1.S \
+	$(GT_PRODUCTION_POLY_SUPPORT_KEM_SOURCE) \
+	$(GT_SOURCE_ROOT)/asm/gt/support/poly_cbd_sotp.S
+
+# Compatibility alias for experiment makefiles that still expect the complete
+# generic support closure.
+GT_PRODUCTION_SUPPORT_SOURCES = $(GT_PRODUCTION_GENERIC_SUPPORT_SOURCES)
 
 GT_PRODUCTION_NTT_SOURCES = \
 	$(GT_SOURCE_ROOT)/asm/gt/ntt/poly_ntt.n1.opt.S \
