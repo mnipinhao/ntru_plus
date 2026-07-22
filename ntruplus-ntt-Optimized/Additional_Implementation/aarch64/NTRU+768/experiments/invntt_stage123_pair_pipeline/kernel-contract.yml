@@ -1,0 +1,79 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: invntt_rminus1_stage123_pair_pipeline
+  name: two_group_load_arithmetic_schedule
+  source: stage123_pair_pipeline.sym.S
+  scheme: ntruplus768
+  operation: inverse_ntt32_stage123
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_validated_via_pi5_neoverse_n1_schedule_model
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: physical_register_schedule_only_per_two_group_window
+  driver: optimize_stage123_pair_pipeline.py
+  expected_outputs: [stage123_pair_pipeline.opt.S, stage123_pair_pipeline.opt.inc, slothy_stage123_pair_pipeline.log]
+  allow_spills: false
+
+region:
+  start_label: invntt_stage123_row0_pair01_slothy_start
+  end_label: invntt_stage123_row0_pair01_slothy_end
+  expected_instruction_count: 166
+  live_in: [x3_branch0_base, x4_branch1_base, x14_stage123_scratch, v0_modulus, v1_twiddles, v2_precomputes]
+  live_out: [sixteen_stage123_q_vectors_in_stripe_scratch]
+
+abi:
+  inputs: [x0_dst, x1_input]
+  outputs: [x0_memory_1536_bytes]
+  clobbers: [v3-v30]
+  concrete_gprs_allowed: [x3, x4, x14]
+  fixed_vector_registers: [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30]
+  reserved_registers: [x18, x19-x28, x29, x30, sp, v0, v1, v2, v31]
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: two_exact_production_Stage123_group_DAGs_with_group1_loads_reorderable_after_group0_load_temp_last_use
+
+layout:
+  input_representation: GT_block_major_row_bit_reversed_branch_pair
+  output_representation: Stage123_stripe_major_scratch
+  vector_lanes: branch0_low_four_lanes_branch1_high_four_lanes
+  packing: eight_Q_vectors_per_group
+
+memory_contract:
+  loads: [same_thirty_two_8_byte_public_offset_loads_as_baseline]
+  stores: [same_sixteen_distinct_16_byte_scratch_stores_as_baseline]
+  aliasing: input_does_not_overlap_stack_scratch
+  alignment: same_as_baseline
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: [same_v0_v1_v2_values_as_baseline]
+  modulus: 3457
+  representation: rminus1_GT_row_bit_reversed_signed_int16
+  reduction_method: exact_baseline_arithmetic_instruction_multiset
+
+range_contract:
+  input_ranges: [same_as_baseline]
+  intermediate_ranges: [same_as_baseline]
+  output_ranges: [same_as_baseline]
+  narrowing_points: [same_as_baseline]
+
+constant_time_contract:
+  secret_inputs: [input_coefficients]
+  public_inputs: [row_id, group_id, fixed_input_offsets, fixed_scratch_offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_invntt_stage123_pair_pipeline
+  test_command: make test_invntt_stage123_pair_pipeline
+  full_path_benchmark_command: make bench_invntt_stage123_pair_pipeline_paired_kem_pmu
+  benchmark_metric: cycles
+  lower_is_better: true

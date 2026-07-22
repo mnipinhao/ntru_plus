@@ -41,6 +41,7 @@ void poly_invntt_rminus1_lazy_twiddle1_stage123_len16(poly *r,
                                                       const poly *a);
 void poly_invntt_rminus1_post_branchfold_slothy(poly *r, const poly *a);
 void poly_invntt_rminus1_post_branchfold_slothy_core(poly *r, const poly *a);
+void poly_invntt_rminus1_stage123_pair_pipeline(poly *r, const poly *a);
 void invntt_stage123_stage45_stripe0_baseline(int16_t *out, const poly *in,
                                                int16_t *scratch);
 void invntt_stage123_stage45_stripe0_fused(int16_t *out, const poly *in,
@@ -225,6 +226,7 @@ int main(void)
         poly_invntt_rminus1_lazy_twiddle1_stage123_len16,
         poly_invntt_rminus1_post_branchfold_slothy_core,
         poly_invntt_rminus1_post_branchfold_slothy,
+        poly_invntt_rminus1_stage123_pair_pipeline,
     };
     const stage123_fn s123_fns[] = {
         invntt_stage123_stage45_stripe0_baseline,
@@ -234,7 +236,7 @@ int main(void)
         invntt_stage45_post_stripe0_baseline,
         invntt_stage45_post_stripe0_handoff,
     };
-    struct sample inv[8][NTESTS] = {{{0}}};
+    struct sample inv[9][NTESTS] = {{{0}}};
     struct sample s123[2][NTESTS] = {{{0}}};
     struct sample post[2][NTESTS] = {{{0}}};
 
@@ -244,13 +246,13 @@ int main(void)
         return 2;
     }
     for (int i = 0; i < 200; i++) {
-        inv_fns[i % 8](&output_poly, &input_product);
+        inv_fns[i % 9](&output_poly, &input_product);
         s123_fns[i & 1](output_coeffs, &input_product, scratch);
         post_fns[i & 1](output_coeffs, row0, row1, stage123);
     }
     for (int sample = 0; sample < NTESTS; sample++) {
-        for (int slot = 0; slot < 8; slot++) {
-            const int variant = (slot + sample) % 8;
+        for (int slot = 0; slot < 9; slot++) {
+            const int variant = (slot + sample) % 9;
             record(&inv[variant][sample], measure_invntt(inv_fns[variant]),
                    INVNTT_ITERATIONS);
         }
@@ -271,6 +273,7 @@ int main(void)
     report("full_invntt", "lazy_len16_abi_safe", inv[5], inv[0]);
     report("full_invntt", "post_branchfold_slothy_core", inv[6], inv[0]);
     report("full_invntt", "post_branchfold_slothy", inv[7], inv[0]);
+    report("full_invntt", "stage123_pair_pipeline", inv[8], inv[1]);
     report("stage123_stage45_stripe0", "scratch", s123[0], s123[0]);
     report("stage123_stage45_stripe0", "register_handoff", s123[1], s123[0]);
     report("stage45_post_stripe0", "scratch", post[0], post[0]);

@@ -1,0 +1,4 @@
+#define INVNTT_ABI_SENTINEL_MACROS_ONLY 1
+#include "poly_invntt_rminus1_lazy_twiddle1_stage123_abi_sentinel.S"
+
+DEFINE_INVNTT_ABI_SENTINEL poly_invntt_rminus1_stage123_pair_pipeline_abi_sentinel, poly_invntt_rminus1_stage123_pair_pipeline

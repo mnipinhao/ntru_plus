@@ -1,0 +1,89 @@
+dag:
+  id: invntt_rminus1_stage123_pair_pipeline_dag
+  kernel_contract: kernel-contract.yml
+  description: two_production_Stage123_groups_with_only_cross_group_input_load_scheduling_added
+
+inputs:
+  - group0_branch0_and_branch1_eight_Q_values
+  - group1_branch0_and_branch1_eight_Q_values
+
+constants:
+  - v0_modular_constants
+  - v1_stage123_twiddles
+  - v2_stage123_precomputes
+
+nodes:
+  - id: group0_load_assemble
+    op: sixteen_d_loads_and_eight_lane_moves
+    inputs: [group0_branch0_and_branch1_eight_Q_values]
+    outputs: [group0_Q0_to_Q7]
+    instruction_shape: exact_baseline_load_and_lane_move_multiset
+    tied_operands: [lane_move_read_modify_write_destination]
+    range_before: production_rminus1_input_contract
+    range_after: unchanged_lane_assembly
+    may_reorder_with: [group1_loads_after_shared_high_temp_last_use]
+    must_precede: [group0_stage123]
+  - id: group0_stage123
+    op: inverse_len2_len4_len8_butterflies
+    inputs: [group0_Q0_to_Q7, v0_modular_constants, v1_stage123_twiddles, v2_stage123_precomputes]
+    outputs: [group0_stage123_outputs]
+    instruction_shape: exact_production_lazy_twiddle1_arithmetic_multiset
+    tied_operands: [all_destructive_mls_destinations]
+    range_before: production_stage123_input_bounds
+    range_after: production_stage123_output_bounds
+    may_reorder_with: [group1_public_input_loads]
+    must_precede: [group0_store]
+  - id: group0_store
+    op: eight_q_stores_to_stripe_scratch
+    inputs: [group0_stage123_outputs]
+    outputs: [group0_scratch]
+    instruction_shape: exact_baseline_store_offsets
+    tied_operands: []
+    range_before: production_stage123_output_bounds
+    range_after: memory_only
+    may_reorder_with: [group1_load_assemble, group1_stage123]
+    must_precede: []
+  - id: group1_load_assemble
+    op: sixteen_d_loads_and_eight_lane_moves
+    inputs: [group1_branch0_and_branch1_eight_Q_values]
+    outputs: [group1_Q0_to_Q7]
+    instruction_shape: exact_baseline_load_and_lane_move_multiset
+    tied_operands: [lane_move_read_modify_write_destination]
+    range_before: production_rminus1_input_contract
+    range_after: unchanged_lane_assembly
+    may_reorder_with: [group0_stage123_after_shared_high_temp_last_use]
+    must_precede: [group1_stage123]
+  - id: group1_stage123
+    op: inverse_len2_len4_len8_butterflies
+    inputs: [group1_Q0_to_Q7, v0_modular_constants, v1_stage123_twiddles, v2_stage123_precomputes]
+    outputs: [group1_stage123_outputs]
+    instruction_shape: exact_production_lazy_twiddle1_arithmetic_multiset
+    tied_operands: [all_destructive_mls_destinations]
+    range_before: production_stage123_input_bounds
+    range_after: production_stage123_output_bounds
+    may_reorder_with: [group0_store]
+    must_precede: [group1_store]
+  - id: group1_store
+    op: eight_q_stores_to_stripe_scratch
+    inputs: [group1_stage123_outputs]
+    outputs: [group1_scratch]
+    instruction_shape: exact_baseline_store_offsets
+    tied_operands: []
+    range_before: production_stage123_output_bounds
+    range_after: memory_only
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads: [all_fixed_public_input_offsets]
+  stores: [all_distinct_fixed_stripe_scratch_offsets]
+  ordering_constraints: [no_alias_between_input_and_stack_scratch]
+
+outputs: [group0_scratch, group1_scratch]
+live_out: [memory_stage123_stripe_scratch]
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
