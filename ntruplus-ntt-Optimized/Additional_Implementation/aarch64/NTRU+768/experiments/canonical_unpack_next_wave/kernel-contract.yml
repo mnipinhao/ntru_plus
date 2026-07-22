@@ -1,0 +1,31 @@
+kernel: gt_canonical_unpack_chunk_u1
+status: experiment-only
+endianness: little
+live_in:
+  x0: GT-layout polynomial destination base
+  x1: canonical byte source, at least 96 readable bytes
+  v0: eight 16-bit lanes containing 0x0fff
+live_out:
+  x0: unchanged
+  x1: advanced by 96 bytes
+  memory: exactly the 16 GT quartic blocks selected by canonical blocks 0..15
+preserved:
+  - x19-x28
+  - d8-d15
+reserved:
+  - x2-x8
+  - x10-x30
+  - sp
+  - v0
+forbidden:
+  - stack spills inside the scheduled region
+  - arithmetic changes
+  - mask changes
+  - store-offset changes
+  - production-default changes
+validation:
+  - exact differential against poly_frombytes_gt_canonical
+  - untouched-output and guard-byte checks
+  - ABI sentinel
+  - AArch64 assembly
+  - Pi5 same-binary PMU before promotion

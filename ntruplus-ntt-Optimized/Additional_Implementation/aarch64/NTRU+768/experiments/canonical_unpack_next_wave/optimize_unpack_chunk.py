@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Run Slothy on the U1 canonical-unpack whole-chunk DAG."""
+
+import argparse
+import importlib
+import logging
+import os
+import sys
+from pathlib import Path
+
+EXP = Path(__file__).resolve().parent
+SOURCE = EXP / "unpack_chunk_u1.sym.S"
+
+
+def add_experiment_instruction_models(arch):
+    class q_ld1_3_with_postinc(arch.AArch64Instruction):
+        pattern = "ld1 {<Va>.<dt>, <Vb>.<dt>, <Vc>.<dt>}, [<Xc>], <imm>"
+        outputs = ["Va", "Vb", "Vc"]
+        in_outs = ["Xc"]
+
+        @classmethod
+        def make(cls, src):
+            obj = arch.AArch64Instruction.build(cls, src)
+            obj.increment = obj.immediate
+            obj.pre_index = None
+            obj.addr = obj.args_in_out[0]
+            obj.args_out_combinations = [
+                (
+                    [0, 1, 2],
+                    [[f"v{i}", f"v{i+1}", f"v{i+2}"] for i in range(0, 30)],
+                )
+            ]
+            return obj
+
+    class d_str_with_imm(arch.Str_Q):
+        pattern = "str <Da>, [<Xc>, <imm>]"
+        inputs = ["Da", "Xc"]
+
+        @classmethod
+        def make(cls, src):
+            obj = arch.AArch64Instruction.build(cls, src)
+            obj.increment = None
+            obj.pre_index = obj.immediate
+            obj.addr = obj.args_in[1]
+            return obj
+
+        def write(self):
+            self.immediate = self.pre_index
+            return super().write()
+
+    arch.Instruction.all_subclass_leaves = arch.all_subclass_leaves(arch.Instruction)
+    return q_ld1_3_with_postinc, d_str_with_imm
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--stalls", type=int, default=256)
+    parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument("--allow-renaming", action="store_true")
+    args = parser.parse_args()
+
+    sys.path.insert(0, os.environ.get("SLOTHY_PATH", str(Path.home() / "slothy")))
+    from slothy import Slothy
+    from slothy.helper import SourceLine
+    import slothy.targets.aarch64.aarch64_neon as arch
+
+    # Compatibility with this checkout's error path while authoring new forms.
+    SourceLine.__str__ = lambda self: self.to_string(
+        indentation=True, comments=True, tags=True
+    )
+
+    q_ld1_3, d_str_imm = add_experiment_instruction_models(arch)
+    target = importlib.import_module("slothy.targets.aarch64.neoverse_n1_experimental")
+    target.execution_units[q_ld1_3] = target.ExecutionUnit.LSU()
+    target.inverse_throughput[q_ld1_3] = 3
+    target.default_latencies[q_ld1_3] = 4
+    logging.basicConfig(level=logging.INFO)
+    slothy = Slothy(arch, target, logger=logging.getLogger("canonical-unpack"))
+    slothy.load_source_from_file(str(SOURCE))
+    slothy.config.variable_size = True
+    slothy.config.inputs_are_outputs = True
+    slothy.config.selftest = False
+    slothy.config.allow_useless_instructions = False
+    slothy.config.constraints.allow_spills = False
+    slothy.config.constraints.allow_renaming = args.allow_renaming
+    slothy.config.constraints.stalls_first_attempt = args.stalls
+    slothy.config.timeout = args.timeout
+    slothy.config.reserved_regs = [
+        *[f"x{i}" for i in range(2, 9)],
+        *[f"x{i}" for i in range(10, 31)],
+        "sp",
+        "v0",
+    ]
+    slothy.optimize(
+        start="slothy_start_gt_canonical_unpack_chunk_u1",
+        end="slothy_end_gt_canonical_unpack_chunk_u1",
+    )
+    suffix = "rename" if args.allow_renaming else "fixed"
+    output = EXP / f"unpack_chunk_u1.{suffix}.opt.s"
+    slothy.write_source_to_file(str(output))
+    print(output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

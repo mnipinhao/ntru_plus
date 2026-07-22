@@ -1,0 +1,107 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt_canonical_pack_chunk0_pre_normalize
+  name: GT canonical pack chunk with pre-transpose normalization
+  source: experiments/canonical_pack_next_wave/pack_chunk_candidates.sym.S
+  scheme: NTRU+768
+  operation: fixed-offset gather, lane-wise canonicalization, transpose, 12-bit packing, and canonical byte stores
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: optimize
+  driver: experiments/canonical_pack_next_wave/optimize_pack_chunk.py
+  expected_outputs:
+    - experiments/canonical_pack_next_wave/pack_chunk_p1.fixed.opt.s
+    - experiments/canonical_pack_next_wave/pack_chunk_p2.fixed.opt.s
+    - experiments/canonical_pack_next_wave/pack_chunk_p3.fixed.opt.s
+  allow_spills: false
+
+region:
+  start_label: slothy_start_gt_canonical_pack_chunk_p1
+  end_label: slothy_end_gt_canonical_pack_chunk_p3
+  expected_instruction_count: 320
+  live_in:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+    - v0 eight lanes of q equals 3457
+  live_out:
+    - x0 advanced by 96 bytes per selected region
+    - canonical byte blocks 0 through 15 stored
+
+abi:
+  inputs:
+    - x0 output byte pointer
+    - x1 GT physical polynomial base
+    - v0 modulus vector
+  outputs:
+    - x0 advanced by 96 bytes
+    - 96 canonical output bytes
+  clobbers:
+    - symbolic vector temporaries
+  concrete_gprs_allowed:
+    - x0
+    - x1
+  fixed_vector_registers:
+    - v0
+  reserved_registers:
+    - x2-x30
+    - sp
+
+instruction_dag:
+  file: experiments/canonical_pack_next_wave/instruction-dag.yml
+  summary: P1 retains sign-mask and add, P2 uses sshr plus destructive mls, and P3 uses ushr plus destructive mla before transpose
+
+layout:
+  input_representation: GT physical quartic block-major order
+  output_representation: KPQC canonical byte blocks 0 through 15
+  vector_lanes: eight signed int16 lanes per symbolic vector
+  packing: transpose and bit-interleave preserve the exact baseline byte order
+
+memory_contract:
+  loads:
+    - same sixteen distinct fixed-offset 8-byte loads as the baseline
+  stores:
+    - same 96 consecutive output bytes as the baseline
+  aliasing: source polynomial and output byte buffer do not alias
+  alignment: source is at least 8-byte aligned and output is at least byte aligned
+  public_offsets_only: true
+  pointer_updates: x0 advances by 96 and x1 is unchanged
+
+constant_contract:
+  constants:
+    - q equals 3457 in every v0 halfword lane
+  modulus: 3457
+  representation: signed representative in the inclusive range -3457 through 3456
+  reduction_method: P1 adds masked q and P2/P3 use an equivalent multiply-accumulate correction
+
+range_contract:
+  input_ranges:
+    - each int16 lane is between -3457 and 3456 inclusive
+  intermediate_ranges:
+    - normalized lanes are between 0 and 3456 inclusive
+  output_ranges:
+    - each encoded field is a canonical 12-bit residue between 0 and 3456
+  narrowing_points:
+    - no normalization widening or narrowing occurs
+
+constant_time_contract:
+  secret_inputs:
+    - polynomial coefficient values
+  public_inputs:
+    - fixed permutation offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -B test_gt_canonical_pack_boundary
+  test_command: make -B test_gt_canonical_pack_boundary
+  full_path_benchmark_command: make -B bench_gt_canonical_pack_next_wave_pmu
+  benchmark_metric: cycles
+  lower_is_better: true

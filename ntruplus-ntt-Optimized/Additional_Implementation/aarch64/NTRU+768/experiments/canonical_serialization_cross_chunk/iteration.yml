@@ -1,0 +1,10 @@
+iteration: pack_p1_pair_01
+state: kernel_contract
+mode: existing_region_replacement
+hypothesis: a combined two-chunk DAG can issue chunk1 gathers while chunk0 arithmetic and stores are in flight
+baseline_instructions: 216
+candidate_instructions: 216
+target_model: neoverse_n1_experimental as Cortex-A76 scheduling proxy
+allow_renaming: true
+allow_spills: false
+production_default_changed: false

@@ -1,0 +1,259 @@
+{
+  "settings": {
+    "host": "Pi5 Cortex-A76",
+    "core": 3,
+    "ntests": 61,
+    "niterations": 2000,
+    "nwarmup": 200,
+    "hash_path": "NO_CE",
+    "deterministic_inputs": true,
+    "run_orders": {
+      "cycles/kem_keygen": [
+        "gt_production_default",
+        "gt_production_source_order",
+        "kpqc_final"
+      ],
+      "cycles/kem_enc": [
+        "gt_production_source_order",
+        "kpqc_final",
+        "gt_production_default"
+      ],
+      "cycles/kem_dec": [
+        "kpqc_final",
+        "gt_production_default",
+        "gt_production_source_order"
+      ],
+      "instructions/kem_keygen": [
+        "gt_production_source_order",
+        "gt_production_default",
+        "kpqc_final"
+      ],
+      "instructions/kem_enc": [
+        "kpqc_final",
+        "gt_production_source_order",
+        "gt_production_default"
+      ],
+      "instructions/kem_dec": [
+        "gt_production_default",
+        "kpqc_final",
+        "gt_production_source_order"
+      ]
+    }
+  },
+  "measurements": {
+    "cycles": {
+      "kem_keygen": {
+        "gt_production_default": {
+          "median": 38634,
+          "percentiles": {
+            "1": 38628,
+            "10": 38631,
+            "20": 38632,
+            "30": 38633,
+            "40": 38634,
+            "50": 38634,
+            "60": 38636,
+            "70": 38637,
+            "80": 38638,
+            "90": 38639,
+            "99": 38646
+          },
+          "p10": 38631,
+          "p50": 38634,
+          "p90": 38639
+        },
+        "gt_production_source_order": {
+          "median": 38755,
+          "percentiles": {
+            "1": 38746,
+            "10": 38750,
+            "20": 38751,
+            "30": 38753,
+            "40": 38754,
+            "50": 38755,
+            "60": 38756,
+            "70": 38757,
+            "80": 38760,
+            "90": 38763,
+            "99": 38766
+          },
+          "p10": 38750,
+          "p50": 38755,
+          "p90": 38763
+        },
+        "kpqc_final": {
+          "median": 39962,
+          "percentiles": {
+            "1": 39958,
+            "10": 39960,
+            "20": 39961,
+            "30": 39961,
+            "40": 39962,
+            "50": 39962,
+            "60": 39963,
+            "70": 39963,
+            "80": 39964,
+            "90": 39965,
+            "99": 39968
+          },
+          "p10": 39960,
+          "p50": 39962,
+          "p90": 39965
+        }
+      },
+      "kem_enc": {
+        "gt_production_source_order": {
+          "median": 39519,
+          "percentiles": {
+            "1": 39503,
+            "10": 39514,
+            "20": 39514,
+            "30": 39516,
+            "40": 39517,
+            "50": 39519,
+            "60": 39521,
+            "70": 39521,
+            "80": 39525,
+            "90": 39527,
+            "99": 39536
+          },
+          "p10": 39514,
+          "p50": 39519,
+          "p90": 39527
+        },
+        "kpqc_final": {
+          "median": 39023,
+          "percentiles": {
+            "1": 39014,
+            "10": 39017,
+            "20": 39018,
+            "30": 39020,
+            "40": 39022,
+            "50": 39023,
+            "60": 39025,
+            "70": 39028,
+            "80": 39032,
+            "90": 39036,
+            "99": 39043
+          },
+          "p10": 39017,
+          "p50": 39023,
+          "p90": 39036
+        },
+        "gt_production_default": {
+          "median": 37667,
+          "percentiles": {
+            "1": 37655,
+            "10": 37660,
+            "20": 37662,
+            "30": 37663,
+            "40": 37666,
+            "50": 37667,
+            "60": 37668,
+            "70": 37670,
+            "80": 37671,
+            "90": 37673,
+            "99": 37678
+          },
+          "p10": 37660,
+          "p50": 37667,
+          "p90": 37673
+        }
+      },
+      "kem_dec": {
+        "kpqc_final": {
+          "median": 35182,
+          "percentiles": {
+            "1": 35179,
+            "10": 35179,
+            "20": 35180,
+            "30": 35181,
+            "40": 35182,
+            "50": 35182,
+            "60": 35183,
+            "70": 35183,
+            "80": 35184,
+            "90": 35185,
+            "99": 35187
+          },
+          "p10": 35179,
+          "p50": 35182,
+          "p90": 35185
+        },
+        "gt_production_default": {
+          "median": 33481,
+          "percentiles": {
+            "1": 33469,
+            "10": 33476,
+            "20": 33478,
+            "30": 33479,
+            "40": 33480,
+            "50": 33481,
+            "60": 33482,
+            "70": 33483,
+            "80": 33487,
+            "90": 33491,
+            "99": 33494
+          },
+          "p10": 33476,
+          "p50": 33481,
+          "p90": 33491
+        },
+        "gt_production_source_order": {
+          "median": 33747,
+          "percentiles": {
+            "1": 33736,
+            "10": 33742,
+            "20": 33744,
+            "30": 33745,
+            "40": 33746,
+            "50": 33747,
+            "60": 33748,
+            "70": 33749,
+            "80": 33751,
+            "90": 33752,
+            "99": 33771
+          },
+          "p10": 33742,
+          "p50": 33747,
+          "p90": 33752
+        }
+      }
+    }
+  },
+  "binaries": {
+    "gt_production_default": {
+      "text": 176737,
+      "data": 784,
+      "bss": 24634240,
+      "total": 24811761,
+      "poly_ntt": {
+        "symbol": "poly_ntt",
+        "address": 39856,
+        "size": 14776,
+        "address_mod32": 16,
+        "address_mod64": 48
+      }
+    },
+    "gt_production_source_order": {
+      "text": 176865,
+      "data": 784,
+      "bss": 24634240,
+      "total": 24811889,
+      "poly_ntt": {
+        "symbol": "poly_ntt",
+        "address": 39856,
+        "size": 14904,
+        "address_mod32": 16,
+        "address_mod64": 48
+      }
+    },
+    "kpqc_final": {
+      "text": 41537,
+      "data": 776,
+      "bss": 24634240,
+      "total": 24676553,
+      "poly_ntt": null
+    }
+  }
+}

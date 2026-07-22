@@ -1,0 +1,5210 @@
+{
+  "status": "model_only",
+  "production_changed": false,
+  "baseline_canonical_major": {
+    "blocks_per_chunk": 16,
+    "chunks": 12,
+    "gather_instructions_per_chunk": 24,
+    "output_store_instructions_per_chunk": 2,
+    "note": "Two st1 multi-register stores write 96 sequential bytes."
+  },
+  "assumptions": [
+    "Source-major groups load contiguous 8-byte GT quartic blocks.",
+    "Store lower bounds use 16/8/4/2/1-byte scalar-width stores and exclude shuffle cost.",
+    "ld3 counts are ISA instruction counts, not Cortex-A76 micro-op or cycle estimates.",
+    "No candidate is eligible for assembly from this model alone."
+  ],
+  "candidates": [
+    {
+      "group_size": 6,
+      "groups": [
+        {
+          "gt_first": 0,
+          "gt_last": 5,
+          "canonical_in_gt_order": [
+            10,
+            51,
+            80,
+            11,
+            52,
+            81
+          ],
+          "output_runs": [
+            {
+              "first": 10,
+              "last": 11,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 51,
+              "last": 52,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 80,
+              "last": 81,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 6,
+          "gt_last": 11,
+          "canonical_in_gt_order": [
+            9,
+            53,
+            93,
+            8,
+            54,
+            92
+          ],
+          "output_runs": [
+            {
+              "first": 8,
+              "last": 9,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 53,
+              "last": 54,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 92,
+              "last": 93,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 12,
+          "gt_last": 17,
+          "canonical_in_gt_order": [
+            14,
+            55,
+            95,
+            15,
+            32,
+            94
+          ],
+          "output_runs": [
+            {
+              "first": 14,
+              "last": 15,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 32,
+              "last": 32,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 55,
+              "last": 55,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 94,
+              "last": 95,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 18,
+          "gt_last": 23,
+          "canonical_in_gt_order": [
+            13,
+            33,
+            91,
+            12,
+            34,
+            90
+          ],
+          "output_runs": [
+            {
+              "first": 12,
+              "last": 13,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 33,
+              "last": 34,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 90,
+              "last": 91,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 24,
+          "gt_last": 29,
+          "canonical_in_gt_order": [
+            6,
+            35,
+            88,
+            7,
+            36,
+            89
+          ],
+          "output_runs": [
+            {
+              "first": 6,
+              "last": 7,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 35,
+              "last": 36,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 88,
+              "last": 89,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 30,
+          "gt_last": 35,
+          "canonical_in_gt_order": [
+            5,
+            37,
+            69,
+            4,
+            38,
+            68
+          ],
+          "output_runs": [
+            {
+              "first": 4,
+              "last": 5,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 37,
+              "last": 38,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 68,
+              "last": 69,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 36,
+          "gt_last": 41,
+          "canonical_in_gt_order": [
+            1,
+            39,
+            71,
+            0,
+            40,
+            70
+          ],
+          "output_runs": [
+            {
+              "first": 0,
+              "last": 1,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 39,
+              "last": 40,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 70,
+              "last": 71,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 42,
+          "gt_last": 47,
+          "canonical_in_gt_order": [
+            3,
+            41,
+            67,
+            2,
+            42,
+            66
+          ],
+          "output_runs": [
+            {
+              "first": 2,
+              "last": 3,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 41,
+              "last": 42,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 66,
+              "last": 67,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 48,
+          "gt_last": 53,
+          "canonical_in_gt_order": [
+            26,
+            43,
+            64,
+            27,
+            44,
+            65
+          ],
+          "output_runs": [
+            {
+              "first": 26,
+              "last": 27,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 43,
+              "last": 44,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 64,
+              "last": 65,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 54,
+          "gt_last": 59,
+          "canonical_in_gt_order": [
+            25,
+            45,
+            77,
+            24,
+            46,
+            76
+          ],
+          "output_runs": [
+            {
+              "first": 24,
+              "last": 25,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 45,
+              "last": 46,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 76,
+              "last": 77,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 60,
+          "gt_last": 65,
+          "canonical_in_gt_order": [
+            30,
+            47,
+            79,
+            31,
+            63,
+            78
+          ],
+          "output_runs": [
+            {
+              "first": 30,
+              "last": 31,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 47,
+              "last": 47,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 63,
+              "last": 63,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 78,
+              "last": 79,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 66,
+          "gt_last": 71,
+          "canonical_in_gt_order": [
+            29,
+            62,
+            75,
+            28,
+            60,
+            74
+          ],
+          "output_runs": [
+            {
+              "first": 28,
+              "last": 29,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 60,
+              "last": 60,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 62,
+              "last": 62,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 74,
+              "last": 75,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 72,
+          "gt_last": 77,
+          "canonical_in_gt_order": [
+            22,
+            61,
+            72,
+            23,
+            56,
+            73
+          ],
+          "output_runs": [
+            {
+              "first": 22,
+              "last": 23,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 56,
+              "last": 56,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 61,
+              "last": 61,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 72,
+              "last": 73,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 78,
+          "gt_last": 83,
+          "canonical_in_gt_order": [
+            21,
+            57,
+            85,
+            20,
+            58,
+            84
+          ],
+          "output_runs": [
+            {
+              "first": 20,
+              "last": 21,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 57,
+              "last": 58,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 84,
+              "last": 85,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 84,
+          "gt_last": 89,
+          "canonical_in_gt_order": [
+            17,
+            59,
+            87,
+            16,
+            48,
+            86
+          ],
+          "output_runs": [
+            {
+              "first": 16,
+              "last": 17,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 48,
+              "last": 48,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 59,
+              "last": 59,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 86,
+              "last": 87,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 90,
+          "gt_last": 95,
+          "canonical_in_gt_order": [
+            19,
+            49,
+            83,
+            18,
+            50,
+            82
+          ],
+          "output_runs": [
+            {
+              "first": 18,
+              "last": 19,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 49,
+              "last": 50,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 82,
+              "last": 83,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 6
+        },
+        {
+          "gt_first": 96,
+          "gt_last": 101,
+          "canonical_in_gt_order": [
+            191,
+            126,
+            157,
+            190,
+            123,
+            156
+          ],
+          "output_runs": [
+            {
+              "first": 123,
+              "last": 123,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 126,
+              "last": 126,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 156,
+              "last": 157,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 190,
+              "last": 191,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 102,
+          "gt_last": 107,
+          "canonical_in_gt_order": [
+            188,
+            122,
+            150,
+            189,
+            120,
+            151
+          ],
+          "output_runs": [
+            {
+              "first": 120,
+              "last": 120,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 122,
+              "last": 122,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 150,
+              "last": 151,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 188,
+              "last": 189,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 108,
+          "gt_last": 113,
+          "canonical_in_gt_order": [
+            184,
+            121,
+            149,
+            185,
+            109,
+            148
+          ],
+          "output_runs": [
+            {
+              "first": 109,
+              "last": 109,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 121,
+              "last": 121,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 148,
+              "last": 149,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 184,
+              "last": 185,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 114,
+          "gt_last": 119,
+          "canonical_in_gt_order": [
+            186,
+            108,
+            145,
+            187,
+            111,
+            144
+          ],
+          "output_runs": [
+            {
+              "first": 108,
+              "last": 108,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 111,
+              "last": 111,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 144,
+              "last": 145,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 186,
+              "last": 187,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 120,
+          "gt_last": 125,
+          "canonical_in_gt_order": [
+            176,
+            110,
+            147,
+            177,
+            107,
+            146
+          ],
+          "output_runs": [
+            {
+              "first": 107,
+              "last": 107,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 110,
+              "last": 110,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 146,
+              "last": 147,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 176,
+              "last": 177,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 126,
+          "gt_last": 131,
+          "canonical_in_gt_order": [
+            178,
+            106,
+            138,
+            179,
+            104,
+            139
+          ],
+          "output_runs": [
+            {
+              "first": 104,
+              "last": 104,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 106,
+              "last": 106,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 138,
+              "last": 139,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 178,
+              "last": 179,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 132,
+          "gt_last": 137,
+          "canonical_in_gt_order": [
+            180,
+            105,
+            137,
+            181,
+            99,
+            136
+          ],
+          "output_runs": [
+            {
+              "first": 99,
+              "last": 99,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 105,
+              "last": 105,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 136,
+              "last": 137,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 180,
+              "last": 181,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 138,
+          "gt_last": 143,
+          "canonical_in_gt_order": [
+            182,
+            98,
+            142,
+            183,
+            96,
+            143
+          ],
+          "output_runs": [
+            {
+              "first": 96,
+              "last": 96,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 98,
+              "last": 98,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 142,
+              "last": 143,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 182,
+              "last": 183,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 144,
+          "gt_last": 149,
+          "canonical_in_gt_order": [
+            160,
+            97,
+            141,
+            161,
+            103,
+            140
+          ],
+          "output_runs": [
+            {
+              "first": 97,
+              "last": 97,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 103,
+              "last": 103,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 140,
+              "last": 141,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 160,
+              "last": 161,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 150,
+          "gt_last": 155,
+          "canonical_in_gt_order": [
+            162,
+            102,
+            134,
+            163,
+            100,
+            135
+          ],
+          "output_runs": [
+            {
+              "first": 100,
+              "last": 100,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 102,
+              "last": 102,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 134,
+              "last": 135,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 162,
+              "last": 163,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 156,
+          "gt_last": 161,
+          "canonical_in_gt_order": [
+            164,
+            101,
+            133,
+            165,
+            117,
+            132
+          ],
+          "output_runs": [
+            {
+              "first": 101,
+              "last": 101,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 117,
+              "last": 117,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 132,
+              "last": 133,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 164,
+              "last": 165,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 162,
+          "gt_last": 167,
+          "canonical_in_gt_order": [
+            166,
+            116,
+            129,
+            167,
+            119,
+            128
+          ],
+          "output_runs": [
+            {
+              "first": 116,
+              "last": 116,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 119,
+              "last": 119,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 128,
+              "last": 129,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 166,
+              "last": 167,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 168,
+          "gt_last": 173,
+          "canonical_in_gt_order": [
+            168,
+            118,
+            131,
+            169,
+            115,
+            130
+          ],
+          "output_runs": [
+            {
+              "first": 115,
+              "last": 115,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 118,
+              "last": 118,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 130,
+              "last": 131,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 168,
+              "last": 169,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 174,
+          "gt_last": 179,
+          "canonical_in_gt_order": [
+            170,
+            114,
+            154,
+            171,
+            112,
+            155
+          ],
+          "output_runs": [
+            {
+              "first": 112,
+              "last": 112,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 114,
+              "last": 114,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 154,
+              "last": 155,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 170,
+              "last": 171,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 180,
+          "gt_last": 185,
+          "canonical_in_gt_order": [
+            172,
+            113,
+            153,
+            173,
+            125,
+            152
+          ],
+          "output_runs": [
+            {
+              "first": 113,
+              "last": 113,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 125,
+              "last": 125,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 152,
+              "last": 153,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 172,
+              "last": 173,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 186,
+          "gt_last": 191,
+          "canonical_in_gt_order": [
+            174,
+            124,
+            158,
+            175,
+            127,
+            159
+          ],
+          "output_runs": [
+            {
+              "first": 124,
+              "last": 124,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 127,
+              "last": 127,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 158,
+              "last": 159,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 174,
+              "last": 175,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 3,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 3,
+          "estimated_peak_vectors_before_pack": 7
+        }
+      ],
+      "run_count_total": 117,
+      "run_count_max": 4,
+      "scalar_store_lower_bound_total": 234,
+      "estimated_peak_vectors": 7
+    },
+    {
+      "group_size": 8,
+      "groups": [
+        {
+          "gt_first": 0,
+          "gt_last": 7,
+          "canonical_in_gt_order": [
+            10,
+            51,
+            80,
+            11,
+            52,
+            81,
+            9,
+            53
+          ],
+          "output_runs": [
+            {
+              "first": 9,
+              "last": 11,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 51,
+              "last": 53,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 80,
+              "last": 81,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 8,
+          "gt_last": 15,
+          "canonical_in_gt_order": [
+            93,
+            8,
+            54,
+            92,
+            14,
+            55,
+            95,
+            15
+          ],
+          "output_runs": [
+            {
+              "first": 8,
+              "last": 8,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 14,
+              "last": 15,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 54,
+              "last": 55,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 92,
+              "last": 93,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 95,
+              "last": 95,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 16,
+          "gt_last": 23,
+          "canonical_in_gt_order": [
+            32,
+            94,
+            13,
+            33,
+            91,
+            12,
+            34,
+            90
+          ],
+          "output_runs": [
+            {
+              "first": 12,
+              "last": 13,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 32,
+              "last": 34,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 90,
+              "last": 91,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 94,
+              "last": 94,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 24,
+          "gt_last": 31,
+          "canonical_in_gt_order": [
+            6,
+            35,
+            88,
+            7,
+            36,
+            89,
+            5,
+            37
+          ],
+          "output_runs": [
+            {
+              "first": 5,
+              "last": 7,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 35,
+              "last": 37,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 88,
+              "last": 89,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 32,
+          "gt_last": 39,
+          "canonical_in_gt_order": [
+            69,
+            4,
+            38,
+            68,
+            1,
+            39,
+            71,
+            0
+          ],
+          "output_runs": [
+            {
+              "first": 0,
+              "last": 1,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 4,
+              "last": 4,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 38,
+              "last": 39,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 68,
+              "last": 69,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 71,
+              "last": 71,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 40,
+          "gt_last": 47,
+          "canonical_in_gt_order": [
+            40,
+            70,
+            3,
+            41,
+            67,
+            2,
+            42,
+            66
+          ],
+          "output_runs": [
+            {
+              "first": 2,
+              "last": 3,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 40,
+              "last": 42,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 66,
+              "last": 67,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 70,
+              "last": 70,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 48,
+          "gt_last": 55,
+          "canonical_in_gt_order": [
+            26,
+            43,
+            64,
+            27,
+            44,
+            65,
+            25,
+            45
+          ],
+          "output_runs": [
+            {
+              "first": 25,
+              "last": 27,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 43,
+              "last": 45,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 64,
+              "last": 65,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 56,
+          "gt_last": 63,
+          "canonical_in_gt_order": [
+            77,
+            24,
+            46,
+            76,
+            30,
+            47,
+            79,
+            31
+          ],
+          "output_runs": [
+            {
+              "first": 24,
+              "last": 24,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 30,
+              "last": 31,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 46,
+              "last": 47,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 76,
+              "last": 77,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 79,
+              "last": 79,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 64,
+          "gt_last": 71,
+          "canonical_in_gt_order": [
+            63,
+            78,
+            29,
+            62,
+            75,
+            28,
+            60,
+            74
+          ],
+          "output_runs": [
+            {
+              "first": 28,
+              "last": 29,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 60,
+              "last": 60,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 62,
+              "last": 63,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 74,
+              "last": 75,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 78,
+              "last": 78,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 72,
+          "gt_last": 79,
+          "canonical_in_gt_order": [
+            22,
+            61,
+            72,
+            23,
+            56,
+            73,
+            21,
+            57
+          ],
+          "output_runs": [
+            {
+              "first": 21,
+              "last": 23,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 56,
+              "last": 57,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 61,
+              "last": 61,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 72,
+              "last": 73,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 80,
+          "gt_last": 87,
+          "canonical_in_gt_order": [
+            85,
+            20,
+            58,
+            84,
+            17,
+            59,
+            87,
+            16
+          ],
+          "output_runs": [
+            {
+              "first": 16,
+              "last": 17,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 20,
+              "last": 20,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 58,
+              "last": 59,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 84,
+              "last": 85,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 87,
+              "last": 87,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 88,
+          "gt_last": 95,
+          "canonical_in_gt_order": [
+            48,
+            86,
+            19,
+            49,
+            83,
+            18,
+            50,
+            82
+          ],
+          "output_runs": [
+            {
+              "first": 18,
+              "last": 19,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 48,
+              "last": 50,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 82,
+              "last": 83,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 86,
+              "last": 86,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 96,
+          "gt_last": 103,
+          "canonical_in_gt_order": [
+            191,
+            126,
+            157,
+            190,
+            123,
+            156,
+            188,
+            122
+          ],
+          "output_runs": [
+            {
+              "first": 122,
+              "last": 123,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 126,
+              "last": 126,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 156,
+              "last": 157,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 188,
+              "last": 188,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 190,
+              "last": 191,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 104,
+          "gt_last": 111,
+          "canonical_in_gt_order": [
+            150,
+            189,
+            120,
+            151,
+            184,
+            121,
+            149,
+            185
+          ],
+          "output_runs": [
+            {
+              "first": 120,
+              "last": 121,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 149,
+              "last": 151,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 184,
+              "last": 185,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 189,
+              "last": 189,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 112,
+          "gt_last": 119,
+          "canonical_in_gt_order": [
+            109,
+            148,
+            186,
+            108,
+            145,
+            187,
+            111,
+            144
+          ],
+          "output_runs": [
+            {
+              "first": 108,
+              "last": 109,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 111,
+              "last": 111,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 144,
+              "last": 145,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 148,
+              "last": 148,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 186,
+              "last": 187,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 120,
+          "gt_last": 127,
+          "canonical_in_gt_order": [
+            176,
+            110,
+            147,
+            177,
+            107,
+            146,
+            178,
+            106
+          ],
+          "output_runs": [
+            {
+              "first": 106,
+              "last": 107,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 110,
+              "last": 110,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 146,
+              "last": 147,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 176,
+              "last": 178,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 128,
+          "gt_last": 135,
+          "canonical_in_gt_order": [
+            138,
+            179,
+            104,
+            139,
+            180,
+            105,
+            137,
+            181
+          ],
+          "output_runs": [
+            {
+              "first": 104,
+              "last": 105,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 137,
+              "last": 139,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 179,
+              "last": 181,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 136,
+          "gt_last": 143,
+          "canonical_in_gt_order": [
+            99,
+            136,
+            182,
+            98,
+            142,
+            183,
+            96,
+            143
+          ],
+          "output_runs": [
+            {
+              "first": 96,
+              "last": 96,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 98,
+              "last": 99,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 136,
+              "last": 136,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 142,
+              "last": 143,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 182,
+              "last": 183,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 144,
+          "gt_last": 151,
+          "canonical_in_gt_order": [
+            160,
+            97,
+            141,
+            161,
+            103,
+            140,
+            162,
+            102
+          ],
+          "output_runs": [
+            {
+              "first": 97,
+              "last": 97,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 102,
+              "last": 103,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 140,
+              "last": 141,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 160,
+              "last": 162,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 152,
+          "gt_last": 159,
+          "canonical_in_gt_order": [
+            134,
+            163,
+            100,
+            135,
+            164,
+            101,
+            133,
+            165
+          ],
+          "output_runs": [
+            {
+              "first": 100,
+              "last": 101,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 133,
+              "last": 135,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 163,
+              "last": 165,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 160,
+          "gt_last": 167,
+          "canonical_in_gt_order": [
+            117,
+            132,
+            166,
+            116,
+            129,
+            167,
+            119,
+            128
+          ],
+          "output_runs": [
+            {
+              "first": 116,
+              "last": 117,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 119,
+              "last": 119,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 128,
+              "last": 129,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 132,
+              "last": 132,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 166,
+              "last": 167,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        },
+        {
+          "gt_first": 168,
+          "gt_last": 175,
+          "canonical_in_gt_order": [
+            168,
+            118,
+            131,
+            169,
+            115,
+            130,
+            170,
+            114
+          ],
+          "output_runs": [
+            {
+              "first": 114,
+              "last": 115,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 118,
+              "last": 118,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 130,
+              "last": 131,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 168,
+              "last": 170,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 8
+        },
+        {
+          "gt_first": 176,
+          "gt_last": 183,
+          "canonical_in_gt_order": [
+            154,
+            171,
+            112,
+            155,
+            172,
+            113,
+            153,
+            173
+          ],
+          "output_runs": [
+            {
+              "first": 112,
+              "last": 113,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 153,
+              "last": 155,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 171,
+              "last": 173,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 7
+        },
+        {
+          "gt_first": 184,
+          "gt_last": 191,
+          "canonical_in_gt_order": [
+            125,
+            152,
+            174,
+            124,
+            158,
+            175,
+            127,
+            159
+          ],
+          "output_runs": [
+            {
+              "first": 124,
+              "last": 125,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 127,
+              "last": 127,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 152,
+              "last": 152,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 158,
+              "last": 159,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 174,
+              "last": 175,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 4,
+          "ld3_2d_full_groups": 1,
+          "ld3_tail_blocks": 2,
+          "input_q_vectors": 4,
+          "estimated_peak_vectors_before_pack": 9
+        }
+      ],
+      "run_count_total": 100,
+      "run_count_max": 5,
+      "scalar_store_lower_bound_total": 200,
+      "estimated_peak_vectors": 9
+    },
+    {
+      "group_size": 12,
+      "groups": [
+        {
+          "gt_first": 0,
+          "gt_last": 11,
+          "canonical_in_gt_order": [
+            10,
+            51,
+            80,
+            11,
+            52,
+            81,
+            9,
+            53,
+            93,
+            8,
+            54,
+            92
+          ],
+          "output_runs": [
+            {
+              "first": 8,
+              "last": 11,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 51,
+              "last": 54,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 80,
+              "last": 81,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 92,
+              "last": 93,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 10
+        },
+        {
+          "gt_first": 12,
+          "gt_last": 23,
+          "canonical_in_gt_order": [
+            14,
+            55,
+            95,
+            15,
+            32,
+            94,
+            13,
+            33,
+            91,
+            12,
+            34,
+            90
+          ],
+          "output_runs": [
+            {
+              "first": 12,
+              "last": 15,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 32,
+              "last": 34,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 55,
+              "last": 55,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 90,
+              "last": 91,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 94,
+              "last": 95,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 11
+        },
+        {
+          "gt_first": 24,
+          "gt_last": 35,
+          "canonical_in_gt_order": [
+            6,
+            35,
+            88,
+            7,
+            36,
+            89,
+            5,
+            37,
+            69,
+            4,
+            38,
+            68
+          ],
+          "output_runs": [
+            {
+              "first": 4,
+              "last": 7,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 35,
+              "last": 38,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 68,
+              "last": 69,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 88,
+              "last": 89,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 10
+        },
+        {
+          "gt_first": 36,
+          "gt_last": 47,
+          "canonical_in_gt_order": [
+            1,
+            39,
+            71,
+            0,
+            40,
+            70,
+            3,
+            41,
+            67,
+            2,
+            42,
+            66
+          ],
+          "output_runs": [
+            {
+              "first": 0,
+              "last": 3,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 39,
+              "last": 42,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 66,
+              "last": 67,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 70,
+              "last": 71,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 10
+        },
+        {
+          "gt_first": 48,
+          "gt_last": 59,
+          "canonical_in_gt_order": [
+            26,
+            43,
+            64,
+            27,
+            44,
+            65,
+            25,
+            45,
+            77,
+            24,
+            46,
+            76
+          ],
+          "output_runs": [
+            {
+              "first": 24,
+              "last": 27,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 43,
+              "last": 46,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 64,
+              "last": 65,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 76,
+              "last": 77,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 10
+        },
+        {
+          "gt_first": 60,
+          "gt_last": 71,
+          "canonical_in_gt_order": [
+            30,
+            47,
+            79,
+            31,
+            63,
+            78,
+            29,
+            62,
+            75,
+            28,
+            60,
+            74
+          ],
+          "output_runs": [
+            {
+              "first": 28,
+              "last": 31,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 47,
+              "last": 47,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 60,
+              "last": 60,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 62,
+              "last": 63,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 74,
+              "last": 75,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 78,
+              "last": 79,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 72,
+          "gt_last": 83,
+          "canonical_in_gt_order": [
+            22,
+            61,
+            72,
+            23,
+            56,
+            73,
+            21,
+            57,
+            85,
+            20,
+            58,
+            84
+          ],
+          "output_runs": [
+            {
+              "first": 20,
+              "last": 23,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 56,
+              "last": 58,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 61,
+              "last": 61,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 72,
+              "last": 73,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 84,
+              "last": 85,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 11
+        },
+        {
+          "gt_first": 84,
+          "gt_last": 95,
+          "canonical_in_gt_order": [
+            17,
+            59,
+            87,
+            16,
+            48,
+            86,
+            19,
+            49,
+            83,
+            18,
+            50,
+            82
+          ],
+          "output_runs": [
+            {
+              "first": 16,
+              "last": 19,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 48,
+              "last": 50,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 59,
+              "last": 59,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 82,
+              "last": 83,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 86,
+              "last": 87,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 11
+        },
+        {
+          "gt_first": 96,
+          "gt_last": 107,
+          "canonical_in_gt_order": [
+            191,
+            126,
+            157,
+            190,
+            123,
+            156,
+            188,
+            122,
+            150,
+            189,
+            120,
+            151
+          ],
+          "output_runs": [
+            {
+              "first": 120,
+              "last": 120,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 122,
+              "last": 123,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 126,
+              "last": 126,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 150,
+              "last": 151,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 156,
+              "last": 157,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 188,
+              "last": 191,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 108,
+          "gt_last": 119,
+          "canonical_in_gt_order": [
+            184,
+            121,
+            149,
+            185,
+            109,
+            148,
+            186,
+            108,
+            145,
+            187,
+            111,
+            144
+          ],
+          "output_runs": [
+            {
+              "first": 108,
+              "last": 109,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 111,
+              "last": 111,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 121,
+              "last": 121,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 144,
+              "last": 145,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 148,
+              "last": 149,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 184,
+              "last": 187,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 120,
+          "gt_last": 131,
+          "canonical_in_gt_order": [
+            176,
+            110,
+            147,
+            177,
+            107,
+            146,
+            178,
+            106,
+            138,
+            179,
+            104,
+            139
+          ],
+          "output_runs": [
+            {
+              "first": 104,
+              "last": 104,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 106,
+              "last": 107,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 110,
+              "last": 110,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 138,
+              "last": 139,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 146,
+              "last": 147,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 176,
+              "last": 179,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 132,
+          "gt_last": 143,
+          "canonical_in_gt_order": [
+            180,
+            105,
+            137,
+            181,
+            99,
+            136,
+            182,
+            98,
+            142,
+            183,
+            96,
+            143
+          ],
+          "output_runs": [
+            {
+              "first": 96,
+              "last": 96,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 98,
+              "last": 99,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 105,
+              "last": 105,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 136,
+              "last": 137,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 142,
+              "last": 143,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 180,
+              "last": 183,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 144,
+          "gt_last": 155,
+          "canonical_in_gt_order": [
+            160,
+            97,
+            141,
+            161,
+            103,
+            140,
+            162,
+            102,
+            134,
+            163,
+            100,
+            135
+          ],
+          "output_runs": [
+            {
+              "first": 97,
+              "last": 97,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 100,
+              "last": 100,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 102,
+              "last": 103,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 134,
+              "last": 135,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 140,
+              "last": 141,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 160,
+              "last": 163,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 156,
+          "gt_last": 167,
+          "canonical_in_gt_order": [
+            164,
+            101,
+            133,
+            165,
+            117,
+            132,
+            166,
+            116,
+            129,
+            167,
+            119,
+            128
+          ],
+          "output_runs": [
+            {
+              "first": 101,
+              "last": 101,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 116,
+              "last": 117,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 119,
+              "last": 119,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 128,
+              "last": 129,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 132,
+              "last": 133,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 164,
+              "last": 167,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 168,
+          "gt_last": 179,
+          "canonical_in_gt_order": [
+            168,
+            118,
+            131,
+            169,
+            115,
+            130,
+            170,
+            114,
+            154,
+            171,
+            112,
+            155
+          ],
+          "output_runs": [
+            {
+              "first": 112,
+              "last": 112,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 114,
+              "last": 115,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 118,
+              "last": 118,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 130,
+              "last": 131,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 154,
+              "last": 155,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 168,
+              "last": 171,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 180,
+          "gt_last": 191,
+          "canonical_in_gt_order": [
+            172,
+            113,
+            153,
+            173,
+            125,
+            152,
+            174,
+            124,
+            158,
+            175,
+            127,
+            159
+          ],
+          "output_runs": [
+            {
+              "first": 113,
+              "last": 113,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 124,
+              "last": 125,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 127,
+              "last": 127,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 152,
+              "last": 153,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 158,
+              "last": 159,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 172,
+              "last": 175,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 6,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 6,
+          "estimated_peak_vectors_before_pack": 12
+        }
+      ],
+      "run_count_total": 85,
+      "run_count_max": 6,
+      "scalar_store_lower_bound_total": 170,
+      "estimated_peak_vectors": 12
+    },
+    {
+      "group_size": 16,
+      "groups": [
+        {
+          "gt_first": 0,
+          "gt_last": 15,
+          "canonical_in_gt_order": [
+            10,
+            51,
+            80,
+            11,
+            52,
+            81,
+            9,
+            53,
+            93,
+            8,
+            54,
+            92,
+            14,
+            55,
+            95,
+            15
+          ],
+          "output_runs": [
+            {
+              "first": 8,
+              "last": 11,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 14,
+              "last": 15,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 51,
+              "last": 55,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 80,
+              "last": 81,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 92,
+              "last": 93,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 95,
+              "last": 95,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        },
+        {
+          "gt_first": 16,
+          "gt_last": 31,
+          "canonical_in_gt_order": [
+            32,
+            94,
+            13,
+            33,
+            91,
+            12,
+            34,
+            90,
+            6,
+            35,
+            88,
+            7,
+            36,
+            89,
+            5,
+            37
+          ],
+          "output_runs": [
+            {
+              "first": 5,
+              "last": 7,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 12,
+              "last": 13,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 32,
+              "last": 37,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 88,
+              "last": 91,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 94,
+              "last": 94,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 13
+        },
+        {
+          "gt_first": 32,
+          "gt_last": 47,
+          "canonical_in_gt_order": [
+            69,
+            4,
+            38,
+            68,
+            1,
+            39,
+            71,
+            0,
+            40,
+            70,
+            3,
+            41,
+            67,
+            2,
+            42,
+            66
+          ],
+          "output_runs": [
+            {
+              "first": 0,
+              "last": 4,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 38,
+              "last": 42,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 66,
+              "last": 71,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 11
+        },
+        {
+          "gt_first": 48,
+          "gt_last": 63,
+          "canonical_in_gt_order": [
+            26,
+            43,
+            64,
+            27,
+            44,
+            65,
+            25,
+            45,
+            77,
+            24,
+            46,
+            76,
+            30,
+            47,
+            79,
+            31
+          ],
+          "output_runs": [
+            {
+              "first": 24,
+              "last": 27,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 30,
+              "last": 31,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 43,
+              "last": 47,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 64,
+              "last": 65,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 76,
+              "last": 77,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 79,
+              "last": 79,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        },
+        {
+          "gt_first": 64,
+          "gt_last": 79,
+          "canonical_in_gt_order": [
+            63,
+            78,
+            29,
+            62,
+            75,
+            28,
+            60,
+            74,
+            22,
+            61,
+            72,
+            23,
+            56,
+            73,
+            21,
+            57
+          ],
+          "output_runs": [
+            {
+              "first": 21,
+              "last": 23,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 28,
+              "last": 29,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 56,
+              "last": 57,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 60,
+              "last": 63,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 72,
+              "last": 75,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 78,
+              "last": 78,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        },
+        {
+          "gt_first": 80,
+          "gt_last": 95,
+          "canonical_in_gt_order": [
+            85,
+            20,
+            58,
+            84,
+            17,
+            59,
+            87,
+            16,
+            48,
+            86,
+            19,
+            49,
+            83,
+            18,
+            50,
+            82
+          ],
+          "output_runs": [
+            {
+              "first": 16,
+              "last": 20,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 48,
+              "last": 50,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 58,
+              "last": 59,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 82,
+              "last": 87,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 96,
+          "gt_last": 111,
+          "canonical_in_gt_order": [
+            191,
+            126,
+            157,
+            190,
+            123,
+            156,
+            188,
+            122,
+            150,
+            189,
+            120,
+            151,
+            184,
+            121,
+            149,
+            185
+          ],
+          "output_runs": [
+            {
+              "first": 120,
+              "last": 123,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 126,
+              "last": 126,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 149,
+              "last": 151,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 156,
+              "last": 157,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 184,
+              "last": 185,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 188,
+              "last": 191,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        },
+        {
+          "gt_first": 112,
+          "gt_last": 127,
+          "canonical_in_gt_order": [
+            109,
+            148,
+            186,
+            108,
+            145,
+            187,
+            111,
+            144,
+            176,
+            110,
+            147,
+            177,
+            107,
+            146,
+            178,
+            106
+          ],
+          "output_runs": [
+            {
+              "first": 106,
+              "last": 111,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 144,
+              "last": 148,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 176,
+              "last": 178,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 186,
+              "last": 187,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 12
+        },
+        {
+          "gt_first": 128,
+          "gt_last": 143,
+          "canonical_in_gt_order": [
+            138,
+            179,
+            104,
+            139,
+            180,
+            105,
+            137,
+            181,
+            99,
+            136,
+            182,
+            98,
+            142,
+            183,
+            96,
+            143
+          ],
+          "output_runs": [
+            {
+              "first": 96,
+              "last": 96,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 98,
+              "last": 99,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 104,
+              "last": 105,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 136,
+              "last": 139,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 142,
+              "last": 143,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 179,
+              "last": 183,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        },
+        {
+          "gt_first": 144,
+          "gt_last": 159,
+          "canonical_in_gt_order": [
+            160,
+            97,
+            141,
+            161,
+            103,
+            140,
+            162,
+            102,
+            134,
+            163,
+            100,
+            135,
+            164,
+            101,
+            133,
+            165
+          ],
+          "output_runs": [
+            {
+              "first": 97,
+              "last": 97,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 100,
+              "last": 103,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 133,
+              "last": 135,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 140,
+              "last": 141,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 160,
+              "last": 165,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 13
+        },
+        {
+          "gt_first": 160,
+          "gt_last": 175,
+          "canonical_in_gt_order": [
+            117,
+            132,
+            166,
+            116,
+            129,
+            167,
+            119,
+            128,
+            168,
+            118,
+            131,
+            169,
+            115,
+            130,
+            170,
+            114
+          ],
+          "output_runs": [
+            {
+              "first": 114,
+              "last": 119,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 128,
+              "last": 132,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 166,
+              "last": 170,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            }
+          ],
+          "run_count": 3,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 11
+        },
+        {
+          "gt_first": 176,
+          "gt_last": 191,
+          "canonical_in_gt_order": [
+            154,
+            171,
+            112,
+            155,
+            172,
+            113,
+            153,
+            173,
+            125,
+            152,
+            174,
+            124,
+            158,
+            175,
+            127,
+            159
+          ],
+          "output_runs": [
+            {
+              "first": 112,
+              "last": 113,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 124,
+              "last": 125,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 127,
+              "last": 127,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 152,
+              "last": 155,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 158,
+              "last": 159,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 171,
+              "last": 175,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 8,
+          "ld3_2d_full_groups": 2,
+          "ld3_tail_blocks": 4,
+          "input_q_vectors": 8,
+          "estimated_peak_vectors_before_pack": 14
+        }
+      ],
+      "run_count_total": 60,
+      "run_count_max": 6,
+      "scalar_store_lower_bound_total": 146,
+      "estimated_peak_vectors": 14
+    },
+    {
+      "group_size": 24,
+      "groups": [
+        {
+          "gt_first": 0,
+          "gt_last": 23,
+          "canonical_in_gt_order": [
+            10,
+            51,
+            80,
+            11,
+            52,
+            81,
+            9,
+            53,
+            93,
+            8,
+            54,
+            92,
+            14,
+            55,
+            95,
+            15,
+            32,
+            94,
+            13,
+            33,
+            91,
+            12,
+            34,
+            90
+          ],
+          "output_runs": [
+            {
+              "first": 8,
+              "last": 15,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 32,
+              "last": 34,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 51,
+              "last": 55,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 80,
+              "last": 81,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 90,
+              "last": 95,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 17
+        },
+        {
+          "gt_first": 24,
+          "gt_last": 47,
+          "canonical_in_gt_order": [
+            6,
+            35,
+            88,
+            7,
+            36,
+            89,
+            5,
+            37,
+            69,
+            4,
+            38,
+            68,
+            1,
+            39,
+            71,
+            0,
+            40,
+            70,
+            3,
+            41,
+            67,
+            2,
+            42,
+            66
+          ],
+          "output_runs": [
+            {
+              "first": 0,
+              "last": 7,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 35,
+              "last": 42,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 66,
+              "last": 71,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 88,
+              "last": 89,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            }
+          ],
+          "run_count": 4,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 16
+        },
+        {
+          "gt_first": 48,
+          "gt_last": 71,
+          "canonical_in_gt_order": [
+            26,
+            43,
+            64,
+            27,
+            44,
+            65,
+            25,
+            45,
+            77,
+            24,
+            46,
+            76,
+            30,
+            47,
+            79,
+            31,
+            63,
+            78,
+            29,
+            62,
+            75,
+            28,
+            60,
+            74
+          ],
+          "output_runs": [
+            {
+              "first": 24,
+              "last": 31,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 43,
+              "last": 47,
+              "blocks": 5,
+              "bytes": 30,
+              "scalar_store_lower_bound": 4
+            },
+            {
+              "first": 60,
+              "last": 60,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 62,
+              "last": 65,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 74,
+              "last": 79,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 5,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 17
+        },
+        {
+          "gt_first": 72,
+          "gt_last": 95,
+          "canonical_in_gt_order": [
+            22,
+            61,
+            72,
+            23,
+            56,
+            73,
+            21,
+            57,
+            85,
+            20,
+            58,
+            84,
+            17,
+            59,
+            87,
+            16,
+            48,
+            86,
+            19,
+            49,
+            83,
+            18,
+            50,
+            82
+          ],
+          "output_runs": [
+            {
+              "first": 16,
+              "last": 23,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            },
+            {
+              "first": 48,
+              "last": 50,
+              "blocks": 3,
+              "bytes": 18,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 56,
+              "last": 59,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 61,
+              "last": 61,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 72,
+              "last": 73,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 82,
+              "last": 87,
+              "blocks": 6,
+              "bytes": 36,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 6,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 18
+        },
+        {
+          "gt_first": 96,
+          "gt_last": 119,
+          "canonical_in_gt_order": [
+            191,
+            126,
+            157,
+            190,
+            123,
+            156,
+            188,
+            122,
+            150,
+            189,
+            120,
+            151,
+            184,
+            121,
+            149,
+            185,
+            109,
+            148,
+            186,
+            108,
+            145,
+            187,
+            111,
+            144
+          ],
+          "output_runs": [
+            {
+              "first": 108,
+              "last": 109,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 111,
+              "last": 111,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 120,
+              "last": 123,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 126,
+              "last": 126,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 144,
+              "last": 145,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 148,
+              "last": 151,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 156,
+              "last": 157,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 184,
+              "last": 191,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 8,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 20
+        },
+        {
+          "gt_first": 120,
+          "gt_last": 143,
+          "canonical_in_gt_order": [
+            176,
+            110,
+            147,
+            177,
+            107,
+            146,
+            178,
+            106,
+            138,
+            179,
+            104,
+            139,
+            180,
+            105,
+            137,
+            181,
+            99,
+            136,
+            182,
+            98,
+            142,
+            183,
+            96,
+            143
+          ],
+          "output_runs": [
+            {
+              "first": 96,
+              "last": 96,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 98,
+              "last": 99,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 104,
+              "last": 107,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 110,
+              "last": 110,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 136,
+              "last": 139,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 142,
+              "last": 143,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 146,
+              "last": 147,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 176,
+              "last": 183,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 8,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 20
+        },
+        {
+          "gt_first": 144,
+          "gt_last": 167,
+          "canonical_in_gt_order": [
+            160,
+            97,
+            141,
+            161,
+            103,
+            140,
+            162,
+            102,
+            134,
+            163,
+            100,
+            135,
+            164,
+            101,
+            133,
+            165,
+            117,
+            132,
+            166,
+            116,
+            129,
+            167,
+            119,
+            128
+          ],
+          "output_runs": [
+            {
+              "first": 97,
+              "last": 97,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 100,
+              "last": 103,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 116,
+              "last": 117,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 119,
+              "last": 119,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 128,
+              "last": 129,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 132,
+              "last": 135,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 140,
+              "last": 141,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 160,
+              "last": 167,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 8,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 20
+        },
+        {
+          "gt_first": 168,
+          "gt_last": 191,
+          "canonical_in_gt_order": [
+            168,
+            118,
+            131,
+            169,
+            115,
+            130,
+            170,
+            114,
+            154,
+            171,
+            112,
+            155,
+            172,
+            113,
+            153,
+            173,
+            125,
+            152,
+            174,
+            124,
+            158,
+            175,
+            127,
+            159
+          ],
+          "output_runs": [
+            {
+              "first": 112,
+              "last": 115,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 118,
+              "last": 118,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 124,
+              "last": 125,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 127,
+              "last": 127,
+              "blocks": 1,
+              "bytes": 6,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 130,
+              "last": 131,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 152,
+              "last": 155,
+              "blocks": 4,
+              "bytes": 24,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 158,
+              "last": 159,
+              "blocks": 2,
+              "bytes": 12,
+              "scalar_store_lower_bound": 2
+            },
+            {
+              "first": 168,
+              "last": 175,
+              "blocks": 8,
+              "bytes": 48,
+              "scalar_store_lower_bound": 3
+            }
+          ],
+          "run_count": 8,
+          "contiguous_q_loads": 12,
+          "ld3_2d_full_groups": 4,
+          "ld3_tail_blocks": 0,
+          "input_q_vectors": 12,
+          "estimated_peak_vectors_before_pack": 20
+        }
+      ],
+      "run_count_total": 52,
+      "run_count_max": 8,
+      "scalar_store_lower_bound_total": 121,
+      "estimated_peak_vectors": 20
+    }
+  ]
+}
