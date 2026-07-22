@@ -1,0 +1,23 @@
+kernel:
+  name: q31_basemul_add_pair_pipeline
+  kind: existing_region_replacement
+  baseline_region: production_q31_loop_two_iterations
+  candidate_region: q31_pair_xover_and_tail
+abi:
+  args: [x0_output, x1_a, x2_b, x3_c]
+  callee_saved: preserved
+memory:
+  reads: [a_two_groups, b_two_groups, c_two_groups, lambda_two_groups]
+  writes: [two_contiguous_output_groups]
+  aliasing: production_q31_contract
+arithmetic:
+  modulus: 3457
+  domain: production_direct32_q31_tobytes_contract
+  range: unchanged
+  reduction: unchanged
+outputs:
+  - byte_equivalent_under_immediate_poly_tobytes
+constraints:
+  allow_spills: false
+  allow_renaming: false
+  instruction_multiset: exact_two_iteration_arithmetic_and_memory
