@@ -63,10 +63,18 @@ KPQC_KEM_SOURCES = \
 	$(KPQC_FINAL_ROOT)/asm/ntt.s \
 	$(KPQC_FINAL_ROOT)/asm/base.s
 
+ifneq ($(filter $(BENCH_MODE),kem_components kernel_components),)
+GT_SELECTED_SUPPORT_SOURCES = $(GT_PRODUCTION_GENERIC_SUPPORT_SOURCES)
+GT_REFERENCE_NTT_SOURCE = $(NTRUPLUS)/ntt.c
+else
+GT_SELECTED_SUPPORT_SOURCES = $(GT_PRODUCTION_KEM_SUPPORT_SOURCES)
+GT_REFERENCE_NTT_SOURCE =
+endif
+
 GT_KEM_SOURCES = \
-	$(NTRUPLUS)/ntt.c \
+	$(GT_REFERENCE_NTT_SOURCE) \
 	$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
-	$(GT_PRODUCTION_SUPPORT_SOURCES) \
+	$(GT_SELECTED_SUPPORT_SOURCES) \
 	$(GT_NTT_ASM) \
 	$(GT_NTT32_ASM) \
 	$(GT_PRODUCTION_BPQ_CQ_KEYGEN_RUNTIME_SOURCES) \
@@ -156,11 +164,14 @@ else ifeq ($(CYCLES),MAC)
 BENCH_CFLAGS += -DMAC_CYCLES
 endif
 
-.PHONY: all clean
+.PHONY: all clean check-symbol-closure
 all: $(TARGET)
 
 $(TARGET): $(SOURCES)
 	$(CC) $(BENCH_CFLAGS) $(SOURCES) -o $@
+
+check-symbol-closure: $(TARGET)
+	python3 $(NTRUPLUS)/scripts/check_gt_production_binary_symbols.py $(TARGET)
 
 clean:
 	-$(RM) $(TARGET) $(TARGET).d hal/*.d
