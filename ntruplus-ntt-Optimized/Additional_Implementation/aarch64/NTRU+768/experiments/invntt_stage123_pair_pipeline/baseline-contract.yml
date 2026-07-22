@@ -1,0 +1,57 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: invntt_rminus1_stage123_row0_pair01
+  source: ../../asm/gt/invntt/poly_invntt.n1.opt.inc
+  extracted_region: baseline-row0-pair01.S
+  function: poly_invntt_from_rminus1
+  start_label: baseline_row0_pair01_start
+  end_label: baseline_row0_pair01_end
+  source_commit: a0c2e981501a8f758ec0ede968c7af997ab2aaef
+
+region:
+  instruction_count: 166
+  live_in: [x3_branch0_base, x4_branch1_base, x14_stage123_scratch, v0_modulus, v1_twiddles, v2_precomputes]
+  live_out: [sixteen_stage123_q_vectors_in_stripe_scratch]
+  clobbers: [v3-v12]
+
+abi:
+  inputs: [x0_dst, x1_input]
+  outputs: [x0_memory_1536_bytes]
+  clobbers: [v0-v31]
+  concrete_gprs_allowed: [x3, x4, x14]
+  fixed_vector_registers: [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30]
+  reserved_registers: [x18, x19-x28, x29, x30, sp]
+
+memory_contract:
+  loads: [sixteen_branch0_8_byte_loads, sixteen_branch1_8_byte_loads]
+  stores: [sixteen_16_byte_stage123_stripe_scratch_stores]
+  aliasing: input_does_not_overlap_stack_scratch
+  alignment: input_offsets_8_byte_aligned_scratch_offsets_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: [q_3457_in_v0, stage123_twiddles_in_v1, stage123_precomputes_in_v2]
+  modulus: 3457
+  representation: rminus1_GT_row_bit_reversed_signed_int16
+  reduction_method: production_lazy_twiddle1_len16_stage123_contract
+
+range_contract:
+  input_ranges: [production_poly_basemul_rminus1_output_contract]
+  intermediate_ranges: [production_lazy_twiddle1_stage123_proof_bounds]
+  output_ranges: [production_stage45_stripe_scratch_input_contract]
+  narrowing_points: [unchanged_production_montgomery_multiply_sites]
+
+constant_time_contract:
+  secret_inputs: [input_coefficients]
+  public_inputs: [row_id, group_id, fixed_input_offsets, fixed_scratch_offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 166
+  slothy_expected_cycles:
+  full_path_benchmark: 3556_cycles_actual_rminus1_invntt_post_f2_profile
+  benchmark_command: make bench_invntt_stage123_pair_pipeline_pmu

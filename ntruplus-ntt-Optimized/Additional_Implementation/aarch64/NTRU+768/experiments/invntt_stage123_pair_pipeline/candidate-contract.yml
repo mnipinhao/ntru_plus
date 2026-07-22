@@ -1,0 +1,56 @@
+candidate:
+  id: invntt_rminus1_stage123_pair_pipeline
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: stage123_pair_pipeline.sym.S
+  slothy_driver: optimize_stage123_pair_pipeline.py
+  slothy_log: slothy_stage123_pair_pipeline.log
+  generated_output: stage123_pair_pipeline.opt.inc
+
+contract_preservation:
+  baseline_compared: true
+  preserved: true
+  approved_changes: false
+  approved_by:
+  changed_fields: []
+
+region:
+  start_label: invntt_stage123_row0_pair01_slothy_start
+  end_label: invntt_stage123_row0_pair01_slothy_end
+  live_in: [x3_branch0_base, x4_branch1_base, x14_stage123_scratch, v0_modulus, v1_twiddles, v2_precomputes]
+  live_out: [sixteen_stage123_q_vectors_in_stripe_scratch]
+
+abi:
+  inputs: [x0_dst, x1_input]
+  outputs: [x0_memory_1536_bytes]
+  clobbers: [v0-v31]
+  concrete_gprs_allowed: [x3, x4, x14]
+  fixed_vector_registers: [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30]
+  reserved_registers: [x18, x19-x28, x29, x30, sp, v31]
+
+memory_contract:
+  loads: [sixteen_branch0_8_byte_loads, sixteen_branch1_8_byte_loads]
+  stores: [sixteen_16_byte_stage123_stripe_scratch_stores]
+  aliasing: input_does_not_overlap_stack_scratch
+  alignment: input_offsets_8_byte_aligned_scratch_offsets_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: [q_3457_in_v0, stage123_twiddles_in_v1, stage123_precomputes_in_v2]
+  modulus: 3457
+  representation: rminus1_GT_row_bit_reversed_signed_int16
+  reduction_method: production_lazy_twiddle1_len16_stage123_contract
+
+range_contract:
+  input_ranges: [production_poly_basemul_rminus1_output_contract]
+  intermediate_ranges: [production_lazy_twiddle1_stage123_proof_bounds]
+  output_ranges: [production_stage45_stripe_scratch_input_contract]
+  narrowing_points: [unchanged_production_montgomery_multiply_sites]
+
+constant_time_contract:
+  secret_inputs: [input_coefficients]
+  public_inputs: [row_id, group_id, fixed_input_offsets, fixed_scratch_offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
