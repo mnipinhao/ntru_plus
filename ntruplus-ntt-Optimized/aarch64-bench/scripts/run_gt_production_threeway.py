@@ -14,7 +14,7 @@ from typing import Any
 
 VARIANTS = (
     "gt_production_default",
-    "gt_production_legacy_ntt",
+    "gt_production_source_order",
     "kpqc_final",
 )
 MODES = ("kem_keygen", "kem_enc", "kem_dec")
@@ -104,23 +104,23 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "Variants:",
         "",
-        "- new: promoted G1R123+S2 GT production",
-        "- legacy: original GT production forward NTT",
+        "- new: canonical GT production with frontend DCE + fixed-register Slothy schedule",
+        "- original: canonical GT production with the pre-Slothy source-order frontend",
         "- kpqc: unmodified KPQC final",
     ]
-    for counter in COUNTERS:
+    for counter in rows:
         lines.extend(
             [
                 "",
                 f"## {counter.title()}",
                 "",
-                "| Operation | KPQC final | GT legacy | GT new | New vs KPQC | New vs legacy |",
+                "| Operation | KPQC final | GT source-order | GT new | New vs KPQC | New vs source-order |",
                 "|---|---:|---:|---:|---:|---:|",
             ]
         )
         for mode in MODES:
             kpqc = rows[counter][mode]["kpqc_final"]["p50"]
-            legacy = rows[counter][mode]["gt_production_legacy_ntt"]["p50"]
+            legacy = rows[counter][mode]["gt_production_source_order"]["p50"]
             new = rows[counter][mode]["gt_production_default"]["p50"]
             lines.append(
                 f"| {mode} | {kpqc} | {legacy} | {new} | "
@@ -179,6 +179,7 @@ def main() -> int:
     parser.add_argument("--niterations", type=int, default=2000)
     parser.add_argument("--nwarmup", type=int, default=100)
     parser.add_argument("--keep-binaries", action="store_true")
+    parser.add_argument("--cycles-only", action="store_true")
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
@@ -187,29 +188,41 @@ def main() -> int:
     (output / "bin").mkdir(exist_ok=True)
     (output / "raw").mkdir(exist_ok=True)
 
+    counters = {"cycles": COUNTERS["cycles"]} if args.cycles_only else COUNTERS
     measurements: dict[str, dict[str, dict[str, Any]]] = {
-        counter: {mode: {} for mode in MODES} for counter in COUNTERS
+        counter: {mode: {} for mode in MODES} for counter in counters
     }
     binaries: dict[str, dict[str, Any]] = {}
     build_log = []
 
-    for counter, make_counter in COUNTERS.items():
+    for counter, make_counter in counters.items():
         for mode in MODES:
             built: dict[str, Path] = {}
             for variant in VARIANTS:
                 binary = output / "bin" / f"{variant}_{mode}_{counter}"
+                make_variant = (
+                    "gt_production_default"
+                    if variant == "gt_production_source_order"
+                    else variant
+                )
                 command = [
                     "make",
                     "-B",
                     str(binary),
                     f"TARGET={binary}",
-                    f"VARIANT={variant}",
+                    f"VARIANT={make_variant}",
                     f"BENCH_MODE={mode}",
                     f"CYCLES={make_counter}",
                     f"NTESTS={args.ntests}",
                     f"NITERATIONS={args.niterations}",
                     f"NWARMUP={args.nwarmup}",
                 ]
+                if variant == "gt_production_source_order":
+                    command.extend(
+                        [
+                            "GT_PRODUCTION_NTT_ASM=ntruplus/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2_dropin.S",
+                        ]
+                    )
                 build_log.append(f"$ {' '.join(command)}\n")
                 build_log.append(run(command, root))
                 built[variant] = binary
