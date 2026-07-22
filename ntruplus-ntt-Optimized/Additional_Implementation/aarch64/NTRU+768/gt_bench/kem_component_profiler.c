@@ -181,9 +181,9 @@ static void keypair_derand_profile(uint8_t *pk, uint8_t *sk,
 	KEYPAIR_BASEMUL(&h, &g, &finv);
 	KEYPAIR_BASEMUL(&hinv, &f, &ginv);
 
-	poly_tobytes(pk, &h);
-	poly_tobytes(sk, &f);
-	poly_tobytes(sk + NTRUPLUS_POLYBYTES, &hinv);
+	poly_tobytes_gt_canonical(pk, &h);
+	poly_tobytes_gt_canonical(sk, &f);
+	poly_tobytes_gt_canonical(sk + NTRUPLUS_POLYBYTES, &hinv);
 	hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
 }
 
@@ -204,14 +204,14 @@ static void enc_derand_profile(uint8_t *ct, uint8_t *ss, const uint8_t *pk,
 	poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
 	poly_ntt(&r, &r);
 
-	poly_tobytes(buf2, &r);
+	poly_tobytes_gt_canonical(buf2, &r);
 	hash_g(buf2, buf2);
 	poly_sotp_encode(&m, msg, buf2);
 	poly_ntt(&m, &m);
 
-	poly_frombytes(&h, pk);
+	poly_frombytes_gt_canonical(&h, pk);
 	poly_basemul_add(&c, &h, &r, &m);
-	poly_tobytes(ct, &c);
+	poly_tobytes_gt_canonical(ct, &c);
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
 		ss[i] = buf1[i];
@@ -228,9 +228,9 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 	poly r1, r2;
 	poly m1, m2;
 
-	poly_frombytes(&c, ct);
-	poly_frombytes(&f, sk);
-	poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
+	poly_frombytes_gt_canonical(&c, ct);
+	poly_frombytes_gt_canonical(&f, sk);
+	poly_frombytes_gt_canonical(&hinv, sk + NTRUPLUS_POLYBYTES);
 
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 	poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
@@ -258,7 +258,7 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 	poly_sub(&c, &c, &m2);
 	poly_basemul(&r2, &c, &hinv);
 
-	poly_tobytes(buf1, &r2);
+	poly_tobytes_gt_canonical(buf1, &r2);
 	hash_g(buf2, buf1);
 	fail = poly_sotp_decode(msg, &m1, buf2);
 
@@ -269,7 +269,7 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
 	poly_cbd1(&r1, buf3 + NTRUPLUS_SSBYTES);
 	poly_ntt(&r1, &r1);
-	poly_tobytes(buf2, &r1);
+	poly_tobytes_gt_canonical(buf2, &r1);
 
 	fail |= ct_verify(buf1, buf2, NTRUPLUS_POLYBYTES);
 
@@ -438,7 +438,7 @@ int main(void)
 	poly_basemul(&product, &ntt_poly, &base_inv);
 	poly_invntt(&inv_poly, &product);
 	poly_crepmod3(&decoded, &inv_poly);
-	poly_tobytes(polybytes, &ntt_poly);
+	poly_tobytes_gt_canonical(polybytes, &ntt_poly);
 
 	keypair_derand_profile(pk, sk, fcoins, gcoins);
 	enc_derand_profile(ct, ss, pk, ecoins);
@@ -493,7 +493,7 @@ int main(void)
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #endif
 	BENCH_COMPONENT_ACC(keygen_components, "poly_tobytes_key", 3, {
-		poly_tobytes(polybytes, &ntt_poly);
+		poly_tobytes_gt_canonical(polybytes, &ntt_poly);
 	}, polybytes[(unsigned)i__ & (NTRUPLUS_POLYBYTES - 1)]);
 	BENCH_COMPONENT_ACC(keygen_components, "hash_f_pk", 1, {
 		hash_f(sample_buf, pk);
@@ -514,7 +514,7 @@ int main(void)
 		poly_ntt(&ntt_poly, &small);
 	}, ntt_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(enc_components, "poly_tobytes_r", 1, {
-		poly_tobytes(polybytes, &ntt_poly);
+		poly_tobytes_gt_canonical(polybytes, &ntt_poly);
 	}, polybytes[(unsigned)i__ & (NTRUPLUS_POLYBYTES - 1)]);
 	BENCH_COMPONENT_ACC(enc_components, "hash_g_polybytes", 1, {
 		hash_g(sample_buf, polybytes);
@@ -526,19 +526,19 @@ int main(void)
 		poly_ntt(&ntt_poly, &decoded);
 	}, ntt_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(enc_components, "poly_frombytes_pk", 1, {
-		poly_frombytes(&decoded, polybytes);
+		poly_frombytes_gt_canonical(&decoded, polybytes);
 	}, decoded.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(enc_components, "poly_basemul_add", 1, {
 		poly_basemul_add(&product, &ntt_poly, &base_inv, &ntt_poly);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(enc_components, "poly_tobytes_ct", 1, {
-		poly_tobytes(polybytes, &product);
+		poly_tobytes_gt_canonical(polybytes, &product);
 	}, polybytes[(unsigned)i__ & (NTRUPLUS_POLYBYTES - 1)]);
 	print_component_subtotal(enc_components);
 
 	print_component_header("DECAP");
 	BENCH_COMPONENT_ACC(dec_components, "poly_frombytes", 3, {
-		poly_frombytes(&decoded, polybytes);
+		poly_frombytes_gt_canonical(&decoded, polybytes);
 	}, decoded.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 	BENCH_COMPONENT_ACC(dec_components,
@@ -609,7 +609,7 @@ int main(void)
 		poly_sub(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_tobytes", 2, {
-		poly_tobytes(polybytes, &ntt_poly);
+		poly_tobytes_gt_canonical(polybytes, &ntt_poly);
 	}, polybytes[(unsigned)i__ & (NTRUPLUS_POLYBYTES - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "hash_g_polybytes", 1, {
 		hash_g(sample_buf, polybytes);
