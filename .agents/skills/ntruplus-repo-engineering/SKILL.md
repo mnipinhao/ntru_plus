@@ -50,6 +50,20 @@ implementations, or build/KAT/security commands are needed.
 Do not route ordinary source lookup, Makefile repair, KAT comparison, or frozen
 baseline audits into algorithm-design skills.
 
+## Remote Slothy Policy
+
+Run Slothy itself, its Python drivers, solver-backed allocation, and scheduling
+on `pinhao@172.25.166.141` over SSH port `51208`. Do not use the local host for
+Slothy execution unless the user explicitly overrides this repo policy.
+
+Keep source inspection, contract review, and ordinary repo editing in the local
+checkout. Before a run, complete the canonical
+`slothy-symbolic-asm-authoring` pre-run gates, then sync only the named inputs
+to the remote checkout. Sync back only the expected generated artifacts and
+logs, and complete the canonical post-run gates locally. For existing
+NTRU+768 GT production work, follow
+`ntruplus-gt-kernel-engineering/references/remote-slothy-execution.md`.
+
 ## Repository Workflow
 
 1. Confirm the selected directory and read its Makefile plus `params.h`.

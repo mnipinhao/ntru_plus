@@ -1,6 +1,6 @@
 ---
 name: ntruplus-gt-kernel-engineering
-description: Repo-specific execution workflow for existing NTRU+768 GT production kernel work under ntruplus-ntt-Optimized. Use for GT assembly cleanup, linked-object audits, benchmark-only prototypes, aarch64-bench and Pi5 PMU runs, GT versus KPQC comparisons, Slothy artifact integration, or explicitly requested remote Slothy execution. Prefer this skill over generic lattice, Neon, or Slothy skills for existing NTRU+768 GT production work.
+description: Repo-specific execution workflow for existing NTRU+768 GT production kernel work under ntruplus-ntt-Optimized. Use for GT assembly cleanup, linked-object audits, benchmark-only prototypes, aarch64-bench and Pi5 PMU runs, GT versus KPQC comparisons, Slothy artifact integration, or remote Slothy execution. Prefer this skill over generic lattice, Neon, or Slothy skills for existing NTRU+768 GT production work.
 ---
 
 # NTRU+ GT Kernel Engineering
@@ -63,12 +63,12 @@ source for contracts, exact-region extraction, symbolic assembly, drivers,
 static gates, result parsing, and promotion scoring. Do not create another
 repo-local skill with that name.
 
-For artifact authoring or review, remain in the canonical Slothy workflow. If
-the user explicitly requests remote sync or execution and permissions allow
-it, return to this GT front door after the canonical pre-run gates pass. Read
-`references/remote-slothy-execution.md`, sync only named artifacts, run and poll
-the remote driver, bring generated artifacts back, then resume canonical
-post-run validation.
+For artifact authoring or review, remain in the canonical Slothy workflow.
+After the canonical pre-run gates pass, return to this GT front door for every
+Slothy run. Read `references/remote-slothy-execution.md`, sync only named
+artifacts to the configured remote host, run and poll the remote driver, bring
+generated artifacts back, then resume canonical post-run validation. Do not
+run Slothy locally unless the user explicitly overrides the repo policy.
 
 Use a Neoverse N1 model only as a scheduling candidate when the active remote
 Slothy checkout still lacks an A76 model. Validate correctness and performance

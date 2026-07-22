@@ -1,31 +1,37 @@
 # Remote Slothy and Pi5 Execution
 
-Read this reference only when the user explicitly requests remote Slothy sync,
-remote Slothy execution, or Pi5 correctness/PMU work.
+Read this reference for every Slothy sync or execution, and for Pi5
+correctness/PMU work. This repository runs Slothy remotely by default.
 
 ## Configuration
 
-Use SSH config aliases or user-supplied environment configuration. Never embed
-host addresses, usernames, ports, private keys, or home-directory paths in this
-skill.
+Use the repository-configured Slothy endpoint:
+
+```sh
+ssh -p 51208 pinhao@172.25.166.141
+```
+
+Pass SSH options as separate arguments. Never embed private keys, passwords,
+or remote home-directory paths in this skill.
 
 Require the relevant values before acting:
 
 ```sh
-NTRUPLUS_SLOTHY_SSH="${NTRUPLUS_SLOTHY_SSH:?set an SSH config alias}"
+NTRUPLUS_SLOTHY_HOST="pinhao@172.25.166.141"
+NTRUPLUS_SLOTHY_PORT="51208"
 NTRUPLUS_SLOTHY_ROOT="${NTRUPLUS_SLOTHY_ROOT:?set the remote repo root}"
 NTRUPLUS_SLOTHY_PYTHON="${NTRUPLUS_SLOTHY_PYTHON:?set the remote venv python}"
 NTRUPLUS_PI5_SSH="${NTRUPLUS_PI5_SSH:-}"
 NTRUPLUS_PI5_ROOT="${NTRUPLUS_PI5_ROOT:-}"
 ```
 
-Put non-default ports in the named SSH host entry. Do not construct a shell
-command by evaluating environment-variable contents.
+Do not construct a shell command by evaluating environment-variable contents.
 
 ## Preflight
 
 1. Derive the local root with `git rev-parse --show-toplevel`.
-2. Probe the configured alias with `BatchMode=yes` and a bounded connect timeout.
+2. Probe `pinhao@172.25.166.141` on port `51208` with `BatchMode=yes` and a
+   bounded connect timeout.
 3. Confirm the remote repo root, exact driver, symbolic source, contracts, and
    output parent directories.
 4. Invoke the configured venv interpreter directly and print `sys.executable`
@@ -42,8 +48,9 @@ Run from the local repo root. Preserve repo-relative paths and sync only the
 artifacts named by the active Slothy handoff:
 
 ```sh
-rsync -avR path/to/kernel.sym.S path/to/driver.py path/to/kernel-contract.yml \
-  "$NTRUPLUS_SLOTHY_SSH:$NTRUPLUS_SLOTHY_ROOT/"
+rsync -avR -e "ssh -p 51208" \
+  path/to/kernel.sym.S path/to/driver.py path/to/kernel-contract.yml \
+  "pinhao@172.25.166.141:$NTRUPLUS_SLOTHY_ROOT/"
 ```
 
 Include a baseline contract and instruction DAG when the selected canonical
