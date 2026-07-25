@@ -1,0 +1,77 @@
+rm -rf build
+mkdir -p build
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/tmp/ntruplus-gt-release-closeout/NTRU+768 -I/tmp/ntruplus-gt-release-closeout/NTRU+768/internal \
+	-DBENCH_MODE_STR=\"keygen\" -DBENCH_VARIANT_STR=\"gt-optimized\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /tmp/ntruplus-gt-release-closeout/NTRU+768/kem.c /tmp/ntruplus-gt-release-closeout/NTRU+768/symmetric.c /tmp/ntruplus-gt-release-closeout/NTRU+768/NO_CE/fips202.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/basemul_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/decap_verify.c /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/ntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/invntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/base.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/cbd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/support.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/kem_api.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/unpack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_tree.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_finish.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/fqinv.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/encap_muladd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/decap_verify.S -Wl,--gc-sections -o build/gt-keygen
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/tmp/ntruplus-gt-release-closeout/NTRU+768 -I/tmp/ntruplus-gt-release-closeout/NTRU+768/internal \
+	-DBENCH_MODE_STR=\"encap\" -DBENCH_VARIANT_STR=\"gt-optimized\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /tmp/ntruplus-gt-release-closeout/NTRU+768/kem.c /tmp/ntruplus-gt-release-closeout/NTRU+768/symmetric.c /tmp/ntruplus-gt-release-closeout/NTRU+768/NO_CE/fips202.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/basemul_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/decap_verify.c /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/ntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/invntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/base.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/cbd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/support.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/kem_api.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/unpack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_tree.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_finish.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/fqinv.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/encap_muladd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/decap_verify.S -Wl,--gc-sections -o build/gt-encap
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/tmp/ntruplus-gt-release-closeout/NTRU+768 -I/tmp/ntruplus-gt-release-closeout/NTRU+768/internal \
+	-DBENCH_MODE_STR=\"decap\" -DBENCH_VARIANT_STR=\"gt-optimized\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /tmp/ntruplus-gt-release-closeout/NTRU+768/kem.c /tmp/ntruplus-gt-release-closeout/NTRU+768/symmetric.c /tmp/ntruplus-gt-release-closeout/NTRU+768/NO_CE/fips202.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/keygen_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/basemul_lambda.c /tmp/ntruplus-gt-release-closeout/NTRU+768/internal/decap_verify.c /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/ntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/invntt.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/base.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/cbd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/support.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/kem_api.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/unpack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_tree.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_baseinv_finish.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/keygen_pack.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/fqinv.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/encap_muladd.S /tmp/ntruplus-gt-release-closeout/NTRU+768/asm/internal/decap_verify.S -Wl,--gc-sections -o build/gt-decap
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+	-DBENCH_MODE_STR=\"keygen\" -DBENCH_VARIANT_STR=\"kpqc-final\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/kem.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/symmetric.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/NO_CE/fips202.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/add.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/ntt.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/base.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/crepmod3.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/pack.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/cbd.s -Wl,--gc-sections -o build/kpqc-keygen
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:21: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘52607’ to ‘-12929’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:29: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘65389’ to ‘-147’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:37: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘64143’ to ‘-1393’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:45: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘63965’ to ‘-1571’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:53: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘50645’ to ‘-14891’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                                     ^~~~~~
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+	-DBENCH_MODE_STR=\"encap\" -DBENCH_VARIANT_STR=\"kpqc-final\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/kem.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/symmetric.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/NO_CE/fips202.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/add.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/ntt.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/base.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/crepmod3.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/pack.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/cbd.s -Wl,--gc-sections -o build/kpqc-encap
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:21: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘52607’ to ‘-12929’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:29: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘65389’ to ‘-147’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:37: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘64143’ to ‘-1393’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:45: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘63965’ to ‘-1571’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:53: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘50645’ to ‘-14891’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                                     ^~~~~~
+cc -O3 -fomit-frame-pointer -std=c99 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections -I/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+	-DBENCH_MODE_STR=\"decap\" -DBENCH_VARIANT_STR=\"kpqc-final\" \
+	-DNTESTS=31 -DNITERATIONS=2000 \
+	-DNWARMUP=100 \
+	bench_kem.c deterministic_randombytes.c perf_counter.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/kem.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/symmetric.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/NO_CE/fips202.c /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/add.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/ntt.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/base.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/crepmod3.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/pack.s /home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/asm/cbd.s -Wl,--gc-sections -o build/kpqc-decap
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:21: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘52607’ to ‘-12929’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:29: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘65389’ to ‘-147’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:37: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘64143’ to ‘-1393’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                     ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:45: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘63965’ to ‘-1571’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                             ^~~~~~
+/home/pi/codex-ntruplus-layout-ec897e7f/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768/poly.c:5:53: warning: overflow in conversion from ‘int’ to ‘short int’ changes value from ‘50645’ to ‘-14891’ [-Woverflow]
+    5 |     0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
+      |                                                     ^~~~~~

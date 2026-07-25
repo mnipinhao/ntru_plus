@@ -1,0 +1,83 @@
+{
+  "environment": {
+    "uname": "Linux-6.18.33+rpt-rpi-2712-aarch64-with-glibc2.41",
+    "compiler": "cc (Debian 14.2.0-19) 14.2.0"
+  },
+  "configuration": {
+    "core": "3",
+    "tests_per_invocation": 31,
+    "combined_samples": 62,
+    "iterations": 2000,
+    "warmups": 100,
+    "orders": [
+      [
+        "kpqc",
+        "gt"
+      ],
+      [
+        "gt",
+        "kpqc"
+      ]
+    ]
+  },
+  "source_hashes": {
+    "gt_optimized": "de6c4b0b46707ebc0c07c40773292c821a2913960e2c2b09f0e46b3c610c7224",
+    "kpqc_final": "d08759f2faca6ecea9990b43a4c1cfda1bde67ece7dcb2d26fe7da5951e96381"
+  },
+  "results": {
+    "keygen": {
+      "kpqc": {
+        "count": 62,
+        "min": 40108,
+        "p10": 40111,
+        "p50": 40134,
+        "p90": 40142,
+        "max": 40147
+      },
+      "gt": {
+        "count": 62,
+        "min": 36818,
+        "p10": 36823,
+        "p50": 36852,
+        "p90": 36880,
+        "max": 36886
+      }
+    },
+    "encap": {
+      "kpqc": {
+        "count": 62,
+        "min": 39300,
+        "p10": 39308,
+        "p50": 39311,
+        "p90": 39317,
+        "max": 39323
+      },
+      "gt": {
+        "count": 62,
+        "min": 37822,
+        "p10": 37827,
+        "p50": 37832,
+        "p90": 37836,
+        "max": 37841
+      }
+    },
+    "decap": {
+      "kpqc": {
+        "count": 62,
+        "min": 35153,
+        "p10": 35157,
+        "p50": 35179,
+        "p90": 35198,
+        "max": 35200
+      },
+      "gt": {
+        "count": 62,
+        "min": 32733,
+        "p10": 32737,
+        "p50": 32741,
+        "p90": 32745,
+        "max": 32748
+      }
+    }
+  }
+}
