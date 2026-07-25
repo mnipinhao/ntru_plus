@@ -12,22 +12,56 @@ RUN_TSC=${RUN_TSC:-0}
 STRICT_ENV=${STRICT_ENV:-0}
 DEFAULT_OPERATIONS="ntt gt-ntt gt-ntt-asm-soa \
 gt-frontend gt-frontend-asm gt-stage12 gt-stage12-asm \
-gt-frontend-stage12-asm gt-frontend-stage12-direct-asm \
+gt-stage12-identity-asm gt-frontend-stage12-asm \
+gt-frontend-stage12-identity-asm gt-frontend-stage12-u2-asm \
+gt-frontend-stage12-u4-asm gt-frontend-stage12-u2-identity-asm \
+gt-frontend-stage12-u4-identity-asm gt-frontend-stage12-direct-asm \
 gt-frontend-stage12-half-asm gt-stage345-serial-asm \
 gt-stage345-interleaved-asm gt-stage345-remapped-asm \
 gt-stage345-resident-asm gt-stage345-queued-store-asm \
+gt-stage345-centered-asm gt-stage345-centered-queued-asm \
+gt-stage345-native-centered-asm \
 gt-ntt-frontend-asm-soa gt-ntt-direct-asm-soa \
 gt-ntt-direct-interleaved-asm-soa gt-ntt-direct-queued-store-asm-soa \
 gt-ntt-half-asm-soa \
 gt-ntt-remapped-asm-soa gt-ntt-half-remapped-asm-soa \
 gt-ntt-resident-asm-soa gt-ntt-queued-store-asm-soa \
-basemul gt-basemul-soa invntt gt-invntt32 gt-invntt32-asm \
+gt-ntt-centered-asm-soa gt-ntt-centered-queued-asm-soa \
+gt-ntt-identity-asm-soa gt-ntt-identity-centered-asm-soa \
+gt-ntt-identity-centered-queued-asm-soa \
+gt-ntt-u2-identity-centered-queued-asm-soa \
+gt-ntt-u4-identity-centered-queued-asm-soa \
+gt-ntt-identity-native-centered-asm \
+gt-ntt-u2-identity-native-centered-asm \
+gt-ntt-u4-identity-native-centered-asm \
+gt-ntt-u2-identity-native-centered-fused-asm \
+gt-ntt-u2-identity-native-centered-pipelined-fused-asm \
+gt-ntt-u2-fused-split-twist-native-centered-pipelined-asm \
+gt-ntt-u2-high-first-native-centered-pipelined-asm \
+gt-ntt-fixed-high-first-native-centered-pipelined-asm \
+	gt-ntt-u4-identity-native-centered-fused-asm \
+	basemul gt-basemul-soa gt-basemul-soa-asm \
+	gt-basemul-soa-rminus1-asm \
+	gt-basemul-soa-rminus1-c0lazy-asm \
+	gt-basemul-native-asymmetric gt-basemul-native-asymmetric-asm \
+	gt-basemul-native-asymmetric-rminus1-asm \
+	gt-basemul-native-asymmetric-rminus1-c0lazy-asm \
+	gt-native-forward2-basemul-runtime-asymmetric-asm-boundary \
+	gt-native-forward2-basemul-runtime-asymmetric-rminus1-asm-boundary \
+	gt-native-forward2-basemul-runtime-asymmetric-rminus1-c0lazy-asm-boundary \
+	invntt gt-invntt32 gt-invntt32-asm \
 gt-invdft3 gt-invdft3-asm gt-invpost gt-invpost-asm \
 gt-invntt-soa gt-invntt-soa-hybrid gt-invntt-soa-dft3-hybrid \
 gt-invntt-soa-postprocess-hybrid gt-invntt-soa-fused-asm \
 polymul gt-polymul-soa gt-polymul-soa-hybrid \
 gt-polymul-soa-dft3-hybrid gt-polymul-soa-postprocess-hybrid \
+gt-polymul-soa-basemul-asm-postprocess-hybrid \
+gt-polymul-soa-rminus1-asm-postprocess-hybrid \
+gt-polymul-soa-rminus1-c0lazy-asm-postprocess-hybrid \
 gt-polymul-soa-fused-asm gt-polymul-frontend-fused-asm \
+gt-polymul-identity-centered-queued-fused-asm \
+gt-polymul-u2-identity-centered-queued-fused-asm \
+gt-polymul-u4-identity-centered-queued-fused-asm \
 gt-polymul-direct-fused-asm gt-polymul-direct-interleaved-fused-asm \
 gt-polymul-direct-queued-store-fused-asm \
 gt-polymul-half-fused-asm gt-polymul-remapped-fused-asm \

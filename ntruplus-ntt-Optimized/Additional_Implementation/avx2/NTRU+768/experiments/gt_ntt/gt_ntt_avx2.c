@@ -542,6 +542,96 @@ void gt_ntt_avx2_frontend_queued_store_asm_soa(int16_t out[GT_NTT_N],
 	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
 	gt_ntt_avx2_stage345_soa_queued_store_asm(out, &stage2);
 }
+
+void gt_ntt_avx2_frontend_centered_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_queued_store_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_identity_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_identity_centered_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_queued_store_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_u2_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_queued_store_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_u4_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_soa_centered_queued_store_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_native_centered_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_u2_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_u2_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_native_centered_asm(out, &stage2);
+}
+
+void gt_ntt_avx2_frontend_u4_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	gt_stage2_scratch stage2;
+
+	gt_ntt_avx2_frontend_stage12_u4_identity_asm(&stage2, in);
+	gt_ntt_avx2_stage345_native_centered_asm(out, &stage2);
+}
 #endif
 
 void gt_ntt_avx2_montgomery_test(int16_t out[16],

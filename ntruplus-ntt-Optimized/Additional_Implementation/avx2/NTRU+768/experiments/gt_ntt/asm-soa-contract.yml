@@ -36,6 +36,17 @@ assembly_entries:
     rdi: aligned_stage2_scratch
     rsi: aligned_frontend_scratch
     stack_bytes: 0
+  stage12_identity_candidate:
+    symbol: gt_ntt_avx2_stage12_identity_asm
+    rdi: aligned_stage2_scratch
+    rsi: aligned_frontend_scratch
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    equivalence: coefficientwise_mod_3457_to_stage12
+    stage1_image: "[-2179,2178]"
+    stage2_image: "[-2359,2359]"
+    status: benchmark_only_default_off
   frontend_stage12_fused:
     symbol: gt_ntt_avx2_frontend_stage12_asm
     rdi: aligned_stage2_scratch
@@ -43,6 +54,32 @@ assembly_entries:
     stack_bytes: 1536
     internal_calls: 0
     aliasing: out_may_overlap_input
+  frontend_stage12_reducer_and_pipeline_candidates:
+    symbols:
+      - gt_ntt_avx2_frontend_stage12_identity_asm
+      - gt_ntt_avx2_frontend_stage12_u2_asm
+      - gt_ntt_avx2_frontend_stage12_u4_asm
+      - gt_ntt_avx2_frontend_stage12_u2_identity_asm
+      - gt_ntt_avx2_frontend_stage12_u4_identity_asm
+    rdi: aligned_stage2_scratch
+    rsi: int16_input_768
+    stack_bytes: 1536
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    aliasing: out_may_overlap_input
+    frontend_mapping: exact_match_to_canonical
+    identity_reducer:
+      stage1_image: "[-2179,2178]"
+      stage2_image: "[-2359,2359]"
+      stage2_bound: "5*(q-1)"
+    linked_symbol_bytes:
+      identity: 913
+      u2: 2198
+      u4: 3894
+      u2_identity: 2183
+      u4_identity: 3847
+    selected_existing_soa: gt_ntt_avx2_frontend_stage12_u2_identity_asm
+    status: benchmark_only_default_off
   frontend_stage12_direct_candidate:
     symbol: gt_ntt_avx2_frontend_stage12_direct_asm
     rdi: aligned_stage2_scratch
@@ -94,10 +131,67 @@ assembly_entries:
       queued_store: 1913
     status: benchmark_only_default_off
     selected_default_off: gt_ntt_avx2_stage345_soa_queued_store_asm
+  stage345_centered_candidates:
+    symbols:
+      - gt_ntt_avx2_stage345_soa_centered_asm
+      - gt_ntt_avx2_stage345_soa_centered_queued_store_asm
+    rdi: int16_out_768
+    rsi: aligned_stage2_scratch
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    aliasing: full_regions_must_not_overlap
+    equivalence: coefficientwise_mod_3457
+    output_range: "[-3080,3079]"
+    gcc16_gnu_as_linked_symbol_bytes: 1854
+    selected_existing_soa: gt_ntt_avx2_stage345_soa_centered_queued_store_asm
+    status: benchmark_only_default_off
+  stage345_native_centered:
+    symbol: gt_ntt_avx2_stage345_native_centered_asm
+    rdi: int16_native_out_768
+    rsi: aligned_stage2_scratch
+    stack_bytes: 0
+    internal_calls: 0
+    terminal_vzeroupper: 1
+    aliasing: full_regions_must_not_overlap
+    output_range: "[-3080,3079]"
+    lane_local_transpose_retained: true
+    removed_dynamic_vperm2i128: 48
+    gcc16_gnu_as_linked_symbol_bytes: 1744
+    status: benchmark_only_requires_native_consumers
+  forward_native_single_entry_candidates:
+    symbols:
+      - gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm
+      - gt_ntt_avx2_forward_u4_identity_native_centered_fused_asm
+    rdi: int16_native_out_768
+    rsi: int16_input_768
+    stack_bytes: 3072
+    stack_regions:
+      frontend_semantic_scratch: "[rsp+0,rsp+1536)"
+      stage2_scratch: "[rsp+1536,rsp+3072)"
+    internal_calls: 0
+    push_pop: 0
+    terminal_vzeroupper: 1
+    aliasing: out_may_equal_input
+    arithmetic_contract: exact_composition_of_identity_producer_and_native_centered_stage345
+    native_layout: unchanged
+    output_range: "[-3080,3079]"
+    gcc16_gnu_as_linked_symbol_bytes:
+      u2: 4019
+      u4: 5747
+    measured_5m_paired_cycles:
+      u2_two_entry: 697.4135
+      u2_single_entry: 696.1935
+      u4_two_entry: 697.0855
+      u4_single_entry: 698.3495
+    selected_scheduling_platform: gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm
+    status: benchmark_only_default_off
 output:
   type: int16[768]
   equivalence: coefficientwise_mod_3457
-  range: "[0,3457]"
+  representations:
+    canonical_packed: "[0,3457]"
+    centered_candidate: "[-3080,3079]"
   layout:
     batches: 12
     vectors_per_batch: 4
@@ -114,6 +208,23 @@ output:
     rowbitrev_oracle:
       physical_block: "(32*k3 + 3*Q) mod 96"
       source_word: "384*branch + 4*physical_block + c"
+  native_layout:
+    batches: 12
+    vectors_per_batch: 4
+    lanes_per_vector: 16
+    row01:
+      batch: "2*floor(Q/8) + branch"
+      lane: "(Q mod 8) + 8*k3"
+      domains:
+        k3: "0..1"
+        Q: "0..31"
+    row2:
+      batch: "8 + 2*floor((Q mod 16)/8) + branch"
+      lane: "(Q mod 8) + 8*floor(Q/16)"
+      domains:
+        k3: "2"
+        Q: "0..31"
+    timed_conversion_to_soa: forbidden
 scratch:
   canonical_full_wrapper_peak_bytes: 3072
   direct_or_half_full_wrapper_peak_bytes: 1536
@@ -124,6 +235,8 @@ scratch:
   half_frontend_semantic_handoff_bytes: 768
   half_frontend_handoff_traffic_bytes: 1536
   stage2_scratch_bytes_all_variants: 1536
+  native_single_entry_peak_bytes: 3072
+  native_single_entry_frontend_semantic_handoff_bytes: 1536
   stage2_alignment: 32
   standalone_region_stack_bytes: 0
   compiler_spill_bytes: 0
@@ -140,7 +253,9 @@ return_boundary:
 promotion_limits:
   - matching_soa_basemul_is_intrinsic_only
   - direct_and_half_handoff_candidates_are_measured_regressions
-  - queued_store_full_polymul_improvement_is_not_reproducible
+  - selected_existing_soa_path_remains_slower_than_production
+  - native_layout_has_no_matching_basemul_or_inverse
+  - single_entry_control_flow_fusion_saves_only_about_1_2_cycles
   - canonical_frontend_handoff_remains
   - all_variants_retain_stage2_scratch
   - does_not_replace_production_asm_ntt

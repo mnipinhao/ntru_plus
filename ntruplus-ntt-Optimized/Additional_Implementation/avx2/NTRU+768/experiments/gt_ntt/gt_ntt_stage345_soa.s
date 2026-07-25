@@ -141,6 +141,21 @@
 	vpsubw \temp, \value, \value
 .endm
 
+/*
+ * Three-instruction signed representative checkpoint.
+ *
+ * vpmulhrsw computes round(a*10/2^15), so the subtraction remains congruent
+ * to a modulo q.  Exhaustive scalar enumeration over the Stage345 contract
+ * |a| <= 8(q-1) gives [-3080,3079].  This is intentionally a benchmark-only
+ * signed representation candidate; unlike BARRETT_ONE it does not return the
+ * canonical [0,q] representative.
+ */
+.macro CENTER_ONE_TEMP value, temp
+	vpmulhrsw .Lgt_center_10(%rip), \value, \temp
+	vpmullw .Lgt_q(%rip), \temp, \temp
+	vpsubw \temp, \value, \value
+.endm
+
 /* Last two layers shared by the standalone and Barrett-fused transposes. */
 .macro TRANSPOSE8X8_LAYERS23
 	vpunpckldq %ymm10, %ymm8,  %ymm0
@@ -255,6 +270,40 @@
 	BARRETT_ONE_TEMP %ymm11, %ymm1
 .endm
 
+/*
+ * Same logical row order as BARRETT8_REMAPPED_SERIAL.  All registers not
+ * holding logical rows become independent quotient temporaries, exposing the
+ * vpmulhrsw -> vpmullw latency across all eight chains.
+ */
+.macro CENTER8_REMAPPED_PARALLEL
+	vpmulhrsw .Lgt_center_10(%rip), %ymm0,  %ymm1
+	vpmulhrsw .Lgt_center_10(%rip), %ymm2,  %ymm5
+	vpmulhrsw .Lgt_center_10(%rip), %ymm4,  %ymm7
+	vpmulhrsw .Lgt_center_10(%rip), %ymm3,  %ymm9
+	vpmulhrsw .Lgt_center_10(%rip), %ymm8,  %ymm12
+	vpmulhrsw .Lgt_center_10(%rip), %ymm10, %ymm13
+	vpmulhrsw .Lgt_center_10(%rip), %ymm6,  %ymm14
+	vpmulhrsw .Lgt_center_10(%rip), %ymm11, %ymm15
+
+	vpmullw .Lgt_q(%rip), %ymm1,  %ymm1
+	vpmullw .Lgt_q(%rip), %ymm5,  %ymm5
+	vpmullw .Lgt_q(%rip), %ymm7,  %ymm7
+	vpmullw .Lgt_q(%rip), %ymm9,  %ymm9
+	vpmullw .Lgt_q(%rip), %ymm12, %ymm12
+	vpmullw .Lgt_q(%rip), %ymm13, %ymm13
+	vpmullw .Lgt_q(%rip), %ymm14, %ymm14
+	vpmullw .Lgt_q(%rip), %ymm15, %ymm15
+
+	vpsubw %ymm1,  %ymm0,  %ymm0
+	vpsubw %ymm5,  %ymm2,  %ymm2
+	vpsubw %ymm7,  %ymm4,  %ymm4
+	vpsubw %ymm9,  %ymm3,  %ymm3
+	vpsubw %ymm12, %ymm8,  %ymm8
+	vpsubw %ymm13, %ymm10, %ymm10
+	vpsubw %ymm14, %ymm6,  %ymm6
+	vpsubw %ymm15, %ymm11, %ymm11
+.endm
+
 .macro BARRETT_ONE_QVREG value, temp, qreg, vreg
 	vpmulhw \vreg, \value, \temp
 	vpsraw $10, \temp, \temp
@@ -345,13 +394,39 @@
 .endm
 
 /*
+ * Preserve the lane-local transpose result as the output layout.
+ *
+ * TRANSPOSE8X8_REMAPPED is still required: before it, each logical register
+ * is one Q row whose lanes are streams; after it:
+ *   ymm8..ymm11  = branch 0, c0..c3
+ *   ymm12..ymm15 = branch 1, c0..c3
+ *
+ * Each YMM already contains the two desired eight-lane groups in its low and
+ * high 128-bit halves, so this layout needs no cross-half vperm2i128.  dest
+ * points at the first of two adjacent 128-byte batches.
+ */
+.macro STORE_NATIVE_BATCH_PAIR dest
+	vmovdqu %ymm8,    0(\dest)
+	vmovdqu %ymm9,   32(\dest)
+	vmovdqu %ymm10,  64(\dest)
+	vmovdqu %ymm11,  96(\dest)
+	vmovdqu %ymm12, 128(\dest)
+	vmovdqu %ymm13, 160(\dest)
+	vmovdqu %ymm14, 192(\dest)
+	vmovdqu %ymm15, 224(\dest)
+.endm
+
+/*
  * Generate the serial baseline and all scheduling candidates from the same
  * NTT32 and SoA-store body.  Mode 0 is the canonical serial path, mode 1 is
  * the eight-chain Barrett path, mode 2 carries remapped butterfly outputs
  * directly into a serial Barrett and transpose, and mode 3 additionally keeps
  * q and the Barrett reciprocal resident for the full block.  Mode 4 uses the
  * mode-2 arithmetic with all eight SoA permutations queued before the stores.
- * The selector is resolved by the assembler.
+ * Modes 5 and 6 replace only the final canonical Barrett checkpoint with the
+ * three-instruction signed checkpoint; mode 5 keeps the serial store schedule
+ * and mode 6 queues the permutations.  The selector is resolved by the
+ * assembler.
  *
  * void name(int16_t out[768], const gt_stage2_scratch *scratch)
  *
@@ -381,11 +456,15 @@
 	vmovdqa 192(%rsi), %ymm6
 	vmovdqa 224(%rsi), %ymm7
 
-	.if \mode == 4
+	.if \mode >= 4
 	MONT_STAGE_NOCOPY %ymm0, %ymm4, %ymm1, %ymm5, %ymm2, %ymm6, %ymm3, %ymm7, %ymm8, %ymm9, %ymm10, %ymm11, 0
 	MONT_STAGE_NOCOPY %ymm0, %ymm2, %ymm1, %ymm3, %ymm8, %ymm10, %ymm9, %ymm11, %ymm4, %ymm5, %ymm6, %ymm7, 256
 	MONT_STAGE_NOCOPY %ymm0, %ymm1, %ymm4, %ymm5, %ymm8, %ymm9, %ymm6, %ymm7, %ymm2, %ymm3, %ymm10, %ymm11, 512
+	.if \mode >= 5
+	CENTER8_REMAPPED_PARALLEL
+	.else
 	BARRETT8_REMAPPED_SERIAL
+	.endif
 	TRANSPOSE8X8_REMAPPED
 	.else
 	.if \mode == 2
@@ -419,7 +498,11 @@
 	.if \mode == 4
 	STORE_SOA_QUEUED %rcx, %r8
 	.else
+	.if \mode == 6
+	STORE_SOA_QUEUED %rcx, %r8
+	.else
 	STORE_SOA %rcx, %r8
+	.endif
 	.endif
 
 	addq $256, %rsi
@@ -445,11 +528,15 @@
 	vmovdqa 192(%rsi), %ymm6
 	vmovdqa 224(%rsi), %ymm7
 
-	.if \mode == 4
+	.if \mode >= 4
 	MONT_STAGE_NOCOPY %ymm0, %ymm4, %ymm1, %ymm5, %ymm2, %ymm6, %ymm3, %ymm7, %ymm8, %ymm9, %ymm10, %ymm11, 0
 	MONT_STAGE_NOCOPY %ymm0, %ymm2, %ymm1, %ymm3, %ymm8, %ymm10, %ymm9, %ymm11, %ymm4, %ymm5, %ymm6, %ymm7, 256
 	MONT_STAGE_NOCOPY %ymm0, %ymm1, %ymm4, %ymm5, %ymm8, %ymm9, %ymm6, %ymm7, %ymm2, %ymm3, %ymm10, %ymm11, 512
+	.if \mode >= 5
+	CENTER8_REMAPPED_PARALLEL
+	.else
 	BARRETT8_REMAPPED_SERIAL
+	.endif
 	TRANSPOSE8X8_REMAPPED
 	.else
 	.if \mode == 2
@@ -483,7 +570,11 @@
 	.if \mode == 4
 	STORE_SOA_QUEUED %rcx, %r8
 	.else
+	.if \mode == 6
+	STORE_SOA_QUEUED %rcx, %r8
+	.else
 	STORE_SOA %rcx, %r8
+	.endif
 	.endif
 
 	addq $256, %rsi
@@ -498,11 +589,101 @@
 .size \name,.-\name
 .endm
 
+/*
+ * Benchmark-only centered Stage345 with transpose-native output.
+ *
+ * This deliberately keeps the lane-local TRANSPOSE8X8_REMAPPED and removes
+ * only the subsequent cross-128-bit STORE_SOA permutations.  The 12 batches
+ * are four contiguous YMM vectors (c0,c1,c2,c3), with this mapping:
+ *
+ * row01, Q-group g=0..3, branch b=0..1:
+ *   batch = 2*g + b
+ *   lane  = Q%8 for row0, 8 + Q%8 for row1
+ *
+ * row2, Q-group g=0..1, branch b=0..1:
+ *   batch = 8 + 2*g + b
+ *   lane  = Q%8 for Q=8*g..8*g+7,
+ *           8 + Q%8 for Q=8*g+16..8*g+23
+ *
+ * STORE_NATIVE_BATCH_PAIR writes two adjacent batches (256 bytes) per block.
+ * Four row01 blocks plus two row2 blocks therefore cover all 1536 output
+ * bytes exactly once.  rdi is used as a linear output cursor.
+ *
+ * void gt_ntt_avx2_stage345_native_centered_asm(
+ *     int16_t out[768], const gt_stage2_scratch *scratch)
+ */
+.p2align 5
+.globl gt_ntt_avx2_stage345_native_centered_asm
+.type gt_ntt_avx2_stage345_native_centered_asm,@function
+gt_ntt_avx2_stage345_native_centered_asm:
+	/* row01: four Q groups, each producing branch batches 2*g and 2*g+1. */
+	leaq .Lrow01_twiddles(%rip), %rdx
+	movl $4, %r9d
+.p2align 5
+.Lnative_row01_loop:
+	vmovdqa   0(%rsi), %ymm0
+	vmovdqa  32(%rsi), %ymm1
+	vmovdqa  64(%rsi), %ymm2
+	vmovdqa  96(%rsi), %ymm3
+	vmovdqa 128(%rsi), %ymm4
+	vmovdqa 160(%rsi), %ymm5
+	vmovdqa 192(%rsi), %ymm6
+	vmovdqa 224(%rsi), %ymm7
+
+	MONT_STAGE_NOCOPY %ymm0, %ymm4, %ymm1, %ymm5, %ymm2, %ymm6, %ymm3, %ymm7, %ymm8, %ymm9, %ymm10, %ymm11, 0
+	MONT_STAGE_NOCOPY %ymm0, %ymm2, %ymm1, %ymm3, %ymm8, %ymm10, %ymm9, %ymm11, %ymm4, %ymm5, %ymm6, %ymm7, 256
+	MONT_STAGE_NOCOPY %ymm0, %ymm1, %ymm4, %ymm5, %ymm8, %ymm9, %ymm6, %ymm7, %ymm2, %ymm3, %ymm10, %ymm11, 512
+	CENTER8_REMAPPED_PARALLEL
+	TRANSPOSE8X8_REMAPPED
+	STORE_NATIVE_BATCH_PAIR %rdi
+
+	addq $256, %rsi
+	addq $768, %rdx
+	addq $256, %rdi
+	decl %r9d
+	jne .Lnative_row01_loop
+
+	/*
+	 * row2 begins exactly where row01 left the output cursor: batch 8.
+	 * Each low/high half is the Q/Q+16 pair for the same branch.
+	 */
+	leaq .Lrow2_twiddles(%rip), %rdx
+	movl $2, %r9d
+.p2align 5
+.Lnative_row2_loop:
+	vmovdqa   0(%rsi), %ymm0
+	vmovdqa  32(%rsi), %ymm1
+	vmovdqa  64(%rsi), %ymm2
+	vmovdqa  96(%rsi), %ymm3
+	vmovdqa 128(%rsi), %ymm4
+	vmovdqa 160(%rsi), %ymm5
+	vmovdqa 192(%rsi), %ymm6
+	vmovdqa 224(%rsi), %ymm7
+
+	MONT_STAGE_NOCOPY %ymm0, %ymm4, %ymm1, %ymm5, %ymm2, %ymm6, %ymm3, %ymm7, %ymm8, %ymm9, %ymm10, %ymm11, 0
+	MONT_STAGE_NOCOPY %ymm0, %ymm2, %ymm1, %ymm3, %ymm8, %ymm10, %ymm9, %ymm11, %ymm4, %ymm5, %ymm6, %ymm7, 256
+	MONT_STAGE_NOCOPY %ymm0, %ymm1, %ymm4, %ymm5, %ymm8, %ymm9, %ymm6, %ymm7, %ymm2, %ymm3, %ymm10, %ymm11, 512
+	CENTER8_REMAPPED_PARALLEL
+	TRANSPOSE8X8_REMAPPED
+	STORE_NATIVE_BATCH_PAIR %rdi
+
+	addq $256, %rsi
+	addq $768, %rdx
+	addq $256, %rdi
+	decl %r9d
+	jne .Lnative_row2_loop
+
+	vzeroupper
+	ret
+.size gt_ntt_avx2_stage345_native_centered_asm,.-gt_ntt_avx2_stage345_native_centered_asm
+
 STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_asm, 0
 STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_interleaved_asm, 1
 STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_remapped_asm, 2
 STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_resident_asm, 3
 STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_queued_store_asm, 4
+STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_centered_asm, 5
+STAGE345_FUNCTION gt_ntt_avx2_stage345_soa_centered_queued_store_asm, 6
 
 /* Test-only entry point for exhaustively checking the packed reducer macro. */
 .p2align 5
@@ -516,8 +697,23 @@ gt_ntt_avx2_barrett_packed_asm:
 	ret
 .size gt_ntt_avx2_barrett_packed_asm,.-gt_ntt_avx2_barrett_packed_asm
 
+/* Test-only entry point for the signed three-instruction reducer. */
+.p2align 5
+.globl gt_ntt_avx2_centered_packed_asm
+.type gt_ntt_avx2_centered_packed_asm,@function
+gt_ntt_avx2_centered_packed_asm:
+	vmovdqu (%rsi), %ymm0
+	CENTER_ONE_TEMP %ymm0, %ymm1
+	vmovdqu %ymm0, (%rdi)
+	vzeroupper
+	ret
+.size gt_ntt_avx2_centered_packed_asm,.-gt_ntt_avx2_centered_packed_asm
+
 .section .rodata
 .p2align 5
+.globl gt_ntt_avx2_stage345_q_const
+.hidden gt_ntt_avx2_stage345_q_const
+gt_ntt_avx2_stage345_q_const:
 .Lgt_q:
 	.rept 16
 	.short 3457
@@ -525,6 +721,13 @@ gt_ntt_avx2_barrett_packed_asm:
 .Lgt_v:
 	.rept 16
 	.short 19412
+	.endr
+.globl gt_ntt_avx2_stage345_center10_const
+.hidden gt_ntt_avx2_stage345_center10_const
+gt_ntt_avx2_stage345_center10_const:
+.Lgt_center_10:
+	.rept 16
+	.short 10
 	.endr
 
 /* qinv vector followed by twiddle vector. */
@@ -553,6 +756,9 @@ gt_ntt_avx2_barrett_packed_asm:
 .endm
 
 .p2align 5
+.globl gt_ntt_avx2_stage345_row01_twiddles
+.hidden gt_ntt_avx2_stage345_row01_twiddles
+gt_ntt_avx2_stage345_row01_twiddles:
 .Lrow01_twiddles:
 	/* base 0: stages 3, 4, 5. */
 	TW16 -147, -19
@@ -610,7 +816,14 @@ gt_ntt_avx2_barrett_packed_asm:
 	TW16 -554, -19242
 	TW16 1591, -8265
 
+	.set .Lrow01_twiddle_bytes, . - .Lrow01_twiddles
+	.if .Lrow01_twiddle_bytes != 3072
+	.error "row01 Stage345 twiddle table must contain four 768-byte blocks"
+	.endif
 .p2align 5
+.globl gt_ntt_avx2_stage345_row2_twiddles
+.hidden gt_ntt_avx2_stage345_row2_twiddles
+gt_ntt_avx2_stage345_row2_twiddles:
 .Lrow2_twiddles:
 	/* packed base 0: low Q=0..7, high Q=16..23. */
 	TW8X2 -147, 109, -19, -32531

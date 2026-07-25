@@ -36,7 +36,7 @@
  * ymm14       : free
  * ymm15       : q = 3457
  */
-.macro POSTPROCESS_GROUP
+.macro POSTPROCESS_GROUP ninv_pair, two_ninv_pair
 	vmovdqa  0(%rsi), %ymm0
 	vmovdqa 32(%rsi), %ymm1
 	vmovdqa 64(%rsi), %ymm2
@@ -101,7 +101,7 @@
 	vpsubw %xmm3, %xmm11, %xmm11
 
 	/* Low branch: Mont(sum-correction, 1/192). */
-	vmovdqa .Lpost_ninv_pair(%rip), %ymm12
+	vmovdqa \ninv_pair(%rip), %ymm12
 	vextracti128 $1, %ymm12, %xmm13
 	vpmullw %xmm12,  %xmm8, %xmm4
 	vpmullw %xmm12,  %xmm9, %xmm5
@@ -121,7 +121,7 @@
 	vpsubw %xmm7, %xmm11, %xmm11
 
 	/* High branch: Mont(correction, 1/96). */
-	vmovdqa .Lpost_2ninv_pair(%rip), %ymm12
+	vmovdqa \two_ninv_pair(%rip), %ymm12
 	vextracti128 $1, %ymm12, %xmm13
 	vpmullw %xmm12, %xmm0, %xmm4
 	vpmullw %xmm12, %xmm1, %xmm5
@@ -172,7 +172,7 @@ gt_invntt_soa_postprocess_asm:
 	movl $12, %ecx
 .p2align 5
 .Lpost_group_loop:
-	POSTPROCESS_GROUP
+	POSTPROCESS_GROUP .Lpost_ninv_pair, .Lpost_2ninv_pair
 	addq $128, %rsi
 	addq $32, %r8
 	addq $32, %r9
@@ -183,6 +183,35 @@ gt_invntt_soa_postprocess_asm:
 	vzeroupper
 	ret
 .size gt_invntt_soa_postprocess_asm,.-gt_invntt_soa_postprocess_asm
+
+/*
+ * Matching endpoint for an inverse input uniformly scaled by R^-1.  All
+ * inverse twiddle and untwist factors remain in Montgomery form, so that
+ * scale propagates unchanged until the two final normalization products.
+ * Their factors carry one additional R and restore normal-domain output.
+ */
+.p2align 5
+.globl gt_invntt_soa_postprocess_rminus1_asm
+.type gt_invntt_soa_postprocess_rminus1_asm,@function
+gt_invntt_soa_postprocess_rminus1_asm:
+	vmovdqa .Lpost_q(%rip), %ymm15
+	leaq gt_inv_untwist(%rip), %r8
+	leaq gt_inv_untwist_qinv(%rip), %r9
+	leaq gt_inv_output_block(%rip), %rdx
+	movl $12, %ecx
+.p2align 5
+.Lpost_rminus1_group_loop:
+	POSTPROCESS_GROUP .Lpost_ninv_rminus1_pair, .Lpost_2ninv_rminus1_pair
+	addq $128, %rsi
+	addq $32, %r8
+	addq $32, %r9
+	addq $8, %rdx
+	decl %ecx
+	jne .Lpost_rminus1_group_loop
+
+	vzeroupper
+	ret
+.size gt_invntt_soa_postprocess_rminus1_asm,.-gt_invntt_soa_postprocess_rminus1_asm
 
 .section .rodata
 .p2align 5
@@ -213,6 +242,21 @@ gt_invntt_soa_postprocess_asm:
 	.endr
 	.rept 8
 	.short -1622
+	.endr
+/* (1/192)*R^2 and (1/96)*R^2, stored as [factor*qinv | factor]. */
+.Lpost_ninv_rminus1_pair:
+	.rept 8
+	.short 15375
+	.endr
+	.rept 8
+	.short 1679
+	.endr
+.Lpost_2ninv_rminus1_pair:
+	.rept 8
+	.short 30749
+	.endr
+	.rept 8
+	.short -99
 	.endr
 
 #ifndef GT_INVNTT_FUSED_INCLUDE

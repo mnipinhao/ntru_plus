@@ -1,5 +1,5 @@
-kernel: ntruplus768_gt_basemul_soa_avx2_intrinsic
-status: experimental_semantics_baseline
+kernel: ntruplus768_gt_basemul_layout_avx2_intrinsic
+status: experimental_soa_and_native_semantics_consumer
 platform:
   isa: AVX2
   target_cpu: AMD_Ryzen_7_9700X
@@ -10,21 +10,41 @@ operation:
 input:
   operands: 2
   type: int16[768]
-  coefficient_range: "[-3457,3457]"
+  coefficient_range:
+    soa_symmetric: "both operands in [-3457,3457]"
+    native_asymmetric: "one operand in [-3457,3457], the other in [-27648,27648]"
+    lazy_by_lazy_allowed: false
   domain: normal_residue
   aliasing: all_three_arrays_must_not_overlap
 layout:
   batches: 12
   vectors_per_batch: 4
   lanes_per_vector: 16
-  formula:
-    batch: "4*k3 + floor(Q/8)"
-    lane: "8*branch + (Q mod 8)"
-    word: "64*batch + 16*c + lane"
+  variants:
+    soa:
+      batch: "4*k3 + floor(Q/8)"
+      lane: "8*branch + (Q mod 8)"
+    native_row01:
+      batch: "2*floor(Q/8) + branch"
+      lane: "(Q mod 8) + 8*k3"
+    native_row2:
+      batch: "8 + 2*floor((Q mod 16)/8) + branch"
+      lane: "(Q mod 8) + 8*floor(Q/16)"
+  word: "64*batch + 16*c + lane"
 output:
   type: int16[768]
-  coefficient_range: "[-3456,3456]"
-  domain: normal_residue
+  variants:
+    normal:
+      coefficient_range: "[-3456,3456]"
+      domain: normal_residue
+    rminus1_safe:
+      coefficient_range: "[-2359,2359]"
+      domain: product_times_R^-1
+    rminus1_c0lazy:
+      coefficient_range:
+        c0: "[-6912,6912]"
+        c1_c2_c3: "[-2359,2359]"
+      domain: product_times_R^-1
   layout_preserved: true
 arithmetic:
   runtime_products:
@@ -36,25 +56,51 @@ arithmetic:
     table_domain: lambda_times_R
     table_pair: [lambda, lambda_times_qinv_mod_2^16]
   finalizers:
-    count_per_lane: 4
-    factor: R^2
-    output_domain: normal_residue
+    variants:
+      normal:
+        fixed_montgomery_count_per_batch: 4
+        factor: R^2
+        output_domain: normal_residue
+      rminus1_safe:
+        center10_count_per_batch: 4
+        output_domain: product_times_R^-1
+      rminus1_c0lazy:
+        center10_count_per_batch: 3
+        raw_coefficients: [c0]
+        output_domain: product_times_R^-1
   largest_add_accumulator: "4*(q-1)=13824"
 tables:
   generator: generate_gt_soa_tables.py
   logical_exponent: "(32*k3 + 3*bitreverse5(Q)) mod 96"
   branch_scale: [2, 22]
-  bytes: 768
+  layouts: [soa, native]
+  arrays_per_layout: [lambda, lambda_times_qinv_mod_2^16]
+  total_bytes: 1536
 constant_time:
   secret_dependent_branches: false
   secret_dependent_addresses: false
   table_indices: public_batch_only
 compiler_audit:
   compiler: GCC_16.1.1
-  symbol_bytes: 773
+  shared_helper_bytes: 758
+  wrapper_bytes_each: 16
   explicit_stack_adjustment_bytes: 72
   vector_spills_present: true
+scheduled_asm:
+  source: gt_basemul_layout_asm.S
+  entries:
+    normal: [gt_basemul_soa_asm_avx2, gt_basemul_native_asm_avx2]
+    rminus1_safe: [gt_basemul_soa_rminus1_asm_avx2, gt_basemul_native_rminus1_asm_avx2]
+    rminus1_c0lazy: [gt_basemul_soa_rminus1_c0lazy_asm_avx2, gt_basemul_native_rminus1_c0lazy_asm_avx2]
+  native_linked_bytes: 655
+  native_static_instructions: 147
+  qinv_premultiplies_per_batch: 4
+  stack_references: 0
+  calls: 0
+  terminal_vzeroupper: 1
+  output_exact_with_intrinsic: true
 promotion_limits:
-  - intrinsic_schedule_has_vector_spills
+  - scheduled_asm_is_default_off
   - no_basemul_add_variant
-  - matching_soa_inverse_is_not_yet_hand_scheduled_asm
+  - rminus1_entries_require_matching_inverse_normalization
+  - direct_native_inverse_first_load_is_not_implemented

@@ -7,6 +7,20 @@
 #include "fips202/fips202.h"
 #include "randombytes.h"
 
+#if defined(NTRUPLUS_BENCH_INTERNAL)
+int ntruplus_ref_keypair_derand(
+    uint8_t pk[NTRUPLUS_PUBLICKEYBYTES],
+    uint8_t sk[NTRUPLUS_SECRETKEYBYTES],
+    const uint8_t f_coins[NTRUPLUS_SYMBYTES],
+    const uint8_t g_coins[NTRUPLUS_SYMBYTES]);
+
+int ntruplus_ref_enc_derand(
+    uint8_t ct[NTRUPLUS_CIPHERTEXTBYTES],
+    uint8_t ss[NTRUPLUS_SSBYTES],
+    const uint8_t pk[NTRUPLUS_PUBLICKEYBYTES],
+    const uint8_t coins[NTRUPLUS_N / 8]);
+#endif
+
 /*************************************************
 * Name:        verify
 *
@@ -28,6 +42,8 @@ static inline int verify(const uint8_t *a, const uint8_t *b, size_t len)
     return (-(uint64_t)acc) >> 63;
 }
 
+#if !defined(NTRUPLUS_EXTERNAL_KEYPAIR) || \
+    defined(NTRUPLUS_BENCH_INTERNAL)
 /*************************************************
 * Name:        genf_derand
 *
@@ -114,6 +130,26 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
 }
 
+#if defined(NTRUPLUS_BENCH_INTERNAL)
+int ntruplus_ref_keypair_derand(
+    uint8_t pk[NTRUPLUS_PUBLICKEYBYTES],
+    uint8_t sk[NTRUPLUS_SECRETKEYBYTES],
+    const uint8_t f_coins[NTRUPLUS_SYMBYTES],
+    const uint8_t g_coins[NTRUPLUS_SYMBYTES])
+{
+    poly f, finv;
+    poly g, ginv;
+
+    if (genf_derand(&f, &finv, f_coins) != 0 ||
+        geng_derand(&g, &ginv, g_coins) != 0)
+        return 1;
+
+    crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
+    return 0;
+}
+#endif
+#endif
+
 /*************************************************
 * Name:        crypto_kem_keypair
 *
@@ -129,6 +165,7 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 *
 * Returns 0 on success.
 **************************************************/
+#if !defined(NTRUPLUS_EXTERNAL_KEYPAIR)
 int crypto_kem_keypair(uint8_t *pk, uint8_t *sk)
 {
     uint8_t coins[NTRUPLUS_SYMBYTES];
@@ -147,6 +184,7 @@ int crypto_kem_keypair(uint8_t *pk, uint8_t *sk)
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
     return 0;
 }
+#endif
 
 /*************************************************
 * Name:        crypto_kem_enc_derand
@@ -197,6 +235,17 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     
     return 0;
 }
+
+#if defined(NTRUPLUS_BENCH_INTERNAL)
+int ntruplus_ref_enc_derand(
+    uint8_t ct[NTRUPLUS_CIPHERTEXTBYTES],
+    uint8_t ss[NTRUPLUS_SSBYTES],
+    const uint8_t pk[NTRUPLUS_PUBLICKEYBYTES],
+    const uint8_t coins[NTRUPLUS_N / 8])
+{
+    return crypto_kem_enc_derand(ct, ss, pk, coins);
+}
+#endif
 
 /*************************************************
 * Name:        crypto_kem_enc

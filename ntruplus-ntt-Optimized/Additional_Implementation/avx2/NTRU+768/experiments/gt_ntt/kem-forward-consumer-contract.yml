@@ -1,0 +1,332 @@
+contract: ntruplus768_avx2_kem_forward_consumers
+status: avx2_pack_completed_full_kem_default_off
+source_revision: 1c4d072ae096a3ab49682934010570b16f941bc5
+
+ring:
+  coefficient_modulus: 3457
+  polynomial_modulus: X^768-X^384+1
+  degree: 768
+  storage_lane: signed_int16
+
+security:
+  all_forward_inputs: secret_derived
+  coefficient_dependent_branches: forbidden
+  coefficient_dependent_addresses: forbidden
+  coefficient_dependent_table_indices: forbidden
+  call_site_constant_mode: allowed
+
+layouts:
+  coefficient:
+    id: COEFF16
+    order: natural_polynomial_coefficient_order
+  gt_native:
+    id: GTN16
+    batches: 12
+    coefficients_per_quartic: 4
+    lanes_per_vector: 16
+    word: 64*batch+16*c+lane
+    row01:
+      batch: 2*floor(Q/8)+branch
+      lane: (Q mod 8)+8*k3
+      k3: [0, 1]
+    row2:
+      batch: 8+2*floor((Q mod 16)/8)+branch
+      lane: (Q mod 8)+8*floor(Q/16)
+      k3: 2
+  production_slots:
+    id: P16
+    word: 64*production_batch+16*c+production_lane
+    production_batch: 2*group+sign
+    lambda: (-1)^sign*zetas[624+32*group+16+production_lane]
+    selected_as_internal_layout: false
+  wire:
+    id: WIRE12
+    bytes: 1152
+    coefficient_bits: 12
+    slot_order: production_slots
+    encode_representatives: canonical_0_to_3456
+    arbitrary_decode_range: 0_to_4095
+    abi_change_allowed: false
+
+slot_map:
+  relation: pure_public_permutation_mod_3457
+  coefficient_index_preserved: true
+  definition: unique production slot with lambda equal to gt_native_lambda[batch][lane] modulo q
+  generation_sources: [zetas, gt_native_lambda]
+  manual_table: forbidden
+  evidence:
+    lambda_multiset_entries: 192
+    lambda_multiset_equal: true
+    mapping_bijective: true
+    basis_vectors_checked: 768
+    deterministic_random_vectors_checked: 256
+    canonical_int16_values_checked: 65536
+    wire_layout_full_patterns_checked: 86
+
+formats:
+  GTN-C:
+    layout: GTN16
+    domain: normal_residue
+    range: [-3456, 3456]
+    centered_forward_producer_image: [-3080, 3079]
+    baseinv_legal: true
+  GTN-L3:
+    layout: GTN16
+    domain: normal_residue
+    absolute_bound: 10368
+    forward_producer_bounds:
+      vector_0_through_31: 10172
+      vector_32_through_47: 9992
+    montgomery_square_safe_absolute_bound: 10643
+    baseinv_direct_legal: true
+    normalization_vectors_required: 0
+  GTN-L8:
+    layout: GTN16
+    domain: normal_residue
+    absolute_bound: 27648
+    baseinv_legal: false
+    baseinv_center_on_load_candidate:
+      algebraically_legal: true
+      status: benchmark_only_rejected
+      forward_plus_baseinv_delta_percent: 0.7876
+  GTN-U12:
+    layout: GTN16
+    domain: normal_residue
+    range: [0, 4095]
+    valid_generated_subset: [0, 3456]
+    source: direct_wire12_decode
+  GTN-WDEC:
+    layout: GTN16
+    domain: normal_residue
+    range: [-27648, 31743]
+    scope: decapsulation_subtraction_only
+  GTN-RM1-C0L:
+    layout: GTN16
+    domain: product_times_R_inverse
+    range:
+      c0: [-6912, 6912]
+      c1_c2_c3: [-2359, 2359]
+    only_consumer: matching_native_inverse
+
+call_sites:
+  - id: KG-F
+    source: kem.c:54
+    value: f
+    input_distribution: cbd1_times_3_with_constant_term_plus_1
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [baseinv_gtn, basemul_gtn_hinv, pack_gtn_to_wire12_sk_f]
+    lazy_allowed: true
+    reason: all_forward_terminal_vectors_are_direct_baseinv_square_safe
+  - id: KG-G
+    source: kem.c:81
+    value: g
+    input_distribution: cbd1_times_3
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [baseinv_gtn, basemul_gtn_h]
+    lazy_allowed: true
+    reason: all_forward_terminal_vectors_are_direct_baseinv_square_safe
+  - id: ENC-R
+    source: kem.c:183
+    value: r
+    input_distribution: cbd1
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [pack_gtn_to_wire12_hash_input, basemul_gtn_with_decoded_pk]
+    wire_identity_required: true
+  - id: ENC-M
+    source: kem.c:188
+    value: m
+    input_distribution: sotp_encode_small
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [add_gtn_to_hr, pack_gtn_to_wire12_ciphertext]
+    wire_identity_required: true
+  - id: DEC-M2
+    source: kem.c:265
+    value: m2
+    input_distribution: inverse_then_crepmod3
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [sub_gtn_from_decoded_ciphertext, basemul_gtn_wdec_with_hinv]
+    downstream_format: GTN-WDEC
+  - id: DEC-R1
+    source: kem.c:279
+    value: r1
+    input_distribution: cbd1
+    secrecy: secret
+    forward_format: GTN-L3
+    consumers: [pack_gtn_to_wire12_verify_input, constant_time_verify]
+    wire_identity_required: true
+
+range_obligations:
+  forward_terminal_square_safety:
+    row01_maximum: 10172*10172
+    row01_product: 103469584
+    row2_maximum: 9992*9992
+    row2_product: 99840064
+    montgomery_limit: 113278976
+    status: holds_all_48_vectors
+  forward_plus_baseinv_benchmark:
+    centered_cycles: 1719.121376
+    centered_ref_cycles: 1215.197318
+    centered_instructions: 4327.221192
+    lazy_direct_cycles: 1662.209984
+    lazy_direct_ref_cycles: 1174.715057
+    lazy_direct_instructions: 4183.192379
+    delta_cycles: -56.911392
+    delta_percent: -3.3105
+    delta_instructions: -144.028813
+    status: lazy_direct_wins
+  encapsulation_untrusted_pk_times_lazy_r:
+    product: 4095*27648
+    maximum: 113218560
+    montgomery_limit: 113278976
+    status: holds
+  encapsulation_add:
+    inputs: [[-3456, 3456], [-27648, 27648]]
+    result: [-31104, 31104]
+    signed_int16: holds
+  decapsulation_sub:
+    inputs: [[0, 4095], [-27648, 27648]]
+    result: [-27648, 31743]
+    signed_int16: holds
+  decapsulation_wide_times_hinv:
+    product: 31743*3456
+    maximum: 109703808
+    montgomery_limit: 113278976
+    status: holds
+  wire_encoder:
+    accepted_input: all_signed_int16
+    output: canonical_0_to_3456
+    evidence: exhaustive_65536_inputs
+
+selected_design:
+  internal_layout: GTN16
+  external_format: WIRE12
+  centered_forward_sites: []
+  lazy_forward_sites: [KG-F, KG-G, ENC-R, ENC-M, DEC-M2, DEC-R1]
+  lazy_forward_format: GTN-L3
+  production_promotion: rejected_full_kem_cycle_regression
+  permutation_policy: fuse_into_native_pack_unpack
+  standalone_768_word_conversion: forbidden
+  rminus1_closed_boundary: decapsulation_basemul_c_times_f_to_matching_inverse
+
+keygen_native_island:
+  status: keygen_parity_full_kem_cycle_rejected
+  path:
+    - lazy_forward_GTN-L3
+    - direct_GTN-L3_baseinv
+    - native_basemul
+    - direct_native_to_WIRE12_pack
+  standalone_768_word_conversion: false
+  correctness:
+    deterministic_keypairs_byte_exact: 128
+    public_stream_full_kem_checks: 16
+    nist_kat_cases: 100
+    kat_req_byte_exact: true
+    kat_rsp_byte_exact: true
+    kat_rsp_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+  benchmark:
+    host: AMD_Ryzen_7_9700X
+    compiler: GCC_16.1.1
+    cpu: 2
+    perf_repetitions: 11
+    keygen:
+      calls_per_repetition: 100000
+      production_cycles: 33586.943
+      gt_cycles: 46620.917
+      delta_percent: 38.807
+      production_instructions: 86480.524
+      gt_instructions: 119577.515
+    full_kem:
+      calls_per_repetition: 50000
+      production_cycles: 87533.786
+      gt_cycles: 100853.340
+      delta_percent: 15.216
+      production_instructions: 215528.032
+      gt_instructions: 248625.030
+    pack:
+      calls_per_repetition: 1000000
+      production_cycles: 226.156
+      scalar_native_cycles: 4046.129
+      production_instructions: 815.292
+      scalar_native_instructions: 12152.293
+      keygen_calls: 3
+      historical_blocker: scalar_public_gather_permutation_and_serialization
+    avx2_pack:
+      implementation:
+        source: gt_native_pack_asm.S
+        generated_schedule: gt_native_pack_asm_tables.inc
+        text_bytes: 3125
+        static_instructions: 506
+        secret_dependent_addresses: false
+        avx512_instructions: false
+        dual_sign_shuffle: true
+        paired_ymm_groups: [1, 3]
+      calls_per_repetition: 1000000
+      production:
+        cycles: 225.468
+        ref_cycles: 158.464
+        instructions: 815.291
+      arbitrary_signed_int16:
+        cycles: 308.646
+        ref_cycles: 217.187
+        instructions: 1056.291
+      GTN-L3:
+        cycles: 287.201
+        ref_cycles: 202.839
+        instructions: 960.291
+        normalization: exact_center10_then_add_q_if_negative
+      centered:
+        cycles: 231.480
+        ref_cycles: 163.466
+        instructions: 810.289
+        normalization: add_q_if_negative
+    final_balanced_benchmark:
+      paired_process_order_rounds: 6
+      keygen:
+        calls_per_process: 100000
+        paired_median_cycles_delta: -28.380
+        paired_median_cycles_delta_percent: -0.089
+        paired_median_ref_cycles_delta: -18.970
+        instructions_delta: -779.014
+      full_kem:
+        calls_per_process: 50000
+        paired_median_cycles_delta: 391.266
+        paired_median_cycles_delta_percent: 0.450
+        paired_median_ref_cycles_delta: 281.550
+        instructions_delta: -779.008
+      decision: default_off_full_kem_cycle_gate_failed
+  next_bounded_candidate: post_keygen_frontend_and_icache_localization
+
+required_consumers:
+  - pack_gtn_to_wire12
+  - unpack_wire12_to_gtn
+  - baseinv_gtn
+  - basemul_gtn_normal
+  - basemul_gtn_rm1_c0lazy
+  - add_gtn
+  - sub_gtn
+  - inverse_gtn_rm1_c0lazy
+
+implementation_order:
+  - generated_slot_map_and_permanent_differential
+  - direct_native_pack_unpack
+  - native_add_sub_and_wide_basemul_contracts
+  - encapsulation_native_island
+  - native_baseinv_and_keygen_island
+  - native_inverse_and_decapsulation_island
+  - production_kat_and_full_kem_benchmark
+
+promotion_gates:
+  - exact_wire_bytes
+  - arbitrary_12bit_decode_behavior_preserved
+  - range_and_random_differentials
+  - synchronized_range_proof
+  - constant_time_audit
+  - no_standalone_layout_pass
+  - abi_and_avx2_linked_object_audit
+  - keygen_encapsulation_decapsulation_correctness
+  - same_binary_full_kem_speedup

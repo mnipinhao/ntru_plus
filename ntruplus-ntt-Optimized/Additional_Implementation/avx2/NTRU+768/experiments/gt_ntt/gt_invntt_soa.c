@@ -337,4 +337,14 @@ void gt_invntt_soa_avx2_postprocess_hybrid(int16_t out[GT_NTT_N],
 	gt_invntt_soa_dft3_asm(rows);
 	gt_invntt_soa_postprocess_asm(out, rows);
 }
+
+void gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N])
+{
+	int16_t rows[GT_NTT_N] __attribute__((aligned(32)));
+
+	gt_invntt_soa_ntt32_asm(rows, in);
+	gt_invntt_soa_dft3_asm(rows);
+	gt_invntt_soa_postprocess_rminus1_asm(out, rows);
+}
 #endif

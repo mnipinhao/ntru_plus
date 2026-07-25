@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate AVX2 GT 16-block SoA lambda and lambda*qinv tables."""
+"""Generate AVX2 GT SoA/native lambda and lambda*qinv tables."""
 
 import argparse
 from pathlib import Path
@@ -52,6 +52,32 @@ def make_table() -> list[list[int]]:
     return table
 
 
+def make_native_table() -> list[list[int]]:
+    """Return lambdas in the fused Stage345 native output lane order."""
+    table = []
+
+    # row0/1: batch=(2*g+branch), lane=(Q%8)+8*k3, k3 in {0,1}.
+    for g in range(4):
+        for branch in range(2):
+            row = []
+            for k3 in range(2):
+                for lane in range(8):
+                    row.append(lambda_montgomery(k3, 8 * g + lane, branch))
+            table.append(row)
+
+    # row2: batch=8+(2*g+branch), lane=(Q%8)+8*(Q//16), k3=2.
+    for g in range(2):
+        for branch in range(2):
+            row = []
+            for q_half in range(2):
+                for lane in range(8):
+                    q_index = 16 * q_half + 8 * g + lane
+                    row.append(lambda_montgomery(2, q_index, branch))
+            table.append(row)
+
+    return table
+
+
 def format_table(name: str, table: list[list[int]]) -> str:
     lines = [
         f"const int16_t {name}[GT_SOA_BATCHES][GT_SOA_LANES]",
@@ -66,9 +92,14 @@ def format_table(name: str, table: list[list[int]]) -> str:
 
 def render() -> str:
     lambdas = make_table()
+    native_lambdas = make_native_table()
     lambda_qinv = [
         [signed16(value * QINV) for value in row]
         for row in lambdas
+    ]
+    native_lambda_qinv = [
+        [signed16(value * QINV) for value in row]
+        for row in native_lambdas
     ]
     return "\n".join(
         [
@@ -76,6 +107,10 @@ def render() -> str:
             format_table("gt_soa_lambda", lambdas),
             "",
             format_table("gt_soa_lambda_qinv", lambda_qinv),
+            "",
+            format_table("gt_native_lambda", native_lambdas),
+            "",
+            format_table("gt_native_lambda_qinv", native_lambda_qinv),
             "",
         ]
     )

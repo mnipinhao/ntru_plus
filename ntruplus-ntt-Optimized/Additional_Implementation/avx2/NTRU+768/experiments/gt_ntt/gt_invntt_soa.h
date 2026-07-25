@@ -36,6 +36,10 @@ void gt_invntt_soa_dft3_asm(int16_t rows[GT_NTT_N]);
 void gt_invntt_soa_postprocess_asm(int16_t out[GT_NTT_N],
 	const int16_t rows[GT_NTT_N]);
 
+/* Final normalization for rows that still carry a uniform R^-1 scale. */
+void gt_invntt_soa_postprocess_rminus1_asm(int16_t out[GT_NTT_N],
+	const int16_t rows[GT_NTT_N]);
+
 /* Hybrid milestone: ASM inverse NTT32, intrinsic DFT3 and postprocess. */
 void gt_invntt_soa_avx2_hybrid(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
@@ -47,6 +51,10 @@ void gt_invntt_soa_avx2_dft3_hybrid(int16_t out[GT_NTT_N],
 /* Three separately callable ASM regions; the C wrapper owns row scratch. */
 void gt_invntt_soa_avx2_postprocess_hybrid(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
+
+/* Matching three-region inverse for gt_basemul_*_rminus1_asm_avx2. */
+void gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
 
 /* Single ASM entry with one internal 1536-byte aligned row scratch. */
 void gt_invntt_soa_avx2_fused_asm(int16_t out[GT_NTT_N],

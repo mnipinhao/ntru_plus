@@ -58,12 +58,75 @@ void gt_ntt_avx2_frontend_resident_asm_soa(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
 void gt_ntt_avx2_frontend_queued_store_asm_soa(int16_t out[GT_NTT_N],
 	const int16_t in[GT_NTT_N]);
+/* Benchmark-only reducer candidates; canonical public symbols stay unchanged. */
+void gt_ntt_avx2_frontend_centered_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_identity_asm_soa(int16_t out[GT_NTT_N],
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_identity_centered_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+/* Native-layout forward candidates require a matching basemul/inverse. */
+void gt_ntt_avx2_frontend_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_u2_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_u4_identity_native_centered_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+/* Single-entry full-forward candidates with two 1536-byte scratch regions. */
+void gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_u4_identity_native_centered_fused_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_u2_identity_native_centered_pipelined_fused_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_u2_fused_split_twist_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_u2_high_first_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_fixed_high_first_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_high_first_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_fused_delayed_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N], unsigned final_center);
+void gt_ntt_avx2_forward_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_forward_wide_fused_partial_n0_native_centered_pipelined_asm(
+	int16_t out[GT_NTT_N], const int16_t in[GT_NTT_N]);
 /* Standalone low-level entries below have boundary-specific alias contracts. */
 void gt_ntt_avx2_frontend_asm(gt_frontend_scratch *scratch,
 	const int16_t in[GT_NTT_N]);
 void gt_ntt_avx2_stage12_asm(gt_stage2_scratch *out,
 	const gt_frontend_scratch *in);
+void gt_ntt_avx2_stage12_identity_asm(gt_stage2_scratch *out,
+	const gt_frontend_scratch *in);
+void gt_ntt_avx2_stage12_identity_row2q2_asm(gt_stage2_scratch *out,
+	const gt_frontend_scratch *in);
 void gt_ntt_avx2_frontend_stage12_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_stage12_identity_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_stage12_u2_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_stage12_u4_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_stage12_u2_identity_asm(gt_stage2_scratch *out,
+	const int16_t in[GT_NTT_N]);
+void gt_ntt_avx2_frontend_stage12_u4_identity_asm(gt_stage2_scratch *out,
 	const int16_t in[GT_NTT_N]);
 /* Low-level zero-handoff entry: out and in must not overlap. */
 void gt_ntt_avx2_frontend_stage12_direct_asm(gt_stage2_scratch *out,
@@ -87,7 +150,15 @@ void gt_ntt_avx2_stage345_soa_resident_asm(int16_t out[GT_NTT_N],
 	const gt_stage2_scratch *scratch);
 void gt_ntt_avx2_stage345_soa_queued_store_asm(int16_t out[GT_NTT_N],
 	const gt_stage2_scratch *scratch);
+void gt_ntt_avx2_stage345_soa_centered_asm(int16_t out[GT_NTT_N],
+	const gt_stage2_scratch *scratch);
+void gt_ntt_avx2_stage345_soa_centered_queued_store_asm(
+	int16_t out[GT_NTT_N], const gt_stage2_scratch *scratch);
+void gt_ntt_avx2_stage345_native_centered_asm(int16_t out[GT_NTT_N],
+	const gt_stage2_scratch *scratch);
 void gt_ntt_avx2_barrett_packed_asm(int16_t out[16],
+	const int16_t in[16]);
+void gt_ntt_avx2_centered_packed_asm(int16_t out[16],
 	const int16_t in[16]);
 #endif
 

@@ -3,9 +3,10 @@
 這個目錄包含 opt-in、可差分驗證的 AVX2 GT intrinsic baseline，以及 Linux ELF
 上的手寫組語 prototype。`gt_ntt_frontend_stage12_soa.S` 以 generated mapping/twist
 table 手排 frontend 與 NTT32 stage 1+2，除 canonical single-entry producer 外，也
-保留 zero/half-handoff benchmark candidates。`gt_ntt_stage345_soa.s` 提供 canonical
-stage 3+4+5、packed Barrett、transpose、16-block SoA store，以及四個同語意 schedule
-candidates。它們都沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
+保留 zero/half-handoff、DFT3-tail u2/u4 與 signed-identity benchmark candidates。
+`gt_ntt_stage345_soa.s` 提供 canonical stage 3+4+5、packed Barrett、centered
+checkpoint、16-block SoA store，以及 transpose-native output candidate。它們都
+沒有取代上層 `asm/ntt.s`。`gt_basemul_soa.c` 提供
 AVX2 intrinsic pointwise baseline；`gt_invntt_soa.c` 已能直接消費相同 SoA、完成
 inverse 與 full polynomial multiplication。`gt_invntt_ntt32_soa.s` 已手排 inverse
 NTT32 region，`gt_invntt_dft3_soa.s` 已手排 inverse DFT3/checkpoint region；最後的
@@ -175,6 +176,24 @@ YMM9..YMM15，不再由 GCC 放到 stack/red-zone。這個 standalone linked sym
 且只有尾端一個 `vzeroupper`。這個 scratch 是 row01/row2 的數學 boundary，不是
 register spill。完整 input 在 stage1+2 寫回前已進 scratch，所以 `out==in` 安全。
 
+Benchmark-only identity 版本只替換 factor=`R` 的 Montgomery reduction。它用
+
+```text
+t = round(10*a / 2^15)
+r = a - q*t
+```
+
+做 signed identity reduction；`omega32^8` 與 mixed-half row2 chain 不變。
+Stage1/2 reducer 的 exhaustive image 分別是 `[-2179,2178]` 與
+`[-2359,2359]`，因此仍滿足原本 `4(q-1)`、`5(q-1)` lazy bound。
+
+u2/u4 frontend 則改 instruction schedule，不改數學或 scratch layout。當前 DFT3
+結果留在 YMM6..YMM10；YMM0..YMM5 依序死亡時，立即用 generated CRT-offset
+table 載入下一 pair 的三組 low/high inputs。u2 每個 loop body 處理兩 pair，
+u4 處理四 pair；兩者都有不越界的 straight-line epilogue。Identity 版本的
+producer mean cycles 是 u2 404.05、u4 404.30、baseline 418.13。u2 linked
+symbol 2183 bytes，顯著小於 u4 的 3847 bytes。
+
 另外實作兩個 benchmark-only handoff candidate。`direct` 將 table 改成每個
 `q=0..7` 依序產生 stripe pair A=`(q,q+16)`、B=`(q+8,q+24)`；A 的三條
 stage-1 結果保留在 YMM13..YMM15，B 算完後立即完成三條 stage 2，直接寫入
@@ -240,7 +259,8 @@ YMM8..YMM11；high operand 在兩個 product half 都發出後才 destructive ov
 - `queued-store`：沿用 `remapped` 算術，先發出全部八個 `vperm2i128` 到
   YMM0..YMM7，再連續發出八個 `vmovdqu` store。
 
-`queued-store` 是目前最佳候選。兩輪十回、forward/reverse sequential order 的
+在五個維持 `[0,q]` 表示的 schedule 中，`queued-store` 是最佳候選。兩輪十回、
+forward/reverse sequential order 的
 `perf stat -e cycles` 的 amortized values 中，isolated stage3+4+5 從
 327.00/328.27 降到
 323.30/323.34（快 1.13%--1.50%），完整 forward 從 756.25/756.75 降到
@@ -248,6 +268,18 @@ YMM8..YMM11；high operand 在兩個 product half 都發出後才 destructive ov
 兩個順序都約慢 0.10%，但落在 perf variation 內，視為 neutral/no reliable win；
 所以此路徑仍是 default-off prototype，production 與
 canonical regression symbol 都不變。
+
+另一組 candidate 把 final checkpoint 改成三指令 centered reducer：
+
+```text
+vpmulhrsw 10, value, quotient
+vpmullw    q, quotient, quotient_q
+vpsubw     quotient_q, value, value
+```
+
+完整 lazy interval 的 exact image 是 `[-3080,3079]`。Centered queued
+Stage345 的 mean 是 307.18 cycles，canonical queued 是 323.46；兩者只差
+representative convention，modulo-q 結果相同。
 
 兩個方向也有實際合併：`direct+queued-store` 的完整 forward 是
 846.89/846.92，雖比 direct+serial 的 850.26/850.71 快 0.40%--0.45%，
@@ -287,6 +319,62 @@ transpose，因此不需在 transpose 中跨 half；之後用八個 `vperm2i128`
 `c` 與 `c+4` 的 half 配成四個 SoA YMM，直接 store，不另做 768-coefficient
 transpose pass。
 
+### Transpose-native candidate
+
+Native output 不是把 8x8 transpose 全刪掉。該 lane-local transpose 仍負責把
+「一個 register 一個 Q row」改成「一個 register 一個 quartic coefficient」。
+能刪掉的是之後跨 128-bit half 的八個 `vperm2i128`。
+
+Transpose 後：
+
+```text
+YMM8..YMM11  = branch0 c0..c3
+YMM12..YMM15 = branch1 c0..c3
+```
+
+所以每個 block 可直接連續存成兩個 batch。精確 mapping 是：
+
+```text
+row01:
+  batch = 2*floor(Q/8) + branch
+  lane  = (Q mod 8) + 8*k3, k3=0,1
+
+row2:
+  batch = 8 + 2*floor((Q mod 16)/8) + branch
+  lane  = (Q mod 8) + 8*floor(Q/16)
+```
+
+六個 block 共省 48 個 `vperm2i128`。Native Stage345 mean 是 289.18 cycles，
+centered queued SoA 是 307.30。完整 forward 的 native winner 是
+兩段式 u4 + identity + native-centered，698.55 cycles；現有 SoA winner 是
+u2 + identity + centered + queued-store，718.00 cycles。
+
+測試用 converter 可把 native 768 words byte-exact 還原為現有 SoA，但它不在 timed
+path，也不能成為 production 中間 pass。Basemul 現在已有 direct native consumer；
+inverse first-load 仍必須直接使用 native layout。
+
+### Single-entry native forward
+
+為了讓 scheduler 能跨過 stage2 producer／Stage345 邊界，另有兩個真正的兩參數
+ASM entry：
+
+- `gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm`；
+- `gt_ntt_avx2_forward_u4_identity_native_centered_fused_asm`。
+
+它們不是 C wrapper 串兩個 ASM call。函式內先配置兩個互不重疊的 1536-byte
+區域：低位是 frontend semantic scratch，高位是 stage2 scratch，接著 inline
+frontend、identity-reduced stage1+2 與 native-centered Stage345。整個 symbol 沒有
+`call`、`push` 或 `pop`，只在出口執行一次 `vzeroupper`，且保留 `out == in`。
+這一版刻意不改數學、range 或 native mapping，只測 control-flow fusion，peak
+scratch 仍是 3072 bytes。
+
+同一 executable、共用 output arena、正反 operation order 的 5M-call
+`cycles:u` 確認顯示：U2 從 697.414 降到 696.194，省 1.220 cycles（0.175%）；
+U4 從 697.086 升到 698.350，慢 1.264 cycles（0.181%）。因此 U2 single-entry
+是後續跨邊界 scheduling 的平台，U4 保留為 default-off regression evidence。
+單純省掉 boundary 只有約 1.2 cycles，價值主要是開放後續排程，不是 call
+overhead 本身。
+
 ## 16-block SoA quartic basemul
 
 每個 batch 直接載入 `a0..a3`、`b0..b3` 四組 SoA YMM，16 lanes 同時計算
@@ -316,6 +404,37 @@ F_0=2, F_1=22
 每次 test 都用 `--check` 拒絕 stale table。測試另將 192 lanes 全部對照既有
 `gt_rowbitrev_lambda[branch][physical_block]`，避免混用 input CRT `(64,33)` 與
 正確的 output CRT `(32,3)`。
+
+同一個 quartic helper 也由 `gt_basemul_native_avx2()` 使用。Generator 額外把
+lambda 排成 Stage345 native lane order；row01 與 row2 的 batch/lane 公式就是前節
+的 native mapping，因此四個 coefficient vector 可原位載入、原位存回，不需 768-word
+transpose。允許的非對稱 input contract 是一側 `|x|<=q`、另一側
+`|x|<=8*(q-1)`，兩種 operand orientation 都有測試；lazy-by-lazy 不在 contract 內。
+這讓一支 forward 可以省略 Stage5 後的 144 個動態 center instructions。
+
+`gt_basemul_layout_asm.S` 是相同 contract 的 zero-spill consumer。每個 batch
+把 `a0..a3`、`b0..b3` 與四個 `a_i*qinv mod 2^16` 全部留在 YMM；runtime
+Montgomery low half 直接用 `(a_i*qinv)*b_j`，把原本每個 product 都重算的
+`(a_i*b_j)*qinv` 提到四個 coefficient 的共同 producer。Lambda 與 `R^2` 的
+factor/factor-qinv 仍從既有表和 fixed constant 成對讀取，所以算術、normal-domain
+輸出與 asymmetric range contract 都不變。SoA/native 入口只選不同 table，沒有
+layout conversion。
+
+同檔案另保留兩組 default-off `R^-1` endpoint。它們移除 48 個 `R^2`
+Montgomery finalizers，並由 matching inverse postprocess 把最後的 `1/192`、
+`1/96` constants 各多帶一個 `R`。直接完全不 reduce 會使 inverse lazy bound
+到 `10*(q-1)>32767`，因此 safe 版以三條 `center10` instructions checkpoint
+四個 coefficient；較快的 `c0-lazy` 版只 checkpoint `c1..c3`。`c0` 原始界只有
+`2*(q-1)`，通過 inverse NTT32 後也只到 `8*(q-1)=27648`，恰好落在既有 packed
+Barrett 已驗證區間。兩版都不改 layout、inverse loop 或 twiddle table；目前選擇
+`c0-lazy` 作為後續候選，但尚未進 production。
+
+若 centered 與 lazy 各自展開成一份約 7 KB 的 full-forward symbol，pair boundary
+會因 code footprint 反而慢約 5--7%。目前的 default-off 實驗改用同一支
+runtime-center symbol：public mode 每個 Stage345 block 測一次，兩次 forward 共用
+同一份 code image。Ryzen 上 `2*forward + native basemul` 的十組 paired mean 由
+1784.720 降至 1707.515 cycles（-4.326%），retired instructions 精確少 144.003。
+完整採用仍需 native inverse first-load 與 full-polymul benchmark。
 
 ## SoA direct-consumer inverse NTT
 
@@ -471,11 +590,14 @@ register，所有 schedule candidate 都沒有 spill/reload。也就是說目前
 prototype 的 compiler-generated vector spill 已消除；保留的 frontend 與 stage2
 scratch 是經測量後選擇的資料相依 boundary，而不是 allocator 失敗。
 
-SoA basemul intrinsic 也刻意保留為 semantics baseline：Ryzen 的 GCC 16 linked
-symbol 是 773 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM spill。
-儘管如此，實測 TSC median 與 production basemul 同為 318，retired instructions
-則少約 9.6%。下一個 pointwise optimization gate 是手排成 zero-spill ASM，再比較
-是否真的降低 hardware cycles；不能只根據 intrinsic source 的運算數決定。
+SoA basemul intrinsic 仍刻意保留為 semantics baseline：Ryzen 的 GCC 16 shared
+helper 加 wrapper 是 774 bytes，會建立 72-byte frame 並使用 SysV red zone 做 YMM
+spill。Zero-spill ASM native body 是 655 bytes、147 static instructions；linked audit
+確認沒有 `%rsp`、push/pop/call 或 AVX-512 register。GCC baseline 到 ASM 的 isolated
+perf 由 525.720/377.449 core/reference cycles 降至 470.023/338.473，分別改善
+10.594%/10.326%；retired instructions 由 1685.684 降至 1606.605。下一個算術級
+candidate 是讓 basemul 保持 `R^-1` domain，移除每 batch 四個 `R^2` finalizer，並由
+matching inverse normalization 吸收 scale。
 
 Inverse intrinsic 的 GCC 16 linked symbol 是 2681 bytes。Explicit stack adjustment
 為 1480 bytes，另使用 120-byte red-zone window；其中 1536 bytes 是 row scratch，
@@ -509,6 +631,7 @@ AVX2 已經是 Slothy candidate，也不能直接拿 AArch64 Neon model 來排�
 - `gt_ntt_stage345_soa.s`：依 DAG 手排的 stage3+4+5 與 fused SoA store。
 - `asm-soa-contract.yml`：hybrid ASM boundary、ABI、layout 與 output range。
 - `gt_basemul_soa.c`：16-block SoA quartic intrinsic semantics baseline。
+- `gt_basemul_layout_asm.S`：SoA/native 共用的 zero-spill quartic schedule。
 - `basemul-soa-contract.yml`：pointwise representation、range 與 alias contract。
 - `generate_gt_soa_tables.py`：lambda／lambda-qinv table generator/checker。
 - `gt_invntt_soa.c`：直接消費 SoA 的 lazy inverse/full-pipeline prototype。
@@ -527,10 +650,10 @@ assembly，而不是一次排完整 768-point function：
 2. row01 stage1+2 stripe；
 3. singleton stage1+2 stripe；
 4. row01 stage3+4+5 block；
-6. one 16-block SoA quartic basemul batch。
-7. one `(k3,c)` four-group lazy inverse NTT32；
-8. one inverse DFT3 group；
-9. one `n3,Qgroup` untwist/merge/4×8 final-store group。
+5. one 16-block SoA quartic basemul batch；
+6. one `(k3,c)` four-group lazy inverse NTT32；
+7. one inverse DFT3 group；
+8. one `n3,Qgroup` untwist/merge/4×8 final-store group。
 
 每個 region 都要保留既有 boundary test，檢查 ABI、stack alignment、callee-saved
 register、spill、constant table address 和 modulo-q differential correctness；排程成功
@@ -556,9 +679,12 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - 對同一完整 lazy range 的 packed ASM Barrett modulo/range exhaustive test；
 - frontend `row01/row2` packing differential；
 - stage2 `row01/row2_packed` differential；
+- u2/u4 canonical 與 identity producer 的 exact boundary、in-place regression；
 - direct/half handoff 對 stage2 boundary 的 full-range、random exact differential；
-- canonical 與四個 stage3+4+5 candidate 對獨立 `±5(q-1)` scratch 的
-  modulo-q differential、`[0,q]` range 與 exact reachable-state regression；
+- canonical、四個同表示 schedule、兩個 centered schedule 與 native store 對
+  獨立 `±5(q-1)` scratch 的 modulo-q differential、declared range 與 exact
+  reachable-state regression；
+- native 12-batch mapping 對 centered SoA 的 768-word byte-exact conversion；
 - impulse、boundary 與 200 組完整 random polynomial 對 AArch64 portable GT
   reference 的 modulo-q differential；
 - 768-word SoA mapping 的 forward/inverse exact round trip；
@@ -576,10 +702,11 @@ macOS arm64 會用 `clang -arch x86_64` cross-compile intrinsic path，並透過
 - intrinsic 與 ASM 的 in-place `out==in`；
 - ASan/UBSan 可另外套在同一個 test binary。
 
-Ryzen 7 9700X 的 preliminary run（CPU 2 pinned、boost on、SMT sibling 未隔離）中，
+在較早的 Ryzen 7 9700X preliminary run（CPU 2 pinned、boost on、SMT sibling
+未隔離）中，
 hybrid ASM SoA 的 serialized-TSC median 是 983，intrinsic GT 是 1476，約降低
-33.4%。Production forward NTT 是 444，所以目前主要剩餘成本仍在 intrinsic
-frontend/stage1+2，而不是把 prototype 直接升格成 production kernel。
+33.4%。Production forward NTT 是 444；在該時間點，主要剩餘成本仍在 intrinsic
+frontend/stage1+2。後續里程碑已把這兩段改成手排 ASM。
 
 同一主機 2026-07-16 的 pointwise run 中，production 與 SoA intrinsic basemul
 median 都是 318 TSC ticks；hardware cycles/call 分別為 480.43 與 478.83，
@@ -630,6 +757,189 @@ KPQC Final／production 是 forward 668.996、polymul 2422.08，因此差距縮�
 分別慢 16.86%--16.93% 與 17.33%--17.41%，所以 semantic frontend scratch 不是
 目前 bottleneck。Stage3+4+5 的 `queued-store` 則把 isolated region 降低
 1.13%--1.50%，完整 forward 降低 0.21%--0.34%，但 full polymul 沒有可靠改善。
-兩個實驗都保留作 regression／schedule evidence，沒有改 production 或 prototype
-default。下一個較高價值目標是 inverse/postprocess 或 stage2-to-stage345 boundary
-的結構性改寫，而不是再做相同的 scratch-copy elimination。
+兩個實驗都保留作 regression／schedule evidence。
+
+reducer/pipeline run 中，現有 SoA winner 是
+u2 + identity + centered + queued-store：forward 717.996 cycles、full polymul
+3141.619；canonical GT 分別是 756.840、3219.544，production 是 650.128、
+2401.898。舊的兩段式 forward-only native winner 是
+u4 + identity + native-centered，698.548 cycles；新的單入口比較則選 U2，
+5M-call paired mean 是 696.194 cycles，約為同 run U2 兩段式的 99.825%。
+Native 仍缺 matching
+basemul/inverse，所以所有新路徑維持 default-off，沒有改 production 或 canonical
+prototype default。
+
+`perf record -e cycles:u` 對 U2 single-entry 的 phase-level sample split 是：
+frontend 45.03%、stage1+2 15.30%、Stage345 39.68%。下一個 forward scheduling
+candidate 已把下一個 Stage345 block 的八個 load 排進目前 block 的 native store
+tail。5M-call、十回、正反順序確認由 696.868 降至 695.258 cycles（-0.231%）；
+instructions 增加 7/call，但 IPC 由 3.797 升至 3.812，linked symbol 由 4019 縮至
+3274 bytes。這個 NTTRU-style producer/consumer overlap 成為新的 default-off native
+scheduling platform。下一步回到 frontend CRT-indexed load/address pipeline；不再針對
+約 1-cycle 的 boundary overhead 或 Stage345 store tail 微調，也不重做已證明退步的
+scratch-copy elimination。
+
+frontend 的第一、第二優先也已完成。expanded-constant 的 fused split+twist 雖然把
+兩層 serial Montgomery 改成六條平行 chain，但必須加 exact centered checkpoint；
+5M-call 雙順序結果為 718.615 cycles，比當時 control 的 697.707 慢 2.997%，因此
+保留為 default-off negative result。相反地，high-first cross-pair 排程在目前 DFT3
+與 store tail 期間先完成下一 pair 的 top-zeta Montgomery，算術與輸出 byte-exact，
+不增加 retired instructions，結果為 692.550 cycles（-0.739%）。它成為新的
+default-off native forward winner；production／canonical symbols 仍完全不變。
+
+下一個 bounded forward 實驗應沿用 high-first 排程，改做 pair-specific fixed
+displacement frontend：展開 16 個 public CRT pair 的固定 load 位址，移除每次 pair
+的六個 `movzwl` offset loads 與 indexed-address AGU 壓力。不要再擴大 twist table，
+也不要重開已量到退步的 fused split+twist。
+
+這個 fixed-displacement frontend 已完成。Generator 從同一個 `input_index()` 產生
+16 pair 的 assembly displacement include，build 會檢查 stale artifact。20 對交錯、
+每 process 5M calls 的結果是 693.025 → 690.062 hardware cycles（-0.428%）、
+485.578 → 483.200 reference cycles（-0.490%），instructions 由 2652.193 降到
+2525.191（-4.789%）。獨立 TSC mean 也由 482.80 降到 481.75（-0.217%）。
+
+代價是完全展開後 symbol 從 3274 bytes／715 static instructions 增至 8234 bytes／
+1785 instructions，IPC 從 3.827 降到 3.659；不過 L1I miss 沒有上升。它因此取代
+U2 indexed high-first，成為新的 default-off native winner，但仍不改 production。
+下一個小實驗可利用既有 unrolled body，把 public output-store offsets 也烤進指令，
+移除 `r9` 與每 pair 的 output-index update，而不再複製更多 body。
+
+## Native baseinv center-on-load（2026-07-23）
+
+已完成 default-off 的 `GTN-L8 -> center-on-first-load -> native baseinv`
+實作。它不是先跑一輪 768-coefficient normalization；每個 coefficient YMM
+第一次 load 後直接執行 `vpmulhrsw(a,10)` 與 `a -= q*t`，再進入從 production
+`baseinv.s` 移植的 quartic determinant/adjugate 排程。
+
+Correctness 已覆蓋完整 `[-27648,27648]` exhaustive reducer、19,200 個 random
+invertible quartics、failure-to-zero、`out==in`、Forward centered/lazy
+differential，以及 inverse 乘回 identity。指定的 Ryzen AVX2 主機上，最佳的
+四鏈交錯 ASM 仍使完整 `forward+baseinv` 從 1561.595 增至 1573.895 cycles，
+回退 12.299 cycles（0.788%）。用 memory operand 消掉每 batch broadcast 會因
+load-uop 壓力退得更多（+17.672 cycles）。
+
+因此結論是：把 lazy adjustment 放進 baseinv 在 algebra、range 與 failure
+semantics 上完全可行，但目前不划算。`KG-F/KG-G` 繼續使用 centered Forward；
+center-on-load 保留作 benchmark-only candidate，不改 production。
+
+### Producer-specific GTN-L3：完全移除 baseinv normalization
+
+上面的結論只適用於「任意 `GTN-L8` 輸入」。重新沿實際 delayed-center Forward
+逐 row 推導後，terminal output 明顯更緊：
+
+- native vector slots 0--31（row0/row1 lanes）滿足 `abs(x)<=10172`；
+- vector slots 32--47（row2 lanes）滿足 `abs(x)<=9992`；
+- packed Montgomery 的 unknown-square 安全界是
+  `floor(sqrt(3457*2^15-1))=10643`。
+
+所以 48/48 vectors 都能直接進 baseinv；不需要 partial mask，也不需要更複雜的
+center scheduling。`gt_baseinv_native_l3_asm_avx2` 是 compile-time contract
+alias，linked path 直接共用不含 `vpmulhrsw` 的 centered prepare。
+`generate_gt_forward_lazy_bounds.py` 會檢查
+recurrence、exact center image、兩組固定 vector mapping 與 generated contract。
+
+同一 Ryzen 7 9700X、CPU 2、GCC 16.1.1、每 process 5,000,000 calls、七回
+`perf stat`：
+
+| 完整 boundary | Cycles | Ref cycles | Instructions |
+| --- | ---: | ---: | ---: |
+| centered Forward + centered baseinv | 1719.121 | 1215.197 | 4327.221 |
+| lazy Forward + center-on-load baseinv | 1742.762 | 1230.917 | 4339.224 |
+| lazy Forward + direct GTN-L3 baseinv | 1662.210 | 1174.715 | 4183.192 |
+
+Direct GTN-L3 相對 centered 省 56.911 cycles（3.31%）與 144.029
+instructions。這次是真的消掉 normalization，不是把它移到 baseinv。
+
+Consumer contract 因此可統一：六個 KEM Forward call sites 的實際 producer
+format 都是 `GTN-L3`。`KG-F/KG-G` 的 direct baseinv 現已證明安全；其餘四個
+call sites 原本已對更大的 `GTN-L8` superset 證明 consumer 安全，所以自然接受
+`GTN-L3`。不過這仍是 default-off experimental design；production promotion
+還需要 native KEM island、KAT 與 full-KEM benchmark。
+
+### Key-generation native island 結果
+
+現在已有 opt-in 的完整 keygen candidate：
+
+```text
+lazy Forward -> direct GTN-L3 baseinv -> native basemul
+             -> direct GTN16-to-WIRE12 pack
+```
+
+從 `NTRU+768` 目錄執行：
+
+```sh
+make test-gt-keygen
+make PQCgenKAT_kem PQCgenKAT_kem_gt_keygen
+make bench-gt-keygen
+```
+
+它沒有 standalone 768-word layout conversion，並已通過 exhaustive pack、
+128 組 deterministic byte-exact keypair、full KEM differential，以及完整
+100-case NIST KAT。KAT rsp SHA-256 是
+`22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8`。
+
+但是目前的 direct native pack 是 scalar oracle。相同 Ryzen 7 9700X、CPU 2、
+GCC 16.1.1 的 11-repetition benchmark 顯示：
+
+| Operation | Production cycles | GT cycles | Delta |
+| --- | ---: | ---: | ---: |
+| keygen | 33586.943 | 46620.917 | +38.807% |
+| keygen+encap+decap | 87533.786 | 100853.340 | +15.216% |
+| isolated pack | 226.156 | 4046.129 | 約 17.9 倍 |
+
+三次 pack 多出約 34,011 instructions，足以解釋完整 keygen 的 33,097
+instruction regression；換句話說，native arithmetic island 本身約省 914
+instructions，但被 scalar permutation/gather 吃掉。candidate 因此保持
+default-off。下一步是手排 AVX2 `GTN16 -> WIRE12` permutation+pack，而不是繼續
+微調 Forward。
+
+### Forward reduction audit 與 AVX2 GTN16-to-WIRE12 pack
+
+再次沿 linked lazy Forward 做 range recurrence 後，沒有發現可直接移除的
+material reduction。48 個 terminal center 已經全部拿掉；Stage345 剩下每 block
+四個 low-arm center、合計 24 vectors，若再拔除，row0 在 Stage3 之後的
+`9*(q-1)=31104` 會在後續 twiddle/add 超出 signed-int16。Stage1/2 的 identity
+high-arm reduction 也分別避免 `12*(q-1)=41472` 與 `10*(q-1)=34560` 的
+overflow。剩下唯一顯然的 specialization 是 row01 第一個 block 的七條 identity
+twiddle chains；把四指令 Montgomery identity 改成三指令 center10，理論只省
+7/約 2026 instructions（0.35%），因此延後。
+
+新的 AVX2 pack 由同一個 lambda map generator 產生固定 offset 與 shuffle mask。
+每個 production 四-lane chunk 都來自一個 native XMM half；mask 同時把 sign0
+放低 qword、sign1 放高 qword，所以每個 source 只需一次 `vpshufb`。group 1/3
+的兩個 native batches 又可直接用完整 YMM 同時處理兩個 halves。重建 production
+lane vectors 後，共用原本的 WIRE12 bit-pack 網路，不產生 standalone 1536-byte
+layout conversion。
+
+Pack 另外依實際 consumer contract 分成三個 normalization entry：
+
+- general：任意 signed-int16，保留 production-equivalent Barrett；
+- `GTN-L3`：`abs(x)<=10172`，使用 exact center10 再對負 lane 加 q；
+- centered：`[-3456,3456]`，只需對負 lane 加 q。
+
+Keygen 以 centered pack 處理 `h`、`hinv`，以 L3 pack 處理 lazy Forward 的
+`f`。兩個 centered calls 相鄰，避免 shared permutation core 的 indirect target
+在 `centered -> L3 -> centered` 間來回切換。Ryzen 7 9700X、CPU 2、GCC
+16.1.1、每次 1,000,000 calls、11 repetitions：
+
+| Pack entry | Cycles | Ref cycles | Instructions |
+| --- | ---: | ---: | ---: |
+| production `pack.s` | 225.468 | 158.464 | 815.291 |
+| AVX2 general GTN16 | 308.646 | 217.187 | 1056.291 |
+| AVX2 GTN-L3 | 287.201 | 202.839 | 960.291 |
+| AVX2 centered | 231.480 | 163.466 | 810.289 |
+
+Correctness 覆蓋 general 的全部 65,536 個 int16 patterns、centered 的全部
+6,913 個 representatives、L3 的全部 20,345 個 representatives、86 個完整
+layout patterns、128 組 deterministic keypairs、16 組 full-KEM/public streams，
+以及完整 NIST KAT；response hash 仍是
+`22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8`。
+
+六組交錯 process-order confirmation 的 paired median 顯示 keygen 約省
+28.38 cycles（0.089%）與 779.01 instructions（0.901%）。完整
+keygen+encap+decap 仍多約 391.27 cycles（0.45%），但少 779.01 instructions
+（0.361%）；差額沒有來自 format boundary 的 retired work，較符合執行過較大
+GT keygen code 後對後續 encap/decap 的 frontend/I-cache 影響。因 full-KEM
+cycle gate 尚未通過，整個 island 仍保持 default-off；但 scalar pack blocker
+已經消失，下一步不再是 Forward 微調，而是分開量 keygen 後第一個 encap/decap
+階段的 frontend/code-footprint 成本。

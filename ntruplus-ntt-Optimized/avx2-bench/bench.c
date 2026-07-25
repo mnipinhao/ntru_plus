@@ -92,6 +92,70 @@ static int16_t gt_queued_store_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_queued_store_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static int16_t gt_centered_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_identity_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_identity_centered_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_u2_identity_centered_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_u4_identity_centered_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_identity_centered_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_u2_identity_centered_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_u4_identity_centered_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_identity_native_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_u2_identity_native_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_u4_identity_native_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_u2_identity_native_fused_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_u2_identity_native_pipelined_fused_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_u2_fused_split_twist_native_pipelined_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_u2_high_first_native_pipelined_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_fixed_high_first_native_pipelined_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_wide_high_first_native_pipelined_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t
+    gt_wide_fused_delayed_native_pipelined_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_wide_fused_delayed_row2q2_native_pipelined_outputs
+    [BENCH_NINPUTS][NTRUPLUS_N] __attribute__((aligned(32)));
+static int16_t gt_wide_fused_delayed_row2q2_native_lazy_outputs
+    [BENCH_NINPUTS][NTRUPLUS_N] __attribute__((aligned(32)));
+static int16_t gt_wide_fused_delayed_contiguous_twiddles_native_outputs
+    [BENCH_NINPUTS][NTRUPLUS_N] __attribute__((aligned(32)));
+static int16_t gt_wide_fused_partial_n0_native_pipelined_outputs
+    [BENCH_NINPUTS][NTRUPLUS_N] __attribute__((aligned(32)));
+static int16_t gt_u4_identity_native_fused_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+/* Shared by the paired native timing targets to fix output cache color. */
+static int16_t gt_native_timed_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+/* Shared cache colors for centered/lazy native-consumer boundary timings. */
+static int16_t gt_native_boundary_a[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_native_boundary_b[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_native_boundary_product[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
 static int16_t gt_stage345_serial_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_stage345_interleaved_outputs[BENCH_NINPUTS][NTRUPLUS_N]
@@ -102,6 +166,12 @@ static int16_t gt_stage345_resident_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_stage345_queued_store_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+static int16_t gt_stage345_centered_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_centered_queued_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
+static int16_t gt_stage345_native_centered_outputs[BENCH_NINPUTS][NTRUPLUS_N]
+    __attribute__((aligned(32)));
 static int16_t gt_soa_products[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static gt_frontend_scratch gt_frontend_inputs[BENCH_NINPUTS];
@@ -110,6 +180,12 @@ static gt_frontend_scratch gt_frontend_asm_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_stage12_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_stage12_asm_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_frontend_stage12_asm_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_identity_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_stage12_identity_row2q2_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_u2_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_u4_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_u2_identity_outputs[BENCH_NINPUTS];
+static gt_stage2_scratch gt_frontend_stage12_u4_identity_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_frontend_stage12_direct_outputs[BENCH_NINPUTS];
 static gt_stage2_scratch gt_frontend_stage12_half_outputs[BENCH_NINPUTS];
 static int16_t gt_invntt32_rows[BENCH_NINPUTS][NTRUPLUS_N]
@@ -221,6 +297,47 @@ static uint64_t checksum_i16(const int16_t *values)
   return result;
 }
 
+static void native_centered_to_soa(int16_t out[NTRUPLUS_N],
+                                   const int16_t in[NTRUPLUS_N])
+{
+  unsigned branch;
+  unsigned coefficient;
+  unsigned group;
+  unsigned lane;
+
+  for (group = 0; group < 4; group++) {
+    for (branch = 0; branch < 2; branch++) {
+      for (coefficient = 0; coefficient < 4; coefficient++) {
+        for (lane = 0; lane < 16; lane++) {
+          const unsigned k3 = lane / 8;
+          const unsigned q_lane = lane % 8;
+          const unsigned native_batch = 2 * group + branch;
+          const unsigned soa_batch = 4 * k3 + group;
+
+          out[64 * soa_batch + 16 * coefficient + 8 * branch + q_lane] =
+              in[64 * native_batch + 16 * coefficient + lane];
+        }
+      }
+    }
+  }
+
+  for (group = 0; group < 2; group++) {
+    for (branch = 0; branch < 2; branch++) {
+      for (coefficient = 0; coefficient < 4; coefficient++) {
+        for (lane = 0; lane < 16; lane++) {
+          const unsigned q_half = lane / 8;
+          const unsigned q_lane = lane % 8;
+          const unsigned native_batch = 8 + 2 * group + branch;
+          const unsigned soa_batch = 8 + group + 2 * q_half;
+
+          out[64 * soa_batch + 16 * coefficient + 8 * branch + q_lane] =
+              in[64 * native_batch + 16 * coefficient + lane];
+        }
+      }
+    }
+  }
+}
+
 static void prepare_inputs(void)
 {
   unsigned i;
@@ -240,12 +357,30 @@ static void prepare_inputs(void)
     gt_ntt_avx2_frontend(&gt_frontend_inputs[i], inputs_a[i].coeffs);
     gt_ntt_avx2_frontend_stage12_asm(&gt_frontend_stage12_asm_outputs[i],
                                      inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_identity_asm(
+        &gt_frontend_stage12_identity_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_stage12_identity_row2q2_asm(
+        &gt_stage12_identity_row2q2_outputs[i], &gt_frontend_inputs[i]);
+    gt_ntt_avx2_frontend_stage12_u2_asm(
+        &gt_frontend_stage12_u2_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_u4_asm(
+        &gt_frontend_stage12_u4_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_u2_identity_asm(
+        &gt_frontend_stage12_u2_identity_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_stage12_u4_identity_asm(
+        &gt_frontend_stage12_u4_identity_outputs[i], inputs_a[i].coeffs);
     gt_ntt_avx2_frontend_stage12_direct_asm(
         &gt_frontend_stage12_direct_outputs[i], inputs_a[i].coeffs);
     gt_ntt_avx2_frontend_stage12_half_asm(
         &gt_frontend_stage12_half_outputs[i], inputs_a[i].coeffs);
     gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
                         gt_asm_soa_b[i]);
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+        gt_native_boundary_a[i], inputs_a[i].coeffs, 1);
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+        gt_native_boundary_b[i], inputs_b[i].coeffs, 0);
+    gt_basemul_native_avx2(gt_native_boundary_product[i],
+                           gt_native_boundary_a[i], gt_native_boundary_b[i]);
     gt_invntt_soa_ntt32_intrinsic(gt_invdft3_rows[i],
                                   gt_asm_soa_outputs[i]);
     memcpy(gt_invdft3_rows_asm[i], gt_invdft3_rows[i],
@@ -285,6 +420,12 @@ static int validate_all(void)
   int16_t gt_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_product_want[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_product_soa_want[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_native_centered_soa[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_native_lazy_soa[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_native_product_soa[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_basemul_asm_product[NTRUPLUS_N] __attribute__((aligned(32)));
+  int16_t gt_native_basemul_asm_product[NTRUPLUS_N]
+      __attribute__((aligned(32)));
   int16_t gt_direct_queued_a[NTRUPLUS_N] __attribute__((aligned(32)));
   int16_t gt_direct_queued_b[NTRUPLUS_N] __attribute__((aligned(32)));
   unsigned i;
@@ -342,12 +483,31 @@ static int validate_all(void)
                sizeof(gt_stage12_outputs[i])) != 0 ||
         memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_asm_outputs[i],
                sizeof(gt_stage12_outputs[i])) != 0 ||
+        memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_u2_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0 ||
+        memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_u4_outputs[i],
+               sizeof(gt_stage12_outputs[i])) != 0 ||
         memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_direct_outputs[i],
                sizeof(gt_stage12_outputs[i])) != 0 ||
         memcmp(&gt_stage12_outputs[i], &gt_frontend_stage12_half_outputs[i],
                sizeof(gt_stage12_outputs[i])) != 0) {
       fputs("GT frontend/stage12 ASM exact boundary differential failed\n",
             stderr);
+      return 0;
+    }
+    if (!equal_poly_mod_q(
+            (const int16_t *)(const void *)&gt_frontend_stage12_identity_outputs[i],
+            (const int16_t *)(const void *)&gt_stage12_outputs[i]) ||
+        memcmp(&gt_frontend_stage12_identity_outputs[i],
+               &gt_frontend_stage12_u2_identity_outputs[i],
+               sizeof(gt_frontend_stage12_identity_outputs[i])) != 0 ||
+        memcmp(&gt_frontend_stage12_identity_outputs[i],
+               &gt_frontend_stage12_u4_identity_outputs[i],
+               sizeof(gt_frontend_stage12_identity_outputs[i])) != 0 ||
+        !equal_poly_mod_q(
+            (const int16_t *)(const void *)&gt_stage12_identity_row2q2_outputs[i],
+            (const int16_t *)(const void *)&gt_frontend_stage12_identity_outputs[i])) {
+      fputs("GT identity stage12 modulo differential failed\n", stderr);
       return 0;
     }
 
@@ -365,6 +525,14 @@ static int validate_all(void)
     gt_ntt_avx2_stage345_soa_queued_store_asm(
         gt_stage345_queued_store_outputs[i],
         &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_centered_asm(
+        gt_stage345_centered_outputs[i], &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_soa_centered_queued_store_asm(
+        gt_stage345_centered_queued_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
+    gt_ntt_avx2_stage345_native_centered_asm(
+        gt_stage345_native_centered_outputs[i],
+        &gt_frontend_stage12_asm_outputs[i]);
     if (memcmp(gt_stage345_serial_outputs[i],
                gt_stage345_interleaved_outputs[i],
                sizeof(gt_stage345_serial_outputs[i])) != 0 ||
@@ -376,6 +544,28 @@ static int validate_all(void)
                gt_stage345_queued_store_outputs[i],
                sizeof(gt_stage345_serial_outputs[i])) != 0) {
       fputs("GT stage345 candidate ASM exact differential failed\n", stderr);
+      return 0;
+    }
+    if (!equal_poly_mod_q(gt_stage345_centered_outputs[i],
+                          gt_stage345_serial_outputs[i]) ||
+        memcmp(gt_stage345_centered_outputs[i],
+               gt_stage345_centered_queued_outputs[i],
+               sizeof(gt_stage345_centered_outputs[i])) != 0) {
+      fputs("GT centered Stage345 differential failed\n", stderr);
+      return 0;
+    }
+    for (unsigned j = 0; j < NTRUPLUS_N; j++) {
+      if (gt_stage345_centered_outputs[i][j] < -3080 ||
+          gt_stage345_centered_outputs[i][j] > 3079) {
+        fputs("GT centered Stage345 range failed\n", stderr);
+        return 0;
+      }
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_stage345_native_centered_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_stage345_centered_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT native centered Stage345 mapping failed\n", stderr);
       return 0;
     }
 
@@ -397,6 +587,55 @@ static int validate_all(void)
                                           inputs_a[i].coeffs);
     gt_ntt_avx2_frontend_queued_store_asm_soa(
         gt_queued_store_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_centered_asm_soa(
+        gt_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_identity_asm_soa(
+        gt_identity_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_identity_centered_asm_soa(
+        gt_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+        gt_u2_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+        gt_u4_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_identity_native_centered_asm(
+        gt_identity_native_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u2_identity_native_centered_asm(
+        gt_u2_identity_native_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u4_identity_native_centered_asm(
+        gt_u4_identity_native_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm(
+        gt_u2_identity_native_fused_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_u2_identity_native_centered_pipelined_fused_asm(
+        gt_u2_identity_native_pipelined_fused_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_u2_fused_split_twist_native_centered_pipelined_asm(
+        gt_u2_fused_split_twist_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_u2_high_first_native_centered_pipelined_asm(
+        gt_u2_high_first_native_pipelined_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_fixed_high_first_native_centered_pipelined_asm(
+        gt_fixed_high_first_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_high_first_native_centered_pipelined_asm(
+        gt_wide_high_first_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_delayed_native_centered_pipelined_asm(
+        gt_wide_fused_delayed_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+        gt_wide_fused_delayed_row2q2_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+        gt_wide_fused_delayed_row2q2_native_lazy_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm(
+        gt_wide_fused_delayed_contiguous_twiddles_native_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_partial_n0_native_centered_pipelined_asm(
+        gt_wide_fused_partial_n0_native_pipelined_outputs[i],
+        inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_u4_identity_native_centered_fused_asm(
+        gt_u4_identity_native_fused_outputs[i], inputs_a[i].coeffs);
     if (memcmp(gt_asm_soa_outputs[i], gt_frontend_asm_soa_outputs[i],
                sizeof(gt_asm_soa_outputs[i])) != 0 ||
         memcmp(gt_asm_soa_outputs[i], gt_direct_queued_a,
@@ -420,6 +659,155 @@ static int validate_all(void)
       fputs("GT frontend ASM SoA forward exact differential failed\n", stderr);
       return 0;
     }
+    if (!equal_poly_mod_q(gt_centered_asm_soa_outputs[i],
+                          gt_asm_soa_outputs[i]) ||
+        !equal_poly_mod_q(gt_identity_asm_soa_outputs[i],
+                          gt_asm_soa_outputs[i]) ||
+        !equal_poly_mod_q(gt_identity_centered_asm_soa_outputs[i],
+                          gt_asm_soa_outputs[i])) {
+      fputs("GT reducer full-forward modulo differential failed\n", stderr);
+      return 0;
+    }
+    if (memcmp(gt_u2_identity_centered_asm_soa_outputs[i],
+               gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_identity_centered_asm_soa_outputs[i])) != 0 ||
+        memcmp(gt_u4_identity_centered_asm_soa_outputs[i],
+               gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_identity_centered_asm_soa_outputs[i])) != 0) {
+      fputs("GT u2/u4 combined full-forward exact differential failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_identity_native_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT identity native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_u2_identity_native_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u2 identity native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_u4_identity_native_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u4 identity native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_u2_identity_native_fused_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u2 identity fused native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_u2_identity_native_pipelined_fused_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u2 identity pipelined fused native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_u2_fused_split_twist_native_pipelined_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT u2 fused split-twist native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_u2_high_first_native_pipelined_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u2 high-first native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_fixed_high_first_native_pipelined_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT fixed high-first native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_wide_high_first_native_pipelined_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT wide high-first native full-forward mapping failed\n", stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_wide_fused_delayed_native_pipelined_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT wide fused delayed native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_wide_fused_delayed_row2q2_native_pipelined_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT wide fused delayed row2q2 native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_wide_fused_delayed_row2q2_native_lazy_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT wide fused delayed row2q2 lazy-native mapping failed\n",
+            stderr);
+      return 0;
+    }
+    for (unsigned j = 0; j < NTRUPLUS_N; j++) {
+      if (gt_wide_fused_delayed_row2q2_native_lazy_outputs[i][j] <
+              -8 * (GT_NTT_Q - 1) ||
+          gt_wide_fused_delayed_row2q2_native_lazy_outputs[i][j] >
+              8 * (GT_NTT_Q - 1)) {
+        fputs("GT lazy-native full-forward range failed\n", stderr);
+        return 0;
+      }
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_wide_fused_delayed_contiguous_twiddles_native_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT wide fused delayed contiguous-twiddle native mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(
+        gt_product_soa_want,
+        gt_wide_fused_partial_n0_native_pipelined_outputs[i]);
+    if (!equal_poly_mod_q(gt_product_soa_want,
+                          gt_identity_centered_asm_soa_outputs[i])) {
+      fputs("GT wide fused partial-n0 native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_product_soa_want,
+                           gt_u4_identity_native_fused_outputs[i]);
+    if (memcmp(gt_product_soa_want, gt_identity_centered_asm_soa_outputs[i],
+               sizeof(gt_product_soa_want)) != 0) {
+      fputs("GT u4 identity fused native full-forward mapping failed\n",
+            stderr);
+      return 0;
+    }
 
     ntt_gt_rowbitrevlayout(gt_b_want, inputs_b[i].coeffs);
     gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
@@ -427,8 +815,89 @@ static int validate_all(void)
     gt_ntt_rowbitrev_to_soa(gt_product_soa_want, gt_product_want);
     gt_basemul_soa_avx2(gt_soa_products[i], gt_asm_soa_outputs[i],
                         gt_asm_soa_b[i]);
+    gt_basemul_soa_asm_avx2(gt_basemul_asm_product, gt_asm_soa_outputs[i],
+                            gt_asm_soa_b[i]);
     if (!equal_poly_mod_q(gt_soa_products[i], gt_product_soa_want)) {
       fputs("GT SoA basemul differential failed\n", stderr);
+      return 0;
+    }
+    if (memcmp(gt_basemul_asm_product, gt_soa_products[i],
+               sizeof(gt_basemul_asm_product)) != 0) {
+      fputs("GT SoA basemul ASM exact differential failed\n", stderr);
+      return 0;
+    }
+    gt_basemul_soa_rminus1_asm_avx2(
+        gt_basemul_asm_product, gt_asm_soa_outputs[i], gt_asm_soa_b[i]);
+    gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+        got.coeffs, gt_basemul_asm_product);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT SoA R^-1 basemul/inverse polynomial multiplication failed\n",
+            stderr);
+      return 0;
+    }
+    gt_basemul_soa_rminus1_c0lazy_asm_avx2(
+        gt_basemul_asm_product, gt_asm_soa_outputs[i], gt_asm_soa_b[i]);
+    gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+        got.coeffs, gt_basemul_asm_product);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT SoA R^-1 c0-lazy polynomial multiplication failed\n",
+            stderr);
+      return 0;
+    }
+
+    /* Direct native-layout centered-by-lazy consumer, no layout conversion. */
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+        gt_native_boundary_a[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+        gt_native_boundary_b[i], inputs_b[i].coeffs);
+    gt_basemul_native_avx2(gt_native_boundary_product[i],
+                           gt_native_boundary_a[i], gt_native_boundary_b[i]);
+    gt_basemul_native_asm_avx2(gt_native_basemul_asm_product,
+                               gt_native_boundary_a[i],
+                               gt_native_boundary_b[i]);
+    if (memcmp(gt_native_basemul_asm_product, gt_native_boundary_product[i],
+               sizeof(gt_native_basemul_asm_product)) != 0) {
+      fputs("GT asymmetric native basemul ASM exact differential failed\n",
+            stderr);
+      return 0;
+    }
+    native_centered_to_soa(gt_native_centered_soa,
+                           gt_native_boundary_a[i]);
+    native_centered_to_soa(gt_native_lazy_soa, gt_native_boundary_b[i]);
+    native_centered_to_soa(gt_native_product_soa,
+                           gt_native_basemul_asm_product);
+    gt_basemul_soa_avx2(gt_product_soa_want, gt_native_centered_soa,
+                        gt_native_lazy_soa);
+    if (!equal_poly_mod_q(gt_native_product_soa, gt_product_soa_want)) {
+      fputs("GT asymmetric native basemul differential failed\n", stderr);
+      return 0;
+    }
+    gt_invntt_soa_avx2_fused_asm(got.coeffs, gt_native_product_soa);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT asymmetric native boundary polymul failed\n", stderr);
+      return 0;
+    }
+    gt_basemul_native_rminus1_asm_avx2(
+        gt_native_basemul_asm_product, gt_native_boundary_a[i],
+        gt_native_boundary_b[i]);
+    native_centered_to_soa(gt_native_product_soa,
+                           gt_native_basemul_asm_product);
+    gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+        got.coeffs, gt_native_product_soa);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT asymmetric native R^-1 boundary polymul failed\n", stderr);
+      return 0;
+    }
+    gt_basemul_native_rminus1_c0lazy_asm_avx2(
+        gt_native_basemul_asm_product, gt_native_boundary_a[i],
+        gt_native_boundary_b[i]);
+    native_centered_to_soa(gt_native_product_soa,
+                           gt_native_basemul_asm_product);
+    gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+        got.coeffs, gt_native_product_soa);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT asymmetric native R^-1 c0-lazy boundary polymul failed\n",
+            stderr);
       return 0;
     }
 
@@ -441,6 +910,48 @@ static int validate_all(void)
                                  gt_frontend_asm_soa_products[i]);
     if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
       fputs("GT frontend ASM fused polynomial multiplication failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+        gt_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+        gt_identity_centered_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_identity_centered_asm_soa_outputs[i],
+                        gt_identity_centered_asm_soa_b[i]);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT identity/centered polynomial multiplication failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+        gt_u2_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+        gt_u2_identity_centered_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_u2_identity_centered_asm_soa_outputs[i],
+                        gt_u2_identity_centered_asm_soa_b[i]);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT u2 combined polynomial multiplication failed\n", stderr);
+      return 0;
+    }
+
+    gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+        gt_u4_identity_centered_asm_soa_outputs[i], inputs_a[i].coeffs);
+    gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+        gt_u4_identity_centered_asm_soa_b[i], inputs_b[i].coeffs);
+    gt_basemul_soa_avx2(gt_frontend_asm_soa_products[i],
+                        gt_u4_identity_centered_asm_soa_outputs[i],
+                        gt_u4_identity_centered_asm_soa_b[i]);
+    gt_invntt_soa_avx2_fused_asm(got.coeffs,
+                                 gt_frontend_asm_soa_products[i]);
+    if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
+      fputs("GT u4 combined polynomial multiplication failed\n", stderr);
       return 0;
     }
 
@@ -608,10 +1119,56 @@ static void target_gt_stage12_asm(unsigned index)
                           &gt_frontend_inputs[index]);
 }
 
+static void target_gt_stage12_identity_asm(unsigned index)
+{
+  gt_ntt_avx2_stage12_identity_asm(
+      &gt_frontend_stage12_identity_outputs[index],
+      &gt_frontend_inputs[index]);
+}
+
+static void target_gt_stage12_identity_row2q2_asm(unsigned index)
+{
+  gt_ntt_avx2_stage12_identity_row2q2_asm(
+      &gt_stage12_identity_row2q2_outputs[index], &gt_frontend_inputs[index]);
+}
+
 static void target_gt_frontend_stage12_asm(unsigned index)
 {
   gt_ntt_avx2_frontend_stage12_asm(
       &gt_frontend_stage12_asm_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_identity_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_identity_asm(
+      &gt_frontend_stage12_identity_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_u2_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_u2_asm(
+      &gt_frontend_stage12_u2_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_u4_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_u4_asm(
+      &gt_frontend_stage12_u4_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_u2_identity_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_u2_identity_asm(
+      &gt_frontend_stage12_u2_identity_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_frontend_stage12_u4_identity_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_stage12_u4_identity_asm(
+      &gt_frontend_stage12_u4_identity_outputs[index],
+      inputs_a[index].coeffs);
 }
 
 static void target_gt_frontend_stage12_direct_asm(unsigned index)
@@ -658,6 +1215,27 @@ static void target_gt_stage345_queued_store_asm(unsigned index)
 {
   gt_ntt_avx2_stage345_soa_queued_store_asm(
       gt_stage345_queued_store_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_centered_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_centered_asm(
+      gt_stage345_centered_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_centered_queued_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_soa_centered_queued_store_asm(
+      gt_stage345_centered_queued_outputs[index],
+      &gt_frontend_stage12_asm_outputs[index]);
+}
+
+static void target_gt_stage345_native_centered_asm(unsigned index)
+{
+  gt_ntt_avx2_stage345_native_centered_asm(
+      gt_stage345_native_centered_outputs[index],
       &gt_frontend_stage12_asm_outputs[index]);
 }
 
@@ -716,6 +1294,157 @@ static void target_gt_ntt_queued_store_asm_soa(unsigned index)
       gt_queued_store_asm_soa_outputs[index], inputs_a[index].coeffs);
 }
 
+static void target_gt_ntt_centered_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_centered_asm_soa(
+      gt_centered_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_centered_queued_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_centered_queued_store_asm_soa(
+      gt_centered_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_identity_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_identity_asm_soa(
+      gt_identity_asm_soa_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_identity_centered_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_identity_centered_asm_soa(
+      gt_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_identity_centered_queued_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+      gt_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_identity_centered_queued_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+      gt_u2_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u4_identity_centered_queued_asm_soa(unsigned index)
+{
+  gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+      gt_u4_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_identity_native_centered_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_identity_native_centered_asm(
+      gt_identity_native_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_identity_native_centered_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_u2_identity_native_centered_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u4_identity_native_centered_asm(unsigned index)
+{
+  gt_ntt_avx2_frontend_u4_identity_native_centered_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_identity_native_centered_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_u2_identity_native_centered_fused_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u4_identity_native_centered_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_u4_identity_native_centered_fused_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_identity_native_centered_pipelined_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_u2_identity_native_centered_pipelined_fused_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_fused_split_twist_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_u2_fused_split_twist_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_u2_high_first_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_u2_high_first_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_fixed_high_first_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_fixed_high_first_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_wide_high_first_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_high_first_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_wide_fused_delayed_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void
+target_gt_ntt_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void
+target_gt_ntt_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void
+target_gt_ntt_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
+static void target_gt_ntt_wide_fused_partial_n0_native_centered_pipelined_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_partial_n0_native_centered_pipelined_asm(
+      gt_native_timed_outputs[index], inputs_a[index].coeffs);
+}
+
 static void target_basemul(unsigned index)
 {
   poly_basemul(&freq_out[index], &ntt_a[index], &ntt_b[index]);
@@ -725,6 +1454,142 @@ static void target_gt_basemul_soa(unsigned index)
 {
   gt_basemul_soa_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
                       gt_asm_soa_b[index]);
+}
+
+static void target_gt_basemul_native_asymmetric(unsigned index)
+{
+  gt_basemul_native_avx2(gt_native_boundary_product[index],
+                         gt_native_boundary_a[index],
+                         gt_native_boundary_b[index]);
+}
+
+static void target_gt_basemul_soa_asm(unsigned index)
+{
+	gt_basemul_soa_asm_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+				gt_asm_soa_b[index]);
+}
+
+static void target_gt_basemul_soa_rminus1_asm(unsigned index)
+{
+  gt_basemul_soa_rminus1_asm_avx2(
+      gt_soa_products[index], gt_asm_soa_outputs[index], gt_asm_soa_b[index]);
+}
+
+static void target_gt_basemul_soa_rminus1_c0lazy_asm(unsigned index)
+{
+  gt_basemul_soa_rminus1_c0lazy_asm_avx2(
+      gt_soa_products[index], gt_asm_soa_outputs[index], gt_asm_soa_b[index]);
+}
+
+static void target_gt_basemul_native_asymmetric_asm(unsigned index)
+{
+  gt_basemul_native_asm_avx2(gt_native_boundary_product[index],
+                             gt_native_boundary_a[index],
+                             gt_native_boundary_b[index]);
+}
+
+static void target_gt_basemul_native_asymmetric_rminus1_asm(unsigned index)
+{
+  gt_basemul_native_rminus1_asm_avx2(
+      gt_native_boundary_product[index], gt_native_boundary_a[index],
+      gt_native_boundary_b[index]);
+}
+
+static void target_gt_basemul_native_asymmetric_rminus1_c0lazy_asm(
+    unsigned index)
+{
+  gt_basemul_native_rminus1_c0lazy_asm_avx2(
+      gt_native_boundary_product[index], gt_native_boundary_a[index],
+      gt_native_boundary_b[index]);
+}
+
+/*
+ * Forward-pair + basemul boundaries intentionally omit inverse layout work.
+ * Both targets use the same native buffers; only B's terminal center differs.
+ */
+static void target_gt_native_forward2_basemul_centered_boundary(unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs);
+  gt_basemul_native_avx2(gt_native_boundary_product[index],
+                         gt_native_boundary_a[index],
+                         gt_native_boundary_b[index]);
+}
+
+static void target_gt_native_forward2_basemul_asymmetric_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_centered_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs);
+  gt_basemul_native_avx2(gt_native_boundary_product[index],
+                         gt_native_boundary_a[index],
+                         gt_native_boundary_b[index]);
+}
+
+static void target_gt_native_forward2_basemul_runtime_centered_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs, 1);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs, 1);
+  gt_basemul_native_avx2(gt_native_boundary_product[index],
+                         gt_native_boundary_a[index],
+                         gt_native_boundary_b[index]);
+}
+
+static void target_gt_native_forward2_basemul_runtime_asymmetric_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs, 1);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs, 0);
+  gt_basemul_native_avx2(gt_native_boundary_product[index],
+                         gt_native_boundary_a[index],
+                         gt_native_boundary_b[index]);
+}
+
+static void target_gt_native_forward2_basemul_runtime_asymmetric_asm_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs, 1);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs, 0);
+  gt_basemul_native_asm_avx2(gt_native_boundary_product[index],
+                             gt_native_boundary_a[index],
+                             gt_native_boundary_b[index]);
+}
+
+static void
+target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_asm_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs, 1);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs, 0);
+  gt_basemul_native_rminus1_asm_avx2(
+      gt_native_boundary_product[index], gt_native_boundary_a[index],
+      gt_native_boundary_b[index]);
+}
+
+static void
+target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_c0lazy_asm_boundary(
+    unsigned index)
+{
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_a[index], inputs_a[index].coeffs, 1);
+  gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm(
+      gt_native_boundary_b[index], inputs_b[index].coeffs, 0);
+  gt_basemul_native_rminus1_c0lazy_asm_avx2(
+      gt_native_boundary_product[index], gt_native_boundary_a[index],
+      gt_native_boundary_b[index]);
 }
 
 static void target_gt_invntt_soa(unsigned index)
@@ -841,6 +1706,39 @@ static void target_gt_polymul_soa_postprocess_hybrid(unsigned index)
                                         gt_soa_products[index]);
 }
 
+static void target_gt_polymul_soa_basemul_asm_postprocess_hybrid(
+    unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_asm_avx2(gt_soa_products[index], gt_asm_soa_outputs[index],
+                          gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2_postprocess_hybrid(outputs[index].coeffs,
+                                        gt_soa_products[index]);
+}
+
+static void target_gt_polymul_soa_rminus1_asm_postprocess_hybrid(
+    unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_rminus1_asm_avx2(
+      gt_soa_products[index], gt_asm_soa_outputs[index], gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+      outputs[index].coeffs, gt_soa_products[index]);
+}
+
+static void target_gt_polymul_soa_rminus1_c0lazy_asm_postprocess_hybrid(
+    unsigned index)
+{
+  gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
+  gt_ntt_avx2_asm_soa(gt_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_rminus1_c0lazy_asm_avx2(
+      gt_soa_products[index], gt_asm_soa_outputs[index], gt_asm_soa_b[index]);
+  gt_invntt_soa_avx2_rminus1_postprocess_hybrid(
+      outputs[index].coeffs, gt_soa_products[index]);
+}
+
 static void target_gt_polymul_soa_fused_asm(unsigned index)
 {
   gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[index], inputs_a[index].coeffs);
@@ -860,6 +1758,51 @@ static void target_gt_polymul_frontend_fused_asm(unsigned index)
   gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
                       gt_frontend_asm_soa_outputs[index],
                       gt_frontend_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_identity_centered_queued_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+      gt_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_identity_centered_queued_store_asm_soa(
+      gt_identity_centered_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_identity_centered_asm_soa_outputs[index],
+                      gt_identity_centered_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_u2_identity_centered_queued_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+      gt_u2_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_u2_identity_centered_queued_store_asm_soa(
+      gt_u2_identity_centered_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_u2_identity_centered_asm_soa_outputs[index],
+                      gt_u2_identity_centered_asm_soa_b[index]);
+  gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
+                               gt_frontend_asm_soa_products[index]);
+}
+
+static void target_gt_polymul_u4_identity_centered_queued_fused_asm(
+    unsigned index)
+{
+  gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+      gt_u4_identity_centered_asm_soa_outputs[index],
+      inputs_a[index].coeffs);
+  gt_ntt_avx2_frontend_u4_identity_centered_queued_store_asm_soa(
+      gt_u4_identity_centered_asm_soa_b[index], inputs_b[index].coeffs);
+  gt_basemul_soa_avx2(gt_frontend_asm_soa_products[index],
+                      gt_u4_identity_centered_asm_soa_outputs[index],
+                      gt_u4_identity_centered_asm_soa_b[index]);
   gt_invntt_soa_avx2_fused_asm(outputs[index].coeffs,
                                gt_frontend_asm_soa_products[index]);
 }
@@ -977,7 +1920,18 @@ static const struct operation operations[] = {
   {"gt-frontend-asm", target_gt_frontend_asm},
   {"gt-stage12", target_gt_stage12},
   {"gt-stage12-asm", target_gt_stage12_asm},
+  {"gt-stage12-identity-asm", target_gt_stage12_identity_asm},
+  {"gt-stage12-identity-row2q2-asm",
+   target_gt_stage12_identity_row2q2_asm},
   {"gt-frontend-stage12-asm", target_gt_frontend_stage12_asm},
+  {"gt-frontend-stage12-identity-asm",
+   target_gt_frontend_stage12_identity_asm},
+  {"gt-frontend-stage12-u2-asm", target_gt_frontend_stage12_u2_asm},
+  {"gt-frontend-stage12-u4-asm", target_gt_frontend_stage12_u4_asm},
+  {"gt-frontend-stage12-u2-identity-asm",
+   target_gt_frontend_stage12_u2_identity_asm},
+  {"gt-frontend-stage12-u4-identity-asm",
+   target_gt_frontend_stage12_u4_identity_asm},
   {"gt-frontend-stage12-direct-asm", target_gt_frontend_stage12_direct_asm},
   {"gt-frontend-stage12-half-asm", target_gt_frontend_stage12_half_asm},
   {"gt-stage345-serial-asm", target_gt_stage345_serial_asm},
@@ -985,6 +1939,11 @@ static const struct operation operations[] = {
   {"gt-stage345-remapped-asm", target_gt_stage345_remapped_asm},
   {"gt-stage345-resident-asm", target_gt_stage345_resident_asm},
   {"gt-stage345-queued-store-asm", target_gt_stage345_queued_store_asm},
+  {"gt-stage345-centered-asm", target_gt_stage345_centered_asm},
+  {"gt-stage345-centered-queued-asm",
+   target_gt_stage345_centered_queued_asm},
+  {"gt-stage345-native-centered-asm",
+   target_gt_stage345_native_centered_asm},
   {"gt-ntt-frontend-asm-soa", target_gt_ntt_frontend_asm_soa},
   {"gt-ntt-direct-asm-soa", target_gt_ntt_direct_asm_soa},
   {"gt-ntt-direct-interleaved-asm-soa",
@@ -996,8 +1955,75 @@ static const struct operation operations[] = {
   {"gt-ntt-half-remapped-asm-soa", target_gt_ntt_half_remapped_asm_soa},
   {"gt-ntt-resident-asm-soa", target_gt_ntt_resident_asm_soa},
   {"gt-ntt-queued-store-asm-soa", target_gt_ntt_queued_store_asm_soa},
+  {"gt-ntt-centered-asm-soa", target_gt_ntt_centered_asm_soa},
+  {"gt-ntt-centered-queued-asm-soa",
+   target_gt_ntt_centered_queued_asm_soa},
+  {"gt-ntt-identity-asm-soa", target_gt_ntt_identity_asm_soa},
+  {"gt-ntt-identity-centered-asm-soa",
+   target_gt_ntt_identity_centered_asm_soa},
+  {"gt-ntt-identity-centered-queued-asm-soa",
+   target_gt_ntt_identity_centered_queued_asm_soa},
+  {"gt-ntt-u2-identity-centered-queued-asm-soa",
+   target_gt_ntt_u2_identity_centered_queued_asm_soa},
+  {"gt-ntt-u4-identity-centered-queued-asm-soa",
+   target_gt_ntt_u4_identity_centered_queued_asm_soa},
+  {"gt-ntt-identity-native-centered-asm",
+   target_gt_ntt_identity_native_centered_asm},
+  {"gt-ntt-u2-identity-native-centered-asm",
+   target_gt_ntt_u2_identity_native_centered_asm},
+  {"gt-ntt-u4-identity-native-centered-asm",
+   target_gt_ntt_u4_identity_native_centered_asm},
+  {"gt-ntt-u2-identity-native-centered-fused-asm",
+   target_gt_ntt_u2_identity_native_centered_fused_asm},
+  {"gt-ntt-u2-identity-native-centered-pipelined-fused-asm",
+   target_gt_ntt_u2_identity_native_centered_pipelined_fused_asm},
+  {"gt-ntt-u2-fused-split-twist-native-centered-pipelined-asm",
+   target_gt_ntt_u2_fused_split_twist_native_centered_pipelined_asm},
+  {"gt-ntt-u2-high-first-native-centered-pipelined-asm",
+   target_gt_ntt_u2_high_first_native_centered_pipelined_asm},
+  {"gt-ntt-fixed-high-first-native-centered-pipelined-asm",
+   target_gt_ntt_fixed_high_first_native_centered_pipelined_asm},
+  {"gt-ntt-wide-high-first-native-centered-pipelined-asm",
+   target_gt_ntt_wide_high_first_native_centered_pipelined_asm},
+  {"gt-ntt-wide-fused-delayed-native-centered-pipelined-asm",
+   target_gt_ntt_wide_fused_delayed_native_centered_pipelined_asm},
+  {"gt-ntt-wide-fused-delayed-row2q2-native-centered-pipelined-asm",
+   target_gt_ntt_wide_fused_delayed_row2q2_native_centered_pipelined_asm},
+  {"gt-ntt-wide-fused-delayed-row2q2-native-lazy-pipelined-asm",
+   target_gt_ntt_wide_fused_delayed_row2q2_native_lazy_pipelined_asm},
+  {"gt-ntt-wide-fused-delayed-native-centered-contiguous-twiddles-pipelined-asm",
+   target_gt_ntt_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm},
+  {"gt-ntt-wide-fused-partial-n0-native-centered-pipelined-asm",
+   target_gt_ntt_wide_fused_partial_n0_native_centered_pipelined_asm},
+  {"gt-ntt-u4-identity-native-centered-fused-asm",
+   target_gt_ntt_u4_identity_native_centered_fused_asm},
   {"basemul", target_basemul},
   {"gt-basemul-soa", target_gt_basemul_soa},
+  {"gt-basemul-native-asymmetric", target_gt_basemul_native_asymmetric},
+  {"gt-basemul-soa-asm", target_gt_basemul_soa_asm},
+  {"gt-basemul-soa-rminus1-asm", target_gt_basemul_soa_rminus1_asm},
+  {"gt-basemul-soa-rminus1-c0lazy-asm",
+   target_gt_basemul_soa_rminus1_c0lazy_asm},
+  {"gt-basemul-native-asymmetric-asm",
+   target_gt_basemul_native_asymmetric_asm},
+  {"gt-basemul-native-asymmetric-rminus1-asm",
+   target_gt_basemul_native_asymmetric_rminus1_asm},
+  {"gt-basemul-native-asymmetric-rminus1-c0lazy-asm",
+   target_gt_basemul_native_asymmetric_rminus1_c0lazy_asm},
+  {"gt-native-forward2-basemul-centered-boundary",
+   target_gt_native_forward2_basemul_centered_boundary},
+  {"gt-native-forward2-basemul-asymmetric-boundary",
+   target_gt_native_forward2_basemul_asymmetric_boundary},
+  {"gt-native-forward2-basemul-runtime-centered-boundary",
+   target_gt_native_forward2_basemul_runtime_centered_boundary},
+  {"gt-native-forward2-basemul-runtime-asymmetric-boundary",
+   target_gt_native_forward2_basemul_runtime_asymmetric_boundary},
+  {"gt-native-forward2-basemul-runtime-asymmetric-asm-boundary",
+   target_gt_native_forward2_basemul_runtime_asymmetric_asm_boundary},
+  {"gt-native-forward2-basemul-runtime-asymmetric-rminus1-asm-boundary",
+   target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_asm_boundary},
+  {"gt-native-forward2-basemul-runtime-asymmetric-rminus1-c0lazy-asm-boundary",
+   target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_c0lazy_asm_boundary},
   {"invntt", target_invntt},
   {"gt-invntt32", target_gt_invntt32_intrinsic},
   {"gt-invntt32-asm", target_gt_invntt32_asm},
@@ -1017,9 +2043,21 @@ static const struct operation operations[] = {
   {"gt-polymul-soa-dft3-hybrid", target_gt_polymul_soa_dft3_hybrid},
   {"gt-polymul-soa-postprocess-hybrid",
    target_gt_polymul_soa_postprocess_hybrid},
+  {"gt-polymul-soa-basemul-asm-postprocess-hybrid",
+   target_gt_polymul_soa_basemul_asm_postprocess_hybrid},
+  {"gt-polymul-soa-rminus1-asm-postprocess-hybrid",
+   target_gt_polymul_soa_rminus1_asm_postprocess_hybrid},
+  {"gt-polymul-soa-rminus1-c0lazy-asm-postprocess-hybrid",
+   target_gt_polymul_soa_rminus1_c0lazy_asm_postprocess_hybrid},
   {"gt-polymul-soa-fused-asm", target_gt_polymul_soa_fused_asm},
   {"gt-polymul-frontend-fused-asm",
    target_gt_polymul_frontend_fused_asm},
+  {"gt-polymul-identity-centered-queued-fused-asm",
+   target_gt_polymul_identity_centered_queued_fused_asm},
+  {"gt-polymul-u2-identity-centered-queued-fused-asm",
+   target_gt_polymul_u2_identity_centered_queued_fused_asm},
+  {"gt-polymul-u4-identity-centered-queued-fused-asm",
+   target_gt_polymul_u4_identity_centered_queued_fused_asm},
   {"gt-polymul-direct-fused-asm", target_gt_polymul_direct_fused_asm},
   {"gt-polymul-direct-interleaved-fused-asm",
    target_gt_polymul_direct_interleaved_fused_asm},
@@ -1096,6 +2134,66 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_resident_asm_soa_outputs[i]);
     } else if (operation->run == target_gt_ntt_queued_store_asm_soa) {
       sink ^= checksum_i16(gt_queued_store_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_centered_asm_soa ||
+               operation->run == target_gt_ntt_centered_queued_asm_soa) {
+      sink ^= checksum_i16(gt_centered_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_identity_asm_soa) {
+      sink ^= checksum_i16(gt_identity_asm_soa_outputs[i]);
+    } else if (operation->run == target_gt_ntt_identity_centered_asm_soa ||
+               operation->run ==
+                   target_gt_ntt_identity_centered_queued_asm_soa) {
+      sink ^= checksum_i16(gt_identity_centered_asm_soa_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_identity_centered_queued_asm_soa) {
+      sink ^= checksum_i16(gt_u2_identity_centered_asm_soa_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u4_identity_centered_queued_asm_soa) {
+      sink ^= checksum_i16(gt_u4_identity_centered_asm_soa_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_identity_native_centered_asm) {
+      sink ^= checksum_i16(gt_identity_native_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_identity_native_centered_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u4_identity_native_centered_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_identity_native_centered_fused_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_identity_native_centered_pipelined_fused_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_fused_split_twist_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u2_high_first_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_fixed_high_first_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_high_first_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_fused_delayed_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_fused_delayed_row2q2_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_fused_delayed_row2q2_native_lazy_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_fused_delayed_native_centered_contiguous_twiddles_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_wide_fused_partial_n0_native_centered_pipelined_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
+    } else if (operation->run ==
+               target_gt_ntt_u4_identity_native_centered_fused_asm) {
+      sink ^= checksum_i16(gt_native_timed_outputs[i]);
     } else if (operation->run == target_gt_frontend) {
       sink ^= checksum_i16((const int16_t *)(const void *)&gt_frontend_outputs[i]);
     } else if (operation->run == target_gt_frontend_asm) {
@@ -1106,6 +2204,27 @@ static void consume_outputs(const struct operation *operation)
     } else if (operation->run == target_gt_stage12_asm) {
       sink ^= checksum_i16(
           (const int16_t *)(const void *)&gt_stage12_asm_outputs[i]);
+    } else if (operation->run == target_gt_stage12_identity_asm ||
+               operation->run == target_gt_frontend_stage12_identity_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_identity_outputs[i]);
+    } else if (operation->run == target_gt_stage12_identity_row2q2_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_stage12_identity_row2q2_outputs[i]);
+    } else if (operation->run == target_gt_frontend_stage12_u2_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_u2_outputs[i]);
+    } else if (operation->run == target_gt_frontend_stage12_u4_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_u4_outputs[i]);
+    } else if (operation->run ==
+               target_gt_frontend_stage12_u2_identity_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_u2_identity_outputs[i]);
+    } else if (operation->run ==
+               target_gt_frontend_stage12_u4_identity_asm) {
+      sink ^= checksum_i16((const int16_t *)(const void *)
+                               &gt_frontend_stage12_u4_identity_outputs[i]);
     } else if (operation->run == target_gt_frontend_stage12_asm) {
       sink ^= checksum_i16((const int16_t *)(const void *)
                                &gt_frontend_stage12_asm_outputs[i]);
@@ -1125,10 +2244,40 @@ static void consume_outputs(const struct operation *operation)
       sink ^= checksum_i16(gt_stage345_resident_outputs[i]);
     } else if (operation->run == target_gt_stage345_queued_store_asm) {
       sink ^= checksum_i16(gt_stage345_queued_store_outputs[i]);
+    } else if (operation->run == target_gt_stage345_centered_asm) {
+      sink ^= checksum_i16(gt_stage345_centered_outputs[i]);
+    } else if (operation->run == target_gt_stage345_centered_queued_asm) {
+      sink ^= checksum_i16(gt_stage345_centered_queued_outputs[i]);
+    } else if (operation->run == target_gt_stage345_native_centered_asm) {
+      sink ^= checksum_i16(gt_stage345_native_centered_outputs[i]);
     } else if (operation->run == target_basemul) {
       sink ^= checksum_i16(freq_out[i].coeffs);
-    } else if (operation->run == target_gt_basemul_soa) {
+    } else if (operation->run == target_gt_basemul_soa ||
+               operation->run == target_gt_basemul_soa_asm ||
+               operation->run == target_gt_basemul_soa_rminus1_asm ||
+               operation->run == target_gt_basemul_soa_rminus1_c0lazy_asm) {
       sink ^= checksum_i16(gt_soa_products[i]);
+    } else if (operation->run == target_gt_basemul_native_asymmetric ||
+               operation->run == target_gt_basemul_native_asymmetric_asm ||
+               operation->run ==
+                   target_gt_basemul_native_asymmetric_rminus1_asm ||
+               operation->run ==
+                   target_gt_basemul_native_asymmetric_rminus1_c0lazy_asm ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_centered_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_asymmetric_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_runtime_centered_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_runtime_asymmetric_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_runtime_asymmetric_asm_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_asm_boundary ||
+               operation->run ==
+                   target_gt_native_forward2_basemul_runtime_asymmetric_rminus1_c0lazy_asm_boundary) {
+      sink ^= checksum_i16(gt_native_boundary_product[i]);
     } else if (operation->run == target_gt_invntt32_intrinsic) {
       sink ^= checksum_i16(gt_invntt32_rows[i]);
     } else if (operation->run == target_gt_invntt32_asm) {

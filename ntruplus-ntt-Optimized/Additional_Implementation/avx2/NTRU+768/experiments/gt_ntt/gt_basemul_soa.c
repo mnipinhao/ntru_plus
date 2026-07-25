@@ -40,9 +40,11 @@ static inline __m256i montgomery_mul_load(const int16_t *a,
 		_mm256_loadu_si256((const __m256i *)(const void *)b));
 }
 
-void gt_basemul_soa_avx2(int16_t out[restrict GT_NTT_N],
+static void gt_basemul_layout_avx2(int16_t out[restrict GT_NTT_N],
 	const int16_t a[restrict GT_NTT_N],
-	const int16_t b[restrict GT_NTT_N])
+	const int16_t b[restrict GT_NTT_N],
+	const int16_t lambda_table[GT_SOA_BATCHES][GT_SOA_LANES],
+	const int16_t lambda_qinv_table[GT_SOA_BATCHES][GT_SOA_LANES])
 {
 	const __m256i rsq = _mm256_set1_epi16(GT_RSQ);
 	const __m256i rsq_qinv = _mm256_set1_epi16(GT_RSQ_QINV);
@@ -52,9 +54,9 @@ void gt_basemul_soa_avx2(int16_t out[restrict GT_NTT_N],
 		const int16_t *const ap = a + base;
 		const int16_t *const bp = b + base;
 		const __m256i lambda = _mm256_load_si256(
-			(const __m256i *)(const void *)gt_soa_lambda[batch]);
+			(const __m256i *)(const void *)lambda_table[batch]);
 		const __m256i lambda_qinv = _mm256_load_si256(
-			(const __m256i *)(const void *)gt_soa_lambda_qinv[batch]);
+			(const __m256i *)(const void *)lambda_qinv_table[batch]);
 		__m256i accumulator;
 
 		/* c0 = a0*b0 + lambda*(a1*b3 + a2*b2 + a3*b1). */
@@ -107,4 +109,20 @@ void gt_basemul_soa_avx2(int16_t out[restrict GT_NTT_N],
 		accumulator = montgomery_mul_fixed(accumulator, rsq, rsq_qinv);
 		_mm256_storeu_si256((__m256i *)(void *)(out + base + 48), accumulator);
 	}
+}
+
+void gt_basemul_soa_avx2(int16_t out[restrict GT_NTT_N],
+	const int16_t a[restrict GT_NTT_N],
+	const int16_t b[restrict GT_NTT_N])
+{
+	gt_basemul_layout_avx2(out, a, b,
+		gt_soa_lambda, gt_soa_lambda_qinv);
+}
+
+void gt_basemul_native_avx2(int16_t out[restrict GT_NTT_N],
+	const int16_t a[restrict GT_NTT_N],
+	const int16_t b[restrict GT_NTT_N])
+{
+	gt_basemul_layout_avx2(out, a, b,
+		gt_native_lambda, gt_native_lambda_qinv);
 }

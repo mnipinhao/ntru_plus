@@ -88,7 +88,7 @@ gt_invntt_soa_avx2_fused_asm:
 	movl $12, %ecx
 .p2align 5
 .Lfused_post_group_loop:
-	POSTPROCESS_GROUP
+	POSTPROCESS_GROUP .Lpost_ninv_pair, .Lpost_2ninv_pair
 	addq $128, %rsi
 	addq $32, %r8
 	addq $32, %r9

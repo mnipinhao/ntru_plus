@@ -1,0 +1,141 @@
+kernel: ntruplus768_gt_native_baseinv
+status: benchmark_only_default_off_l3_direct_wins_boundary
+
+platform:
+  isa: AVX2
+  abi: System_V_AMD64
+  object_format: ELF
+
+ring:
+  coefficient_modulus: 3457
+  quartics: 192
+  quotient: "F_q[X]/(X^4-lambda)"
+  layout: GTN16
+  batches: 12
+  lanes_per_batch: 16
+
+entries:
+  centered_control:
+    symbol: gt_baseinv_native_centered_asm_avx2
+    input_format: GTN-C
+    prepare_symbol: gt_baseinv_native_prepare_centered_asm
+  center_on_load:
+    symbol: gt_baseinv_native_center_on_load_asm_avx2
+    input_format: GTN-L8
+    prepare_symbol: gt_baseinv_native_prepare_center_on_load_asm
+    selected_for_production: false
+  l3_direct:
+    symbol: gt_baseinv_native_l3_asm_avx2
+    input_format: GTN-L3
+    implementation: inline_contract_alias_of_centered_control
+    linked_symbol: gt_baseinv_native_centered_asm_avx2
+    prepare_symbol: gt_baseinv_native_prepare_centered_asm
+    normalization_instructions: 0
+    selected_for_experimental_kem_design: true
+
+input:
+  centered_control_range: [-3080, 3079]
+  lazy_absolute_bound: 27648
+  l3_absolute_bound: 10368
+  forward_producer_bounds:
+    vector_0_through_31: 10172
+    vector_32_through_47: 9992
+  montgomery_square_safe_absolute_bound: 10643
+  alignment_bytes: 32
+  aliasing: out_may_equal_in
+
+center_on_load:
+  sequence:
+    - "quotient = vpmulhrsw(input, 10)"
+    - "centered = input - quotient*3457"
+  dynamic_vectors: 48
+  dynamic_instructions:
+    center_arithmetic: 144
+    per_batch_constant_broadcast: 12
+    total_delta_vs_centered_prepare: 156
+  exhaustive_input_count: 55297
+  exact_output_range: [-3080, 3079]
+  congruence_mod_q: preserved
+  standalone_normalization_pass: false
+
+algebra:
+  determinant:
+    t0: "a0^2 + lambda*(a2^2-2*a1*a3)"
+    t1: "2*a0*a2-a1^2-lambda*a3^2"
+    value: "t0^2-lambda*t1^2"
+  batch_inversion:
+    determinants: 12
+    lanes: 16
+    field_inversions: 1
+  failure:
+    return_value: 1
+    output: all_zero
+  success:
+    return_value: 0
+    output_format: GTN-C
+    output_absolute_bound: 3456
+
+constant_time:
+  coefficient_dependent_addresses: false
+  coefficient_dependent_table_indices: false
+  coefficient_dependent_loop_counts: false
+  failure_branch: same_semantics_as_production_poly_baseinv
+
+correctness_gates:
+  - generated_forward_vector_bound_recurrence
+  - all_48_vectors_below_square_safe_threshold
+  - exact_l3_row01_row2_endpoints
+  - exact_generic_l3_endpoints
+  - random_l3_direct_vs_center_on_load
+  - exhaustive_center_l8
+  - centered_vs_lazy_differential
+  - intrinsic_vs_prepare_asm_differential
+  - random_invertible_quartics_19200
+  - boundary_lazy_endpoints
+  - one_zero_determinant_failure
+  - all_zero_failure
+  - failure_output_all_zero
+  - input_immutability
+  - out_equals_in
+  - multiply_inverse_equals_identity
+  - centered_and_lazy_forward_inputs
+  - linux_asm_linked_test
+
+benchmark:
+  host: Ryzen_7_9700X
+  compiler: GCC_16.1.1
+  cpu: 2
+  calls_per_process: 5000000
+  repetitions: 7
+  scheduled_broadcast:
+    centered_cycles: 967.744611
+    center_on_load_cycles: 1021.704966
+    isolated_delta_cycles: 53.960355
+    forward_centered_baseinv_cycles: 1561.595426
+    forward_lazy_baseinv_cycles: 1573.894540
+    boundary_delta_cycles: 12.299114
+    boundary_delta_percent: 0.7876
+    decision: reject_for_production
+  memory_operand_negative_control:
+    forward_centered_baseinv_cycles: 1561.782341
+    forward_lazy_baseinv_cycles: 1579.454125
+    boundary_delta_cycles: 17.671784
+    boundary_delta_percent: 1.1315
+    decision: reject
+  zero_normalization_l3:
+    centered_forward_baseinv_cycles: 1719.121376
+    centered_forward_baseinv_ref_cycles: 1215.197318
+    centered_forward_baseinv_instructions: 4327.221192
+    lazy_forward_direct_baseinv_cycles: 1662.209984
+    lazy_forward_direct_baseinv_ref_cycles: 1174.715057
+    lazy_forward_direct_baseinv_instructions: 4183.192379
+    delta_cycles: -56.911392
+    delta_percent: -3.3105
+    delta_ref_cycles: -40.482261
+    delta_instructions: -144.028813
+    decision: retain_for_kem_integration
+
+promotion_limits:
+  - l3_direct_not_integrated_into_full_keygen
+  - no_full_keygen_kat_or_benchmark_integration
+  - production_symbols_unchanged

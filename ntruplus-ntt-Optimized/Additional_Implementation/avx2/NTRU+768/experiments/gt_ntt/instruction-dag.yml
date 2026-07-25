@@ -51,6 +51,11 @@ regions:
       after_stage1: "4*(q-1)"
       after_stage2: "5*(q-1)"
       barrett_checkpoint: none
+      identity_candidate:
+        formula: "a - q*round(10*a/2^15)"
+        stage1_reducer_image: "[-2179,2178]"
+        stage2_reducer_image: "[-2359,2359]"
+        unchanged_nonidentity_chain: omega32_pow8_and_row2_mixed_half
     register_allocation:
       ymm0_ymm8: data_and_montgomery_temporaries
       ymm9_ymm10: packed_row2_factor_and_qinv
@@ -68,6 +73,34 @@ regions:
     internal_calls: 0
     terminal_vzeroupper: 1
     linked_symbol_bytes: 970
+  frontend_dft3_tail_candidates:
+    implementation: handwritten_avx2_asm_benchmark_only
+    common_nodes:
+      - load_pair0_prologue
+      - current_top_split_and_twist
+      - issue_dft3_difference_and_omega_products
+      - preload_next_n3_0_into_dead_ymm0_ymm3
+      - finish_current_r0_and_preload_next_n3_1_into_dead_ymm1_ymm4
+      - finish_current_r1_r2_and_preload_next_n3_2_into_dead_ymm2_ymm5
+      - store_current_outputs_from_ymm6_to_ymm10
+    register_allocation:
+      ymm0_ymm5: next_pair_inputs_as_current_inputs_die
+      ymm6_ymm8: current_r0_r1_r2
+      ymm9_ymm10: current_row01_permute_outputs
+      ymm12: xmm_load_staging
+      ymm13_ymm15: zeta_zeta_qinv_q
+    u2:
+      loop_groups: 7
+      pairs_per_group: 2
+      epilogue_pairs: [14, 15]
+      identity_linked_symbol_bytes: 2183
+    u4:
+      loop_groups: 3
+      pairs_per_group: 4
+      epilogue_pairs: [12, 13, 14, 15]
+      identity_linked_symbol_bytes: 3847
+    selected_existing_soa: u2_identity
+    final_pair_overread: false
   frontend_stage12_stripe_candidates:
     implementation: handwritten_avx2_asm_benchmark_only
     repeats: 8
@@ -102,15 +135,31 @@ regions:
     row01_repeats: 4
     singleton_repeats: 2
     vectors_per_block: 8
-    nodes:
+    common_nodes:
       - load8
       - stage3_distance4_four_interleaved_montgomery_chains
       - stage4_distance2_four_interleaved_montgomery_chains
       - stage5_distance1_four_interleaved_montgomery_chains
-      - packed_int16_barrett
       - lane_local_transpose8x8
-      - eight_cross_half_permutes
-      - store_four_soa_vectors_per_batch
+    output_variants:
+      canonical_soa:
+        nodes:
+          - packed_int16_barrett
+          - eight_cross_half_permutes
+          - store_four_soa_vectors_per_batch
+        output_range: "[0,q]"
+      centered_soa:
+        nodes:
+          - signed_three_instruction_reducer
+          - eight_cross_half_permutes
+          - store_four_soa_vectors_per_batch
+        output_range: "[-3080,3079]"
+      centered_native:
+        nodes:
+          - signed_three_instruction_reducer
+          - direct_branch_coefficient_vector_stores
+        output_range: "[-3080,3079]"
+        removed: eight_cross_half_permutes_per_block
     live_set_target: 8
     scheduling_candidates:
       canonical_serial:
@@ -136,7 +185,57 @@ regions:
         change: issue_all_eight_vperm2i128_before_all_eight_vmovdqu_stores
         performance_disposition: selected_micro_candidate_default_off
         measured_result: isolated_1_13_to_1_50_percent_faster_full_forward_0_21_to_0_34_percent_faster_full_polymul_0_10_percent_slower
+      centered_queued_store:
+        gcc16_gnu_as_linked_symbol_bytes: 1854
+        reducer: "a - q*round(10*a/2^15)"
+        output_range: "[-3080,3079]"
+        measured_cycles: 307.1845
+        performance_disposition: selected_existing_soa_default_off
+      native_centered:
+        gcc16_gnu_as_linked_symbol_bytes: 1744
+        reducer: "a - q*round(10*a/2^15)"
+        retained: lane_local_transpose8x8
+        removed: 48_cross_half_vperm2i128
+        stores:
+          ymm8_ymm11: branch0_c0_c1_c2_c3
+          ymm12_ymm15: branch1_c0_c1_c2_c3
+        measured_cycles: 289.1795
+        performance_disposition: selected_forward_only_requires_native_consumers
     low_level_aliasing: aligned_stage2_scratch_and_output_must_not_overlap
+  forward_native_single_entry_candidates:
+    implementation: handwritten_avx2_asm_benchmark_only
+    composition:
+      - frontend_dft3_tail_candidate_u2_or_u4
+      - identity_reduced_stage12
+      - centered_native_stage345
+    stack:
+      total_bytes: 3072
+      frontend_semantic_scratch: "[rsp+0,rsp+1536)"
+      stage2_scratch: "[rsp+1536,rsp+3072)"
+    boundary:
+      internal_calls: 0
+      push_pop: 0
+      terminal_vzeroupper: 1
+      exact_entry_rsp_restore: true
+      out_may_equal_input: true
+    linked_symbol_bytes:
+      u2: 4019
+      u4: 5747
+    measured_5m_paired_delta:
+      u2: "-1.220 cycles (-0.175%)"
+      u4: "+1.264 cycles (+0.181%)"
+    u2_cycles_profile_samples:
+      frontend: 45.03_percent
+      stage1_stage2: 15.30_percent
+      stage3_stage4_stage5_native_store: 39.68_percent
+    selected_scheduling_platform: u2
+    next_schedule:
+      - prologue_load_first_stage345_block
+      - compute_current_block
+      - interleave_current_native_stores_with_next_block_loads_into_dead_ymm0_ymm7
+      - epilogue_compute_and_store_last_block
+    next_schedule_peak_live_set_change: none
+    performance_conclusion: boundary_removal_is_small_but_enables_cross_boundary_scheduling
   scatter:
     implementation: intrinsic_rowbitrev_comparison_path_only
     nodes:
@@ -242,3 +341,49 @@ regions:
     vzeroupper: one_at_function_exit
     linked_symbol_bytes: 1968
     performance_conclusion: call_boundary_fusion_is_neutral
+  native_runtime_forward_pair:
+    implementation: handwritten_avx2_asm_benchmark_only
+    symbol: gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_runtime_center_pipelined_asm
+    mode:
+      source: public_third_argument
+      storage: bit0_of_saved_entry_rsp
+      consumer: one_branch_per_stage345_block
+    centered_call:
+      terminal_nodes:
+        - eight_parallel_center10_reducers
+        - lane_local_8x8_transpose
+        - eight_native_stores
+    lazy_call:
+      terminal_nodes:
+        - skip_terminal_center10_reducers
+        - lane_local_8x8_transpose
+        - eight_native_stores
+      output_bound: "8*(q-1)"
+    scratch_bytes: 3072
+    internal_calls: 0
+    linked_symbol_bytes: 7148
+    linked_static_instructions: 1541
+    pair_consumer: native_basemul_batch
+  native_basemul_batch:
+    implementation: shared_intrinsic_semantics_consumer
+    repeats: 12
+    vectors_per_operand: 4
+    lanes: 16_independent_quartics_in_native_order
+    operand_contract:
+      centered: "abs(x) <= q"
+      lazy: "abs(x) <= 8*(q-1)"
+      orientations: 2
+    nodes:
+      - load_a0_a1_a2_a3_without_permutation
+      - load_b0_b1_b2_b3_without_permutation
+      - sixteen_runtime_montgomery_products
+      - three_native_lambda_montgomery_folds
+      - four_r_squared_montgomery_finalizers
+      - store_c0_c1_c2_c3_same_native_layout
+    native_lane_semantics:
+      row01: "batch=2*floor(Q/8)+branch, lane=(Q mod 8)+8*k3"
+      row2: "batch=8+2*floor((Q mod 16)/8)+branch, lane=(Q mod 8)+8*floor(Q/16)"
+    linked_object_audit:
+      shared_helper_bytes: 758
+      wrapper_bytes: 16
+      vector_spills_present: true
