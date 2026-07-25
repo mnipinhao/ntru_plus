@@ -1,0 +1,86 @@
+{
+  "baseline": {
+    "name": "gt_release_section_gc",
+    "text_bytes": 80673,
+    "status": "selected",
+    "evidence": "docs/BENCHMARKS.md in the release"
+  },
+  "completed_size_changes": [
+    {
+      "name": "section_gc",
+      "text_delta_bytes": -14108,
+      "cycle_result": "neutral across balanced full-KEM modes",
+      "status": "selected"
+    },
+    {
+      "name": "compact_decap_verify",
+      "text_delta_bytes_vs_f2": -9088,
+      "cycle_result": "about +112 cycles full decapsulation versus F2",
+      "status": "selected_default"
+    }
+  ],
+  "active_audit_order": [
+    {
+      "rank": 1,
+      "area": "section_and_symbol_ownership",
+      "reason": "size-only cleanup with no arithmetic change"
+    },
+    {
+      "rank": 2,
+      "area": "canonical_pack_unpack",
+      "reason": "large generated code and measured cycle overhead"
+    },
+    {
+      "rank": 3,
+      "area": "keygen_pack_endpoint_duplication",
+      "reason": "multiple layout-specific pack bodies"
+    },
+    {
+      "rank": 4,
+      "area": "forward_inverse_shared_fragments",
+      "reason": "audit exact duplicate tables or scaffolding only"
+    }
+  ],
+  "protected_hot_kernels": [
+    "forward_ntt",
+    "rminus1_inverse_ntt",
+    "rminus1_basemul"
+  ],
+  "serialization_audit": {
+    "linked_serialization_bytes": 15480,
+    "percent_of_text": 19.19,
+    "first_candidate": {
+      "name": "shared_pack64_from_qregs",
+      "status": "superseded_by_verified_split_compact_candidate",
+      "exact_core_instructions": 60,
+      "static_copies": 25,
+      "estimated_text_delta_bytes_before_alignment": -5656,
+      "expected_dynamic_instruction_delta_per_serializer": 24,
+      "reason": "operand-for-operand identical core across generic, keygen CQ, and QSoA pack paths"
+    },
+    "selected_candidate": {
+      "name": "generic_compact_plus_keygen_cq_shared_core",
+      "status": "selected_production",
+      "text_delta_bytes": -6400,
+      "text_delta_percent": -7.93,
+      "generic_pack_paired_cycles": -14,
+      "keygen_cq_pack_paired_cycles": -20,
+      "full_keygen_cycles": -115.0,
+      "full_encapsulation_cycles": -24.5,
+      "full_decapsulation_result": "flat",
+      "mixed_cycles": -123.5,
+      "kat_match": true,
+      "required_abi_mask": "0x0"
+    },
+    "rejected_as_duplicate_cleanup": [
+      {
+        "area": "underscore_symbol_aliases",
+        "reason": "same address, no second body"
+      },
+      {
+        "area": "whole_unpack_endpoint_merge",
+        "reason": "generic GT scatter and QSoA destination contracts differ"
+      }
+    ]
+  }
+}

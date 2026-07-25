@@ -32,9 +32,23 @@ void poly_sotp_encode(poly *r, const uint8_t msg[NTRUPLUS_N/8], const uint8_t bu
 int  poly_sotp_decode(uint8_t msg[NTRUPLUS_N/8], const poly *a, const uint8_t buf[NTRUPLUS_N/4]);
 
 void poly_ntt(poly *r, const poly *a); 
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+/*
+ * Production NTT-domain multiplication contract: poly_basemul leaves one
+ * fixed R^-1 factor and poly_invntt absorbs it in its final constants.
+ * The standalone *_normal symbols retain the independently normalized
+ * reference contract used by primitive tests and component profiling.
+ */
+#endif
 void poly_invntt(poly *r, const poly *a);
 int  poly_baseinv(poly *r, const poly *a);
 void poly_basemul(poly *r, const poly *a, const poly *b);
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+/* Standalone normal-representation references; not linked by minimal KEM. */
+void poly_invntt_normal(poly *r, const poly *a);
+void poly_basemul_normal(poly *r, const poly *a, const poly *b);
+#endif
+/* Normalized a*b+c primitive; production encapsulation uses its byte endpoint. */
 void poly_basemul_add(poly *r, const poly *a, const poly *b, const poly *c);
 void poly_sub(poly *r, const poly *a, const poly *b);
 void poly_triple(poly *r, const poly *a);

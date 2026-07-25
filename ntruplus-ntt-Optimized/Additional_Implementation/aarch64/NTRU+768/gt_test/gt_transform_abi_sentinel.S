@@ -108,6 +108,14 @@
 .size \name, .-\name
 .endm
 
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+#define GT_AUDIT_NORMAL_INVNTT poly_invntt_normal
+#define GT_AUDIT_RMINUS1_INVNTT poly_invntt
+#else
+#define GT_AUDIT_NORMAL_INVNTT poly_invntt
+#define GT_AUDIT_RMINUS1_INVNTT poly_invntt_from_rminus1
+#endif
+
 DEFINE_TRANSFORM_ABI_SENTINEL gt_audit_poly_ntt_abi_sentinel, poly_ntt
-DEFINE_TRANSFORM_ABI_SENTINEL gt_audit_poly_invntt_abi_sentinel, poly_invntt
-DEFINE_TRANSFORM_ABI_SENTINEL gt_audit_poly_invntt_rminus1_abi_sentinel, poly_invntt_from_rminus1
+DEFINE_TRANSFORM_ABI_SENTINEL gt_audit_poly_invntt_abi_sentinel, GT_AUDIT_NORMAL_INVNTT
+DEFINE_TRANSFORM_ABI_SENTINEL gt_audit_poly_invntt_rminus1_abi_sentinel, GT_AUDIT_RMINUS1_INVNTT

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 import shlex
 import subprocess
@@ -27,8 +28,13 @@ def resolve_include(source: Path, include: str) -> Path:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--keygen-layout", choices=("mixed", "cq"),
+                        default="mixed")
+    args = parser.parse_args()
     result = subprocess.run(
-        ["make", "-n", "test_kem_gt_production_default"],
+        ["make", "-n", f"GT_PRODUCTION_KEYGEN_LAYOUT={args.keygen_layout}",
+         "test_kem_gt_production_default"],
         cwd=ROOT,
         check=True,
         text=True,
@@ -65,6 +71,7 @@ def main() -> int:
             if dependency.exists():
                 pending.append(dependency)
 
+    print(f"production_layout_keygen={args.keygen_layout}")
     print(f"production_layout_files={len(visited)}")
     if violations:
         for violation in sorted(set(violations)):

@@ -1,0 +1,797 @@
+{
+  "host": "Raspberry Pi 5 Cortex-A76",
+  "core": "3",
+  "ntests": 61,
+  "niterations": 2000,
+  "nwarmup": 100,
+  "perf_repeats": 3,
+  "variants": {
+    "L0_current": {
+      "link_order": "current",
+      "extra_cflags": ""
+    },
+    "L1_gc": {
+      "link_order": "current",
+      "extra_cflags": "-ffunction-sections -fdata-sections -Wl,--gc-sections"
+    },
+    "L2_mode_hot": {
+      "link_order": "mode_hot",
+      "extra_cflags": ""
+    },
+    "L3_mode_hot_gc": {
+      "link_order": "mode_hot",
+      "extra_cflags": "-ffunction-sections -fdata-sections -Wl,--gc-sections"
+    }
+  },
+  "results": {
+    "L0_current": {
+      "kem_keygen": {
+        "cycles": 37713,
+        "instructions": 86067,
+        "cpi": 0.43818188155739135,
+        "size": {
+          "text": 95341,
+          "data": 760,
+          "bss": 4896,
+          "total": 100997
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 7904,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 22640,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 48928,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 49600,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39583.051286885246,
+          "instructions": 90377.6263442623,
+          "branch-misses": 0.07898360655737705,
+          "L1-icache-load-misses": 0.9873360655737705,
+          "stalled-cycles-frontend": 8.838844262295082,
+          "stalled-cycles-backend": 12361.454139344261
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 0,
+          "instructions": 0,
+          "text": 0
+        }
+      },
+      "kem_enc": {
+        "cycles": 37604,
+        "instructions": 106175,
+        "cpi": 0.3541700023546033,
+        "size": {
+          "text": 95325,
+          "data": 760,
+          "bss": 4896,
+          "total": 100981
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 7904,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 22640,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 48928,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 49600,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39484.44818032787,
+          "instructions": 111491.02588524591,
+          "branch-misses": 1.130344262295082,
+          "L1-icache-load-misses": 0.8524098360655737,
+          "stalled-cycles-frontend": 5.351467213114754,
+          "stalled-cycles-backend": 7867.66543442623
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 0,
+          "instructions": 0,
+          "text": 0
+        }
+      },
+      "kem_dec": {
+        "cycles": 32850,
+        "instructions": 76465,
+        "cpi": 0.4296083175308965,
+        "size": {
+          "text": 95325,
+          "data": 760,
+          "bss": 4896,
+          "total": 100981
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 7904,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 22640,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 48928,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 49600,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 34510.95846721312,
+          "instructions": 80295.52471311475,
+          "branch-misses": 1.5728852459016394,
+          "L1-icache-load-misses": 10.086245901639344,
+          "stalled-cycles-frontend": 8.650426229508197,
+          "stalled-cycles-backend": 10583.474057377049
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 0,
+          "instructions": 0,
+          "text": 0
+        }
+      }
+    },
+    "L1_gc": {
+      "kem_keygen": {
+        "cycles": 37711,
+        "instructions": 86069,
+        "cpi": 0.4381484622802635,
+        "size": {
+          "text": 81273,
+          "data": 736,
+          "bss": 4880,
+          "total": 86889
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 6880,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 21616,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 47904,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 48576,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39620.490590163936,
+          "instructions": 90379.72431147541,
+          "branch-misses": 0.07561475409836066,
+          "L1-icache-load-misses": 0.9548196721311475,
+          "stalled-cycles-frontend": 4.646180327868852,
+          "stalled-cycles-backend": 12351.509393442622
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": -2,
+          "instructions": 2,
+          "text": -14068
+        }
+      },
+      "kem_enc": {
+        "cycles": 37590,
+        "instructions": 106173,
+        "cpi": 0.3540448136531887,
+        "size": {
+          "text": 81257,
+          "data": 736,
+          "bss": 4880,
+          "total": 86873
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 6880,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 21616,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 47904,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 48576,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39470.57686065574,
+          "instructions": 111488.92413114753,
+          "branch-misses": 1.1299344262295081,
+          "L1-icache-load-misses": 0.7722295081967213,
+          "stalled-cycles-frontend": 4.59033606557377,
+          "stalled-cycles-backend": 7860.7707131147545
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": -14,
+          "instructions": -2,
+          "text": -14068
+        }
+      },
+      "kem_dec": {
+        "cycles": 32825,
+        "instructions": 76465,
+        "cpi": 0.4292813705616949,
+        "size": {
+          "text": 81257,
+          "data": 736,
+          "bss": 4880,
+          "total": 86873
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 6880,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "poly_ntt": {
+            "address": 21616,
+            "size": 14776,
+            "mod32": 16,
+            "mod64": 48
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 47904,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 48576,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 34501.17774590164,
+          "instructions": 80295.52568852459,
+          "branch-misses": 0.07282786885245901,
+          "L1-icache-load-misses": 3.7880491803278686,
+          "stalled-cycles-frontend": 4.361967213114754,
+          "stalled-cycles-backend": 10668.476909836065
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": -25,
+          "instructions": 0,
+          "text": -14068
+        }
+      }
+    },
+    "L2_mode_hot": {
+      "kem_keygen": {
+        "cycles": 37720,
+        "instructions": 86067,
+        "cpi": 0.43826321354293746,
+        "size": {
+          "text": 95309,
+          "data": 760,
+          "bss": 4896,
+          "total": 100965
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "poly_ntt": {
+            "address": 19648,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 45920,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 46592,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 71328,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39594.921721311475,
+          "instructions": 90377.62478688525,
+          "branch-misses": 1.0391967213114754,
+          "L1-icache-load-misses": 0.9563852459016393,
+          "stalled-cycles-frontend": 9.177483606557377,
+          "stalled-cycles-backend": 12338.32825409836
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 7,
+          "instructions": 0,
+          "text": -32
+        }
+      },
+      "kem_enc": {
+        "cycles": 37604,
+        "instructions": 106175,
+        "cpi": 0.3541700023546033,
+        "size": {
+          "text": 95325,
+          "data": 760,
+          "bss": 4896,
+          "total": 100981
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "poly_ntt": {
+            "address": 19648,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 46752,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 47424,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 71360,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39472.18623770492,
+          "instructions": 111491.02549180327,
+          "branch-misses": 1.1310081967213115,
+          "L1-icache-load-misses": 0.8218196721311476,
+          "stalled-cycles-frontend": 4.392131147540984,
+          "stalled-cycles-backend": 7908.607032786886
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 0,
+          "instructions": 0,
+          "text": 0
+        }
+      },
+      "kem_dec": {
+        "cycles": 32853,
+        "instructions": 76465,
+        "cpi": 0.42964755116720066,
+        "size": {
+          "text": 95325,
+          "data": 760,
+          "bss": 4896,
+          "total": 100981
+        },
+        "symbols": {
+          "crypto_kem_keypair": {
+            "address": 6688,
+            "size": 404,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "crypto_kem_enc": {
+            "address": 7104,
+            "size": 80,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "crypto_kem_dec": {
+            "address": 7184,
+            "size": 436,
+            "mod32": 16,
+            "mod64": 16
+          },
+          "poly_ntt": {
+            "address": 36704,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 54752,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 66784,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 67456,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 34499.670762295085,
+          "instructions": 80295.52539344263,
+          "branch-misses": 0.07439344262295082,
+          "L1-icache-load-misses": 10.005418032786885,
+          "stalled-cycles-frontend": 4.330827868852459,
+          "stalled-cycles-backend": 10585.839327868853
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 3,
+          "instructions": 0,
+          "text": 0
+        }
+      }
+    },
+    "L3_mode_hot_gc": {
+      "kem_keygen": {
+        "cycles": 37719,
+        "instructions": 86069,
+        "cpi": 0.4382414109609732,
+        "size": {
+          "text": 81241,
+          "data": 736,
+          "bss": 4880,
+          "total": 86857
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "poly_ntt": {
+            "address": 18624,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 44896,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 45568,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 70304,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39608.08590983607,
+          "instructions": 90379.72547540984,
+          "branch-misses": 0.0744672131147541,
+          "L1-icache-load-misses": 0.9713524590163934,
+          "stalled-cycles-frontend": 11.1525,
+          "stalled-cycles-backend": 12370.765590163934
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 6,
+          "instructions": 2,
+          "text": -14100
+        }
+      },
+      "kem_enc": {
+        "cycles": 37582,
+        "instructions": 106173,
+        "cpi": 0.3539694649298786,
+        "size": {
+          "text": 81257,
+          "data": 736,
+          "bss": 4880,
+          "total": 86873
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "poly_ntt": {
+            "address": 18624,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 45728,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 46400,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 70336,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 39457.5261557377,
+          "instructions": 111488.92219672131,
+          "branch-misses": 1.1718770491803279,
+          "L1-icache-load-misses": 0.8934016393442623,
+          "stalled-cycles-frontend": 5.435811475409836,
+          "stalled-cycles-backend": 7874.73156557377
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": -22,
+          "instructions": -2,
+          "text": -14068
+        }
+      },
+      "kem_dec": {
+        "cycles": 32885,
+        "instructions": 76465,
+        "cpi": 0.4300660432877787,
+        "size": {
+          "text": 81257,
+          "data": 736,
+          "bss": 4880,
+          "total": 86873
+        },
+        "symbols": {
+          "crypto_kem_dec": {
+            "address": 6144,
+            "size": 428,
+            "mod32": 0,
+            "mod64": 0
+          },
+          "poly_ntt": {
+            "address": 35680,
+            "size": 14776,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_decap_verify_to_bytes": {
+            "address": 53728,
+            "size": 92,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_baseinv_bpq_to_cq_scaled_r": {
+            "address": 65760,
+            "size": 144,
+            "mod32": 0,
+            "mod64": 32
+          },
+          "gt_keygen_basemul_bpq_cq_to_cq_scaled_r": {
+            "address": 66432,
+            "size": 1584,
+            "mod32": 0,
+            "mod64": 0
+          }
+        },
+        "perf_per_measured_call": {
+          "cycles": 34527.7641147541,
+          "instructions": 80295.52450819672,
+          "branch-misses": 0.07539344262295082,
+          "L1-icache-load-misses": 3.780450819672131,
+          "stalled-cycles-frontend": 4.265877049180328,
+          "stalled-cycles-backend": 10610.95956557377
+        },
+        "correctness": "pass",
+        "delta_vs_L0": {
+          "cycles": 35,
+          "instructions": 0,
+          "text": -14068
+        }
+      }
+    }
+  },
+  "cycle_winners": {
+    "kem_keygen": "L1_gc",
+    "kem_enc": "L3_mode_hot_gc",
+    "kem_dec": "L1_gc"
+  }
+}

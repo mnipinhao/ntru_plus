@@ -1,0 +1,26 @@
+{
+  "candidate": "poly_ntt_shared_core_direct_cq",
+  "production_source": "asm/gt/ntt/poly_ntt.n1.opt.S",
+  "production_sha256": "dcd05579c140e07533f311fa3550bf9e80753bfaf1b7fa342cdafbc48bb21497",
+  "direct_cq_source": "asm/gt/experiment/forward_ntt/poly_ntt_to_cq_endpoint.S",
+  "direct_cq_sha256": "c8fdb1d61c0c226df0a9493b13c97b3b876284993c3b7ecf9aec1b8d3007ea43",
+  "output": "asm/gt/experiment/forward_ntt/poly_ntt_shared_core_direct_cq.S",
+  "output_sha256": "1d480c9c15162690f5f3f4821f5159b8a0c7da2780e9e6ee43fdf1b2d805b041",
+  "boundary": "// ---- row0: Stage12 one-pass block0+block1+block2 live-out ----",
+  "mode_stack_offset": 8,
+  "selector_public": true,
+  "bl_introduced": false,
+  "arithmetic_changed": false,
+  "reduction_changed": false,
+  "production_default_changed": false,
+  "instruction_model": {
+    "shared_prefix": 1303,
+    "generic_suffix": 2382,
+    "cq_suffix": 2403,
+    "shared_epilogue": 9,
+    "dispatch_overhead": 7,
+    "separate_total": 7409,
+    "dual_total": 6104,
+    "estimated_removed": 1305
+  }
+}

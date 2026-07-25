@@ -1,0 +1,36 @@
+candidate:
+  id: rminus1_basemul_pair_pipeline
+  status: promote
+  mode: existing_region_replacement
+
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: []
+  approval_note: arithmetic_layout_range_and_constant_time_contract_unchanged
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
+slothy:
+  status: pass
+  baseline_expected_cycles: 242
+  candidate_expected_cycles: 38
+  parity_justification: N1_estimate_is_optimistic_for_A76_V0_and_not_used_as_hardware_claim
+  log_json: slothy.log
+
+benchmark:
+  status: pass
+  command: make bench_rminus1_basemul_pair_pipeline_pmu
+  metric: full_decap_cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 32954.5
+  candidate: 32856.5
+
+decision:
+  reason: bit_exact_ABI_safe_and_stable_Pi5_kernel_and_full_decap_win
+  next_iteration: inverse_final_V0_arithmetic_research

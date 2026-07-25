@@ -1,0 +1,92 @@
+dag:
+  id: rminus1_basemul_pair_pipeline_dag
+  kernel_contract: kernel-contract.yml
+  description: Two independent copies of the audited production quartic product DAG.
+
+inputs:
+  - src1_group0_c0_c1_c2_c3
+  - src2_group0_c0_c1_c2_c3
+  - lambda_group0
+  - src1_group1_c0_c1_c2_c3
+  - src2_group1_c0_c1_c2_c3
+  - lambda_group1
+constants:
+  - q_3457
+  - qinv_12929
+  - montgomery_fold_constants
+
+nodes:
+  - id: group0_loads
+    op: ld4_ld4_ld1
+    inputs: [src1_group0, src2_group0, lambda_group0]
+    outputs: [group0_vectors]
+    instruction_shape: two_ld4_and_one_ld1
+    tied_operands: [x1_postincrement, x2_postincrement, x4_postincrement]
+    range_before: production_forward_ntt_output_contract
+    range_after: unchanged
+    may_reorder_with: [group1_loads_after_public_pointer_updates]
+    must_precede: [group0_quartic]
+  - id: group0_quartic
+    op: production_quartic_multiply_and_montgomery_fold
+    inputs: [group0_vectors, montgomery_fold_constants]
+    outputs: [group0_raw_rminus1]
+    instruction_shape: exact_production_arithmetic_multiset
+    tied_operands: [smlal_destinations]
+    range_before: production_forward_ntt_output_contract
+    range_after: production_raw_rminus1_basemul_contract
+    may_reorder_with: [group1_quartic_when_registers_and_dependencies_allow]
+    must_precede: [group0_store]
+  - id: group0_store
+    op: st4
+    inputs: [group0_raw_rminus1]
+    outputs: [dst_group0]
+    instruction_shape: one_64_byte_st4
+    tied_operands: [x0_postincrement]
+    range_before: production_raw_rminus1_basemul_contract
+    range_after: memory_output
+    may_reorder_with: [group1_arithmetic]
+    must_precede: [group1_store]
+  - id: group1_loads
+    op: ld4_ld4_ld1
+    inputs: [src1_group1, src2_group1, lambda_group1]
+    outputs: [group1_vectors]
+    instruction_shape: two_ld4_and_one_ld1
+    tied_operands: [x1_postincrement, x2_postincrement, x4_postincrement]
+    range_before: production_forward_ntt_output_contract
+    range_after: unchanged
+    may_reorder_with: [group0_final_montgomery_fold_after_group0_input_last_use]
+    must_precede: [group1_quartic]
+  - id: group1_quartic
+    op: production_quartic_multiply_and_montgomery_fold
+    inputs: [group1_vectors, montgomery_fold_constants]
+    outputs: [group1_raw_rminus1]
+    instruction_shape: exact_production_arithmetic_multiset
+    tied_operands: [smlal_destinations]
+    range_before: production_forward_ntt_output_contract
+    range_after: production_raw_rminus1_basemul_contract
+    may_reorder_with: [group0_store]
+    must_precede: [group1_store]
+  - id: group1_store
+    op: st4
+    inputs: [group1_raw_rminus1]
+    outputs: [dst_group1]
+    instruction_shape: one_64_byte_st4
+    tied_operands: [x0_postincrement]
+    range_before: production_raw_rminus1_basemul_contract
+    range_after: memory_output
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads: [constant_once, src1_groups_in_order, src2_groups_in_order, lambda_groups_in_order]
+  stores: [dst_group0_then_dst_group1]
+  ordering_constraints: [postincrement_pointer_chains, preserve_output_group_order]
+
+outputs: [dst_group0, dst_group1]
+live_out: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32, output_memory]
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

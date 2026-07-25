@@ -1,0 +1,5 @@
+#define crypto_kem_keypair bench_crypto_kem_keypair_group_pipeline_v3
+#define crypto_kem_enc bench_crypto_kem_enc_group_pipeline_v3
+#define crypto_kem_dec bench_crypto_kem_dec_group_pipeline_v3
+#define gt_decap_verify_to_bytes gt_decap_verify_to_bytes_group_pipeline_v3
+#include "ntruplus/kem.c"

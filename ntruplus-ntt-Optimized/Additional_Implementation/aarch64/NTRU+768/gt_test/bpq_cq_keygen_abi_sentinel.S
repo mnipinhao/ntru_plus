@@ -28,7 +28,8 @@
 .endm
 
 /*
- * x0=BPQ work, x1=CQ inverse, x2=CQ product, x3=bytes, x4=small input.
+ * x0=BPQ work, x1=CQ inverse, x2=CQ product, x3=bytes,
+ * x4=generic block-major NTT input.
  * The chain calls every public entry in the production-only keygen backend.
  */
 .global C_SYM(gt_keygen_bpq_cq_abi_sentinel)
@@ -81,10 +82,7 @@ C_SYM(gt_keygen_bpq_cq_abi_sentinel):
 
     ldr x0, [sp, #144]
     ldr x1, [sp, #176]
-    bl C_SYM(gt_keygen_ntt_bpq_mul3)
-    ldr x0, [sp, #144]
-    ldr x1, [sp, #176]
-    bl C_SYM(gt_keygen_ntt_bpq_mul3_add1)
+    bl C_SYM(gt_keygen_blockmajor_to_bpq)
     ldr x0, [sp, #152]
     ldr x1, [sp, #144]
     bl C_SYM(gt_keygen_baseinv_bpq_to_cq_scaled_r)

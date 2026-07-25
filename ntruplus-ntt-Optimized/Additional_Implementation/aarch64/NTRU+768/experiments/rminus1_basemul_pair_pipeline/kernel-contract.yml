@@ -1,0 +1,79 @@
+mode: existing_region_replacement
+candidate_status: promote
+
+kernel:
+  id: rminus1_basemul_pair_pipeline
+  name: two_iteration_raw_rminus1_quartic_basemul
+  source: rminus1_pair_pipeline.sym.S
+  scheme: NTRUplus768
+  operation: poly_basemul_raw_rminus1
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_measured_via_neoverse_n1_schedule_candidate
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: functional_ra_then_window_schedule
+  driver: optimize_rminus1_pair_pipeline.py
+  expected_outputs: [rminus1_pair_pipeline.opt.S, slothy.log]
+  allow_spills: false
+
+region:
+  start_label: rminus1_pair_slothy_start
+  end_label: rminus1_pair_slothy_end
+  expected_instruction_count: 154
+  live_in: [x0_dst, x1_src1, x2_src2, x4_lambda, v0_constants]
+  live_out: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32, output_memory]
+
+abi:
+  inputs: [x0_dst, x1_src1, x2_src2]
+  outputs: [two_rminus1_blockmajor_groups]
+  clobbers: [x3, x4, x8, v0-v31, nzcv]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8]
+  fixed_vector_registers: [v0]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: two_independent_production_quartic_products_with_ordered_pointer_updates_and_stores
+
+layout:
+  input_representation: GT_rowbitrev_blockmajor_st4_groups
+  output_representation: GT_rowbitrev_blockmajor_raw_Rminus1_st4_groups
+  vector_lanes: eight_independent_physical_quartic_blocks
+  packing: coefficient_major_vectors_c0_c1_c2_c3
+
+memory_contract:
+  loads: [one_constant_vector, two_src1_ld4, two_src2_ld4, two_lambda_vectors]
+  stores: [two_ordered_output_st4]
+  aliasing: dst_src1_src2_do_not_overlap
+  alignment: production_poly_alignment
+  public_offsets_only: true
+  pointer_updates: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32]
+
+constant_contract:
+  constants: [q_3457, qinv_12929, montgomery_constants, rowbitrev_lambda]
+  modulus: 3457
+  representation: int16_montgomery
+  reduction_method: unchanged_production_widening_montgomery_fold
+
+range_contract:
+  input_ranges: [production_forward_ntt_output_contract]
+  intermediate_ranges: [production_int32_quartic_accumulator_contract]
+  output_ranges: [production_raw_rminus1_basemul_contract]
+  narrowing_points: [uzp2_after_each_montgomery_fold]
+
+constant_time_contract:
+  secret_inputs: [src1_coefficients, src2_coefficients]
+  public_inputs: [fixed_trip_count, rowbitrev_lambda_addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_rminus1_basemul_pair_pipeline
+  test_command: make test_rminus1_basemul_pair_pipeline_abi
+  full_path_benchmark_command: make bench_rminus1_basemul_pair_pipeline_pmu
+  benchmark_metric: cycles
+  lower_is_better: true

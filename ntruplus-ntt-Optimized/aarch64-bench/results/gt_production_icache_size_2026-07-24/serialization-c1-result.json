@@ -1,0 +1,83 @@
+{
+  "date": "2026-07-24",
+  "host": "Raspberry Pi 5 Cortex-A76",
+  "decision": "selected_production",
+  "variants": {
+    "A": "baseline_release",
+    "B": "generic_compact",
+    "C": "keygen_cq_shared_core",
+    "D": "generic_compact_plus_keygen_cq_shared_core"
+  },
+  "correctness": {
+    "generic_mismatches": 0,
+    "keygen_cq_mismatches": 0,
+    "guard_mismatches": 0,
+    "candidate_abi_masks": "0x0",
+    "kem_round_trips": 100,
+    "kat_match": true,
+    "kat_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
+  },
+  "text_bytes": {
+    "A": 80673,
+    "B": 76865,
+    "C": 78113,
+    "D": 74273,
+    "D_delta_vs_A": -6400,
+    "D_percent_vs_A": -7.93
+  },
+  "direct_paired": {
+    "generic": {
+      "baseline_cycles_p50": 642,
+      "candidate_cycles_p50": 628,
+      "paired_cycles_p10_p50_p90": [-16, -14, -13],
+      "baseline_instructions_p50": 1375,
+      "candidate_instructions_p50": 1353
+    },
+    "keygen_cq": {
+      "baseline_cycles_p50": 629,
+      "candidate_cycles_p50": 609,
+      "paired_cycles_p10_p50_p90": [-21, -20, -20],
+      "baseline_instructions_p50": 1208,
+      "candidate_instructions_p50": 1234
+    }
+  },
+  "full_kem_cycles_median_of_round_medians": {
+    "keygen": {"A": 36944.5, "B": 36947.0, "C": 36840.5, "D": 36829.5},
+    "encapsulation": {"A": 37649.0, "B": 37622.0, "C": 37650.0, "D": 37624.5},
+    "decapsulation": {"A": 32865.5, "B": 32864.5, "C": 32868.5, "D": 32864.0}
+  },
+  "mixed": {
+    "cycles": {"A": 107602.0, "B": 107502.0, "C": 107482.0, "D": 107478.5},
+    "instructions": {"A": 264426, "B": 264360, "C": 264504, "D": 264438}
+  },
+  "external_perf_l1i_misses": {
+    "A_median": 47582,
+    "D_median": 27051,
+    "reduction_percent": 43.15,
+    "scope": "complete 100-round test process"
+  },
+  "production_promotion_retest": {
+    "counter": "perf_event_open_cycles",
+    "core": 3,
+    "ntests": 31,
+    "niterations": 2000,
+    "nwarmup": 100,
+    "shake": "NO_CE",
+    "gt_text_bytes": 74273,
+    "keygen": {
+      "kpqc_final_cycles_p50": 39956,
+      "gt_cycles_p50": 37669,
+      "reduction_percent": 5.72
+    },
+    "encapsulation": {
+      "kpqc_final_cycles_p50": 39056,
+      "gt_cycles_p50": 37599,
+      "reduction_percent": 3.73
+    },
+    "decapsulation": {
+      "kpqc_final_cycles_p50": 35183,
+      "gt_cycles_p50": 32828,
+      "reduction_percent": 6.69
+    }
+  }
+}

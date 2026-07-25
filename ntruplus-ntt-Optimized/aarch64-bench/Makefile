@@ -6,6 +6,7 @@
 .PHONY: bench_gt_canonical_serialization_next_pmu
 
 .PHONY: all clean bench-gt bench-gt-legacy bench-kpqc-final bench_gt_canonical_pack_chunk_pmu bench_gt_canonical_pack_full_pmu bench_gt_canonical_unpack_chunk_pmu bench_gt_canonical_unpack_full_pmu bench_gt_canonical_serialization_paired_kem_pmu bench_gt_canonical_keygen_p1_u1_paired_kem_pmu bench_gt_canonical_pack_p1_paired_kem_pmu bench_gt_canonical_unpack_u1_paired_kem_pmu bench_gt_q31_pair_pipeline_paired_kem_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_u01v3_g1_fullpath_pmu bench_u01v3_g1_r123_paired_kem_pmu bench_invntt_lazy_len16_paired_kem_pmu bench_invntt_promoted_paired_kem_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_hier_k8_diff bench_gt_baseinv_hier_k8_decompose_pmu bench_gt_baseinv_hier_k8_tree_candidate_pmu bench_gt_baseinv_paper_hier_neon_pmu bench_gt_baseinv_paper_hier_neon_keygen_pmu bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu bench_gt_keygen_direct_h_hinv_pmu bench_gt_keygen_public_arith_pair_pmu bench_gt_keygen_public_arith_pair_asm_pmu bench_gt_keygen_finish_to_h_hinv_pmu bench_gt_keygen_sample_prebaseinv_split_pmu bench_gt_keygen_sample_ntt_fusion_pmu bench_gt_keygen_sample_ntt_fusion_slothy_pmu bench_gt_keygen_sample_hierk8_combo_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_sample_hierk8_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: bench_invntt_stage45_row_helper_paired_kem_pmu
 
 TARGET = bench
 CC ?= gcc
@@ -420,6 +421,7 @@ GT_CANONICAL_UNPACK_U1_PAIRED_KEM_TARGET ?= bench_gt_canonical_unpack_u1_paired_
 GT_Q31_PAIR_PIPELINE_PAIRED_KEM_TARGET ?= bench_gt_q31_pair_pipeline_paired_kem_pmu_bin
 INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET ?= bench_invntt_lazy_len16_paired_kem_pmu_bin
 INVNTT_PROMOTED_PAIRED_KEM_TARGET ?= bench_invntt_promoted_paired_kem_pmu_bin
+INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_TARGET ?= bench_invntt_stage45_row_helper_paired_kem_pmu_bin
 U01V3_G1_R123_PAIRED_KEM_NTESTS ?= 61
 U01V3_G1_R123_PAIRED_KEM_NITERATIONS ?= 2000
 U01V3_G1_R123_PAIRED_KEM_NWARMUP ?= 100
@@ -887,6 +889,23 @@ INVNTT_PROMOTED_PAIRED_KEM_SOURCES = \
 	$(GT_PRODUCTION_Q31_ENCAP_ASM) \
 	$(NTRUPLUS)/asm/gt/experiment/forward_ntt/poly_ntt_u01v3_g1_r123_s2.S
 
+INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_SOURCES = \
+	bench_gt_paired_full_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_invntt_stage45_row_helper_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
+	$(GT_PRODUCTION_KEM_SUPPORT_SOURCES) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(NTRUPLUS)/asm/gt/experiment/invntt/poly_invntt_rminus1_stage45_row_helper.S \
+	$(word 4,$(GT_PRODUCTION_BASE_ASM)) \
+	$(GT_PRODUCTION_Q31_ENCAP_ASM)
+
 GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES = \
 	bench_gt_direct32_q31_release_guard.c \
 	bench_kem_current_wrapper.c \
@@ -1352,6 +1371,19 @@ $(INVNTT_PROMOTED_PAIRED_KEM_TARGET): $(INVNTT_PROMOTED_PAIRED_KEM_SOURCES)
 		-DBENCH_VARIANTS_LABEL=\"A_promoted/B_historical_baseline\" \
 		$(INVNTT_PROMOTED_PAIRED_KEM_SOURCES) -o $@
 
+$(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_TARGET): $(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_INCLUDE_KEYPAIR_SCOPE \
+		-DBENCH_FULL_KEM_ONLY \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_CHECK_INVALID_DECAP \
+		-DBENCH_VARIANTS_LABEL=\"A_production/B_invntt_stage45_row_helper\" \
+		$(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_SOURCES) -o $@
+
 $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET): $(GT_DIRECT32_Q31_RELEASE_GUARD_SOURCES)
 	$(CC) $(CFLAGS) \
 		-UGT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP \
@@ -1569,6 +1601,11 @@ bench_invntt_promoted_paired_kem_pmu:
 	$(MAKE) -B $(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
 	size $(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
 	$(SUDO) taskset -c $(CORE) ./$(INVNTT_PROMOTED_PAIRED_KEM_TARGET)
+
+bench_invntt_stage45_row_helper_paired_kem_pmu:
+	$(MAKE) -B $(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_TARGET)
+	size $(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(INVNTT_STAGE45_ROW_HELPER_PAIRED_KEM_TARGET)
 
 check_gt_basemul_add_direct32_q31_reducer:
 	$(PYTHON) $(NTRUPLUS)/scripts/analyze_gt_basemul_add_direct32_reducers.py

@@ -1,0 +1,56 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: production_rminus1_basemul_two_dynamic_iterations
+  source: asm/gt/basemul/poly_basemul_body.inc
+  extracted_region: baseline-region.S
+  function: poly_basemul
+  start_label: rminus1_pair_baseline_start
+  end_label: rminus1_pair_baseline_end
+  source_commit: 87b5f8ad-dirty-production-worktree
+
+region:
+  instruction_count: 154
+  live_in: [x0_dst, x1_src1, x2_src2, x4_lambda, v0_constants]
+  live_out: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32, output_memory]
+  clobbers: [v1-v31]
+
+abi:
+  inputs: [x0_dst, x1_src1, x2_src2]
+  outputs: [two_rminus1_blockmajor_groups]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8]
+  fixed_vector_registers: [v0]
+  reserved_registers: [x18-x30, sp]
+
+memory_contract:
+  loads: [two_64_byte_src1_groups, two_64_byte_src2_groups, two_16_byte_lambda_groups]
+  stores: [two_64_byte_rminus1_output_groups]
+  aliasing: dst_src1_src2_do_not_overlap
+  alignment: production_poly_alignment
+  public_offsets_only: true
+  pointer_updates: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32]
+
+constant_contract:
+  constants: [q_3457, qinv_12929, montgomery_constants, rowbitrev_lambda]
+  modulus: 3457
+  representation: int16_montgomery_rowbitrev_blockmajor
+  reduction_method: production_widening_montgomery_fold
+
+range_contract:
+  input_ranges: [production_forward_ntt_output_contract]
+  intermediate_ranges: [production_int32_quartic_accumulator_contract]
+  output_ranges: [production_raw_rminus1_basemul_contract]
+  narrowing_points: [uzp2_after_montgomery_fold]
+
+constant_time_contract:
+  secret_inputs: [src1_coefficients, src2_coefficients]
+  public_inputs: [fixed_trip_count, rowbitrev_lambda_addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 154
+  slothy_expected_cycles: 242
+  full_path_benchmark: production_poly_basemul_rminus1
+  benchmark_command: make bench_rminus1_basemul_pair_pipeline_pmu

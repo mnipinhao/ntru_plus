@@ -46,4 +46,9 @@ profile_kem_gt_production_opt_rminus1: profile_kem_gt_production_opt
 
 include make/experiments/forward-ntt.mk
 include make/experiments/invntt-stage123.mk
+include make/experiments/invntt-stage45-row-helper.mk
 include make/experiments/q31-pointwise.mk
+include make/experiments/keygen-all-cq.mk
+include make/experiments/rminus1-basemul-pair.mk
+include make/experiments/serialization-icache.mk
+include make/experiments/decap-verify-group-pipeline.mk

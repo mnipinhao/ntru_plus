@@ -88,7 +88,8 @@ _support_loop_sub:
  b.ne _support_loop_sub
  ret
 
-#ifndef GT_PRODUCTION_KEM_MINIMAL_SUPPORT
+#if !defined(GT_PRODUCTION_KEM_MINIMAL_SUPPORT) || \
+    defined(GT_PRODUCTION_KEM_INCLUDE_TRIPLE)
 .global poly_triple
 .global _poly_triple
 poly_triple:

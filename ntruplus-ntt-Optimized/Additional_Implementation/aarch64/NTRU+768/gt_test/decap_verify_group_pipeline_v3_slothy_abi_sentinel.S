@@ -1,0 +1,7 @@
+#define gt_decap_verify_pointwise \
+    gt_decap_verify_pointwise_group_pipeline_v3_slothy
+#define gt_decap_verify_pointwise_abi_sentinel \
+    gt_decap_verify_pointwise_group_pipeline_v3_slothy_abi_sentinel
+#define _gt_decap_verify_pointwise_abi_sentinel \
+    _gt_decap_verify_pointwise_group_pipeline_v3_slothy_abi_sentinel
+#include "decap_verify_canonical_abi_sentinel.S"

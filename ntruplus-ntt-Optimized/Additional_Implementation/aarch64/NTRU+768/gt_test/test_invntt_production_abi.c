@@ -4,8 +4,6 @@
 #include "params.h"
 #include "poly.h"
 
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
 void poly_invntt_rminus1_lazy_twiddle1_stage123_len16(poly *r, const poly *a);
 int poly_invntt_from_rminus1_production_abi_sentinel(poly *r,
                                                      const poly *a);
@@ -43,8 +41,8 @@ int main(void)
         fill_small(&b);
         poly_ntt(&antt, &a);
         poly_ntt(&bntt, &b);
-        poly_basemul_rminus1(&product, &antt, &bntt);
-        poly_invntt_from_rminus1(&production, &product);
+        poly_basemul(&product, &antt, &bntt);
+        poly_invntt(&production, &product);
         poly_invntt_rminus1_lazy_twiddle1_stage123_len16(&oracle, &product);
         mismatches += compare(&production, &oracle);
         abi_mask |= (uint64_t)poly_invntt_from_rminus1_production_abi_sentinel(

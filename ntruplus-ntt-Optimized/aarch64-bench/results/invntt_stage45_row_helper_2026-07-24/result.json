@@ -1,0 +1,46 @@
+{
+  "date": "2026-07-24",
+  "machine": "Raspberry Pi 5 Cortex-A76",
+  "core": 3,
+  "decision": "promote_for_code_size_not_speed",
+  "correctness": {
+    "direct_mismatches": 0,
+    "abi_mask": "0x0",
+    "full_kem_paired_checks": 366,
+    "full_kem_paired_mismatches": 0
+  },
+  "text_bytes": {
+    "invntt_object_production": 16352,
+    "invntt_object_helper": 13712,
+    "isolated_kem_production": 74857,
+    "isolated_kem_helper": 72233
+  },
+  "direct_invntt": {
+    "ntests": 61,
+    "niterations": 20000,
+    "production_cycles_p50": 3581.894,
+    "helper_cycles_p50": 3580.377,
+    "paired_cycles_delta_p50": -1.520,
+    "production_instructions_p50": 4816.001,
+    "helper_instructions_p50": 4822.001
+  },
+  "same_binary_decap": {
+    "ntests": 61,
+    "niterations": 2000,
+    "production_cycles_p50": 32991.325,
+    "helper_cycles_p50": 33002.902,
+    "paired_cycles_delta_p50": 11.750,
+    "paired_cycles_delta_p10": 9.266,
+    "paired_cycles_delta_p90": 13.943,
+    "helper_wins": 0,
+    "instruction_delta": 6
+  },
+  "isolated_decap": {
+    "pairs": 8,
+    "production_function_address": "0xbf90",
+    "helper_function_address": "0xbf90",
+    "paired_cycle_deltas": [32, 2, 13, 8, 14, -21, 13, -14],
+    "paired_cycle_delta_median_approx": 10.5,
+    "helper_wins": 2
+  }
+}

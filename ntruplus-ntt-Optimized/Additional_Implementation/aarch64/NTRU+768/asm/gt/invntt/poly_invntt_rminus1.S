@@ -1,10 +1,13 @@
 /*
  * Production GT inverse NTT for inputs carrying one extra R^-1 factor.
  *
- * This production entry is paired with poly_basemul_rminus1() and returns
- * normal R^0 coefficients.  Proof-gated multiplier-1 reductions are deferred
- * through inverse NTT32 transform size 16; size 32 remains reduced.
+ * This entry is paired with the raw-factor basemul and returns normal R^0
+ * coefficients. Production exports the pair as poly_basemul/poly_invntt;
+ * experiment-only builds retain the explicit *_rminus1 names. Proof-gated
+ * multiplier-1 reductions are deferred through inverse NTT32 transform size
+ * 16; size 32 remains reduced.
  */
+#ifndef GT_PRODUCTION_RMINUS1_IS_POLY_API
 #define poly_invntt poly_invntt_from_rminus1
 #define _poly_invntt _poly_invntt_from_rminus1
 #define gt_block_major_poly_invntt gt_block_major_poly_invntt_from_rminus1
@@ -13,6 +16,7 @@
 #define _gt_tuple_poly_invntt _gt_tuple_poly_invntt_from_rminus1
 #define gt_bpq_poly_invntt gt_bpq_poly_invntt_from_rminus1
 #define _gt_bpq_poly_invntt _gt_bpq_poly_invntt_from_rminus1
+#endif
 .equ INVNTT_INPUT_RMINUS1, 1
 .equ INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
@@ -24,6 +28,7 @@
 .equ INVNTT_USE_LAZY_TWIDDLE1_LEN16, 1
 .equ INVNTT_PRESERVE_CALLEE_SAVED_SIMD, 1
 .equ INVNTT_BLOCK_MAJOR_ONLY, 1
+.equ INVNTT_USE_STAGE45_ROW_HELPER, 1
 #ifdef __APPLE__
 .equ INVNTT_DARWIN_NO_WEAK, 1
 #endif

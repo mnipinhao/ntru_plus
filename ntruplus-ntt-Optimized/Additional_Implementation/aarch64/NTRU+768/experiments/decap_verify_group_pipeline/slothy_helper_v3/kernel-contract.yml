@@ -1,0 +1,79 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: decap_verify_helper_v3_slothy
+  name: v3_shared_quartic_verify_helper_rescheduled
+  source: helper_v3.sym.S
+  scheme: NTRUplus768
+  operation: decap_verify_pointwise_group
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_measured_via_neoverse_n1_schedule_candidate
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: functional_ra_then_full_region_schedule
+  driver: optimize_helper_v3.py
+  expected_outputs: [helper_v3.alloc.S, helper_v3.opt.S, slothy.log]
+  allow_spills: false
+
+region:
+  start_label: slothy_start_decap_verify_helper_v3
+  end_label: slothy_end_decap_verify_helper_v3
+  expected_instruction_count: 100
+  live_in: [x0_dst, x2_rhs, x3_zeta, v0_constants, v4-v7_lhs_group, v24-v31_next_group]
+  live_out: [x0_plus_64, x2_plus_64, x3_plus_16, v24-v31_unchanged, output_memory]
+
+abi:
+  inputs: [x0_dst, x2_rhs, x3_zeta, v0_constants, v4-v7_lhs_group]
+  outputs: [one_64_byte_qsoa_product_group]
+  clobbers: [v1-v23]
+  concrete_gprs_allowed: [x0, x2, x3]
+  fixed_vector_registers: [v0, v4, v5, v6, v7]
+  reserved_registers: [x1, x4-x30, sp, v24-v31]
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact_v3_quartic_product_with_loads_montgomery_folds_barrett_reduction_and_store
+
+layout:
+  input_representation: lhs_four_coefficient_vectors_and_rhs_qsoa_group
+  output_representation: qsoa_four_coefficient_vectors
+  vector_lanes: eight_independent_quartic_products
+  packing: coefficient_major_vectors_c0_c1_c2_c3
+
+memory_contract:
+  loads: [one_16_byte_zeta_vector, one_64_byte_rhs_group]
+  stores: [one_64_byte_qsoa_output_group]
+  aliasing: dst_rhs_zeta_do_not_overlap
+  alignment: production_poly_and_table_alignment
+  public_offsets_only: true
+  pointer_updates: [x0_plus_64, x2_plus_64, x3_plus_16]
+
+constant_contract:
+  constants: [q_3457, qinv_12929, montgomery_and_barrett_constants, rowbitrev_lambda]
+  modulus: 3457
+  representation: int16_montgomery_qsoa
+  reduction_method: unchanged_v3_widening_montgomery_and_barrett_folds
+
+range_contract:
+  input_ranges: [production_forward_ntt_and_verify_rhs_contract]
+  intermediate_ranges: [production_int32_quartic_accumulator_contract]
+  output_ranges: [production_verify_pointwise_qsoa_contract]
+  narrowing_points: [uzp2_after_each_montgomery_fold, final_int16_barrett_reduction]
+
+constant_time_contract:
+  secret_inputs: [lhs_group, rhs_group]
+  public_inputs: [fixed_group_count, fixed_table_addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make test_decap_verify_group_pipeline_v3_slothy
+  test_command: make test_decap_verify_group_pipeline_v3_slothy_abi
+  full_path_benchmark_command: make -f Makefile.production bench-kem-decap-verify-group-pipeline-v3-slothy-paired
+  benchmark_metric: cycles
+  lower_is_better: true

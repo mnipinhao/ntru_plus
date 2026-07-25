@@ -26,17 +26,148 @@
 #include "NO_CE/fips202.h"
 #endif
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
-#include "gt/keygen_bpq_cq.h"
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+#include "gt/keygen_cq.h"
 
 static void bench_keygen_ntt_mul3(poly *out, const poly *small)
 {
-  gt_keygen_ntt_bpq_mul3((gt_bpq_poly *)(void *)out, small);
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  gt_keygen_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
 }
 
 static void bench_keygen_ntt_mul3_add1(poly *out, const poly *small)
 {
-  gt_keygen_ntt_bpq_mul3_add1((gt_bpq_poly *)(void *)out, small);
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+  gt_keygen_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+}
+
+static int bench_keygen_baseinv(poly *out, const poly *in)
+{
+  return gt_keygen_baseinv_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)in);
+}
+
+static void bench_keygen_basemul(poly *out, const poly *a,
+                                 const poly *b)
+{
+  gt_keygen_basemul_cq_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)a,
+      (const gt_cq_poly *)(const void *)b);
+}
+
+static void bench_keygen_tobytes_cq(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_cq(out, (const gt_cq_poly *)(const void *)in);
+}
+
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_ntt_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_ntt_mul3_add1
+#define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv
+#define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul
+#define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_F bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV bench_keygen_tobytes_cq
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#include "experiments/keygen_all_cq/keygen_all_cq.h"
+
+static void bench_keygen_ntt_mul3(poly *out, const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+  gt_experiment_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+#else
+  gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+  gt_experiment_poly_ntt_to_bpq(&bpq, &coefficients);
+#else
+  poly block_major;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+  gt_experiment_keygen_bpq_to_cq((gt_cq_poly *)(void *)out, &bpq);
+#endif
+}
+
+static void bench_keygen_ntt_mul3_add1(poly *out, const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+  gt_experiment_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+#else
+  gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+  gt_experiment_poly_ntt_to_bpq(&bpq, &coefficients);
+#else
+  poly block_major;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+  gt_experiment_keygen_bpq_to_cq((gt_cq_poly *)(void *)out, &bpq);
+#endif
+}
+
+static int bench_keygen_baseinv(poly *out, const poly *in)
+{
+  return gt_experiment_keygen_baseinv_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)in);
+}
+
+static void bench_keygen_basemul(poly *out, const poly *a,
+                                 const poly *b)
+{
+  gt_experiment_keygen_basemul_cq_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)a,
+      (const gt_cq_poly *)(const void *)b);
+}
+
+static void bench_keygen_tobytes_cq(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_cq(out, (const gt_cq_poly *)(const void *)in);
+}
+
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_ntt_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_ntt_mul3_add1
+#define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv
+#define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul
+#define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_F bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV bench_keygen_tobytes_cq
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+#include "gt/keygen_bpq_cq.h"
+
+static void bench_keygen_ntt_mul3(poly *out, const poly *small)
+{
+  poly coefficients;
+  poly block_major;
+
+  poly_triple(&coefficients, small);
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq((gt_bpq_poly *)(void *)out, &block_major);
+}
+
+static void bench_keygen_ntt_mul3_add1(poly *out, const poly *small)
+{
+  poly coefficients;
+  poly block_major;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq((gt_bpq_poly *)(void *)out, &block_major);
 }
 
 static int bench_keygen_baseinv(poly *out, const poly *in)
@@ -99,7 +230,9 @@ static void bench_keygen_tobytes_bpq_p1(uint8_t *out, const poly *in)
 #define BENCH_KEYGEN_TOBYTES_SECRET_HINV BENCH_KEYGEN_TOBYTES_PUBLIC
 #endif
 
-#if defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #elif defined(GT_PRODUCTION_USE_SCALED_KEYPAIR)
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,

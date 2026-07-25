@@ -1,0 +1,55 @@
+candidate:
+  id: rminus1_basemul_pair_pipeline
+  status: promote
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: rminus1_pair_pipeline.sym.S
+  slothy_driver: optimize_rminus1_pair_pipeline.py
+  slothy_log: slothy.log
+  generated_output: rminus1_pair_pipeline.opt.S
+
+contract_preservation:
+  baseline_compared: true
+  preserved: true
+  approved_changes: false
+  approved_by:
+  changed_fields: []
+
+region:
+  start_label: rminus1_pair_slothy_start
+  end_label: rminus1_pair_slothy_end
+  live_in: [x0_dst, x1_src1, x2_src2, x4_lambda, v0_constants]
+  live_out: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32, output_memory]
+
+abi:
+  inputs: [x0_dst, x1_src1, x2_src2]
+  outputs: [two_rminus1_blockmajor_groups]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8]
+  fixed_vector_registers: [v0]
+  reserved_registers: [x18-x30, sp]
+
+memory_contract:
+  loads: [two_64_byte_src1_groups, two_64_byte_src2_groups, two_16_byte_lambda_groups]
+  stores: [two_64_byte_rminus1_output_groups]
+  aliasing: dst_src1_src2_do_not_overlap
+  alignment: production_poly_alignment
+  public_offsets_only: true
+  pointer_updates: [x0_plus_128, x1_plus_128, x2_plus_128, x4_plus_32]
+
+constant_contract:
+  constants: [q_3457, qinv_12929, montgomery_constants, rowbitrev_lambda]
+  modulus: 3457
+  representation: int16_montgomery_rowbitrev_blockmajor
+  reduction_method: production_widening_montgomery_fold
+
+range_contract:
+  input_ranges: [production_forward_ntt_output_contract]
+  intermediate_ranges: [production_int32_quartic_accumulator_contract]
+  output_ranges: [production_raw_rminus1_basemul_contract]
+  narrowing_points: [uzp2_after_montgomery_fold]
+
+constant_time_contract:
+  secret_inputs: [src1_coefficients, src2_coefficients]
+  public_inputs: [fixed_trip_count, rowbitrev_lambda_addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

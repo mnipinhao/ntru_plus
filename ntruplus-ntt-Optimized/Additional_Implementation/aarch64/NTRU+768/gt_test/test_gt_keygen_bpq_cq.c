@@ -58,11 +58,11 @@ int main(void)
         poly_triple(&old_f, &small_f);
         old_f.coeffs[0] += 1;
         poly_ntt(&old_f, &old_f);
-        gt_keygen_ntt_bpq_mul3_add1(&new_f, &small_f);
+        gt_keygen_blockmajor_to_bpq(&new_f, &old_f);
 
         poly_triple(&old_g, &small_g);
         poly_ntt(&old_g, &old_g);
-        gt_keygen_ntt_bpq_mul3(&new_g, &small_g);
+        gt_keygen_blockmajor_to_bpq(&new_g, &old_g);
 
         poly_tobytes_gt_canonical_p1(old_bytes, &old_f);
         gt_keygen_tobytes_bpq_p1(new_bytes, &new_f);

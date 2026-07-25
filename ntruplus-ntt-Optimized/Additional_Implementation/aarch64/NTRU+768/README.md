@@ -10,6 +10,8 @@ files from an `experiment` or `experiments` path.
 | `asm/slothy/inputs/` | Symbolic inputs, contracts, and regeneration drivers |
 | `gt_production_sources.mk` | Authoritative production source manifest |
 | `gt_production_variants.mk` | Authoritative production feature flags |
+| `docs/gt-production-current-file-map.md` | Human-readable selected KEM path and profiler-only file map |
+| `docs/gt-production-keygen-cq-promotion-audit-2026-07-23.md` | Mixed versus direct-CQ production decision and Pi 5 evidence |
 | `make/production.mk` | KAT and production KEM targets |
 | `make/tests.mk` | Correctness and ABI tests |
 | `make/experiments.mk` | Experiment and profiling targets |

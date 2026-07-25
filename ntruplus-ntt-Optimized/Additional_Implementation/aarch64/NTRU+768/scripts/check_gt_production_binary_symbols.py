@@ -12,9 +12,11 @@ from pathlib import Path
 FORBIDDEN = {
     "baseinv",
     "basemul",
+    "poly_basemul_normal",
     "basemul_add",
     "gt_kpqc_block_to_gt_block",
     "invntt",
+    "poly_invntt_normal",
     "invntt_gt_rowbitrevlayout",
     "invntt_gt_rowbitrevlayout_exact",
     "ntt",
@@ -22,22 +24,50 @@ FORBIDDEN = {
     "poly_frombytes_gt_canonical_ref",
     "poly_tobytes_gt_canonical_p1",
     "poly_tobytes_gt_canonical_ref",
-    "poly_triple",
 }
 
-REQUIRED = {
+COMMON_REQUIRED = {
     "crypto_kem_dec",
     "crypto_kem_enc",
     "crypto_kem_keypair",
     "gt_decap_verify_pointwise",
-    "gt_keygen_baseinv_bpq_to_cq_scaled_r",
-    "gt_keygen_basemul_bpq_cq_to_cq_scaled_r",
     "poly_basemul_add_encap_direct32_q31_tobytes_contract",
-    "poly_basemul_rminus1",
+    "poly_basemul",
     "poly_frombytes_gt_canonical_u1",
-    "poly_invntt_from_rminus1",
+    "poly_invntt",
     "poly_ntt",
     "poly_tobytes_gt_canonical",
+    "poly_triple",
+}
+
+KEYGEN_REQUIRED = {
+    "mixed": {
+        "gt_keygen_baseinv_bpq_to_cq_scaled_r",
+        "gt_keygen_basemul_bpq_cq_to_cq_scaled_r",
+        "gt_keygen_blockmajor_to_bpq",
+        "gt_keygen_tobytes_bpq_p1",
+        "gt_keygen_tobytes_cq",
+    },
+    "cq": {
+        "gt_keygen_baseinv_cq_to_cq_scaled_r",
+        "gt_keygen_basemul_cq_cq_to_cq_scaled_r",
+        "gt_keygen_poly_ntt_to_cq",
+        "gt_keygen_tobytes_cq",
+    },
+}
+
+KEYGEN_FORBIDDEN = {
+    "mixed": {
+        "gt_keygen_baseinv_cq_to_cq_scaled_r",
+        "gt_keygen_basemul_cq_cq_to_cq_scaled_r",
+        "gt_keygen_poly_ntt_to_cq",
+    },
+    "cq": {
+        "gt_keygen_baseinv_bpq_to_cq_scaled_r",
+        "gt_keygen_basemul_bpq_cq_to_cq_scaled_r",
+        "gt_keygen_blockmajor_to_bpq",
+        "gt_keygen_tobytes_bpq_p1",
+    },
 }
 
 
@@ -56,13 +86,18 @@ def main() -> int:
     parser.add_argument("binary", type=Path)
     parser.add_argument("--nm", default="nm")
     parser.add_argument("--json", type=Path)
+    parser.add_argument("--keygen-layout", choices=sorted(KEYGEN_REQUIRED),
+                        default="mixed")
     args = parser.parse_args()
 
     symbols = defined_symbols(args.binary, args.nm)
-    forbidden_present = sorted(FORBIDDEN & symbols)
-    required_missing = sorted(REQUIRED - symbols)
+    forbidden = FORBIDDEN | KEYGEN_FORBIDDEN[args.keygen_layout]
+    required = COMMON_REQUIRED | KEYGEN_REQUIRED[args.keygen_layout]
+    forbidden_present = sorted(forbidden & symbols)
+    required_missing = sorted(required - symbols)
     result = {
         "binary": str(args.binary),
+        "keygen_layout": args.keygen_layout,
         "forbidden_present": forbidden_present,
         "required_missing": required_missing,
         "status": "pass" if not forbidden_present and not required_missing else "fail",

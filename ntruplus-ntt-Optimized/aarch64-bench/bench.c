@@ -21,18 +21,163 @@
 #include "params.h"
 #include "poly.h"
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+#define BENCH_NORMAL_BASEMUL poly_basemul_normal
+#define BENCH_NORMAL_INVNTT poly_invntt_normal
+#else
+#define BENCH_NORMAL_BASEMUL poly_basemul
+#define BENCH_NORMAL_INVNTT poly_invntt
+#endif
+
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+#include "gt/keygen_cq.h"
+
+static void bench_keygen_shared_ntt_to_cq_mul3(poly *out,
+                                                const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  gt_keygen_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+}
+
+static void bench_keygen_shared_ntt_to_cq_mul3_add1(poly *out,
+                                                     const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+  gt_keygen_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+}
+
+static int bench_keygen_baseinv_cq(poly *out, const poly *in)
+{
+  return gt_keygen_baseinv_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)in);
+}
+
+static void bench_keygen_basemul_cq(poly *out, const poly *a,
+                                    const poly *b)
+{
+  gt_keygen_basemul_cq_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)a,
+      (const gt_cq_poly *)(const void *)b);
+}
+
+static void bench_keygen_tobytes_cq(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_cq(out, (const gt_cq_poly *)(const void *)in);
+}
+
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_shared_ntt_to_cq_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_shared_ntt_to_cq_mul3_add1
+#define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv_cq
+#define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul_cq
+#define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_F bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV bench_keygen_tobytes_cq
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#include "experiments/keygen_all_cq/keygen_all_cq.h"
+
+static void bench_keygen_shared_ntt_to_cq_mul3(poly *out,
+                                                const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+  gt_experiment_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+#else
+  gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+  gt_experiment_poly_ntt_to_bpq(&bpq, &coefficients);
+#else
+  poly block_major;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+  gt_experiment_keygen_bpq_to_cq((gt_cq_poly *)(void *)out, &bpq);
+#endif
+}
+
+static void bench_keygen_shared_ntt_to_cq_mul3_add1(poly *out,
+                                                     const poly *small)
+{
+  poly coefficients;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+  gt_experiment_poly_ntt_to_cq((gt_cq_poly *)(void *)out, &coefficients);
+#else
+  gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+  gt_experiment_poly_ntt_to_bpq(&bpq, &coefficients);
+#else
+  poly block_major;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+  gt_experiment_keygen_bpq_to_cq((gt_cq_poly *)(void *)out, &bpq);
+#endif
+}
+
+static int bench_keygen_baseinv_cq(poly *out, const poly *in)
+{
+  return gt_experiment_keygen_baseinv_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)in);
+}
+
+static void bench_keygen_basemul_cq(poly *out, const poly *a,
+                                    const poly *b)
+{
+  gt_experiment_keygen_basemul_cq_cq_to_cq_scaled_r(
+      (gt_cq_poly *)(void *)out,
+      (const gt_cq_poly *)(const void *)a,
+      (const gt_cq_poly *)(const void *)b);
+}
+
+static void bench_keygen_tobytes_cq(uint8_t *out, const poly *in)
+{
+  gt_keygen_tobytes_cq(out, (const gt_cq_poly *)(const void *)in);
+}
+
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_shared_ntt_to_cq_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_shared_ntt_to_cq_mul3_add1
+#define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv_cq
+#define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul_cq
+#define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_F bench_keygen_tobytes_cq
+#define BENCH_KEYGEN_TOBYTES_SECRET_HINV bench_keygen_tobytes_cq
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #include "gt/keygen_bpq_cq.h"
 
 /* The profiler keeps one poly-sized fixture pool; adapters name each layout. */
-static void bench_keygen_ntt_bpq_mul3(poly *out, const poly *small)
+static void bench_keygen_shared_ntt_to_bpq_mul3(poly *out,
+                                                 const poly *small)
 {
-  gt_keygen_ntt_bpq_mul3((gt_bpq_poly *)(void *)out, small);
+  poly coefficients;
+  poly block_major;
+
+  poly_triple(&coefficients, small);
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq((gt_bpq_poly *)(void *)out, &block_major);
 }
 
-static void bench_keygen_ntt_bpq_mul3_add1(poly *out, const poly *small)
+static void bench_keygen_shared_ntt_to_bpq_mul3_add1(poly *out,
+                                                      const poly *small)
 {
-  gt_keygen_ntt_bpq_mul3_add1((gt_bpq_poly *)(void *)out, small);
+  poly coefficients;
+  poly block_major;
+
+  poly_triple(&coefficients, small);
+  coefficients.coeffs[0] += 1;
+  poly_ntt(&block_major, &coefficients);
+  gt_keygen_blockmajor_to_bpq((gt_bpq_poly *)(void *)out, &block_major);
 }
 
 static int bench_keygen_baseinv_bpq_cq(poly *out, const poly *in)
@@ -61,8 +206,8 @@ static void bench_keygen_tobytes_bpq_p1(uint8_t *out, const poly *in)
                            (const gt_bpq_poly *)(const void *)in);
 }
 
-#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_ntt_bpq_mul3
-#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_ntt_bpq_mul3_add1
+#define BENCH_KEYGEN_NTT_MUL3 bench_keygen_shared_ntt_to_bpq_mul3
+#define BENCH_KEYGEN_NTT_MUL3_ADD1 bench_keygen_shared_ntt_to_bpq_mul3_add1
 #define BENCH_KEYPAIR_BASEINV bench_keygen_baseinv_bpq_cq
 #define BENCH_KEYPAIR_BASEMUL bench_keygen_basemul_bpq_cq
 #define BENCH_KEYGEN_TOBYTES_PUBLIC bench_keygen_tobytes_cq
@@ -108,8 +253,6 @@ static void bench_keygen_tobytes_bpq_p1(uint8_t *out, const poly *in)
 #endif
 
 #ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
 #endif
 
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
@@ -124,7 +267,9 @@ void poly_basemul_to_tuple(poly *r, const poly *a, const poly *b);
 void gt_tuple_poly_invntt(poly *r, const poly *a);
 #endif
 
-#if defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #elif defined(GT_PRODUCTION_USE_SCALED_KEYPAIR)
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
@@ -140,7 +285,7 @@ void poly_basemul_scaled_r_input(poly *r, const poly *a,
 #define BENCH_KEYPAIR_BASEINV poly_baseinv
 #endif
 #ifndef BENCH_KEYPAIR_BASEMUL
-#define BENCH_KEYPAIR_BASEMUL poly_basemul
+#define BENCH_KEYPAIR_BASEMUL BENCH_NORMAL_BASEMUL
 #endif
 #endif
 
@@ -694,8 +839,8 @@ static void prepare_poly_inputs(void)
     poly_ntt(&g_ntt_a[i], &g_a[i]);
     poly_ntt(&g_ntt_b[i], &g_b[i]);
     poly_ntt(&g_ntt_acc[i], &g_acc[i]);
-    poly_basemul(&g_freq_out[i], &g_ntt_a[i], &g_ntt_b[i]);
-    poly_invntt(&g_out[i], &g_freq_out[i]);
+    BENCH_NORMAL_BASEMUL(&g_freq_out[i], &g_ntt_a[i], &g_ntt_b[i]);
+    BENCH_NORMAL_INVNTT(&g_out[i], &g_freq_out[i]);
 #if BENCH_ENABLE_INVNTT_STAGES
     poly_invntt_bench_rows(g_invntt_rows[i], &g_ntt_a[i]);
     poly_invntt_bench_post_dft3_reduce(g_invntt_dft[i], g_invntt_rows[i]);
@@ -747,8 +892,8 @@ static int prepare_kem_inputs(void)
 #ifdef GT_PRODUCTION_USE_SCALED_KEYPAIR
   g_base_inv_keypair = g_key_finv;
 #endif
-  poly_basemul(&g_product, &g_ntt_poly, &g_base_inv);
-  poly_invntt(&g_inv_poly, &g_product);
+  BENCH_NORMAL_BASEMUL(&g_product, &g_ntt_poly, &g_base_inv);
+  BENCH_NORMAL_INVNTT(&g_inv_poly, &g_product);
   poly_crepmod3(&g_decoded, &g_inv_poly);
   BENCH_NTT_TOBYTES(g_polybytes, &g_ntt_poly);
 
@@ -778,14 +923,14 @@ static int prepare_kem_inputs(void)
   poly_invntt_from_rminus1_stage45scratch(&g_dec_m1,
                                           dec_product.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-  poly_basemul_rminus1(&dec_product, &g_dec_c, &g_dec_f);
-  poly_invntt_from_rminus1(&g_dec_m1, &dec_product);
+  poly_basemul(&dec_product, &g_dec_c, &g_dec_f);
+  poly_invntt(&g_dec_m1, &dec_product);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
   poly_basemul_to_tuple(&dec_product, &g_dec_c, &g_dec_f);
   gt_tuple_poly_invntt(&g_dec_m1, &dec_product);
 #else
-  poly_basemul(&dec_product, &g_dec_c, &g_dec_f);
-  poly_invntt(&g_dec_m1, &dec_product);
+  BENCH_NORMAL_BASEMUL(&dec_product, &g_dec_c, &g_dec_f);
+  BENCH_NORMAL_INVNTT(&g_dec_m1, &dec_product);
 #endif
 #if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \
     !defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP)
@@ -800,7 +945,7 @@ static int prepare_kem_inputs(void)
       g_dec_verify_bytes, &g_dec_c_minus_m2,
       g_sk + NTRUPLUS_POLYBYTES);
 #else
-  poly_basemul(&dec_verify_product, &g_dec_c_minus_m2, &g_dec_hinv);
+  BENCH_NORMAL_BASEMUL(&dec_verify_product, &g_dec_c_minus_m2, &g_dec_hinv);
   BENCH_NTT_TOBYTES(g_dec_verify_bytes, &dec_verify_product);
 #endif
   poly_ntt(&dec_r1_ntt, &g_dec_r1_coeff);
@@ -828,7 +973,7 @@ static int check_ntt_roundtrip(void)
   poly got;
 
   poly_ntt(&freq, &g_a[0]);
-  poly_invntt(&got, &freq);
+  BENCH_NORMAL_INVNTT(&got, &freq);
   return compare_poly_modq("ntt roundtrip", &got, &g_a[0]);
 }
 
@@ -838,7 +983,7 @@ static int check_gt_invntt_exact_one(const char *label, const poly *freq)
   poly got;
   poly want;
 
-  poly_invntt(&got, freq);
+  BENCH_NORMAL_INVNTT(&got, freq);
   invntt_gt_rowbitrevlayout_exact(want.coeffs, freq->coeffs);
   return compare_poly_exact(label, &got, &want);
 }
@@ -895,8 +1040,8 @@ static int check_mul_pipeline(void)
   schoolbook_mul_reference(&want, &g_a[0], &g_b[0]);
   poly_ntt(&ntt_a, &g_a[0]);
   poly_ntt(&ntt_b, &g_b[0]);
-  poly_basemul(&freq, &ntt_a, &ntt_b);
-  poly_invntt(&got, &freq);
+  BENCH_NORMAL_BASEMUL(&freq, &ntt_a, &ntt_b);
+  BENCH_NORMAL_INVNTT(&got, &freq);
   return compare_poly_modq("ntt_mul_pipeline", &got, &want);
 }
 
@@ -921,7 +1066,7 @@ static int check_add_pipeline(void)
   poly_ntt(&ntt_b, &g_b[0]);
   poly_ntt(&ntt_acc, &g_acc[0]);
   poly_basemul_add(&freq, &ntt_a, &ntt_b, &ntt_acc);
-  poly_invntt(&got, &freq);
+  BENCH_NORMAL_INVNTT(&got, &freq);
   return compare_poly_modq("ntt_basemul_add_pipeline", &got, &want);
 }
 
@@ -944,7 +1089,7 @@ static int check_correctness(const char *mode)
 
     for (i = 0; i < NITERATIONS; i++)
     {
-      poly_invntt(&want, &g_ntt_a[i]);
+      BENCH_NORMAL_INVNTT(&want, &g_ntt_a[i]);
       poly_invntt_bench_post(&got, g_invntt_rows[i]);
       if (!compare_poly_modq("invntt staged post", &got, &want))
       {
@@ -1014,12 +1159,12 @@ static void target_ntt(int idx)
 
 static void target_invntt(int idx)
 {
-  poly_invntt(&g_out[idx], &g_ntt_a[idx]);
+  BENCH_NORMAL_INVNTT(&g_out[idx], &g_ntt_a[idx]);
 }
 
 static void target_basemul(int idx)
 {
-  poly_basemul(&g_freq_out[idx], &g_ntt_a[idx], &g_ntt_b[idx]);
+  BENCH_NORMAL_BASEMUL(&g_freq_out[idx], &g_ntt_a[idx], &g_ntt_b[idx]);
 }
 
 static void target_basemul_add(int idx)
@@ -1032,8 +1177,8 @@ static void target_pipeline(int idx)
 {
   poly_ntt(&g_ntt_a[idx], &g_a[idx]);
   poly_ntt(&g_ntt_b[idx], &g_b[idx]);
-  poly_basemul(&g_freq_out[idx], &g_ntt_a[idx], &g_ntt_b[idx]);
-  poly_invntt(&g_out[idx], &g_freq_out[idx]);
+  BENCH_NORMAL_BASEMUL(&g_freq_out[idx], &g_ntt_a[idx], &g_ntt_b[idx]);
+  BENCH_NORMAL_INVNTT(&g_out[idx], &g_freq_out[idx]);
 }
 
 static void target_add_pipeline(int idx)
@@ -1043,7 +1188,7 @@ static void target_add_pipeline(int idx)
   poly_ntt(&g_ntt_acc[idx], &g_acc[idx]);
   poly_basemul_add(&g_freq_out[idx], &g_ntt_a[idx], &g_ntt_b[idx],
                    &g_ntt_acc[idx]);
-  poly_invntt(&g_out[idx], &g_freq_out[idx]);
+  BENCH_NORMAL_INVNTT(&g_out[idx], &g_freq_out[idx]);
 }
 
 #if BENCH_ENABLE_INVNTT_STAGES
@@ -1343,11 +1488,11 @@ static void component_decap_first_basemul_actual(int idx)
   poly_basemul_rminus1_to_stage123scratch(g_product.coeffs,
                                           &g_dec_c, &g_dec_f);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-  poly_basemul_rminus1(&g_product, &g_dec_c, &g_dec_f);
+  poly_basemul(&g_product, &g_dec_c, &g_dec_f);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
   poly_basemul_to_tuple(&g_product, &g_dec_c, &g_dec_f);
 #else
-  poly_basemul(&g_product, &g_dec_c, &g_dec_f);
+  BENCH_NORMAL_BASEMUL(&g_product, &g_dec_c, &g_dec_f);
 #endif
 }
 
@@ -1357,11 +1502,11 @@ static void component_decap_first_invntt_actual(int idx)
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
   poly_invntt_from_rminus1_stage45scratch(&g_inv_poly, g_product.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-  poly_invntt_from_rminus1(&g_inv_poly, &g_product);
+  poly_invntt(&g_inv_poly, &g_product);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
   gt_tuple_poly_invntt(&g_inv_poly, &g_product);
 #else
-  poly_invntt(&g_inv_poly, &g_product);
+  BENCH_NORMAL_INVNTT(&g_inv_poly, &g_product);
 #endif
 }
 
@@ -1374,7 +1519,7 @@ static void component_decap_first_pair_actual(int idx)
 static void component_poly_basemul(int idx)
 {
   (void)idx;
-  poly_basemul(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
+  BENCH_NORMAL_BASEMUL(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
 }
 
 static void component_decap_verify_basemul_pack(int idx)
@@ -1386,7 +1531,7 @@ static void component_decap_verify_basemul_pack(int idx)
       g_sk + NTRUPLUS_POLYBYTES);
 #else
   BENCH_NTT_FROMBYTES(&g_dec_hinv, g_sk + NTRUPLUS_POLYBYTES);
-  poly_basemul(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
+  BENCH_NORMAL_BASEMUL(&g_product, &g_dec_c_minus_m2, &g_dec_hinv);
   BENCH_NTT_TOBYTES(g_dec_verify_bytes, &g_product);
 #endif
 }

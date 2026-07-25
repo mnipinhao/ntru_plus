@@ -1,0 +1,109 @@
+{
+  "date": "2026-07-24",
+  "baseline": {
+    "host": "Raspberry Pi 5 Cortex-A76",
+    "elf": "/tmp/ntruplus-gt-release-20260724-v2-build/test_kem",
+    "text_bytes": 80673
+  },
+  "linked_regions": [
+    {
+      "name": "poly_tobytes",
+      "start": "0xd7b0",
+      "end": "0xecf0",
+      "bytes": 5440,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 2,
+        "decapsulation": 1
+      }
+    },
+    {
+      "name": "poly_frombytes",
+      "start": "0xf530",
+      "end": "0x10660",
+      "bytes": 4400,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 1,
+        "decapsulation": 2
+      }
+    },
+    {
+      "name": "gt_keygen_tobytes_cq",
+      "start": "0x11020",
+      "end": "0x12450",
+      "bytes": 5168,
+      "calls": {
+        "keygen": 3,
+        "encapsulation": 0,
+        "decapsulation": 0
+      }
+    },
+    {
+      "name": "qsoa_frombytes",
+      "start": "0xf278",
+      "end": "0xf340",
+      "bytes": 200,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 0,
+        "decapsulation": 1
+      }
+    },
+    {
+      "name": "qsoa_tobytes",
+      "start": "0xf340",
+      "end": "0xf450",
+      "bytes": 272,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 0,
+        "decapsulation": 1
+      }
+    },
+    {
+      "name": "gt_decap_verify_to_bytes",
+      "start": "0x28a0",
+      "end": "0x28fc",
+      "bytes": 92,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 0,
+        "decapsulation": 1
+      }
+    },
+    {
+      "name": "gt_decap_verify_pointwise",
+      "start": "0x12940",
+      "end": "0x13480",
+      "bytes": 2880,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 0,
+        "decapsulation": 1
+      }
+    },
+    {
+      "name": "poly_basemul_add",
+      "start": "0x12610",
+      "end": "0x12940",
+      "bytes": 816,
+      "calls": {
+        "keygen": 0,
+        "encapsulation": 1,
+        "decapsulation": 0
+      }
+    }
+  ],
+  "totals": {
+    "canonical_serialization_bytes": 15480,
+    "canonical_serialization_percent_of_text": 19.19,
+    "pack_family_bytes": 10880,
+    "pack_family_percent_of_text": 13.49
+  },
+  "alias_findings": {
+    "underscore_aliases_duplicate_code": false,
+    "poly_ntt_and_keygen_endpoint_duplicate_code": false,
+    "note": "Aliases share addresses; they do not add a second body."
+  }
+}

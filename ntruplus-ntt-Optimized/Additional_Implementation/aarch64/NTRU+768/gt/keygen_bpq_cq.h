@@ -25,9 +25,12 @@ _Static_assert(_Alignof(gt_cq_poly) == _Alignof(poly),
                "CQ storage alignment must match poly");
 #endif
 
-/* Internal keygen-only layout contract. These are not generic poly APIs. */
-void gt_keygen_ntt_bpq_mul3(gt_bpq_poly *out_bpq, const poly *small);
-void gt_keygen_ntt_bpq_mul3_add1(gt_bpq_poly *out_bpq, const poly *small);
+/*
+ * Internal keygen-only layout contract. These are not generic poly APIs.
+ * The conversion requires distinct input/output objects.
+ */
+void gt_keygen_blockmajor_to_bpq(gt_bpq_poly *out_bpq,
+                                 const poly *in_blockmajor);
 
 int gt_keygen_baseinv_bpq_to_cq_scaled_r(gt_cq_poly *out_cq,
                                           const gt_bpq_poly *in_bpq);

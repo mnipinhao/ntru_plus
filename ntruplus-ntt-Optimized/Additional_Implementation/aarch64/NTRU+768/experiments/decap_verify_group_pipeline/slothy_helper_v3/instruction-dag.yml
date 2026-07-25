@@ -1,0 +1,104 @@
+dag:
+  id: decap_verify_helper_v3_dag
+  kernel_contract: kernel-contract.yml
+  description: Exact semantic DAG of one V3 shared quartic verification helper call.
+
+inputs:
+  - lhs_coefficient_vectors_a0_a1_a2_a3
+  - rhs_coefficient_vectors_b0_b1_b2_b3
+  - rowbitrev_lambda
+  - q_and_reduction_constants
+
+nodes:
+  - id: loads
+    op: ld1_zeta_and_ld1x4_rhs
+    inputs: [x3_zeta, x2_rhs]
+    outputs: [lambda, b0, b1, b2, b3]
+    instruction_shape: exact_two_v3_load_instructions
+    tied_operands: [x3_postincrement, x2_postincrement, ld1x4_consecutive_outputs]
+    range_before: public_aligned_memory
+    range_after: production_zeta_and_rhs_input_contract
+    may_reorder_with: []
+    must_precede: [wraparound_dot_products, direct_dot_products]
+  - id: wraparound_dot_products
+    op: widening_quartic_wraparound_terms
+    inputs: [a1, a2, a3, b1, b2, b3]
+    outputs: [wrap0_int32, wrap1_int32, wrap2_int32]
+    instruction_shape: six_smull_and_six_smlal_low_high_pairs
+    tied_operands: [smlal_destinations]
+    range_before: production_forward_ntt_and_verify_rhs_contract
+    range_after: production_int32_quartic_accumulator_contract
+    may_reorder_with: [direct_a3_b0_product_after_required_loads]
+    must_precede: [wraparound_montgomery_fold]
+  - id: wraparound_montgomery_fold
+    op: three_widening_montgomery_reductions
+    inputs: [wrap0_int32, wrap1_int32, wrap2_int32, q, qinv]
+    outputs: [wrap0_red, wrap1_red, wrap2_red]
+    instruction_shape: uzp1_mul_smlal_smlal2_uzp2_per_value
+    tied_operands: [smlal_destinations]
+    range_before: production_int32_quartic_accumulator_contract
+    range_after: production_int16_montgomery_contract
+    may_reorder_with: [independent_direct_dot_product_terms]
+    must_precede: [lambda_products]
+  - id: quartic_dot_products
+    op: four_widening_quartic_output_dot_products
+    inputs: [a0, a1, a2, a3, b0, b1, b2, b3, lambda, wrap0_red, wrap1_red, wrap2_red]
+    outputs: [r0_int32, r1_int32, r2_int32, r3_int32]
+    instruction_shape: exact_v3_smull_smull2_smlal_smlal2_multiset
+    tied_operands: [smlal_destinations]
+    range_before: production_int16_montgomery_contract
+    range_after: production_int32_quartic_accumulator_contract
+    may_reorder_with: [remaining_wraparound_fold_when_dependencies_allow]
+    must_precede: [product_montgomery_fold]
+  - id: product_montgomery_fold
+    op: four_widening_montgomery_reductions
+    inputs: [r0_int32, r1_int32, r2_int32, r3_int32, q, qinv]
+    outputs: [raw0, raw1, raw2, raw3]
+    instruction_shape: uzp1_mul_smlal_smlal2_uzp2_per_value
+    tied_operands: [smlal_destinations]
+    range_before: production_int32_quartic_accumulator_contract
+    range_after: production_raw_verify_product_contract
+    may_reorder_with: []
+    must_precede: [final_scale_and_reduce]
+  - id: final_scale_and_reduce
+    op: montgomery_scale_then_barrett_reduce
+    inputs: [raw0, raw1, raw2, raw3, q_and_reduction_constants]
+    outputs: [out0, out1, out2, out3]
+    instruction_shape: mul_sqrdmulh_mls_sqdmulh_srshr_mls_per_value
+    tied_operands: [first_mls_destinations, final_mls_destinations]
+    range_before: production_raw_verify_product_contract
+    range_after: production_verify_pointwise_qsoa_contract
+    may_reorder_with: []
+    must_precede: [store]
+  - id: store
+    op: st1x4
+    inputs: [out0, out1, out2, out3, x0_dst]
+    outputs: [output_memory]
+    instruction_shape: exact_one_v3_store_instruction
+    tied_operands: [x0_postincrement, st1x4_consecutive_inputs]
+    range_before: production_verify_pointwise_qsoa_contract
+    range_after: memory_output
+    may_reorder_with: []
+    must_precede: []
+
+memory:
+  loads: [zeta_then_rhs_as_in_v3_source]
+  stores: [one_output_group]
+  ordering_constraints: [public_postincrement_pointer_chains, store_after_all_output_defs]
+
+register_contract:
+  fixed: [v0_constants]
+  live_through_unchanged: [v24, v25, v26, v27, v28, v29, v30, v31]
+  allocated_pool: [v1-v23]
+  input_register_binding: [lhs0_v4, lhs1_v5, lhs2_v6, lhs3_v7]
+  spills_allowed: false
+
+outputs: [output_memory]
+live_out: [x0_plus_64, x2_plus_64, x3_plus_16, v24-v31_unchanged]
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
+  live_through_checked: true

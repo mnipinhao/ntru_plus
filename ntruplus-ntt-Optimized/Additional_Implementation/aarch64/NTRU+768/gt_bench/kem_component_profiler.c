@@ -12,11 +12,6 @@
 #include "symmetric.h"
 #include "test/counter.h"
 
-#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
-#endif
-
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
                                              const poly *a,
@@ -78,7 +73,7 @@ void poly_basemul_scaled_r_input(poly *r, const poly *a,
 #define KEYPAIR_BASEMUL poly_basemul_scaled_r_input
 #else
 #define KEYPAIR_BASEINV poly_baseinv
-#define KEYPAIR_BASEMUL poly_basemul
+#define KEYPAIR_BASEMUL poly_basemul_normal
 #endif
 
 #ifdef SUPPORTS_SHAKE256_ASM
@@ -236,18 +231,18 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 	poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
 	poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-	poly_basemul_rminus1(&m1, &c, &f);
-	poly_invntt_from_rminus1(&m1, &m1);
+	poly_basemul(&m1, &c, &f);
+	poly_invntt(&m1, &m1);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
 	poly_basemul_to_tuple(&m1, &c, &f);
 	gt_tuple_poly_invntt(&m1, &m1);
 #elif defined(GT_PRODUCTION_USE_PACK_TUPLE_DECAP)
-	poly_basemul(&m1, &c, &f);
+	poly_basemul_normal(&m1, &c, &f);
 	gt_block_major_to_tuple_c(&m2, &m1);
 	gt_tuple_poly_invntt(&m1, &m2);
 #else
-	poly_basemul(&m1, &c, &f);
-	poly_invntt(&m1, &m1);
+	poly_basemul_normal(&m1, &c, &f);
+	poly_invntt_normal(&m1, &m1);
 #endif
 #if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \
 	!defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP)
@@ -256,7 +251,7 @@ static int dec_profile(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
 	poly_ntt(&m2, &m1);
 	poly_sub(&c, &c, &m2);
-	poly_basemul(&r2, &c, &hinv);
+	poly_basemul_normal(&r2, &c, &hinv);
 
 	poly_tobytes_gt_canonical(buf1, &r2);
 	hash_g(buf2, buf1);
@@ -435,8 +430,8 @@ int main(void)
 		return 1;
 	}
 #endif
-	poly_basemul(&product, &ntt_poly, &base_inv);
-	poly_invntt(&inv_poly, &product);
+	poly_basemul_normal(&product, &ntt_poly, &base_inv);
+	poly_invntt_normal(&inv_poly, &product);
 	poly_crepmod3(&decoded, &inv_poly);
 	poly_tobytes_gt_canonical(polybytes, &ntt_poly);
 
@@ -489,7 +484,7 @@ int main(void)
 		(void)poly_baseinv(&base_inv, &ntt_poly);
 	}, base_inv.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(keygen_components, "poly_basemul_keypair", 2, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #endif
 	BENCH_COMPONENT_ACC(keygen_components, "poly_tobytes_key", 3, {
@@ -553,17 +548,17 @@ int main(void)
 		                                        product.coeffs);
 	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-	BENCH_COMPONENT_ACC(dec_components, "poly_basemul_rminus1", 1, {
-		poly_basemul_rminus1(&product, &ntt_poly, &base_inv);
-	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
-	BENCH_COMPONENT_ACC(dec_components, "poly_invntt_from_rminus1", 1, {
-		poly_invntt_from_rminus1(&inv_poly, &product);
-	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
 		poly_basemul(&product, &ntt_poly, &base_inv);
+	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
+	BENCH_COMPONENT_ACC(dec_components, "poly_invntt", 1, {
+		poly_invntt(&inv_poly, &product);
+	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
+	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul_to_tuple", 1, {
@@ -573,11 +568,11 @@ int main(void)
 		gt_tuple_poly_invntt(&inv_poly, &product);
 	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #elif defined(GT_PRODUCTION_USE_PACK_TUPLE_DECAP)
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "gt_block_major_to_tuple_c", 1, {
 		gt_block_major_to_tuple_c(&decoded, &product);
@@ -586,14 +581,14 @@ int main(void)
 		gt_tuple_poly_invntt(&inv_poly, &decoded);
 	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 1, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #else
 	BENCH_COMPONENT_ACC(dec_components, "poly_basemul", 2, {
-		poly_basemul(&product, &ntt_poly, &base_inv);
+		poly_basemul_normal(&product, &ntt_poly, &base_inv);
 	}, product.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 	BENCH_COMPONENT_ACC(dec_components, "poly_invntt", 1, {
-		poly_invntt(&inv_poly, &product);
+		poly_invntt_normal(&inv_poly, &product);
 	}, inv_poly.coeffs[(unsigned)i__ & (NTRUPLUS_N - 1)]);
 #endif
 #if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \

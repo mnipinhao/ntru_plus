@@ -10,6 +10,16 @@
  *     the current Pi 5 median is about 4039 cycles in the base-N1 combined
  *     matrix, with the best observed pipeline/KEM medians.
  */
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+#define poly_invntt poly_invntt_normal
+#define _poly_invntt _poly_invntt_normal
+#define gt_block_major_poly_invntt gt_block_major_poly_invntt_normal
+#define _gt_block_major_poly_invntt _gt_block_major_poly_invntt_normal
+#define gt_tuple_poly_invntt gt_tuple_poly_invntt_normal
+#define _gt_tuple_poly_invntt _gt_tuple_poly_invntt_normal
+#define gt_bpq_poly_invntt gt_bpq_poly_invntt_normal
+#define _gt_bpq_poly_invntt _gt_bpq_poly_invntt_normal
+#endif
 .equ INVNTT_USE_DIRECT_STAGE123_STRIPE_SCRATCH, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION, 1
 .equ INVNTT_USE_STAGE45_REDUCE_FUSION_SLOTHY, 1
@@ -20,4 +30,4 @@
 #ifdef __APPLE__
 .equ INVNTT_DARWIN_NO_WEAK, 1
 #endif
-.include "asm/gt/invntt/poly_invntt.n1.opt.inc"
+#include "poly_invntt.n1.opt.inc"

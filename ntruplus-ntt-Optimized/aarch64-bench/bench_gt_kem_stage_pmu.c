@@ -70,8 +70,8 @@ int bench_crypto_kem_dec_current(uint8_t *ss, const uint8_t *ct,
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
+void poly_basemul(poly *r, const poly *a, const poly *b);
+void poly_invntt(poly *r, const poly *a);
 #ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
 void poly_ntt_mul3_add1(poly *out, const poly *a);
 #endif
@@ -359,9 +359,9 @@ static int prepare_inputs(void)
     poly_frombytes(&g_hinv[input_idx], input->sk + NTRUPLUS_POLYBYTES);
     poly_frombytes(&g_h[input_idx], input->pk);
 
-    poly_basemul_rminus1(&g_m1_product[input_idx], &g_c[input_idx],
+    poly_basemul(&g_m1_product[input_idx], &g_c[input_idx],
                          &g_f[input_idx]);
-    poly_invntt_from_rminus1(&g_m1_inv[input_idx],
+    poly_invntt(&g_m1_inv[input_idx],
                              &g_m1_product[input_idx]);
     poly_crepmod3(&g_m1_crep[input_idx], &g_m1_inv[input_idx]);
     poly_ntt(&g_m2[input_idx], &g_m1_crep[input_idx]);
@@ -534,7 +534,7 @@ static NOINLINE void target_decap_basemul_rminus1(size_t idx)
 {
   size_t input_idx = idx % NINPUTS;
 
-  poly_basemul_rminus1(&g_m1_product[input_idx], &g_c[input_idx],
+  poly_basemul(&g_m1_product[input_idx], &g_c[input_idx],
                        &g_f[input_idx]);
 }
 
@@ -542,7 +542,7 @@ static NOINLINE void target_decap_invntt_rminus1(size_t idx)
 {
   size_t input_idx = idx % NINPUTS;
 
-  poly_invntt_from_rminus1(&g_m1_inv[input_idx],
+  poly_invntt(&g_m1_inv[input_idx],
                            &g_m1_product[input_idx]);
 }
 

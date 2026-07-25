@@ -1,11 +1,17 @@
 // Production decapsulation QSoA pointwise kernel.
 // Generated from the audited F2 pair-pipeline schedule.
+#ifndef GT_DECAP_VERIFY_POINTWISE_SYMBOL
+#define GT_DECAP_VERIFY_POINTWISE_SYMBOL gt_decap_verify_pointwise
+#endif
+#ifndef GT_DECAP_VERIFY_POINTWISE_DARWIN_SYMBOL
+#define GT_DECAP_VERIFY_POINTWISE_DARWIN_SYMBOL _gt_decap_verify_pointwise
+#endif
 .text
 .p2align 5
-.global gt_decap_verify_pointwise
-.global _gt_decap_verify_pointwise
-gt_decap_verify_pointwise:
-_gt_decap_verify_pointwise:
+.global GT_DECAP_VERIFY_POINTWISE_SYMBOL
+.global GT_DECAP_VERIFY_POINTWISE_DARWIN_SYMBOL
+GT_DECAP_VERIFY_POINTWISE_SYMBOL:
+GT_DECAP_VERIFY_POINTWISE_DARWIN_SYMBOL:
     sub sp, sp, #64
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]

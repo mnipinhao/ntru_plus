@@ -67,8 +67,8 @@ int bench_crypto_kem_dec_current(uint8_t *ss, const uint8_t *ct,
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
+void poly_basemul(poly *r, const poly *a, const poly *b);
+void poly_invntt(poly *r, const poly *a);
 #define BENCH_KEM_KEYPAIR bench_crypto_kem_keypair_current
 #define BENCH_KEM_ENC bench_crypto_kem_enc_current
 #define BENCH_KEM_DEC bench_crypto_kem_dec_current
@@ -298,12 +298,12 @@ static void keypair_basemul(poly *r, const poly *a, const poly *b)
 
 static void decap_first_basemul(poly *r, const poly *a, const poly *b)
 {
-  poly_basemul_rminus1(r, a, b);
+  poly_basemul(r, a, b);
 }
 
 static void decap_first_invntt(poly *r, const poly *a)
 {
-  poly_invntt_from_rminus1(r, a);
+  poly_invntt(r, a);
 }
 
 static int prepare_inputs(void)

@@ -726,6 +726,14 @@
         str q24, [x2, #368]
 .endm
 
+.macro INVOKE_INVNTT32_STAGE45_SCRATCH_ROW
+.ifdef INVNTT_USE_STAGE45_ROW_HELPER
+    bl .Linvntt32_stage45_scratch_row_helper
+.else
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.endif
+.endm
+
 .macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
     POST_STORE_PTR_BRANCHFOLD \xvec, \ptr, \off_lo, \off_hi
 .endm
@@ -951,7 +959,7 @@ slothy_end_invntt_block_row0_stage123:
      * live-out: row0 natural-order stage45 output at [x2].
      */
 slothy_start_invntt_block_row0_stage45:
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    INVOKE_INVNTT32_STAGE45_SCRATCH_ROW
 slothy_end_invntt_block_row0_stage45:
 
     add x3, x1, #0
@@ -971,7 +979,7 @@ slothy_end_invntt_block_row1_stage123:
      * live-out: row1 natural-order stage45 output at [x2].
      */
 slothy_start_invntt_block_row1_stage45:
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    INVOKE_INVNTT32_STAGE45_SCRATCH_ROW
 slothy_end_invntt_block_row1_stage45:
 
     add x3, x1, #0
@@ -991,7 +999,7 @@ slothy_end_invntt_block_row2_stage123:
      * live-out: row2 natural-order stage45 output at [x2].
      */
 slothy_start_invntt_block_row2_stage45:
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    INVOKE_INVNTT32_STAGE45_SCRATCH_ROW
 slothy_end_invntt_block_row2_stage45:
     b L_invntt_post_tail
 
@@ -1107,6 +1115,13 @@ slothy_end_invntt_post_fused:
     add sp, sp, #INVNTT_STACK_SIZE
     ldp x30, x0, [sp], #16
     ret
+
+.ifdef INVNTT_USE_STAGE45_ROW_HELPER
+.p2align 4
+.Linvntt32_stage45_scratch_row_helper:
+    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+    ret
+.endif
 .endif
 
 .ifdef INVNTT_EXPOSE_STAGE123_SCRATCH_ABI
@@ -1271,6 +1286,7 @@ inv_branchfold_vecs:
 .purgem BPQ_CQ_STAGE123_STRIPE_SCRATCH_ROW_BODY
 .endif
 .purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.purgem INVOKE_INVNTT32_STAGE45_SCRATCH_ROW
 .purgem POST_STORE_PTR
 .purgem LOAD_BRANCHFOLD_CONSTS
 .purgem POST_STORE_PTR_BRANCHFOLD

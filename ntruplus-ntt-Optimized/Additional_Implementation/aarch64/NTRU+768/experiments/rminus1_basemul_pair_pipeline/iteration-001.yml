@@ -1,0 +1,25 @@
+iteration:
+  id: rminus1_pair_001
+  mode: existing_region_replacement
+  state: promotion_decision
+  status: promote
+repo_probe:
+  production_source: asm/gt/basemul/poly_basemul_body.inc
+  production_wrapper: asm/gt/basemul/poly_basemul_rminus1.S
+  production_symbol: poly_basemul
+  slothy_host: pinhao@172.25.166.141:51208
+  slothy_root: /home/pinhao/slothy
+  slothy_interpreter: /home/pinhao/slothy/venv/bin/python
+  target_model: neoverse_n1_experimental
+  hardware_target: Raspberry_Pi_5_Cortex_A76
+hypothesis:
+  summary: independent symbolic values permit useful cross_iteration scheduling
+  contract_change: false
+gates:
+  baseline_extracted: pass
+  kernel_contract: pass
+  symbolic_static_checks: pass
+  slothy: pass
+  correctness: pass
+  abi: pass
+  full_path_pmu: pass

@@ -1,0 +1,53 @@
+mode: existing_region_replacement
+candidate_status: serious_experiment
+
+candidate:
+  id: decap_verify_group_pipeline_v3_slothy_helper
+  source: helper_v3.sym.S
+  allocated: helper_v3.alloc.S
+  optimized: helper_v3.opt.S
+  integrated: asm/gt/experiment/decap/verify_pointwise_group_pipeline_v3_slothy.S
+  baseline_contract: baseline-contract.yml
+  kernel_contract: kernel-contract.yml
+  instruction_dag: instruction-dag.yml
+
+region:
+  instruction_count: 100
+  mnemonic_multiset_unchanged: true
+  arithmetic_semantics_changed: false
+  reduction_semantics_changed: false
+  memory_contract_changed: false
+  spills: 0
+
+register_contract:
+  fixed_vector_registers: [v0, v4, v5, v6, v7]
+  lhs_input_bindings: [lhs0_v4, lhs1_v5, lhs2_v6, lhs3_v7]
+  live_through_unchanged: [v24, v25, v26, v27, v28, v29, v30, v31]
+  allocated_pool: [v1-v23]
+  forbidden_vector_touches: [v24-v31]
+  abi_callee_saved_low_halves_restored_by_outer_wrapper: [d8-d15]
+
+slothy_result:
+  selfcheck: pass
+  target: neoverse_n1_experimental
+  expected_cycles_before: 25
+  expected_cycles_after: 25
+  expected_instruction_count: 100
+  model_note: schedule_changed_but_the_n1_model_expected_cycle_count_is_flat
+
+validation:
+  symbolic_checker: pass_with_srshr_manual_def_use_review
+  reserved_register_static_audit: pass
+  differential: pass_1000_cases_zero_mismatches
+  abi_sentinel: pass_mask_0x0
+  full_kem: pass_valid_and_invalid_ciphertexts
+  paired_pmu:
+    v3_delta_cycles: [72, 66, 68]
+    compact_delta_cycles: [136, 137, 137]
+    wins: 61_of_61_each_run
+    retired_instructions_equal: true
+    function_alignment_equal: true
+
+promotion:
+  production_default_changed: false
+  decision: keep_as_best_default_off_group_pipeline_candidate

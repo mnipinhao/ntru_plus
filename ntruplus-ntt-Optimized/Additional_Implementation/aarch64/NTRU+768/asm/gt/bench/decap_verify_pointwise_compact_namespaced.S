@@ -1,0 +1,3 @@
+#define GT_DECAP_VERIFY_POINTWISE_SYMBOL gt_decap_verify_pointwise_compact
+#define GT_DECAP_VERIFY_POINTWISE_DARWIN_SYMBOL _gt_decap_verify_pointwise_compact
+#include "../decap/verify_pointwise_compact.S"

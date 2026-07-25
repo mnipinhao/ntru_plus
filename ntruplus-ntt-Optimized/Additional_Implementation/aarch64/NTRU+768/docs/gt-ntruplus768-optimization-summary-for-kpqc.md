@@ -1,6 +1,6 @@
 # NTRU+768 AArch64 優化說明：GT 實作與 KPQC final 的差異
 
-更新日期：2026-07-21
+更新日期：2026-07-22
 
 這份文件面向已熟悉 NTRU+ 與 KPQC final 的讀者，說明目前 GT 實作的主要
 改動、演算法結構，以及 Raspberry Pi 5 上的效能結果。精確 ASM、register allocation、
@@ -27,12 +27,13 @@ C 與 AVX2 實作；本工作將相同方法映射到 AArch64 Neon，並另外�
 field-inversion chain。15-step chain 與 hierarchical batching 是兩項不同改動，
 不能把 hierarchical batching 的 full-keygen cycle delta 歸因於少一次 multiplication。
 
-Key generation 另外使用一條 private mixed-layout contract。Fused sample NTT 將
-`f/g` 直接存成 branch-pair quartic (BPQ)；baseinv prepare 在第一次需要
-coefficient-wise arithmetic 時轉成 coefficient-major quartic (CQ)，hierarchical
-inversion 與 finish 維持 CQ；public products 使用 BPQ x CQ mixed basemul 並直接
-輸出 CQ。最後 `h/hinv` 由 CQ pack、`f` 由 BPQ P1 pack 產生 canonical bytes。
-這條 contract 只用於 keygen；generic polynomial API 與 encap/decap layout 不變。
+Key generation 另外使用一條 private mixed-layout contract。它先明確建立 `3F+1`
+與 `3G`，再和 encapsulation/decapsulation 一樣呼叫 shared production `poly_ntt`。
+NTT 的 generic block-major output 隨後以固定 permutation 轉成 branch-pair quartic
+(BPQ)；baseinv prepare 在第一次需要 coefficient-wise arithmetic 時轉成
+coefficient-major quartic (CQ)，hierarchical inversion 與 finish 維持 CQ；public
+products 使用 BPQ x CQ mixed basemul 並直接輸出 CQ。最後 `h/hinv` 由 CQ pack、
+`f` 由 BPQ P1 pack 產生 canonical bytes。
 
 Decapsulation verification 的最後一個 product 使用 caller-specific canonical
 pointwise path：右 operand 直接解成 canonical QSoA，左 operand 從 GT physical
@@ -45,14 +46,15 @@ KPQC final 相同的 canonical wire serialization 時：
 
 | Operation | KPQC final cycles | GT cycles | Cycle reduction |
 |---|---:|---:|---:|
-| keygen | 39979 | 36357 | 9.06% |
-| encapsulation | 39057 | 37582 | 3.78% |
-| decapsulation | 35182 | 32860 | 6.60% |
+| keygen | 39964 | 37702 | 5.66% |
+| encapsulation | 39066 | 37576 | 3.81% |
+| decapsulation | 35189 | 32872 | 6.58% |
 
 目前 full-KEM 是穩定的 single-digit speedup，尚未達到 20% 的 scheme-level 目標。
-獨立的 Mixed BPQ/CQ promotion A/B 量測由 `38264` 降到 `36373` cycles，減少
-`1891` cycles（`4.94%`）。Encap/decap 與 promotion 前 GT 的差異低於 `0.1%`，
-符合這是 keygen-only contract 的預期。
+先前 fused SAMPLE-DAG/direct-BPQ NTT 的 `36357` cycle keygen 結果保留為歷史
+實驗，不是目前 production。改成 shared `poly_ntt` 後，兩個 sample transform
+分別為 `3302` 與 `3305` cycles；雖然比 fused path 多約 `1.3k` full-keygen
+cycles，但 code contract 更單一，且 selected binary 少掉一份 direct-BPQ NTT。
 
 ## 2. Forward NTT
 
@@ -274,15 +276,13 @@ inversion，與 24-element linear Montgomery batch 的 `3n-3 = 69` 相同；它�
 
 | Keygen contract | KPQC final | GT | Delta |
 |---|---:|---:|---:|
-| standalone baseinv | 4056 | 4514 | +11.29% |
-| matching basemul | 2641 | 2022 | -23.44% |
-| baseinv + matching basemul | 6693 | 6534 | -2.38% |
+| standalone baseinv | 4056 | 4044 | -0.30% |
+| matching basemul | 2641 | 1668 | -36.84% |
+| baseinv + matching basemul | 6693 | 5709 | -14.70% |
 
 因此 hierarchical + batch inversion 確實是 production；目前相對 KPQC 的 paired
-contract 已快 `2.38%`，但不能改寫成 GT standalone baseinv 本身較快。Production
-default 只連入一份 2008-byte HIER-K8 tree backend；舊 wrapper 只保留給 kill-switch
-與 benchmark-helper build，避免 duplicated KEM/backend code 造成 I-cache 與
-code-placement 干擾。
+contract 快 `14.70%`。這個數字必須解讀為 BPQ-to-CQ baseinv 與 matching mixed
+basemul 的整體 contract，不能拿 generic `poly_baseinv` profiler 代替。
 
 第二層 total product 使用一條 15-step exponentiation chain；KPQC 使用的 chain
 有 16 次 modular vector multiplications。這只證明 arithmetic chain 少一次
@@ -307,10 +307,10 @@ Full-KEM 與 forward component 數據都來自 Raspberry Pi 5 Cortex-A76、固�
 portable `NO_CE` SHAKE。對外解讀應維持以下界線：
 
 - Forward NTT 在固定 KEM-component harness 約快 24.6%-25.1%，不代表 full KEM 快相同比例。
-- Rotating-buffer forward benchmark 約快 20.5%，顯示 cache context 會影響比例。
+- Rotating-buffer forward benchmark 約快 18.9%，顯示 cache context 會影響比例。
 - Standalone inverse 尚未快於 KPQC；decapsulation收益來自跨 kernel factor fusion。
 - 15-step chain 少一次 multiplication，但目前沒有獨立 cycle win 或 full-KEM delta。
-- Full KEM canonical production 目前快約 3.46%-4.78%，尚未達到 20% 目標。
+- Full KEM canonical production 目前快約 3.81%-6.58%，尚未達到 20% 目標。
 
 ## 6. References
 

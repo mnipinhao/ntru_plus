@@ -17,6 +17,8 @@ dependencies.
 | `keygen_sample_prebaseinv_split/` | measurement-only PMU split |
 | `base_gt_direct_bytes/` | document/model-only; includes direct32 finalizer prototype |
 | `decap_verify_byte_contract/` | reference contract only |
+| `decap_verify_group_pipeline/` | active default-off candidate: unchanged instruction stream, cross-group gather scheduling saves about 20 full-decap cycles |
+| `gt_production_icache_size/` | active: release-boundary, code-size, and warm/mixed/cold I-cache audit |
 
 New work should begin in a new, narrowly named directory with a README that
 states its contract, correctness oracle, benchmark gate, and final decision.

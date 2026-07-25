@@ -13,8 +13,49 @@
 #include "randombytes.h"
 #include "gt/decap_backend.h"
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#ifdef GT_PRODUCTION_RMINUS1_IS_POLY_API
+#define GT_NORMAL_BASEMUL poly_basemul_normal
+#define GT_NORMAL_INVNTT poly_invntt_normal
+#else
+#define GT_NORMAL_BASEMUL poly_basemul
+#define GT_NORMAL_INVNTT poly_invntt
+#endif
+
+#if defined(GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT) && \
+    defined(GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT)
+#error "select only one experimental keygen NTT endpoint"
+#endif
+#if (defined(GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT) || \
+     defined(GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT)) && \
+    !defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#error "experimental keygen NTT endpoints require the all-CQ backend"
+#endif
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) && \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#error "select either production keygen CQ or the historical CQ experiment"
+#endif
+
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #include "gt/keygen_bpq_cq.h"
+#endif
+
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+#include "gt/keygen_cq.h"
+typedef gt_cq_poly gt_keygen_secret_poly;
+typedef gt_cq_poly gt_keygen_inverse_poly;
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+void gt_experiment_keygen_bpq_to_cq(gt_cq_poly *out_cq,
+                                    const gt_bpq_poly *in_bpq);
+int gt_experiment_keygen_baseinv_cq_to_cq_scaled_r(
+    gt_cq_poly *out_cq, const gt_cq_poly *in_cq);
+void gt_experiment_keygen_basemul_cq_cq_to_cq_scaled_r(
+    gt_cq_poly *out_cq, const gt_cq_poly *a_cq,
+    const gt_cq_poly *b_scaled_r_cq);
+typedef gt_cq_poly gt_keygen_secret_poly;
+typedef gt_cq_poly gt_keygen_inverse_poly;
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 typedef gt_bpq_poly gt_keygen_secret_poly;
 typedef gt_cq_poly gt_keygen_inverse_poly;
 #else
@@ -22,7 +63,12 @@ typedef poly gt_keygen_secret_poly;
 typedef poly gt_keygen_inverse_poly;
 #endif
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#define GT_KEYGEN_POLY_TOBYTES_PUBLIC gt_keygen_tobytes_cq
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_F gt_keygen_tobytes_cq
+#define GT_KEYGEN_POLY_TOBYTES_SECRET_HINV gt_keygen_tobytes_cq
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #define GT_KEYGEN_POLY_TOBYTES_PUBLIC gt_keygen_tobytes_cq
 #define GT_KEYGEN_POLY_TOBYTES_SECRET_F gt_keygen_tobytes_bpq_p1
 #define GT_KEYGEN_POLY_TOBYTES_SECRET_HINV gt_keygen_tobytes_cq
@@ -114,11 +160,6 @@ void gt_decap_verify_canonical_bridge_candidate(
     const uint8_t hinv_bytes[NTRUPLUS_POLYBYTES]);
 #endif
 
-#ifdef GT_PRODUCTION_USE_RMINUS1_DECAP
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
-#endif
-
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
                                              const poly *a,
@@ -171,7 +212,13 @@ static void gt_block_major_to_tuple_c(poly *tuple,
 }
 #endif
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+#define KEYPAIR_BASEINV gt_keygen_baseinv_cq_to_cq_scaled_r
+#define KEYPAIR_BASEMUL gt_keygen_basemul_cq_cq_to_cq_scaled_r
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+#define KEYPAIR_BASEINV gt_experiment_keygen_baseinv_cq_to_cq_scaled_r
+#define KEYPAIR_BASEMUL gt_experiment_keygen_basemul_cq_cq_to_cq_scaled_r
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
 #define KEYPAIR_BASEINV gt_keygen_baseinv_bpq_to_cq_scaled_r
 #define KEYPAIR_BASEMUL gt_keygen_basemul_bpq_cq_to_cq_scaled_r
 #elif defined(GT_PRODUCTION_USE_SCALED_KEYPAIR)
@@ -235,8 +282,33 @@ gt_encap_basemul_add_tobytes_contract(uint8_t *ct, const poly *h,
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
 gt_keygen_ntt_mul3_add1(gt_keygen_secret_poly *out)
 {
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
-    gt_keygen_ntt_bpq_mul3_add1(out, &out->storage);
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+    poly_triple(&out->storage, &out->storage);
+    out->storage.coeffs[0] += 1;
+    gt_keygen_poly_ntt_to_cq(out, &out->storage);
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+    poly_triple(&out->storage, &out->storage);
+    out->storage.coeffs[0] += 1;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+    gt_experiment_poly_ntt_to_cq(out, &out->storage);
+#else
+    gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+    gt_experiment_poly_ntt_to_bpq(&bpq, &out->storage);
+#else
+    poly block_major;
+    poly_ntt(&block_major, &out->storage);
+    gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+    gt_experiment_keygen_bpq_to_cq(out, &bpq);
+#endif
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+    poly block_major;
+
+    poly_triple(&out->storage, &out->storage);
+    out->storage.coeffs[0] += 1;
+    poly_ntt(&block_major, &out->storage);
+    gt_keygen_blockmajor_to_bpq(out, &block_major);
 #elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
     poly_ntt_mul3_add1(out, out);
 #else
@@ -249,8 +321,30 @@ gt_keygen_ntt_mul3_add1(gt_keygen_secret_poly *out)
 static GT_KEYGEN_SAMPLE_DAG_INLINE GT_KEYGEN_SAMPLE_DAG_ATTR void
 gt_keygen_ntt_mul3(gt_keygen_secret_poly *out)
 {
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
-    gt_keygen_ntt_bpq_mul3(out, &out->storage);
+#ifdef GT_PRODUCTION_USE_KEYGEN_CQ
+    poly_triple(&out->storage, &out->storage);
+    gt_keygen_poly_ntt_to_cq(out, &out->storage);
+#elif defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ)
+    poly_triple(&out->storage, &out->storage);
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_CQ_ENDPOINT
+    gt_experiment_poly_ntt_to_cq(out, &out->storage);
+#else
+    gt_bpq_poly bpq;
+#ifdef GT_EXPERIMENT_USE_KEYGEN_DIRECT_BPQ_ENDPOINT
+    gt_experiment_poly_ntt_to_bpq(&bpq, &out->storage);
+#else
+    poly block_major;
+    poly_ntt(&block_major, &out->storage);
+    gt_keygen_blockmajor_to_bpq(&bpq, &block_major);
+#endif
+    gt_experiment_keygen_bpq_to_cq(out, &bpq);
+#endif
+#elif defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
+    poly block_major;
+
+    poly_triple(&out->storage, &out->storage);
+    poly_ntt(&block_major, &out->storage);
+    gt_keygen_blockmajor_to_bpq(out, &block_major);
 #elif defined(GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3)
     poly_ntt_mul3(out, out);
 #else
@@ -304,7 +398,9 @@ static inline int genf_derand(gt_keygen_secret_poly *f,
 
     shake256(buf, sizeof buf, coins, 32);
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
     poly_cbd1(&f->storage, buf);
 #else
     poly_cbd1(f, buf);
@@ -335,7 +431,9 @@ static inline int geng_derand(gt_keygen_secret_poly *g,
 
     shake256(buf, sizeof buf, coins, 32);
 
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
     poly_cbd1(&g->storage, buf);
 #else
     poly_cbd1(g, buf);
@@ -367,7 +465,9 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
                                              const gt_keygen_secret_poly *g,
                                              const gt_keygen_inverse_poly *ginv)
 {
-#ifdef GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+#if defined(GT_PRODUCTION_USE_KEYGEN_CQ) || \
+    defined(GT_EXPERIMENT_USE_KEYGEN_ALL_CQ) || \
+    defined(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)
     gt_cq_poly h, hinv;
 #else
     poly h, hinv;
@@ -543,19 +643,19 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
     poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
-    /* Paired ABI: basemul_rminus1 leaves an extra R^-1 for this invntt entry. */
-    poly_basemul_rminus1(&m1, &c, &f);
-    poly_invntt_from_rminus1(&m1, &m1);
+    /* Production poly API: basemul leaves R^-1; invntt absorbs it. */
+    poly_basemul(&m1, &c, &f);
+    poly_invntt(&m1, &m1);
 #elif defined(GT_PRODUCTION_USE_TUPLE_DECAP)
     poly_basemul_to_tuple(&m1, &c, &f);
     gt_tuple_poly_invntt(&m1, &m1);
 #elif defined(GT_PRODUCTION_USE_PACK_TUPLE_DECAP)
-    poly_basemul(&m1, &c, &f);
+    GT_NORMAL_BASEMUL(&m1, &c, &f);
     gt_block_major_to_tuple_c(&m2, &m1);
     gt_tuple_poly_invntt(&m1, &m2);
 #else
-    poly_basemul(&m1, &c, &f);
-    poly_invntt(&m1, &m1);
+    GT_NORMAL_BASEMUL(&m1, &c, &f);
+    GT_NORMAL_INVNTT(&m1, &m1);
 #endif
 #if !defined(GT_PRODUCTION_USE_RMINUS1_CREP3_DECAP) && \
     !defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_CREP3_DECAP)
@@ -579,7 +679,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 #elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT)
     gt_decap_verify_basemul_tobytes_direct_candidate(buf1, &c, &hinv);
 #else
-    poly_basemul(&r2, &c, &hinv);
+    GT_NORMAL_BASEMUL(&r2, &c, &hinv);
     poly_tobytes_gt_canonical(buf1, &r2);
 #endif
     hash_g(buf2, buf1);

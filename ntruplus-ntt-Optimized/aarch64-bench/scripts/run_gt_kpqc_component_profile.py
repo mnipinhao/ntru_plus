@@ -19,9 +19,10 @@ FULL_MODES = ("kem_keygen", "kem_enc", "kem_dec")
 COUNTERS = {"cycles": "PERF", "instructions": "INSTRUCTIONS"}
 PERCENTILES = (1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99)
 PROFILE_SYMBOLS = (
-    "gt_keygen_ntt_bpq_mul3",
-    "gt_keygen_ntt_bpq_mul3_add1",
-    "gt_keygen_ntt32_batch8_to_bpq",
+    "gt_experiment_poly_ntt_to_cq",
+    "gt_experiment_keygen_baseinv_cq_to_cq_scaled_r",
+    "gt_experiment_keygen_basemul_cq_cq_to_cq_scaled_r",
+    "gt_keygen_blockmajor_to_bpq",
     "gt_keygen_baseinv_bpq_to_cq_scaled_r",
     "gt_keygen_baseinv_bpq_prepare",
     "gt_keygen_baseinv_hier_k8",
@@ -314,8 +315,9 @@ def render_kem_components(report: dict[str, Any]) -> list[str]:
         "boundary diagnostics and are excluded from weighted subtotals.",
         "These rows use fixed, deterministic buffers reconstructed from a valid KEM "
         "key/ciphertext and satisfy each GT representation/range contract.",
-        "GT keygen stores the two specialized sample NTTs directly in BPQ layout, "
-        "converts the operand being inverted to CQ during baseinv prepare, performs "
+        "GT keygen explicitly forms 3F+1/3G, calls the shared production poly_ntt, "
+        "then converts the generic GT block-major result to BPQ. It converts the "
+        "operand being inverted to CQ during baseinv prepare, performs "
         "hierarchical K=8 batch inversion with `gt_fqinv15_asm`, and keeps the result "
         "in scaled-R CQ layout for the mixed BPQ x CQ basemul. Its baseinv and basemul "
         "rows must therefore be interpreted together, not as independent generic-API "
@@ -371,6 +373,60 @@ def render_kem_components(report: dict[str, Any]) -> list[str]:
             f"**{percent_delta(gt_subtotal, kpqc_subtotal):+.2f}%** | "
             f"**{gt_subtotal - kpqc_subtotal:+d}** | | |"
         )
+    return lines
+
+
+def render_candidate_components(report: dict[str, Any]) -> list[str]:
+    component_rows = report["components"]
+    candidates = [
+        variant for variant in report["binaries"]
+        if variant not in {"gt_production_default", "kpqc_final"}
+    ]
+    if not candidates:
+        return []
+
+    lines = [
+        "## Optional Candidate Component Deltas",
+        "",
+        "These tables use the same fixtures and measured boundaries as the two "
+        "baseline component tables. Candidate rows are actual candidate-macro "
+        "paths, not generic substitutes.",
+    ]
+    for mode, title in (
+        ("kernel_components", "Generic/Public Primitive Diagnostics"),
+        ("kem_components", "Actual KEM-Path Components"),
+    ):
+        cycle_rows = component_rows["cycles"][mode]
+        instruction_rows = component_rows.get("instructions", {}).get(mode, {})
+        names = list(cycle_rows["kpqc_final"])
+        for candidate in candidates:
+            lines.extend(
+                [
+                    "",
+                    f"### {title}: `{candidate}`",
+                    "",
+                    "| Group | Kind | Component | Count | KPQC cycles | GT production cycles | Candidate cycles | Candidate vs GT | Candidate vs KPQC | KPQC instr | GT instr | Candidate instr |",
+                    "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+                ]
+            )
+            for name in names:
+                kpqc = cycle_rows["kpqc_final"][name]
+                production = cycle_rows["gt_production_default"][name]
+                selected = cycle_rows[candidate][name]
+                kpqc_i = instruction_rows.get("kpqc_final", {}).get(name, {}).get("p50")
+                production_i = instruction_rows.get("gt_production_default", {}).get(name, {}).get("p50")
+                selected_i = instruction_rows.get(candidate, {}).get(name, {}).get("p50")
+                lines.append(
+                    f"| {selected['group']} | {selected['kind']} | {name} | "
+                    f"{selected['count']} | {kpqc['p50']} | {production['p50']} | "
+                    f"{selected['p50']} | "
+                    f"{selected['p50'] - production['p50']:+d} "
+                    f"({percent_delta(selected['p50'], production['p50']):+.2f}%) | "
+                    f"{selected['p50'] - kpqc['p50']:+d} "
+                    f"({percent_delta(selected['p50'], kpqc['p50']):+.2f}%) | "
+                    f"{fmt_int(kpqc_i)} | {fmt_int(production_i)} | "
+                    f"{fmt_int(selected_i)} |"
+                )
     return lines
 
 
@@ -472,7 +528,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         "Raspberry Pi 5 Cortex-A76, portable NO_CE hash path, core pinned.",
         f"Each row is p50 of {settings['ntests']} samples x "
         f"{settings['niterations']} calls; warmup={settings['nwarmup']}.",
-        "Both binaries run deterministic KEM setup and correctness checks before PMU; "
+        "All variants use uniform section GC."
+        if settings["uniform_gc"]
+        else "Variants use their current Makefile section-GC policy.",
+        "All binaries run deterministic KEM setup and correctness checks before PMU; "
         "the component mode also runs a reconstructed-ciphertext decapsulation postflight. "
         "Full KEM totals are decisive; component subtotals omit copies/call overhead and "
         "are used for hotspot attribution only.",
@@ -497,6 +556,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         *render_kem_components(report),
         "",
+        *render_candidate_components(report),
+        "",
         *render_opportunity_table(report),
         "",
         *render_metadata(report),
@@ -514,6 +575,7 @@ def main() -> int:
     parser.add_argument("--nwarmup", type=int, default=100)
     parser.add_argument("--cycles-only", action="store_true")
     parser.add_argument("--keep-binaries", action="store_true")
+    parser.add_argument("--uniform-gc", action="store_true")
     parser.add_argument("--variants", nargs="+", default=list(DEFAULT_VARIANTS))
     args = parser.parse_args()
     variants = tuple(args.variants)
@@ -552,6 +614,11 @@ def main() -> int:
                     f"CYCLES={make_counter}", f"NTESTS={args.ntests}",
                     f"NITERATIONS={args.niterations}", f"NWARMUP={args.nwarmup}",
                 ]
+                if args.uniform_gc:
+                    command.append(
+                        "EXTRA_CFLAGS=-ffunction-sections -fdata-sections "
+                        "-Wl,--gc-sections"
+                    )
                 build_log.append(f"$ {' '.join(command)}\n")
                 build_log.append(run(command, root))
                 built[variant] = binary
@@ -578,6 +645,7 @@ def main() -> int:
             "niterations": args.niterations,
             "nwarmup": args.nwarmup,
             "hash_path": "NO_CE",
+            "uniform_gc": args.uniform_gc,
             "deterministic_inputs": True,
             "primitive_measurement": "rotating-buffer repeated call",
             "kem_path_component_measurement": "fixed contract-valid buffer repeated call",

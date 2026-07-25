@@ -1,6 +1,6 @@
 # GT new 相對 KPQC final 的 production 優化總覽
 
-更新日期：2026-07-21
+更新日期：2026-07-22
 
 > 這份是 internal production audit。面向 KPQC 作者、以演算法與實作概念為主的
 > 短版請看 `gt-ntruplus768-optimization-summary-for-kpqc.md`。
@@ -22,13 +22,13 @@ KPQC final：
 
 | KEM operation | KPQC final | GT new | 少掉的 cycles | cycle reduction | speedup |
 |---|---:|---:|---:|---:|---:|
-| keygen | 39979 | 36357 | 3622 | 9.06% | 1.100x |
-| encap | 39057 | 37582 | 1475 | 3.78% | 1.039x |
-| decap | 35182 | 32860 | 2322 | 6.60% | 1.071x |
+| keygen | 39964 | 37702 | 2262 | 5.66% | 1.060x |
+| encap | 39066 | 37576 | 1490 | 3.81% | 1.040x |
+| decap | 35189 | 32872 | 2317 | 6.58% | 1.070x |
 
 GT new 現在三項都快於 KPQC final，但還沒有達到原先的 scheme-level `20%`
-目標。這次 cleanup 的 final run只量 cycles；retired-instruction/CPI 表保留為
-2026-07-19 的歷史診斷，不能當成目前 Mixed BPQ/CQ binary 的 current 數據。
+目標。目前 keygen 已不再使用 fused SAMPLE-DAG/direct-BPQ NTT；它明確建立
+`3F+1`/`3G`、呼叫 shared `poly_ntt`，再轉成 BPQ。舊 fused 數據只作歷史證據。
 
 先前文件使用的 `37966/37590/32482` 是 canonical wire serialization 完整接入前
 的 internal-layout historical run。它不再作為 current production benchmark。
@@ -125,9 +125,9 @@ date:          2026-07-21
 
 | Operation | KPQC final | GT new | New vs KPQC |
 |---|---:|---:|---:|
-| keygen | 39979 | 36357 | -9.06% |
-| encap | 39057 | 37582 | -3.78% |
-| decap | 35182 | 32860 | -6.60% |
+| keygen | 39964 | 37702 | -5.66% |
+| encap | 39066 | 37576 | -3.81% |
+| decap | 35189 | 32872 | -6.58% |
 
 舊的 `GT source-order` run 仍可用來判斷 forward scheduling，但它使用 promotion
 前的 baseinv binary，不能再和這張 current full-KEM 表相減來歸因單一 kernel。
@@ -136,12 +136,12 @@ Cycle distribution 很窄：
 
 | Operation | Variant | p10 | p50 | p90 |
 |---|---|---:|---:|---:|
-| keygen | KPQC final | 39973 | 39979 | 39991 |
-| keygen | GT new | 36354 | 36357 | 36362 |
-| encap | KPQC final | 39053 | 39057 | 39060 |
-| encap | GT new | 37562 | 37582 | 37588 |
-| decap | KPQC final | 35179 | 35182 | 35185 |
-| decap | GT new | 32855 | 32860 | 32868 |
+| keygen | KPQC final | 39956 | 39964 | 39966 |
+| keygen | GT new | 37695 | 37702 | 37707 |
+| encap | KPQC final | 39063 | 39066 | 39070 |
+| encap | GT new | 37568 | 37576 | 37583 |
+| decap | KPQC final | 35187 | 35189 | 35192 |
+| decap | GT new | 32867 | 32872 | 32876 |
 
 ### 3.2 Historical retired instructions and CPI
 
@@ -175,20 +175,23 @@ GT new：
 
 ```text
 SHAKE -> cbd1
-      -> SAMPLE-DAG: triple/add1 fused into a dedicated Slothy NTT input DAG
-      -> poly_baseinv_scaled_r
+      -> explicit triple/add1
+      -> shared production poly_ntt
+      -> fixed block-major-to-BPQ conversion
+      -> BPQ-to-CQ hierarchical baseinv
            closed-form numerator/determinant
            -> hierarchical k=8 denominator tree
            -> one fqinv15 ASM inverse on the tree root product
            -> ASM finish
            -> inverse output retains the keygen scaled-R contract
-      -> poly_basemul_scaled_r_input for h and hinv
+      -> mixed BPQ x CQ basemul for h and hinv
            consumes scaled-R inverse
            -> omits a redundant final Montgomery correction
       -> pack/hash
 ```
 
-Keygen 的主要增量不是 G1R123+S2；是 `SAMPLE-DAG + HIERK8 + scaled-R`。
+Keygen 的 current 增量是 shared Good-Thomas NTT、hierarchical K=8/fqinv15、
+scaled-R 與 BPQ/CQ mixed arithmetic。SAMPLE-DAG 已退出 production。
 
 ### 4.2 Encap
 
@@ -329,7 +332,7 @@ full KEM 的 cycle movement 大致符合「每次 KEM 兩個 generic NTT」的�
 candidate 的 L1I refill 略增，但 backend stalls 下降；目前收益不是 function
 alignment 偶然造成。
 
-### 5.6 Keygen SAMPLE-DAG: 把 triple/add1 融入 NTT input DAG
+### 5.6 Historical Keygen SAMPLE-DAG
 
 KPQC/一般 keygen 會先 materialize：
 
@@ -356,6 +359,11 @@ Promotion same-binary data：
 |---|---:|---:|---:|
 | post-CBD sample path x2 | 6367 | 6046 | -321 cycles |
 | full keygen | 38777 | 38469 | -308 cycles |
+
+這條 fused frontend 後來退出 production。Current path 保留顯式
+`poly_triple`/`+1`，並使用和 encap/decap 相同的 `poly_ntt`；NTT 完成後才透過
+固定 permutation 轉成 BPQ。歷史數據保留用來量化這個 contract 選擇的成本，
+不再列為 current production optimization。
 
 ### 5.7 Baseinv: 在 KPQC batch inverse 上再做的優化
 
@@ -660,7 +668,8 @@ permutation cost；因此早期 internal-layout full-KEM 數字不能當 current
 | G1 live handoff | generic forward NTT | Stage12 block0-2 直接交給 Stage345 | 包含在每 NTT 約 -45 cycles | yes |
 | R123 | generic forward NTT | Slothy 排 block1-3 reduction tails | 包含在每 NTT 約 -45 cycles | yes |
 | S2 | generic forward NTT | safe `ext+str` 改 `umov+str` | 包含在每 NTT 約 -45 cycles | yes |
-| SAMPLE-DAG | keygen only | triple/add1 進 Phase123 symbolic DAG | full keygen -308 cycles | yes |
+| SAMPLE-DAG | keygen only | triple/add1 進 Phase123 symbolic DAG | historical full keygen -308 cycles | no |
+| shared NTT to BPQ | keygen only | explicit 3F+1/3G, shared poly_ntt, fixed BPQ boundary | sample paths 3302/3305 cycles | yes |
 | fqinv15 ASM | keygen baseinv | 15-multiply inverse chain | linked current backend；無單獨 current full-KEM delta | yes |
 | HIERK8 tree | keygen baseinv | 24 den = 8 groups x 3 | full keygen -178 cycles | yes |
 | SAMPLE + HIERK8 | keygen | 上述兩者組合 | full keygen -483 cycles | yes |
@@ -736,7 +745,7 @@ asm/gt/ntt/poly_ntt_tables.inc
 asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S          # legacy/sample row-kernel dependency
 ```
 
-Keygen sample NTT：
+Historical keygen fused sample NTT (not production)：
 
 ```text
 asm/gt/ntt/poly_ntt_mul3.S
@@ -744,9 +753,8 @@ asm/gt/ntt/poly_ntt_mul3_add1.S
 experiments/keygen_sample_ntt_fusion/gt_frontend_mul3/
 ```
 
-注意：這兩個 file 仍在 `asm/gt/experiment/`，而檔頭註解也保留早期
-benchmark-only 說法；但現在 Makefile確實會把它們 link 進 production default。
-判定 production identity 時以 Makefile 與 `gt_production_variants.mk` 為準。
+這些檔案不再由 production source manifest 連入。Current keygen 使用
+`poly_triple -> poly_ntt -> gt_keygen_blockmajor_to_bpq`。
 
 Inverse NTT：
 
@@ -824,8 +832,9 @@ script 會用 `taskset -c 3` pin 到同一個 Pi 5 core，並讓兩邊維持 por
 目前能確定的事：
 
 1. GT new 對 KPQC final 的 full-KEM cycle win 是真實且穩定的，範圍約
-   `3.46%` 到 `4.78%`。
-2. keygen 的主要 GT-specific 收益來自 SAMPLE-DAG、HIERK8 與 scaled-R。
+   `3.81%` 到 `6.58%`。
+2. keygen 的主要 GT-specific 收益來自 shared Good-Thomas NTT、HIERK8、
+   scaled-R 與 BPQ/CQ mixed arithmetic；SAMPLE-DAG 是 historical experiment。
 3. encap 的 arithmetic 收益主要來自兩次 forward NTT 加 Q31 byte contract，
    但 hash 仍占大部分時間。
 4. decap 的主要 GT-specific 收益來自 rminus1 first product、兩次 forward NTT
@@ -833,5 +842,5 @@ script 會用 `taskset -c 3` pin 到同一個 Pi 5 core，並讓兩邊維持 por
 5. generic basemul、InvNTT、baseinv並非每個 isolated window 都勝過 KPQC；
    caller-specific scale/layout contract 才是 GT 整體變快的關鍵。
 6. 距離 20% 目標仍有明顯差距。只再省幾十 cycle 的 NTT/store peephole 不足以
-   把 3.46%-4.78% 推到 20%；後續若仍鎖定 polynomial path，需要更大的 algorithm/
+   把 3.81%-6.58% 推到 20%；後續若仍鎖定 polynomial path，需要更大的 algorithm/
    cross-kernel change，或重新評估 hash backend 在完整 KEM 中的占比。

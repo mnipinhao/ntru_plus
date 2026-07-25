@@ -30,4 +30,5 @@ test_kem_gt_production_legacy_ntt:
 	$(MAKE) -B test_kem_gt_production_default GT_PRODUCTION_USE_LEGACY_NTT=1
 
 check-production-layout:
-	python3 scripts/check_production_layout.py
+	python3 scripts/check_production_layout.py \
+		--keygen-layout $(GT_PRODUCTION_KEYGEN_LAYOUT)

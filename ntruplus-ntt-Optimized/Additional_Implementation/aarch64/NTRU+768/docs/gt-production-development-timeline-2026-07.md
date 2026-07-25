@@ -13,7 +13,9 @@ The selected full-KEM path is defined by `gt_production_sources.mk` and
 ```text
 keygen:
   cbd1
-    -> keygen-only fused NTT to BPQ
+    -> explicit 3F+1 or 3G coefficients
+    -> shared production poly_ntt
+    -> fixed block-major-to-BPQ boundary
     -> BPQ baseinv prepare to CQ
     -> hierarchical K=8 inversion + fqinv15
     -> mixed BPQ x CQ basemul
@@ -25,8 +27,8 @@ encapsulation:
     -> direct-Q31 basemul_add + canonical bytes
 
 decapsulation first product:
-  poly_basemul_rminus1
-    -> poly_invntt_from_rminus1
+  poly_basemul
+    -> poly_invntt
 
 decapsulation verification:
   canonical hinv bytes + GT NTT operand
@@ -88,8 +90,10 @@ The production audit established these contracts:
 - The production decapsulation pair deliberately keeps an `R^-1` factor after
   `poly_basemul_rminus1`; `poly_invntt_from_rminus1` absorbs it in its final
   constants together with untwist, branch merge, and normalization.
-- The public generic `poly_invntt` remains a normal-factor API for standalone
-  tests and generic pipelines. It is not the first decapsulation inverse.
+- At this historical checkpoint the normal-factor inverse still owned the
+  public name. On July 23 the active paired path took the ordinary
+  `poly_basemul/poly_invntt` names and the normalized diagnostics moved to
+  `poly_basemul_normal/poly_invntt_normal`.
 - Internal GT ordering is allowed to differ from KPQC. Canonical pack/unpack
   is the external byte boundary that must agree.
 
@@ -203,11 +207,54 @@ the GT decoder and reported zero mismatches. See
 `gt-production-source-closure-audit-2026-07-22.md` for symbol and code-size
 details.
 
+## July 23: production API and compact decap profile
+
+The first decapsulation product was organized as one public transform
+contract:
+
+```text
+poly_basemul
+  leaves one R^-1 factor
+poly_invntt
+  absorbs that factor in final constants
+```
+
+The independently normalized primitive implementations now export
+`poly_basemul_normal/poly_invntt_normal` in production-aware test and profiler
+builds. Specialized keygen, encapsulation, and verification kernels keep
+private names because their layouts or byte endpoints differ.
+
+The compact F1 verification backend became the default after a same-binary
+full-decap comparison found F2 faster by 112 cycles (about 0.34%) while F1
+reduced `.text` by 9,088 bytes. F2 remains the explicit `speed` profile.
+Detailed results are in
+`gt-production-f1-f2-decap-profile-decision-2026-07-23.md`.
+
 ## Current interpretation
 
-- Use the July 22 table for current full-KEM claims.
+- The first July 22 table above is the historical fused-keygen closure result.
+- Current production now explicitly forms `3F+1`/`3G`, calls the same
+  `poly_ntt` as encap/decap, then converts block-major output to BPQ.
+- The shared-NTT rerun measured `37702/37576/32872` cycles for
+  keygen/encap/decap versus KPQC `39964/39066/35189`.
+- The shared-NTT binary text is about 107.3 KB; detailed current results are in
+  `aarch64-bench/results/gt_production_shared_ntt_2026-07-22/summary.md`.
 - Use the July 21 component profile for the selected BPQ/CQ keygen contract.
 - Use July 10 only as historical G1R123+S2 paired evidence.
 - Do not substitute generic `baseinv`, `basemul`, or `poly_invntt` rows for
   caller-specific KEM paths.
 - Current open work is maintained in `gt-production-current-backlog.md`.
+
+## July 24: pipelined compact verification backend
+
+The V3 gather pipeline moves all eight fixed-offset loads for QSoA group
+`N+1` to the earliest safe points in group `N`'s transpose. A subsequent
+Slothy pass rescheduled the shared 100-instruction multiplication/reduction
+helper while preserving `q24-q31` as live-through registers.
+
+Same-binary full-decapsulation PMU measured a 136-137 cycle reduction against
+the source-order compact profile, with 61/61 paired wins, unchanged retired
+instructions, and unchanged 2,880-byte function size. Differential, ABI,
+full-KEM, deterministic KAT, linked-symbol closure, and clean-release checks
+all pass. The `pipeline` profile is now the production default; `compact` and
+`speed` remain explicit comparison profiles.

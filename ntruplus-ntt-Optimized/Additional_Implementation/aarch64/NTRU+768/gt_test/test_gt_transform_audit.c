@@ -20,8 +20,6 @@
 #endif
 
 void poly_basemul_gt_ref(poly *r, const poly *a, const poly *b);
-void poly_basemul_rminus1(poly *r, const poly *a, const poly *b);
-void poly_invntt_from_rminus1(poly *r, const poly *a);
 uint64_t gt_audit_poly_ntt_abi_sentinel(poly *r, const poly *a);
 uint64_t gt_audit_poly_invntt_abi_sentinel(poly *r, const poly *a);
 uint64_t gt_audit_poly_invntt_rminus1_abi_sentinel(poly *r,
@@ -177,8 +175,8 @@ static void full_product(poly *out, poly *fa, poly *fb, poly *fp,
 {
     poly_ntt(fa, a);
     poly_ntt(fb, b);
-    poly_basemul(fp, fa, fb);
-    poly_invntt(out, fp);
+    poly_basemul_normal(fp, fa, fb);
+    poly_invntt_normal(out, fp);
 }
 
 static void check_transform_case(const char *label, unsigned case_idx,
@@ -200,7 +198,7 @@ static void check_transform_case(const char *label, unsigned case_idx,
     poly_ntt(&inplace, &inplace);
     compare_exact("forward_inplace", case_idx, &inplace, &fa);
 
-    poly_invntt(&roundtrip, &fa);
+    poly_invntt_normal(&roundtrip, &fa);
     compare_modq("normal_roundtrip", case_idx, &roundtrip, a);
     check_centered_representatives("normal_inverse_range", case_idx,
                                    &roundtrip, &normal_inverse_max_abs);
@@ -208,16 +206,16 @@ static void check_transform_case(const char *label, unsigned case_idx,
     compare_exact("normal_inverse_exact", case_idx, &roundtrip, &inverse_ref);
 
     inplace = fa;
-    poly_invntt(&inplace, &inplace);
+    poly_invntt_normal(&inplace, &inplace);
     compare_exact("inverse_inplace", case_idx, &inplace, &roundtrip);
 
-    poly_basemul(&base, &fa, &fb);
+    poly_basemul_normal(&base, &fa, &fb);
     poly_basemul_gt_ref(&base_ref, &fa, &fb);
     compare_modq("base_layout", case_idx, &base, &base_ref);
-    poly_invntt(&product, &base);
+    poly_invntt_normal(&product, &base);
 
-    poly_basemul_rminus1(&rminus_base, &fa, &fb);
-    poly_invntt_from_rminus1(&rminus_product, &rminus_base);
+    poly_basemul(&rminus_base, &fa, &fb);
+    poly_invntt(&rminus_product, &rminus_base);
     compare_exact("rminus1_pair", case_idx, &rminus_product, &product);
     check_centered_representatives("rminus_inverse_range", case_idx,
                                    &rminus_product, &rminus_inverse_max_abs);
@@ -303,13 +301,13 @@ static uint64_t check_abi(void)
 
     poly_ntt(&fa, &a);
     poly_ntt(&fb, &b);
-    poly_basemul(&base, &fa, &fb);
-    poly_invntt(&direct, &base);
+    poly_basemul_normal(&base, &fa, &fb);
+    poly_invntt_normal(&direct, &base);
     normal_inverse_mask = gt_audit_poly_invntt_abi_sentinel(&sentinel, &base);
     compare_exact("abi_normal_inverse_output", 0, &sentinel, &direct);
 
-    poly_basemul_rminus1(&rminus_base, &fa, &fb);
-    poly_invntt_from_rminus1(&direct, &rminus_base);
+    poly_basemul(&rminus_base, &fa, &fb);
+    poly_invntt(&direct, &rminus_base);
     rminus_inverse_mask =
         gt_audit_poly_invntt_rminus1_abi_sentinel(&sentinel, &rminus_base);
     compare_exact("abi_rminus_inverse_output", 0, &sentinel, &direct);
