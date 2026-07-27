@@ -29,8 +29,8 @@ To verify the complete extracted archive:
 shasum -a 256 -c SHA256SUMS
 ```
 
-The repository does not track a generated zip. Create a release artifact from
-the selected commit with:
+The repository does not track a generated zip. From the repository root,
+create a release artifact from the selected commit with:
 
 ```sh
 git archive --format=zip \
