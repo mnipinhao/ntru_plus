@@ -190,3 +190,16 @@ return.
 This keeps the external KEM API ABI-compliant without adding repeated
 save/restore pairs around every private leaf. The required public polynomial
 entrypoints are independently covered by the release ABI sentinel.
+
+The internal custom-ABI symbols are not a supported library surface and must
+not be called by downstream code. They are compiled and linked only as part of
+the fixed source closure in this directory. A compiler or optimization-policy
+change is therefore a release-contract change: it requires rebuilding the
+whole closure and rerunning `make check`, including the KEM round-trip, public
+ABI sentinel, and byte-for-byte KAT gates. The release does not claim that an
+arbitrary object assembled from `asm/internal/` is independently AAPCS64
+callable.
+
+Validated toolchain families are GNU-compatible AArch64 GCC on Linux and Apple
+Clang on macOS. Performance claims remain tied to the exact Linux compiler
+reported by the benchmark summary.

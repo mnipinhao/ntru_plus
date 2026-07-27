@@ -2,6 +2,11 @@
 
 Updated: 2026-07-23
 
+Mainline note, 2026-07-27: the evidence below records the original
+default-off decision. After the standalone Direct-CQ release passed source
+closure, KAT, ABI, and full-KEM gates, Direct-CQ became the mainline default.
+The measured mixed profile remains available for reproduction.
+
 ## Decision
 
 The direct-CQ keygen path is now a formal, default-off GT production profile:

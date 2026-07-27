@@ -59,6 +59,6 @@ The component-level figures in `NTRU+768/docs/BENCHMARKS.md` describe the
 measured production call graph. This compact handoff harness intentionally
 focuses on the decisive public full-KEM totals.
 
-The release includes a complete reference run under
-`results/pi5-reference-20260725/`, including raw samples, source-tree hashes,
-the build log, and generated JSON and Markdown summaries.
+The release tracks the generated JSON and Markdown summaries for the reference
+run under `results/pi5-reference-20260725/`. Raw samples and build logs are
+reproducible outputs and are intentionally not tracked on the mainline.

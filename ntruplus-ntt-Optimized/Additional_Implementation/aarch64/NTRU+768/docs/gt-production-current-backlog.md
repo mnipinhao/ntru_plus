@@ -11,12 +11,11 @@ Completed July plans are summarized in `gt-production-development-timeline-2026-
 - External key, secret-key, and ciphertext bytes: KPQC canonical compatible.
 - Forward NTT: production Good-Thomas/G1R123+S2 lineage with frontend DCE and
   fixed-register scheduling.
-- Keygen: explicit `3F+1`/`3G`, shared production `poly_ntt`, fixed
-  block-major-to-BPQ boundary, hierarchical K=8 + fqinv15, mixed BPQ x CQ
-  basemul, and specialized canonical pack.
-- Direct-CQ keygen: formal default-off production profile with a dual-entry
-  NTT, CQ hierarchical baseinv, CQ x CQ basemul, and CQ pack. It is the
-  keygen-throughput profile; mixed remains the balanced default.
+- Keygen: mainline direct-CQ profile with explicit `3F+1`/`3G`, a dual-entry
+  production NTT, CQ hierarchical K=8 + fqinv15 baseinv, CQ x CQ basemul,
+  and CQ canonical pack.
+- Historical mixed keygen remains an explicit compatibility and benchmark
+  profile; it is no longer the default.
 - Encapsulation: canonical U1 unpack and direct-Q31 basemul-add byte endpoint.
 - Decapsulation: public `poly_basemul -> poly_invntt` paired rminus1 contract
   and compact F1 canonical verification pointwise endpoint.
@@ -153,7 +152,7 @@ For every production candidate:
   was keygen `+16`, encap `-9`, and decap `+3` cycles, so no speedup is
   claimed. `GT_PRODUCTION_USE_SECTION_GC=0` reproduces the old binary.
 - G1R123+S2 promotion evidence: historical and complete.
-- Direct-CQ keygen: promoted from experiment to a formal production profile.
-  Current audit result is 36,773 keygen cycles, 906 cycles faster than mixed;
-  it remains default-off because text grows by about 2.8 KB and the current
-  unique replacement has a roughly 13-cycle encap/decap placement regression.
+- Direct-CQ keygen: promoted from experiment to the mainline production
+  profile. Current audit result is 36,773 keygen cycles, 906 cycles faster
+  than mixed. Text grows by about 2.8 KB and the current unique replacement
+  has a roughly 13-cycle encap/decap placement regression.

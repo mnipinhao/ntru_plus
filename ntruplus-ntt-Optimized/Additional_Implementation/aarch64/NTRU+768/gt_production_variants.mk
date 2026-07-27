@@ -18,7 +18,6 @@ GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3 ?= 0
 GT_PRODUCTION_DISABLE_HIERK8_TREE ?= 0
 GT_PRODUCTION_USE_PAPER_HIER_K8 ?= 0
 GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16 ?= 1
-GT_PRODUCTION_USE_BPQ_CQ_KEYGEN ?= 1
 GT_PRODUCTION_USE_SECTION_GC ?= 1
 
 # Production targets compile and link in one compiler invocation. Put each
@@ -36,11 +35,17 @@ else
 $(error unknown GT_PRODUCTION_USE_SECTION_GC=$(GT_PRODUCTION_USE_SECTION_GC); use 0 or 1)
 endif
 
-# `mixed` remains the release default. `cq` is the promoted, default-off
-# direct-CQ keygen profile. The legacy boolean remains supported for older
-# benchmark makefiles that explicitly set it to zero.
-GT_PRODUCTION_KEYGEN_LAYOUT ?= \
+# Direct-CQ is the mainline production default and matches the standalone
+# release. Preserve the historical boolean only as an explicit compatibility
+# input for older benchmark commands.
+ifeq ($(origin GT_PRODUCTION_KEYGEN_LAYOUT),undefined)
+ifneq ($(origin GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),undefined)
+GT_PRODUCTION_KEYGEN_LAYOUT := \
 	$(if $(filter 1,$(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN)),mixed,legacy)
+else
+GT_PRODUCTION_KEYGEN_LAYOUT := cq
+endif
+endif
 
 ifeq ($(GT_PRODUCTION_KEYGEN_LAYOUT),cq)
 GT_PRODUCTION_USE_BPQ_CQ_KEYGEN := 0

@@ -16,7 +16,7 @@ No production source may depend on `asm/gt/experiment/` or `experiments/`.
 The default variant is `gt_production_q31` and enables:
 
 ```text
-GT_PRODUCTION_USE_BPQ_CQ_KEYGEN
+GT_PRODUCTION_KEYGEN_LAYOUT=cq
 GT_PRODUCTION_USE_RMINUS1_DECAP
 GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
 GT_PRODUCTION_USE_DIRECT32_Q31_BASEMUL_ADD_ENCAP
@@ -41,7 +41,7 @@ internal layouts, canonical bytes, or KAT output. Set
 `GT_PRODUCTION_USE_SECTION_GC=0` only to reproduce the historical non-GC
 binary. KPQC final benchmark builds do not inherit this GT policy.
 
-The formal keygen-throughput profile is selected with:
+The mainline keygen profile is:
 
 ```text
 GT_PRODUCTION_KEYGEN_LAYOUT=cq
@@ -49,9 +49,10 @@ GT_PRODUCTION_KEYGEN_LAYOUT=cq
 
 It replaces only the keygen transform/layout and pointwise closure. Generic
 `poly_ntt` remains available for encapsulation and decapsulation from the same
-dual-entry production assembly. The current audit keeps `mixed` as the
-balanced default; see
-`gt-production-keygen-cq-promotion-audit-2026-07-23.md`.
+dual-entry production assembly. The historical BPQ/CQ path remains available
+with `GT_PRODUCTION_KEYGEN_LAYOUT=mixed` for differential and benchmark
+reproduction. See `gt-production-keygen-cq-promotion-audit-2026-07-23.md` for
+the original promotion evidence.
 
 The default decapsulation verification profile is `pipeline`: the V3
 cross-group gather schedule plus the audited Slothy shared-helper schedule.
@@ -85,9 +86,9 @@ hash backend is an independent build choice, not part of the NTT layout.
 asm/gt/ntt/poly_ntt.n1.opt.S
 ```
 
-The same `poly_ntt` entry point is used by keygen, encapsulation, and
-decapsulation. Keygen adds a fixed block-major-to-BPQ conversion after the
-transform so the BPQ/CQ arithmetic backend remains unchanged. The selected
+The generic `poly_ntt` entry point is used by encapsulation and decapsulation.
+Keygen uses the second entry point in the same production assembly to write CQ
+directly. The selected
 forward transform is self-contained: its Stage12 and Stage345 row work is
 already expanded in this file.
 

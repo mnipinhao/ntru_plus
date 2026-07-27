@@ -6,33 +6,13 @@ polynomial to share one NTT-domain memory layout.
 
 ## Production data flow
 
-### Key generation profiles
+### Key generation
 
-The balanced default is selected with:
-
-```text
-GT_PRODUCTION_KEYGEN_LAYOUT=mixed
-```
-
-```text
-small f/g coefficient polynomials
-  -> explicit 3G or 3F+1 coefficient polynomial
-  -> shared production poly_ntt
-  -> fixed block-major-to-BPQ conversion
-  -> BPQ (branch-pair quartic) layout
-  -> BPQ baseinv prepare
-  -> CQ (coefficient-major quartic) hierarchical inversion
-  -> BPQ x CQ basemul
-  -> CQ canonical pack
-```
-
-The keygen-throughput production profile is selected with:
+The mainline production default is the direct-CQ path:
 
 ```text
 GT_PRODUCTION_KEYGEN_LAYOUT=cq
 ```
-
-Its data flow is:
 
 ```text
 small f/g coefficient polynomials
@@ -43,10 +23,27 @@ small f/g coefficient polynomials
   -> CQ canonical pack
 ```
 
-This profile is production-supported and has no runtime dependency on an
-experiment directory. It remains default-off because it adds about 2.8 KB of
-text and current replacement binaries show a small code-placement regression
-outside keygen. See
+The historical mixed profile remains available explicitly:
+
+```text
+GT_PRODUCTION_KEYGEN_LAYOUT=mixed
+```
+
+```text
+small f/g coefficient polynomials
+  -> explicit 3G or 3F+1 coefficient polynomial
+  -> shared production poly_ntt
+  -> fixed block-major-to-BPQ conversion
+  -> BPQ baseinv prepare
+  -> CQ hierarchical inversion
+  -> BPQ x CQ basemul
+  -> CQ canonical pack
+```
+
+Direct-CQ is production-supported and has no runtime dependency on an
+experiment directory. Its promotion trades about 2.8 KB of text for roughly
+906 saved keygen cycles; the measured non-keygen code-placement delta is about
+13 cycles. See the historical decision evidence in
 `../docs/gt-production-keygen-cq-promotion-audit-2026-07-23.md`.
 
 `gt_bpq_poly` and `gt_cq_poly` in `keygen_bpq_cq.h` are private types. Both
