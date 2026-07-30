@@ -1,5 +1,31 @@
 # Third-party comparison checkouts
 
+## NTRU+ Official Main
+
+- Upstream: <https://github.com/ntruplus/ntruplus.git>
+- Local path: `third_party/NTRUplus-official-main`
+- Revision at import: `0c249d5828b90e8dd5de2c8405323d5ee2a0ce41`
+- Imported: 2026-07-30
+
+This ignored source snapshot is the Official Main comparison baseline for the
+NTRU+768 AVX2 lane.  It was created with `git archive`, so it intentionally has
+no nested Git metadata and cannot drift through an accidental pull.
+
+To restore the exact snapshot after a fresh clone:
+
+```sh
+git clone https://github.com/ntruplus/ntruplus.git /tmp/ntruplus-official
+git -C /tmp/ntruplus-official checkout \
+  0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+git -C /tmp/ntruplus-official archive HEAD | \
+  tar -x -C third_party/NTRUplus-official-main
+```
+
+The relevant implementation is
+`Additional_Implementation/avx2/NTRU+768`.  Keep its in-place Forward and
+scaled basemul/inverse contracts distinct from the KPQC Final out-of-place
+benchmark API.
+
 ## NTTRU
 
 - Upstream: <https://github.com/gregorseiler/NTTRU.git>

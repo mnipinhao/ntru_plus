@@ -58,6 +58,42 @@ static int16_t gt_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
+
+/*
+ * KPQC Final exposes out-of-place NTT wrappers.  Official Main uses native
+ * in-place entry points and a matching scaled basemul/inverse pair.  Keep the
+ * compatibility copies in setup/validation only; timed Official operations
+ * below call the native in-place symbols directly.
+ */
+static void production_ntt_out(poly *r, const poly *a)
+{
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  memcpy(r, a, sizeof(*r));
+  poly_ntt(r);
+#else
+  poly_ntt(r, a);
+#endif
+}
+
+static void production_invntt_out(poly *r, const poly *a)
+{
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  memcpy(r, a, sizeof(*r));
+  poly_invntt_scale(r);
+#else
+  poly_invntt(r, a);
+#endif
+}
+
+static void production_basemul_for_inverse(poly *r, const poly *a,
+                                            const poly *b)
+{
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  poly_basemul_scale(r, a, b);
+#else
+  poly_basemul(r, a, b);
+#endif
+}
 static int16_t gt_frontend_asm_soa_outputs[BENCH_NINPUTS][NTRUPLUS_N]
     __attribute__((aligned(32)));
 static int16_t gt_frontend_asm_soa_b[BENCH_NINPUTS][NTRUPLUS_N]
@@ -259,6 +295,24 @@ static int equal_poly_mod_q(const int16_t *a, const int16_t *b)
   return 1;
 }
 
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+static int equal_poly_mod_q_scaled(const int16_t *a, const int16_t *b,
+                                   int scale)
+{
+  unsigned i;
+
+  for (i = 0; i < NTRUPLUS_N; i++) {
+    if (mod_q((int)a[i] - (int)b[i] * scale) != 0) {
+      fprintf(stderr,
+              "scaled mismatch at coefficient %u: got=%d want=%d scale=%d\n",
+              i, a[i], b[i], scale);
+      return 0;
+    }
+  }
+  return 1;
+}
+#endif
+
 static void schoolbook_mul(poly *out, const poly *a, const poly *b)
 {
   int64_t temporary[2 * NTRUPLUS_N - 1] = {0};
@@ -345,9 +399,9 @@ static void prepare_inputs(void)
   for (i = 0; i < BENCH_NINPUTS; i++) {
     fill_poly(&inputs_a[i], UINT32_C(0x243f6a88) + i);
     fill_poly(&inputs_b[i], UINT32_C(0x85a308d3) + i);
-    poly_ntt(&ntt_a[i], &inputs_a[i]);
-    poly_ntt(&ntt_b[i], &inputs_b[i]);
-    poly_basemul(&freq_out[i], &ntt_a[i], &ntt_b[i]);
+    production_ntt_out(&ntt_a[i], &inputs_a[i]);
+    production_ntt_out(&ntt_b[i], &inputs_b[i]);
+    production_basemul_for_inverse(&freq_out[i], &ntt_a[i], &ntt_b[i]);
     gt_ntt_avx2_asm_soa(gt_asm_soa_outputs[i], inputs_a[i].coeffs);
     gt_ntt_avx2_asm_soa(gt_asm_soa_b[i], inputs_b[i].coeffs);
     gt_ntt_avx2_frontend_asm_soa(gt_frontend_asm_soa_outputs[i],
@@ -431,18 +485,23 @@ static int validate_all(void)
   unsigned i;
 
   for (i = 0; i < 8; i++) {
-    poly_ntt(&frequency_a, &inputs_a[i]);
-    poly_invntt(&got, &frequency_a);
+    production_ntt_out(&frequency_a, &inputs_a[i]);
+    production_invntt_out(&got, &frequency_a);
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+    if (!equal_poly_mod_q_scaled(got.coeffs, inputs_a[i].coeffs, -147)) {
+#else
     if (!equal_poly_mod_q(got.coeffs, inputs_a[i].coeffs)) {
+#endif
       fputs("production NTT round-trip failed\n", stderr);
       return 0;
     }
 
     schoolbook_mul(&want, &inputs_a[i], &inputs_b[i]);
-    poly_ntt(&frequency_a, &inputs_a[i]);
-    poly_ntt(&frequency_b, &inputs_b[i]);
-    poly_basemul(&frequency_product, &frequency_a, &frequency_b);
-    poly_invntt(&got, &frequency_product);
+    production_ntt_out(&frequency_a, &inputs_a[i]);
+    production_ntt_out(&frequency_b, &inputs_b[i]);
+    production_basemul_for_inverse(&frequency_product, &frequency_a,
+                                    &frequency_b);
+    production_invntt_out(&got, &frequency_product);
     if (!equal_poly_mod_q(got.coeffs, want.coeffs)) {
       fputs("production polynomial multiplication failed\n", stderr);
       return 0;
@@ -1083,7 +1142,11 @@ static int validate_all(void)
 
 static void target_ntt(unsigned index)
 {
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  poly_ntt(&outputs[index]);
+#else
   poly_ntt(&outputs[index], &inputs_a[index]);
+#endif
 }
 
 static void target_gt_ntt(unsigned index)
@@ -1657,15 +1720,26 @@ static void target_gt_invpost_asm(unsigned index)
 
 static void target_invntt(unsigned index)
 {
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  poly_invntt_scale(&outputs[index]);
+#else
   poly_invntt(&outputs[index], &ntt_a[index]);
+#endif
 }
 
 static void target_polymul(unsigned index)
 {
+#if defined(BENCH_PRODUCTION_INPLACE) && BENCH_PRODUCTION_INPLACE
+  poly_ntt(&ntt_a[index]);
+  poly_ntt(&ntt_b[index]);
+  poly_basemul_scale(&outputs[index], &ntt_a[index], &ntt_b[index]);
+  poly_invntt_scale(&outputs[index]);
+#else
   poly_ntt(&ntt_a[index], &inputs_a[index]);
   poly_ntt(&ntt_b[index], &inputs_b[index]);
   poly_basemul(&freq_out[index], &ntt_a[index], &ntt_b[index]);
   poly_invntt(&outputs[index], &freq_out[index]);
+#endif
 }
 
 static void target_gt_polymul_soa(unsigned index)

@@ -108,6 +108,14 @@ make kpqc-audit
 single-entry run used an ELF `EXEC` binary, so symbol addresses and code layout
 were inspected in the same linked form that was measured.
 
+Official Main's current AVX2 API uses in-place `poly_ntt` and
+`poly_invntt_scale`.  Build the harness with
+`BENCH_PRODUCTION_INPLACE=1` when `NTRU_ROOT` points at that tree.  The
+compatibility path copies prepared inputs outside timed regions and calls the
+native in-place API inside them; its complete polymul uses
+`poly_basemul_scale` with the matching scaled inverse.  The default remains the
+KPQC/out-of-place API.
+
 Default target flags:
 
 ```text

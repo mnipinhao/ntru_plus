@@ -30,10 +30,20 @@ typedef struct {
   double stddev;
 } stats_t;
 
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+int crypto_kem_keypair_gt(unsigned char *pk, unsigned char *sk);
+#endif
+
 static unsigned long long g_counter_gap = 0;
 static int g_iterations = 1000;
 static int g_warmup = 100;
-static const char *g_unit = "cycles";
+#if defined(__aarch64__)
+static const char *g_unit = "cntvct_ticks";
+#elif defined(__x86_64__) || defined(__i386__)
+static const char *g_unit = "tsc_ticks";
+#else
+static const char *g_unit = "ns";
+#endif
 
 static poly g_poly_a;
 static poly g_poly_b;
@@ -56,17 +66,16 @@ static inline uint64_t raw_counter(void) {
 #elif defined(__x86_64__) || defined(__i386__)
 static inline uint64_t raw_counter(void) {
   uint64_t result;
-  __asm__ volatile("rdtsc; shlq $32,%%rdx; orq %%rdx,%%rax"
+  __asm__ volatile("lfence; rdtsc; shlq $32,%%rdx; orq %%rdx,%%rax"
                    : "=a"(result)
                    :
-                   : "%rdx");
+                   : "%rdx", "memory");
   return result;
 }
 #else
 static inline uint64_t raw_counter(void) {
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
-  g_unit = "ns";
   return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 #endif
@@ -168,6 +177,46 @@ static stats_t run_bench(bench_fn_t fn) {
   return s;
 }
 
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+static void run_bench_pair(bench_fn_t first, bench_fn_t second,
+                           stats_t *first_stats, stats_t *second_stats) {
+  uint64_t *first_samples =
+      calloc((size_t)g_iterations, sizeof(uint64_t));
+  uint64_t *second_samples =
+      calloc((size_t)g_iterations, sizeof(uint64_t));
+  if (first_samples == NULL || second_samples == NULL) {
+    fprintf(stderr, "allocation failed for paired benchmark samples\n");
+    free(first_samples);
+    free(second_samples);
+    exit(1);
+  }
+
+  for (int i = 0; i < g_warmup; ++i) {
+    if ((i & 1) == 0) {
+      (void)measured_cycles(first);
+      (void)measured_cycles(second);
+    } else {
+      (void)measured_cycles(second);
+      (void)measured_cycles(first);
+    }
+  }
+  for (int i = 0; i < g_iterations; ++i) {
+    if ((i & 1) == 0) {
+      first_samples[i] = measured_cycles(first);
+      second_samples[i] = measured_cycles(second);
+    } else {
+      second_samples[i] = measured_cycles(second);
+      first_samples[i] = measured_cycles(first);
+    }
+  }
+
+  *first_stats = compute_stats(first_samples, g_iterations);
+  *second_stats = compute_stats(second_samples, g_iterations);
+  free(first_samples);
+  free(second_samples);
+}
+#endif
+
 static uint64_t bench_poly_cbd1(void) {
   poly_cbd1(&g_poly_a, g_seed_buf);
   return 0;
@@ -183,7 +232,11 @@ static uint64_t bench_poly_sotp_decode(void) {
 }
 
 static uint64_t bench_poly_ntt(void) {
+#if defined(BENCH_PRODUCTION_INPLACE)
+  poly_ntt(&g_poly_b);
+#else
   poly_ntt(&g_poly_b, &g_poly_a);
+#endif
   return 0;
 }
 
@@ -194,6 +247,12 @@ static uint64_t bench_poly_baseinv(void) {
 static uint64_t bench_keygen(void) {
   return (uint64_t)crypto_kem_keypair(g_pk, g_sk);
 }
+
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+static uint64_t bench_keygen_gt(void) {
+  return (uint64_t)crypto_kem_keypair_gt(g_pk, g_sk);
+}
+#endif
 
 static uint64_t bench_encap(void) {
   return (uint64_t)crypto_kem_enc(g_ct, g_ss, g_pk);
@@ -217,8 +276,25 @@ static void init_inputs(void) {
   for (int i = 0; i < NTRUPLUS_N; ++i) {
     g_poly_a.coeffs[i] = (int16_t)((i * 7) % 1223);
   }
-  (void)crypto_kem_keypair(g_pk, g_sk);
-  (void)crypto_kem_enc(g_ct, g_ss, g_pk);
+#if defined(BENCH_PRODUCTION_INPLACE)
+  g_poly_b = g_poly_a;
+#endif
+  if (crypto_kem_keypair(g_pk, g_sk) != 0 ||
+      crypto_kem_enc(g_ct, g_ss, g_pk) != 0 ||
+      crypto_kem_dec(g_dss, g_ct, g_sk) != 0 ||
+      memcmp(g_ss, g_dss, CRYPTO_BYTES) != 0) {
+    fprintf(stderr, "KEM self-check failed before benchmark\n");
+    exit(1);
+  }
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+  if (crypto_kem_keypair_gt(g_pk, g_sk) != 0 ||
+      crypto_kem_enc(g_ct, g_ss, g_pk) != 0 ||
+      crypto_kem_dec(g_dss, g_ct, g_sk) != 0 ||
+      memcmp(g_ss, g_dss, CRYPTO_BYTES) != 0) {
+    fprintf(stderr, "GT keygen KEM self-check failed before benchmark\n");
+    exit(1);
+  }
+#endif
 }
 
 static void print_stats_json(FILE *out, const char *name, stats_t s, int with_trailing_comma) {
@@ -256,7 +332,13 @@ int main(int argc, char **argv) {
   stats_t sotp_decode = run_bench(bench_poly_sotp_decode);
   stats_t ntt = run_bench(bench_poly_ntt);
   stats_t baseinv = run_bench(bench_poly_baseinv);
-  stats_t keygen = run_bench(bench_keygen);
+  stats_t keygen;
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+  stats_t keygen_gt;
+  run_bench_pair(bench_keygen, bench_keygen_gt, &keygen, &keygen_gt);
+#else
+  keygen = run_bench(bench_keygen);
+#endif
   stats_t encap = run_bench(bench_encap);
   stats_t decap = run_bench(bench_decap);
 
@@ -279,6 +361,9 @@ int main(int argc, char **argv) {
   print_stats_json(out, "poly_ntt", ntt, 1);
   print_stats_json(out, "poly_baseinv", baseinv, 1);
   print_stats_json(out, "keygen", keygen, 1);
+#if defined(BENCH_GT_KEYPAIR_COMPARISON)
+  print_stats_json(out, "keygen_gt", keygen_gt, 1);
+#endif
   print_stats_json(out, "encap", encap, 1);
   print_stats_json(out, "decap", decap, 0);
   fprintf(out, "  }\n");

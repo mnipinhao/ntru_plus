@@ -15,6 +15,10 @@ GT_ASM_INCLUDES := $(GT_ROOT)/gt_ntt_stage345_native_fused.inc \
 
 CPPFLAGS += -I$(NTRU_ROOT) -I$(GT_ROOT)
 CPPFLAGS += -DGT_HAVE_AVX2_ASM=1
+BENCH_PRODUCTION_INPLACE ?= 0
+ifeq ($(BENCH_PRODUCTION_INPLACE),1)
+CPPFLAGS += -DBENCH_PRODUCTION_INPLACE=1
+endif
 TARGET_FLAGS ?= -march=x86-64-v3 -mtune=znver5 -mprefer-vector-width=256
 BENCH_LDFLAGS ?=
 CFLAGS ?= -O3 -g
