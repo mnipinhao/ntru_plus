@@ -44,7 +44,41 @@ typedef void (*unpack_fn)(poly *out, const uint8_t *in);
 
 void poly_frombytes_gt_chunk0_u0(poly *out, const uint8_t *in);
 void poly_frombytes_gt_chunk0_u1(poly *out, const uint8_t *in);
+#ifndef GT_PRODUCTION_USE_CANONICAL_UNPACK_U1
 void poly_frombytes_gt_canonical_u1(poly *out, const uint8_t *in);
+#endif
+#ifdef BENCH_WAVE2_CHECKED_REF
+int gt_checked_canonical_decode_ref(poly *out, const uint8_t *in);
+
+static volatile int checked_decode_result_sink;
+
+static void checked_decode_ref_wrapper(poly *out, const uint8_t *in)
+{
+    checked_decode_result_sink |=
+        gt_checked_canonical_decode_ref(out, in);
+}
+#endif
+#if defined(BENCH_WAVE3_CHECKED_U1) || \
+    defined(BENCH_WAVE3_CHECKED_QSOA) || \
+    defined(BENCH_GLOBALMAX_CHECKED_U1) || \
+    defined(BENCH_GLOBALMAX_CHECKED_QSOA)
+int gt_checked_canonical_decode_u1(poly *out, const uint8_t *in);
+int gt_checked_canonical_decode_qsoa_u1(poly *out, const uint8_t *in);
+
+static volatile int wave3_checked_decode_result_sink;
+
+static void wave3_checked_u1_wrapper(poly *out, const uint8_t *in)
+{
+    wave3_checked_decode_result_sink |=
+        gt_checked_canonical_decode_u1(out, in);
+}
+
+static void wave3_checked_qsoa_wrapper(poly *out, const uint8_t *in)
+{
+    wave3_checked_decode_result_sink |=
+        gt_checked_canonical_decode_qsoa_u1(out, in);
+}
+#endif
 
 struct counts {
     uint64_t cycles;
@@ -57,7 +91,22 @@ struct variant {
 };
 
 static const struct variant variants[VARIANT_COUNT] = {
-#if defined(BENCH_FULL_UNPACK)
+#if defined(BENCH_WAVE2_CHECKED_REF)
+    {"u1_production", poly_frombytes_gt_canonical_u1},
+    {"checked_scalar_ref", checked_decode_ref_wrapper},
+#elif defined(BENCH_WAVE3_CHECKED_U1)
+    {"u1_production", poly_frombytes_gt_canonical_u1},
+    {"wave3_checked_u1", wave3_checked_u1_wrapper},
+#elif defined(BENCH_WAVE3_CHECKED_QSOA)
+    {"qsoa_production", poly_frombytes},
+    {"wave3_checked_qsoa", wave3_checked_qsoa_wrapper},
+#elif defined(BENCH_GLOBALMAX_CHECKED_U1)
+    {"u1_production", poly_frombytes_gt_canonical_u1},
+    {"globalmax_checked_u1", wave3_checked_u1_wrapper},
+#elif defined(BENCH_GLOBALMAX_CHECKED_QSOA)
+    {"qsoa_production", poly_frombytes},
+    {"globalmax_checked_qsoa", wave3_checked_qsoa_wrapper},
+#elif defined(BENCH_FULL_UNPACK)
     {"production", poly_frombytes_gt_canonical},
     {"u1", poly_frombytes_gt_canonical_u1},
 #else
@@ -180,7 +229,12 @@ static unsigned run_correctness(void)
     for (size_t test = 0; test < NVALID; test++) {
         for (size_t i = 0; i < sizeof input; i++)
             input[i] = (uint8_t)next_u32();
+#if defined(BENCH_WAVE3_CHECKED_QSOA) || \
+    defined(BENCH_GLOBALMAX_CHECKED_QSOA)
+        poly_frombytes(&reference, input);
+#else
         poly_frombytes_gt_canonical(&reference, input);
+#endif
         for (size_t v = 0; v < VARIANT_COUNT; v++) {
             memset(&got, 0, sizeof got);
             variants[v].fn(&got, input);
@@ -230,9 +284,22 @@ static void report(uint64_t cycles[VARIANT_COUNT][NTESTS],
             wins += delta[t] < 0;
         }
         qsort(delta, NTESTS, sizeof delta[0], cmp_i64);
-        printf("paired,u1_vs_baseline,delta_p10=%" PRId64
+        printf("paired,%s,delta_p10=%" PRId64
                ",delta_p50=%" PRId64 ",delta_p90=%" PRId64
                ",wins=%u/%d\n",
+#if defined(BENCH_WAVE2_CHECKED_REF)
+               "checked_scalar_ref_vs_u1",
+#elif defined(BENCH_WAVE3_CHECKED_U1)
+               "wave3_checked_u1_vs_u1",
+#elif defined(BENCH_WAVE3_CHECKED_QSOA)
+               "wave3_checked_qsoa_vs_qsoa",
+#elif defined(BENCH_GLOBALMAX_CHECKED_U1)
+               "globalmax_checked_u1_vs_u1",
+#elif defined(BENCH_GLOBALMAX_CHECKED_QSOA)
+               "globalmax_checked_qsoa_vs_qsoa",
+#else
+               "u1_vs_baseline",
+#endif
                delta[NTESTS / 10], delta[NTESTS / 2],
                delta[(9 * NTESTS) / 10], wins, NTESTS);
     }
@@ -262,7 +329,17 @@ int main(void)
     close_events();
 
     printf("pmu_settings,scope=%s,NTESTS=%d,NITERATIONS=%d,NWARMUP=%d,NINPUTS=%d\n",
-#if defined(BENCH_FULL_UNPACK)
+#if defined(BENCH_WAVE2_CHECKED_REF)
+           "wave2_checked_scalar_vs_u1",
+#elif defined(BENCH_WAVE3_CHECKED_U1)
+           "wave3_checked_u1_vs_u1",
+#elif defined(BENCH_WAVE3_CHECKED_QSOA)
+           "wave3_checked_qsoa_vs_qsoa",
+#elif defined(BENCH_GLOBALMAX_CHECKED_U1)
+           "globalmax_checked_u1_vs_u1",
+#elif defined(BENCH_GLOBALMAX_CHECKED_QSOA)
+           "globalmax_checked_qsoa_vs_qsoa",
+#elif defined(BENCH_FULL_UNPACK)
            "full_unpack",
 #else
            "chunk0",

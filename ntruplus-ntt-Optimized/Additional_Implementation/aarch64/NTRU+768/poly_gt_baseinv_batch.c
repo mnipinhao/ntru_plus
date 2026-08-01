@@ -109,6 +109,16 @@ void gt_baseinv_fqinv_current_vec_for_bench(int16_t out[8],
 void gt_baseinv_fqinv16_vec_for_bench(int16_t out[8],
                                       const int16_t in[8],
                                       int scaled_r);
+void gt_baseinv_fqinv15_parallel_intrinsic_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_source_asm_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_interleaved_asm_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_slothy_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_slothy_fixed_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r);
 void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],
                                             const int16_t in[8],
                                             int scaled_r);
@@ -193,6 +203,12 @@ int poly_baseinv_gt_batch_scaled_r_hier_kway_current_for_bench(poly *r,
 void baseinv_batch_finish24_n1_asm(int16_t *dst, const int16_t *den_inv);
 #if defined(GT_BASEINV_USE_FQINV15_ASM)
 int16x8_t gt_fqinv15_asm(int16x8_t a, int16x8_t con);
+#endif
+#if defined(GT_BASEINV_DIVSTEP_BENCH_HELPERS)
+int16x8_t gt_fqinv15_parallel_source_asm(int16x8_t a, int16x8_t con);
+int16x8_t gt_fqinv15_parallel_interleaved_asm(int16x8_t a, int16x8_t con);
+int16x8_t fqinv15_parallel_a76_slothy_candidate(int16x8_t a, int16x8_t con);
+int16x8_t fqinv15_parallel_interleaved_baseline(int16x8_t a, int16x8_t con);
 #endif
 
 static const int16_t gt_baseinv_consts[8] __attribute__((aligned(16))) = {
@@ -348,6 +364,33 @@ static inline int16x8_t fqinv_new_neon(int16x8_t a, int16x8_t con)
 }
 
 #if defined(GT_BASEINV_DIVSTEP_BENCH_HELPERS)
+static inline int16x8_t fqinv15_parallel_neon(int16x8_t a, int16x8_t con)
+{
+	int16x8_t a1 = a;
+	int16x8_t a16, a17, a32, a128, a145, a691;
+
+	a = fqmul_neon(a, a, con);       // 2
+	a = fqmul_neon(a, a, con);       // 4
+	a = fqmul_neon(a, a, con);       // 8
+	a16 = fqmul_neon(a, a, con);     // 16
+
+	a17 = fqmul_neon(a16, a1, con);  // 17, independent of a32
+	a32 = fqmul_neon(a16, a16, con); // 32, independent of a17
+	a = fqmul_neon(a32, a32, con);   // 64
+	a128 = fqmul_neon(a, a, con);    // 128
+	a145 = fqmul_neon(a128, a17, con);
+	a = fqmul_neon(a145, a128, con); // 273
+	a = fqmul_neon(a, a, con);       // 546
+	a691 = fqmul_neon(a, a145, con);
+	a = fqmul_neon(a691, a691, con); // 1382
+	a = fqmul_neon(a, a, con);       // 2764
+	a = fqmul_neon(a, a691, con);    // 3455
+
+	a16 = vqrdmulhq_laneq_s16(a, con, 6);
+	a = vmulq_laneq_s16(a, con, 5);
+	return vmlsq_laneq_s16(a, a16, con, 0);
+}
+
 static inline int16x8_t fqinv16_neon(int16x8_t a, int16x8_t con)
 {
 	int16x8_t t1, t2, t3;
@@ -1156,6 +1199,56 @@ void gt_baseinv_fqinv16_vec_for_bench(int16_t out[8],
 	                                   gt_baseinv_consts;
 
 	vst1q_s16(out, fqinv16_neon(vld1q_s16(in), vld1q_s16(consts)));
+}
+
+void gt_baseinv_fqinv15_parallel_intrinsic_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r)
+{
+	const int16_t *consts = scaled_r ? gt_baseinv_scaled_r_consts :
+	                                   gt_baseinv_consts;
+
+	vst1q_s16(out,
+	          fqinv15_parallel_neon(vld1q_s16(in), vld1q_s16(consts)));
+}
+
+void gt_baseinv_fqinv15_parallel_source_asm_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r)
+{
+	const int16_t *consts = scaled_r ? gt_baseinv_scaled_r_consts :
+	                                   gt_baseinv_consts;
+
+	vst1q_s16(out, gt_fqinv15_parallel_source_asm(
+	                  vld1q_s16(in), vld1q_s16(consts)));
+}
+
+void gt_baseinv_fqinv15_parallel_interleaved_asm_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r)
+{
+	const int16_t *consts = scaled_r ? gt_baseinv_scaled_r_consts :
+	                                   gt_baseinv_consts;
+
+	vst1q_s16(out, gt_fqinv15_parallel_interleaved_asm(
+	                  vld1q_s16(in), vld1q_s16(consts)));
+}
+
+void gt_baseinv_fqinv15_parallel_slothy_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r)
+{
+	const int16_t *consts = scaled_r ? gt_baseinv_scaled_r_consts :
+	                                   gt_baseinv_consts;
+
+	vst1q_s16(out, fqinv15_parallel_a76_slothy_candidate(
+	                  vld1q_s16(in), vld1q_s16(consts)));
+}
+
+void gt_baseinv_fqinv15_parallel_slothy_fixed_vec_for_bench(
+	int16_t out[8], const int16_t in[8], int scaled_r)
+{
+	const int16_t *consts = scaled_r ? gt_baseinv_scaled_r_consts :
+	                                   gt_baseinv_consts;
+
+	vst1q_s16(out, fqinv15_parallel_interleaved_baseline(
+	                  vld1q_s16(in), vld1q_s16(consts)));
 }
 
 void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],

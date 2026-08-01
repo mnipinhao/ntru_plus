@@ -184,6 +184,7 @@ include make/production.mk
 include make/production-tests.mk
 include make/tests.mk
 include make/experiments.mk
+include make/experiments/checked-canonical-decode.mk
 
 .PHONY: clean
 clean:

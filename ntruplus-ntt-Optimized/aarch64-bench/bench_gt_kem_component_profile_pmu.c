@@ -71,8 +71,6 @@ int bench_crypto_kem_dec_current(uint8_t *ss, const uint8_t *ct,
 int poly_baseinv_scaled_r(poly *r, const poly *a);
 void poly_basemul_scaled_r_input(poly *r, const poly *a,
                                  const poly *b_scaled_r);
-void poly_basemul(poly *r, const poly *a, const poly *b);
-void poly_invntt(poly *r, const poly *a);
 #ifdef GT_PRODUCTION_USE_KEYGEN_SAMPLE_NTT_MUL3
 void poly_ntt_mul3(poly *out, const poly *a);
 void poly_ntt_mul3_add1(poly *out, const poly *a);

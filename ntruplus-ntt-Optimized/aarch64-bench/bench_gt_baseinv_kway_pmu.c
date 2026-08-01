@@ -72,6 +72,16 @@ void gt_baseinv_fqinv_current_vec_for_bench(int16_t out[8],
 void gt_baseinv_fqinv16_vec_for_bench(int16_t out[8],
                                       const int16_t in[8],
                                       int scaled_r);
+void gt_baseinv_fqinv15_parallel_intrinsic_vec_for_bench(
+    int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_source_asm_vec_for_bench(
+    int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_interleaved_asm_vec_for_bench(
+    int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_slothy_vec_for_bench(
+    int16_t out[8], const int16_t in[8], int scaled_r);
+void gt_baseinv_fqinv15_parallel_slothy_fixed_vec_for_bench(
+    int16_t out[8], const int16_t in[8], int scaled_r);
 void gt_baseinv_fqinv_divstep_vec_for_bench(int16_t out[8],
                                             const int16_t in[8],
                                             int scaled_r);
@@ -115,6 +125,11 @@ enum variant_mode
   MODE_BASEINV_HIER_KWAY_CURRENT = 17,
   MODE_HIER_KWAY_DELTA = 18,
   MODE_BASEINV_HIER_KWAY_DELTA = 19,
+  MODE_FQINV15_PARALLEL_INTRINSIC = 20,
+  MODE_FQINV15_PARALLEL_SOURCE_ASM = 21,
+  MODE_FQINV15_PARALLEL_INTERLEAVED_ASM = 22,
+  MODE_FQINV15_PARALLEL_SLOTHY = 23,
+  MODE_FQINV15_PARALLEL_SLOTHY_FIXED = 24,
 };
 
 struct pmu_event
@@ -601,6 +616,57 @@ static uint64_t check_fqinv16_vector_exhaustive(uint64_t *zero_mismatches)
   return mismatches;
 }
 
+typedef void (*fqinv_vector_fn)(int16_t out[8], const int16_t in[8],
+                                int scaled_r);
+
+static uint64_t check_fqinv15_parallel_exhaustive(
+    fqinv_vector_fn candidate, uint64_t *exact_mismatches,
+    uint64_t *zero_mismatches)
+{
+  uint64_t mismatches = 0;
+  int16_t in[8];
+  int16_t current[8];
+  int16_t got[8];
+  int16_t prod[8];
+
+  for (int scaled_r = 0; scaled_r <= 1; scaled_r++)
+  {
+    for (int base = 0; base < NTRUPLUS_Q; base += 8)
+    {
+      for (int lane = 0; lane < 8; lane++)
+      {
+        int32_t v = base + lane;
+
+        if (v >= NTRUPLUS_Q)
+          v = 0;
+        if (v > NTRUPLUS_Q / 2)
+          v -= NTRUPLUS_Q;
+        in[lane] = (int16_t)v;
+      }
+
+      gt_baseinv_fqinv_current_vec_for_bench(current, in, scaled_r);
+      candidate(got, in, scaled_r);
+      gt_baseinv_fqmul_vec_for_bench(prod, in, got);
+
+      for (int lane = 0; lane < 8; lane++)
+      {
+        if (got[lane] != current[lane])
+          (*exact_mismatches)++;
+        if (modq_i32(in[lane]) == 0)
+        {
+          if (!modq_equal_i16(got[lane], 0))
+            (*zero_mismatches)++;
+          continue;
+        }
+        if (!modq_equal_i16(prod[lane], scaled_r ? 1 : -682))
+          mismatches++;
+      }
+    }
+  }
+
+  return mismatches;
+}
+
 static uint64_t check_product_oracle(const int16_t *orig, const int16_t *old_inv,
                                      const int16_t *new_inv, int m)
 {
@@ -659,6 +725,16 @@ static uint64_t run_correctness(void)
   uint64_t hier_baseinv_exact_rep_mismatches[M24_K_COUNT] = {0};
   uint64_t hier_divstep_baseinv_exact_rep_mismatches[M24_K_COUNT] = {0};
   uint64_t fqinv16_exact_rep_mismatches = 0;
+  uint64_t fqinv15_parallel_intrinsic_mismatches;
+  uint64_t fqinv15_parallel_source_asm_mismatches;
+  uint64_t fqinv15_parallel_interleaved_asm_mismatches;
+  uint64_t fqinv15_parallel_slothy_mismatches;
+  uint64_t fqinv15_parallel_slothy_fixed_mismatches;
+  uint64_t fqinv15_parallel_intrinsic_exact_mismatches = 0;
+  uint64_t fqinv15_parallel_source_asm_exact_mismatches = 0;
+  uint64_t fqinv15_parallel_interleaved_asm_exact_mismatches = 0;
+  uint64_t fqinv15_parallel_slothy_exact_mismatches = 0;
+  uint64_t fqinv15_parallel_slothy_fixed_exact_mismatches = 0;
   uint64_t divstep_exact_rep_mismatches = 0;
   uint64_t divstep_vector_exact_rep_mismatches = 0;
   uint64_t hier_divstep_exact_rep_mismatches = 0;
@@ -683,6 +759,31 @@ static uint64_t run_correctness(void)
       check_divstep_vector_exact_exhaustive();
   fqinv16_vector_mismatches =
       check_fqinv16_vector_exhaustive(&zero_behavior_mismatches);
+  fqinv15_parallel_intrinsic_mismatches =
+      check_fqinv15_parallel_exhaustive(
+          gt_baseinv_fqinv15_parallel_intrinsic_vec_for_bench,
+          &fqinv15_parallel_intrinsic_exact_mismatches,
+          &zero_behavior_mismatches);
+  fqinv15_parallel_source_asm_mismatches =
+      check_fqinv15_parallel_exhaustive(
+          gt_baseinv_fqinv15_parallel_source_asm_vec_for_bench,
+          &fqinv15_parallel_source_asm_exact_mismatches,
+          &zero_behavior_mismatches);
+  fqinv15_parallel_interleaved_asm_mismatches =
+      check_fqinv15_parallel_exhaustive(
+          gt_baseinv_fqinv15_parallel_interleaved_asm_vec_for_bench,
+          &fqinv15_parallel_interleaved_asm_exact_mismatches,
+          &zero_behavior_mismatches);
+  fqinv15_parallel_slothy_mismatches =
+      check_fqinv15_parallel_exhaustive(
+          gt_baseinv_fqinv15_parallel_slothy_vec_for_bench,
+          &fqinv15_parallel_slothy_exact_mismatches,
+          &zero_behavior_mismatches);
+  fqinv15_parallel_slothy_fixed_mismatches =
+      check_fqinv15_parallel_exhaustive(
+          gt_baseinv_fqinv15_parallel_slothy_fixed_vec_for_bench,
+          &fqinv15_parallel_slothy_fixed_exact_mismatches,
+          &zero_behavior_mismatches);
 
   for (size_t input = 0; input < NINPUTS; input++)
   {
@@ -1058,6 +1159,16 @@ static uint64_t run_correctness(void)
   total_mismatches = mismatches + product_mismatches + current_sweep_mismatches +
                      round_contract_mismatches + scalar_mismatches +
                      vector_mismatches + fqinv16_vector_mismatches +
+                     fqinv15_parallel_intrinsic_mismatches +
+                     fqinv15_parallel_source_asm_mismatches +
+                     fqinv15_parallel_interleaved_asm_mismatches +
+                     fqinv15_parallel_slothy_mismatches +
+                     fqinv15_parallel_slothy_fixed_mismatches +
+                     fqinv15_parallel_intrinsic_exact_mismatches +
+                     fqinv15_parallel_source_asm_exact_mismatches +
+                     fqinv15_parallel_interleaved_asm_exact_mismatches +
+                     fqinv15_parallel_slothy_exact_mismatches +
+                     fqinv15_parallel_slothy_fixed_exact_mismatches +
                      zero_behavior_mismatches;
   exact_rep_mismatches = current_sweep_exact_rep_mismatches +
                          fqinv16_exact_rep_mismatches +
@@ -1071,6 +1182,16 @@ static uint64_t run_correctness(void)
          ",divstep_round_contract_mismatches=%" PRIu64
          ",divstep_vector_mismatches=%" PRIu64
          ",fqinv16_vector_mismatches=%" PRIu64
+         ",fqinv15_parallel_intrinsic_mismatches=%" PRIu64
+         ",fqinv15_parallel_source_asm_mismatches=%" PRIu64
+         ",fqinv15_parallel_interleaved_asm_mismatches=%" PRIu64
+         ",fqinv15_parallel_slothy_mismatches=%" PRIu64
+         ",fqinv15_parallel_slothy_fixed_mismatches=%" PRIu64
+         ",fqinv15_parallel_intrinsic_exact_mismatches=%" PRIu64
+         ",fqinv15_parallel_source_asm_exact_mismatches=%" PRIu64
+         ",fqinv15_parallel_interleaved_asm_exact_mismatches=%" PRIu64
+         ",fqinv15_parallel_slothy_exact_mismatches=%" PRIu64
+         ",fqinv15_parallel_slothy_fixed_exact_mismatches=%" PRIu64
          ",zero_behavior_mismatches=%" PRIu64
          ",fqinv_mismatches=%" PRIu64
          ",product_oracle_mismatches=%" PRIu64
@@ -1085,7 +1206,18 @@ static uint64_t run_correctness(void)
          ",exact_rep_mismatches=%" PRIu64
          ",valid_cases=%d\n",
          total_mismatches, scalar_mismatches, round_contract_mismatches,
-         vector_mismatches, fqinv16_vector_mismatches, zero_behavior_mismatches,
+         vector_mismatches, fqinv16_vector_mismatches,
+         fqinv15_parallel_intrinsic_mismatches,
+         fqinv15_parallel_source_asm_mismatches,
+         fqinv15_parallel_interleaved_asm_mismatches,
+         fqinv15_parallel_slothy_mismatches,
+         fqinv15_parallel_slothy_fixed_mismatches,
+         fqinv15_parallel_intrinsic_exact_mismatches,
+         fqinv15_parallel_source_asm_exact_mismatches,
+         fqinv15_parallel_interleaved_asm_exact_mismatches,
+         fqinv15_parallel_slothy_exact_mismatches,
+         fqinv15_parallel_slothy_fixed_exact_mismatches,
+         zero_behavior_mismatches,
          fqinv_mismatches, product_mismatches, baseinv_scaled_mismatches,
          current_sweep_mismatches, current_sweep_exact_rep_mismatches,
          fqinv16_exact_rep_mismatches, divstep_exact_rep_mismatches,
@@ -1191,6 +1323,31 @@ static void run_variant_once(const struct variant *variant, size_t idx)
   case MODE_FQINV_ONLY_FQINV16:
     gt_baseinv_fqinv16_vec_for_bench(g_work36, g_den24[input], 0);
     g_sink ^= (uint16_t)g_work36[(idx + 6) & 7];
+    break;
+  case MODE_FQINV15_PARALLEL_INTRINSIC:
+    gt_baseinv_fqinv15_parallel_intrinsic_vec_for_bench(
+        g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 1) & 7];
+    break;
+  case MODE_FQINV15_PARALLEL_SOURCE_ASM:
+    gt_baseinv_fqinv15_parallel_source_asm_vec_for_bench(
+        g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 2) & 7];
+    break;
+  case MODE_FQINV15_PARALLEL_INTERLEAVED_ASM:
+    gt_baseinv_fqinv15_parallel_interleaved_asm_vec_for_bench(
+        g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 4) & 7];
+    break;
+  case MODE_FQINV15_PARALLEL_SLOTHY:
+    gt_baseinv_fqinv15_parallel_slothy_vec_for_bench(
+        g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 3) & 7];
+    break;
+  case MODE_FQINV15_PARALLEL_SLOTHY_FIXED:
+    gt_baseinv_fqinv15_parallel_slothy_fixed_vec_for_bench(
+        g_work36, g_den24[input], 0);
+    g_sink ^= (uint16_t)g_work36[(idx + 5) & 7];
     break;
   case MODE_FQINV_ONLY_DELTA:
     gt_baseinv_fqinv_divstep_vec_for_bench(g_work36, g_den24[input], 0);
@@ -1378,6 +1535,21 @@ int main(void)
                        0};
   variants[nvariants++] =
       (struct variant){"fqinv_only_fqinv16", MODE_FQINV_ONLY_FQINV16, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv15_parallel_intrinsic",
+                       MODE_FQINV15_PARALLEL_INTRINSIC, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv15_parallel_source_asm",
+                       MODE_FQINV15_PARALLEL_SOURCE_ASM, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv15_parallel_interleaved_asm",
+                       MODE_FQINV15_PARALLEL_INTERLEAVED_ASM, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv15_parallel_a76_slothy",
+                       MODE_FQINV15_PARALLEL_SLOTHY, 1, 0};
+  variants[nvariants++] =
+      (struct variant){"fqinv_only_fqinv15_parallel_a76_slothy_fixed",
+                       MODE_FQINV15_PARALLEL_SLOTHY_FIXED, 1, 0};
   variants[nvariants++] =
       (struct variant){"fqinv_only_delta_divstep", MODE_FQINV_ONLY_DELTA, 1,
                        0};

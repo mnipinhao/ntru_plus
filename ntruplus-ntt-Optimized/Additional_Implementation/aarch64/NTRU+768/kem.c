@@ -160,10 +160,29 @@ void gt_decap_verify_canonical_bridge_candidate(
     const uint8_t hinv_bytes[NTRUPLUS_POLYBYTES]);
 #endif
 
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM
+#ifndef GT_CHECKED_CANONICAL_DECODE
+#define GT_CHECKED_CANONICAL_DECODE gt_checked_canonical_decode_ref
+#endif
+#endif
+
+#if defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA) && \
+    !defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
+#error "checked canonical h-inv QSoA requires the canonical decap pointwise path"
+#endif
+
 #ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
 void poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
                                              const poly *a,
                                              const poly *b);
+void poly_invntt_from_rminus1_stage45scratch(poly *r,
+                                             const int16_t *scratch);
+#endif
+
+#ifdef GT_EXPERIMENT_USE_WAVE11_BASEMUL_STAGE123_DECAP
+void wave11_poly_basemul_rminus1_to_stage123scratch(int16_t *scratch,
+                                                    const poly *a,
+                                                    const poly *b);
 void poly_invntt_from_rminus1_stage45scratch(poly *r,
                                              const int16_t *scratch);
 #endif
@@ -541,7 +560,16 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 	uint8_t buf2[NTRUPLUS_POLYBYTES];
     
     poly h, r, m;
-    
+
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM
+    if (GT_CHECKED_CANONICAL_DECODE(&h, pk)) {
+        gt_wave2_secure_clear(ct, NTRUPLUS_CIPHERTEXTBYTES);
+        gt_wave2_secure_clear(ss, NTRUPLUS_SSBYTES);
+        gt_wave2_secure_clear(&h, sizeof h);
+        return 1;
+    }
+#endif
+
     for (size_t i = 0; i < NTRUPLUS_N / 8; i++)
         msg[i] = coins[i];
 
@@ -556,12 +584,24 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_sotp_encode(&m, msg, buf2);
     poly_ntt(&m, &m);
     
+#ifndef GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM
     poly_frombytes_gt_canonical(&h, pk);
+#endif
     gt_encap_basemul_add_tobytes_contract(ct, &h, &r, &m);
     
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf1[i];
-    
+
+#if defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM) && \
+    !defined(GT_EXPERIMENT_WAVE2_DISABLE_SCRATCH_CLEAR)
+    gt_wave2_secure_clear(msg, sizeof msg);
+    gt_wave2_secure_clear(buf1, sizeof buf1);
+    gt_wave2_secure_clear(buf2, sizeof buf2);
+    gt_wave2_secure_clear(&h, sizeof h);
+    gt_wave2_secure_clear(&r, sizeof r);
+    gt_wave2_secure_clear(&m, sizeof m);
+#endif
+
     return 0;
 }
 
@@ -586,7 +626,17 @@ int crypto_kem_enc(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
     uint8_t coins[NTRUPLUS_N / 8];
 
     randombytes(coins, sizeof coins);
+#if defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM) && \
+    !defined(GT_EXPERIMENT_WAVE2_DISABLE_SCRATCH_CLEAR)
+    {
+        const int result = crypto_kem_enc_derand(ct, ss, pk, coins);
+
+        gt_wave2_secure_clear(coins, sizeof coins);
+        return result;
+    }
+#else
     return crypto_kem_enc_derand(ct, ss, pk, coins);
+#endif
 }
 
 /*************************************************
@@ -615,6 +665,13 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     int8_t fail;
     
     poly c, f;
+#if defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM) && \
+    !defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA)
+    poly checked_hinv;
+#endif
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA
+    poly checked_hinv_qsoa;
+#endif
 #if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
     !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
     !defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
@@ -630,16 +687,40 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     poly r2;
 #endif
     poly m1, m2;
-    
+
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM
+    fail = (int8_t)GT_CHECKED_CANONICAL_DECODE(&c, ct);
+    fail |= (int8_t)GT_CHECKED_CANONICAL_DECODE(&f, sk);
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA
+    fail |= (int8_t)gt_checked_canonical_decode_qsoa_u1(
+        &checked_hinv_qsoa, sk + NTRUPLUS_POLYBYTES);
+#else
+    fail |= (int8_t)GT_CHECKED_CANONICAL_DECODE(
+        &checked_hinv, sk + NTRUPLUS_POLYBYTES);
+#endif
+    if (fail) {
+        gt_wave2_secure_clear(ss, NTRUPLUS_SSBYTES);
+        goto cleanup;
+    }
+#else
     poly_frombytes_gt_canonical(&c, ct);
     poly_frombytes_gt_canonical(&f, sk);
+#endif
 #if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
     !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
     !defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
+#if defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM) && \
+    !defined(GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA)
+    hinv = checked_hinv;
+#else
     poly_frombytes_gt_canonical(&hinv, sk + NTRUPLUS_POLYBYTES);
 #endif
+#endif
     
-#ifdef GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP
+#ifdef GT_EXPERIMENT_USE_WAVE11_BASEMUL_STAGE123_DECAP
+    wave11_poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
+    poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
+#elif defined(GT_PRODUCTION_USE_RMINUS1_STAGE123SCRATCH_DECAP)
     poly_basemul_rminus1_to_stage123scratch(m1.coeffs, &c, &f);
     poly_invntt_from_rminus1_stage45scratch(&m1, m1.coeffs);
 #elif defined(GT_PRODUCTION_USE_RMINUS1_DECAP)
@@ -664,7 +745,10 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     poly_ntt(&m2, &m1);
     poly_sub(&c, &c, &m2);
-#ifdef GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA
+    gt_decap_verify_predecoded_qsoa_to_bytes(
+        buf1, &c, &checked_hinv_qsoa);
+#elif defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
     gt_decap_verify_to_bytes(buf1, &c, sk + NTRUPLUS_POLYBYTES);
 #elif defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER)
     gt_decap_verify_canonical_fused_gather_candidate(
@@ -698,6 +782,39 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf3[i] & ~(-fail);
-    
+
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_KEM
+cleanup:
+#ifndef GT_EXPERIMENT_WAVE2_DISABLE_SCRATCH_CLEAR
+    gt_wave2_secure_clear(msg, sizeof msg);
+    gt_wave2_secure_clear(buf1, sizeof buf1);
+    gt_wave2_secure_clear(buf2, sizeof buf2);
+    gt_wave2_secure_clear(buf3, sizeof buf3);
+    gt_wave2_secure_clear(&c, sizeof c);
+    gt_wave2_secure_clear(&f, sizeof f);
+#ifdef GT_EXPERIMENT_USE_CHECKED_CANONICAL_HINV_QSOA
+    gt_wave2_secure_clear(&checked_hinv_qsoa, sizeof checked_hinv_qsoa);
+#else
+    gt_wave2_secure_clear(&checked_hinv, sizeof checked_hinv);
+#endif
+    gt_wave2_secure_clear(&r1, sizeof r1);
+    gt_wave2_secure_clear(&m1, sizeof m1);
+    gt_wave2_secure_clear(&m2, sizeof m2);
+#if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
+    !defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
+    gt_wave2_secure_clear(&hinv, sizeof hinv);
+#endif
+#if !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_C) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_BASEMUL_TOBYTES_CONTRACT_DIRECT) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_BRIDGE) && \
+    !defined(GT_EXPERIMENT_USE_DECAP_VERIFY_CANONICAL_POINTWISE_FUSED_GATHER) && \
+    !defined(GT_PRODUCTION_USE_DECAP_CANONICAL_POINTWISE)
+    gt_wave2_secure_clear(&r2, sizeof r2);
+#endif
+#endif
+#endif
+
     return fail;
 }

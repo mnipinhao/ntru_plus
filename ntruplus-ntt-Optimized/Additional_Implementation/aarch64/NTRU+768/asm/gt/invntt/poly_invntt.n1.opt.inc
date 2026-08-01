@@ -1208,8 +1208,27 @@ _poly_invntt_stage45scratch:
     RUN_FUSED_POST_LOOP 4
 
     INVNTT_RESTORE_CALLEE_SAVED_SIMD
+.ifdef INVNTT_STAGE123_SCRATCH_SECURE_CLEAR
+    /*
+     * Experiment-only hardened exposed ABI: erase the complete inverse-NTT
+     * frame after restoring the AAPCS64 low halves of d8-d15.
+     */
+    movi v0.16b, #0
+    mov x16, sp
+    mov x17, #(INVNTT_STACK_SIZE / 16)
+.Linvntt_stage45scratch_clear:
+    str q0, [x16], #16
+    subs x17, x17, #1
+    b.ne .Linvntt_stage45scratch_clear
+.endif
     add sp, sp, #INVNTT_STACK_SIZE
+.ifdef INVNTT_STAGE123_SCRATCH_SECURE_CLEAR
+    ldp x30, x0, [sp]
+    stp xzr, xzr, [sp]
+    add sp, sp, #16
+.else
     ldp x30, x0, [sp], #16
+.endif
     ret
 .endif
 

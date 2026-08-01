@@ -5,8 +5,16 @@
 .PHONY: bench_gt_baseinv_replacement_balanced
 .PHONY: bench_gt_canonical_serialization_next_pmu
 
-.PHONY: all clean bench-gt bench-gt-legacy bench-kpqc-final bench_gt_canonical_pack_chunk_pmu bench_gt_canonical_pack_full_pmu bench_gt_canonical_unpack_chunk_pmu bench_gt_canonical_unpack_full_pmu bench_gt_canonical_serialization_paired_kem_pmu bench_gt_canonical_keygen_p1_u1_paired_kem_pmu bench_gt_canonical_pack_p1_paired_kem_pmu bench_gt_canonical_unpack_u1_paired_kem_pmu bench_gt_q31_pair_pipeline_paired_kem_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_u01v3_g1_fullpath_pmu bench_u01v3_g1_r123_paired_kem_pmu bench_invntt_lazy_len16_paired_kem_pmu bench_invntt_promoted_paired_kem_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_hier_k8_diff bench_gt_baseinv_hier_k8_decompose_pmu bench_gt_baseinv_hier_k8_tree_candidate_pmu bench_gt_baseinv_paper_hier_neon_pmu bench_gt_baseinv_paper_hier_neon_keygen_pmu bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu bench_gt_keygen_direct_h_hinv_pmu bench_gt_keygen_public_arith_pair_pmu bench_gt_keygen_public_arith_pair_asm_pmu bench_gt_keygen_finish_to_h_hinv_pmu bench_gt_keygen_sample_prebaseinv_split_pmu bench_gt_keygen_sample_ntt_fusion_pmu bench_gt_keygen_sample_ntt_fusion_slothy_pmu bench_gt_keygen_sample_hierk8_combo_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_sample_hierk8_release_guard check_gt_direct32_q31_release_candidate
+.PHONY: all clean bench-gt bench-gt-legacy bench-kpqc-final bench_gt_canonical_pack_chunk_pmu bench_gt_canonical_pack_full_pmu bench_gt_canonical_unpack_chunk_pmu bench_gt_canonical_unpack_full_pmu bench_gt_canonical_serialization_paired_kem_pmu bench_gt_canonical_keygen_p1_u1_paired_kem_pmu bench_gt_canonical_pack_p1_paired_kem_pmu bench_gt_canonical_unpack_u1_paired_kem_pmu bench_gt_checked_canonical_wave2_paired_kem_pmu bench_gt_q31_pair_pipeline_paired_kem_pmu bench_gt_kem_stage_pmu bench_gt_nonhash_substage_pmu bench_u01v3_g1_fullpath_pmu bench_u01v3_g1_r123_paired_kem_pmu bench_invntt_lazy_len16_paired_kem_pmu bench_invntt_promoted_paired_kem_pmu bench_gt_keygen_component_profile_pmu bench_gt_decap_component_profile_pmu bench_gt_encap_residual_split_pmu bench_gt_kem_component_profile_pmu bench_gt_baseinv_kway_pmu bench_gt_baseinv_fqinv15_fixed_pmu bench_gt_baseinv_hier_k8_diff bench_gt_baseinv_hier_k8_decompose_pmu bench_gt_baseinv_hier_k8_tree_candidate_pmu bench_gt_baseinv_paper_hier_neon_pmu bench_gt_baseinv_paper_hier_neon_keygen_pmu bench_gt_baseinv_hier_k8_tree_fullkeygen_pmu bench_gt_keygen_direct_h_hinv_pmu bench_gt_keygen_public_arith_pair_pmu bench_gt_keygen_public_arith_pair_asm_pmu bench_gt_keygen_finish_to_h_hinv_pmu bench_gt_keygen_sample_prebaseinv_split_pmu bench_gt_keygen_sample_ntt_fusion_pmu bench_gt_keygen_sample_ntt_fusion_slothy_pmu bench_gt_keygen_sample_hierk8_combo_pmu check_gt_basemul_add_direct32_q31_reducer check_gt_direct32_q31_release_guard check_gt_sample_hierk8_release_guard check_gt_direct32_q31_release_candidate
 .PHONY: bench_invntt_stage45_row_helper_paired_kem_pmu
+.PHONY: bench_gt_checked_canonical_wave2_decode_only_paired_kem_pmu
+.PHONY: bench_gt_checked_canonical_wave2_unpack_pmu
+.PHONY: bench_gt_checked_canonical_wave3_paired_kem_pmu
+.PHONY: bench_gt_checked_canonical_wave2_vs_wave3_paired_kem_pmu
+.PHONY: bench_gt_checked_canonical_wave3_u1_pmu
+.PHONY: bench_gt_checked_canonical_wave3_qsoa_pmu
+.PHONY: bench_gt_checked_canonical_globalmax_u1_pmu
+.PHONY: bench_gt_checked_canonical_globalmax_qsoa_pmu
 
 TARGET = bench
 CC ?= gcc
@@ -46,14 +54,19 @@ ifeq ($(VARIANT),gt_production_legacy_ntt)
 GT_PRODUCTION_USE_LEGACY_NTT := 1
 endif
 
-ifeq ($(GT_PRODUCTION_USE_LEGACY_NTT),1)
+ifeq ($(GT_PRODUCTION_KEYGEN_LAYOUT),cq)
+GT_PRODUCTION_NTT_ASM ?= $(word 1,$(GT_PRODUCTION_KEYGEN_CQ_NTT_SOURCES))
+GT_PRODUCTION_NTT32_ASM ?=
+else ifeq ($(GT_PRODUCTION_USE_LEGACY_NTT),1)
 GT_PRODUCTION_NTT_ASM ?= $(NTRUPLUS)/asm/gt/ntt/poly_ntt.S
 GT_PRODUCTION_NTT32_ASM ?= $(NTRUPLUS)/asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S
 else
 GT_PRODUCTION_NTT_ASM ?= $(word 1,$(GT_PRODUCTION_NTT_SOURCES))
 GT_PRODUCTION_NTT32_ASM ?= $(word 2,$(GT_PRODUCTION_NTT_SOURCES))
 endif
-ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3),1)
+ifeq ($(GT_PRODUCTION_KEYGEN_LAYOUT),cq)
+GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM =
+else ifeq ($(GT_PRODUCTION_DISABLE_KEYGEN_SAMPLE_NTT_MUL3),1)
 GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM =
 else ifeq ($(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),1)
 GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM =
@@ -65,6 +78,12 @@ GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND = \
 	$(GT_PRODUCTION_BPQ_CQ_KEYGEN_RUNTIME_SOURCES)
 else
 GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND =
+endif
+ifeq ($(GT_PRODUCTION_KEYGEN_LAYOUT),cq)
+GT_PRODUCTION_CQ_KEYGEN_BACKEND = \
+	$(GT_PRODUCTION_KEYGEN_CQ_RUNTIME_SOURCES)
+else
+GT_PRODUCTION_CQ_KEYGEN_BACKEND =
 endif
 GT_PRODUCTION_INVNTT_ASM ?= $(GT_PRODUCTION_INVNTT_SOURCE)
 ifeq ($(GT_PRODUCTION_USE_INVNTT_LAZY_TWIDDLE1_LEN16),1)
@@ -131,7 +150,10 @@ KPQC_FINAL_KEM_SOURCES = \
 	$(KPQC_FINAL_ROOT)/asm/ntt.s \
 	$(KPQC_FINAL_ROOT)/asm/base.s
 
-ifeq ($(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),1)
+ifeq ($(GT_PRODUCTION_KEYGEN_LAYOUT),cq)
+GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES = \
+	$(GT_PRODUCTION_CQ_KEYGEN_BACKEND)
+else ifeq ($(GT_PRODUCTION_USE_BPQ_CQ_KEYGEN),1)
 GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES = \
 	$(GT_PRODUCTION_BPQ_CQ_KEYGEN_BACKEND)
 else
@@ -305,6 +327,7 @@ GT_KEM_COMPONENT_PROFILE_PMU_NITERATIONS ?= 5000
 GT_KEM_COMPONENT_PROFILE_PMU_NWARMUP ?= 100
 GT_KEM_COMPONENT_PROFILE_PMU_NINPUTS ?= 64
 GT_BASEINV_KWAY_PMU_TARGET ?= bench_gt_baseinv_kway_pmu_bin
+GT_BASEINV_FQINV15_FIXED_PMU_TARGET ?= bench_gt_baseinv_fqinv15_fixed_pmu_bin
 GT_BASEINV_KWAY_PMU_NTESTS ?= 31
 GT_BASEINV_KWAY_PMU_NITERATIONS ?= 5000
 GT_BASEINV_KWAY_PMU_NWARMUP ?= 100
@@ -418,6 +441,15 @@ GT_CANONICAL_SERIALIZATION_PAIRED_KEM_TARGET ?= bench_gt_canonical_serialization
 GT_CANONICAL_KEYGEN_P1_U1_PAIRED_KEM_TARGET ?= bench_gt_canonical_keygen_p1_u1_paired_kem_pmu_bin
 GT_CANONICAL_PACK_P1_PAIRED_KEM_TARGET ?= bench_gt_canonical_pack_p1_paired_kem_pmu_bin
 GT_CANONICAL_UNPACK_U1_PAIRED_KEM_TARGET ?= bench_gt_canonical_unpack_u1_paired_kem_pmu_bin
+GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET ?= bench_gt_checked_canonical_wave2_paired_kem_pmu_bin
+GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET ?= bench_gt_checked_canonical_wave2_decode_only_paired_kem_pmu_bin
+GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET ?= bench_gt_checked_canonical_wave2_unpack_pmu_bin
+GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_TARGET ?= bench_gt_checked_canonical_wave3_paired_kem_pmu_bin
+GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_TARGET ?= bench_gt_checked_canonical_wave2_vs_wave3_paired_kem_pmu_bin
+GT_CHECKED_CANONICAL_WAVE3_U1_TARGET ?= bench_gt_checked_canonical_wave3_u1_pmu_bin
+GT_CHECKED_CANONICAL_WAVE3_QSOA_TARGET ?= bench_gt_checked_canonical_wave3_qsoa_pmu_bin
+GT_CHECKED_CANONICAL_GLOBALMAX_U1_TARGET ?= bench_gt_checked_canonical_globalmax_u1_pmu_bin
+GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_TARGET ?= bench_gt_checked_canonical_globalmax_qsoa_pmu_bin
 GT_Q31_PAIR_PIPELINE_PAIRED_KEM_TARGET ?= bench_gt_q31_pair_pipeline_paired_kem_pmu_bin
 INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET ?= bench_invntt_lazy_len16_paired_kem_pmu_bin
 INVNTT_PROMOTED_PAIRED_KEM_TARGET ?= bench_invntt_promoted_paired_kem_pmu_bin
@@ -459,10 +491,10 @@ GT_KEM_COMPONENT_PROFILE_PMU_SOURCES = \
 	$(GT_SUPPORT_ASM) \
 	$(GT_PRODUCTION_NTT_ASM) \
 	$(GT_PRODUCTION_NTT32_ASM) \
-	$(GT_PRODUCTION_SAMPLE_NTT_MUL3_ASM) \
+	$(GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES) \
 	$(GT_PRODUCTION_INVNTT_ASM) \
 	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
-	$(GT_BASEINV_BATCH_C) \
+	$(filter-out $(GT_PRODUCTION_BASEINV_FQINV_SOURCE),$(GT_BASEINV_BATCH_C)) \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
 	$(GT_BENCH_EXTRA_ASM)
@@ -471,11 +503,33 @@ GT_BASEINV_KWAY_PMU_SOURCES = \
 	bench_gt_baseinv_kway_pmu.c \
 	$(NTRUPLUS)/ntt.c \
 	$(GT_BASEINV_BATCH_C) \
+	$(NTRUPLUS)/asm/gt/experiment/poly_baseinv_fqinv15_parallel.S \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/slothy/fqinv15_parallel_a76.opt.s \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/slothy/fqinv15_parallel_a76_fixed.opt.s \
 	$(GT_BASEINV_DIVSTEP_ASM) \
 	$(GT_BASEINV_DIVSTEP_S32FOLD_ASM) \
 	$(GT_BASEINV_DIVSTEP_MODQ16_ASM) \
 	$(GT_BASEINV_DIVSTEP_LAZY16_ASM) \
 	$(GT_BASEINV_DIVSTEP_SWAR_ASM)
+
+GT_BASEINV_FQINV15_FIXED_PMU_SOURCES = \
+	bench_gt_baseinv_fqinv15_fixed_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_fqinv15_fixed_candidate_wrapper.c \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/poly_baseinv_hier_k8_fixed_candidate.c \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/keygen_cq_fixed_candidate.c \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/keygen_baseinv_tree_fixed_candidate.S \
+	$(NTRUPLUS)/experiments/fqinv15_parallel/slothy/fqinv15_parallel_a76_fixed.opt.s \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
+	$(GT_PRODUCTION_KEM_SUPPORT_SOURCES) \
+	$(GT_PRODUCTION_KEYGEN_CQ_NTT_SOURCES) \
+	$(GT_PRODUCTION_KEYGEN_CQ_RUNTIME_SOURCES) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(filter-out $(GT_PRODUCTION_BASEINV_FQINV_SOURCE),$(GT_BASEINV_BATCH_C)) \
+	$(word 4,$(GT_PRODUCTION_BASE_ASM)) \
+	$(GT_PRODUCTION_SELECTED_EXTRA_ASM)
 
 GT_BASEINV_HIER_K8_DIFF_SOURCES = \
 	bench_gt_baseinv_hier_k8_diff.c \
@@ -772,6 +826,89 @@ GT_CANONICAL_SERIALIZATION_PAIRED_KEM_SOURCES = \
 	$(GT_PRODUCTION_BASE_ASM) \
 	$(GT_PRODUCTION_Q31_ENCAP_ASM)
 
+GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_SOURCES = \
+	bench_gt_paired_full_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_checked_canonical_wave2_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
+	$(GT_PRODUCTION_KEM_SUPPORT_SOURCES) \
+	$(GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/checked_decode_oracle.c \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(word 4,$(GT_PRODUCTION_BASE_ASM)) \
+	$(GT_PRODUCTION_SELECTED_EXTRA_ASM)
+
+GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_SOURCES = \
+	$(subst bench_kem_checked_canonical_wave2_candidate_wrapper.c, \
+		bench_kem_checked_canonical_wave2_decode_only_wrapper.c, \
+		$(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_SOURCES))
+
+GT_CHECKED_CANONICAL_WAVE2_UNPACK_SOURCES = \
+	bench_gt_canonical_unpack_pmu.c \
+	$(GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/checked_decode_oracle.c \
+	$(GT_PRODUCTION_CANONICAL_UNPACK_U1_SOURCE)
+
+GT_CHECKED_CANONICAL_WAVE3_DECODE_SOURCES = \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave3_checked_canonical_unpack_u1.S \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave3_checked_canonical_qsoa_u1.S
+
+GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_SOURCES = \
+	bench_gt_paired_full_kem_pmu.c \
+	bench_kem_u01v3_g1_r123_prod_wrapper.c \
+	bench_kem_checked_canonical_wave3_candidate_wrapper.c \
+	bench_kem_u01v3_g1_r123_capture_wrapper.c \
+	$(NTRUPLUS)/symmetric.c \
+	$(NTRUPLUS)/NO_CE/fips202.c \
+	$(GT_PRODUCTION_DECAP_CANONICAL_POINTWISE_SOURCES) \
+	$(GT_PRODUCTION_KEM_SUPPORT_SOURCES) \
+	$(GT_PRODUCTION_NTT_ASM) \
+	$(GT_PRODUCTION_NTT32_ASM) \
+	$(GT_PRODUCTION_KEYGEN_RUNTIME_SOURCES) \
+	$(GT_PRODUCTION_INVNTT_RMINUS1_ASM) \
+	$(word 4,$(GT_PRODUCTION_BASE_ASM)) \
+	$(GT_PRODUCTION_SELECTED_EXTRA_ASM) \
+	$(GT_CHECKED_CANONICAL_WAVE3_DECODE_SOURCES) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave3_checked_qsoa_endpoint.c
+
+GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_SOURCES = \
+	$(subst bench_kem_u01v3_g1_r123_prod_wrapper.c, \
+		bench_kem_checked_canonical_wave2_as_production_wrapper.c, \
+		$(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_SOURCES)) \
+	$(GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/checked_decode_oracle.c
+
+GT_CHECKED_CANONICAL_WAVE3_U1_SOURCES = \
+	bench_gt_canonical_unpack_pmu.c \
+	$(GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE) \
+	$(GT_PRODUCTION_CANONICAL_UNPACK_U1_SOURCE) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave3_checked_canonical_unpack_u1.S
+
+GT_CHECKED_CANONICAL_WAVE3_QSOA_SOURCES = \
+	bench_gt_canonical_unpack_pmu.c \
+	$(GT_PRODUCTION_POLY_SUPPORT_SOURCE) \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave3_checked_canonical_qsoa_u1.S
+
+GT_CHECKED_CANONICAL_GLOBALMAX_ROOT = \
+	$(NTRUPLUS)/experiments/checked_canonical_decode/wave4_production_shape
+
+GT_CHECKED_CANONICAL_GLOBALMAX_U1_SOURCES = \
+	bench_gt_canonical_unpack_pmu.c \
+	$(GT_PRODUCTION_CANONICAL_REFERENCE_SOURCE) \
+	$(GT_PRODUCTION_CANONICAL_UNPACK_U1_SOURCE) \
+	$(GT_CHECKED_CANONICAL_GLOBALMAX_ROOT)/asm/optimization/checked_unpack_globalmax.S
+
+GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_SOURCES = \
+	bench_gt_canonical_unpack_pmu.c \
+	$(GT_PRODUCTION_POLY_SUPPORT_SOURCE) \
+	$(GT_CHECKED_CANONICAL_GLOBALMAX_ROOT)/asm/optimization/checked_qsoa_globalmax.S
+
 GT_CANONICAL_UNPACK_U1_PAIRED_KEM_SOURCES = \
 	bench_gt_paired_full_kem_pmu.c \
 	bench_kem_u01v3_g1_r123_prod_wrapper.c \
@@ -1063,6 +1200,7 @@ $(GT_KEM_STAGE_PMU_TARGET): $(GT_KEM_STAGE_PMU_SOURCES)
 $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET): $(GT_KEM_COMPONENT_PROFILE_PMU_SOURCES)
 	$(CC) $(CFLAGS) \
 		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DGT_BASEINV_USE_FQINV15_ASM \
 		-DNTESTS=$(NTESTS) \
 		-DNITERATIONS=$(NITERATIONS) \
 		-DNWARMUP=$(NWARMUP) \
@@ -1081,6 +1219,22 @@ $(GT_BASEINV_KWAY_PMU_TARGET): $(GT_BASEINV_KWAY_PMU_SOURCES)
 		-DNWARMUP=$(NWARMUP) \
 		-DNINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS) \
 		$(GT_BASEINV_KWAY_PMU_SOURCES) -o $@
+
+$(GT_BASEINV_FQINV15_FIXED_PMU_TARGET): $(GT_BASEINV_FQINV15_FIXED_PMU_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-UGT_PRODUCTION_USE_BPQ_CQ_KEYGEN \
+		-DGT_PRODUCTION_USE_KEYGEN_CQ \
+		-DGT_BASEINV_BATCH_USE_ASM_FINISH \
+		-DGT_BASEINV_USE_FQINV15_ASM \
+		-DGT_BASEINV_USE_HIER_K8 \
+		-DGT_BASEINV_USE_HIER_K8_TREE \
+		-DGT_BASEINV_SCALED_R_EXTERNAL_BACKEND \
+		-DNTESTS=$(NTESTS) \
+		-DNITERATIONS=$(NITERATIONS) \
+		-DNKEYPAIR_ITERATIONS=$(NKEYPAIR_ITERATIONS) \
+		-DNWARMUP=$(NWARMUP) \
+		-DNINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS) \
+		$(GT_BASEINV_FQINV15_FIXED_PMU_SOURCES) -o $@
 
 $(GT_BASEINV_HIER_K8_DIFF_TARGET): $(GT_BASEINV_HIER_K8_DIFF_SOURCES)
 	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
@@ -1304,6 +1458,104 @@ $(GT_CANONICAL_SERIALIZATION_PAIRED_KEM_TARGET): $(GT_CANONICAL_SERIALIZATION_PA
 		-DBENCH_VARIANTS_LABEL=\"A_production/B_serialization_p1_u1\" \
 		$(GT_CANONICAL_SERIALIZATION_PAIRED_KEM_SOURCES) -o $@
 
+$(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET): $(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_INCLUDE_KEYPAIR_SCOPE \
+		-DBENCH_FULL_KEM_ONLY \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_VARIANTS_LABEL=\"A_production/B_checked_canonical_wave2\" \
+		$(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET): $(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_INCLUDE_KEYPAIR_SCOPE \
+		-DBENCH_FULL_KEM_ONLY \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_VARIANTS_LABEL=\"A_production/B_checked_decode_only\" \
+		$(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET): $(GT_CHECKED_CANONICAL_WAVE2_UNPACK_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NTESTS) \
+		-DNITERATIONS=$(GT_CANONICAL_PACK_CHUNK_PMU_NITERATIONS) \
+		-DNWARMUP=$(GT_CANONICAL_PACK_CHUNK_PMU_NWARMUP) \
+		-DNINPUTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NINPUTS) \
+		-DBENCH_FULL_UNPACK \
+		-DBENCH_WAVE2_CHECKED_REF \
+		$(GT_CHECKED_CANONICAL_WAVE2_UNPACK_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_TARGET): $(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_INCLUDE_KEYPAIR_SCOPE \
+		-DBENCH_FULL_KEM_ONLY \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_VARIANTS_LABEL=\"A_production/B_checked_canonical_wave3\" \
+		$(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_TARGET): $(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
+		-DNITERATIONS=$(U01V3_G1_R123_PAIRED_KEM_NITERATIONS) \
+		-DNWARMUP=$(U01V3_G1_R123_PAIRED_KEM_NWARMUP) \
+		-DNINPUTS=$(U01V3_G1_R123_PAIRED_KEM_NINPUTS) \
+		-DBENCH_INCLUDE_KEYPAIR_SCOPE \
+		-DBENCH_FULL_KEM_ONLY \
+		-DBENCH_EVENT_LIMIT=2 \
+		-DBENCH_VARIANTS_LABEL=\"A_checked_canonical_wave2/B_checked_canonical_wave3\" \
+		$(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE3_U1_TARGET): $(GT_CHECKED_CANONICAL_WAVE3_U1_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NTESTS) \
+		-DNITERATIONS=$(GT_CANONICAL_PACK_CHUNK_PMU_NITERATIONS) \
+		-DNWARMUP=$(GT_CANONICAL_PACK_CHUNK_PMU_NWARMUP) \
+		-DNINPUTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NINPUTS) \
+		-DBENCH_FULL_UNPACK \
+		-DBENCH_WAVE3_CHECKED_U1 \
+		$(GT_CHECKED_CANONICAL_WAVE3_U1_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_WAVE3_QSOA_TARGET): $(GT_CHECKED_CANONICAL_WAVE3_QSOA_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NTESTS) \
+		-DNITERATIONS=$(GT_CANONICAL_PACK_CHUNK_PMU_NITERATIONS) \
+		-DNWARMUP=$(GT_CANONICAL_PACK_CHUNK_PMU_NWARMUP) \
+		-DNINPUTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NINPUTS) \
+		-DBENCH_FULL_UNPACK \
+		-DBENCH_WAVE3_CHECKED_QSOA \
+		$(GT_CHECKED_CANONICAL_WAVE3_QSOA_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_GLOBALMAX_U1_TARGET): $(GT_CHECKED_CANONICAL_GLOBALMAX_U1_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NTESTS) \
+		-DNITERATIONS=$(GT_CANONICAL_PACK_CHUNK_PMU_NITERATIONS) \
+		-DNWARMUP=$(GT_CANONICAL_PACK_CHUNK_PMU_NWARMUP) \
+		-DNINPUTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NINPUTS) \
+		-DBENCH_FULL_UNPACK \
+		-DBENCH_GLOBALMAX_CHECKED_U1 \
+		$(GT_CHECKED_CANONICAL_GLOBALMAX_U1_SOURCES) -o $@
+
+$(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_TARGET): $(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_SOURCES)
+	$(CC) $(CFLAGS_NO_RUNCOUNTS) \
+		-DNTESTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NTESTS) \
+		-DNITERATIONS=$(GT_CANONICAL_PACK_CHUNK_PMU_NITERATIONS) \
+		-DNWARMUP=$(GT_CANONICAL_PACK_CHUNK_PMU_NWARMUP) \
+		-DNINPUTS=$(GT_CANONICAL_PACK_CHUNK_PMU_NINPUTS) \
+		-DBENCH_FULL_UNPACK \
+		-DBENCH_GLOBALMAX_CHECKED_QSOA \
+		$(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_SOURCES) -o $@
+
 $(GT_CANONICAL_UNPACK_U1_PAIRED_KEM_TARGET): $(GT_CANONICAL_UNPACK_U1_PAIRED_KEM_SOURCES)
 	$(CC) $(CFLAGS_CANONICAL_BASELINE) \
 		-DNTESTS=$(U01V3_G1_R123_PAIRED_KEM_NTESTS) \
@@ -1474,6 +1726,10 @@ bench_gt_baseinv_kway_pmu:
 	$(MAKE) -B $(GT_BASEINV_KWAY_PMU_TARGET) NTESTS=$(GT_BASEINV_KWAY_PMU_NTESTS) NITERATIONS=$(GT_BASEINV_KWAY_PMU_NITERATIONS) NWARMUP=$(GT_BASEINV_KWAY_PMU_NWARMUP) GT_BASEINV_KWAY_PMU_NINPUTS=$(GT_BASEINV_KWAY_PMU_NINPUTS)
 	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_KWAY_PMU_TARGET)
 
+bench_gt_baseinv_fqinv15_fixed_pmu:
+	$(MAKE) -B $(GT_BASEINV_FQINV15_FIXED_PMU_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_FQINV15_FIXED_PMU_TARGET)
+
 bench_gt_baseinv_hier_k8_diff:
 	$(MAKE) -B $(GT_BASEINV_HIER_K8_DIFF_TARGET) GT_BASEINV_HIER_K8_DIFF_NTESTS=$(GT_BASEINV_HIER_K8_DIFF_NTESTS) GT_BASEINV_HIER_K8_DIFF_NITERATIONS=$(GT_BASEINV_HIER_K8_DIFF_NITERATIONS) GT_BASEINV_HIER_K8_DIFF_NWARMUP=$(GT_BASEINV_HIER_K8_DIFF_NWARMUP) GT_BASEINV_HIER_K8_DIFF_NINPUTS=$(GT_BASEINV_HIER_K8_DIFF_NINPUTS)
 	$(SUDO) taskset -c $(CORE) ./$(GT_BASEINV_HIER_K8_DIFF_TARGET)
@@ -1572,6 +1828,51 @@ bench_gt_canonical_serialization_paired_kem_pmu:
 	size $(GT_CANONICAL_SERIALIZATION_PAIRED_KEM_TARGET)
 	$(SUDO) taskset -c $(CORE) ./$(GT_CANONICAL_SERIALIZATION_PAIRED_KEM_TARGET)
 
+bench_gt_checked_canonical_wave2_paired_kem_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET)
+
+bench_gt_checked_canonical_wave2_decode_only_paired_kem_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET)
+
+bench_gt_checked_canonical_wave2_unpack_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET)
+
+bench_gt_checked_canonical_wave3_paired_kem_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE3_PAIRED_KEM_TARGET)
+
+bench_gt_checked_canonical_wave2_vs_wave3_paired_kem_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE2_VS_WAVE3_TARGET)
+
+bench_gt_checked_canonical_wave3_u1_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE3_U1_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE3_U1_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE3_U1_TARGET)
+
+bench_gt_checked_canonical_wave3_qsoa_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_WAVE3_QSOA_TARGET)
+	size $(GT_CHECKED_CANONICAL_WAVE3_QSOA_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_WAVE3_QSOA_TARGET)
+
+bench_gt_checked_canonical_globalmax_u1_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_GLOBALMAX_U1_TARGET)
+	size $(GT_CHECKED_CANONICAL_GLOBALMAX_U1_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_GLOBALMAX_U1_TARGET)
+
+bench_gt_checked_canonical_globalmax_qsoa_pmu:
+	$(MAKE) -B $(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_TARGET)
+	size $(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_TARGET)
+	$(SUDO) taskset -c $(CORE) ./$(GT_CHECKED_CANONICAL_GLOBALMAX_QSOA_TARGET)
+
 bench_gt_canonical_unpack_u1_paired_kem_pmu:
 	$(MAKE) -B $(GT_CANONICAL_UNPACK_U1_PAIRED_KEM_TARGET)
 	size $(GT_CANONICAL_UNPACK_U1_PAIRED_KEM_TARGET)
@@ -1642,4 +1943,4 @@ bench-kpqc-final:
 	sudo taskset -c 3 ./$(TARGET)
 
 clean:
-	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_BASEINV_HIER_K8_DIFF_TARGET) $(GT_BASEINV_HIER_K8_DECOMPOSE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_CANDIDATE_PMU_TARGET) $(GT_BASEINV_PAPER_HIER_NEON_PMU_TARGET) $(GT_BASEINV_PAPER_HIER_NEON_KEYGEN_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_FULLKEYGEN_PMU_TARGET) $(GT_BASEINV_HIER_K8_KPQC_ASM_OBJ) $(GT_BASEINV_HIER_K8_KPQC_ASM_TMP) $(GT_KEYGEN_DIRECT_H_HINV_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_ASM_PMU_TARGET) $(GT_KEYGEN_FINISH_TO_H_HINV_PMU_TARGET) $(GT_KEYGEN_SAMPLE_PREBASEINV_SPLIT_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET) $(GT_KEYGEN_SAMPLE_HIERK8_COMBO_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(U01V3_G1_FULLPATH_PMU_TARGET) $(U01V3_G1_R123_PAIRED_KEM_TARGET) $(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET) $(INVNTT_PROMOTED_PAIRED_KEM_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DIRECT32_Q31_ABSENCE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_SAMPLE_OFF_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_HIER_OFF_TARGET) *.textsizes *.stats *.d hal/*.d
+	-$(RM) $(TARGET) $(GT_KEM_STAGE_PMU_TARGET) $(GT_KEM_COMPONENT_PROFILE_PMU_TARGET) $(GT_BASEINV_KWAY_PMU_TARGET) $(GT_BASEINV_HIER_K8_DIFF_TARGET) $(GT_BASEINV_HIER_K8_DECOMPOSE_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_CANDIDATE_PMU_TARGET) $(GT_BASEINV_PAPER_HIER_NEON_PMU_TARGET) $(GT_BASEINV_PAPER_HIER_NEON_KEYGEN_PMU_TARGET) $(GT_BASEINV_HIER_K8_TREE_FULLKEYGEN_PMU_TARGET) $(GT_BASEINV_HIER_K8_KPQC_ASM_OBJ) $(GT_BASEINV_HIER_K8_KPQC_ASM_TMP) $(GT_KEYGEN_DIRECT_H_HINV_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_PMU_TARGET) $(GT_KEYGEN_PUBLIC_ARITH_PAIR_ASM_PMU_TARGET) $(GT_KEYGEN_FINISH_TO_H_HINV_PMU_TARGET) $(GT_KEYGEN_SAMPLE_PREBASEINV_SPLIT_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_PMU_TARGET) $(GT_KEYGEN_SAMPLE_NTT_FUSION_SLOTHY_PMU_TARGET) $(GT_KEYGEN_SAMPLE_HIERK8_COMBO_PMU_TARGET) $(GT_NONHASH_SUBSTAGE_PMU_GT_TARGET) $(U01V3_G1_FULLPATH_PMU_TARGET) $(U01V3_G1_R123_PAIRED_KEM_TARGET) $(GT_CHECKED_CANONICAL_WAVE2_PAIRED_KEM_TARGET) $(GT_CHECKED_CANONICAL_WAVE2_DECODE_ONLY_TARGET) $(GT_CHECKED_CANONICAL_WAVE2_UNPACK_TARGET) $(INVNTT_LAZY_LEN16_PAIRED_KEM_TARGET) $(INVNTT_PROMOTED_PAIRED_KEM_TARGET) $(GT_DIRECT32_Q31_RELEASE_GUARD_TARGET) $(GT_DIRECT32_Q31_ABSENCE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_SAMPLE_OFF_TARGET) $(GT_SAMPLE_HIERK8_RELEASE_GUARD_HIER_OFF_TARGET) *.textsizes *.stats *.d hal/*.d
