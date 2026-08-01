@@ -91,8 +91,8 @@ PRODUCERS = [
             "ntt32_batch8_to_blockmajor contract: lazy CT stays below signed int16",
         ),
         expected_instr_reduction=(
-            "192 reduction chains per full poly_ntt call "
-            "(3 rows * 4 blocks * 16 chains), about 576 vector instructions"
+            "96 reduction chains per endpoint call "
+            "(3 rows * 4 blocks * 8 vector chains), about 288 vector instructions"
         ),
         cycle_estimate="large if safe, but safety currently fails for key consumers",
         note="This is the only candidate with obvious instruction removal.",
@@ -109,8 +109,8 @@ PRODUCERS = [
             "target bound equal to baseinv signed vneg/vshl #1 machine precondition",
         ),
         expected_instr_reduction=(
-            "3 vector instructions per proven removed chain; upper bound 576 "
-            "if all 192 final chains meet this bound"
+            "3 vector instructions per proven removed chain; upper bound 288 "
+            "if all 96 final chains in the selected endpoint meet this bound"
         ),
         cycle_estimate=(
             "0 now because no proof exists; if proven, proportional to removed "
@@ -133,8 +133,8 @@ PRODUCERS = [
             "target bound equal to decap poly_sub no-wrap machine precondition",
         ),
         expected_instr_reduction=(
-            "3 vector instructions per proven removed chain; upper bound 576 "
-            "if all 192 final chains meet this bound"
+            "3 vector instructions per proven removed chain; upper bound 288 "
+            "if all 96 final chains in the selected endpoint meet this bound"
         ),
         cycle_estimate=(
             "0 now because no proof exists; if proven, proportional to removed "

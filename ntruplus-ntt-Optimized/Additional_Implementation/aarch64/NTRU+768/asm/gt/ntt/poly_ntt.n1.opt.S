@@ -10,7 +10,9 @@
 .global _poly_ntt
 .global gt_block_major_poly_ntt
 .global _gt_block_major_poly_ntt
+#ifndef __APPLE__
 .type poly_ntt, %function
+#endif
 poly_ntt:
 _poly_ntt:
 gt_block_major_poly_ntt:
@@ -4331,7 +4333,9 @@ _gt_block_major_poly_ntt:
     ldp x19, x20, [sp, #16]
     add sp, sp, #1696
     ret
+#ifndef __APPLE__
 .size poly_ntt, .-poly_ntt
+#endif
 .global poly_ntt_end
 poly_ntt_end:
 

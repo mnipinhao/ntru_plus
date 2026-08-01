@@ -4,7 +4,9 @@
 .p2align 4
 .global poly_tobytes_gt_canonical
 .global _poly_tobytes_gt_canonical
+#ifndef __APPLE__
 .type poly_tobytes_gt_canonical, %function
+#endif
 poly_tobytes_gt_canonical:
 _poly_tobytes_gt_canonical:
     sub sp, sp, #80
@@ -427,7 +429,9 @@ _poly_tobytes_gt_canonical:
 .Lcanonical_pack_compact_q:
     .hword 3457, 3457, 3457, 3457
     .hword 3457, 3457, 3457, 3457
+#ifndef __APPLE__
 .size poly_tobytes_gt_canonical, .-poly_tobytes_gt_canonical
+#endif
 
 #ifndef GT_PRODUCTION_USE_CANONICAL_UNPACK_U1
 .global poly_frombytes_gt_canonical

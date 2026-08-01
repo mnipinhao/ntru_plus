@@ -1,0 +1,5367 @@
+{
+  "arithmetic": {
+    "fqmul_extreme_witnesses": {
+      "max_reciprocal": -5573,
+      "max_twiddle": -588,
+      "max_x": -32718,
+      "min_reciprocal": -5573,
+      "min_twiddle": -588,
+      "min_x": 32718
+    },
+    "fqmul_inputs_exhaustively_checked": 2621440,
+    "fqmul_model": "s16(s16(x*twiddle) - sqrdmulh(x,reciprocal)*q)",
+    "fqmul_output_bound": {
+      "hi": 3436,
+      "lo": -3436
+    },
+    "sqrdmulh_model": "signed saturating rounding doubling high multiply, 16-bit lanes",
+    "stage_bounds": [
+      {
+        "bound": {
+          "hi": 10368,
+          "lo": -10368
+        },
+        "name": "GT raw 3-point DFT input",
+        "signed_int16_safe": true,
+        "stage": 0
+      },
+      {
+        "bound": {
+          "hi": 13804,
+          "lo": -13804
+        },
+        "name": "after lazy CT stage 1",
+        "signed_int16_safe": true,
+        "stage": 1
+      },
+      {
+        "bound": {
+          "hi": 17240,
+          "lo": -17240
+        },
+        "name": "after lazy CT stage 2",
+        "signed_int16_safe": true,
+        "stage": 2
+      },
+      {
+        "bound": {
+          "hi": 20676,
+          "lo": -20676
+        },
+        "name": "after lazy CT stage 3",
+        "signed_int16_safe": true,
+        "stage": 3
+      },
+      {
+        "bound": {
+          "hi": 24112,
+          "lo": -24112
+        },
+        "name": "after lazy CT stage 4",
+        "signed_int16_safe": true,
+        "stage": 4
+      },
+      {
+        "bound": {
+          "hi": 27548,
+          "lo": -27548
+        },
+        "name": "after lazy CT stage 5",
+        "signed_int16_safe": true,
+        "stage": 5
+      }
+    ],
+    "twiddle_pairs_checked": 40
+  },
+  "callers": {
+    "decap_m1": {
+      "endpoint": "poly_ntt",
+      "implementation_safe_without_final_reduction": false,
+      "input_bound": {
+        "hi": 1,
+        "lo": -1
+      },
+      "input_evidence": "poly_crepmod3 emits centered ternary coefficients",
+      "logical_stores_checked": 96,
+      "machine_bound": {
+        "hi": 31039,
+        "lo": -31039
+      },
+      "machine_obligation": "poly_sub computes centered ciphertext minus m2 in signed-16 lanes",
+      "machine_safe_without_final_reduction": true,
+      "producer_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "semantic_bound": {
+        "hi": 1728,
+        "lo": -1728
+      },
+      "semantic_obligation": "verify basemul equivalence after poly_sub is proven only from the production centered NTT representative contract",
+      "semantic_safe_without_final_reduction": false
+    },
+    "encap_m": {
+      "endpoint": "poly_ntt",
+      "implementation_safe_without_final_reduction": false,
+      "input_bound": {
+        "hi": 1,
+        "lo": -1
+      },
+      "input_evidence": "poly_sotp_encode emits centered ternary coefficients",
+      "logical_stores_checked": 96,
+      "machine_bound": {
+        "hi": 32767,
+        "lo": -32767
+      },
+      "machine_obligation": "Q31 addend is loaded as int16 and widened to int32",
+      "machine_safe_without_final_reduction": true,
+      "producer_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "semantic_bound": {
+        "hi": 1728,
+        "lo": -1728
+      },
+      "semantic_obligation": "the checked Q31 byte-contract proof covers the production centered NTT addend only",
+      "semantic_safe_without_final_reduction": false
+    },
+    "keygen_g": {
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "implementation_safe_without_final_reduction": false,
+      "input_bound": {
+        "hi": 3,
+        "lo": -3
+      },
+      "input_evidence": "poly_cbd1 gives {-1,0,1}; poly_triple multiplies by 3",
+      "logical_stores_checked": 96,
+      "machine_bound": {
+        "hi": 16383,
+        "lo": -16383
+      },
+      "machine_obligation": "baseinv prepare uses signed-16 vneg followed by vshl #1",
+      "machine_safe_without_final_reduction": false,
+      "producer_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "semantic_bound": {
+        "hi": 1728,
+        "lo": -1728
+      },
+      "semantic_obligation": "baseinv reduce_mul2/reduce_mul3/fqmul proof covers production centered representatives only",
+      "semantic_safe_without_final_reduction": false
+    }
+  },
+  "q": 3457,
+  "schema": "ntruplus-p1c-per-store-proof-v1",
+  "sources": {
+    "active_ntt": {
+      "cq_suffix_final_reduction_chains": 96,
+      "generic_suffix_final_reduction_chains": 96,
+      "important_count_note": "The file contains 192 chains total, but its two 96-chain suffixes are mutually exclusive; one NTT call executes 96.",
+      "path": "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+768/asm/ntt.S",
+      "sha256": "6f874aa58557ba12ed20f36bc3e3bb8c8e642c2f1d70c17bed13453510ecacbc"
+    },
+    "modular_ntt32": {
+      "active_final_reduction_chains_per_row": 32,
+      "path": "ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/asm/gt/ntt/ntt32_batch8_to_blockmajor.n1.opt.S",
+      "sha256": "3ff85cc9c56b82d14f6b7bd5dca1173e5fcc22faa8dd8bba68c0c65e5164a355"
+    }
+  },
+  "stores": [
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 4306,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 0,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 4310,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 1,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 4318,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 2,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 4326,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 3,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 4330,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 4,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 4339,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 5,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 4343,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 6,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 4346,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 7,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 4469,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 8,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 4472,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 9,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 4487,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 10,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 4493,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 11,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 4504,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 12,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 4524,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 13,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 4528,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 14,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 4537,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 15,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 4649,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 16,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 4661,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 17,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 4669,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 18,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 4676,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 19,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 4679,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 20,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 4693,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 21,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 4707,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 22,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 4717,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 23,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 4841,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 24,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 4847,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 25,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 4848,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 26,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 4849,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 27,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 4868,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 28,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 4875,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 29,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 4880,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 30,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 4884,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 31,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 5220,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 32,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 5224,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 33,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 5232,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 34,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 5240,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 35,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 5244,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 36,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 5253,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 37,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 5257,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 38,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 5260,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 39,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 5383,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 40,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 5386,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 41,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 5401,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 42,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 5407,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 43,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 5418,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 44,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 5438,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 45,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 5442,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 46,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 5451,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 47,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 5563,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 48,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 5575,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 49,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 5583,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 50,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 5590,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 51,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 5593,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 52,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 5607,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 53,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 5621,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 54,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 5631,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 55,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 5755,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 56,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 5761,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 57,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 5762,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 58,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 5763,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 59,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 5782,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 60,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 5789,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 61,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 5794,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 62,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 5798,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 63,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 6134,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 64,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 6138,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 65,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 6146,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 66,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 6154,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 67,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 6158,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 68,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 6167,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 69,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 6171,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 70,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 6174,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 71,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 6297,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 72,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 6300,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 73,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 6315,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 74,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 6321,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 75,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 6332,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 76,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 6352,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 77,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 6356,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 78,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 6365,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 79,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 6477,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 80,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 6489,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 81,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 6497,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 82,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 6504,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 83,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 6507,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 84,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 6521,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 85,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 6535,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 86,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 6545,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 87,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 6669,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 88,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 6675,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 89,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 6676,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 90,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 6677,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 91,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 6696,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 92,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 6703,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 93,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 6708,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 94,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "keygen_g",
+      "endpoint": "gt_keygen_poly_ntt_to_cq",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 6712,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 95,
+      "machine_safe_without_final_reduction": false,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 1646,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 0,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 1650,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 1,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 1658,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 2,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 1666,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 3,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 1670,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 4,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 1679,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 5,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 1683,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 6,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 1687,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 7,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 1800,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 8,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 1803,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 9,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 1818,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 10,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 1826,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 11,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 1839,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 12,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 1852,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 13,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 1856,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 14,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 1865,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 15,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 1974,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 16,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 1986,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 17,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 1994,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 18,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2002,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 19,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2005,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 20,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 2021,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 21,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2026,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 22,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 2036,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 23,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2159,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 24,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2165,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 25,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2166,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 26,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 2167,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 27,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 2188,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 28,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2195,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 29,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2202,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 30,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2210,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 31,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2532,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 32,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 2536,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 33,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 2544,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 34,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2552,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 35,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 2556,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 36,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 2565,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 37,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2569,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 38,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2573,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 39,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 2686,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 40,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2689,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 41,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2704,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 42,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2712,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 43,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 2725,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 44,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 2738,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 45,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2742,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 46,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 2751,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 47,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2860,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 48,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2872,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 49,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 2880,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 50,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2888,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 51,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2891,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 52,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 2907,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 53,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2912,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 54,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 2922,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 55,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3045,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 56,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3051,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 57,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3052,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 58,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3053,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 59,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 3074,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 60,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3081,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 61,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3088,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 62,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3096,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 63,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3418,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 64,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 3422,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 65,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 3430,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 66,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3438,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 67,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 3442,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 68,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 3451,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 69,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3455,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 70,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3459,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 71,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 3572,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 72,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3575,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 73,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3590,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 74,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3598,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 75,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 3611,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 76,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 3624,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 77,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3628,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 78,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 3637,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 79,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3746,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 80,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3758,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 81,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3766,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 82,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3774,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 83,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3777,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 84,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 3793,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 85,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3798,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 86,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 3808,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 87,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3931,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 88,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3937,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 89,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3938,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 90,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3939,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 91,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 3960,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 92,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3967,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 93,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3974,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 94,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "encap_m",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3982,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 95,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 1646,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 0,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 1650,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 1,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 1658,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 2,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 1666,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 3,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 1670,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 4,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 1679,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 5,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 1683,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 6,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 1687,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 7,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 1800,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 8,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 1803,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 9,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 1818,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 10,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 1826,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 11,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 1839,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 12,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 1852,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 13,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 1856,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 14,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 1865,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 15,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 1974,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 16,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 1986,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 17,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 1994,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 18,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2002,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 19,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2005,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 20,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 2021,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 21,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2026,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 22,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 2036,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 23,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2159,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 24,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2165,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 25,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2166,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 26,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 2167,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 27,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 2188,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 28,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2195,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 29,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2202,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 30,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2210,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 31,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 0,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2532,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 32,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 2536,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 33,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 2544,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 34,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2552,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 35,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 2556,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 36,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 2565,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 37,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2569,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 38,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2573,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 39,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 2686,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 40,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 2689,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 41,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2704,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 42,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2712,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 43,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 2725,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 44,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 2738,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 45,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 2742,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 46,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 2751,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 47,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2860,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 48,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 2872,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 49,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 2880,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 50,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 2888,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 51,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 2891,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 52,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 2907,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 53,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 2912,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 54,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 2922,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 55,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3045,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 56,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3051,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 57,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3052,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 58,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3053,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 59,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 3074,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 60,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3081,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 61,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3088,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 62,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3096,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 63,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 1,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3418,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 64,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 3422,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 65,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 3430,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 66,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v22.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3438,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 67,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v18.8H, v0.H[1]",
+      "final_reduction_line": 3442,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 68,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v25.8H, v26.8H, v0.H[1]",
+      "final_reduction_line": 3451,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 69,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v27.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3455,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 70,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 0,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v5.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3459,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 71,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v17.8H, v0.H[1]",
+      "final_reduction_line": 3572,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 72,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3575,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 73,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3590,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 74,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v10.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3598,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 75,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v6.8H, v0.H[1]",
+      "final_reduction_line": 3611,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 76,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v4.8H, v0.H[1]",
+      "final_reduction_line": 3624,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 77,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v8.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3628,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 78,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 1,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v2.8H, v5.8H, v0.H[1]",
+      "final_reduction_line": 3637,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 79,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3746,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 80,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3758,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 81,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3766,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 82,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3774,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 83,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3777,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 84,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v11.8H, v0.H[1]",
+      "final_reduction_line": 3793,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 85,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v30.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3798,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 86,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 2,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v28.8H, v0.H[1]",
+      "final_reduction_line": 3808,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 87,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v2.8H, v0.H[1]",
+      "final_reduction_line": 3931,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 88,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 0
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v19.8H, v0.H[1]",
+      "final_reduction_line": 3937,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 89,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 1
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v14.8H, v9.8H, v0.H[1]",
+      "final_reduction_line": 3938,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 90,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 2
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v3.8H, v10.8H, v0.H[1]",
+      "final_reduction_line": 3939,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 91,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 3
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v6.8H, v12.8H, v0.H[1]",
+      "final_reduction_line": 3960,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 92,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 4
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v24.8H, v14.8H, v0.H[1]",
+      "final_reduction_line": 3967,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 93,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 5
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v18.8H, v3.8H, v0.H[1]",
+      "final_reduction_line": 3974,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 94,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 6
+    },
+    {
+      "block": 3,
+      "caller": "decap_m1",
+      "endpoint": "poly_ntt",
+      "final_reduction_instruction": "sqdmulh v26.8H, v1.8H, v0.H[1]",
+      "final_reduction_line": 3982,
+      "implementation_safe_without_final_reduction": false,
+      "lanes": 8,
+      "logical_store": 95,
+      "machine_safe_without_final_reduction": true,
+      "pre_final_reduction_bound": {
+        "hi": 27548,
+        "lo": -27548
+      },
+      "row": 2,
+      "semantic_safe_without_final_reduction": false,
+      "vector_in_block": 7
+    }
+  ],
+  "summary": {
+    "assembly_generation_allowed": false,
+    "callers_checked": 3,
+    "decision": "proof_failed_do_not_generate_assembly",
+    "lanes_covered": 2304,
+    "logical_stores_checked": 288,
+    "logical_stores_per_caller": 96,
+    "removed_instructions_if_one_endpoint_were_fully_safe": 288
+  }
+}

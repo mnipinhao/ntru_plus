@@ -35,7 +35,8 @@ COMMON_REQUIRED = {
     "poly_basemul",
     "poly_frombytes_gt_canonical_u1",
     "poly_invntt",
-    "poly_ntt",
+    "gt_internal_poly_ntt_loose",
+    "gt_internal_poly_tobytes_from_loose",
     "poly_tobytes_gt_canonical",
     "poly_triple",
 }

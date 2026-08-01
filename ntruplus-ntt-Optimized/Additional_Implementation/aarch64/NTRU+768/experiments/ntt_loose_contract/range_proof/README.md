@@ -14,6 +14,9 @@ experiments/ntt_loose_contract/range_proof/README.md
 experiments/ntt_loose_contract/range_proof/range_model.py
 experiments/ntt_loose_contract/range_proof/consumer_bounds.md
 experiments/ntt_loose_contract/range_proof/candidate_matrix.md
+experiments/ntt_loose_contract/range_proof/p1c_per_store_proof.py
+experiments/ntt_loose_contract/range_proof/p1c_per_store_bounds.json
+experiments/ntt_loose_contract/range_proof/P1C-PER-STORE-PROOF.md
 ```
 
 ## Question
@@ -47,7 +50,7 @@ Current wide variant:
 ```text
 stage345_pre_final_barrett output: [-32767,32767]
 removed reductions: all stage345 final output reduction chains
-expected theoretical saving: 192 chains ~= 576 vector instructions per poly_ntt
+expected theoretical saving: 96 chains ~= 288 vector instructions per endpoint call
 implementation safe: no
 ```
 
@@ -64,9 +67,9 @@ Proof-only narrower variants recorded in `range_model.py` and
 
 | proof-only variant | producer bound | consumer bound | machine safe? | implementation safe? | expected instruction / cycle saving |
 |---|---:|---:|---|---|---|
-| `keygen_g_baseinv_machine_limited` | `[-16383,16383]` | baseinv prepare `[-16383,16383]` | yes | no | 3 vector instructions per proven removed chain; upper bound 576 instructions if all 192 final chains meet this bound. Current cycle saving is 0 because no proof exists. |
+| `keygen_g_baseinv_machine_limited` | `[-16383,16383]` | baseinv prepare `[-16383,16383]` | yes | no | 3 vector instructions per proven removed chain; upper bound 288 instructions if all 96 endpoint chains meet this bound. Current cycle saving is 0 because no proof exists. |
 | `encap_m_reduced_non_centered` | `[-3456,3456]` | Q31 addend machine `[-32767,32767]`; semantic proof currently `[-1728,1728]` | yes | no | unknown/likely 0 because no separate centering tail exists in the current schedule. |
-| `decap_m1_poly_sub_no_wrap_limited` | `[-31039,31039]` | poly_sub no-wrap about `[-31039,31039]` | yes | no | 3 vector instructions per proven removed chain; upper bound 576 instructions if all 192 final chains meet this bound. Current cycle saving is 0 because no proof exists. |
+| `decap_m1_poly_sub_no_wrap_limited` | `[-31039,31039]` | poly_sub no-wrap about `[-31039,31039]` | yes | no | 3 vector instructions per proven removed chain; upper bound 288 instructions if all 96 endpoint chains meet this bound. Current cycle saving is 0 because no proof exists. |
 
 Rows that are machine-safe but not implementation-safe still require both a
 per-store producer bound and the downstream semantic proof before any ASM work.
@@ -88,12 +91,16 @@ The production stage345 final reduction is interleaved with scatter stores.
 Dynamic per full `poly_ntt` call:
 
 ```text
-3 rows * 4 blocks * 16 final output reduction chains = 192 chains
+3 rows * 4 blocks * 8 final output vector reduction chains = 96 chains
 each chain ~= sqdmulh + srshr + mls
-theoretical instruction removal if all removed ~= 576 vector instructions
+theoretical instruction removal if all removed ~= 288 vector instructions
 ```
 
 This is attractive only if the consumer range proof succeeds.  It does not.
+
+The flattened production source contains both mutually-exclusive endpoint
+suffixes, so a source-wide count sees 192 chains.  A call executes exactly one
+96-chain suffix; 192 is not a per-call count.
 
 ## Consumer Findings
 
@@ -197,5 +204,6 @@ Commands:
 
 ```sh
 python3 ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/experiments/ntt_loose_contract/range_proof/range_model.py
+make -C ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/experiments/ntt_loose_contract/range_proof check
 git diff --check
 ```
