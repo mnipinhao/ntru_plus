@@ -188,12 +188,20 @@ Lbpq_tree_failure:
 	mov w0, #1
 
 Lbpq_tree_return:
-	add sp, sp, #BPQ_TREE_LOCAL_BYTES
-	ldp d14, d15, [sp], #16
-	ldp d12, d13, [sp], #16
-	ldp d10, d11, [sp], #16
-	ldp d8, d9, [sp], #16
-	ldp x30, x19, [sp], #16
+	/* P0-B: restore first, then erase local scratch and saved images. */
+	ldp d14, d15, [sp, #(BPQ_TREE_LOCAL_BYTES + 0)]
+	ldp d12, d13, [sp, #(BPQ_TREE_LOCAL_BYTES + 16)]
+	ldp d10, d11, [sp, #(BPQ_TREE_LOCAL_BYTES + 32)]
+	ldp d8, d9, [sp, #(BPQ_TREE_LOCAL_BYTES + 48)]
+	ldp x30, x19, [sp, #(BPQ_TREE_LOCAL_BYTES + 64)]
+	movi v1.16b, #0
+	mov x9, sp
+	mov x10, #21
+Lbpq_tree_clear:
+	str q1, [x9], #16
+	subs x10, x10, #1
+	b.ne Lbpq_tree_clear
+	add sp, sp, #(BPQ_TREE_LOCAL_BYTES + 80)
 	ret
 #ifndef __APPLE__
 .size C_SYM(gt_keygen_baseinv_hier_k8), \

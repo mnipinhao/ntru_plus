@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "fips202.h"
+#include "internal/secure_clear.h"
 
 #define NROUNDS 24
 #define ROL(a, offset) (((a) << (offset)) ^ ((a) >> (64 - (offset))))
@@ -377,6 +378,7 @@ static void keccak_absorb(uint64_t *s, uint32_t r, const uint8_t *m,
     for (i = 0; i < r / 8; ++i) {
         s[i] ^= load64(t + 8 * i);
     }
+    gt_secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -551,7 +553,9 @@ void shake128_inc_ctx_clone(shake128incctx *dest, const shake128incctx *src) {
 }
 
 void shake128_inc_ctx_release(shake128incctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 void shake256_inc_init(shake256incctx *state) {
@@ -583,7 +587,9 @@ void shake256_inc_ctx_clone(shake256incctx *dest, const shake256incctx *src) {
 }
 
 void shake256_inc_ctx_release(shake256incctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 /*************************************************
@@ -631,7 +637,9 @@ void shake128_ctx_clone(shake128ctx *dest, const shake128ctx *src) {
 
 /** Release the allocated state. Call only once. */
 void shake128_ctx_release(shake128ctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 /*************************************************
@@ -679,7 +687,9 @@ void shake256_ctx_clone(shake256ctx *dest, const shake256ctx *src) {
 
 /** Release the allocated state. Call only once. */
 void shake256_ctx_release(shake256ctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 /*************************************************
@@ -711,6 +721,7 @@ void shake128(uint8_t *output, size_t outlen,
         }
     }
     shake128_ctx_release(&s);
+    gt_secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -742,6 +753,7 @@ void shake256(uint8_t *output, size_t outlen,
         }
     }
     shake256_ctx_release(&s);
+    gt_secure_clear(t, sizeof t);
 }
 
 void sha3_256_inc_init(sha3_256incctx *state) {
@@ -761,7 +773,9 @@ void sha3_256_inc_ctx_clone(sha3_256incctx *dest, const sha3_256incctx *src) {
 }
 
 void sha3_256_inc_ctx_release(sha3_256incctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 void sha3_256_inc_absorb(sha3_256incctx *state, const uint8_t *input, size_t inlen) {
@@ -779,6 +793,7 @@ void sha3_256_inc_finalize(uint8_t *output, sha3_256incctx *state) {
     for (size_t i = 0; i < 32; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -803,6 +818,8 @@ void sha3_256(uint8_t *output, const uint8_t *input, size_t inlen) {
     for (size_t i = 0; i < 32; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
+    gt_secure_clear(s, sizeof s);
 }
 
 void sha3_384_inc_init(sha3_384incctx *state) {
@@ -826,7 +843,9 @@ void sha3_384_inc_absorb(sha3_384incctx *state, const uint8_t *input, size_t inl
 }
 
 void sha3_384_inc_ctx_release(sha3_384incctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 void sha3_384_inc_finalize(uint8_t *output, sha3_384incctx *state) {
@@ -840,6 +859,7 @@ void sha3_384_inc_finalize(uint8_t *output, sha3_384incctx *state) {
     for (size_t i = 0; i < 48; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -864,6 +884,8 @@ void sha3_384(uint8_t *output, const uint8_t *input, size_t inlen) {
     for (size_t i = 0; i < 48; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
+    gt_secure_clear(s, sizeof s);
 }
 
 void sha3_512_inc_init(sha3_512incctx *state) {
@@ -887,7 +909,9 @@ void sha3_512_inc_absorb(sha3_512incctx *state, const uint8_t *input, size_t inl
 }
 
 void sha3_512_inc_ctx_release(sha3_512incctx *state) {
+    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
     free(state->ctx);
+    state->ctx = NULL;
 }
 
 void sha3_512_inc_finalize(uint8_t *output, sha3_512incctx *state) {
@@ -901,6 +925,7 @@ void sha3_512_inc_finalize(uint8_t *output, sha3_512incctx *state) {
     for (size_t i = 0; i < 64; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -925,4 +950,6 @@ void sha3_512(uint8_t *output, const uint8_t *input, size_t inlen) {
     for (size_t i = 0; i < 64; i++) {
         output[i] = t[i];
     }
+    gt_secure_clear(t, sizeof t);
+    gt_secure_clear(s, sizeof s);
 }

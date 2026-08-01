@@ -76,6 +76,30 @@ Lbpq_finish_cq_loop:
 	stp q30, q31, [x0], #32
 	subs w3, w3, #1
 	b.ne Lbpq_finish_cq_loop
+	/* P0-B: output is committed; erase secret vector temporaries. */
+	movi v1.16b, #0
+	movi v2.16b, #0
+	movi v3.16b, #0
+	movi v4.16b, #0
+	movi v5.16b, #0
+	movi v6.16b, #0
+	movi v7.16b, #0
+	movi v16.16b, #0
+	movi v17.16b, #0
+	movi v18.16b, #0
+	movi v19.16b, #0
+	movi v20.16b, #0
+	movi v21.16b, #0
+	movi v22.16b, #0
+	movi v23.16b, #0
+	movi v24.16b, #0
+	movi v25.16b, #0
+	movi v26.16b, #0
+	movi v27.16b, #0
+	movi v28.16b, #0
+	movi v29.16b, #0
+	movi v30.16b, #0
+	movi v31.16b, #0
 	ret
 #ifndef __APPLE__
 .size C_SYM(gt_keygen_baseinv_cq_finish), \

@@ -4,6 +4,7 @@
 #include <arm_neon.h>
 
 #include "keygen.h"
+#include "secure_clear.h"
 
 #if NTRUPLUS_N != 768
 #error "The direct-CQ keygen backend is specialized for NTRU+768"
@@ -14,6 +15,8 @@
 extern const int16_t gt_keygen_bpq_lambda8[GT_KEYGEN_CQ_GROUPS][8];
 
 int gt_keygen_baseinv_hier_k8(int16_t *den);
+void gt_keygen_baseinv_cq_prepare(int16_t *numerator, int16_t *den,
+                                  const int16_t *input_cq);
 void gt_keygen_baseinv_cq_finish(int16_t *out_cq,
                                  const int16_t *numerator,
                                  const int16_t *den);
@@ -92,61 +95,27 @@ static inline int16x8_t reduce_mul4(int16x8_t a0, int16x8_t b0,
     return montgomery_reduce_vec(lo, hi, con);
 }
 
-static void baseinv_cq_prepare_group(int16_t *numerator, int16x8_t *den,
-                                     const int16_t *src, int16x8_t zeta,
-                                     int16x8_t con)
-{
-    int16x8_t a0 = vld1q_s16(src + 0);
-    int16x8_t a1 = vld1q_s16(src + 8);
-    int16x8_t a2 = vld1q_s16(src + 16);
-    int16x8_t a3 = vld1q_s16(src + 24);
-    int16x8_t neg2a2 = vshlq_n_s16(vnegq_s16(a2), 1);
-    int16x8_t neg2a3 = vshlq_n_s16(vnegq_s16(a3), 1);
-    int16x8_t t0, t1, t2;
-    int16x8_t n0, n1, n2, n3;
-
-    t0 = reduce_mul2(a2, a2, a1, neg2a3, con);
-    t1 = fqmul_neon(a3, a3, con);
-    t0 = reduce_mul2(t0, zeta, a0, a0, con);
-    t1 = reduce_mul3(t1, zeta, a1, a1, a0, neg2a2, con);
-    t2 = fqmul_neon(t1, zeta, con);
-
-    *den = reduce_mul2(t0, t0, vnegq_s16(t1), t2, con);
-    n0 = reduce_mul2(a0, t0, a2, t2, con);
-    n1 = reduce_mul2(a3, t2, a1, t0, con);
-    n2 = reduce_mul2(a2, t0, a0, t1, con);
-    n3 = reduce_mul2(a1, t1, a3, t0, con);
-
-    vst1q_s16(numerator + 0, n0);
-    vst1q_s16(numerator + 8, n1);
-    vst1q_s16(numerator + 16, n2);
-    vst1q_s16(numerator + 24, n3);
-}
-
 int gt_keygen_baseinv_cq_to_cq_scaled_r(
     gt_cq_poly *out_cq, const gt_cq_poly *in_cq)
 {
     int16_t den[GT_KEYGEN_CQ_GROUPS * 8] __attribute__((aligned(16)));
     int16_t numerator[GT_KEYGEN_CQ_GROUPS * 32]
         __attribute__((aligned(16)));
-    int16x8_t con = vld1q_s16(gt_keygen_cq_consts);
-    int group;
+    gt_keygen_baseinv_cq_prepare(numerator, den,
+                                 in_cq->storage.coeffs);
 
-    for (group = 0; group < GT_KEYGEN_CQ_GROUPS; group++) {
-        int16x8_t zeta = vld1q_s16(gt_keygen_bpq_lambda8[group]);
+    {
+        int result = gt_keygen_baseinv_hier_k8(den);
 
-        baseinv_cq_prepare_group(numerator + 32 * group,
-                                 (int16x8_t *)(den + 8 * group),
-                                 in_cq->storage.coeffs + 32 * group,
-                                 zeta, con);
+        if (result)
+            memset(out_cq, 0, sizeof(*out_cq));
+        else
+            gt_keygen_baseinv_cq_finish(
+                out_cq->storage.coeffs, numerator, den);
+        gt_secure_clear(numerator, sizeof numerator);
+        gt_secure_clear(den, sizeof den);
+        return result;
     }
-
-    if (gt_keygen_baseinv_hier_k8(den)) {
-        memset(out_cq, 0, sizeof(*out_cq));
-        return 1;
-    }
-    gt_keygen_baseinv_cq_finish(out_cq->storage.coeffs, numerator, den);
-    return 0;
 }
 
 void gt_keygen_basemul_cq_cq_to_cq_scaled_r(

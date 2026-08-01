@@ -32,7 +32,9 @@ BANNED_FILE_SUFFIXES = {
 BANNED_GENERATED_NAMES = {
     "PQCgenKAT_kem",
     "test_abi",
+    "test_canonical",
     "test_kem",
+    "test_zeroization",
 }
 BANNED_TOKENS = (
     "GT_EXPERIMENT_",
@@ -41,12 +43,15 @@ BANNED_TOKENS = (
     "GT_PRODUCTION_VARIANT",
 )
 REQUIRED_PUBLIC_SYMBOLS = (
-    "poly_ntt",
     "poly_invntt",
     "poly_basemul",
     "poly_basemul_add",
     "poly_tobytes",
     "poly_frombytes",
+)
+REQUIRED_INTERNAL_KEM_SYMBOLS = (
+    "gt_internal_poly_ntt_loose",
+    "gt_internal_poly_tobytes_from_loose",
 )
 EXPECTED_KAT_RSP_SHA256 = (
     "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
@@ -94,6 +99,14 @@ for symbol in REQUIRED_PUBLIC_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", headers) is None:
         fail(f"missing public declaration: {symbol}")
 
+kem_source = (ROOT / "kem.c").read_text(encoding="utf-8")
+internal_headers = (ROOT / "internal/ntt.h").read_text(encoding="utf-8")
+for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
+    if re.search(rf"\b{re.escape(symbol)}\s*\(", internal_headers) is None:
+        fail(f"missing internal declaration: {symbol}")
+    if re.search(rf"\b{re.escape(symbol)}\s*\(", kem_source) is None:
+        fail(f"missing internal KEM consumer: {symbol}")
+
 expected = {
     "asm/ntt.S",
     "asm/invntt.S",
@@ -107,6 +120,11 @@ expected = {
     "Makefile",
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
+    "internal/secure_clear.h",
+    "internal/ntt.h",
+    "scripts/check_zeroization.py",
+    "test/test_zeroization.c",
+    "test/test_canonical.c",
     "kat/expected/PQCkemKAT_2336.req",
     "kat/expected/PQCkemKAT_2336.rsp",
 }

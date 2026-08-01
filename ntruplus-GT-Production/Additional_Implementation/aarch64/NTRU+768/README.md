@@ -33,16 +33,18 @@ not optional profiles:
 
 - A key-generation NTT with a direct vector-native output layout, hierarchical
   batch inversion, pointwise multiplication, and canonical packing.
-- An encapsulation-only `a*b+c` pointwise endpoint.
+- An encapsulation-only `a*b+c` pointwise endpoint whose output exactly aliases
+  the consumed message-polynomial input, avoiding a separate ciphertext
+  polynomial temporary.
 - A compact decapsulation verification endpoint with cross-group gather
   pipelining and a Slothy-scheduled shared multiplication helper.
 - A paired pointwise/inverse contract in which pointwise multiplication leaves
   one Montgomery `R^-1` factor and the inverse transform absorbs it.
 
 See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) for the transform, layout,
-and fixed build contracts. See
-[docs/OPTIMIZATION-SUMMARY.md](docs/OPTIMIZATION-SUMMARY.md) for a concise
-comparison with KPQC final.
+and fixed build contracts. The repository-level
+[optimization summary](../../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md)
+provides a concise comparison with KPQC final.
 
 ## Build
 
@@ -52,6 +54,7 @@ The default build uses portable `NO_CE` SHAKE:
 make
 make test
 make abi
+make zeroization
 make kat
 make kat-check
 make size
@@ -73,9 +76,10 @@ a different external directory. The release directory remains source-only
 after all build and validation targets.
 
 `make check-release` verifies that the source closure contains no experiment
-directories or production profile selectors. `make kat-check` regenerates the
-NIST KAT and compares it byte-for-byte with the canonical vectors under
-`kat/expected/`.
+directories or production profile selectors. `make zeroization` combines a
+static source-coverage gate with a runtime audit hook for the portable C
+clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
+with the canonical vectors under `kat/expected/`.
 
 ## Scope
 
@@ -89,6 +93,6 @@ NIST KAT and compares it byte-for-byte with the canonical vectors under
 
 This release tree intentionally excludes benchmark prototypes, Slothy inputs
 and logs, archived alternatives, and generic kernels not called by the
-selected KEM. The reproducible public full-KEM comparison is provided by the
-sibling [`../benchmark/`](../benchmark/) directory in the AArch64 handoff
-archive.
+selected KEM. The reproducible public full-KEM comparison is maintained under
+[`../../../../bench/aarch64/gt-production/`](../../../../bench/aarch64/gt-production/)
+outside the release source closure.

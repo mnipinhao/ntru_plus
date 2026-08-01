@@ -699,8 +699,18 @@ _gt_block_major_poly_invntt:
     RUN_FUSED_POST_LOOP 4
 
     INVNTT_RESTORE_CALLEE_SAVED_SIMD
+    /* P0-B: erase 2,144 bytes of inverse-NTT scratch. */
+    movi v0.16b, #0
+    mov x16, sp
+    mov x17, #134
+.Lp0b_invntt_clear:
+    str q0, [x16], #16
+    subs x17, x17, #1
+    b.ne .Lp0b_invntt_clear
     add sp, sp, #INVNTT_STACK_SIZE
-    ldp x30, x0, [sp], #16
+    ldp x30, x0, [sp]
+    stp xzr, xzr, [sp]
+    add sp, sp, #16
     ret
 
 .p2align 4

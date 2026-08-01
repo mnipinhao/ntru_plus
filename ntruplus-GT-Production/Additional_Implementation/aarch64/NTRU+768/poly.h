@@ -11,16 +11,18 @@ typedef struct {
 
 /* Canonical public-key, secret-key, and ciphertext byte boundary. */
 void poly_tobytes(uint8_t out[NTRUPLUS_POLYBYTES], const poly *a);
-void poly_frombytes(poly *out,
-                    const uint8_t in[NTRUPLUS_POLYBYTES]);
+/*
+ * Decode every coefficient and return 1 iff any decoded 12-bit value is
+ * outside [0, NTRUPLUS_Q). The output is complete on both return paths.
+ */
+int poly_frombytes(poly *out,
+                   const uint8_t in[NTRUPLUS_POLYBYTES]);
 
 void poly_cbd1(poly *out, const uint8_t buf[NTRUPLUS_N / 4]);
 void poly_sotp_encode(poly *out, const uint8_t msg[NTRUPLUS_N / 8],
                       const uint8_t buf[NTRUPLUS_N / 4]);
 int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
                      const uint8_t buf[NTRUPLUS_N / 4]);
-
-void poly_ntt(poly *out, const poly *in);
 
 /*
  * The production decapsulation pair keeps one R^-1 factor after basemul and

@@ -8,18 +8,23 @@
 #include "randombytes.h"
 #include "internal/decap_verify.h"
 #include "internal/keygen.h"
+#include "internal/ntt.h"
+#include "internal/secure_clear.h"
 
 typedef gt_cq_poly keygen_poly;
 
 #include "NO_CE/fips202.h"
 
 static inline void encap_basemul_add_tobytes(uint8_t *ct, const poly *h,
-                                             const poly *r, const poly *m)
+                                             const poly *r, poly *m)
 {
-    poly c;
-
-    poly_basemul_add(&c, h, r, m);
-    poly_tobytes(ct, &c);
+    /*
+     * The encap-only assembly contract loads each 64-byte m block before
+     * overwriting that same output block.  Reuse m as the ciphertext
+     * polynomial to avoid a separate 1,536-byte stack object and clear.
+     */
+    poly_basemul_add(m, h, r, m);
+    poly_tobytes(ct, m);
 }
 
 static inline void keygen_ntt_mul3_add1(keygen_poly *out)
@@ -74,13 +79,16 @@ static inline int genf_derand(keygen_poly *f,
                               const uint8_t *coins)
 {
     uint8_t buf[NTRUPLUS_N / 4];
+    int result;
 
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(&f->storage, buf);
     keygen_ntt_mul3_add1(f);
 
-    return gt_keygen_baseinv_cq_to_cq_scaled_r(finv, f);
+    result = gt_keygen_baseinv_cq_to_cq_scaled_r(finv, f);
+    gt_secure_clear(buf, sizeof buf);
+    return result;
 }
 
 /*************************************************
@@ -101,13 +109,16 @@ static inline int geng_derand(keygen_poly *g,
                               const uint8_t *coins)
 {
     uint8_t buf[NTRUPLUS_N / 4];
+    int result;
 
     shake256(buf, sizeof buf, coins, 32);
 
     poly_cbd1(&g->storage, buf);
     keygen_ntt_mul3(g);
 
-    return gt_keygen_baseinv_cq_to_cq_scaled_r(ginv, g);
+    result = gt_keygen_baseinv_cq_to_cq_scaled_r(ginv, g);
+    gt_secure_clear(buf, sizeof buf);
+    return result;
 }
 
 /*************************************************
@@ -141,6 +152,8 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
     gt_keygen_tobytes_cq(sk, f);
     gt_keygen_tobytes_cq(sk + NTRUPLUS_POLYBYTES, &hinv);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
+    gt_secure_clear(&h, sizeof h);
+    gt_secure_clear(&hinv, sizeof hinv);
 }
 
 /*************************************************
@@ -165,15 +178,28 @@ int crypto_kem_keypair_internal(uint8_t *pk, uint8_t *sk)
     keygen_poly f, g;
     keygen_poly finv, ginv;
 
-    do {
+    for (;;) {
         randombytes(coins, sizeof coins);
-    } while (genf_derand(&f, &finv, coins));
+        if (!genf_derand(&f, &finv, coins))
+            break;
+        gt_secure_clear(&f, sizeof f);
+        gt_secure_clear(&finv, sizeof finv);
+    }
 
-    do {
+    for (;;) {
         randombytes(coins, sizeof coins);
-    } while (geng_derand(&g, &ginv, coins));
+        if (!geng_derand(&g, &ginv, coins))
+            break;
+        gt_secure_clear(&g, sizeof g);
+        gt_secure_clear(&ginv, sizeof ginv);
+    }
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
+    gt_secure_clear(coins, sizeof coins);
+    gt_secure_clear(&f, sizeof f);
+    gt_secure_clear(&g, sizeof g);
+    gt_secure_clear(&finv, sizeof finv);
+    gt_secure_clear(&ginv, sizeof ginv);
     return 0;
 }
 
@@ -202,6 +228,13 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 
     poly h, r, m;
 
+    if (poly_frombytes(&h, pk)) {
+        gt_secure_clear(ct, NTRUPLUS_CIPHERTEXTBYTES);
+        gt_secure_clear(ss, NTRUPLUS_SSBYTES);
+        gt_secure_clear(&h, sizeof h);
+        return 1;
+    }
+
     for (size_t i = 0; i < NTRUPLUS_N / 8; i++)
         msg[i] = coins[i];
 
@@ -209,19 +242,24 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     hash_h(buf1, msg);
 
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
-    poly_ntt(&r, &r);
+    gt_internal_poly_ntt_loose(&r, &r);
 
-    poly_tobytes(buf2, &r);
+    gt_internal_poly_tobytes_from_loose(buf2, &r);
     hash_g(buf2, buf2);
     poly_sotp_encode(&m, msg, buf2);
-    poly_ntt(&m, &m);
+    gt_internal_poly_ntt_loose(&m, &m);
 
-    poly_frombytes(&h, pk);
     encap_basemul_add_tobytes(ct, &h, &r, &m);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf1[i];
 
+    gt_secure_clear(msg, sizeof msg);
+    gt_secure_clear(buf1, sizeof buf1);
+    gt_secure_clear(buf2, sizeof buf2);
+    gt_secure_clear(&h, sizeof h);
+    gt_secure_clear(&r, sizeof r);
+    gt_secure_clear(&m, sizeof m);
     return 0;
 }
 
@@ -244,9 +282,12 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 int crypto_kem_enc_internal(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
 {
     uint8_t coins[NTRUPLUS_N / 8];
+    int result;
 
     randombytes(coins, sizeof coins);
-    return crypto_kem_enc_derand(ct, ss, pk, coins);
+    result = crypto_kem_enc_derand(ct, ss, pk, coins);
+    gt_secure_clear(coins, sizeof coins);
+    return result;
 }
 
 /*************************************************
@@ -268,44 +309,64 @@ int crypto_kem_enc_internal(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
 int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
                             const uint8_t *sk)
 {
-	uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
-	uint8_t buf1[NTRUPLUS_POLYBYTES];
-	uint8_t buf2[NTRUPLUS_POLYBYTES];
-	uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
-
+    struct {
+        uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
+        uint8_t buf1[NTRUPLUS_POLYBYTES];
+        uint8_t buf2[NTRUPLUS_POLYBYTES];
+        poly c;
+        poly hinv;
+        union {
+            poly forward;
+            uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
+        } slot;
+        poly m_then_r;
+    } scratch;
+    poly *forward = &scratch.slot.forward;
+    poly *m_r = &scratch.m_then_r;
     int8_t fail;
 
-    poly c, f;
-    poly r1;
-    poly m1, m2;
+    /*
+     * Decode and validate ct/f in one 64-coefficient/two-group pipeline.
+     * ct is retained in Decap QSoA layout; packed f is consumed directly
+     * and is never materialized in the scratch object.
+     */
+    fail = (int8_t)gt_decap_checked_ct_f_basemul_scale64(
+        m_r, &scratch.c, ct, sk);
+    fail |= (int8_t)gt_decap_poly_frombytes(
+        &scratch.hinv, sk + NTRUPLUS_POLYBYTES);
+    if (fail) {
+        gt_secure_clear(ss, NTRUPLUS_SSBYTES);
+        goto cleanup;
+    }
 
-    poly_frombytes(&c, ct);
-    poly_frombytes(&f, sk);
+    gt_decap_poly_invntt_scale(m_r);
+    poly_crepmod3(m_r, m_r);
 
-    /* Production poly API: basemul leaves R^-1; invntt absorbs it. */
-    poly_basemul(&m1, &c, &f);
-    poly_invntt(&m1, &m1);
-    poly_crepmod3(&m1, &m1);
+    gt_decap_poly_ntt(forward, m_r);
+    gt_decap_poly_sub(&scratch.c, &scratch.c, forward);
+    gt_decap_poly_basemul(
+        forward, &scratch.c, &scratch.hinv);
+    gt_decap_poly_tobytes(scratch.buf1, forward);
 
-    poly_ntt(&m2, &m1);
-    poly_sub(&c, &c, &m2);
-    gt_decap_verify_to_bytes(buf1, &c, sk + NTRUPLUS_POLYBYTES);
-    hash_g(buf2, buf1);
-    fail = poly_sotp_decode(msg, &m1, buf2);
+    hash_g(scratch.buf2, scratch.buf1);
+    fail = (int8_t)poly_sotp_decode(scratch.msg, m_r, scratch.buf2);
 
     for (size_t i = 0; i < NTRUPLUS_SYMBYTES; i++)
-        msg[i + NTRUPLUS_N / 8] = sk[i + 2 * NTRUPLUS_POLYBYTES];
+        scratch.msg[i + NTRUPLUS_N / 8] =
+            sk[i + 2 * NTRUPLUS_POLYBYTES];
 
-    hash_h(buf3, msg);
+    hash_h(scratch.slot.buf3, scratch.msg);
 
-    poly_cbd1(&r1, buf3 + NTRUPLUS_SSBYTES);
-    poly_ntt(&r1, &r1);
-    poly_tobytes(buf2, &r1);
+    poly_cbd1(m_r, scratch.slot.buf3 + NTRUPLUS_SSBYTES);
+    gt_decap_poly_ntt(&scratch.c, m_r);
+    gt_decap_poly_tobytes(scratch.buf2, &scratch.c);
 
-    fail |= verify(buf1, buf2, NTRUPLUS_POLYBYTES);
+    fail |= verify(scratch.buf1, scratch.buf2, NTRUPLUS_POLYBYTES);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
-        ss[i] = buf3[i] & ~(-fail);
+        ss[i] = scratch.slot.buf3[i] & ~(-fail);
 
+cleanup:
+    gt_secure_clear(&scratch, sizeof scratch);
     return fail;
 }

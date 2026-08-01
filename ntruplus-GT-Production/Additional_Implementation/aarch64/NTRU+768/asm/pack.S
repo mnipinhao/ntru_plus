@@ -1,3 +1,7 @@
+/* Production Wave 8 dual-entry canonical pack. */
+/* Promoted from production_pack_sha256=03d69c69946f5e55f5c6b1f13bf1a62f43f2b1453b246c8dc8f5f39b2482b346. */
+/* poly_tobytes keeps the reduced fast path; the Wave 8 entry */
+/* canonicalizes arbitrary signed-16 block-major representatives. */
 // Production compact shared-core canonical pack.
 .text
 
@@ -7,8 +11,19 @@
 #ifndef __APPLE__
 .type poly_tobytes, %function
 #endif
+.global gt_internal_poly_tobytes_from_loose
+.global _gt_internal_poly_tobytes_from_loose
+#ifndef __APPLE__
+.type gt_internal_poly_tobytes_from_loose, %function
+#endif
+gt_internal_poly_tobytes_from_loose:
+_gt_internal_poly_tobytes_from_loose:
+    mov w3, #1
+    b .Lwave8_dual_pack_entry
 poly_tobytes:
 _poly_tobytes:
+    mov w3, #0
+.Lwave8_dual_pack_entry:
     sub sp, sp, #80
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]
@@ -334,11 +349,44 @@ _poly_tobytes:
     ldp d10, d11, [sp, #16]
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
+    /* P0-B: erase the complete handwritten spill frame. */
+    movi v0.16b, #0
+    stp q0, q0, [sp, #0]
+    stp q0, q0, [sp, #32]
+    str q0, [sp, #64]
     add sp, sp, #80
     ret
 
 .p2align 4
 .Lcanonical_pack_compact_core:
+    /* WAVE8 v2: skip this block for already-reduced consumers. */
+    cbz w3, .Lwave8_pack_already_reduced
+    ldr q30, [x2, #16]
+    sqdmulh v31.8H, v1.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v1.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v2.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v2.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v3.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v3.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v4.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v4.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v5.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v5.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v6.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v6.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v7.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v7.8H, v31.8H, v0.8H
+    sqdmulh v31.8H, v8.8H, v30.8H
+    srshr v31.8H, v31.8H, #11
+    mls v8.8H, v31.8H, v0.8H
+.Lwave8_pack_already_reduced:
     sshr v31.8H, v6.8H, #15
     sshr v19.8H, v5.8H, #15
     and v23.16B, v31.16B, v0.16B
@@ -429,6 +477,9 @@ _poly_tobytes:
 .Lcanonical_pack_compact_q:
     .hword 3457, 3457, 3457, 3457
     .hword 3457, 3457, 3457, 3457
+    /* Barrett quotient constant, one value per halfword lane. */
+    .hword 19412, 19412, 19412, 19412
+    .hword 19412, 19412, 19412, 19412
 #ifndef __APPLE__
 .size poly_tobytes, .-poly_tobytes
 #endif

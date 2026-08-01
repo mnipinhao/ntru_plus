@@ -1,4 +1,4 @@
-// Generated U1 full canonical unpack; GT production path.
+// Generated checked U1 canonical unpack from clean GT Production; strategy=globalmax.
 .text
 .p2align 4
 .global poly_frombytes
@@ -12,6 +12,12 @@ _poly_frombytes:
     stp d14, d15, [sp, #48]
     adr x2, .Lcanonical_unpack_candidate_mask
     ldr q0, [x2]
+    mov w10, #3457
+    dup v8.8h, w10
+    movi v7.16b, #0
+    movi v22.16b, #0
+    movi v24.16b, #0
+    movi v25.16b, #0
     // canonical blocks 0..15
     ld1 {v14.8H, v15.8H, v16.8H}, [x1], #48
     ld1 {v18.8H, v19.8H, v20.8H}, [x1], #48
@@ -55,6 +61,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -146,6 +161,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -237,6 +261,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -328,6 +361,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -419,6 +461,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -510,6 +561,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -601,6 +661,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -692,6 +761,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -783,6 +861,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -874,6 +961,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -965,6 +1061,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -1056,6 +1161,15 @@ _poly_frombytes:
     and v15.16B, v12.16B, v0.16B
     and v10.16B, v9.16B, v0.16B
     and v3.16B, v3.16B, v0.16B
+    // Accumulate four independent unsigned maxima.
+    umax v7.8h, v7.8h, v6.8h
+    umax v7.8h, v7.8h, v23.8h
+    umax v22.8h, v22.8h, v20.8h
+    umax v22.8h, v22.8h, v31.8h
+    umax v24.8h, v24.8h, v13.8h
+    umax v24.8h, v24.8h, v15.8h
+    umax v25.8h, v25.8h, v10.8h
+    umax v25.8h, v25.8h, v3.8h
     trn1 v21.8H, v6.8H, v20.8H
     trn1 v2.8H, v23.8H, v15.8H
     trn1 v4.8H, v3.8H, v31.8H
@@ -1104,10 +1218,22 @@ _poly_frombytes:
     str x9, [x0, #1128]
     umov x9, v31.d[1]
     str x9, [x0, #768]
+    umax v7.8h, v7.8h, v22.8h
+    umax v24.8h, v24.8h, v25.8h
+    umax v7.8h, v7.8h, v24.8h
+    cmhs v7.8h, v7.8h, v8.8h
+    umaxv h22, v7.8h
+    umov w0, v22.h[0]
+    cmp w0, #0
+    cset w0, ne
     ldp d8, d9, [sp, #0]
     ldp d10, d11, [sp, #16]
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
+    /* P0-B: erase the complete handwritten spill frame. */
+    movi v0.16b, #0
+    stp q0, q0, [sp, #0]
+    stp q0, q0, [sp, #32]
     add sp, sp, #64
     ret
 

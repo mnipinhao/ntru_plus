@@ -6,9 +6,10 @@ maintenance reference, not a performance comparison.
 
 For the Good-Thomas decomposition, optimization rationale, KPQC-final
 comparison, and measured cycle reductions, see
-[`OPTIMIZATION-SUMMARY.md`](OPTIMIZATION-SUMMARY.md). For the complete
+[`OPTIMIZATION-SUMMARY.md`](../../../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md).
+For the complete
 measurement method and raw component results, see
-[`BENCHMARKS.md`](BENCHMARKS.md).
+[`BENCHMARKS.md`](../../../../../bench/aarch64/gt-production/reports/BENCHMARKS.md).
 
 ## 1. Release Scope
 
@@ -145,6 +146,18 @@ The three inverse Stage45 rows share one internal row helper. This changes only
 the call structure and linked text size; row arithmetic, input order, and
 output representation are unchanged.
 
+### 6.1 Encapsulation exact-alias contract
+
+The encapsulation-only `poly_basemul_add` call passes the message polynomial as
+both its additive input and output.  The selected assembly processes one
+64-byte block at a time and loads the complete additive-input block before
+storing that output block, so this exact alias is part of the fixed production
+contract.  The result is consumed immediately by `poly_tobytes`.
+
+This alias is not a general public overlap guarantee: callers must not infer
+that `poly_basemul_add` supports partial overlap or output aliasing with either
+multiplicative input.
+
 ## 7. Serialization Boundary
 
 `poly_tobytes` and `poly_frombytes` implement canonical NTRU+ byte order while
@@ -203,3 +216,46 @@ callable.
 Validated toolchain families are GNU-compatible AArch64 GCC on Linux and Apple
 Clang on macOS. Performance claims remain tied to the exact Linux compiler
 reported by the benchmark summary.
+
+## 10. Secret-Lifetime and Zeroization Contract
+
+The production KEM explicitly clears secret-bearing automatic and heap
+storage before the owning scope returns or releases it:
+
+- key-generation samples, inverses, numerator scratch, and the hierarchical
+  base-inversion denominator tree
+- encapsulation and decapsulation messages, hash images, coins, and polynomial
+  temporaries
+- portable FIPS202 absorb buffers, squeeze buffers, stack states, and
+  allocated incremental contexts
+- handwritten NTT, inverse-NTT, pointwise, serialization, and base-inversion
+  spill frames
+
+`internal/secure_clear.h` selects a platform primitive when one is available
+and otherwise uses a volatile byte loop so the clear cannot be removed as a
+dead store. The public KEM wrappers preserve the return value and restored
+AAPCS64 callee-saved state, then erase their spill image and the remaining
+caller-saved general-purpose and SIMD temporaries. Private assembly leaves
+clear their complete spill frames or their secret exponent/product registers
+at the point where the result has been committed.
+
+The policy has two release gates:
+
+```text
+make zeroization-source-check
+make zeroization
+```
+
+The first checks that every audited source boundary still contains its
+required clear. The second builds with `GT_SECURE_CLEAR_AUDIT_HOOK`, runs a
+complete keypair/encapsulation/decapsulation flow, and verifies that the
+portable C clear primitive observes zero bytes after every call and sees the
+large key-generation, FIPS202-state, and domain-separated hash buffers.
+Assembly clearing is checked statically because the portable hook cannot
+intercept stores emitted directly by handwritten assembly.
+
+This is a best-effort lifetime policy for architecturally visible memory and
+register state. It does not claim erasure of compiler-created copies,
+microarchitectural state, caches, or swap. Any source, compiler, ABI, or stack
+layout change requires rerunning `make check` and reviewing the static
+coverage list in `scripts/check_zeroization.py`.

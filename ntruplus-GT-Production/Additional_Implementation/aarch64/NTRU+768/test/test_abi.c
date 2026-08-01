@@ -9,7 +9,7 @@
 
 typedef uint64_t (*abi_sentinel_fn)(void *, void *, void *, void *);
 
-uint64_t abi_poly_ntt(void *, void *, void *, void *);
+uint64_t abi_internal_poly_ntt_loose(void *, void *, void *, void *);
 uint64_t abi_poly_invntt(void *, void *, void *, void *);
 uint64_t abi_poly_basemul(void *, void *, void *, void *);
 uint64_t abi_poly_basemul_add(void *, void *, void *, void *);
@@ -29,6 +29,13 @@ uint64_t abi_decap_verify(void *, void *, void *, void *);
 uint64_t abi_qsoa_frombytes(void *, void *, void *, void *);
 uint64_t abi_decap_pointwise(void *, void *, void *, void *);
 uint64_t abi_qsoa_tobytes(void *, void *, void *, void *);
+uint64_t abi_decap_packed64(void *, void *, void *, void *);
+uint64_t abi_decap_frombytes(void *, void *, void *, void *);
+uint64_t abi_decap_tobytes(void *, void *, void *, void *);
+uint64_t abi_decap_basemul(void *, void *, void *, void *);
+uint64_t abi_decap_invntt(void *, void *, void *, void *);
+uint64_t abi_decap_sub(void *, void *, void *, void *);
+uint64_t abi_decap_ntt(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_keypair(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_enc(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_dec(void *, void *, void *, void *);
@@ -80,7 +87,8 @@ int main(void)
          ct, ss_enc, pk, NULL, 1},
         {"crypto_kem_dec", abi_crypto_kem_dec,
          ss_dec, ct, sk, NULL, 1},
-        {"poly_ntt", abi_poly_ntt, &a, &b, NULL, NULL, 1},
+        {"internal_ntt_loose", abi_internal_poly_ntt_loose,
+         &a, &b, NULL, NULL, 1},
         {"poly_invntt", abi_poly_invntt, &a, &b, NULL, NULL, 1},
         {"poly_basemul", abi_poly_basemul, &a, &b, &c, NULL, 1},
         {"poly_basemul_add", abi_poly_basemul_add, &a, &b, &c, &d, 1},
@@ -101,14 +109,28 @@ int main(void)
          &cq_c, &cq_a, &cq_b, NULL, 1},
         {"keygen_tobytes", abi_keygen_tobytes,
          bytes_a, &cq_c, NULL, NULL, 1},
-        {"decap_verify", abi_decap_verify,
-         bytes_b, &a, bytes_a, NULL, 0},
+        {"decap_verify_predecoded", abi_decap_verify,
+         bytes_b, &a, &b, NULL, 0},
         {"qsoa_frombytes", abi_qsoa_frombytes,
          &b, bytes_a, NULL, NULL, 0},
         {"decap_pointwise", abi_decap_pointwise,
          &c, &a, &b, NULL, 1},
         {"qsoa_tobytes", abi_qsoa_tobytes,
          bytes_b, &c, NULL, NULL, 0},
+        {"decap_packed64", abi_decap_packed64,
+         &a, &b, bytes_a, bytes_b, 1},
+        {"decap_frombytes", abi_decap_frombytes,
+         &a, bytes_a, NULL, NULL, 1},
+        {"decap_tobytes", abi_decap_tobytes,
+         bytes_b, &a, NULL, NULL, 1},
+        {"decap_basemul", abi_decap_basemul,
+         &a, &b, &c, NULL, 1},
+        {"decap_invntt", abi_decap_invntt,
+         &a, NULL, NULL, NULL, 1},
+        {"decap_sub", abi_decap_sub,
+         &a, &b, &c, NULL, 1},
+        {"decap_ntt", abi_decap_ntt,
+         &a, &b, NULL, NULL, 1},
     };
 
     for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {

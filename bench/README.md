@@ -6,6 +6,14 @@
 2. Cycle benchmarking for the shared KEM/poly APIs
 3. Auto-generated comparison reports under `bench/results/`
 
+The GT-Production-specific AArch64 benchmark companion and its curated
+historical reports live under
+[`aarch64/gt-production/`](aarch64/gt-production/). Keeping them here leaves
+the publishable implementation tree source-only.
+
+The complete Official main / KPQC Final / GT Production study starts at
+[`aarch64/gt-production/reports/official-main-study/README.md`](aarch64/gt-production/reports/official-main-study/README.md).
+
 The important change is that the compare flow no longer hardcodes one "baseline" tree and one "optimized" tree. It now accepts any two implementation directories that already ship a working `Makefile`, such as:
 
 - `../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768`
@@ -114,3 +122,10 @@ The February 2026 C profilers are preserved under `legacy/` for provenance but
 are no longer active Makefile targets. They duplicate the portable comparison
 flow, and one of them embeds machine-specific paths. Use `bench_impls.py`
 through the commands above for current comparisons.
+
+## GT-Production AArch64 companion
+
+[`aarch64/gt-production/`](aarch64/gt-production/) contains the reproducible
+full-KEM harness, Pi 5 result archives, the KPQC-final optimization summary,
+and the Official-main adoption assessment. It is intentionally separate from
+`ntruplus-GT-Production/Additional_Implementation/aarch64/`.

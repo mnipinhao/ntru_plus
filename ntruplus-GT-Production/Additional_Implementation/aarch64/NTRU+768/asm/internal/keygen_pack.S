@@ -516,6 +516,11 @@ _gt_keygen_tobytes_cq:
     ldp d10, d11, [sp, #16]
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
+    /* P0-B: erase the complete handwritten spill frame. */
+    movi v0.16b, #0
+    stp q0, q0, [sp, #0]
+    stp q0, q0, [sp, #32]
+    str q0, [sp, #64]
     add sp, sp, #80
     ret
 

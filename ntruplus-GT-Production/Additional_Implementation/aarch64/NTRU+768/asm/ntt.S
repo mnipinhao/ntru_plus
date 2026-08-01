@@ -1,3 +1,7 @@
+/* Production Wave 8 common-loose Forward NTT. */
+/* Promoted from production_ntt_sha256=6f874aa58557ba12ed20f36bc3e3bb8c8e642c2f1d70c17bed13453510ecacbc. */
+/* The sole internal generic NTT endpoint stores [-27548,27548]. */
+/* The keygen Direct-CQ endpoint retains its production reductions. */
 /* Production dual endpoint for generic block-major and keygen CQ. */
 /* production_sha256=dcd05579c140e07533f311fa3550bf9e80753bfaf1b7fa342cdafbc48bb21497 */
 /* direct_cq_sha256=c8fdb1d61c0c226df0a9493b13c97b3b876284993c3b7ecf9aec1b8d3007ea43 */
@@ -9,17 +13,17 @@
 .align 4
 .equ STACK_LOC_0, 0
 
-.global poly_ntt
-.global _poly_ntt
-.global gt_block_major_poly_ntt
-.global _gt_block_major_poly_ntt
+.global gt_internal_poly_ntt_loose
+.global _gt_internal_poly_ntt_loose
+.global gt_internal_block_major_poly_ntt_loose
+.global _gt_internal_block_major_poly_ntt_loose
 #ifndef __APPLE__
-.type poly_ntt, %function
+.type gt_internal_poly_ntt_loose, %function
 #endif
-poly_ntt:
-_poly_ntt:
-gt_block_major_poly_ntt:
-_gt_block_major_poly_ntt:
+gt_internal_poly_ntt_loose:
+_gt_internal_poly_ntt_loose:
+gt_internal_block_major_poly_ntt_loose:
+_gt_internal_block_major_poly_ntt_loose:
     mov w2, #0
     b .Lgt_shared_core_entry
 
@@ -1643,74 +1647,74 @@ _gt_keygen_poly_ntt_to_cq:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-        sqdmulh v5.8H, v17.8H, v0.H[1]
-        srshr v18.8H, v18.8H, #11
-        mls v3.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-        sqdmulh v22.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-        mls v17.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-        srshr v3.8H, v22.8H, #11
+    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-        sqdmulh v22.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #STACK_LOC_0]
         str x6, [sp, #STACK_LOC_0]
-        srshr v22.8H, v22.8H, #11
-        sqdmulh v25.8H, v18.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-        srshr v8.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #STACK_LOC_0]
-        sqdmulh v25.8H, v26.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #STACK_LOC_0]
         str d17, [x11]
-        sqdmulh v27.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-        sqdmulh v5.8H, v1.8H, v0.H[1]
-        srshr v27.8H, v27.8H, #11
-        mls v18.8H, v8.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
+    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #STACK_LOC_0]
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-        srshr v17.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-        mls v2.8H, v27.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #STACK_LOC_0]
-        mls v14.8H, v22.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-        mls v1.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-        mls v26.8H, v17.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #STACK_LOC_0]
         str x4, [sp, #STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-        mls v4.8H, v3.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -1797,25 +1801,25 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-        sqdmulh v18.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-        sqdmulh v6.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-        srshr v4.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-        srshr v6.8H, v6.8H, #11
-        mls v17.8H, v4.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-        mls v2.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-        sqdmulh v6.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -1823,20 +1827,20 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-        sqdmulh v10.8H, v1.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v9.8H, v6.8H, v0.H[0]
-        srshr v6.8H, v10.8H, #11
-        mls v1.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
+    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-        sqdmulh v8.8H, v6.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -1849,29 +1853,29 @@ _gt_keygen_poly_ntt_to_cq:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v2.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-        sqdmulh v8.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-        mls v6.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-        sqdmulh v2.8H, v5.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-        mls v4.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-        mls v3.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
-        mls v5.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -1971,7 +1975,7 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-        sqdmulh v14.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -1981,28 +1985,28 @@ _gt_keygen_poly_ntt_to_cq:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-        srshr v28.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-        sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-        mls v19.8H, v28.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-        srshr v26.8H, v14.8H, #11
-        sqdmulh v14.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-        mls v9.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-        sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-        srshr v21.8H, v14.8H, #11
-        sqdmulh v18.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -2010,35 +2014,35 @@ _gt_keygen_poly_ntt_to_cq:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-        srshr v14.8H, v6.8H, #11
-        mls v10.8H, v21.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        mls v19.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-        sqdmulh v18.8H, v11.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-        sqdmulh v30.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-        srshr v6.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-        sqdmulh v18.8H, v28.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-        mls v11.8H, v6.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        srshr v18.8H, v30.8H, #11
+    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -2046,12 +2050,12 @@ _gt_keygen_poly_ntt_to_cq:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v14.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-        mls v28.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -2156,75 +2160,75 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-        sqdmulh v26.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-        srshr v15.8H, v26.8H, #11
-        sqdmulh v6.8H, v19.8H, v0.H[1]
-        sqdmulh v14.8H, v9.8H, v0.H[1]
-        sqdmulh v3.8H, v10.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
-        mls v2.8H, v15.8H, v0.H[0]
-        srshr v14.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-        srshr v18.8H, v3.8H, #11
-        mls v19.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-        mls v9.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-        mls v10.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-        sqdmulh v6.8H, v12.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-        sqdmulh v24.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v26.8H, v1.8H, v0.H[1]
-        srshr v24.8H, v24.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-        mls v12.8H, v6.8H, v0.H[0]
-        srshr v30.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-        mls v14.8H, v24.8H, v0.H[0]
-        srshr v26.8H, v26.8H, #11
+    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-        mls v3.8H, v30.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -2529,74 +2533,74 @@ _gt_keygen_poly_ntt_to_cq:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-        sqdmulh v5.8H, v17.8H, v0.H[1]
-        srshr v18.8H, v18.8H, #11
-        mls v3.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-        sqdmulh v22.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-        mls v17.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-        srshr v3.8H, v22.8H, #11
+    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-        sqdmulh v22.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #STACK_LOC_0]
         str x6, [sp, #STACK_LOC_0]
-        srshr v22.8H, v22.8H, #11
-        sqdmulh v25.8H, v18.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-        srshr v8.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #STACK_LOC_0]
-        sqdmulh v25.8H, v26.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #STACK_LOC_0]
         str d17, [x11]
-        sqdmulh v27.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-        sqdmulh v5.8H, v1.8H, v0.H[1]
-        srshr v27.8H, v27.8H, #11
-        mls v18.8H, v8.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
+    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #STACK_LOC_0]
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-        srshr v17.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-        mls v2.8H, v27.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #STACK_LOC_0]
-        mls v14.8H, v22.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-        mls v1.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-        mls v26.8H, v17.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #STACK_LOC_0]
         str x4, [sp, #STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-        mls v4.8H, v3.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -2683,25 +2687,25 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-        sqdmulh v18.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-        sqdmulh v6.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-        srshr v4.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-        srshr v6.8H, v6.8H, #11
-        mls v17.8H, v4.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-        mls v2.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-        sqdmulh v6.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -2709,20 +2713,20 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-        sqdmulh v10.8H, v1.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v9.8H, v6.8H, v0.H[0]
-        srshr v6.8H, v10.8H, #11
-        mls v1.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
+    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-        sqdmulh v8.8H, v6.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -2735,29 +2739,29 @@ _gt_keygen_poly_ntt_to_cq:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v2.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-        sqdmulh v8.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-        mls v6.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-        sqdmulh v2.8H, v5.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-        mls v4.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-        mls v3.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
-        mls v5.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -2857,7 +2861,7 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-        sqdmulh v14.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -2867,28 +2871,28 @@ _gt_keygen_poly_ntt_to_cq:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-        srshr v28.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-        sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-        mls v19.8H, v28.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-        srshr v26.8H, v14.8H, #11
-        sqdmulh v14.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-        mls v9.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-        sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-        srshr v21.8H, v14.8H, #11
-        sqdmulh v18.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -2896,35 +2900,35 @@ _gt_keygen_poly_ntt_to_cq:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-        srshr v14.8H, v6.8H, #11
-        mls v10.8H, v21.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        mls v19.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-        sqdmulh v18.8H, v11.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-        sqdmulh v30.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-        srshr v6.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-        sqdmulh v18.8H, v28.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-        mls v11.8H, v6.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        srshr v18.8H, v30.8H, #11
+    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -2932,12 +2936,12 @@ _gt_keygen_poly_ntt_to_cq:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v14.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-        mls v28.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -3042,75 +3046,75 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-        sqdmulh v26.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-        srshr v15.8H, v26.8H, #11
-        sqdmulh v6.8H, v19.8H, v0.H[1]
-        sqdmulh v14.8H, v9.8H, v0.H[1]
-        sqdmulh v3.8H, v10.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
-        mls v2.8H, v15.8H, v0.H[0]
-        srshr v14.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-        srshr v18.8H, v3.8H, #11
-        mls v19.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-        mls v9.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-        mls v10.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-        sqdmulh v6.8H, v12.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-        sqdmulh v24.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v26.8H, v1.8H, v0.H[1]
-        srshr v24.8H, v24.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-        mls v12.8H, v6.8H, v0.H[0]
-        srshr v30.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-        mls v14.8H, v24.8H, v0.H[0]
-        srshr v26.8H, v26.8H, #11
+    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-        mls v3.8H, v30.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -3415,74 +3419,74 @@ _gt_keygen_poly_ntt_to_cq:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-        sqdmulh v5.8H, v17.8H, v0.H[1]
-        srshr v18.8H, v18.8H, #11
-        mls v3.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-        sqdmulh v22.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-        mls v17.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-        srshr v3.8H, v22.8H, #11
+    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-        sqdmulh v22.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #STACK_LOC_0]
         str x6, [sp, #STACK_LOC_0]
-        srshr v22.8H, v22.8H, #11
-        sqdmulh v25.8H, v18.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-        srshr v8.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #STACK_LOC_0]
-        sqdmulh v25.8H, v26.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #STACK_LOC_0]
         str d17, [x11]
-        sqdmulh v27.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-        sqdmulh v5.8H, v1.8H, v0.H[1]
-        srshr v27.8H, v27.8H, #11
-        mls v18.8H, v8.8H, v0.H[0]
+    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
+    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #STACK_LOC_0]
-        srshr v5.8H, v5.8H, #11
+    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-        srshr v17.8H, v25.8H, #11
+    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-        mls v2.8H, v27.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #STACK_LOC_0]
-        mls v14.8H, v22.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-        mls v1.8H, v5.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-        mls v26.8H, v17.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #STACK_LOC_0]
         str x4, [sp, #STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-        mls v4.8H, v3.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -3569,25 +3573,25 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-        sqdmulh v18.8H, v17.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-        sqdmulh v6.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-        srshr v4.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-        srshr v6.8H, v6.8H, #11
-        mls v17.8H, v4.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-        mls v2.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-        sqdmulh v6.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -3595,20 +3599,20 @@ _gt_keygen_poly_ntt_to_cq:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-        sqdmulh v10.8H, v1.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v9.8H, v6.8H, v0.H[0]
-        srshr v6.8H, v10.8H, #11
-        mls v1.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
+    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-        sqdmulh v8.8H, v6.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -3621,29 +3625,29 @@ _gt_keygen_poly_ntt_to_cq:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v2.8H, v4.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-        sqdmulh v8.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-        mls v6.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-        sqdmulh v2.8H, v5.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-        mls v4.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v8.8H, #11
+    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-        mls v3.8H, v1.8H, v0.H[0]
-        srshr v1.8H, v2.8H, #11
-        mls v5.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
+    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -3743,7 +3747,7 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-        sqdmulh v14.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -3753,28 +3757,28 @@ _gt_keygen_poly_ntt_to_cq:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-        srshr v28.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-        sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-        mls v19.8H, v28.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-        srshr v26.8H, v14.8H, #11
-        sqdmulh v14.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-        mls v9.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-        sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-        srshr v21.8H, v14.8H, #11
-        sqdmulh v18.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -3782,35 +3786,35 @@ _gt_keygen_poly_ntt_to_cq:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-        srshr v14.8H, v6.8H, #11
-        mls v10.8H, v21.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        mls v19.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-        sqdmulh v18.8H, v11.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-        sqdmulh v30.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-        srshr v6.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-        sqdmulh v18.8H, v28.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-        mls v11.8H, v6.8H, v0.H[0]
-        srshr v26.8H, v18.8H, #11
-        srshr v18.8H, v30.8H, #11
+    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
+    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -3818,12 +3822,12 @@ _gt_keygen_poly_ntt_to_cq:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        mls v14.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-        mls v28.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -3928,75 +3932,75 @@ _gt_keygen_poly_ntt_to_cq:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-        sqdmulh v26.8H, v2.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-        srshr v15.8H, v26.8H, #11
-        sqdmulh v6.8H, v19.8H, v0.H[1]
-        sqdmulh v14.8H, v9.8H, v0.H[1]
-        sqdmulh v3.8H, v10.8H, v0.H[1]
-        srshr v6.8H, v6.8H, #11
-        mls v2.8H, v15.8H, v0.H[0]
-        srshr v14.8H, v14.8H, #11
+    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-        srshr v18.8H, v3.8H, #11
-        mls v19.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
+    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-        mls v9.8H, v14.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-        mls v10.8H, v18.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-        sqdmulh v6.8H, v12.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-        sqdmulh v24.8H, v14.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-        sqdmulh v18.8H, v3.8H, v0.H[1]
+    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-        srshr v6.8H, v6.8H, #11
+    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-        sqdmulh v26.8H, v1.8H, v0.H[1]
-        srshr v24.8H, v24.8H, #11
+    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
+    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-        mls v12.8H, v6.8H, v0.H[0]
-        srshr v30.8H, v18.8H, #11
+    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-        mls v14.8H, v24.8H, v0.H[0]
-        srshr v26.8H, v26.8H, #11
+    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
+    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-        mls v3.8H, v30.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-        mls v1.8H, v26.8H, v0.H[0]
+    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -6781,15 +6785,23 @@ _gt_keygen_poly_ntt_to_cq:
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
+    /* P0-B: erase the complete handwritten spill frame. */
+    movi v0.16b, #0
+    mov x9, sp
+    mov x10, #106
+.Lp0b_clear_1696:
+    str q0, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lp0b_clear_1696
     add sp, sp, #1696
     ret
 .Lgt_shared_core_end:
 #ifndef __APPLE__
-.size poly_ntt, .Lgt_shared_core_end-poly_ntt
+.size gt_internal_poly_ntt_loose, .Lgt_shared_core_end-gt_internal_poly_ntt_loose
 .size gt_keygen_poly_ntt_to_cq, .Lgt_shared_core_end-gt_keygen_poly_ntt_to_cq
 #endif
-.global poly_ntt_end
-poly_ntt_end:
+.global gt_internal_poly_ntt_loose_end
+gt_internal_poly_ntt_loose_end:
 
 /* Generated by experiments/forward_ntt_phase123_u01/generate_u01_block_first_artifacts.py. */
 /* Do not edit by hand. */

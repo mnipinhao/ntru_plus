@@ -88,6 +88,7 @@ _support_loop_triple:
  subs x8, x8, #192
  b.ne _support_loop_triple
  ret
+
 .global poly_crepmod3
 .global _poly_crepmod3
 poly_crepmod3:
@@ -127,8 +128,17 @@ _support_loop_crepmod3:
 .global _qsoa_frombytes
 qsoa_frombytes:
 _qsoa_frombytes:
+ sub sp, sp, #64
+ stp d8, d9, [sp, #0]
+ stp d10, d11, [sp, #16]
+ stp d12, d13, [sp, #32]
+ stp d14, d15, [sp, #48]
  adr x2, support_const_mask_0fff
  ldr q0, [x2]
+ mov w8, #3457
+ dup v1.8h, w8
+ movi v3.16b, #0
+ movi v11.16b, #0
  mov x8, #1536
 
 .align 2
@@ -170,6 +180,10 @@ _support_loop_frombytes:
         and v27.16B, v5.16B, v0.16B
         shl v22.8H, v4.8H, #4
         and v25.16B, v19.16B, v0.16B
+        umax v3.8h, v3.8h, v24.8h
+        umax v3.8h, v3.8h, v25.8h
+        umax v3.8h, v3.8h, v26.8h
+        umax v3.8h, v3.8h, v27.8h
         shl v5.8H, v15.8H, #8
         trn2 v29.8H, v23.8H, v21.8H
         ushr v13.8H, v15.8H, #4
@@ -182,10 +196,25 @@ _support_loop_frombytes:
         and v16.16B, v6.16B, v0.16B
         and v17.16B, v13.16B, v0.16B
         and v15.16B, v30.16B, v0.16B
+        umax v11.8h, v11.8h, v14.8h
+        umax v11.8h, v11.8h, v15.8h
+        umax v11.8h, v11.8h, v16.8h
+        umax v11.8h, v11.8h, v17.8h
         st1 {v14.8H, v15.8H, v16.8H, v17.8H}, [x0], #64
 
  subs x8, x8, #128
  b.ne _support_loop_frombytes
+ umax v3.8h, v3.8h, v11.8h
+ cmhs v3.8h, v3.8h, v1.8h
+ umaxv h7, v3.8h
+ umov w0, v7.h[0]
+ cmp w0, #0
+ cset w0, ne
+ ldp d8, d9, [sp, #0]
+ ldp d10, d11, [sp, #16]
+ ldp d12, d13, [sp, #32]
+ ldp d14, d15, [sp, #48]
+ add sp, sp, #64
  ret
 
 .global qsoa_tobytes

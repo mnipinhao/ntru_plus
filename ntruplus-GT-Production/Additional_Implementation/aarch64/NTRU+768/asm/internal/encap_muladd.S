@@ -257,6 +257,10 @@ Lpoly_basemul_add_loop:
  ldp d12, d13, [sp, #32]
  ldp d10, d11, [sp, #16]
  ldp d8, d9, [sp, #0]
+    /* P0-B: erase the complete handwritten spill frame. */
+    movi v0.16b, #0
+    stp q0, q0, [sp, #0]
+    stp q0, q0, [sp, #32]
  add sp, sp, #64
  ret
 
