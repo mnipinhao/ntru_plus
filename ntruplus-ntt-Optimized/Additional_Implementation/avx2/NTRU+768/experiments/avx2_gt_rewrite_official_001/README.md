@@ -9,6 +9,15 @@ B1 forward/inverse accounts for only 36,778 caller-weighted cycles, while at
 least 95,420 cycles must be removed. No Round 2 assembly was started.
 `BACKEND=official` therefore remains the default and GT remains opt-in.
 
+Round 3 then closed the complete GT–Official differential. Its authoritative
+same-binary baseline is Official 90,611.830 cycles versus GT 186,228.970
+cycles. Direct native-layout costs plus one non-nested decapsulation region
+reconstruct the 95,617.140-cycle gap to 0.844%; both absolute closures are
+also below 5%. The largest coherent scope costs only 53,228.365 cycles even
+with an impossible zero floor, so it cannot meet the 70,000-cycle removable
+potential gate. The final Round 3 decision is `stop-gt-unsuitable-for-avx2`;
+no benchmark-only prototype or integration was authorized.
+
 Official Main revision `0c249d5828b90e8dd5de2c8405323d5ee2a0ce41`
 owns the KEM call graph, public API, `poly` type, in-place transform signatures,
 wire formats, scaling, failure behavior, and KAT contract. `ntruplus-KpqC-Final`
@@ -67,6 +76,13 @@ make CC=gcc bench-stages
 make CC=gcc bench-stages-pmu
 make CC=gcc bench-stages-pmu-summary
 make round2-amdahl
+make CC=gcc bench-kem
+make CC=gcc bench-kem-reversed
+make CC=gcc bench-call-counts
+make CC=gcc bench-symmetric
+make CC=gcc bench-round3-coarse-region
+make CC=gcc bench-symmetric-pmu
+make round3-attribution
 
 # Public KEM API, compile-time selection only:
 make CC=gcc BACKEND=official selected-kat-run
@@ -84,3 +100,9 @@ traffic, making that paired boundary infinitely fast still projects about
 150,083 cycles per caller triplet. See `proofs/round2-amdahl-gate.md` and
 `results/round2-amdahl.json`; a future performance round must use a broader
 optimization boundary rather than B1 assembly alone.
+
+Round 3 evidence is in `results/round3-baseline.yml`,
+`results/round3-attribution.json`, `results/round3-symmetric-pmu.json`, and
+`results/round3-decision.md`. Reversed link order changes the measured gap by
+7.267%, so the result is marked frontend-sensitive, but this remains below the
+10% attribution-inconclusive threshold.

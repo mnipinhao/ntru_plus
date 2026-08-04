@@ -1,0 +1,46 @@
+schema_version: 1
+baseline_id: round3-primary-20260804-cpu1-f059ceb
+authoritative_for_round3: primary
+history:
+  round1_gt_baseline: 186504.100
+  round2_attribution_gt_baseline: 186861.520
+  round2_attribution_official_baseline: 91088.810
+  round2_measured_gap: 95772.710
+  research_parity: 92906.000
+  round2_saving_to_parity: 93955.520
+  b1_weighted_cycles: 36778.338
+  saving_needed_after_free_b1: 57177.182
+primary:
+  artifact: results/kem-caller-benchmark.json
+  link_order: bench,official_kem,gt_kem,gt_backend,official_backend,kem_support
+  official_cycles: 90611.830
+  gt_cycles: 186228.970
+  measured_gap: 95617.140
+  saving_to_research_parity: 93322.970
+reversed_corroboration:
+  artifact: results/round3-kem-reversed.json
+  link_order: bench,gt_kem,gt_backend,official_kem,official_backend,kem_support
+  official_cycles: 94315.450
+  gt_cycles: 196881.040
+  measured_gap: 102565.590
+  gap_change_percent_from_primary: 7.267
+  classification: frontend-sensitive
+  decision: proceed
+  inconclusive_threshold_percent: 10.0
+environment:
+  repository_head_before_round3: f059ceb960fe8a925582cdd3ab1bbe4f7ee5f46b
+  official_revision: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+  compiler: gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+  cpu: 1
+  cpu_core: 1
+  cpu_socket: 0
+  cpu_node: 0
+  cpu_min_mhz: 400.0000
+  cpu_max_mhz: 4800.0000
+  governor: powersave
+  observed_scaling_frequency_khz: 4600046
+  flags: -mavx2 -mbmi2 -mpopcnt -maes -march=native -mtune=native -O3 -fomit-frame-pointer
+generator:
+  manifest_sha256: 58345531a702716a6332cc605c157b4546f37493c0f7da99414557cacc462d28
+  generator_sha256: 1ec2c677629ae611690d08368022b392121fd0be421da70e85a0879a864ab8fe
+

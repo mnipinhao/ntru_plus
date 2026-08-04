@@ -1,0 +1,70 @@
+schema_version: 1
+source: third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768/kem.c
+measurement: counters-only; no TSC reads
+operations:
+  keypair:
+    edges:
+      - keypair.random_f
+      - keypair.shake_f
+      - keypair.cbd_f
+      - keypair.triple_f
+      - keypair.ntt_f
+      - keypair.baseinv_f
+      - keypair.random_g
+      - keypair.shake_g
+      - keypair.cbd_g
+      - keypair.triple_g
+      - keypair.ntt_g
+      - keypair.baseinv_g
+      - keypair.basemul_h
+      - keypair.encode_pk
+      - keypair.basemul_hinv
+      - keypair.encode_sk_f
+      - keypair.encode_sk_hinv
+      - keypair.hash_pk
+    path_counters: [keypair.f_retries, keypair.g_retries]
+  encap:
+    edges:
+      - encap.random_coins
+      - encap.decode_pk
+      - encap.hash_pk
+      - encap.hash_msg
+      - encap.cbd_r
+      - encap.ntt_r
+      - encap.encode_r
+      - encap.hash_r
+      - encap.sotp_encode_m
+      - encap.ntt_m
+      - encap.basemul_hr
+      - encap.add_c
+      - encap.encode_c
+    path_counters: [encap.invalid_pk]
+  decap:
+    edges:
+      - decap.decode_ct
+      - decap.decode_sk_f
+      - decap.decode_sk_hinv
+      - decap.basemul_scale_cf
+      - decap.invntt_m
+      - decap.crepmod3_m
+      - decap.ntt_m
+      - decap.sub_c
+      - decap.basemul_chinv
+      - decap.encode_recovered_r
+      - decap.hash_recovered_r
+      - decap.sotp_decode_m
+      - decap.hash_msg
+      - decap.cbd_expected_r
+      - decap.ntt_expected_r
+      - decap.encode_expected_r
+      - decap.verify_r
+    path_counters: [decap.malformed_encoding, decap.verify_failure]
+candidate_scope_rules:
+  - scopes are continuous paths in one caller DAG or a single cross-caller boundary class
+  - every listed edge has unit ownership inside a candidate; overlapping candidates are never summed
+  - common_kem edges are excluded from removable potential
+  - the zero-floor upper bound is evaluated before detailed arithmetic and memory floors
+coarse_region_edges:
+  - id: decap.shared_differential_region
+    members: all decapsulation edges
+    ownership: supplemental measured caller-context differential; never summed with its members

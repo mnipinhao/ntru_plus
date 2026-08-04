@@ -53,8 +53,11 @@ SELECTED_KAT_BIN := $(BUILD_DIR)/PQCgenKAT_selected_$(BACKEND)
 .PHONY: bench-n32 bench-n32-smoke bench-n32-instructions \
 	bench-basemul bench-basemul-smoke bench-basemul-instructions \
 	bench-kem bench-kem-smoke bench-kem-instructions \
+	bench-kem-reversed \
 	bench-stages bench-stages-smoke bench-stages-pmu bench-call-counts \
-	bench-stages-pmu-summary round2-amdahl
+	bench-stages-pmu-summary round2-amdahl \
+	bench-symmetric bench-symmetric-smoke bench-symmetric-pmu \
+	bench-round3-coarse-region
 
 all: check
 
@@ -149,6 +152,14 @@ $(BUILD_DIR)/bench_call_counts.o: bench/bench_call_counts.c src/gt_backend.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) -Igenerated -I$(OFFICIAL_ROOT) $(TEST_CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/bench_symmetric.o: bench/bench_symmetric.c src/gt_backend.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -Igenerated -I$(OFFICIAL_ROOT) $(TEST_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/bench_round3_coarse_region.o: bench/bench_round3_coarse_region.c
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -I$(OFFICIAL_ROOT) $(TEST_CFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/official_kem.o: $(OFFICIAL_ROOT)/kem.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(OFFICIAL_CFLAGS) -c $< -o $@
@@ -179,9 +190,21 @@ COUNTED_KEM_RENAMES := \
 	-Dpoly_basemul_scale=gt_count_poly_basemul_scale \
 	-Dpoly_baseinv=gt_count_poly_baseinv \
 	-Dpoly_tobytes=gt_count_poly_tobytes \
-	-Dpoly_frombytes=gt_count_poly_frombytes
+	-Dpoly_frombytes=gt_count_poly_frombytes \
+	-Dpoly_add=gt_count_poly_add \
+	-Dpoly_sub=gt_count_poly_sub \
+	-Dpoly_cbd1=gt_count_poly_cbd1 \
+	-Dpoly_triple=gt_count_poly_triple \
+	-Dpoly_crepmod3=gt_count_poly_crepmod3 \
+	-Dpoly_sotp_encode=gt_count_poly_sotp_encode \
+	-Dpoly_sotp_decode=gt_count_poly_sotp_decode \
+	-Dhash_f=gt_count_hash_f \
+	-Dhash_g=gt_count_hash_g \
+	-Dhash_h=gt_count_hash_h \
+	-Dfips202avx_shake256=gt_count_shake256 \
+	-Drandombytes=gt_count_randombytes
 
-$(BUILD_DIR)/gt_kem_counted.o: $(OFFICIAL_ROOT)/kem.c src/gt_backend.h
+$(BUILD_DIR)/gt_kem_counted.o: $(OFFICIAL_ROOT)/kem.c src/gt_backend.h Makefile
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(OFFICIAL_CFLAGS) $(COUNTED_KEM_RENAMES) -c $< -o $@
 
@@ -324,11 +347,20 @@ $(BUILD_DIR)/bench_kem: $(BUILD_DIR)/bench_kem.o $(BUILD_DIR)/official_kem.o \
 	$(BUILD_DIR)/gt_kem.o $(GT_OBJS) $(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
 	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
 
+$(BUILD_DIR)/bench_kem_reversed: $(BUILD_DIR)/bench_kem.o \
+	$(BUILD_DIR)/gt_kem.o $(BUILD_DIR)/official_kem.o \
+	$(OFFICIAL_OBJS) $(GT_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
+
 bench-kem-smoke: $(BUILD_DIR)/bench_kem
 	$(BUILD_DIR)/bench_kem --iterations 1 --samples 4
 
 bench-kem: $(BUILD_DIR)/bench_kem
 	$(BUILD_DIR)/bench_kem --iterations 100 --samples 20 | tee results/kem-caller-benchmark.json
+
+bench-kem-reversed: $(BUILD_DIR)/bench_kem_reversed
+	$(BUILD_DIR)/bench_kem_reversed --iterations 100 --samples 20 \
+		| tee results/round3-kem-reversed.json
 
 bench-kem-instructions: $(BUILD_DIR)/bench_kem
 	perf stat -x, -o results/kem-official-perf.csv \
@@ -368,7 +400,42 @@ $(BUILD_DIR)/bench_call_counts: $(BUILD_DIR)/bench_call_counts.o \
 	$(CC) $(COMMON_FLAGS) $^ -o $@
 
 bench-call-counts: $(BUILD_DIR)/bench_call_counts
-	$(BUILD_DIR)/bench_call_counts | tee results/round2-call-counts.json
+	$(BUILD_DIR)/bench_call_counts | tee results/round3-call-counts.json
+
+$(BUILD_DIR)/bench_symmetric: $(BUILD_DIR)/bench_symmetric.o $(GT_OBJS) \
+	$(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
+
+bench-symmetric-smoke: $(BUILD_DIR)/bench_symmetric
+	$(BUILD_DIR)/bench_symmetric --iterations 100 --samples 4
+
+bench-symmetric: $(BUILD_DIR)/bench_symmetric
+	bash tools/run_round3_direct.sh $(BUILD_DIR)/bench_symmetric
+	python3 tools/merge_round3_direct.py \
+		| tee results/round3-symmetric-cycles.json
+
+bench-symmetric-pmu: $(BUILD_DIR)/bench_symmetric
+	bash tools/run_round3_pmu.sh $(BUILD_DIR)/bench_symmetric
+	python3 tools/summarize_round3_pmu.py \
+		| tee results/round3-symmetric-pmu.stdout.json
+
+$(BUILD_DIR)/bench_round3_coarse_region: \
+		$(BUILD_DIR)/bench_round3_coarse_region.o $(BUILD_DIR)/official_kem.o \
+		$(BUILD_DIR)/gt_kem.o $(GT_OBJS) $(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
+
+bench-round3-coarse-region: $(BUILD_DIR)/bench_round3_coarse_region
+	PROFILE_SCOPE=shared_differential \
+		$(BUILD_DIR)/bench_round3_coarse_region --iterations 100 --samples 20 \
+		| tee results/round3-coarse-shared-differential.json
+
+.PHONY: round3-attribution
+round3-attribution: results/round3-symmetric-cycles.json \
+		results/round3-call-counts.json results/kem-caller-benchmark.json \
+		results/round3-kem-reversed.json \
+		results/round3-coarse-shared-differential.json \
+		results/round3-symmetric-pmu.json
+	python3 tools/analyze_round3.py
 
 round2-amdahl: results/round2-stage-cycles.json results/round2-call-counts.json
 	python3 tools/analyze_round2.py

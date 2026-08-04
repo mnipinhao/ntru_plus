@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "authoritative_baseline_id": "round3-primary-20260804-cpu1-f059ceb",
+  "baseline": {
+    "official_cycles": 90611.83,
+    "gt_cycles": 186228.97,
+    "measured_gap": 95617.14,
+    "reversed_gap": 102565.59000000001,
+    "placement_gap_change_fraction": 0.0726695025598968,
+    "frontend_sensitive": true
+  },
+  "pmu": {
+    "artifact": "results/round3-symmetric-pmu.json",
+    "measurement_count": 27,
+    "groups_per_measurement": 4,
+    "max_scaling_factor": 1.0101010101010102,
+    "min_scaling_factor": 1.0
+  },
+  "reconstruction": {
+    "official_cycles": 92058.44399999999,
+    "gt_cycles": 186868.663,
+    "gap_cycles": 94810.21900000001,
+    "direct_gap_before_coarse_region_cycles": 88562.717,
+    "coarse_region": {
+      "artifact": "results/round3-coarse-shared-differential.json",
+      "scope": "shared_differential",
+      "region": "decap-complete-non-nested",
+      "measured_differential_cycles": 50700.43,
+      "direct_decap_backend_differential_cycles": 44452.928,
+      "supplemental_shared_differential_cycles": 6247.502
+    },
+    "absolute_closure_error_fraction": {
+      "official": 0.015964957335040986,
+      "gt": 0.0034349811417632783
+    },
+    "differential_closure_error_fraction": 0.008439083202028293,
+    "classes": {
+      "common_kem": 84657.51,
+      "official_backend": 7400.934,
+      "gt_backend": 95963.651,
+      "gt_glue_unclosed": 806.9209999999875,
+      "shared_but_differential": 6247.502
+    },
+    "operations": {
+      "keypair": {
+        "official_backend_cycles": 3270.361,
+        "gt_backend_cycles": 26042.638,
+        "common_kem_cycles": 35998.507
+      },
+      "encap": {
+        "official_backend_cycles": 1602.638,
+        "gt_backend_cycles": 22940.15,
+        "common_kem_cycles": 39315.864
+      },
+      "decap": {
+        "official_backend_cycles": 2527.935,
+        "gt_backend_cycles": 46980.863,
+        "common_kem_cycles": 9343.139000000001
+      }
+    }
+  },
+  "scope_floor_policy": "Zero is a strict upper-bound floor. Required arithmetic, memory, canonical byte, permutation, spill and dependency costs are nonnegative; therefore a scope below 70k at zero cannot pass a detailed floor.",
+  "candidate_scopes": [
+    {
+      "name": "decap-backend-pipeline",
+      "edge_ids": [
+        "decap.decode_ct",
+        "decap.decode_sk_f",
+        "decap.decode_sk_hinv",
+        "decap.basemul_scale_cf",
+        "decap.invntt_m",
+        "decap.ntt_m",
+        "decap.basemul_chinv",
+        "decap.encode_recovered_r",
+        "decap.ntt_expected_r",
+        "decap.encode_expected_r",
+        "decap.shared_differential_region"
+      ],
+      "current_gt_cycles": 53228.365,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 53228.365,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "forward-materialization-boundary-class",
+      "edge_ids": [
+        "*.ntt"
+      ],
+      "current_gt_cycles": 43867.608,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 43867.608,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "keypair-backend-pipeline",
+      "edge_ids": [
+        "keypair.ntt_f",
+        "keypair.baseinv_f",
+        "keypair.ntt_g",
+        "keypair.baseinv_g",
+        "keypair.basemul_h",
+        "keypair.encode_pk",
+        "keypair.basemul_hinv",
+        "keypair.encode_sk_f",
+        "keypair.encode_sk_hinv"
+      ],
+      "current_gt_cycles": 26042.638,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 26042.638,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "encap-backend-pipeline",
+      "edge_ids": [
+        "encap.decode_pk",
+        "encap.ntt_r",
+        "encap.encode_r",
+        "encap.ntt_m",
+        "encap.basemul_hr",
+        "encap.encode_c"
+      ],
+      "current_gt_cycles": 22940.15,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 22940.15,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "serialization-boundary-class",
+      "edge_ids": [
+        "*.tobytes",
+        "*.frombytes"
+      ],
+      "current_gt_cycles": 19300.324,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 19300.324,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "base-arithmetic-boundary-class",
+      "edge_ids": [
+        "*.basemul",
+        "*.basemul_scale",
+        "*.baseinv"
+      ],
+      "current_gt_cycles": 17758.996,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 17758.996,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    },
+    {
+      "name": "inverse-store-reload-boundary-class",
+      "edge_ids": [
+        "decap.invntt_m"
+      ],
+      "current_gt_cycles": 15036.723,
+      "optimistic_floor_cycles": 0.0,
+      "potential_cycles": 15036.723,
+      "floor_note": "zero-floor upper bound; detailed mandatory floor waived"
+    }
+  ],
+  "thresholds": {
+    "closure": 0.05,
+    "inconclusive": 0.1,
+    "removable_cycles": 70000.0
+  },
+  "decision": "stop-gt-unsuitable-for-avx2",
+  "prototype_built": false,
+  "prototype_reason": "No candidate passes the zero-floor 70k gate."
+}

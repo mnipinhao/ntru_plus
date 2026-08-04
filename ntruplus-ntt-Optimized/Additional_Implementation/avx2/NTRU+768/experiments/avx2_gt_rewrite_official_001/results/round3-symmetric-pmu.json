@@ -1,0 +1,3403 @@
+{
+  "schema_version": 1,
+  "cpu": 1,
+  "calls_per_event": 22000000,
+  "event_groups": {
+    "1": [
+      "cycles",
+      "instructions"
+    ],
+    "2": [
+      "uops_retired.slots",
+      "mem_inst_retired.all_loads",
+      "mem_inst_retired.all_stores"
+    ],
+    "3": [
+      "mem_load_retired.l1_miss",
+      "branches",
+      "branch-misses"
+    ],
+    "4": [
+      "slots",
+      "topdown-fe-bound",
+      "topdown-be-bound"
+    ]
+  },
+  "measurements": {
+    "add:official": {
+      "candidate": "add",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-add-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 1381536637.0,
+              "unit": "",
+              "per_call": 62.79711986363636,
+              "time_running_ns": 288628213.0,
+              "time_enabled_ns": 291543649.4949495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 4382346937.0,
+              "unit": "",
+              "per_call": 199.19758804545455,
+              "time_running_ns": 288628213.0,
+              "time_enabled_ns": 291543649.4949495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-add-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 4206715593.0,
+              "unit": "",
+              "per_call": 191.21434513636365,
+              "time_running_ns": 287815365.0,
+              "time_enabled_ns": 290722590.90909094,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 2136221205.0,
+              "unit": "",
+              "per_call": 97.10096386363637,
+              "time_running_ns": 287815365.0,
+              "time_enabled_ns": 290722590.90909094,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1079122584.0,
+              "unit": "",
+              "per_call": 49.05102654545455,
+              "time_running_ns": 287815365.0,
+              "time_enabled_ns": 290722590.90909094,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-add-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 1500.0,
+              "unit": "",
+              "per_call": 6.818181818181818e-05,
+              "time_running_ns": 289144091.0,
+              "time_enabled_ns": 292064738.3838384,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 264277188.0,
+              "unit": "",
+              "per_call": 12.012599454545455,
+              "time_running_ns": 289144091.0,
+              "time_enabled_ns": 292064738.3838384,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 2037.0,
+              "unit": "",
+              "per_call": 9.259090909090908e-05,
+              "time_running_ns": 289144091.0,
+              "time_enabled_ns": 292064738.3838384,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-add-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 8270726046.0,
+              "unit": "",
+              "per_call": 375.942093,
+              "time_running_ns": 288806965.0,
+              "time_enabled_ns": 288806965.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 785079.0,
+              "unit": "",
+              "per_call": 0.035685409090909094,
+              "time_running_ns": 288806965.0,
+              "time_enabled_ns": 288806965.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 4054277473.0,
+              "unit": "",
+              "per_call": 184.2853396818182,
+              "time_running_ns": 288806965.0,
+              "time_enabled_ns": 288806965.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "baseinv:gt": {
+      "candidate": "baseinv",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-baseinv-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 28969312767.0,
+              "unit": "",
+              "per_call": 1316.7869439545454,
+              "time_running_ns": 6071297483.0,
+              "time_enabled_ns": 6132623720.202021,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 59051303516.0,
+              "unit": "",
+              "per_call": 2684.1501598181817,
+              "time_running_ns": 6071297483.0,
+              "time_enabled_ns": 6132623720.202021,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-baseinv-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 58593821402.0,
+              "unit": "",
+              "per_call": 2663.3555182727273,
+              "time_running_ns": 6067443091.0,
+              "time_enabled_ns": 6128730394.949495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 4048199057.0,
+              "unit": "",
+              "per_call": 184.00904804545453,
+              "time_running_ns": 6067443091.0,
+              "time_enabled_ns": 6128730394.949495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 3212148051.0,
+              "unit": "",
+              "per_call": 146.0067295909091,
+              "time_running_ns": 6067443091.0,
+              "time_enabled_ns": 6128730394.949495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-baseinv-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 30774.0,
+              "unit": "",
+              "per_call": 0.0013988181818181818,
+              "time_running_ns": 6245974121.0,
+              "time_enabled_ns": 6309064768.686869,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 638081210.0,
+              "unit": "",
+              "per_call": 29.003691363636364,
+              "time_running_ns": 6245974121.0,
+              "time_enabled_ns": 6309064768.686869,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 1596972.0,
+              "unit": "",
+              "per_call": 0.07258963636363637,
+              "time_running_ns": 6245974121.0,
+              "time_enabled_ns": 6309064768.686869,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-baseinv-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 173476805684.0,
+              "unit": "",
+              "per_call": 7885.309349272728,
+              "time_running_ns": 6059201235.0,
+              "time_enabled_ns": 6120405287.878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 6059201235.0,
+              "time_enabled_ns": 6120405287.878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 114290601392.0,
+              "unit": "",
+              "per_call": 5195.027336,
+              "time_running_ns": 6059201235.0,
+              "time_enabled_ns": 6120405287.878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "baseinv:official": {
+      "candidate": "baseinv",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-baseinv-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 22764308185.0,
+              "unit": "",
+              "per_call": 1034.7412811363636,
+              "time_running_ns": 4773745842.0,
+              "time_enabled_ns": 4821965496.969697,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 60591667233.0,
+              "unit": "",
+              "per_call": 2754.166692409091,
+              "time_running_ns": 4773745842.0,
+              "time_enabled_ns": 4821965496.969697,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-baseinv-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 60707213413.0,
+              "unit": "",
+              "per_call": 2759.4187915,
+              "time_running_ns": 4773784471.0,
+              "time_enabled_ns": 4822004516.161616,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 6688475319.0,
+              "unit": "",
+              "per_call": 304.0216054090909,
+              "time_running_ns": 4773784471.0,
+              "time_enabled_ns": 4822004516.161616,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 7414510415.0,
+              "unit": "",
+              "per_call": 337.0232006818182,
+              "time_running_ns": 4773784471.0,
+              "time_enabled_ns": 4822004516.161616,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-baseinv-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 12523.0,
+              "unit": "",
+              "per_call": 0.0005692272727272727,
+              "time_running_ns": 4786742180.0,
+              "time_enabled_ns": 4835093111.111111,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branches": {
+              "raw_count": 4180280968.0,
+              "unit": "",
+              "per_call": 190.01277127272726,
+              "time_running_ns": 4786742180.0,
+              "time_enabled_ns": 4835093111.111111,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branch-misses": {
+              "raw_count": 7037.0,
+              "unit": "",
+              "per_call": 0.00031986363636363636,
+              "time_running_ns": 4786742180.0,
+              "time_enabled_ns": 4835093111.111111,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-baseinv-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 136926400350.0,
+              "unit": "",
+              "per_call": 6223.927288636363,
+              "time_running_ns": 4777562888.0,
+              "time_enabled_ns": 4825821098.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 1610898826.0,
+              "unit": "",
+              "per_call": 73.22267390909091,
+              "time_running_ns": 4777562888.0,
+              "time_enabled_ns": 4825821098.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 74101346071.0,
+              "unit": "",
+              "per_call": 3368.2430032272728,
+              "time_running_ns": 4777562888.0,
+              "time_enabled_ns": 4825821098.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "basemul:gt": {
+      "candidate": "basemul",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-basemul-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 112865028275.0,
+              "unit": "",
+              "per_call": 5130.228557954545,
+              "time_running_ns": 23643658344.0,
+              "time_enabled_ns": 23882483175.757576,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 256083355385.0,
+              "unit": "",
+              "per_call": 11640.1525175,
+              "time_running_ns": 23643658344.0,
+              "time_enabled_ns": 23882483175.757576,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-basemul-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 268510601433.0,
+              "unit": "",
+              "per_call": 12205.027337863636,
+              "time_running_ns": 23661963917.0,
+              "time_enabled_ns": 23900973653.535355,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 32802420300.0,
+              "unit": "",
+              "per_call": 1491.0191045454546,
+              "time_running_ns": 23661963917.0,
+              "time_enabled_ns": 23900973653.535355,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 5346072045.0,
+              "unit": "",
+              "per_call": 243.00327477272728,
+              "time_running_ns": 23661963917.0,
+              "time_enabled_ns": 23900973653.535355,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-basemul-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 22177.0,
+              "unit": "",
+              "per_call": 0.0010080454545454546,
+              "time_running_ns": 23652578313.0,
+              "time_enabled_ns": 23891493245.454544,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branches": {
+              "raw_count": 3520072340.0,
+              "unit": "",
+              "per_call": 160.0032881818182,
+              "time_running_ns": 23652578313.0,
+              "time_enabled_ns": 23891493245.454544,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branch-misses": {
+              "raw_count": 61369.0,
+              "unit": "",
+              "per_call": 0.0027895,
+              "time_running_ns": 23652578313.0,
+              "time_enabled_ns": 23891493245.454544,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-basemul-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 677446335730.0,
+              "unit": "",
+              "per_call": 30793.015260454544,
+              "time_running_ns": 23675917647.0,
+              "time_enabled_ns": 23915068330.303032,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 2656652296.0,
+              "unit": "",
+              "per_call": 120.75692254545454,
+              "time_running_ns": 23675917647.0,
+              "time_enabled_ns": 23915068330.303032,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 406467801437.0,
+              "unit": "",
+              "per_call": 18475.80915622727,
+              "time_running_ns": 23675917647.0,
+              "time_enabled_ns": 23915068330.303032,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "basemul:official": {
+      "candidate": "basemul",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-basemul-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 11271108117.0,
+              "unit": "",
+              "per_call": 512.3230962272727,
+              "time_running_ns": 2355772587.0,
+              "time_enabled_ns": 2379568269.6969695,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "instructions": {
+              "raw_count": 39494810024.0,
+              "unit": "",
+              "per_call": 1795.2186374545454,
+              "time_running_ns": 2355772587.0,
+              "time_enabled_ns": 2379568269.6969695,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-basemul-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 39101625870.0,
+              "unit": "",
+              "per_call": 1777.3466304545454,
+              "time_running_ns": 2370930634.0,
+              "time_enabled_ns": 2394879428.2828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 5390763176.0,
+              "unit": "",
+              "per_call": 245.03468981818182,
+              "time_running_ns": 2370930634.0,
+              "time_enabled_ns": 2394879428.2828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 2134304012.0,
+              "unit": "",
+              "per_call": 97.01381872727272,
+              "time_running_ns": 2370930634.0,
+              "time_enabled_ns": 2394879428.2828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-basemul-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 3733.0,
+              "unit": "",
+              "per_call": 0.00016968181818181817,
+              "time_running_ns": 2369372580.0,
+              "time_enabled_ns": 2393305636.3636365,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 484072002.0,
+              "unit": "",
+              "per_call": 22.003272818181816,
+              "time_running_ns": 2369372580.0,
+              "time_enabled_ns": 2393305636.3636365,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 4602.0,
+              "unit": "",
+              "per_call": 0.00020918181818181818,
+              "time_running_ns": 2369372580.0,
+              "time_enabled_ns": 2393305636.3636365,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-basemul-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 67686906080.0,
+              "unit": "",
+              "per_call": 3076.677549090909,
+              "time_running_ns": 2365037478.0,
+              "time_enabled_ns": 2388926745.4545455,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 2365037478.0,
+              "time_enabled_ns": 2388926745.4545455,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 28667395515.0,
+              "unit": "",
+              "per_call": 1303.0634325,
+              "time_running_ns": 2365037478.0,
+              "time_enabled_ns": 2388926745.4545455,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "basemul_scale:gt": {
+      "candidate": "basemul_scale",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-basemul_scale-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 114226351442.0,
+              "unit": "",
+              "per_call": 5192.106883727272,
+              "time_running_ns": 23958687996.0,
+              "time_enabled_ns": 23958687996.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "instructions": {
+              "raw_count": 256080294235.0,
+              "unit": "",
+              "per_call": 11640.013374318181,
+              "time_running_ns": 23958687996.0,
+              "time_enabled_ns": 23958687996.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-basemul_scale-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 267454130933.0,
+              "unit": "",
+              "per_call": 12157.0059515,
+              "time_running_ns": 23947356250.0,
+              "time_enabled_ns": 24189248737.373737,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 32802410366.0,
+              "unit": "",
+              "per_call": 1491.018653,
+              "time_running_ns": 23947356250.0,
+              "time_enabled_ns": 24189248737.373737,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 5346070385.0,
+              "unit": "",
+              "per_call": 243.00319931818183,
+              "time_running_ns": 23947356250.0,
+              "time_enabled_ns": 24189248737.373737,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-basemul_scale-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 35742.0,
+              "unit": "",
+              "per_call": 0.0016246363636363637,
+              "time_running_ns": 23935734389.0,
+              "time_enabled_ns": 24177509483.838383,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branches": {
+              "raw_count": 3520074196.0,
+              "unit": "",
+              "per_call": 160.00337254545454,
+              "time_running_ns": 23935734389.0,
+              "time_enabled_ns": 24177509483.838383,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branch-misses": {
+              "raw_count": 62692.0,
+              "unit": "",
+              "per_call": 0.0028496363636363637,
+              "time_running_ns": 23935734389.0,
+              "time_enabled_ns": 24177509483.838383,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-basemul_scale-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 685556541870.0,
+              "unit": "",
+              "per_call": 31161.660994090907,
+              "time_running_ns": 23985702312.0,
+              "time_enabled_ns": 24227982133.333332,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 23985702312.0,
+              "time_enabled_ns": 24227982133.333332,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 416710839175.0,
+              "unit": "",
+              "per_call": 18941.40178068182,
+              "time_running_ns": 23985702312.0,
+              "time_enabled_ns": 24227982133.333332,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "basemul_scale:official": {
+      "candidate": "basemul_scale",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-basemul_scale-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 9475282722.0,
+              "unit": "",
+              "per_call": 430.6946691818182,
+              "time_running_ns": 1982231539.0,
+              "time_enabled_ns": 2002254079.7979798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 32168491226.0,
+              "unit": "",
+              "per_call": 1462.2041466363637,
+              "time_running_ns": 1982231539.0,
+              "time_enabled_ns": 2002254079.7979798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-basemul_scale-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 32039081222.0,
+              "unit": "",
+              "per_call": 1456.3218737272728,
+              "time_running_ns": 1980772550.0,
+              "time_enabled_ns": 2000780353.5353537,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 4290699895.0,
+              "unit": "",
+              "per_call": 195.03181340909092,
+              "time_running_ns": 1980772550.0,
+              "time_enabled_ns": 2000780353.5353537,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1078181010.0,
+              "unit": "",
+              "per_call": 49.008227727272725,
+              "time_running_ns": 1980772550.0,
+              "time_enabled_ns": 2000780353.5353537,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-basemul_scale-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 3241.0,
+              "unit": "",
+              "per_call": 0.0001473181818181818,
+              "time_running_ns": 1975503300.0,
+              "time_enabled_ns": 1995457878.7878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 220044958.0,
+              "unit": "",
+              "per_call": 10.002043545454546,
+              "time_running_ns": 1975503300.0,
+              "time_enabled_ns": 1995457878.7878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 3602.0,
+              "unit": "",
+              "per_call": 0.00016372727272727272,
+              "time_running_ns": 1975503300.0,
+              "time_enabled_ns": 1995457878.7878788,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-basemul_scale-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 56447433145.0,
+              "unit": "",
+              "per_call": 2565.792415681818,
+              "time_running_ns": 1973397547.0,
+              "time_enabled_ns": 1993330855.5555556,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 1973397547.0,
+              "time_enabled_ns": 1993330855.5555556,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 24349873121.0,
+              "unit": "",
+              "per_call": 1106.8124145909092,
+              "time_running_ns": 1973397547.0,
+              "time_enabled_ns": 1993330855.5555556,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "cbd1:official": {
+      "candidate": "cbd1",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-cbd1-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 2128225809.0,
+              "unit": "",
+              "per_call": 96.73753677272727,
+              "time_running_ns": 444734607.0,
+              "time_enabled_ns": 449226875.75757575,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 7595407615.0,
+              "unit": "",
+              "per_call": 345.2458006818182,
+              "time_running_ns": 444734607.0,
+              "time_enabled_ns": 449226875.75757575,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-cbd1-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 7529958529.0,
+              "unit": "",
+              "per_call": 342.27084222727274,
+              "time_running_ns": 444847157.0,
+              "time_enabled_ns": 449340562.6262626,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 220173398.0,
+              "unit": "",
+              "per_call": 10.007881727272727,
+              "time_running_ns": 444847157.0,
+              "time_enabled_ns": 449340562.6262626,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1078761538.0,
+              "unit": "",
+              "per_call": 49.03461536363636,
+              "time_running_ns": 444847157.0,
+              "time_enabled_ns": 449340562.6262626,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-cbd1-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 2073.0,
+              "unit": "",
+              "per_call": 9.422727272727272e-05,
+              "time_running_ns": 445330776.0,
+              "time_enabled_ns": 445330776.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "branches": {
+              "raw_count": 154034443.0,
+              "unit": "",
+              "per_call": 7.001565590909091,
+              "time_running_ns": 445330776.0,
+              "time_enabled_ns": 445330776.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "branch-misses": {
+              "raw_count": 3639.0,
+              "unit": "",
+              "per_call": 0.0001654090909090909,
+              "time_running_ns": 445330776.0,
+              "time_enabled_ns": 445330776.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-cbd1-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 12826867893.0,
+              "unit": "",
+              "per_call": 583.0394496818182,
+              "time_running_ns": 446710257.0,
+              "time_enabled_ns": 451222481.8181818,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 446710257.0,
+              "time_enabled_ns": 451222481.8181818,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 5331952928.0,
+              "unit": "",
+              "per_call": 242.36149672727274,
+              "time_running_ns": 446710257.0,
+              "time_enabled_ns": 451222481.8181818,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "crepmod3:official": {
+      "candidate": "crepmod3",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-crepmod3-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 4111466547.0,
+              "unit": "",
+              "per_call": 186.88484304545455,
+              "time_running_ns": 867338838.0,
+              "time_enabled_ns": 876099836.3636364,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 14899647230.0,
+              "unit": "",
+              "per_call": 677.2566922727273,
+              "time_running_ns": 867338838.0,
+              "time_enabled_ns": 876099836.3636364,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-crepmod3-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 14636088518.0,
+              "unit": "",
+              "per_call": 665.2767508181818,
+              "time_running_ns": 862517245.0,
+              "time_enabled_ns": 871229540.4040405,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 1188441451.0,
+              "unit": "",
+              "per_call": 54.02006595454545,
+              "time_running_ns": 862517245.0,
+              "time_enabled_ns": 871229540.4040405,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1078392518.0,
+              "unit": "",
+              "per_call": 49.017841727272724,
+              "time_running_ns": 862517245.0,
+              "time_enabled_ns": 871229540.4040405,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-crepmod3-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 1487.0,
+              "unit": "",
+              "per_call": 6.759090909090909e-05,
+              "time_running_ns": 856725772.0,
+              "time_enabled_ns": 865379567.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 352131574.0,
+              "unit": "",
+              "per_call": 16.005980636363635,
+              "time_running_ns": 856725772.0,
+              "time_enabled_ns": 865379567.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 2794.0,
+              "unit": "",
+              "per_call": 0.000127,
+              "time_running_ns": 856725772.0,
+              "time_enabled_ns": 865379567.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-crepmod3-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 24613307610.0,
+              "unit": "",
+              "per_call": 1118.7867095454546,
+              "time_running_ns": 857292195.0,
+              "time_enabled_ns": 865951712.1212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 857292195.0,
+              "time_enabled_ns": 865951712.1212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 10038368593.0,
+              "unit": "",
+              "per_call": 456.2894815,
+              "time_running_ns": 857292195.0,
+              "time_enabled_ns": 865951712.1212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "frombytes:gt": {
+      "candidate": "frombytes",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-frombytes-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 95152888886.0,
+              "unit": "",
+              "per_call": 4325.131313,
+              "time_running_ns": 19936339268.0,
+              "time_enabled_ns": 20137716432.32323,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "instructions": {
+              "raw_count": 414793479480.0,
+              "unit": "",
+              "per_call": 18854.24906727273,
+              "time_running_ns": 19936339268.0,
+              "time_enabled_ns": 20137716432.32323,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-frombytes-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 406361246681.0,
+              "unit": "",
+              "per_call": 18470.965758227274,
+              "time_running_ns": 20343051739.0,
+              "time_enabled_ns": 20548537110.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 46618674422.0,
+              "unit": "",
+              "per_call": 2119.0306555454545,
+              "time_running_ns": 20343051739.0,
+              "time_enabled_ns": 20548537110.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 33902471544.0,
+              "unit": "",
+              "per_call": 1541.0214338181818,
+              "time_running_ns": 20343051739.0,
+              "time_enabled_ns": 20548537110.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-frombytes-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 22236.0,
+              "unit": "",
+              "per_call": 0.0010107272727272727,
+              "time_running_ns": 19586222840.0,
+              "time_enabled_ns": 19784063474.747475,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 12826196926.0,
+              "unit": "",
+              "per_call": 583.0089511818181,
+              "time_running_ns": 19586222840.0,
+              "time_enabled_ns": 19784063474.747475,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 39359171.0,
+              "unit": "",
+              "per_call": 1.7890532272727273,
+              "time_running_ns": 19586222840.0,
+              "time_enabled_ns": 19784063474.747475,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-frombytes-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 575435310492.0,
+              "unit": "",
+              "per_call": 26156.15047690909,
+              "time_running_ns": 20098083513.0,
+              "time_enabled_ns": 20301094457.575756,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 154573970666.0,
+              "unit": "",
+              "per_call": 7026.089575727273,
+              "time_running_ns": 20098083513.0,
+              "time_enabled_ns": 20301094457.575756,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 13539654363.0,
+              "unit": "",
+              "per_call": 615.4388346818182,
+              "time_running_ns": 20098083513.0,
+              "time_enabled_ns": 20301094457.575756,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "frombytes:official": {
+      "candidate": "frombytes",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-frombytes-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 3245902307.0,
+              "unit": "",
+              "per_call": 147.54101395454546,
+              "time_running_ns": 685694953.0,
+              "time_enabled_ns": 692621164.6464647,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 11774834687.0,
+              "unit": "",
+              "per_call": 535.2197585,
+              "time_running_ns": 685694953.0,
+              "time_enabled_ns": 692621164.6464647,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-frombytes-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 11643693285.0,
+              "unit": "",
+              "per_call": 529.2587856818182,
+              "time_running_ns": 673962814.0,
+              "time_enabled_ns": 680770519.1919192,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 968426914.0,
+              "unit": "",
+              "per_call": 44.01940518181818,
+              "time_running_ns": 673962814.0,
+              "time_enabled_ns": 680770519.1919192,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1078463395.0,
+              "unit": "",
+              "per_call": 49.02106340909091,
+              "time_running_ns": 673962814.0,
+              "time_enabled_ns": 680770519.1919192,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-frombytes-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 1283.0,
+              "unit": "",
+              "per_call": 5.831818181818182e-05,
+              "time_running_ns": 672121690.0,
+              "time_enabled_ns": 678910797.979798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 220105898.0,
+              "unit": "",
+              "per_call": 10.004813545454546,
+              "time_running_ns": 672121690.0,
+              "time_enabled_ns": 678910797.979798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 1786.0,
+              "unit": "",
+              "per_call": 8.118181818181818e-05,
+              "time_running_ns": 672121690.0,
+              "time_enabled_ns": 678910797.979798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-frombytes-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 19359065850.0,
+              "unit": "",
+              "per_call": 879.9575386363637,
+              "time_running_ns": 675144814.0,
+              "time_enabled_ns": 675144814.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 1644999.0,
+              "unit": "",
+              "per_call": 0.07477268181818182,
+              "time_running_ns": 675144814.0,
+              "time_enabled_ns": 675144814.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 7743626340.0,
+              "unit": "",
+              "per_call": 351.98301545454547,
+              "time_running_ns": 675144814.0,
+              "time_enabled_ns": 675144814.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "hash_f:official": {
+      "candidate": "hash_f",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-hash_f-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 236790680430.0,
+              "unit": "",
+              "per_call": 10763.212746818182,
+              "time_running_ns": 49606699008.0,
+              "time_enabled_ns": 50107776775.757576,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 557131907141.0,
+              "unit": "",
+              "per_call": 25324.177597318183,
+              "time_running_ns": 49606699008.0,
+              "time_enabled_ns": 50107776775.757576,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-hash_f-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 552113421874.0,
+              "unit": "",
+              "per_call": 25096.064630636363,
+              "time_running_ns": 49684059615.0,
+              "time_enabled_ns": 50185918803.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 75218485132.0,
+              "unit": "",
+              "per_call": 3419.0220514545454,
+              "time_running_ns": 49684059615.0,
+              "time_enabled_ns": 50185918803.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 7084049826.0,
+              "unit": "",
+              "per_call": 322.0022648181818,
+              "time_running_ns": 49684059615.0,
+              "time_enabled_ns": 50185918803.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-hash_f-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 106942.0,
+              "unit": "",
+              "per_call": 0.004861,
+              "time_running_ns": 49668655319.0,
+              "time_enabled_ns": 50170358908.08081,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 11418177048.0,
+              "unit": "",
+              "per_call": 519.0080476363636,
+              "time_running_ns": 49668655319.0,
+              "time_enabled_ns": 50170358908.08081,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 165445397.0,
+              "unit": "",
+              "per_call": 7.520245318181818,
+              "time_running_ns": 49668655319.0,
+              "time_enabled_ns": 50170358908.08081,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-hash_f-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 1422787864876.0,
+              "unit": "",
+              "per_call": 64672.17567618182,
+              "time_running_ns": 49688291041.0,
+              "time_enabled_ns": 50190192970.70707,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 22318241016.0,
+              "unit": "",
+              "per_call": 1014.4655007272727,
+              "time_running_ns": 49688291041.0,
+              "time_enabled_ns": 50190192970.70707,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 842513598416.0,
+              "unit": "",
+              "per_call": 38296.07265527273,
+              "time_running_ns": 49688291041.0,
+              "time_enabled_ns": 50190192970.70707,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "hash_g:official": {
+      "candidate": "hash_g",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-hash_g-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 263603455980.0,
+              "unit": "",
+              "per_call": 11981.975271818183,
+              "time_running_ns": 55228728501.0,
+              "time_enabled_ns": 55786594445.454544,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 621217258236.0,
+              "unit": "",
+              "per_call": 28237.148101636365,
+              "time_running_ns": 55228728501.0,
+              "time_enabled_ns": 55786594445.454544,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-hash_g-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 615069484223.0,
+              "unit": "",
+              "per_call": 27957.703828318183,
+              "time_running_ns": 55189001326.0,
+              "time_enabled_ns": 55746465985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 83358886372.0,
+              "unit": "",
+              "per_call": 3789.0402896363635,
+              "time_running_ns": 55189001326.0,
+              "time_enabled_ns": 55746465985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 8734095610.0,
+              "unit": "",
+              "per_call": 397.0043459090909,
+              "time_running_ns": 55189001326.0,
+              "time_enabled_ns": 55746465985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-hash_g-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 37675.0,
+              "unit": "",
+              "per_call": 0.0017125,
+              "time_running_ns": 55185507616.0,
+              "time_enabled_ns": 55742936985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 13068128520.0,
+              "unit": "",
+              "per_call": 594.0058418181818,
+              "time_running_ns": 55185507616.0,
+              "time_enabled_ns": 55742936985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 180426441.0,
+              "unit": "",
+              "per_call": 8.201201863636363,
+              "time_running_ns": 55185507616.0,
+              "time_enabled_ns": 55742936985.85859,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-hash_g-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 1579266803935.0,
+              "unit": "",
+              "per_call": 71784.85472431818,
+              "time_running_ns": 55157148303.0,
+              "time_enabled_ns": 55714291215.15151,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 24772812609.0,
+              "unit": "",
+              "per_call": 1126.0369367727274,
+              "time_running_ns": 55157148303.0,
+              "time_enabled_ns": 55714291215.15151,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 928980472902.0,
+              "unit": "",
+              "per_call": 42226.38513190909,
+              "time_running_ns": 55157148303.0,
+              "time_enabled_ns": 55714291215.15151,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "hash_h:official": {
+      "candidate": "hash_h",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-hash_h-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 53337292289.0,
+              "unit": "",
+              "per_call": 2424.422376772727,
+              "time_running_ns": 11169992434.0,
+              "time_enabled_ns": 11282820640.404041,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 129693389236.0,
+              "unit": "",
+              "per_call": 5895.154056181818,
+              "time_running_ns": 11169992434.0,
+              "time_enabled_ns": 11282820640.404041,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-hash_h-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 128100358808.0,
+              "unit": "",
+              "per_call": 5822.743582181818,
+              "time_running_ns": 11164175830.0,
+              "time_enabled_ns": 11276945282.828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 17578471988.0,
+              "unit": "",
+              "per_call": 799.021454,
+              "time_running_ns": 11164175830.0,
+              "time_enabled_ns": 11276945282.828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 2794080780.0,
+              "unit": "",
+              "per_call": 127.00367181818181,
+              "time_running_ns": 11164175830.0,
+              "time_enabled_ns": 11276945282.828283,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-hash_h-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 21389.0,
+              "unit": "",
+              "per_call": 0.0009722272727272727,
+              "time_running_ns": 11198307227.0,
+              "time_enabled_ns": 11311421441.41414,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branches": {
+              "raw_count": 3630103977.0,
+              "unit": "",
+              "per_call": 165.00472622727273,
+              "time_running_ns": 11198307227.0,
+              "time_enabled_ns": 11311421441.41414,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "branch-misses": {
+              "raw_count": 22053248.0,
+              "unit": "",
+              "per_call": 1.0024203636363636,
+              "time_running_ns": 11198307227.0,
+              "time_enabled_ns": 11311421441.41414,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-hash_h-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 319564233843.0,
+              "unit": "",
+              "per_call": 14525.646992863636,
+              "time_running_ns": 11164034046.0,
+              "time_enabled_ns": 11276802066.666666,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 6265965368.0,
+              "unit": "",
+              "per_call": 284.81660763636364,
+              "time_running_ns": 11164034046.0,
+              "time_enabled_ns": 11276802066.666666,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 184219381862.0,
+              "unit": "",
+              "per_call": 8373.608266454545,
+              "time_running_ns": 11164034046.0,
+              "time_enabled_ns": 11276802066.666666,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "invntt:gt": {
+      "candidate": "invntt",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-invntt-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 527551768974.0,
+              "unit": "",
+              "per_call": 23979.625862454544,
+              "time_running_ns": 110528572020.0,
+              "time_enabled_ns": 111645022242.42424,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 982853533361.0,
+              "unit": "",
+              "per_call": 44675.16060731818,
+              "time_running_ns": 110528572020.0,
+              "time_enabled_ns": 111645022242.42424,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-invntt-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 1035742731682.0,
+              "unit": "",
+              "per_call": 47079.215076454544,
+              "time_running_ns": 110529922278.0,
+              "time_enabled_ns": 111646386139.39394,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 32692213017.0,
+              "unit": "",
+              "per_call": 1486.009682590909,
+              "time_running_ns": 110529922278.0,
+              "time_enabled_ns": 111646386139.39394,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 25916074763.0,
+              "unit": "",
+              "per_call": 1178.0033983181818,
+              "time_running_ns": 110529922278.0,
+              "time_enabled_ns": 111646386139.39394,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-invntt-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 182015.0,
+              "unit": "",
+              "per_call": 0.008273409090909092,
+              "time_running_ns": 110510796577.0,
+              "time_enabled_ns": 111627067249.49495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 15136157799.0,
+              "unit": "",
+              "per_call": 688.0071726818181,
+              "time_running_ns": 110510796577.0,
+              "time_enabled_ns": 111627067249.49495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 22817587.0,
+              "unit": "",
+              "per_call": 1.0371630454545455,
+              "time_running_ns": 110510796577.0,
+              "time_enabled_ns": 111627067249.49495,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-invntt-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 3168056958540.0,
+              "unit": "",
+              "per_call": 144002.58902454545,
+              "time_running_ns": 110626756359.0,
+              "time_enabled_ns": 110626756359.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 12423752778.0,
+              "unit": "",
+              "per_call": 564.7160353636364,
+              "time_running_ns": 110626756359.0,
+              "time_enabled_ns": 110626756359.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 2136885477917.0,
+              "unit": "",
+              "per_call": 97131.15808713637,
+              "time_running_ns": 110626756359.0,
+              "time_enabled_ns": 110626756359.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "invntt:official": {
+      "candidate": "invntt",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-invntt-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 16430859855.0,
+              "unit": "",
+              "per_call": 746.8572661363636,
+              "time_running_ns": 3441140292.0,
+              "time_enabled_ns": 3475899284.848485,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 54696871279.0,
+              "unit": "",
+              "per_call": 2486.2214217727274,
+              "time_running_ns": 3441140292.0,
+              "time_enabled_ns": 3475899284.848485,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-invntt-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 53864398191.0,
+              "unit": "",
+              "per_call": 2448.3817359545455,
+              "time_running_ns": 3459935705.0,
+              "time_enabled_ns": 3494884550.5050507,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 5918527167.0,
+              "unit": "",
+              "per_call": 269.02396213636365,
+              "time_running_ns": 3459935705.0,
+              "time_enabled_ns": 3494884550.5050507,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 4246372221.0,
+              "unit": "",
+              "per_call": 193.01691913636364,
+              "time_running_ns": 3459935705.0,
+              "time_enabled_ns": 3494884550.5050507,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-invntt-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 5343.0,
+              "unit": "",
+              "per_call": 0.00024286363636363636,
+              "time_running_ns": 3461419442.0,
+              "time_enabled_ns": 3496383274.7474747,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 924080019.0,
+              "unit": "",
+              "per_call": 42.003637227272726,
+              "time_running_ns": 3461419442.0,
+              "time_enabled_ns": 3496383274.7474747,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 6771.0,
+              "unit": "",
+              "per_call": 0.0003077727272727273,
+              "time_running_ns": 3461419442.0,
+              "time_enabled_ns": 3496383274.7474747,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-invntt-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 99030030253.0,
+              "unit": "",
+              "per_call": 4501.3650115,
+              "time_running_ns": 3457175039.0,
+              "time_enabled_ns": 3492095998.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 3457175039.0,
+              "time_enabled_ns": 3492095998.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 45437307998.0,
+              "unit": "",
+              "per_call": 2065.3321817272727,
+              "time_running_ns": 3457175039.0,
+              "time_enabled_ns": 3492095998.989899,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "ntt:gt": {
+      "candidate": "ntt",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-ntt-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 255990821443.0,
+              "unit": "",
+              "per_call": 11635.946429227273,
+              "time_running_ns": 53630821521.0,
+              "time_enabled_ns": 54172546990.90909,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "instructions": {
+              "raw_count": 631359711580.0,
+              "unit": "",
+              "per_call": 28698.16870818182,
+              "time_running_ns": 53630821521.0,
+              "time_enabled_ns": 54172546990.90909,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-ntt-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 642308460998.0,
+              "unit": "",
+              "per_call": 29195.839136272727,
+              "time_running_ns": 53642601070.0,
+              "time_enabled_ns": 54184445525.252525,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 33242242275.0,
+              "unit": "",
+              "per_call": 1511.0110125,
+              "time_running_ns": 53642601070.0,
+              "time_enabled_ns": 54184445525.252525,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 18788105380.0,
+              "unit": "",
+              "per_call": 854.00479,
+              "time_running_ns": 53642601070.0,
+              "time_enabled_ns": 54184445525.252525,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-ntt-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 153130.0,
+              "unit": "",
+              "per_call": 0.006960454545454546,
+              "time_running_ns": 53810908629.0,
+              "time_enabled_ns": 54354453160.606064,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 27390197525.0,
+              "unit": "",
+              "per_call": 1245.008978409091,
+              "time_running_ns": 53810908629.0,
+              "time_enabled_ns": 54354453160.606064,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 22110367.0,
+              "unit": "",
+              "per_call": 1.0050166818181818,
+              "time_running_ns": 53810908629.0,
+              "time_enabled_ns": 54354453160.606064,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-ntt-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 1538177876246.0,
+              "unit": "",
+              "per_call": 69917.176193,
+              "time_running_ns": 53716329210.0,
+              "time_enabled_ns": 54258918393.93939,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 12064140205.0,
+              "unit": "",
+              "per_call": 548.3700093181818,
+              "time_running_ns": 53716329210.0,
+              "time_enabled_ns": 54258918393.93939,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 880682235026.0,
+              "unit": "",
+              "per_call": 40031.010683,
+              "time_running_ns": 53716329210.0,
+              "time_enabled_ns": 54258918393.93939,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "ntt:official": {
+      "candidate": "ntt",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-ntt-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 16075686379.0,
+              "unit": "",
+              "per_call": 730.7130172272728,
+              "time_running_ns": 3368623238.0,
+              "time_enabled_ns": 3368623238.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "instructions": {
+              "raw_count": 47696271920.0,
+              "unit": "",
+              "per_call": 2168.01236,
+              "time_running_ns": 3368623238.0,
+              "time_enabled_ns": 3368623238.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-ntt-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 46867210339.0,
+              "unit": "",
+              "per_call": 2130.327742681818,
+              "time_running_ns": 3351527754.0,
+              "time_enabled_ns": 3385381569.6969695,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 5852499630.0,
+              "unit": "",
+              "per_call": 266.02271045454546,
+              "time_running_ns": 3351527754.0,
+              "time_enabled_ns": 3385381569.6969695,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 4246356439.0,
+              "unit": "",
+              "per_call": 193.01620177272727,
+              "time_running_ns": 3351527754.0,
+              "time_enabled_ns": 3385381569.6969695,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-ntt-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 5355.0,
+              "unit": "",
+              "per_call": 0.0002434090909090909,
+              "time_running_ns": 3349450958.0,
+              "time_enabled_ns": 3383283795.959596,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 924096524.0,
+              "unit": "",
+              "per_call": 42.00438745454545,
+              "time_running_ns": 3349450958.0,
+              "time_enabled_ns": 3383283795.959596,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 6568.0,
+              "unit": "",
+              "per_call": 0.00029854545454545455,
+              "time_running_ns": 3349450958.0,
+              "time_enabled_ns": 3383283795.959596,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-ntt-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 96024789137.0,
+              "unit": "",
+              "per_call": 4364.763142590909,
+              "time_running_ns": 3354016764.0,
+              "time_enabled_ns": 3387895721.212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 3354016764.0,
+              "time_enabled_ns": 3387895721.212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 48953814069.0,
+              "unit": "",
+              "per_call": 2225.173366772727,
+              "time_running_ns": 3354016764.0,
+              "time_enabled_ns": 3387895721.212121,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "randombytes32:official": {
+      "candidate": "randombytes32",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-randombytes32-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 458479605131.0,
+              "unit": "",
+              "per_call": 20839.98205140909,
+              "time_running_ns": 96058239079.0,
+              "time_enabled_ns": 97028524322.22223,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 2091019581744.0,
+              "unit": "",
+              "per_call": 95046.34462472727,
+              "time_running_ns": 96058239079.0,
+              "time_enabled_ns": 97028524322.22223,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-randombytes32-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 2031054473664.0,
+              "unit": "",
+              "per_call": 92320.65789381818,
+              "time_running_ns": 95950710910.0,
+              "time_enabled_ns": 96919910010.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 299641401087.0,
+              "unit": "",
+              "per_call": 13620.063685772728,
+              "time_running_ns": 95950710910.0,
+              "time_enabled_ns": 96919910010.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 207307031383.0,
+              "unit": "",
+              "per_call": 9423.046881045455,
+              "time_running_ns": 95950710910.0,
+              "time_enabled_ns": 96919910010.10101,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-randombytes32-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 233612.0,
+              "unit": "",
+              "per_call": 0.010618727272727273,
+              "time_running_ns": 95961249789.0,
+              "time_enabled_ns": 96930555342.42424,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 39446840595.0,
+              "unit": "",
+              "per_call": 1793.0382088636363,
+              "time_running_ns": 95961249789.0,
+              "time_enabled_ns": 96930555342.42424,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 45892564.0,
+              "unit": "",
+              "per_call": 2.0860256363636362,
+              "time_running_ns": 95961249789.0,
+              "time_enabled_ns": 96930555342.42424,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-randombytes32-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 2748587045848.0,
+              "unit": "",
+              "per_call": 124935.77481127273,
+              "time_running_ns": 95988398586.0,
+              "time_enabled_ns": 96957978369.69698,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 21557545456.0,
+              "unit": "",
+              "per_call": 979.8884298181819,
+              "time_running_ns": 95988398586.0,
+              "time_enabled_ns": 96957978369.69698,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 657505136457.0,
+              "unit": "",
+              "per_call": 29886.59711168182,
+              "time_running_ns": 95988398586.0,
+              "time_enabled_ns": 96957978369.69698,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "randombytes96:official": {
+      "candidate": "randombytes96",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-randombytes96-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 821215151787.0,
+              "unit": "",
+              "per_call": 37327.961444863635,
+              "time_running_ns": 172055743502.0,
+              "time_enabled_ns": 172055743502.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "instructions": {
+              "raw_count": 3762487809918.0,
+              "unit": "",
+              "per_call": 171022.17317809092,
+              "time_running_ns": 172055743502.0,
+              "time_enabled_ns": 172055743502.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-randombytes96-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 3654258844022.0,
+              "unit": "",
+              "per_call": 166102.67472827272,
+              "time_running_ns": 172169727812.0,
+              "time_enabled_ns": 173908815971.71716,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 539001796754.0,
+              "unit": "",
+              "per_call": 24500.081670636362,
+              "time_running_ns": 172169727812.0,
+              "time_enabled_ns": 173908815971.71716,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 372835358295.0,
+              "unit": "",
+              "per_call": 16947.061740681816,
+              "time_running_ns": 172169727812.0,
+              "time_enabled_ns": 173908815971.71716,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-randombytes96-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 413619.0,
+              "unit": "",
+              "per_call": 0.018800863636363636,
+              "time_running_ns": 172241133751.0,
+              "time_enabled_ns": 173980943182.82828,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 70863585051.0,
+              "unit": "",
+              "per_call": 3221.0720477727273,
+              "time_running_ns": 172241133751.0,
+              "time_enabled_ns": 173980943182.82828,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 45444674.0,
+              "unit": "",
+              "per_call": 2.065667,
+              "time_running_ns": 172241133751.0,
+              "time_enabled_ns": 173980943182.82828,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-randombytes96-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 4925185459854.0,
+              "unit": "",
+              "per_call": 223872.066357,
+              "time_running_ns": 171977369192.0,
+              "time_enabled_ns": 171977369192.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 38628905567.0,
+              "unit": "",
+              "per_call": 1755.8593439545455,
+              "time_running_ns": 171977369192.0,
+              "time_enabled_ns": 171977369192.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 1139552714240.0,
+              "unit": "",
+              "per_call": 51797.850647272724,
+              "time_running_ns": 171977369192.0,
+              "time_enabled_ns": 171977369192.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "shake256:official": {
+      "candidate": "shake256",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-shake256-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 52564597499.0,
+              "unit": "",
+              "per_call": 2389.299886318182,
+              "time_running_ns": 11008817046.0,
+              "time_enabled_ns": 11120017218.181818,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 125181582004.0,
+              "unit": "",
+              "per_call": 5690.071909272728,
+              "time_running_ns": 11008817046.0,
+              "time_enabled_ns": 11120017218.181818,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-shake256-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 123609019635.0,
+              "unit": "",
+              "per_call": 5618.591801590909,
+              "time_running_ns": 11012895615.0,
+              "time_enabled_ns": 11124136984.848484,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 16192437104.0,
+              "unit": "",
+              "per_call": 736.0198683636364,
+              "time_running_ns": 11012895615.0,
+              "time_enabled_ns": 11124136984.848484,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1980060353.0,
+              "unit": "",
+              "per_call": 90.00274331818181,
+              "time_running_ns": 11012895615.0,
+              "time_enabled_ns": 11124136984.848484,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-shake256-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 10490.0,
+              "unit": "",
+              "per_call": 0.0004768181818181818,
+              "time_running_ns": 11007070869.0,
+              "time_enabled_ns": 11118253403.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 2926091066.0,
+              "unit": "",
+              "per_call": 133.00413936363637,
+              "time_running_ns": 11007070869.0,
+              "time_enabled_ns": 11118253403.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 24327695.0,
+              "unit": "",
+              "per_call": 1.1058043181818182,
+              "time_running_ns": 11007070869.0,
+              "time_enabled_ns": 11118253403.030304,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-shake256-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 315125060251.0,
+              "unit": "",
+              "per_call": 14323.866375045454,
+              "time_running_ns": 11004083376.0,
+              "time_enabled_ns": 11115235733.333334,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 4943138199.0,
+              "unit": "",
+              "per_call": 224.68809995454546,
+              "time_running_ns": 11004083376.0,
+              "time_enabled_ns": 11115235733.333334,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 186603467050.0,
+              "unit": "",
+              "per_call": 8481.975775,
+              "time_running_ns": 11004083376.0,
+              "time_enabled_ns": 11115235733.333334,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "sotp_decode:official": {
+      "candidate": "sotp_decode",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-sotp_decode-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 3109104314.0,
+              "unit": "",
+              "per_call": 141.32292336363636,
+              "time_running_ns": 649877671.0,
+              "time_enabled_ns": 656442091.919192,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 9421568835.0,
+              "unit": "",
+              "per_call": 428.2531288636364,
+              "time_running_ns": 649877671.0,
+              "time_enabled_ns": 656442091.919192,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-sotp_decode-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 9509066782.0,
+              "unit": "",
+              "per_call": 432.23030827272726,
+              "time_running_ns": 647144908.0,
+              "time_enabled_ns": 653681725.2525252,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 1716824043.0,
+              "unit": "",
+              "per_call": 78.0374565,
+              "time_running_ns": 647144908.0,
+              "time_enabled_ns": 653681725.2525252,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 572278513.0,
+              "unit": "",
+              "per_call": 26.01265968181818,
+              "time_running_ns": 647144908.0,
+              "time_enabled_ns": 653681725.2525252,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-sotp_decode-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 2301.0,
+              "unit": "",
+              "per_call": 0.00010459090909090909,
+              "time_running_ns": 658270462.0,
+              "time_enabled_ns": 658270462.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "branches": {
+              "raw_count": 154034679.0,
+              "unit": "",
+              "per_call": 7.001576318181818,
+              "time_running_ns": 658270462.0,
+              "time_enabled_ns": 658270462.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "branch-misses": {
+              "raw_count": 3879.0,
+              "unit": "",
+              "per_call": 0.0001763181818181818,
+              "time_running_ns": 658270462.0,
+              "time_enabled_ns": 658270462.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-sotp_decode-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 18611601310.0,
+              "unit": "",
+              "per_call": 845.9818777272727,
+              "time_running_ns": 648092380.0,
+              "time_enabled_ns": 654638767.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 145973343.0,
+              "unit": "",
+              "per_call": 6.635151954545455,
+              "time_running_ns": 648092380.0,
+              "time_enabled_ns": 654638767.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 8904373960.0,
+              "unit": "",
+              "per_call": 404.7442709090909,
+              "time_running_ns": 648092380.0,
+              "time_enabled_ns": 654638767.6767677,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "sotp_encode:official": {
+      "candidate": "sotp_encode",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-sotp_encode-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 2134717426.0,
+              "unit": "",
+              "per_call": 97.03261027272727,
+              "time_running_ns": 452980858.0,
+              "time_enabled_ns": 457556422.2222222,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 7815551299.0,
+              "unit": "",
+              "per_call": 355.25233177272725,
+              "time_running_ns": 452980858.0,
+              "time_enabled_ns": 457556422.2222222,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-sotp_encode-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 7749972279.0,
+              "unit": "",
+              "per_call": 352.27146722727275,
+              "time_running_ns": 447733924.0,
+              "time_enabled_ns": 452256488.8888889,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 286221302.0,
+              "unit": "",
+              "per_call": 13.010059181818182,
+              "time_running_ns": 447733924.0,
+              "time_enabled_ns": 452256488.8888889,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1078768787.0,
+              "unit": "",
+              "per_call": 49.03494486363636,
+              "time_running_ns": 447733924.0,
+              "time_enabled_ns": 452256488.8888889,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-sotp_encode-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 1041.0,
+              "unit": "",
+              "per_call": 4.731818181818182e-05,
+              "time_running_ns": 445360650.0,
+              "time_enabled_ns": 449859242.42424244,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 154119841.0,
+              "unit": "",
+              "per_call": 7.005447318181818,
+              "time_running_ns": 445360650.0,
+              "time_enabled_ns": 449859242.42424244,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 1217.0,
+              "unit": "",
+              "per_call": 5.5318181818181816e-05,
+              "time_running_ns": 445360650.0,
+              "time_enabled_ns": 449859242.42424244,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-sotp_encode-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 12832480624.0,
+              "unit": "",
+              "per_call": 583.2945738181818,
+              "time_running_ns": 453181664.0,
+              "time_enabled_ns": 457759256.56565654,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 453181664.0,
+              "time_enabled_ns": 457759256.56565654,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "topdown-be-bound": {
+              "raw_count": 5032345341.0,
+              "unit": "",
+              "per_call": 228.74297004545454,
+              "time_running_ns": 453181664.0,
+              "time_enabled_ns": 457759256.56565654,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        }
+      }
+    },
+    "sub:official": {
+      "candidate": "sub",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-sub-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 1391678755.0,
+              "unit": "",
+              "per_call": 63.25812522727273,
+              "time_running_ns": 291479636.0,
+              "time_enabled_ns": 294423874.74747473,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            },
+            "instructions": {
+              "raw_count": 4360908703.0,
+              "unit": "",
+              "per_call": 198.22312286363638,
+              "time_running_ns": 291479636.0,
+              "time_enabled_ns": 294423874.74747473,
+              "running_percent": 99.0,
+              "scaling_factor": 1.01010101010101
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-sub-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 4184788653.0,
+              "unit": "",
+              "per_call": 190.21766604545454,
+              "time_running_ns": 289315858.0,
+              "time_enabled_ns": 292238240.4040404,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 2136285618.0,
+              "unit": "",
+              "per_call": 97.10389172727272,
+              "time_running_ns": 289315858.0,
+              "time_enabled_ns": 292238240.4040404,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1079155127.0,
+              "unit": "",
+              "per_call": 49.05250577272727,
+              "time_running_ns": 289315858.0,
+              "time_enabled_ns": 292238240.4040404,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-sub-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 719.0,
+              "unit": "",
+              "per_call": 3.268181818181818e-05,
+              "time_running_ns": 291147321.0,
+              "time_enabled_ns": 294088203.03030306,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 264299676.0,
+              "unit": "",
+              "per_call": 12.013621636363636,
+              "time_running_ns": 291147321.0,
+              "time_enabled_ns": 294088203.03030306,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 1181.0,
+              "unit": "",
+              "per_call": 5.3681818181818184e-05,
+              "time_running_ns": 291147321.0,
+              "time_enabled_ns": 294088203.03030306,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-sub-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 8306461710.0,
+              "unit": "",
+              "per_call": 377.5664413636364,
+              "time_running_ns": 297720024.0,
+              "time_enabled_ns": 297720024.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 943188.0,
+              "unit": "",
+              "per_call": 0.042872181818181816,
+              "time_running_ns": 297720024.0,
+              "time_enabled_ns": 297720024.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 4104369315.0,
+              "unit": "",
+              "per_call": 186.56224159090908,
+              "time_running_ns": 297720024.0,
+              "time_enabled_ns": 297720024.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "tobytes:gt": {
+      "candidate": "tobytes",
+      "backend": "gt",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-tobytes-gt-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 39132533469.0,
+              "unit": "",
+              "per_call": 1778.7515213181819,
+              "time_running_ns": 8205582198.0,
+              "time_enabled_ns": 8288466866.666667,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 179751400024.0,
+              "unit": "",
+              "per_call": 8170.518182909091,
+              "time_running_ns": 8205582198.0,
+              "time_enabled_ns": 8288466866.666667,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-tobytes-gt-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 179792373455.0,
+              "unit": "",
+              "per_call": 8172.380611590909,
+              "time_running_ns": 8200608154.0,
+              "time_enabled_ns": 8283442579.79798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 26158122033.0,
+              "unit": "",
+              "per_call": 1189.0055469545455,
+              "time_running_ns": 8200608154.0,
+              "time_enabled_ns": 8283442579.79798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 5126036725.0,
+              "unit": "",
+              "per_call": 233.00166931818183,
+              "time_running_ns": 8200608154.0,
+              "time_enabled_ns": 8283442579.79798,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-tobytes-gt-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 11287.0,
+              "unit": "",
+              "per_call": 0.0005130454545454545,
+              "time_running_ns": 8193035114.0,
+              "time_enabled_ns": 8275793044.444445,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 4598186028.0,
+              "unit": "",
+              "per_call": 209.00845581818183,
+              "time_running_ns": 8193035114.0,
+              "time_enabled_ns": 8275793044.444445,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 5161590.0,
+              "unit": "",
+              "per_call": 0.23461772727272728,
+              "time_running_ns": 8193035114.0,
+              "time_enabled_ns": 8275793044.444445,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-tobytes-gt-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 234858036145.0,
+              "unit": "",
+              "per_call": 10675.365279318181,
+              "time_running_ns": 8197715720.0,
+              "time_enabled_ns": 8280520929.29293,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 8197715720.0,
+              "time_enabled_ns": 8280520929.29293,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 55260714386.0,
+              "unit": "",
+              "per_call": 2511.850653909091,
+              "time_running_ns": 8197715720.0,
+              "time_enabled_ns": 8280520929.29293,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    },
+    "tobytes:official": {
+      "candidate": "tobytes",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-tobytes-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 4875773727.0,
+              "unit": "",
+              "per_call": 221.6260785,
+              "time_running_ns": 1019989527.0,
+              "time_enabled_ns": 1030292451.5151515,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "instructions": {
+              "raw_count": 15888188016.0,
+              "unit": "",
+              "per_call": 722.1903643636364,
+              "time_running_ns": 1019989527.0,
+              "time_enabled_ns": 1030292451.5151515,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-tobytes-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 15758155423.0,
+              "unit": "",
+              "per_call": 716.2797919545454,
+              "time_running_ns": 1025735262.0,
+              "time_enabled_ns": 1036096224.2424242,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 1122375808.0,
+              "unit": "",
+              "per_call": 51.01708218181818,
+              "time_running_ns": 1025735262.0,
+              "time_enabled_ns": 1036096224.2424242,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 814268239.0,
+              "unit": "",
+              "per_call": 37.012192681818185,
+              "time_running_ns": 1025735262.0,
+              "time_enabled_ns": 1036096224.2424242,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-tobytes-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 2094.0,
+              "unit": "",
+              "per_call": 9.518181818181818e-05,
+              "time_running_ns": 1018153935.0,
+              "time_enabled_ns": 1028438318.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 220071012.0,
+              "unit": "",
+              "per_call": 10.003227818181818,
+              "time_running_ns": 1018153935.0,
+              "time_enabled_ns": 1028438318.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 2381.0,
+              "unit": "",
+              "per_call": 0.00010822727272727272,
+              "time_running_ns": 1018153935.0,
+              "time_enabled_ns": 1028438318.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-tobytes-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 29360992314.0,
+              "unit": "",
+              "per_call": 1334.5905597272726,
+              "time_running_ns": 1023117745.0,
+              "time_enabled_ns": 1023117745.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 1023117745.0,
+              "time_enabled_ns": 1023117745.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "topdown-be-bound": {
+              "raw_count": 13586655266.0,
+              "unit": "",
+              "per_call": 617.5752393636363,
+              "time_running_ns": 1023117745.0,
+              "time_enabled_ns": 1023117745.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        }
+      }
+    },
+    "triple:official": {
+      "candidate": "triple",
+      "backend": "official",
+      "groups": {
+        "1": {
+          "artifact": "results/round3-pmu-triple-official-g1.csv",
+          "events": {
+            "cycles": {
+              "raw_count": 1268091284.0,
+              "unit": "",
+              "per_call": 57.64051290909091,
+              "time_running_ns": 265881132.0,
+              "time_enabled_ns": 265881132.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            },
+            "instructions": {
+              "raw_count": 5016269659.0,
+              "unit": "",
+              "per_call": 228.01225722727273,
+              "time_running_ns": 265881132.0,
+              "time_enabled_ns": 265881132.0,
+              "running_percent": 100.0,
+              "scaling_factor": 1.0
+            }
+          }
+        },
+        "2": {
+          "artifact": "results/round3-pmu-triple-official-g2.csv",
+          "events": {
+            "uops_retired.slots": {
+              "raw_count": 4845424161.0,
+              "unit": "",
+              "per_call": 220.24655277272728,
+              "time_running_ns": 265147520.0,
+              "time_enabled_ns": 267825777.7777778,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_loads": {
+              "raw_count": 1079154814.0,
+              "unit": "",
+              "per_call": 49.052491545454544,
+              "time_running_ns": 265147520.0,
+              "time_enabled_ns": 267825777.7777778,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "mem_inst_retired.all_stores": {
+              "raw_count": 1079145436.0,
+              "unit": "",
+              "per_call": 49.052065272727276,
+              "time_running_ns": 265147520.0,
+              "time_enabled_ns": 267825777.7777778,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "3": {
+          "artifact": "results/round3-pmu-triple-official-g3.csv",
+          "events": {
+            "mem_load_retired.l1_miss": {
+              "raw_count": 787.0,
+              "unit": "",
+              "per_call": 3.577272727272727e-05,
+              "time_running_ns": 266179096.0,
+              "time_enabled_ns": 268867773.73737377,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branches": {
+              "raw_count": 264562341.0,
+              "unit": "",
+              "per_call": 12.025560954545455,
+              "time_running_ns": 266179096.0,
+              "time_enabled_ns": 268867773.73737377,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "branch-misses": {
+              "raw_count": 1248.0,
+              "unit": "",
+              "per_call": 5.6727272727272726e-05,
+              "time_running_ns": 266179096.0,
+              "time_enabled_ns": 268867773.73737377,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        },
+        "4": {
+          "artifact": "results/round3-pmu-triple-official-g4.csv",
+          "events": {
+            "slots": {
+              "raw_count": 7633685430.0,
+              "unit": "",
+              "per_call": 346.98570136363634,
+              "time_running_ns": 266409018.0,
+              "time_enabled_ns": 269100018.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-fe-bound": {
+              "raw_count": 0.0,
+              "unit": "",
+              "per_call": 0.0,
+              "time_running_ns": 266409018.0,
+              "time_enabled_ns": 269100018.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            },
+            "topdown-be-bound": {
+              "raw_count": 2784049979.0,
+              "unit": "",
+              "per_call": 126.54772631818182,
+              "time_running_ns": 266409018.0,
+              "time_enabled_ns": 269100018.1818182,
+              "running_percent": 99.0,
+              "scaling_factor": 1.0101010101010102
+            }
+          }
+        }
+      }
+    }
+  }
+}

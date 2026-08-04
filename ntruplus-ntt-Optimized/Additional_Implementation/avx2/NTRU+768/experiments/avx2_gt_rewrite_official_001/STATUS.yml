@@ -1,6 +1,6 @@
 schema_version: 1
 experiment_id: AVX2-GT-REWRITE-OFFICIAL-001
-lifecycle: round2-amdahl-rejected
+lifecycle: round3-gt-unsuitable-for-avx2
 branch: experiment/avx2-gt-rewrite-official-001
 worktree: /home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001
 
@@ -35,6 +35,15 @@ implementation:
     million_call_paired_samples: complete
     pmu_metrics: complete
     amdahl_gate: failed-before-assembly
+  round3_differential_attribution:
+    authoritative_baseline: round3-primary-20260804-cpu1-f059ceb
+    counters_only_caller_edges: complete
+    symmetric_direct_costs: complete
+    grouped_pmu_matrix: complete-27-measurements-times-4-groups
+    coarse_shared_differential_region: complete
+    differential_closure_error_percent: 0.844
+    max_zero_floor_coherent_potential_cycles: 53228.365
+    seventy_k_gate: failed-before-prototype
 
 gates:
   official_contract: pass
@@ -48,6 +57,9 @@ gates:
   asan_ubsan: pass
   release_mechanical_audit: pass
   full_caller_performance: fail
+  round3_absolute_closure_official: pass-1.596-percent
+  round3_absolute_closure_gt: pass-0.343-percent
+  round3_differential_closure: pass-0.844-percent
 
 selection:
   n32: B1
@@ -56,8 +68,10 @@ selection:
   backend_default: official
   gt_backend: opt-in
   promotion: rejected
+  round3_decision: stop-gt-unsuitable-for-avx2
 
 next_work:
-  - do not implement paired B1 assembly under the frozen Round 2 scope
-  - any future round must target more than B1 or change the promotion objective
+  - do not implement a Round 3 prototype; no coherent scope reaches 70k even with a zero floor
+  - do not reopen B1 assembly, lazy, B2, C, or BM-B under the frozen objective
+  - any future round must change the architecture, representation boundary, or promotion objective
   - keep Official as the default backend
