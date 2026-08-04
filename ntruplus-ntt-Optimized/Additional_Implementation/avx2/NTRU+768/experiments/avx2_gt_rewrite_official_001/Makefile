@@ -3,8 +3,10 @@ BACKEND ?= official
 
 REPO_ROOT := $(abspath ../../../../../..)
 OFFICIAL_ROOT := $(REPO_ROOT)/third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
+PROTOTYPE_ROOT := $(REPO_ROOT)/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt_ntt
 BUILD_DIR ?= build
 OFFICIAL_OBJ_DIR := $(BUILD_DIR)/official
+PROTOTYPE_OBJ_DIR := $(BUILD_DIR)/prototype
 
 CPPFLAGS := -I$(OFFICIAL_ROOT) -Isrc
 COMMON_FLAGS := -mavx2 -mbmi2 -mpopcnt -maes -march=native -mtune=native \
@@ -30,6 +32,13 @@ KEM_SUPPORT_OBJS := $(KEM_ASM_OBJS) $(OFFICIAL_OBJ_DIR)/symmetric.o \
 	$(OFFICIAL_OBJ_DIR)/fips202/fips202.o \
 	$(OFFICIAL_OBJ_DIR)/fips202/KeccakP-1600-AVX2.o \
 	$(OFFICIAL_OBJ_DIR)/kat/rng.o $(OFFICIAL_OBJ_DIR)/kat/aes.o
+PROTOTYPE_C_NAMES := gt_native_pack gt_baseinv_native gt_basemul_soa gt_ntt_tables
+PROTOTYPE_ASM_NAMES := gt_native_pack_asm gt_ntt_frontend_stage12_soa \
+	gt_ntt_stage345_soa gt_baseinv_native_prepare_asm gt_basemul_layout_asm
+PROTOTYPE_RAW_OBJS := \
+	$(addprefix $(PROTOTYPE_OBJ_DIR)/,$(addsuffix .o,$(PROTOTYPE_C_NAMES))) \
+	$(addprefix $(PROTOTYPE_OBJ_DIR)/,$(addsuffix .o,$(PROTOTYPE_ASM_NAMES)))
+PROTOTYPE_OBJS := $(BUILD_DIR)/prototype_keypair_adapter.o $(PROTOTYPE_RAW_OBJS)
 
 .PHONY: all official-dry-run official-test official-kat-build \
 	official-contract generate check-generated scalar-test check clean \
@@ -39,6 +48,8 @@ KEM_SUPPORT_OBJS := $(KEM_ASM_OBJS) $(OFFICIAL_OBJ_DIR)/symmetric.o \
 .PHONY: kem-differential
 .PHONY: kat-differential
 .PHONY: selected-kat-build selected-kat-run backend-selector-audit
+.PHONY: prototype-keypair-differential bench-prototype-compare \
+	bench-prototype-compare-smoke check-prototype-source-closure
 
 ifeq ($(BACKEND),official)
 SELECTED_KEM_OBJ := $(BUILD_DIR)/official_kem.o
@@ -91,6 +102,21 @@ $(OFFICIAL_OBJ_DIR)/fips202/%.o: $(OFFICIAL_ROOT)/fips202/%.s
 $(OFFICIAL_OBJ_DIR)/kat/%.o: $(OFFICIAL_ROOT)/kat/%.c
 	@mkdir -p $(@D)
 	$(CC) -I$(OFFICIAL_ROOT)/kat $(OFFICIAL_CFLAGS) -c $< -o $@
+
+$(PROTOTYPE_OBJ_DIR)/%.o: $(PROTOTYPE_ROOT)/%.c
+	@mkdir -p $(@D)
+	$(CC) -I$(OFFICIAL_ROOT) -I$(PROTOTYPE_ROOT) \
+		-DGT_HAVE_AVX2_ASM=1 $(TEST_CFLAGS) -c $< -o $@
+
+$(PROTOTYPE_OBJ_DIR)/%.o: $(PROTOTYPE_ROOT)/%.S
+	@mkdir -p $(@D)
+	$(CC) -I$(OFFICIAL_ROOT) -I$(PROTOTYPE_ROOT) \
+		-DGT_HAVE_AVX2_ASM=1 $(COMMON_FLAGS) -c $< -o $@
+
+$(PROTOTYPE_OBJ_DIR)/%.o: $(PROTOTYPE_ROOT)/%.s
+	@mkdir -p $(@D)
+	$(CC) -I$(OFFICIAL_ROOT) -I$(PROTOTYPE_ROOT) \
+		-DGT_HAVE_AVX2_ASM=1 $(COMMON_FLAGS) -c $< -o $@
 
 $(BUILD_DIR)/official_contract.o: tests/official_contract.c src/gt_schoolbook.h
 	@mkdir -p $(@D)
@@ -225,6 +251,22 @@ $(BUILD_DIR)/test_kem_differential.o: tests/test_kem_differential.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) -I$(OFFICIAL_ROOT) $(TEST_CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/prototype_keypair_adapter.o: src/prototype_keypair_adapter.c \
+		src/prototype_keypair_adapter.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -I$(PROTOTYPE_ROOT) -DGT_HAVE_AVX2_ASM=1 \
+		$(TEST_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/test_prototype_keypair.o: tests/test_prototype_keypair.c \
+		src/prototype_keypair_adapter.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(TEST_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/bench_prototype_compare.o: bench/bench_prototype_compare.c \
+		src/prototype_keypair_adapter.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(TEST_CFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/kat_official_main.o: $(OFFICIAL_ROOT)/kat/PQCgenKAT_kem.c
 	@mkdir -p $(@D)
 	$(CC) -I$(OFFICIAL_ROOT) -I$(OFFICIAL_ROOT)/kat $(OFFICIAL_CFLAGS) -c $< -o $@
@@ -268,6 +310,18 @@ $(BUILD_DIR)/test_kem_differential: $(BUILD_DIR)/test_kem_differential.o \
 
 kem-differential: check-generated $(BUILD_DIR)/test_kem_differential
 	$(BUILD_DIR)/test_kem_differential
+
+$(BUILD_DIR)/test_prototype_keypair: $(BUILD_DIR)/test_prototype_keypair.o \
+		$(PROTOTYPE_OBJS) $(BUILD_DIR)/official_kem.o \
+		$(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -o $@
+
+prototype-keypair-differential: check-prototype-source-closure \
+		$(BUILD_DIR)/test_prototype_keypair
+	$(BUILD_DIR)/test_prototype_keypair
+
+check-prototype-source-closure:
+	python3 tools/check_prototype_source_closure.py
 
 $(BUILD_DIR)/PQCgenKAT_official: $(BUILD_DIR)/kat_official_main.o \
 	$(BUILD_DIR)/official_kem.o $(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
@@ -372,6 +426,20 @@ bench-kem-instructions: $(BUILD_DIR)/bench_kem
 		$(BUILD_DIR)/bench_kem --candidate gt --iterations 100 --samples 20 \
 		| tee results/kem-gt-run.json
 
+$(BUILD_DIR)/bench_prototype_compare: $(BUILD_DIR)/bench_prototype_compare.o \
+		$(PROTOTYPE_OBJS) $(BUILD_DIR)/official_kem.o $(BUILD_DIR)/gt_kem.o \
+		$(GT_OBJS) $(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
+
+bench-prototype-compare-smoke: check-prototype-source-closure \
+		$(BUILD_DIR)/bench_prototype_compare
+	$(BUILD_DIR)/bench_prototype_compare --iterations 1 --samples 4
+
+bench-prototype-compare: check-prototype-source-closure \
+		$(BUILD_DIR)/bench_prototype_compare
+	$(BUILD_DIR)/bench_prototype_compare --iterations 100 --samples 24 \
+		| tee results/prototype-keypair-same-binary.json
+
 $(BUILD_DIR)/bench_stages: $(BUILD_DIR)/bench_stages.o $(GT_OBJS)
 	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
 
@@ -454,7 +522,8 @@ sanitize:
 		scalar-test bm32-test kem-differential
 
 check: official-contract scalar-test bm32-test kem-differential kat-differential \
-	backend-selector-audit audit-release sanitize
+	backend-selector-audit audit-release sanitize \
+	prototype-keypair-differential
 
 clean:
 	$(RM) -r $(BUILD_DIR)

@@ -44,6 +44,14 @@ implementation:
     differential_closure_error_percent: 0.844
     max_zero_floor_coherent_potential_cycles: 53228.365
     seventy_k_gate: failed-before-prototype
+  prototype_branch_comparison:
+    source_revision: 76a0c183f73fb008a808c0c3ebe97af8415ecad5
+    source_closure: committed-and-sha256-locked
+    scope: native-gt-keypair-plus-official-encap-decap
+    deterministic_keypair_and_triplet_rounds: 100-byte-exact
+    hardened_hybrid_paired_delta_cycles: -65.030
+    hardened_hybrid_paired_delta_mad_cycles: 752.900
+    conclusion: keypair-parity-only-not-full-gt-parity
 
 gates:
   official_contract: pass
@@ -75,3 +83,4 @@ next_work:
   - do not reopen B1 assembly, lazy, B2, C, or BM-B under the frozen objective
   - any future round must change the architecture, representation boundary, or promotion objective
   - keep Official as the default backend
+  - if the architecture objective is reopened, freeze one consumer-complete native decapsulation closure before any integration claim

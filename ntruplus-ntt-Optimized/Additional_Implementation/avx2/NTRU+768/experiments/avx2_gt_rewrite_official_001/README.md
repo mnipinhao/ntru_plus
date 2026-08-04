@@ -18,6 +18,15 @@ with an impossible zero floor, so it cannot meet the 70,000-cycle removable
 potential gate. The final Round 3 decision is `stop-gt-unsuitable-for-avx2`;
 no benchmark-only prototype or integration was authorized.
 
+A subsequent scope-control experiment links the committed
+`avx2-gt-ntt-prototype` native keypair kernels into the same Official Main
+binary. Its hardened hybrid (native GT keypair, Official encap/decap) is
+byte-exact for 100 deterministic triplets and measures `-65 ± 753` paired
+cycles versus Official: parity within noise. This does not contradict Round
+3, because it bypasses every expensive GT encap/decap boundary. Replacing
+only Round 3's keypair with the prototype result would still project about
+164.7k cycles. See `results/prototype-branch-comparison.md`.
+
 Official Main revision `0c249d5828b90e8dd5de2c8405323d5ee2a0ce41`
 owns the KEM call graph, public API, `poly` type, in-place transform signatures,
 wire formats, scaling, failure behavior, and KAT contract. `ntruplus-KpqC-Final`
@@ -83,6 +92,9 @@ make CC=gcc bench-symmetric
 make CC=gcc bench-round3-coarse-region
 make CC=gcc bench-symmetric-pmu
 make round3-attribution
+make CC=gcc check-prototype-source-closure
+make CC=gcc prototype-keypair-differential
+make CC=gcc bench-prototype-compare
 
 # Public KEM API, compile-time selection only:
 make CC=gcc BACKEND=official selected-kat-run
