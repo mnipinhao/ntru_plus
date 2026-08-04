@@ -71,6 +71,8 @@ static int check_forward_case(const poly *input, unsigned id)
     poly c = *input;
     poly avx2_b1 = *input;
     poly avx2_b2 = *input;
+    poly staged_b1;
+    _Alignas(32) int16_t rows[3][32][16];
     gt_range_trace trace;
 
     poly_ntt(&official);
@@ -84,13 +86,17 @@ static int check_forward_case(const poly *input, unsigned id)
     gt_ref_ntt_variant(&c, GT_N32_C, NULL);
     gt_poly_ntt_avx2_b1(&avx2_b1);
     gt_poly_ntt_avx2_b2(&avx2_b2);
+    gt_profile_forward_frontend(rows, input);
+    gt_profile_forward_b1(&staged_b1,
+                          (const int16_t (*)[32][16])rows);
     if (memcmp(&b1, &b2, sizeof b1) != 0 || memcmp(&b2, &c, sizeof b2) != 0) {
         fprintf(stderr, "N32 stage differential failed case=%u\n", id);
         return 0;
     }
     if (memcmp(&b2, &avx2_b1, sizeof b2) != 0
+            || memcmp(&avx2_b1, &staged_b1, sizeof avx2_b1) != 0
             || memcmp(&b2, &avx2_b2, sizeof b2) != 0) {
-        fprintf(stderr, "AVX2 B1/B2 differential failed case=%u\n", id);
+        fprintf(stderr, "AVX2/staged B1/B2 differential failed case=%u\n", id);
         return 0;
     }
     if (!bytes_equal(&official, &b2)) {
@@ -100,10 +106,18 @@ static int check_forward_case(const poly *input, unsigned id)
     {
         poly scalar_inverse = b2;
         poly avx2_inverse = b2;
+        poly staged_inverse;
+        _Alignas(32) int16_t after32[3][32][16];
         gt_ref_poly_invntt_scale(&scalar_inverse);
         gt_poly_invntt_avx2_b(&avx2_inverse);
-        if (memcmp(&scalar_inverse, &avx2_inverse, sizeof scalar_inverse) != 0) {
-            fprintf(stderr, "AVX2 paired inverse differential failed case=%u\n", id);
+        gt_profile_inverse_b1(after32, &b2);
+        gt_profile_inverse_tail(&staged_inverse,
+                                (const int16_t (*)[32][16])after32);
+        if (memcmp(&scalar_inverse, &avx2_inverse, sizeof scalar_inverse) != 0
+                || memcmp(&avx2_inverse, &staged_inverse,
+                          sizeof avx2_inverse) != 0) {
+            fprintf(stderr, "AVX2/staged inverse differential failed case=%u\n",
+                    id);
             return 0;
         }
     }

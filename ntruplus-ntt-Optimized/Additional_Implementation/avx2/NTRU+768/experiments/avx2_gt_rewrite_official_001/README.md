@@ -3,9 +3,11 @@
 Experiment ID: `AVX2-GT-REWRITE-OFFICIAL-001`.
 
 This experiment now contains a complete canonical, byte-exact GT backend and
-the evidence needed to decide whether it may replace Official Main.  It does
-not currently pass the performance gate, so `BACKEND=official` remains the
-default and GT remains opt-in.
+the evidence needed to decide whether it may replace Official Main. Round 2
+decomposed full-caller cost and stopped at the theoretical Amdahl gate: paired
+B1 forward/inverse accounts for only 36,778 caller-weighted cycles, while at
+least 95,420 cycles must be removed. No Round 2 assembly was started.
+`BACKEND=official` therefore remains the default and GT remains opt-in.
 
 Official Main revision `0c249d5828b90e8dd5de2c8405323d5ee2a0ce41`
 owns the KEM call graph, public API, `poly` type, in-place transform signatures,
@@ -60,6 +62,11 @@ make CC=gcc bench-basemul
 make CC=gcc bench-basemul-instructions
 make CC=gcc bench-kem
 make CC=gcc bench-kem-instructions
+make CC=gcc bench-call-counts
+make CC=gcc bench-stages
+make CC=gcc bench-stages-pmu
+make CC=gcc bench-stages-pmu-summary
+make round2-amdahl
 
 # Public KEM API, compile-time selection only:
 make CC=gcc BACKEND=official selected-kat-run
@@ -71,8 +78,9 @@ stage/schoolbook/baseinv tests, one-million-vector BM32 test, 8-round
 same-binary KEM differential, 100-case byte-exact KAT, release-object audit,
 and ASan/UBSan run.
 
-The fused F0/F1 producer and inverse DFT3/preweight/top-CRT/store are AVX2, but
-the current compiler-generated cyclic16/NTT32 scheduling still has substantial
-fixed row-workspace traffic.  Lazy serialization/add/sub fusion is
-intentionally not promoted while this larger boundary remains slower; see the
-current numbers in `results/promotion.yml`.
+The fused F0/F1 producer and inverse DFT3/preweight/top-CRT/store are AVX2.
+Although compiler-generated cyclic16/NTT32 has substantial fixed workspace
+traffic, making that paired boundary infinitely fast still projects about
+150,083 cycles per caller triplet. See `proofs/round2-amdahl-gate.md` and
+`results/round2-amdahl.json`; a future performance round must use a broader
+optimization boundary rather than B1 assembly alone.

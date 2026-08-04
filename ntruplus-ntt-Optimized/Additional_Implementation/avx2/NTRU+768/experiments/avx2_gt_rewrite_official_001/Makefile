@@ -52,7 +52,9 @@ endif
 SELECTED_KAT_BIN := $(BUILD_DIR)/PQCgenKAT_selected_$(BACKEND)
 .PHONY: bench-n32 bench-n32-smoke bench-n32-instructions \
 	bench-basemul bench-basemul-smoke bench-basemul-instructions \
-	bench-kem bench-kem-smoke bench-kem-instructions
+	bench-kem bench-kem-smoke bench-kem-instructions \
+	bench-stages bench-stages-smoke bench-stages-pmu bench-call-counts \
+	bench-stages-pmu-summary round2-amdahl
 
 all: check
 
@@ -139,6 +141,14 @@ $(BUILD_DIR)/bench_basemul.o: bench/bench_basemul.c src/gt_backend.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) -Igenerated $(TEST_CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/bench_stages.o: bench/bench_stages.c src/gt_backend.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -Igenerated $(TEST_CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/bench_call_counts.o: bench/bench_call_counts.c src/gt_backend.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) -Igenerated -I$(OFFICIAL_ROOT) $(TEST_CFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/official_kem.o: $(OFFICIAL_ROOT)/kem.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(OFFICIAL_CFLAGS) -c $< -o $@
@@ -158,6 +168,22 @@ GT_KEM_RENAMES := \
 $(BUILD_DIR)/gt_kem.o: $(OFFICIAL_ROOT)/kem.c src/gt_backend.h
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(OFFICIAL_CFLAGS) $(GT_KEM_RENAMES) -c $< -o $@
+
+COUNTED_KEM_RENAMES := \
+	-Dcrypto_kem_keypair=gt_count_crypto_kem_keypair \
+	-Dcrypto_kem_enc=gt_count_crypto_kem_enc \
+	-Dcrypto_kem_dec=gt_count_crypto_kem_dec \
+	-Dpoly_ntt=gt_count_poly_ntt \
+	-Dpoly_invntt_scale=gt_count_poly_invntt_scale \
+	-Dpoly_basemul=gt_count_poly_basemul \
+	-Dpoly_basemul_scale=gt_count_poly_basemul_scale \
+	-Dpoly_baseinv=gt_count_poly_baseinv \
+	-Dpoly_tobytes=gt_count_poly_tobytes \
+	-Dpoly_frombytes=gt_count_poly_frombytes
+
+$(BUILD_DIR)/gt_kem_counted.o: $(OFFICIAL_ROOT)/kem.c src/gt_backend.h
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(OFFICIAL_CFLAGS) $(COUNTED_KEM_RENAMES) -c $< -o $@
 
 GT_POLY_RENAMES := \
 	-Dpoly_ntt=gt_poly_ntt \
@@ -313,6 +339,39 @@ bench-kem-instructions: $(BUILD_DIR)/bench_kem
 		-e cpu_core/cycles/,cpu_core/instructions/ -- \
 		$(BUILD_DIR)/bench_kem --candidate gt --iterations 100 --samples 20 \
 		| tee results/kem-gt-run.json
+
+$(BUILD_DIR)/bench_stages: $(BUILD_DIR)/bench_stages.o $(GT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -lm -o $@
+
+bench-stages-smoke: $(BUILD_DIR)/bench_stages
+	$(BUILD_DIR)/bench_stages --iterations 100 --samples 4
+
+bench-stages: $(BUILD_DIR)/bench_stages
+	$(BUILD_DIR)/bench_stages --iterations 1000000 --samples 20 \
+		| tee results/round2-stage-cycles.json
+
+bench-stages-pmu: $(BUILD_DIR)/bench_stages
+	@for stage in forward_frontend forward_b1 basemul_bm_a baseinv \
+		inverse_b1 inverse_tail tobytes frombytes; do \
+		perf stat -x, -o results/round2-$${stage}-perf.csv \
+			-e cpu_core/cycles/,cpu_core/instructions/,cpu_core/uops_retired.slots/,cpu_core/mem_inst_retired.all_loads/,cpu_core/mem_inst_retired.all_stores/,cpu_core/mem_load_retired.l1_miss/,cpu_core/branches/,cpu_core/branch-misses/,cpu_core/topdown-fe-bound/,cpu_core/topdown-be-bound/ -- \
+			$(BUILD_DIR)/bench_stages --candidate $${stage} \
+			--iterations 1000000 --samples 20 \
+			> results/round2-$${stage}-run.json || exit; \
+	done
+
+bench-stages-pmu-summary:
+	python3 tools/summarize_stage_pmu.py
+
+$(BUILD_DIR)/bench_call_counts: $(BUILD_DIR)/bench_call_counts.o \
+	$(BUILD_DIR)/gt_kem_counted.o $(GT_OBJS) $(OFFICIAL_OBJS) $(KEM_SUPPORT_OBJS)
+	$(CC) $(COMMON_FLAGS) $^ -o $@
+
+bench-call-counts: $(BUILD_DIR)/bench_call_counts
+	$(BUILD_DIR)/bench_call_counts | tee results/round2-call-counts.json
+
+round2-amdahl: results/round2-stage-cycles.json results/round2-call-counts.json
+	python3 tools/analyze_round2.py
 
 audit-release: $(GT_OBJS)
 	python3 tools/audit_release.py --build-dir $(BUILD_DIR) | tee results/release-audit.json

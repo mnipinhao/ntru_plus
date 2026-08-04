@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "candidate": "all",
+  "cpu": 1,
+  "iterations_per_sample": 1000000,
+  "warmups": 2,
+  "samples": 20,
+  "stages": {
+    "forward_frontend": {"median_cycles": 2779.331, "mad_cycles": 12.467},
+    "forward_b1": {"median_cycles": 4513.877, "mad_cycles": 13.596},
+    "basemul_bm_a": {"median_cycles": 3224.674, "mad_cycles": 8.450},
+    "baseinv": {"median_cycles": 820.905, "mad_cycles": 1.443},
+    "inverse_b1": {"median_cycles": 9695.076, "mad_cycles": 41.703},
+    "inverse_tail": {"median_cycles": 5356.300, "mad_cycles": 4.042},
+    "tobytes": {"median_cycles": 1127.040, "mad_cycles": 4.444},
+    "frombytes": {"median_cycles": 3319.791, "mad_cycles": 87.186}
+  },
+  "canonical_standalone_pass_cycles": 0,
+  "canonical_note": "reductions are embedded in forward_b1",
+  "checksum": "0000000000000000"
+}

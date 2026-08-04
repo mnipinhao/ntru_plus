@@ -156,12 +156,9 @@ static void store_gt_block(poly *r, size_t k3, size_t block32,
     }
 }
 
-static void forward_b(poly *r, int identity_reduce)
+void gt_profile_forward_frontend(int16_t rows[3][32][16], const poly *input)
 {
-    const poly input = *r;
-    _Alignas(32) int16_t rows[3][32][16];
-    _Alignas(32) int16_t output[32][16];
-    memset(rows, 0, sizeof rows);
+    memset(rows, 0, 3U * 32U * 16U * sizeof rows[0][0][0]);
 
     /* Fused 8-lane F0/F1 producer: raw -722/+723 top butterfly, branch
      * preweight, DFT3, and lane-transposed rows for the AVX2 B kernel. */
@@ -174,9 +171,9 @@ static void forward_b(poly *r, int identity_reduce)
             const size_t n = gt_input_crt[32 * n3 + n32];
             const size_t index = 4 * n;
             const __m256i low = _mm256_cvtepi16_epi32(
-                _mm_loadl_epi64((const __m128i *)&input.coeffs[index]));
+                _mm_loadl_epi64((const __m128i *)&input->coeffs[index]));
             const __m256i high = _mm256_cvtepi16_epi32(
-                _mm_loadl_epi64((const __m128i *)&input.coeffs[
+                _mm_loadl_epi64((const __m128i *)&input->coeffs[
                     index + NTRUPLUS_N / 2]));
             const __m256i top0 = _mm256_add_epi32(
                 low, _mm256_mullo_epi32(high, phi0));
@@ -204,12 +201,33 @@ static void forward_b(poly *r, int identity_reduce)
         _mm_storeu_si128((__m128i *)rows[1][n32], pack8_i32(y1));
         _mm_storeu_si128((__m128i *)rows[2][n32], pack8_i32(y2));
     }
+}
+
+static void forward_b1_rows_to_gt(poly *r,
+                                  const int16_t rows[3][32][16],
+                                  int identity_reduce)
+{
+    _Alignas(32) int16_t output[32][16];
 
     for (size_t k3 = 0; k3 < 3; ++k3) {
         ntt32_b_rows(output, (const int16_t (*)[16])rows[k3], identity_reduce);
         store_gt_block(r, k3, 0, (const int16_t (*)[16])output);
         store_gt_block(r, k3, 1, (const int16_t (*)[16])output);
     }
+}
+
+void gt_profile_forward_b1(poly *r, const int16_t rows[3][32][16])
+{
+    forward_b1_rows_to_gt(r, rows, 0);
+}
+
+static void forward_b(poly *r, int identity_reduce)
+{
+    const poly input = *r;
+    _Alignas(32) int16_t rows[3][32][16];
+    gt_profile_forward_frontend(rows, &input);
+    forward_b1_rows_to_gt(r, (const int16_t (*)[32][16])rows,
+                          identity_reduce);
 }
 
 void gt_poly_ntt_avx2_b1(poly *r)

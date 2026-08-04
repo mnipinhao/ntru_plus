@@ -149,20 +149,24 @@ static void load_gt_block(int16_t input[32][16], const poly *frequency,
     }
 }
 
-void gt_poly_invntt_avx2_b(poly *r)
+void gt_profile_inverse_b1(int16_t after32[3][32][16],
+                           const poly *frequency)
 {
-    const poly frequency = *r;
     _Alignas(32) int16_t input[32][16];
-    _Alignas(32) int16_t after32[3][32][16];
 
     memset(input, 0, sizeof input);
-    memset(after32, 0, sizeof after32);
+    memset(after32, 0, 3U * 32U * 16U * sizeof after32[0][0][0]);
     for (size_t k3 = 0; k3 < 3; ++k3) {
-        load_gt_block(input, &frequency, k3, 0);
-        load_gt_block(input, &frequency, k3, 1);
+        load_gt_block(input, frequency, k3, 0);
+        load_gt_block(input, frequency, k3, 1);
         gt_avx2_intt32_b_rows(after32[k3],
                               (const int16_t (*)[16])input);
     }
+}
+
+void gt_profile_inverse_tail(poly *r,
+                             const int16_t after32[3][32][16])
+{
 
     const __m256i omega3 = _mm256_set1_epi32(GT_OMEGA3);
     const __m256i inv3 = _mm256_set1_epi32(GT_INV3);
@@ -203,6 +207,15 @@ void gt_poly_invntt_avx2_b(poly *r)
                 NTRUPLUS_N / 2 + 4 * n], pack4_i32(high));
         }
     }
+}
+
+
+void gt_poly_invntt_avx2_b(poly *r)
+{
+    const poly frequency = *r;
+    _Alignas(32) int16_t after32[3][32][16];
+    gt_profile_inverse_b1(after32, &frequency);
+    gt_profile_inverse_tail(r, (const int16_t (*)[32][16])after32);
 }
 
 void gt_poly_invntt_scale(poly *r)

@@ -1,0 +1,34 @@
+schema_version: 1
+date: 2026-08-04
+decision: stop-amdahl-theoretical-gate-failed
+assembly_started: false
+backend_default: official
+baseline_cycles:
+  official: 91088.810
+  gt: 186861.520
+threshold_cycles:
+  research_parity: 92906
+  promotion: 86530
+caller_weighted_c32_cycles: 36778.338
+required_saving_cycles:
+  frozen_plan_parity: 95420
+  frozen_plan_promotion: 99974
+  measured_baseline_to_research_parity: 93955.520
+  measured_baseline_to_promotion: 100331.520
+projection_cycles:
+  b1_2x: 168472.351
+  b1_3x: 162342.628
+  b1_4x: 159277.767
+  b1_infinite: 150083.182
+post_profiling_integration_cycles:
+  official: 90751.560
+  gt: 186301.190
+  gt_delta_percent: 105.287
+reason: paired B1 accounts for too little caller time to reach parity even at zero cost
+frozen:
+  - official-oracle
+  - GT-algebra-layout-and-scale
+  - B1
+  - BM-A
+  - canonical-only
+  - backend-default-official

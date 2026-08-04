@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "official_cycles": 91088.81,
+    "gt_cycles": 186861.52,
+    "research_parity_cycles": 92906.0,
+    "promotion_cycles": 86530.0
+  },
+  "call_counts": {
+    "ntt": 6,
+    "basemul": 4,
+    "basemul_scale": 1,
+    "baseinv": 2,
+    "invntt": 1,
+    "tobytes": 7,
+    "frombytes": 4
+  },
+  "stage_median_cycles": {
+    "forward_frontend": 2779.331,
+    "forward_b1": 4513.877,
+    "basemul_bm_a": 3224.674,
+    "baseinv": 820.905,
+    "inverse_b1": 9695.076,
+    "inverse_tail": 5356.3,
+    "tobytes": 1127.04,
+    "frombytes": 3319.791
+  },
+  "caller_weighted_stage_cycles": {
+    "forward_frontend": 16675.986,
+    "forward_b1": 27083.262000000002,
+    "basemul_bm_a": 16123.369999999999,
+    "baseinv": 1641.81,
+    "inverse_b1": 9695.076,
+    "inverse_tail": 5356.3,
+    "tobytes": 7889.28,
+    "frombytes": 13279.164
+  },
+  "modeled_gt_stage_cycles": 97744.248,
+  "unattributed_kem_cycles": 89117.27199999998,
+  "c32_cycles": 36778.338,
+  "required_saving": {
+    "current_baseline_to_research_parity": 93955.51999999999,
+    "current_baseline_to_promotion": 100331.51999999999,
+    "frozen_plan_parity": 95420.0,
+    "frozen_plan_promotion": 99974.0,
+    "current_baseline_to_official": 95772.70999999999
+  },
+  "speedup_projections": {
+    "2x": {
+      "saving_cycles": 18389.169,
+      "projected_gt_cycles": 168472.351
+    },
+    "3x": {
+      "saving_cycles": 24518.892000000003,
+      "projected_gt_cycles": 162342.628
+    },
+    "4x": {
+      "saving_cycles": 27583.753500000003,
+      "projected_gt_cycles": 159277.7665
+    },
+    "infinite": {
+      "saving_cycles": 36778.338,
+      "projected_gt_cycles": 150083.18199999997
+    }
+  },
+  "optimistic_floor": {
+    "cycles": 0.0,
+    "reason": "zero is the strongest possible optimistic floor; the theoretical infinite-speed gate already fails"
+  },
+  "gates": {
+    "theoretical_research_parity": false,
+    "theoretical_promotion": false,
+    "decision": "stop-amdahl-theoretical-gate-failed"
+  }
+}

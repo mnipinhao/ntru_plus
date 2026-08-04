@@ -1,6 +1,6 @@
 schema_version: 1
 experiment_id: AVX2-GT-REWRITE-OFFICIAL-001
-lifecycle: correctness-complete-performance-rejected
+lifecycle: round2-amdahl-rejected
 branch: experiment/avx2-gt-rewrite-official-001
 worktree: /home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001
 
@@ -29,6 +29,12 @@ implementation:
   serialization: complete
   canonical_kem: complete
   lazy_fusion: deliberately-not-promoted
+  round2_cycle_decomposition:
+    stage_boundaries: complete
+    deterministic_caller_counts: complete
+    million_call_paired_samples: complete
+    pmu_metrics: complete
+    amdahl_gate: failed-before-assembly
 
 gates:
   official_contract: pass
@@ -52,6 +58,6 @@ selection:
   promotion: rejected
 
 next_work:
-  - decompose full-caller cycles and apply the Round 2 Amdahl gate
-  - replace compiler-generated NTT32/inverse only if the gate passes
-  - keep canonical-only until paired assembly stabilizes
+  - do not implement paired B1 assembly under the frozen Round 2 scope
+  - any future round must target more than B1 or change the promotion objective
+  - keep Official as the default backend

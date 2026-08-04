@@ -36,6 +36,15 @@ void gt_avx2_ntt32_b2_rows(int16_t out[32][16],
                            const int16_t in[32][16]);
 void gt_avx2_intt32_b_rows(int16_t out[32][16],
                            const int16_t in[32][16]);
+
+/* Profiling-only stage boundaries.  They use the production implementation
+ * directly, but are not part of the public backend API. */
+void gt_profile_forward_frontend(int16_t rows[3][32][16], const poly *input);
+void gt_profile_forward_b1(poly *r, const int16_t rows[3][32][16]);
+void gt_profile_inverse_b1(int16_t after32[3][32][16],
+                           const poly *frequency);
+void gt_profile_inverse_tail(poly *r,
+                             const int16_t after32[3][32][16]);
 void gt_poly_invntt_avx2_b(poly *r);
 
 void gt_poly_ntt(poly *r);

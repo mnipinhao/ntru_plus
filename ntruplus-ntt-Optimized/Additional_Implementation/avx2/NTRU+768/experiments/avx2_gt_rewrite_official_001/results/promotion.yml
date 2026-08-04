@@ -17,26 +17,25 @@ static_audit:
 performance:
   full_caller_paired_samples: 20
   iterations_per_operation_per_sample: 100
-  official_total_median_cycles: 91088.810
-  gt_total_median_cycles: 186861.520
-  gt_delta_percent: 105.142
+  official_total_median_cycles: 90751.560
+  gt_total_median_cycles: 186301.190
+  gt_delta_percent: 105.287
   individual_regressions_percent:
-    keypair: 58.840
-    encap: 57.496
-    decap: 405.886
+    keypair: 59.156
+    encap: 57.606
+    decap: 409.609
   instruction_measurement:
     measured_keygen_encap_decap_triplets: 2200
-    official_total_instructions: 1183967316
-    official_instructions_per_triplet: 538166.962
-    gt_total_instructions: 2009831210
-    gt_instructions_per_triplet: 913559.641
-    gt_delta_percent: 69.754
+    official_total_instructions: 1180364158
+    official_instructions_per_triplet: 536529.163
+    gt_total_instructions: 2009563487
+    gt_instructions_per_triplet: 913437.949
+    gt_delta_percent: 70.249
   gate: fail
 decision:
   promotion: rejected
-  reason: compiler-generated NTT32/inverse scheduling is not yet competitive
+  reason: paired B1 has only 36778.338 caller-weighted cycles and fails the theoretical Amdahl gate
   lazy_fusion: not-promoted
   B_lazy: canonical-only
-  next_optimization_boundary:
-    - register-scheduled-assembly-ntt32-and-inverse
-    - reduce-fixed-row-workspace-traffic
+  round2_assembly: not-started
+  next_optimization_boundary: broader-than-paired-B1-required
