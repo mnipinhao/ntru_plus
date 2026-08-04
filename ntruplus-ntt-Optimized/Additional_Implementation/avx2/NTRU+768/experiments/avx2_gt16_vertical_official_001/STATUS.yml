@@ -1,0 +1,37 @@
+experiment: avx2_gt16_vertical_official_001
+round: 4B
+branch: experiment/avx2-gt16-vertical-official-001
+parent_checkpoint: c62ec1a
+status: stop-vertical-gt16-before-avx2
+production_changed: false
+asm_authorized: false
+contracts:
+  official_oracle: frozen
+  scalar_gt16: inherited-and-frozen
+  canonical_scale: s=1
+layout:
+  batches: 3
+  batch_axis: k3
+  vector_axis: k16
+  lane: 4*branch+degree
+registers:
+  usable_ymm: 15
+  emergency_ymm: ymm15
+  generated_peak_live: 9
+  spill: false
+gates:
+  frozen_forward_instructions: 2026.260
+  five_percent_forward_threshold: 1924.947
+  producer_floor: 1884
+  producer_only: pass
+  output_to_native_bm_bridge: 288
+  consumer_compatible_forward: 2172
+  consumer_complete: fail
+decision: >-
+  The vertical arithmetic amortization is real, but k16 changes from a vector
+  axis in the NTT to a lane axis in the frozen quartic BM.  The optimistic
+  transpose alone consumes more than the producer's entire gate headroom.
+reopen_condition: >-
+  Supply a final-stage/consumer co-schedule with a complete bridge below 40.947
+  instructions, or a native vertical BM plus paired inverse whose full static
+  chain beats 95 percent of the frozen champion.

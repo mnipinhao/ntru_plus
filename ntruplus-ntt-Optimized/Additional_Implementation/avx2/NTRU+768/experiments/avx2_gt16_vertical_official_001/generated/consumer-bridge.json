@@ -1,0 +1,32 @@
+{
+  "b1_per_k3": {
+    "cross_128_permute": 16,
+    "loads": 16,
+    "stores": 16,
+    "total": 96,
+    "unpack_dwords": 16,
+    "unpack_qwords": 16,
+    "unpack_words": 16
+  },
+  "b2_per_k3": {
+    "cross_128_permute": 16,
+    "loads": 16,
+    "stores": 16,
+    "total": 96,
+    "unpack_dwords": 16,
+    "unpack_qwords": 16,
+    "unpack_words": 16
+  },
+  "direct_lane_internal_bm": {
+    "arithmetic_replication_factor": 4,
+    "decision": "reject-before-kernel",
+    "frozen_soa_vector_quartics": 16,
+    "vector_quartics": 4
+  },
+  "lower_bound_note": "B1/B2 change lane order, not the conflicting k16 vector/lane axis; both require the same 16x16 topology",
+  "native_bm_axes": "vectors=(branch,k3,degree), lanes=k16",
+  "one_way_instructions": 288,
+  "reason": "k16 is a vector index for vertical NTT16 but a SIMD lane for the frozen quartic BM",
+  "source_axes": "vectors=k16, lanes=branch*4+degree",
+  "two_forward_inputs_plus_inverse_output_instructions": 864
+}
