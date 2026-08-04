@@ -1,7 +1,69 @@
 {
   "binary": "build/bench_qbm_intrinsic",
   "forbidden_avx512": [],
-  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills.",
+  "forward": {
+    "f0_fused": {
+      "calls": [
+        "forward_ntt16_layers"
+      ],
+      "linked_bytes": 2282,
+      "stack_data_references": 7,
+      "vector_stack_references": 2,
+      "vzeroupper": true
+    },
+    "f0_materialized": {
+      "calls": [
+        "round4c_forward_frontend_intrinsic",
+        "forward_ntt16_layers"
+      ],
+      "linked_bytes": 379,
+      "stack_data_references": 1,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
+    "f1_fused": {
+      "calls": [
+        "frontend_bitreversed.constprop.0",
+        "forward_ntt16_layers"
+      ],
+      "linked_bytes": 383,
+      "stack_data_references": 1,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
+    "f1_materialized": {
+      "calls": [
+        "frontend_bitreversed.constprop.0",
+        "forward_ntt16_layers"
+      ],
+      "linked_bytes": 231,
+      "stack_data_references": 1,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
+    "frontend": {
+      "calls": [],
+      "linked_bytes": 412,
+      "stack_data_references": 0,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
+    "frozen_gt32": {
+      "calls": [],
+      "linked_bytes": 6929,
+      "stack_data_references": 2,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
+    "ntt16": {
+      "calls": [],
+      "linked_bytes": 1806,
+      "stack_data_references": 9,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    }
+  },
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper.",
   "inverse": {
     "frozen_gt32_fused": {
       "calls": [],

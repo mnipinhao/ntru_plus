@@ -11,6 +11,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
 BINARY = HERE / "build/bench_qbm_intrinsic"
+FORWARD_BINARY = HERE / "build/bench_forward_intrinsic"
 OUTPUT = HERE / "results/round4c-intrinsic-audit.json"
 
 
@@ -24,11 +25,19 @@ def main() -> int:
     args = parser.parse_args()
     disassembly = command("objdump", "-d", "-M", "intel", str(BINARY))
     symbols = command("nm", "-S", "--size-sort", str(BINARY))
+    forward_disassembly = command(
+        "objdump", "-d", "-M", "intel", str(FORWARD_BINARY))
+    forward_symbols = command("nm", "-S", "--size-sort", str(FORWARD_BINARY))
     sizes = {}
     for line in symbols.splitlines():
         fields = line.split()
         if len(fields) == 4:
             sizes[fields[3]] = int(fields[1], 16)
+    forward_sizes = {}
+    for line in forward_symbols.splitlines():
+        fields = line.split()
+        if len(fields) == 4:
+            forward_sizes[fields[3]] = int(fields[1], 16)
 
     def body(symbol: str) -> str:
         match = re.search(rf"^[0-9a-f]+ <{re.escape(symbol)}>:\n(.*?)(?=\n\n|\Z)",
@@ -64,17 +73,44 @@ def main() -> int:
             "calls": re.findall(r"call\s+[0-9a-f]+\s+<([^>]+)>", text),
             "vzeroupper": "vzeroupper" in text,
         }
+    forward_records = {}
+    for label, symbol in (
+        ("frontend", "frontend_bitreversed.constprop.0"),
+        ("ntt16", "forward_ntt16_layers"),
+        ("f0_materialized", "round4c_forward_f0_materialized"),
+        ("f0_fused", "round4c_forward_f0_fused"),
+        ("f1_materialized", "round4c_forward_f1_materialized"),
+        ("f1_fused", "round4c_forward_f1_fused"),
+        ("frozen_gt32", "gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm"),
+    ):
+        match = re.search(
+            rf"^[0-9a-f]+ <{re.escape(symbol)}>:\n(.*?)(?=\n\n|\Z)",
+            forward_disassembly, re.MULTILINE | re.DOTALL)
+        assert match, symbol
+        text = match.group(1)
+        forward_records[label] = {
+            "linked_bytes": forward_sizes[symbol],
+            "stack_data_references": len(re.findall(r"\[(?:rsp|rbp)[^]]*\]", text)),
+            "vector_stack_references": len(re.findall(
+                r"v(?:mov|broadcast|insert|extract)[^\n]*\[(?:rsp|rbp)[^]]*\]", text)),
+            "calls": re.findall(r"call\s+[0-9a-f]+\s+<([^>]+)>", text),
+            "vzeroupper": "vzeroupper" in text,
+        }
     finding = {
         "binary": str(BINARY.relative_to(HERE)),
         "qbm": records,
         "inverse": inverse_records,
-        "forbidden_avx512": re.findall(r"\b(?:zmm\d+|k[0-7])\b", disassembly),
+        "forward": forward_records,
+        "forbidden_avx512": re.findall(
+            r"\b(?:zmm\d+|k[0-7])\b", disassembly + forward_disassembly),
         "interpretation": (
             "vector-at-a-time is spill-free; GCC spills two data values in the "
             "4-vector helper and heavily spills the 8-vector helper. The selected "
             "inverse I0 keeps standalone merge and remains faster than I1. The "
             "CT layers keep only public loop-state stack references; generated "
-            "packed beta constants remove full-inverse vector stack spills."
+            "packed beta constants remove full-inverse vector stack spills. "
+            "The best F1 forward has no vector spill; its remaining stack "
+            "references are public loop state in the generic CT16 helper."
         ),
     }
     expected = json.dumps(finding, indent=2, sort_keys=True) + "\n"

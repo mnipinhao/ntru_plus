@@ -205,6 +205,71 @@ def constant_header(factors: dict[str, Any]) -> str:
                  ", ".join(str(branch["F"]) for branch in branches) + "};")
     lines.append("static const int16_t round4c_branch_beta[4] = {" +
                  ", ".join(str(branch["beta"]) for branch in branches) + "};")
+    gamma_vector = [branch["gamma"] for branch in branches for _ in range(4)]
+    beta_vector = [branch["beta"] for branch in branches for _ in range(4)]
+    for name, values in (("round4c_forward_gamma", gamma_vector),
+                         ("round4c_forward_beta", beta_vector)):
+        encoded = [mont_constant(value) for value in values]
+        lines.append(f"static const int16_t {name}_mont[16] __attribute__((aligned(32))) = {{" +
+                     ", ".join(str(pair[0]) for pair in encoded) + "};")
+        lines.append(f"static const int16_t {name}_qinv[16] __attribute__((aligned(32))) = {{" +
+                     ", ".join(str(pair[1]) for pair in encoded) + "};")
+    preweight_rows = []
+    preweight_qinv_rows = []
+    for natural in range(48):
+        values = [pow(branch["F"], -natural, Q)
+                  for branch in branches for _ in range(4)]
+        encoded = [mont_constant(value) for value in values]
+        preweight_rows.append([pair[0] for pair in encoded])
+        preweight_qinv_rows.append([pair[1] for pair in encoded])
+    lines.extend(array("round4c_forward_preweight_mont", preweight_rows))
+    lines.append("")
+    lines.extend(array("round4c_forward_preweight_qinv", preweight_qinv_rows))
+    lines.append("")
+    forward_twiddles = []
+    for length in (2, 4, 8, 16):
+        for index in range(length // 2):
+            forward_twiddles.append(pow(OMEGA16, index * (16 // length), Q))
+    forward_encoded = [mont_constant(value) for value in forward_twiddles]
+    lines.append("static const int16_t round4c_fwd16_twiddle_mont[15] __attribute__((aligned(32))) = {")
+    lines.append("    " + ", ".join(str(pair[0]) for pair in forward_encoded) + ",")
+    lines.append("};")
+    lines.append("static const int16_t round4c_fwd16_twiddle_qinv[15] __attribute__((aligned(32))) = {")
+    lines.append("    " + ", ".join(str(pair[1]) for pair in forward_encoded) + ",")
+    lines.append("};")
+    fwd_omega_mont, fwd_omega_qinv = mont_constant(OMEGA3)
+    lines.append(f"static const int16_t round4c_fwd3_omega_mont = {fwd_omega_mont};")
+    lines.append(f"static const int16_t round4c_fwd3_omega_qinv = {fwd_omega_qinv};")
+    linear_rows = [[] for _ in range(4)]
+    maximum_linear_sum = 0
+    for natural in range(48):
+        row_values = [[] for _ in range(4)]
+        for branch in branches:
+            weight = pow(branch["F"], -natural, Q)
+            coefficients = (weight,
+                            branch["beta"] * weight,
+                            branch["gamma"] * weight,
+                            branch["beta"] * branch["gamma"] * weight)
+            for source_index, coefficient in enumerate(coefficients):
+                row_values[source_index].extend((centered(coefficient),) * 4)
+        for source_index in range(4):
+            linear_rows[source_index].append(row_values[source_index])
+        maximum_linear_sum = max(maximum_linear_sum,
+            4 * sum(abs(row_values[index][lane])
+                    for index in range(4) for lane in range(16)))
+    # The per-lane bound, not the sum over all lanes, controls vpmullw/add.
+    maximum_linear_sum = max(
+        4 * sum(abs(linear_rows[source][natural][lane])
+                for source in range(4))
+        for natural in range(48) for lane in range(16))
+    assert maximum_linear_sum < 32768
+    for source_index, rows in enumerate(linear_rows):
+        lines.extend(array(f"round4c_forward_linear_c{source_index}", rows))
+        lines.append("")
+    identity_mont, identity_qinv = mont_constant(1)
+    lines.append(f"static const int16_t round4c_forward_identity_mont = {identity_mont};")
+    lines.append(f"static const int16_t round4c_forward_identity_qinv = {identity_qinv};")
+    lines.append(f"static const int round4c_forward_linear_raw_bound = {maximum_linear_sum};")
     lines.append("")
     lines.extend(["#endif", ""])
     return "\n".join(lines)
@@ -460,6 +525,101 @@ def inverse_ct_ranges() -> dict[str, Any]:
     }
 
 
+def forward_ct_ranges() -> dict[str, Any]:
+    branches = json.loads(
+        (HORIZONTAL / "generated/gt16-branches.json").read_text()
+    )["branches"]
+    source = (-3, 4)
+    frontend_by_branch: list[list[tuple[int, int]]] = [[] for _ in range(4)]
+    linear_raw_by_branch: list[list[tuple[int, int]]] = [[] for _ in range(4)]
+    for natural in range(48):
+        for branch, spec in enumerate(branches):
+            weight = pow(spec["F"], -natural, Q)
+            coefficients = [centered(value) for value in (
+                weight, spec["beta"] * weight,
+                spec["gamma"] * weight,
+                spec["beta"] * spec["gamma"] * weight)]
+            terms = []
+            for coefficient in coefficients:
+                products = [source[0] * coefficient, source[1] * coefficient]
+                terms.append((min(products), max(products)))
+            raw = (sum(term[0] for term in terms),
+                   sum(term[1] for term in terms))
+            assert -32768 < raw[0] <= raw[1] < 32768
+            linear_raw_by_branch[branch].append(raw)
+            frontend_by_branch[branch].append(mont16_interval(raw, 1))
+    frontend_bound = max(abs(value) for rows in frontend_by_branch
+                         for interval in rows for value in interval)
+
+    def trace(start: tuple[int, int]) -> list[dict[str, Any]]:
+        positions = [start] * 16
+        stages = []
+        offset = 0
+        for length in (2, 4, 8, 16):
+            half = length // 2
+            twiddles = [pow(OMEGA16, index * (16 // length), Q)
+                        for index in range(half)]
+            output: list[tuple[int, int] | None] = [None] * 16
+            for block in range(0, 16, length):
+                for index, twiddle in enumerate(twiddles):
+                    low = positions[block + index]
+                    high_input = positions[block + index + half]
+                    high = (high_input if index == 0 else
+                            mont16_interval(high_input, twiddle))
+                    total = add_interval(low, high)
+                    difference = subtract_interval(low, high)
+                    if length in (2, 8):
+                        total = center_once_interval(total)
+                        difference = center_once_interval(difference)
+                    output[block + index] = total
+                    output[block + index + half] = difference
+            positions = [value for value in output if value is not None]
+            stages.append({
+                "length": length,
+                "twiddle_offset": offset,
+                "identity_twiddle_montgomery_omitted": True,
+                "corrections_per_output": 1 if length in (2, 8) else 0,
+                "overall_interval": [min(x[0] for x in positions),
+                                     max(x[1] for x in positions)],
+            })
+            offset += half
+        return stages
+
+    f0_dft_raw = (-3 * frontend_bound, 3 * frontend_bound)
+    f0_dft_centered = center_once_interval(f0_dft_raw)
+    f0_stages = trace(f0_dft_centered)
+    f1_stages = trace((-frontend_bound, frontend_bound))
+    f1_ct_bound = max(abs(value) for value in
+                      f1_stages[-1]["overall_interval"])
+    f1_dft_bound = 3 * f1_ct_bound
+    maximum = max(frontend_bound, *(abs(value) for value in f0_dft_raw),
+                  f1_dft_bound,
+                  *(abs(value) for stage in f0_stages + f1_stages
+                    for value in stage["overall_interval"]))
+    assert maximum < 32768
+    return {
+        "algorithm": "natural-input bit-reversed Cooley-Tukey forward NTT16",
+        "input_contract": [-3, 4],
+        "frontend": "four preweighted linear products plus one identity Montgomery reduction",
+        "frontend_linear_raw_intervals": [[list(x) for x in rows]
+                                          for rows in linear_raw_by_branch],
+        "frontend_branch_intervals": [[list(x) for x in rows]
+                                      for rows in frontend_by_branch],
+        "frontend_absolute_bound": frontend_bound,
+        "F0_DFT3_first": {
+            "dft3_raw_conservative_interval": list(f0_dft_raw),
+            "dft3_single_correction_interval": list(f0_dft_centered),
+            "ntt16_stages": f0_stages,
+        },
+        "F1_NTT16_first": {
+            "ntt16_stages": f1_stages,
+            "dft3_raw_conservative_interval": [-f1_dft_bound, f1_dft_bound],
+        },
+        "signed_int16_safe": True,
+        "note": "Montgomery intervals are exhaustively evaluated; add/sub composition is conservative.",
+    }
+
+
 def range_metadata() -> dict[str, Any]:
     split_bound = 2 * CENTER
     c0_bound = 2 * split_bound * CENTER
@@ -489,6 +649,7 @@ def range_metadata() -> dict[str, Any]:
         "signed_int32_safe": c1_bound < 2**31,
         "negative_32768_excluded": True,
         "inverse_ct_lazy": inverse_ct_ranges(),
+        "forward_ct_lazy": forward_ct_ranges(),
         "five_instruction_montgomery32": {
             "qinv": QINV,
             "sequence": ["vpmullw-qinv", "vpand-lowword", "vpmaddwd-q",
@@ -662,6 +823,14 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "inverse_regression": 214.364,
             "known_terminal_plus_inverse_net_regression": 165.524,
             "forward_break_even_each": 82.762,
+            "forward_frozen_gt32_ab_ba_mean": 464.4815,
+            "forward_f0_materialized_ab_ba_mean": 787.97265,
+            "forward_f0_fused_ab_ba_mean": 792.7014,
+            "forward_f1_materialized_ab_ba_mean": 750.82635,
+            "forward_f1_fused_ab_ba_mean": 719.3613,
+            "selected_forward": "F1-NTT16-first-fused",
+            "selected_forward_regression": 254.8798,
+            "legacy_chain_regression": 675.2836,
         },
         "limitations": [
             "the static projection is retained as historical accounting and is superseded for inverse decisions by the executable CT result",
@@ -670,7 +839,7 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "serialization and 384-norm baseinv have separate mandatory gates",
         ],
     }
-    status = ("intrinsic-inverse-prototype-measured-direct-gate-fail"
+    status = ("executable-forward-measured-chain-parity-gate-fail"
               if gate_pass else "stop-quadratic-terminal-before-avx2")
     result = {
         "status": status,
@@ -692,18 +861,25 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "frozen_gt32_tsc_median": 911.8615,
             "regression_percent": 23.5084,
         },
+        "direct_forward_cycle_gate": {
+            "status": "fail",
+            "selected": "F1-NTT16-first-fused",
+            "candidate_tsc_ab_ba_mean": 719.3613,
+            "frozen_gt32_tsc_ab_ba_mean": 464.4815,
+            "candidate_regression_tsc": 254.8798,
+            "required_saving_tsc": 82.762,
+            "parity_maximum_tsc": 381.7195,
+        },
         "production_changed": False,
         "reason": (
             "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, "
             "but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. "
-            "Assembly remains unauthorized until executable forwards close the full chain."
+            "The best executable forward adds another 254.880 ticks per call, so the "
+            "legacy local 2F+B+I accounting misses parity by 675.284 ticks."
             if gate_pass else
             "The consumer-complete static floor does not clear 95% of the frozen chain."
         ),
-        "next_gate": (
-            "two executable vertical forwards must each recover at least 82.762 local TSC "
-            "ticks before the same-binary 2F+B+I gate, followed by serialization/baseinv"
-        ),
+        "next_gate": "stop before assembly, serialization, baseinv, or integration",
     }
     return accounting, result
 
@@ -722,8 +898,11 @@ def artifacts() -> dict[Path, Any]:
             str(BENCHMARK_FILE.relative_to(REPO)): sha256(BENCHMARK_FILE),
             str((HERE / "src/qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.c"),
             str((HERE / "src/inverse_stage1_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/inverse_stage1_intrinsic.c"),
+            str((HERE / "src/forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/forward_intrinsic.c"),
+            str((HERE / "tests/test_forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "tests/test_forward_intrinsic.c"),
             str((HERE / "src/transpose_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/transpose_intrinsic.c"),
             str((HERE.parent / "gt_ntt/gt_basemul_layout_asm.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_basemul_layout_asm.S"),
+            str((HERE.parent / "gt_ntt/gt_ntt_frontend_stage12_soa.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_ntt_frontend_stage12_soa.S"),
         },
         "production_files_modified": [],
     }

@@ -1,0 +1,64 @@
+{
+  "status": "forward-chain-parity-gate-fail",
+  "environment": "local Intel Core Ultra 7 155H, powersave governor",
+  "method": {
+    "same_binary": true,
+    "samples": 20,
+    "warmups": 2,
+    "calls_per_sample": 1000000,
+    "orders": ["forward", "reverse"],
+    "input_range": [-3, 4]
+  },
+  "order_medians_tsc": {
+    "forward": {
+      "frozen_gt32": 463.6848,
+      "f0_materialized": 786.4655,
+      "f0_fused": 794.1268,
+      "f1_materialized": 751.1988,
+      "f1_fused": 718.9259
+    },
+    "reverse": {
+      "frozen_gt32": 465.2782,
+      "f0_materialized": 789.4798,
+      "f0_fused": 791.2760,
+      "f1_materialized": 750.4539,
+      "f1_fused": 719.7967
+    }
+  },
+  "mean_of_order_medians_tsc": {
+    "frozen_gt32": 464.4815,
+    "f0_materialized": 787.97265,
+    "f0_fused": 792.7014,
+    "f1_materialized": 750.82635,
+    "f1_fused": 719.3613
+  },
+  "selected": "f1_fused",
+  "direct_stage_medians_tsc": {
+    "frontend": 280.7912,
+    "dft3_centered_F0_boundary": 109.1102,
+    "ntt16_zero_arithmetic": 287.0803,
+    "quadratic_split": 102.6226,
+    "note": "Direct buckets overlap under fusion and must not be added as a reconstructed full producer."
+  },
+  "selected_regression_vs_frozen_tsc": 254.8798,
+  "known_terminal_plus_inverse_regression_tsc": 165.524,
+  "legacy_chain_regression_tsc": 675.2836,
+  "forward_parity_required_saving_tsc": 82.762,
+  "forward_parity_maximum_tsc": 381.7195,
+  "parity_gate": "fail",
+  "five_percent_gate": "fail",
+  "correctness": {
+    "cases": 77,
+    "candidates": 4,
+    "component_oracle_congruence": "pass",
+    "materialized_fused_bit_exact": "pass",
+    "in_place_alias": "pass",
+    "maximum_observed_absolute": 9976
+  },
+  "audit": {
+    "selected_vector_spills": 0,
+    "ct16_vector_spills": 0,
+    "avx512": false
+  },
+  "decision": "Do not authorize assembly or integration. The executable vertical producer misses parity by a margin too large to attribute to the remaining intrinsic scheduling overhead alone."
+}

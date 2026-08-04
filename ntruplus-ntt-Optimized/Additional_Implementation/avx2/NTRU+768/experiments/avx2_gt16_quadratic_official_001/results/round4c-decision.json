@@ -1,5 +1,14 @@
 {
   "assembly_authorized": false,
+  "direct_forward_cycle_gate": {
+    "candidate_regression_tsc": 254.8798,
+    "candidate_tsc_ab_ba_mean": 719.3613,
+    "frozen_gt32_tsc_ab_ba_mean": 464.4815,
+    "parity_maximum_tsc": 381.7195,
+    "required_saving_tsc": 82.762,
+    "selected": "F1-NTT16-first-fused",
+    "status": "fail"
+  },
   "direct_inverse_cycle_gate": {
     "algorithm": "lazy-Cooley-Tukey",
     "candidate_tsc_median": 1126.2255,
@@ -16,9 +25,9 @@
   },
   "intrinsics_prototype_authorized": true,
   "intrinsics_prototype_completed": true,
-  "next_gate": "two executable vertical forwards must each recover at least 82.762 local TSC ticks before the same-binary 2F+B+I gate, followed by serialization/baseinv",
+  "next_gate": "stop before assembly, serialization, baseinv, or integration",
   "production_changed": false,
-  "reason": "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. Assembly remains unauthorized until executable forwards close the full chain.",
+  "reason": "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. The best executable forward adds another 254.880 ticks per call, so the legacy local 2F+B+I accounting misses parity by 675.284 ticks.",
   "selected_qbm": "QBM-PREWEIGHT",
-  "status": "intrinsic-inverse-prototype-measured-direct-gate-fail"
+  "status": "executable-forward-measured-chain-parity-gate-fail"
 }

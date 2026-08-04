@@ -42,10 +42,32 @@ for the same-binary frozen GT32 fused inverse, a 23.51% regression.  The
 inverse deficit is now 214.364 ticks versus the terminal boundary's 48.840-tick
 gain.
 
-This is preliminary local evidence, not a promotion result: the host uses the
-powersave governor and differs from the frozen Ryzen benchmark machine.  There
-is still no executable vertical forward or complete `2F+B+I` chain,
-serialization consumer, or quadratic baseinv/keygen benchmark.  Assembly
-remains unauthorized; two forward prototypes would first have to recover the
-known 165.524-tick terminal-plus-inverse deficit, or 82.762 ticks each, before
-the chain reaches parity.
+The vertical forward is now executable in four benchmark-only forms:
+DFT3-first and NTT16-first, each with a materialized and fused boundary.  It
+uses a natural-input, bit-reversed Cooley-Tukey NTT16.  The small `[-3,4]`
+contract permits special R2, standard R2, and `F^-n` preweight to become four
+ordinary lane-wise products followed by one identity Montgomery reduction;
+the generator proves the signed-int16 raw bound.  Length 2 and 8 correct once,
+length 4 and 16 remain lazy, and identity twiddles are omitted.
+
+All four candidates pass 77 scalar component-oracle cases, in-place aliasing,
+and materialized/fused representative differentials.  In two 20-sample runs
+of one million calls per sample, the mean of the AB/BA medians is 464.482 TSC
+for frozen GT32 and 719.361 for the best F1 fused producer.  F0 materialized,
+F0 fused, and F1 materialized measure 787.973, 792.701, and 750.826
+respectively.  The selected path has no vector spills; reversing benchmark
+order changes the GT32/GT16 gap by less than 1%.
+
+Million-call direct buckets measure 280.791 TSC for the fused-linear frontend,
+287.080 for a zero-data CT16 arithmetic pass, 109.110 for the centered F0 DFT3
+boundary, and 102.623 for standalone quadratic split.  These buckets overlap
+when fused and therefore are not summed as a reconstructed producer, but they
+show that the deficit is distributed across the mandatory frontend and CT16;
+it is not explained by a single spill or materialization pass.
+
+The forward therefore regresses by 254.880 ticks instead of saving the required
+82.762.  Under the pre-existing local chain accounting, two forwards plus the
+known terminal/inverse deficit miss parity by 675.284 ticks.  This is a direct
+gate failure, not a production or promotion result: the host still uses the
+powersave governor, but same-binary AB/BA evidence is decisive enough to stop
+before assembly, serialization, baseinv, or KEM integration.
