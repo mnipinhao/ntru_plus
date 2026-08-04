@@ -1,0 +1,37 @@
+schema_version: 1
+operations: [gt_poly_basemul, gt_poly_basemul_scale]
+entry:
+  operands: [a, b]
+  representation: gt-canonical
+  layout: gt-layout-v1
+  scale: normal
+  range: [-1728, 1728]
+  secrecy: secret-or-public
+nodes:
+  - id: alpha-precompute
+    operation: alpha-weight-selected-terms-mod-q
+    result_range: [-1728, 1728]
+  - id: quartic-product
+    operation: direct-degree4-convolution-mod-x4-minus-alpha
+    accumulator: signed-int32
+    primary_candidate: BM-A-vpmaddwd
+  - id: reduction
+    operation: proved-int32-to-centered-canonical
+    correction: fixed-count
+exit:
+  representation: gt-canonical
+  layout: gt-layout-v1
+  scale:
+    gt_poly_basemul: normal
+    gt_poly_basemul_scale: normal-gt-paired-inverse-normalizes
+  range: [-1728, 1728]
+  legal_consumers: [gt_poly_basemul, gt_poly_invntt_scale, gt_poly_tobytes,
+                    gt_ntt_equal_canonical]
+alias_contract:
+  official_supported: [r-distinct, a-equals-b]
+  official_unsupported: [r-equals-a, r-equals-b, all-equal]
+  partial_overlap: unsupported
+candidates:
+  BM-A: selected
+  BM-B: rejected-slower-and-larger-3q-control
+  BM-C: rejected-no-caller-win

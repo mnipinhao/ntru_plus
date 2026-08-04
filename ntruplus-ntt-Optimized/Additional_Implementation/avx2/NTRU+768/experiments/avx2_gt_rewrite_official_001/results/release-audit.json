@@ -1,0 +1,69 @@
+{
+  "constant_time_review": {
+    "baseinv_failure_early_exit": false,
+    "finding": "Fixed loop bounds and coefficient-independent addresses verified by source review; disassembly scan is not a formal constant-time proof.",
+    "public_input_exception": "gt_poly_frombytes rejection may branch on public wire input",
+    "secret_kernels": [
+      "gt_poly_ntt",
+      "gt_poly_basemul",
+      "gt_poly_basemul_scale",
+      "gt_poly_baseinv",
+      "gt_poly_invntt_scale"
+    ],
+    "status": "pass"
+  },
+  "footprint": {
+    "basemul_candidates": {
+      "BM-A": {
+        "code_bytes": 1132,
+        "table_bytes": 384
+      },
+      "BM-B": {
+        "code_bytes": 2090,
+        "table_bytes": 384
+      }
+    },
+    "n32_candidates": {
+      "B1": {
+        "code_bytes": 1967,
+        "table_bytes": 64
+      },
+      "B2": {
+        "code_bytes": 2089,
+        "table_bytes": 64
+      }
+    },
+    "static_instruction_count": 6834,
+    "table_bytes": 4144,
+    "text_bytes": 29260
+  },
+  "isa": {
+    "evex_findings": [],
+    "forbidden_register_findings": [],
+    "policy": "AVX2-only; no EVEX, zmm, or opmask registers",
+    "status": "pass"
+  },
+  "mandatory_mechanical_gate": "pass",
+  "promotion_blocker": "full-caller performance gate is evaluated separately",
+  "promotion_ready": false,
+  "schema_version": 1,
+  "scope": "release GT backend objects",
+  "stack": {
+    "basemul4_leaf_stack_access": false,
+    "largest_static_frame_bytes_by_object": {
+      "gt_backend.o": 3584,
+      "gt_baseinv_avx2.o": 1152,
+      "gt_basemul_avx2.o": 40,
+      "gt_forward_avx2.o": 4096,
+      "gt_generated_tables.o": 0,
+      "gt_inverse_avx2.o": 4096
+    },
+    "note": "Forward/inverse/baseinv frames contain explicit fixed-size row or batch workspaces; only the BM-A leaf has a no-spill gate.",
+    "status": "pass"
+  },
+  "symbols": {
+    "required_prefix": "gt_",
+    "status": "pass",
+    "unexpected": []
+  }
+}

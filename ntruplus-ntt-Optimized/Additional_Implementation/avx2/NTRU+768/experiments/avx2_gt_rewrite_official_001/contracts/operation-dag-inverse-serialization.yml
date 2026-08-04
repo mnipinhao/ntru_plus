@@ -1,0 +1,40 @@
+schema_version: 1
+operations: [gt_poly_invntt_scale, gt_poly_tobytes, gt_poly_frombytes]
+inverse:
+  entry:
+    representation: gt-canonical-or-proved-scaled-product
+    layout: gt-layout-v1
+  nodes:
+    - paired-inverse-ntt32
+    - inverse-dft3
+    - inverse-output-frequency-map
+    - inverse-preweight
+    - normalization-96
+    - top-crt
+    - coefficient-order-store
+  production_passes:
+    standalone-untwist: forbidden
+    standalone-normalization: forbidden
+  exit:
+    representation: coefficient-centered
+    layout: coefficient-order
+    scale: Official-compatible
+    alias: in-place-required
+serialization:
+  encode:
+    input: gt-canonical
+    operations: [gt-to-official-component-map, centered-to-nonnegative,
+                 pack-12-bit]
+    output_bytes: 1152
+    input_preserved: true
+  decode:
+    input_bytes: 1152
+    operations: [unpack-12-bit, malformed-check,
+                 official-to-gt-component-map, nonnegative-to-centered]
+    output: gt-canonical
+    malformed_return: Official-byte-exact
+    malformed_output: Official-raw-values-after-gt-component-map
+alias_contract:
+  encode: disjoint
+  decode: disjoint
+  partial_overlap: unsupported

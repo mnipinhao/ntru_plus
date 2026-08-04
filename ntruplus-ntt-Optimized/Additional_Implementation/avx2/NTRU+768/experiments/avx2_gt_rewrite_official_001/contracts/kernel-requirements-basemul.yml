@@ -1,0 +1,31 @@
+schema_version: 1
+kernel: gt-quartic-basemul-avx2
+isa: [avx2]
+primary: BM-A
+accumulation:
+  instruction_family: vpmaddwd
+  width: signed-int32
+  formula: direct-quartic-mod-x4-minus-alpha
+  alpha_weighting: reduce-selected-input-before-accumulation
+proof_obligations:
+  - all-int16-inputs-and-add-sub-fit
+  - vpmaddwd-pair-sums-fit-signed-int32
+  - four-product-accumulators-fit-signed-int32
+  - reducer-approximation-and-corrections-exact
+  - narrowing-after-centered-reduction-only
+bounds_to_prove:
+  - {name: 3q, absolute: 10371}
+  - {name: 4q, absolute: 13828}
+  - {name: 5q, absolute: 17285}
+  - {name: 6q, absolute: 20742}
+output:
+  representation: centered-canonical
+  interval: [-1728, 1728]
+alternatives:
+  BM-B: narrow-lazy-karatsuba-control-3q
+  BM-C: caller-level-asymmetric-expanded-only
+forbidden:
+  - expanded-representation-in-public-key
+  - expanded-representation-in-secret-key
+  - expanded-representation-in-ciphertext
+

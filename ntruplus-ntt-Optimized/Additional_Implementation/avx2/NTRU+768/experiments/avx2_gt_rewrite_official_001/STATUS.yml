@@ -1,0 +1,57 @@
+schema_version: 1
+experiment_id: AVX2-GT-REWRITE-OFFICIAL-001
+lifecycle: correctness-complete-performance-rejected
+branch: experiment/avx2-gt-rewrite-official-001
+worktree: /home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001
+
+source_identity:
+  repository_base: 76a0c183f73fb008a808c0c3ebe97af8415ecad5
+  official_main: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+  official_snapshot: third_party/NTRUplus-official-main
+  gt_regression_only: ../gt_ntt
+  kpqc_final: historical-only
+
+implementation:
+  contract_and_same_binary_oracle: complete
+  generated_maps_tables_schedules_manifest: complete
+  scalar_gt_b1_b2_c: complete
+  scalar_schoolbook_final_oracle: complete
+  avx2_forward:
+    n32: B1-selected
+    producer: fused-avx2-f0-f1-pack
+  avx2_basemul:
+    selected: BM-A-vpmaddwd-int32
+    control: BM-B-3q-rejected
+  avx2_baseinv: complete-fixed-shape-batch-inversion
+  avx2_inverse:
+    n32: complete
+    postprocess: fused-avx2-dft3-preweight-top-crt-store
+  serialization: complete
+  canonical_kem: complete
+  lazy_fusion: deliberately-not-promoted
+
+gates:
+  official_contract: pass
+  generated_assertions: pass
+  scalar_and_stage_differential: pass
+  schoolbook_polymul: pass
+  baseinv_identity_failure_alias: pass
+  bm32_range_reducer: pass
+  deterministic_kem_byte_exact: pass
+  kat_byte_exact: pass
+  asan_ubsan: pass
+  release_mechanical_audit: pass
+  full_caller_performance: fail
+
+selection:
+  n32: B1
+  basemul: BM-A
+  B_lazy: canonical-only
+  backend_default: official
+  gt_backend: opt-in
+  promotion: rejected
+
+next_work:
+  - decompose full-caller cycles and apply the Round 2 Amdahl gate
+  - replace compiler-generated NTT32/inverse only if the gate passes
+  - keep canonical-only until paired assembly stabilizes

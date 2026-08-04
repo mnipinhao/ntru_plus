@@ -1,0 +1,42 @@
+schema_version: 1
+date: 2026-08-04
+backend_default: official
+gt_backend: opt-in
+correctness:
+  official_contract_71_cases: pass
+  scalar_stage_and_oracle: pass
+  bm32_million_vectors: pass
+  canonical_kem_byte_exact_8_rounds: pass
+  official_kat_100_cases_byte_exact: pass
+  asan_ubsan: pass
+static_audit:
+  symbol_prefix: pass
+  avx2_only: pass
+  bm_a_leaf_no_spill: pass
+  fixed_secret_loop_and_address_review: pass
+performance:
+  full_caller_paired_samples: 20
+  iterations_per_operation_per_sample: 100
+  official_total_median_cycles: 91088.810
+  gt_total_median_cycles: 186861.520
+  gt_delta_percent: 105.142
+  individual_regressions_percent:
+    keypair: 58.840
+    encap: 57.496
+    decap: 405.886
+  instruction_measurement:
+    measured_keygen_encap_decap_triplets: 2200
+    official_total_instructions: 1183967316
+    official_instructions_per_triplet: 538166.962
+    gt_total_instructions: 2009831210
+    gt_instructions_per_triplet: 913559.641
+    gt_delta_percent: 69.754
+  gate: fail
+decision:
+  promotion: rejected
+  reason: compiler-generated NTT32/inverse scheduling is not yet competitive
+  lazy_fusion: not-promoted
+  B_lazy: canonical-only
+  next_optimization_boundary:
+    - register-scheduled-assembly-ntt32-and-inverse
+    - reduce-fixed-row-workspace-traffic

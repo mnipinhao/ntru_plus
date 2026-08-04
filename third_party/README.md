@@ -7,11 +7,13 @@
 - Revision at import: `0c249d5828b90e8dd5de2c8405323d5ee2a0ce41`
 - Imported: 2026-07-30
 
-This ignored source snapshot is the Official Main comparison baseline for the
-NTRU+768 AVX2 lane.  It was created with `git archive`, so it intentionally has
-no nested Git metadata and cannot drift through an accidental pull.
+This tracked, revision-locked source snapshot is the Official Main comparison
+baseline and API authority for the NTRU+768 AVX2 GT rewrite.  It was created
+with `git archive`, so it intentionally has no nested Git metadata and cannot
+drift through an accidental pull.  Do not edit it in place; put GT code and
+adapters in the active optimization tree and compare them against this source.
 
-To restore the exact snapshot after a fresh clone:
+To reproduce or refresh the exact snapshot deliberately:
 
 ```sh
 git clone https://github.com/ntruplus/ntruplus.git /tmp/ntruplus-official
@@ -19,6 +21,15 @@ git -C /tmp/ntruplus-official checkout \
   0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
 git -C /tmp/ntruplus-official archive HEAD | \
   tar -x -C third_party/NTRUplus-official-main
+```
+
+After importing, verify both the recorded revision and the vendored tree before
+committing:
+
+```sh
+git -C /tmp/ntruplus-official rev-parse HEAD
+git diff --no-index --stat \
+  /tmp/ntruplus-official third_party/NTRUplus-official-main
 ```
 
 The relevant implementation is

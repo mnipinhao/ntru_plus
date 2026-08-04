@@ -1,0 +1,52 @@
+schema_version: 1
+n32:
+  B1:
+    scalar_correctness: pass
+    avx2_stage_differential: pass
+    paired_inverse: pass
+    row_benchmark: pass
+    selected: true
+  B2:
+    scalar_correctness: pass
+    avx2_stage_differential: pass
+    paired_inverse: pass
+    row_benchmark: pass
+    selected: false
+  C:
+    scalar_correctness: pass
+    inverse_schedule: pass
+    register_plan:
+      result: fail
+      ymm_required: 32
+      maximum: 16
+    static_cost:
+      result: fail
+      multiplies_per_row: 1024
+      comparison: above-B
+    row_benchmark: not-run-after-earlier-gate-failure
+    status: rejected-before-avx2
+basemul:
+  BM-A:
+    implementation: avx2-vpmaddwd-int32
+    bounds_passed: [3q, 4q, 5q, 6q]
+    reducer_random_vectors: 1000000
+    output_range: [-1728, 1728]
+    benchmark:
+      median_cycles: 3244.750
+      code_bytes: 1132
+      instructions_per_poly: 11642.802
+      instructions_per_vector_leaf: 242.558
+    selected: true
+  BM-B:
+    implementation: avx2-narrow-karatsuba-control
+    bound: 3q
+    scalar_differential: pass
+    benchmark:
+      median_cycles: 5415.058
+      delta_from_BM-A_percent: 66.887
+      code_bytes: 2090
+      instructions_per_poly: 20805.291
+      instructions_per_vector_leaf: 433.444
+    status: rejected-slower-and-larger
+  BM-C:
+    status: rejected-no-decode-plus-precompute-caller-win

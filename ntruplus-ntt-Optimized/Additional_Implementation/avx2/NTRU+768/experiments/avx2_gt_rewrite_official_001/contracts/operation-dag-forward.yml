@@ -1,0 +1,39 @@
+schema_version: 1
+operation: gt_poly_ntt
+entry:
+  object: poly
+  representation: coefficient-small
+  layout: coefficient-order
+  scale: normal
+  range: [-3, 4]
+  alias: in-place-required
+  secrecy: secret-or-public
+nodes:
+  - id: F0
+    operation: official-small-input-top-butterfly
+    reduction: none
+    output_layout: two-branches-times-four-y-planes
+    output_range: [-2891, 2896]
+  - id: F1
+    operation: stride4-plus-gt-pack-plus-preweight-plus-dft3
+    implementation: fused-avx2-8-lane-producer
+    input_crt: (64*n3+33*n32) mod 96
+    output_frequency: (32*k3+3*k32) mod 96
+  - id: F2
+    operation: cyclic-ntt32
+    candidates: [B1, B2, C]
+  - id: F3
+    operation: canonicalize-centered
+    output_range: [-1728, 1728]
+exit:
+  object: poly
+  representation: gt-canonical
+  layout: gt-layout-v1
+  scale: normal
+  alias: same-object-as-entry
+  legal_consumers: [gt_poly_basemul, gt_poly_basemul_scale, gt_poly_baseinv,
+                    gt_poly_tobytes, gt_ntt_equal_canonical]
+variants:
+  gt_poly_ntt: canonical
+  gt_poly_ntt_canonical: canonical
+  gt_poly_ntt_lazy: canonical-fallback-no-lazy-caller-selected

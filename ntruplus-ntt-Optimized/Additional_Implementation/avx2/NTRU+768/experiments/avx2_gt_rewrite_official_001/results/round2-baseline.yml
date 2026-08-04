@@ -1,0 +1,34 @@
+schema_version: 1
+date: 2026-08-04
+branch: experiment/avx2-gt-rewrite-official-001
+repository_parent: 76a0c183f73fb008a808c0c3ebe97af8415ecad5
+official_revision: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+toolchain:
+  compiler: gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+  kernel: Linux 7.0.0-14-generic x86_64
+benchmark_host:
+  cpu: Intel(R) Core(TM) Ultra 7 155H
+  affinity_cpu: 1
+  cpu1_max_mhz: 4800
+  governor: powersave
+  observed_khz_before_checkpoint: 1615000
+checks:
+  make_cc_gcc_check: pass
+  official_contract_cases: 71
+  scalar_gt_cases: 23
+  bm32_vectors: 1000000
+  deterministic_kem_rounds: 8
+  kat_cases: 100
+  sanitizer: pass
+caller_baseline:
+  paired_samples: 20
+  iterations_per_operation_per_sample: 100
+  official_median_cycles: 91088.810
+  gt_median_cycles: 186861.520
+  gt_delta_percent: 105.142
+sha256:
+  generator: 1ec2c677629ae611690d08368022b392121fd0be421da70e85a0879a864ab8fe
+  generated_manifest: 58345531a702716a6332cc605c157b4546f37493c0f7da99414557cacc462d28
+  status: 014adec92a0fa9274dca4c763fb5605e2c89dbe9e90075d4e65d0930982e8b73
+  promotion: a5b16596b82e2f7fb6c0aa45687434ee609fde51f5e2d452ca25143aa73a723e
+  caller_benchmark: a6183cf77a180e6d28f6fa81f6295ca7a0776c151ecfa9bc97c69525ad155ce8

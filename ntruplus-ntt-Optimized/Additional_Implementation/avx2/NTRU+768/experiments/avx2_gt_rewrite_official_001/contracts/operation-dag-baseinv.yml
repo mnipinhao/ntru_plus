@@ -1,0 +1,35 @@
+schema_version: 1
+operation: gt_poly_baseinv
+entry:
+  object: a
+  representation: gt-canonical
+  layout: gt-layout-v1
+  scale: normal
+  range: [-1728, 1728]
+  secrecy: secret
+nodes:
+  - id: quartic-denominator
+    operation: fixed-formula-norm
+  - id: batch-inversion
+    operation: fixed-shape-montgomery-trick
+    secret_dependent_loop: false
+    secret_dependent_address: false
+  - id: recover-components
+    operation: fixed-formula-quartic-inverse
+  - id: zero-mask
+    operation: constant-time-failure-aggregation
+exit:
+  object: r
+  representation: gt-canonical
+  layout: gt-layout-v1
+  scale: normal
+  range: [-1728, 1728]
+  return:
+    success: 0
+    noninvertible: Official-compatible-nonzero
+  failure_output: Official-byte-exact
+  legal_consumers: [gt_poly_basemul, gt_poly_tobytes]
+alias_contract:
+  official_supported: [r-distinct, r-equals-a]
+  gt_required: [r-distinct, r-equals-a]
+  partial_overlap: unsupported

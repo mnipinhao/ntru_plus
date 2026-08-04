@@ -1,0 +1,25 @@
+schema_version: 1
+kernel: gt-baseinv-avx2
+isa: [avx2]
+input:
+  representation: centered-canonical-gt
+  interval: [-1728, 1728]
+output:
+  representation: centered-canonical-gt
+  interval: [-1728, 1728]
+behavior:
+  success_value: 0
+  invertibility_failure: Official-exact
+  failure_output: Official-exact
+constant_time:
+  secret_dependent_branch: forbidden
+  secret_dependent_address: forbidden
+  data_dependent_loop: forbidden
+  batch_inversion_shape: fixed
+tests:
+  - identity-per-component
+  - zero-component-failure
+  - multiple-zero-components
+  - official-alias-characterization
+  - full-keygen-caller
+

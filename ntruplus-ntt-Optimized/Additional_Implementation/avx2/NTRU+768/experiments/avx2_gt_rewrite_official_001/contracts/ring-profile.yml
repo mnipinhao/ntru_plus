@@ -1,0 +1,103 @@
+schema_version: 1
+profile_id: ntruplus768-gt-official-main-0c249d5
+mode: implement
+
+authority:
+  api: Official Main
+  revision: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+  immutable_source: third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
+  mathematical_oracle: int64-schoolbook-quotient-ring
+  regression_only: ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt_ntt
+  historical_only: ntruplus-KpqC-Final
+
+ring:
+  coefficient_modulus: 3457
+  dimension: 768
+  quotient: x^768-x^384+1
+  transform_degree: 4
+  component_count: 192
+  primitive_root:
+    value: 22
+    order: 576
+  phi:
+    value: 2735
+    inverse: 723
+    definition: 22^96 mod 3457
+
+official_factorization:
+  stages: [radix2, radix3, radix2, radix2, radix2, radix2, radix2]
+  leaf_modulus: x^4-alpha
+  leaf_order: official-index-192
+
+good_thomas:
+  factors: [3, 32]
+  input_crt:
+    formula: (64*n3 + 33*n32) mod 96
+    invariants:
+      - n mod 3 == n3
+      - n mod 32 == n32
+  output_frequency:
+    formula: (32*k3 + 3*k32) mod 96
+  branches:
+    - id: 0
+      quotient: y^96-phi
+      F: 2
+      F_power_96: phi_inverse
+      preweight: F^(-n)
+    - id: 1
+      quotient: y^96-phi_inverse
+      F: 22
+      F_power_96: phi
+      preweight: F^(-n)
+
+gt_layout:
+  dimensions: [branch:2, k3:3, block32:2, degree:4, lane:16]
+  batch: ((branch*3+k3)*2+block32)
+  component_frequency: 16*block32+lane
+  word: 64*batch+16*degree+lane
+  total_words: 768
+  visibility: backend-private
+  may_cross:
+    - gt-prefixed-calls
+  must_not_cross:
+    - public-api
+    - wire-format
+    - non-gt-callers
+
+representations:
+  coefficient_small:
+    interval: [-3, 4]
+    scale: normal
+  top_raw:
+    interval: [-2891, 2896]
+    scale: normal
+  gt_lazy:
+    interval: open-symmetric-B_lazy
+    initial_candidate: 10371
+    candidates: [10371, 13828, 17285, 20742]
+    scale: generator-manifest
+  gt_canonical:
+    interval: [-1728, 1728]
+    scale: normal
+  encoded:
+    interval: [0, 3456]
+    order: Official-specification
+    packing: 12-bit-little-endian-pairs
+
+compatibility:
+  full_kem: deterministic-byte-exact
+  artifacts: [pk, sk, ct, ss, failure-behavior, kat]
+  first_integration: canonical-only
+  lazy_fusion: gated-after-canonical-kem
+
+security:
+  arithmetic: constant-time
+  secret_dependent_branches: forbidden
+  secret_dependent_addresses: forbidden
+  public_malformed_decode_rejection: Official-byte-exact
+
+open_choices:
+  ntt32: [B1, B2, C]
+  B_lazy: [3q, 4q, 5q, 6q]
+  basemul: [BM-A, BM-B, BM-C]
+  promotion: gated

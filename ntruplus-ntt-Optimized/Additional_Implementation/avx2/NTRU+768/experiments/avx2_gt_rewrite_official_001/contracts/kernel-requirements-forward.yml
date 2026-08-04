@@ -1,0 +1,38 @@
+schema_version: 1
+kernel: gt-forward-avx2
+isa: [avx2]
+correctness_gates:
+  - generated-root-and-crt-assertions
+  - component-alpha-equals-official-index-192
+  - scalar-stage-differential
+  - round-trip
+  - schoolbook-polymul
+ranges:
+  input: [-3, 4]
+  F0: [-2891, 2896]
+  canonical_output: [-1728, 1728]
+  no_int16_overflow: required
+candidates:
+  B1:
+    completion: pass-selected
+    cyclic_half_identity_reduce: false
+  B2:
+    completion: pass-not-selected
+    cyclic_half_identity_reduce: true
+  C:
+    completion: rejected-before-avx2
+    gates:
+      scalar_correctness: pass-required
+      inverse_schedule: pass-required
+      range_no_int16_overflow: pass-required
+      ymm_registers_max: 16
+      spills: 0
+      static_cost_not_above_best_B: true
+      row_cycles_regression_max_percent: 3
+selection:
+  B_tie_percent: 1
+  B_tiebreak: smaller-code-plus-tables
+abi:
+  stack_alignment: sysv-x86_64
+  callee_saved: preserve
+  vzeroupper: required-before-return-if-needed

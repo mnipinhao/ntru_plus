@@ -1,0 +1,37 @@
+schema_version: 1
+date: 2026-08-04
+host: Intel Core Ultra 7 155H
+compiler: GCC 15.2.0
+cpu_affinity: 1
+method:
+  warmups: 2
+  paired_forward_reverse_samples: 20
+  calls_per_candidate_per_sample: 1000000
+  timing: rdtscp-plus-lfence
+results_cycles_per_row:
+  B1:
+    median: 1463.650
+    mad: 6.567
+  B2:
+    median: 1500.466
+    mad: 9.626
+  difference_percent: 2.515
+selection: B1
+reason: B1 is faster by more than the 1 percent tie threshold.
+instruction_measurement:
+  method: perf-cpu_core-over-2-warmups-plus-20-samples
+  measured_calls_per_candidate: 22000000
+  B1:
+    total_instructions: 152662311812
+    instructions_per_call: 6939.196
+    code_bytes: 1967
+    table_bytes: 64
+  B2:
+    total_instructions: 157105580033
+    instructions_per_call: 7141.163
+    code_bytes: 2089
+    table_bytes: 64
+scope:
+  includes: AVX2 NTT32 row kernel
+  excludes: scalar correctness-first F0/F1 producer
+  promotion_claim: none

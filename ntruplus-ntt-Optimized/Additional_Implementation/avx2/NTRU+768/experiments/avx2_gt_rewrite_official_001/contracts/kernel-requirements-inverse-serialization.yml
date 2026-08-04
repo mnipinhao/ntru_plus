@@ -1,0 +1,34 @@
+schema_version: 1
+kernels: [gt-inverse-avx2, gt-pack-avx2]
+inverse:
+  input_layout: gt-layout-v1
+  paired_with_selected_forward: true
+  fused_operations:
+    - inverse-ntt32
+    - inverse-dft3
+    - inverse-permutation-and-preweight
+    - normalization
+    - top-crt
+    - coefficient-order-store
+  standalone_production_passes_forbidden: [untwist, normalization]
+  output: Official-coefficient-representation
+serialization:
+  wire_bytes: 1152
+  element_width_bits: 12
+  exact_order: Official-specification
+  encode_input_preserved: true
+  malformed_decode: Official-byte-exact
+verification:
+  - encode-decode-round-trip
+  - all-4096-raw-12-bit-values
+  - malformed-boundaries
+  - official-exact-valid-encodings
+  - official-exact-invalid-return-and-output
+  - full-kem-byte-exact
+static_audit:
+  - symbol-visibility
+  - stack-alignment
+  - no-spills-in-selected-leaf-kernels
+  - avx2-only
+  - no-secret-dependent-branch-or-address
+
