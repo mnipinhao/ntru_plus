@@ -2,6 +2,7 @@ PYTHON ?= python3
 CC ?= gcc
 CFLAGS ?= -O3 -mavx2 -Wall -Wextra -Werror -std=c11
 BUILD := build
+SAN_BUILD := build-sanitize
 INCLUDES := -Isrc -Igenerated
 QBM_SRC := src/qbm_intrinsic.c
 TRANSPOSE_SRC := src/transpose_intrinsic.c
@@ -36,12 +37,16 @@ intrinsic-check: $(BUILD)/test_qbm_intrinsic
 audit: $(BUILD)/bench_qbm_intrinsic
 	$(PYTHON) tools/audit_intrinsic.py --check
 
-sanitize: CFLAGS := -O1 -g -mavx2 -Wall -Wextra -Werror -std=c11 -fsanitize=address,undefined -fno-omit-frame-pointer
-sanitize: clean $(BUILD)/test_qbm_intrinsic
-	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_qbm_intrinsic
+sanitize:
+	mkdir -p $(SAN_BUILD)
+	$(CC) -O1 -g -mavx2 -Wall -Wextra -Werror -std=c11 \
+		-fsanitize=address,undefined -fno-omit-frame-pointer $(INCLUDES) \
+		$(QBM_SRC) $(BASELINE_SRC) tests/test_qbm_intrinsic.c \
+		-o $(SAN_BUILD)/test_qbm_intrinsic
+	ASAN_OPTIONS=detect_leaks=0 $(SAN_BUILD)/test_qbm_intrinsic
 
 bench: $(BUILD)/bench_qbm_intrinsic
 	$(BUILD)/bench_qbm_intrinsic
 
 clean:
-	$(RM) -r $(BUILD)
+	$(RM) -r $(BUILD) $(SAN_BUILD)
