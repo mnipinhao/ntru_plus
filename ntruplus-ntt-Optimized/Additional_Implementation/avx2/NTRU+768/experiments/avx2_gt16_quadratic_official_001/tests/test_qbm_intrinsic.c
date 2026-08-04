@@ -128,6 +128,7 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     int16_t inverse_ntt0[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_ntt1[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_full[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_full_i1[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_full_want[ROUND4C_WORDS] __attribute__((aligned(32)));
 
     round4c_split_intrinsic(qa, quartic_a);
@@ -182,6 +183,11 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
         }
     }
     round4c_inverse_full_i0(inverse_full, product0);
+    round4c_inverse_full_i1(inverse_full_i1, product0);
+    if (memcmp(inverse_full, inverse_full_i1, sizeof(inverse_full)) != 0) {
+        fprintf(stderr, "full inverse I0/I1 differential failed\n");
+        return 1;
+    }
     scalar_full_inverse(inverse_full_want, inverse_ntt0);
     if (memcmp(inverse_full, inverse_full_want, sizeof(inverse_full)) != 0) {
         for (size_t i = 0; i < ROUND4C_WORDS; ++i) {

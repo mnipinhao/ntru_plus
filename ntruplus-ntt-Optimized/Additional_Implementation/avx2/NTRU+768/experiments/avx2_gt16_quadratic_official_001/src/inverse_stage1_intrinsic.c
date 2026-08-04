@@ -144,7 +144,7 @@ void round4c_inverse_stage1_i1(int16_t out[768], const int16_t quadratic[768])
     }
 }
 
-static void inverse_ntt16_tail(int16_t values[768])
+static void inverse_ntt16_layers(int16_t values[768])
 {
     size_t twiddle_offset = 0;
     for (size_t length = 4; length <= 16; length *= 2) {
@@ -159,26 +159,51 @@ static void inverse_ntt16_tail(int16_t values[768])
                         (const __m256i *)(values + 16 * low_vector));
                     __m256i high = _mm256_loadu_si256(
                         (const __m256i *)(values + 16 * high_vector));
-                    high = montmul_scalar(
-                        high,
-                        round4c_inv16_twiddle_mont[twiddle_offset + index],
-                        round4c_inv16_twiddle_qinv[twiddle_offset + index]);
-                    _mm256_storeu_si256((__m256i *)(values + 16 * low_vector),
-                        center_once(_mm256_add_epi16(low, high)));
-                    _mm256_storeu_si256((__m256i *)(values + 16 * high_vector),
-                        center_once(_mm256_sub_epi16(low, high)));
+                    /* The first twiddle of every CT block is exactly one.
+                     * Keeping that lane lazy removes a redundant Montgomery
+                     * multiply; the generated trace bounds the final raw
+                     * layer by +/-6910 and the following DFT3 by +/-20730. */
+                    if (index != 0) {
+                        high = montmul_scalar(
+                            high,
+                            round4c_inv16_twiddle_mont[twiddle_offset + index],
+                            round4c_inv16_twiddle_qinv[twiddle_offset + index]);
+                    }
+                    __m256i sum = _mm256_add_epi16(low, high);
+                    __m256i difference = _mm256_sub_epi16(low, high);
+                    /* CT range schedule: len=4 stays within +/-3460 and can
+                     * feed len=8 directly.  One correction after len=8 gives
+                     * +/-1765; len=16 then stays within +/-3513. */
+                    if (length == 8) {
+                        sum = center_once(sum);
+                        difference = center_once(difference);
+                    }
+                    _mm256_storeu_si256(
+                        (__m256i *)(values + 16 * low_vector), sum);
+                    _mm256_storeu_si256(
+                        (__m256i *)(values + 16 * high_vector), difference);
                 }
             }
         }
         twiddle_offset += half;
     }
+}
+
+static void inverse_ntt16_normalize(int16_t values[768])
+{
     for (size_t vector = 0; vector < 48; ++vector) {
         const __m256i x = _mm256_loadu_si256(
             (const __m256i *)(values + 16 * vector));
         _mm256_storeu_si256((__m256i *)(values + 16 * vector),
-            center_once(montmul_scalar(x, round4c_inv16_norm_mont,
-                                       round4c_inv16_norm_qinv)));
+            montmul_scalar(x, round4c_inv16_norm_mont,
+                           round4c_inv16_norm_qinv));
     }
+}
+
+static void inverse_ntt16_tail(int16_t values[768])
+{
+    inverse_ntt16_layers(values);
+    inverse_ntt16_normalize(values);
 }
 
 void round4c_inverse_ntt16_i0(int16_t out[768], const int16_t quadratic[768])
@@ -191,6 +216,51 @@ void round4c_inverse_ntt16_i1(int16_t out[768], const int16_t quadratic[768])
 {
     round4c_inverse_stage1_i1(out, quadratic);
     inverse_ntt16_tail(out);
+}
+
+static inline __m256i standard_r2_without_half(__m256i value)
+{
+    const __m256i low_mask = _mm256_load_si256(
+        (const __m256i *)low64_dup_bytes);
+    const __m256i high_mask = _mm256_load_si256(
+        (const __m256i *)high64_dup_bytes);
+    const __m256i plus = _mm256_shuffle_epi8(value, low_mask);
+    const __m256i minus = _mm256_shuffle_epi8(value, high_mask);
+    const __m256i sum = _mm256_add_epi16(plus, minus);
+    const __m256i difference = _mm256_sub_epi16(plus, minus);
+    const __m256i inverse_beta = _mm256_load_si256(
+        (const __m256i *)round4c_inv_beta_vector_mont);
+    const __m256i inverse_beta_qinv = _mm256_load_si256(
+        (const __m256i *)round4c_inv_beta_vector_qinv);
+    const __m256i high = montmul_vector(difference, inverse_beta,
+                                       inverse_beta_qinv);
+    return _mm256_blend_epi16(sum, high, 0xf0);
+}
+
+static inline void inverse_branch_merge_one(int16_t out[768], __m256i value,
+                                            size_t natural)
+{
+    const __m256i paired = standard_r2_without_half(value);
+    const __m256i top0 = _mm256_permute2x128_si256(paired, paired, 0x00);
+    const __m256i top1 = _mm256_permute2x128_si256(paired, paired, 0x11);
+    const __m256i difference = _mm256_sub_epi16(top0, top1);
+    const __m256i scaled_top0 = montmul_scalar(
+        top0, round4c_final_merge_mont[0], round4c_final_merge_qinv[0]);
+    const __m256i high = montmul_scalar(
+        difference, round4c_final_merge_mont[1],
+        round4c_final_merge_qinv[1]);
+    const __m256i low_term = montmul_scalar(
+        difference, round4c_final_merge_mont[2],
+        round4c_final_merge_qinv[2]);
+    const __m128i low = _mm256_castsi256_si128(center_once(
+        _mm256_sub_epi16(scaled_top0, low_term)));
+    const __m128i high128 = _mm256_castsi256_si128(center_once(high));
+    _mm_storel_epi64((__m128i *)(out + 4 * natural), low);
+    _mm_storel_epi64((__m128i *)(out + 4 * (natural + 48)),
+                     _mm_srli_si128(low, 8));
+    _mm_storel_epi64((__m128i *)(out + 4 * (natural + 96)), high128);
+    _mm_storel_epi64((__m128i *)(out + 4 * (natural + 144)),
+                     _mm_srli_si128(high128, 8));
 }
 
 static void inverse_dft3_postweight(int16_t rows[768])
@@ -214,31 +284,9 @@ static void inverse_dft3_postweight(int16_t rows[768])
             output[i3] = montmul16(
                 output[i3], round4c_inv48_postweight_mont[vector],
                 round4c_inv48_postweight_qinv[vector]);
-            _mm256_store_si256((__m256i *)(rows + 16 * vector),
-                               center_once(output[i3]));
+            _mm256_store_si256((__m256i *)(rows + 16 * vector), output[i3]);
         }
     }
-}
-
-static inline __m256i standard_r2_without_half(__m256i value)
-{
-    const __m256i low_mask = _mm256_load_si256(
-        (const __m256i *)low64_dup_bytes);
-    const __m256i high_mask = _mm256_load_si256(
-        (const __m256i *)high64_dup_bytes);
-    const __m256i plus = _mm256_shuffle_epi8(value, low_mask);
-    const __m256i minus = _mm256_shuffle_epi8(value, high_mask);
-    const __m256i sum = _mm256_add_epi16(plus, minus);
-    const __m256i difference = _mm256_sub_epi16(plus, minus);
-    const __m256i inverse_beta = _mm256_set_m128i(
-        _mm_set1_epi16(round4c_inv_beta_mont[1]),
-        _mm_set1_epi16(round4c_inv_beta_mont[0]));
-    const __m256i inverse_beta_qinv = _mm256_set_m128i(
-        _mm_set1_epi16(round4c_inv_beta_qinv[1]),
-        _mm_set1_epi16(round4c_inv_beta_qinv[0]));
-    const __m256i high = montmul_vector(difference, inverse_beta,
-                                       inverse_beta_qinv);
-    return _mm256_blend_epi16(sum, high, 0xf0);
 }
 
 static void inverse_branch_merge_store(int16_t out[768],
@@ -248,36 +296,29 @@ static void inverse_branch_merge_store(int16_t out[768],
         for (size_t i16 = 0; i16 < 16; ++i16) {
             const size_t vector = 16 * i3 + i16;
             const size_t natural = (16 * i3 + 33 * i16) % 48;
-            const __m256i paired = standard_r2_without_half(
-                _mm256_load_si256((const __m256i *)(rows + 16 * vector)));
-            const __m256i top0 = _mm256_permute2x128_si256(paired, paired, 0x00);
-            const __m256i top1 = _mm256_permute2x128_si256(paired, paired, 0x11);
-            const __m256i difference = _mm256_sub_epi16(top0, top1);
-            const __m256i scaled_top0 = montmul_scalar(
-                top0, round4c_final_merge_mont[0],
-                round4c_final_merge_qinv[0]);
-            const __m256i high = montmul_scalar(
-                difference, round4c_final_merge_mont[1],
-                round4c_final_merge_qinv[1]);
-            const __m256i low_term = montmul_scalar(
-                difference, round4c_final_merge_mont[2],
-                round4c_final_merge_qinv[2]);
-            const __m128i low = _mm256_castsi256_si128(center_once(
-                _mm256_sub_epi16(scaled_top0, low_term)));
-            const __m128i high128 = _mm256_castsi256_si128(center_once(high));
-            _mm_storel_epi64((__m128i *)(out + 4 * natural), low);
-            _mm_storel_epi64((__m128i *)(out + 4 * (natural + 48)),
-                             _mm_srli_si128(low, 8));
-            _mm_storel_epi64((__m128i *)(out + 4 * (natural + 96)), high128);
-            _mm_storel_epi64((__m128i *)(out + 4 * (natural + 144)),
-                             _mm_srli_si128(high128, 8));
+            const __m256i value = _mm256_load_si256(
+                (const __m256i *)(rows + 16 * vector));
+            inverse_branch_merge_one(out, value, natural);
         }
     }
 }
 
-void round4c_inverse_full_i0(int16_t out[768], const int16_t quadratic[768])
+static void inverse_full_finish(int16_t out[768])
 {
-    round4c_inverse_ntt16_i0(full_inverse_rows, quadratic);
+    /* The full CT path folds both /16 and /3 into the F^n postweight. */
+    inverse_ntt16_layers(full_inverse_rows);
     inverse_dft3_postweight(full_inverse_rows);
     inverse_branch_merge_store(out, full_inverse_rows);
+}
+
+void round4c_inverse_full_i0(int16_t out[768], const int16_t quadratic[768])
+{
+    round4c_inverse_stage1_i0(full_inverse_rows, quadratic);
+    inverse_full_finish(out);
+}
+
+void round4c_inverse_full_i1(int16_t out[768], const int16_t quadratic[768])
+{
+    round4c_inverse_stage1_i1(full_inverse_rows, quadratic);
+    inverse_full_finish(out);
 }

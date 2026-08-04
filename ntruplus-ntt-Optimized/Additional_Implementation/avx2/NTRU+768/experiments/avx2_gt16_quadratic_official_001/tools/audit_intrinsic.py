@@ -52,8 +52,9 @@ def main() -> int:
     for label, symbol in (
         ("stage1_i0", "round4c_inverse_stage1_i0"),
         ("stage1_i1", "round4c_inverse_stage1_i1"),
-        ("ntt16_tail", "inverse_ntt16_tail"),
+        ("ntt16_layers", "inverse_ntt16_layers"),
         ("full_i0", "round4c_inverse_full_i0"),
+        ("full_i1", "round4c_inverse_full_i1"),
         ("frozen_gt32_fused", "gt_invntt_soa_avx2_fused_asm"),
     ):
         text = body(symbol)
@@ -71,9 +72,9 @@ def main() -> int:
         "interpretation": (
             "vector-at-a-time is spill-free; GCC spills two data values in the "
             "4-vector helper and heavily spills the 8-vector helper. The selected "
-            "inverse I0 keeps standalone merge; I1 is larger and slower. The "
-            "NTT16 tail spills two public loop-state GPRs; full I0 additionally "
-            "materializes two vector constants on the stack."
+            "inverse I0 keeps standalone merge and remains faster than I1. The "
+            "CT layers keep only public loop-state stack references; generated "
+            "packed beta constants remove full-inverse vector stack spills."
         ),
     }
     expected = json.dumps(finding, indent=2, sort_keys=True) + "\n"

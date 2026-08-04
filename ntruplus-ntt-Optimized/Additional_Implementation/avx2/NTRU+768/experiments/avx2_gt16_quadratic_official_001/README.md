@@ -33,16 +33,19 @@ vector-at-a-time QBM is spill-free; GCC spills two data values in the selected
 four-vector schedule but it is still 2.87% faster.  The eight-vector schedule
 spills heavily and is rejected.
 
-The paired inverse is now executable through coefficient-order stores.  I0
-(standalone merge) beats the fused-first-load I1 by 1.13% through inverse
-NTT16.  After removing redundant post-stage-1 corrections, complete I0 measures
-1456.139 TSC ticks versus 913.699 for the same-binary frozen GT32 fused inverse,
-a 59.37% regression.  The inverse deficit is 542.440 ticks, far larger than
-the terminal boundary's 48.840-tick gain.
+The paired inverse is now executable through coefficient-order stores.  It is
+a lazy Cooley-Tukey schedule: only length 8 corrects, identity twiddle
+Montgomery multiplies are omitted, and `/16` plus `/3` are folded into the
+`F^n` postweight.  I0 (standalone merge) beats fused-first-load I1 by 0.782%
+through the complete inverse.  I0 measures 1126.226 TSC ticks versus 911.862
+for the same-binary frozen GT32 fused inverse, a 23.51% regression.  The
+inverse deficit is now 214.364 ticks versus the terminal boundary's 48.840-tick
+gain.
 
 This is preliminary local evidence, not a promotion result: the host uses the
 powersave governor and differs from the frozen Ryzen benchmark machine.  There
 is still no executable vertical forward or complete `2F+B+I` chain,
 serialization consumer, or quadratic baseinv/keygen benchmark.  Assembly
-remains unauthorized; a forward prototype would first have to recover the
-known 493.600-tick terminal-plus-inverse deficit.
+remains unauthorized; two forward prototypes would first have to recover the
+known 165.524-tick terminal-plus-inverse deficit, or 82.762 ticks each, before
+the chain reaches parity.

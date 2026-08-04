@@ -183,6 +183,7 @@ int main(int argc, char **argv)
         double ntt16_i0;
         double ntt16_i1;
         double full_i0;
+        double full_i1;
         double frozen_inverse;
         if (reverse) {
             stage_i1 = bench_unary(round4c_inverse_stage1_i1, out,
@@ -193,6 +194,8 @@ int main(int argc, char **argv)
                                    scratch_product, iterations);
             ntt16_i0 = bench_unary(round4c_inverse_ntt16_i0, out,
                                    scratch_product, iterations);
+            full_i1 = bench_unary(round4c_inverse_full_i1, out,
+                                  scratch_product, iterations);
             full_i0 = bench_unary(round4c_inverse_full_i0, out,
                                   scratch_product, iterations);
             frozen_inverse = bench_unary(gt_invntt_soa_avx2_fused_asm, out,
@@ -210,6 +213,8 @@ int main(int argc, char **argv)
                                          scratch_product, iterations);
             full_i0 = bench_unary(round4c_inverse_full_i0, out,
                                   scratch_product, iterations);
+            full_i1 = bench_unary(round4c_inverse_full_i1, out,
+                                  scratch_product, iterations);
         }
         printf("{\n");
         printf("  \"iterations\": %zu,\n", iterations);
@@ -220,6 +225,7 @@ int main(int argc, char **argv)
         printf("  \"inverse_ntt16_i0_tsc\": %.3f,\n", ntt16_i0);
         printf("  \"inverse_ntt16_i1_tsc\": %.3f,\n", ntt16_i1);
         printf("  \"inverse_full_i0_tsc\": %.3f,\n", full_i0);
+        printf("  \"inverse_full_i1_tsc\": %.3f,\n", full_i1);
         printf("  \"frozen_gt32_inverse_tsc\": %.3f,\n", frozen_inverse);
         printf("  \"sink\": %llu\n", (unsigned long long)sink);
         printf("}\n");

@@ -150,7 +150,7 @@ def constant_header(factors: dict[str, Any]) -> str:
     lines.append(f"static const int16_t round4c_inv3_omega_mont = {omega3_mont};")
     lines.append(f"static const int16_t round4c_inv3_omega_qinv = {omega3_qinv};")
     lines.append("")
-    inverse3 = pow(3, -1, Q)
+    inverse48 = pow(48, -1, Q)
     postweight_rows = []
     postweight_qinv_rows = []
     for i3 in range(3):
@@ -158,7 +158,7 @@ def constant_header(factors: dict[str, Any]) -> str:
             natural = (16 * i3 + 33 * i16) % 48
             values = []
             for branch in branches:
-                value = inverse3 * pow(branch["F"], natural, Q) % Q
+                value = inverse48 * pow(branch["F"], natural, Q) % Q
                 values.extend((value,) * 4)
             encoded = [mont_constant(value) for value in values]
             postweight_rows.append([item[0] for item in encoded])
@@ -184,6 +184,16 @@ def constant_header(factors: dict[str, Any]) -> str:
     # constants remove that common scale while completing the special R2.
     scalar_array("round4c_inv_beta", [pow(branches[index]["beta"], -1, Q)
                                       for index in (0, 2)])
+    inverse_betas = [pow(branches[index]["beta"], -1, Q)
+                     for index in (0, 2)]
+    beta_vector = [inverse_betas[0]] * 8 + [inverse_betas[1]] * 8
+    beta_encoded = [mont_constant(value) for value in beta_vector]
+    lines.append("static const int16_t round4c_inv_beta_vector_mont[16] "
+                 "__attribute__((aligned(32))) = {" +
+                 ", ".join(str(pair[0]) for pair in beta_encoded) + "};")
+    lines.append("static const int16_t round4c_inv_beta_vector_qinv[16] "
+                 "__attribute__((aligned(32))) = {" +
+                 ", ".join(str(pair[1]) for pair in beta_encoded) + "};")
     inverse_scale = (R % Q) * pow(4, -1, Q) % Q
     inverse_delta = pow(2735 - 723, -1, Q)
     scalar_array("round4c_final_merge", [
@@ -323,6 +333,133 @@ def mont32(x: int) -> int:
     return (x - m * Q) // R
 
 
+def mulhi16(left: int, right: int) -> int:
+    return (signed16(left) * signed16(right)) // R
+
+
+def mont16_fixed(x: int, factor: int) -> int:
+    mont, qinv = mont_constant(factor)
+    low = signed16(signed16(x) * qinv)
+    return signed16(mulhi16(x, mont) - mulhi16(low, Q))
+
+
+def mont16_interval(interval: tuple[int, int], factor: int) -> tuple[int, int]:
+    values = [mont16_fixed(x, factor)
+              for x in range(interval[0], interval[1] + 1)]
+    return min(values), max(values)
+
+
+def add_interval(left: tuple[int, int], right: tuple[int, int]) -> tuple[int, int]:
+    return left[0] + right[0], left[1] + right[1]
+
+
+def subtract_interval(left: tuple[int, int],
+                      right: tuple[int, int]) -> tuple[int, int]:
+    return left[0] - right[1], left[1] - right[0]
+
+
+def center_once_interval(interval: tuple[int, int]) -> tuple[int, int]:
+    values = [x - Q if x > CENTER else x + Q if x < -CENTER else x
+              for x in range(interval[0], interval[1] + 1)]
+    return min(values), max(values)
+
+
+def inverse_ct_ranges() -> dict[str, Any]:
+    positions = [(-CENTER, CENTER)] * 16
+    stages = []
+    for length in (4, 8, 16):
+        half = length // 2
+        twiddles = [pow(OMEGA16, -index * (16 // length), Q)
+                    for index in range(half)]
+        output: list[tuple[int, int] | None] = [None] * 16
+        for start in range(0, 16, length):
+            for index, twiddle in enumerate(twiddles):
+                low = positions[start + index]
+                high_input = positions[start + index + half]
+                high = (high_input if index == 0 else
+                        mont16_interval(high_input, twiddle))
+                total = add_interval(low, high)
+                difference = subtract_interval(low, high)
+                if length == 8:
+                    total = center_once_interval(total)
+                    difference = center_once_interval(difference)
+                output[start + index] = total
+                output[start + index + half] = difference
+        assert all(value is not None for value in output)
+        positions = [value for value in output if value is not None]
+        stages.append({
+            "length": length,
+            "corrections_per_output": 1 if length == 8 else 0,
+            "identity_twiddle_montgomery_omitted": True,
+            "overall_interval": [min(x[0] for x in positions),
+                                 max(x[1] for x in positions)],
+            "position_intervals": [list(x) for x in positions],
+        })
+
+    dft_intervals = []
+    for interval in positions:
+        product = mont16_interval(subtract_interval(interval, interval), OMEGA3)
+        dft_intervals.append([
+            add_interval(add_interval(interval, interval), interval),
+            add_interval(subtract_interval(interval, interval), product),
+            subtract_interval(subtract_interval(interval, interval), product),
+        ])
+    dft_bound = max(abs(value) for rows in dft_intervals
+                    for interval in rows for value in interval)
+    branches = json.loads(
+        (HORIZONTAL / "generated/gt16-branches.json").read_text()
+    )["branches"]
+    postweight_by_branch: list[list[tuple[int, int]]] = [[] for _ in range(4)]
+    inverse48 = pow(48, -1, Q)
+    for i16 in range(16):
+        for i3 in range(3):
+            natural = (16 * i3 + 33 * i16) % 48
+            for branch, spec in enumerate(branches):
+                factor = inverse48 * pow(spec["F"], natural, Q) % Q
+                postweight_by_branch[branch].append(
+                    mont16_interval(dft_intervals[i16][i3], factor))
+    branch_ranges = [(min(x[0] for x in values), max(x[1] for x in values))
+                     for values in postweight_by_branch]
+    tops = []
+    for top in range(2):
+        plus = branch_ranges[2 * top]
+        minus = branch_ranges[2 * top + 1]
+        tops.append([
+            add_interval(plus, minus),
+            mont16_interval(subtract_interval(plus, minus),
+                            pow(branches[2 * top]["beta"], -1, Q)),
+        ])
+    inverse_scale = (R % Q) * pow(4, -1, Q) % Q
+    inverse_delta = pow(2735 - 723, -1, Q)
+    final_raw = []
+    maximum_top_difference = 0
+    for half in range(2):
+        difference = subtract_interval(tops[0][half], tops[1][half])
+        maximum_top_difference = max(maximum_top_difference,
+                                     abs(difference[0]), abs(difference[1]))
+        scaled_top0 = mont16_interval(tops[0][half], inverse_scale)
+        high = mont16_interval(
+            difference, inverse_delta * inverse_scale % Q)
+        low_term = mont16_interval(
+            difference, 2735 * inverse_delta * inverse_scale % Q)
+        final_raw.extend((subtract_interval(scaled_top0, low_term), high))
+    assert max(abs(x) for stage in stages for x in stage["overall_interval"]) < 32768
+    assert dft_bound < 32768 and maximum_top_difference < 32768
+    return {
+        "algorithm": "Cooley-Tukey inverse NTT16",
+        "stage1_boundary": "centered after scale-2 quadratic merge",
+        "stages": stages,
+        "inverse16_normalization": "folded into inverse48 postweight",
+        "dft3_raw_interval": [-dft_bound, dft_bound],
+        "postweight_branch_intervals": [list(x) for x in branch_ranges],
+        "standard_r2_top_intervals": [[list(x) for x in top] for top in tops],
+        "maximum_special_r2_difference_absolute": maximum_top_difference,
+        "final_raw_intervals": [list(x) for x in final_raw],
+        "final_single_correction_sufficient": True,
+        "signed_int16_safe": True,
+    }
+
+
 def range_metadata() -> dict[str, Any]:
     split_bound = 2 * CENTER
     c0_bound = 2 * split_bound * CENTER
@@ -351,6 +488,7 @@ def range_metadata() -> dict[str, Any]:
         "c1_vpmaddwd_bound": c1_bound,
         "signed_int32_safe": c1_bound < 2**31,
         "negative_32768_excluded": True,
+        "inverse_ct_lazy": inverse_ct_ranges(),
         "five_instruction_montgomery32": {
             "qinv": QINV,
             "sequence": ["vpmullw-qinv", "vpand-lowword", "vpmaddwd-q",
@@ -515,14 +653,25 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         "five_percent_gate": FROZEN_CHAIN_GATE,
         "static_gate": "pass" if gate_pass else "fail",
         "projected_improvement_percent": 100 * (FROZEN_CHAIN - projected_chain) / FROZEN_CHAIN,
+        "executable_local_cycles": {
+            "terminal_old": 601.868,
+            "terminal_quadratic": 553.028,
+            "terminal_saving": 48.840,
+            "inverse_frozen_gt32": 911.8615,
+            "inverse_quadratic_gt16_ct": 1126.2255,
+            "inverse_regression": 214.364,
+            "known_terminal_plus_inverse_net_regression": 165.524,
+            "forward_break_even_each": 82.762,
+        },
         "limitations": [
-            "1884 is an optimistic vertical inverse symmetry floor, not an inverse execution trace",
+            "the static projection is retained as historical accounting and is superseded for inverse decisions by the executable CT result",
             "4731.420 is the tracked hybrid inverse dynamic count, not a same-binary Round 4C measurement",
             "instruction projection does not predict cycles or frontend behavior",
             "serialization and 384-norm baseinv have separate mandatory gates",
         ],
     }
-    status = "intrinsic-terminal-cycle-gate-pass" if gate_pass else "stop-quadratic-terminal-before-avx2"
+    status = ("intrinsic-inverse-prototype-measured-direct-gate-fail"
+              if gate_pass else "stop-quadratic-terminal-before-avx2")
     result = {
         "status": status,
         "selected_qbm": schedules["selected"],
@@ -536,17 +685,24 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "improvement_percent": 8.11474 if gate_pass else None,
             "environment": "local Intel Core Ultra 7 155H, powersave governor",
         },
+        "direct_inverse_cycle_gate": {
+            "status": "fail",
+            "algorithm": "lazy-Cooley-Tukey",
+            "candidate_tsc_median": 1126.2255,
+            "frozen_gt32_tsc_median": 911.8615,
+            "regression_percent": 23.5084,
+        },
         "production_changed": False,
         "reason": (
-            "The exact benchmark-only terminal boundary clears the direct 5% cycle gate, "
-            "but the inverse term is still only a symmetry floor and serialization/baseinv "
-            "are not closed. Assembly remains unauthorized."
+            "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, "
+            "but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. "
+            "Assembly remains unauthorized until executable forwards close the full chain."
             if gate_pass else
             "The consumer-complete static floor does not clear 95% of the frozen chain."
         ),
         "next_gate": (
-            "concrete executable paired vertical inverse trace, followed by direct "
-            "serialization and baseinv caller benchmarks"
+            "two executable vertical forwards must each recover at least 82.762 local TSC "
+            "ticks before the same-binary 2F+B+I gate, followed by serialization/baseinv"
         ),
     }
     return accounting, result
