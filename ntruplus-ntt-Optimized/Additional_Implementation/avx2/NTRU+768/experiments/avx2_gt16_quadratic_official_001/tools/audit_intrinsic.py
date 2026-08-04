@@ -77,10 +77,12 @@ def main() -> int:
     for label, symbol in (
         ("frontend", "frontend_bitreversed.constprop.0"),
         ("ntt16", "forward_ntt16_layers"),
+        ("ntt16_asm", "round4c_forward_ntt16_asm"),
         ("f0_materialized", "round4c_forward_f0_materialized"),
         ("f0_fused", "round4c_forward_f0_fused"),
         ("f1_materialized", "round4c_forward_f1_materialized"),
         ("f1_fused", "round4c_forward_f1_fused"),
+        ("f1_hybrid_asm", "round4c_forward_f1_hybrid_asm"),
         ("frozen_gt32", "gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm"),
     ):
         match = re.search(
@@ -110,7 +112,9 @@ def main() -> int:
             "CT layers keep only public loop-state stack references; generated "
             "packed beta constants remove full-inverse vector stack spills. "
             "The best F1 forward has no vector spill; its remaining stack "
-            "references are public loop state in the generic CT16 helper."
+            "references are public loop state in the generic CT16 helper. "
+            "The handwritten CT16 is a leaf with fixed public loops, no stack "
+            "access, no spill, and an explicit vzeroupper."
         ),
     }
     expected = json.dumps(finding, indent=2, sort_keys=True) + "\n"

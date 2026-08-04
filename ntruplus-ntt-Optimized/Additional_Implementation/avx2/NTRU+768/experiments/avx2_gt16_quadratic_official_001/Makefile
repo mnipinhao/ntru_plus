@@ -7,6 +7,7 @@ INCLUDES := -Isrc -Igenerated
 QBM_SRC := src/qbm_intrinsic.c
 INVERSE_SRC := src/inverse_stage1_intrinsic.c
 FORWARD_SRC := src/forward_intrinsic.c
+FORWARD_ASM := src/forward_ntt16_asm.S
 TRANSPOSE_SRC := src/transpose_intrinsic.c
 QUARTIC_ASM := ../gt_ntt/gt_basemul_layout_asm.S
 BASELINE_SRC := $(TRANSPOSE_SRC) generated/quartic-lambda.c $(QUARTIC_ASM)
@@ -33,17 +34,17 @@ $(BUILD):
 $(BUILD)/test_qbm_intrinsic: $(QBM_SRC) $(INVERSE_SRC) $(BASELINE_SRC) tests/test_qbm_intrinsic.c generated/quadratic-constants.h | $(BUILD)
 	$(CC) $(CFLAGS) $(INCLUDES) $(QBM_SRC) $(INVERSE_SRC) $(BASELINE_SRC) tests/test_qbm_intrinsic.c -o $@
 
-$(BUILD)/test_forward_intrinsic: $(QBM_SRC) $(FORWARD_SRC) tests/test_forward_intrinsic.c generated/quadratic-constants.h | $(BUILD)
-	$(CC) $(CFLAGS) $(INCLUDES) $(QBM_SRC) $(FORWARD_SRC) tests/test_forward_intrinsic.c -o $@
+$(BUILD)/test_forward_intrinsic: $(QBM_SRC) $(FORWARD_SRC) $(FORWARD_ASM) tests/test_forward_intrinsic.c generated/quadratic-constants.h generated/forward-ntt16-constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) $(INCLUDES) $(QBM_SRC) $(FORWARD_SRC) $(FORWARD_ASM) tests/test_forward_intrinsic.c -o $@
 
 $(BUILD)/bench_qbm_intrinsic: $(QBM_SRC) $(INVERSE_SRC) $(BASELINE_SRC) $(FROZEN_INVERSE_SRC) bench/bench_qbm_intrinsic.c generated/quadratic-constants.h | $(BUILD)
 	$(CC) $(CFLAGS) -DGT_HAVE_AVX2_ASM=1 $(INCLUDES) -I../gt_ntt \
 		$(QBM_SRC) $(INVERSE_SRC) $(BASELINE_SRC) $(FROZEN_INVERSE_SRC) \
 		bench/bench_qbm_intrinsic.c -o $@
 
-$(BUILD)/bench_forward_intrinsic: $(QBM_SRC) $(FORWARD_SRC) $(FROZEN_FORWARD_SRC) bench/bench_forward_intrinsic.c generated/quadratic-constants.h | $(BUILD)
+$(BUILD)/bench_forward_intrinsic: $(QBM_SRC) $(FORWARD_SRC) $(FORWARD_ASM) $(FROZEN_FORWARD_SRC) bench/bench_forward_intrinsic.c generated/quadratic-constants.h generated/forward-ntt16-constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -DGT_HAVE_AVX2_ASM=1 $(INCLUDES) -I../gt_ntt \
-		$(QBM_SRC) $(FORWARD_SRC) $(FROZEN_FORWARD_SRC) \
+		$(QBM_SRC) $(FORWARD_SRC) $(FORWARD_ASM) $(FROZEN_FORWARD_SRC) \
 		bench/bench_forward_intrinsic.c -o $@
 
 intrinsic-check: $(BUILD)/test_qbm_intrinsic $(BUILD)/test_forward_intrinsic
@@ -62,7 +63,7 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 $(SAN_BUILD)/test_qbm_intrinsic
 	$(CC) -O1 -g -mavx2 -Wall -Wextra -Werror -std=c11 \
 		-fsanitize=address,undefined -fno-omit-frame-pointer $(INCLUDES) \
-		$(QBM_SRC) $(FORWARD_SRC) tests/test_forward_intrinsic.c \
+		$(QBM_SRC) $(FORWARD_SRC) $(FORWARD_ASM) tests/test_forward_intrinsic.c \
 		-o $(SAN_BUILD)/test_forward_intrinsic
 	ASAN_OPTIONS=detect_leaks=0 $(SAN_BUILD)/test_forward_intrinsic
 

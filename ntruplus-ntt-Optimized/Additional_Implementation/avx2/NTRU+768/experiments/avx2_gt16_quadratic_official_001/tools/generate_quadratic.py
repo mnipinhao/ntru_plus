@@ -301,6 +301,29 @@ def quartic_lambda_source() -> str:
     return "\n".join(lines)
 
 
+def forward_asm_constants() -> str:
+    twiddles = [pow(OMEGA16, index * (16 // length), Q)
+                for length in (2, 4, 8, 16)
+                for index in range(length // 2)]
+    encoded = [mont_constant(value) for value in twiddles]
+    return "\n".join([
+        ".p2align 5",
+        ".Lfwd16_mont:",
+        "\t.short " + ", ".join(str(pair[0]) for pair in encoded),
+        ".p2align 5",
+        ".Lfwd16_qinv:",
+        "\t.short " + ", ".join(str(pair[1]) for pair in encoded),
+        ".p2align 1",
+        ".Lq:",
+        "\t.short 3457",
+        ".Lcenter:",
+        "\t.short 1728",
+        ".Lnegative_center:",
+        "\t.short -1728",
+        "",
+    ])
+
+
 def choose_vector_signs(vector: list[dict[str, Any]]) -> tuple[list[int], dict[str, Any]]:
     """Exhaust all 2^4 root orientations for one (k3,k16) vector."""
     candidates = []
@@ -823,14 +846,17 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "inverse_regression": 214.364,
             "known_terminal_plus_inverse_net_regression": 165.524,
             "forward_break_even_each": 82.762,
-            "forward_frozen_gt32_ab_ba_mean": 464.4815,
-            "forward_f0_materialized_ab_ba_mean": 787.97265,
-            "forward_f0_fused_ab_ba_mean": 792.7014,
-            "forward_f1_materialized_ab_ba_mean": 750.82635,
-            "forward_f1_fused_ab_ba_mean": 719.3613,
-            "selected_forward": "F1-NTT16-first-fused",
-            "selected_forward_regression": 254.8798,
-            "legacy_chain_regression": 675.2836,
+            "forward_frozen_gt32_ab_ba_mean": 463.5532,
+            "forward_f0_materialized_ab_ba_mean": 792.56145,
+            "forward_f0_fused_ab_ba_mean": 794.67745,
+            "forward_f1_materialized_ab_ba_mean": 752.356,
+            "forward_f1_fused_ab_ba_mean": 722.61095,
+            "forward_f1_hybrid_asm_ab_ba_mean": 678.98395,
+            "ct16_intrinsic_ab_ba_mean": 288.3822,
+            "ct16_asm_ab_ba_mean": 252.21765,
+            "selected_forward": "F1-NTT16-first-hybrid-asm",
+            "selected_forward_regression": 215.43075,
+            "legacy_chain_regression": 596.3855,
         },
         "limitations": [
             "the static projection is retained as historical accounting and is superseded for inverse decisions by the executable CT result",
@@ -845,6 +871,7 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         "status": status,
         "selected_qbm": schedules["selected"],
         "assembly_authorized": False,
+        "benchmark_only_ct16_assembly_completed": True,
         "intrinsics_prototype_authorized": gate_pass,
         "intrinsics_prototype_completed": gate_pass,
         "direct_terminal_cycle_gate": {
@@ -863,19 +890,20 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         },
         "direct_forward_cycle_gate": {
             "status": "fail",
-            "selected": "F1-NTT16-first-fused",
-            "candidate_tsc_ab_ba_mean": 719.3613,
-            "frozen_gt32_tsc_ab_ba_mean": 464.4815,
-            "candidate_regression_tsc": 254.8798,
+            "selected": "F1-NTT16-first-hybrid-asm",
+            "candidate_tsc_ab_ba_mean": 678.98395,
+            "frozen_gt32_tsc_ab_ba_mean": 463.5532,
+            "candidate_regression_tsc": 215.43075,
             "required_saving_tsc": 82.762,
-            "parity_maximum_tsc": 381.7195,
+            "parity_maximum_tsc": 380.7912,
         },
         "production_changed": False,
         "reason": (
             "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, "
             "but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. "
-            "The best executable forward adds another 254.880 ticks per call, so the "
-            "legacy local 2F+B+I accounting misses parity by 675.284 ticks."
+            "The handwritten CT16 improves the selected forward by 43.627 ticks, but "
+            "the hybrid still adds 215.431 ticks per call. The legacy local 2F+B+I "
+            "accounting therefore misses parity by 596.386 ticks."
             if gate_pass else
             "The consumer-complete static floor does not clear 95% of the frozen chain."
         ),
@@ -899,6 +927,7 @@ def artifacts() -> dict[Path, Any]:
             str((HERE / "src/qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.c"),
             str((HERE / "src/inverse_stage1_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/inverse_stage1_intrinsic.c"),
             str((HERE / "src/forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/forward_intrinsic.c"),
+            str((HERE / "src/forward_ntt16_asm.S").relative_to(REPO)): sha256(HERE / "src/forward_ntt16_asm.S"),
             str((HERE / "tests/test_forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "tests/test_forward_intrinsic.c"),
             str((HERE / "src/transpose_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/transpose_intrinsic.c"),
             str((HERE.parent / "gt_ntt/gt_basemul_layout_asm.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_basemul_layout_asm.S"),
@@ -910,6 +939,7 @@ def artifacts() -> dict[Path, Any]:
         HERE / "generated/quadratic-factorization.json": factors,
         HERE / "generated/quadratic-constants.h": constant_header(factors),
         HERE / "generated/quartic-lambda.c": quartic_lambda_source(),
+        HERE / "generated/forward-ntt16-constants.inc": forward_asm_constants(),
         HERE / "generated/quadratic-range-metadata.json": ranges,
         HERE / "generated/qbm-static-schedules.json": schedules,
         HERE / "generated/source-manifest.json": manifest,

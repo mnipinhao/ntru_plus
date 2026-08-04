@@ -52,22 +52,29 @@ length 4 and 16 remain lazy, and identity twiddles are omitted.
 
 All four candidates pass 77 scalar component-oracle cases, in-place aliasing,
 and materialized/fused representative differentials.  In two 20-sample runs
-of one million calls per sample, the mean of the AB/BA medians is 464.482 TSC
-for frozen GT32 and 719.361 for the best F1 fused producer.  F0 materialized,
-F0 fused, and F1 materialized measure 787.973, 792.701, and 750.826
-respectively.  The selected path has no vector spills; reversing benchmark
-order changes the GT32/GT16 gap by less than 1%.
+of one million calls per sample, the mean of the AB/BA medians is 463.553 TSC
+for frozen GT32 and 722.611 for the intrinsic F1 fused producer.  F0
+materialized, F0 fused, and F1 materialized measure 792.561, 794.677, and
+752.356 respectively.
 
-Million-call direct buckets measure 280.791 TSC for the fused-linear frontend,
-287.080 for a zero-data CT16 arithmetic pass, 109.110 for the centered F0 DFT3
-boundary, and 102.623 for standalone quadratic split.  These buckets overlap
+A benchmark-only GNU assembler CT16 now replaces the intrinsic core in the F1
+producer.  It interleaves two independent butterflies, has fixed public loops,
+uses generated execution-order constants, and is a leaf with no stack access
+or vector spill.  Direct CT16 drops from 288.382 to 252.218 TSC (12.54%); the
+complete hybrid producer drops from 722.611 to 678.984 (6.04%).  Reversing
+benchmark order preserves the result.
+
+Million-call direct buckets measure 286.777 TSC for the fused-linear frontend,
+252.218 for the assembler CT16 arithmetic pass, 108.975 for the centered F0
+DFT3 boundary, and 102.928 for standalone quadratic split.  These buckets overlap
 when fused and therefore are not summed as a reconstructed producer, but they
 show that the deficit is distributed across the mandatory frontend and CT16;
 it is not explained by a single spill or materialization pass.
 
-The forward therefore regresses by 254.880 ticks instead of saving the required
+The assembler-assisted forward still regresses by 215.431 ticks instead of
+saving the required
 82.762.  Under the pre-existing local chain accounting, two forwards plus the
-known terminal/inverse deficit miss parity by 675.284 ticks.  This is a direct
+known terminal/inverse deficit miss parity by 596.386 ticks.  This is a direct
 gate failure, not a production or promotion result: the host still uses the
 powersave governor, but same-binary AB/BA evidence is decisive enough to stop
 before assembly, serialization, baseinv, or KEM integration.

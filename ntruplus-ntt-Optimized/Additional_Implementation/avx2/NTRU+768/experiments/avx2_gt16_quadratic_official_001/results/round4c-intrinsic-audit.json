@@ -26,10 +26,20 @@
         "frontend_bitreversed.constprop.0",
         "forward_ntt16_layers"
       ],
-      "linked_bytes": 383,
-      "stack_data_references": 1,
+      "linked_bytes": 42,
+      "stack_data_references": 0,
       "vector_stack_references": 0,
-      "vzeroupper": true
+      "vzeroupper": false
+    },
+    "f1_hybrid_asm": {
+      "calls": [
+        "frontend_bitreversed.constprop.0",
+        "round4c_forward_ntt16_asm"
+      ],
+      "linked_bytes": 37,
+      "stack_data_references": 0,
+      "vector_stack_references": 0,
+      "vzeroupper": false
     },
     "f1_materialized": {
       "calls": [
@@ -61,9 +71,16 @@
       "stack_data_references": 9,
       "vector_stack_references": 0,
       "vzeroupper": true
+    },
+    "ntt16_asm": {
+      "calls": [],
+      "linked_bytes": 2134,
+      "stack_data_references": 0,
+      "vector_stack_references": 0,
+      "vzeroupper": true
     }
   },
-  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper.",
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper. The handwritten CT16 is a leaf with fixed public loops, no stack access, no spill, and an explicit vzeroupper.",
   "inverse": {
     "frozen_gt32_fused": {
       "calls": [],

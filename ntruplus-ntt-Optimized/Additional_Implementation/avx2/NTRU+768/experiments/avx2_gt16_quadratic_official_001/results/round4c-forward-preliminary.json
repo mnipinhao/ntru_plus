@@ -11,54 +11,66 @@
   },
   "order_medians_tsc": {
     "forward": {
-      "frozen_gt32": 463.6848,
-      "f0_materialized": 786.4655,
-      "f0_fused": 794.1268,
-      "f1_materialized": 751.1988,
-      "f1_fused": 718.9259
+      "frozen_gt32": 461.4948,
+      "f0_materialized": 791.5417,
+      "f0_fused": 795.4425,
+      "f1_materialized": 750.1195,
+      "f1_fused": 718.8270,
+      "f1_hybrid_asm": 677.9991
     },
     "reverse": {
-      "frozen_gt32": 465.2782,
-      "f0_materialized": 789.4798,
-      "f0_fused": 791.2760,
-      "f1_materialized": 750.4539,
-      "f1_fused": 719.7967
+      "frozen_gt32": 465.6116,
+      "f0_materialized": 793.5812,
+      "f0_fused": 793.9124,
+      "f1_materialized": 754.5925,
+      "f1_fused": 726.3949,
+      "f1_hybrid_asm": 679.9688
     }
   },
   "mean_of_order_medians_tsc": {
-    "frozen_gt32": 464.4815,
-    "f0_materialized": 787.97265,
-    "f0_fused": 792.7014,
-    "f1_materialized": 750.82635,
-    "f1_fused": 719.3613
+    "frozen_gt32": 463.5532,
+    "f0_materialized": 792.56145,
+    "f0_fused": 794.67745,
+    "f1_materialized": 752.356,
+    "f1_fused": 722.61095,
+    "f1_hybrid_asm": 678.98395
   },
-  "selected": "f1_fused",
+  "selected": "f1_hybrid_asm",
   "direct_stage_medians_tsc": {
-    "frontend": 280.7912,
-    "dft3_centered_F0_boundary": 109.1102,
-    "ntt16_zero_arithmetic": 287.0803,
-    "quadratic_split": 102.6226,
+    "frontend": 286.77685,
+    "dft3_centered_F0_boundary": 108.9745,
+    "ntt16_intrinsic_zero_arithmetic": 288.3822,
+    "ntt16_asm_zero_arithmetic": 252.21765,
+    "quadratic_split": 102.9278,
     "note": "Direct buckets overlap under fusion and must not be added as a reconstructed full producer."
   },
-  "selected_regression_vs_frozen_tsc": 254.8798,
+  "selected_regression_vs_frozen_tsc": 215.43075,
+  "asm_gain_vs_intrinsic_f1_tsc": 43.627,
+  "asm_gain_vs_intrinsic_f1_percent": 6.0374,
+  "asm_ct16_gain_tsc": 36.16455,
+  "asm_ct16_gain_percent": 12.5405,
   "known_terminal_plus_inverse_regression_tsc": 165.524,
-  "legacy_chain_regression_tsc": 675.2836,
+  "legacy_chain_regression_tsc": 596.3855,
   "forward_parity_required_saving_tsc": 82.762,
-  "forward_parity_maximum_tsc": 381.7195,
+  "forward_parity_maximum_tsc": 380.7912,
   "parity_gate": "fail",
   "five_percent_gate": "fail",
   "correctness": {
     "cases": 77,
-    "candidates": 4,
+    "candidates": 5,
     "component_oracle_congruence": "pass",
     "materialized_fused_bit_exact": "pass",
+    "ct16_c_asm_bit_exact": "pass",
+    "asm_guard_buffer": "pass",
     "in_place_alias": "pass",
     "maximum_observed_absolute": 9976
   },
   "audit": {
     "selected_vector_spills": 0,
+    "asm_stack_references": 0,
+    "asm_linked_bytes": 2134,
     "ct16_vector_spills": 0,
     "avx512": false
   },
-  "decision": "Do not authorize assembly or integration. The executable vertical producer misses parity by a margin too large to attribute to the remaining intrinsic scheduling overhead alone."
+  "decision": "The benchmark-only CT16 assembly is a real 12.54% core improvement, but the hybrid producer still misses parity decisively. Do not expand into full-forward assembly or integration."
 }

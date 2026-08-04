@@ -270,10 +270,8 @@ void round4c_forward_f1_materialized(int16_t out[768], const int16_t in[768])
     round4c_split_intrinsic(out, frontend_rows);
 }
 
-void round4c_forward_f1_fused(int16_t out[768], const int16_t in[768])
+static void forward_f1_split_tail(int16_t out[768])
 {
-    frontend_bitreversed(transform_rows, in);
-    round4c_forward_ntt16_intrinsic(transform_rows);
     for (size_t k16 = 0; k16 < 16; ++k16) {
         __m256i output[3];
         dft3(_mm256_load_si256(
@@ -289,4 +287,18 @@ void round4c_forward_f1_fused(int16_t out[768], const int16_t in[768])
                                 split_one(output[k3], vector));
         }
     }
+}
+
+void round4c_forward_f1_fused(int16_t out[768], const int16_t in[768])
+{
+    frontend_bitreversed(transform_rows, in);
+    round4c_forward_ntt16_intrinsic(transform_rows);
+    forward_f1_split_tail(out);
+}
+
+void round4c_forward_f1_hybrid_asm(int16_t out[768], const int16_t in[768])
+{
+    frontend_bitreversed(transform_rows, in);
+    round4c_forward_ntt16_asm(transform_rows);
+    forward_f1_split_tail(out);
 }

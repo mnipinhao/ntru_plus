@@ -1,12 +1,13 @@
 {
   "assembly_authorized": false,
+  "benchmark_only_ct16_assembly_completed": true,
   "direct_forward_cycle_gate": {
-    "candidate_regression_tsc": 254.8798,
-    "candidate_tsc_ab_ba_mean": 719.3613,
-    "frozen_gt32_tsc_ab_ba_mean": 464.4815,
-    "parity_maximum_tsc": 381.7195,
+    "candidate_regression_tsc": 215.43075,
+    "candidate_tsc_ab_ba_mean": 678.98395,
+    "frozen_gt32_tsc_ab_ba_mean": 463.5532,
+    "parity_maximum_tsc": 380.7912,
     "required_saving_tsc": 82.762,
-    "selected": "F1-NTT16-first-fused",
+    "selected": "F1-NTT16-first-hybrid-asm",
     "status": "fail"
   },
   "direct_inverse_cycle_gate": {
@@ -27,7 +28,7 @@
   "intrinsics_prototype_completed": true,
   "next_gate": "stop before assembly, serialization, baseinv, or integration",
   "production_changed": false,
-  "reason": "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. The best executable forward adds another 254.880 ticks per call, so the legacy local 2F+B+I accounting misses parity by 675.284 ticks.",
+  "reason": "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. The handwritten CT16 improves the selected forward by 43.627 ticks, but the hybrid still adds 215.431 ticks per call. The legacy local 2F+B+I accounting therefore misses parity by 596.386 ticks.",
   "selected_qbm": "QBM-PREWEIGHT",
   "status": "executable-forward-measured-chain-parity-gate-fail"
 }

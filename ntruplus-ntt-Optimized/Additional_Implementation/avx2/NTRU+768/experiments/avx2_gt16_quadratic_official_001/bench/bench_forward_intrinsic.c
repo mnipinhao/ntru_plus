@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum { SAMPLES = 20, KERNELS = 5, DEFAULT_ITERATIONS = 20000 };
+enum { SAMPLES = 20, KERNELS = 6, DEFAULT_ITERATIONS = 20000 };
 
 typedef void (*forward_kernel)(int16_t *, const int16_t *);
 
@@ -18,6 +18,7 @@ void gt_ntt_avx2_forward_wide_fused_delayed_row2q2_native_lazy_pipelined_asm(
 
 static volatile uint64_t sink;
 static int16_t stage_zero[768] __attribute__((aligned(32)));
+static int16_t stage_zero_asm[768] __attribute__((aligned(32)));
 
 static uint64_t start_tsc(void)
 {
@@ -78,6 +79,12 @@ static void ntt16_zero_kernel(int16_t *out, const int16_t *in)
     round4c_forward_ntt16_intrinsic(out);
 }
 
+static void ntt16_zero_asm_kernel(int16_t *out, const int16_t *in)
+{
+    (void)in;
+    round4c_forward_ntt16_asm(out);
+}
+
 static void measure_kernel(forward_kernel kernel, int16_t *out,
                            const int16_t *in, size_t iterations,
                            double *result_median, double *result_mad)
@@ -123,10 +130,12 @@ int main(int argc, char **argv)
         round4c_forward_f0_fused,
         round4c_forward_f1_materialized,
         round4c_forward_f1_fused,
+        round4c_forward_f1_hybrid_asm,
     };
     static const char *const names[KERNELS] = {
         "frozen_gt32", "f0_materialized", "f0_fused",
         "f1_materialized", "f1_fused",
+        "f1_hybrid_asm",
     };
     int16_t input[768] __attribute__((aligned(32)));
     int16_t output[768] __attribute__((aligned(32)));
@@ -155,15 +164,17 @@ int main(int argc, char **argv)
         }
     }
     round4c_forward_frontend_intrinsic(stage_input, input);
-    double stage_median[4], stage_mad[4];
+    double stage_median[5], stage_mad[5];
     measure_kernel(round4c_forward_frontend_intrinsic, output, input,
                    iterations, &stage_median[0], &stage_mad[0]);
     measure_kernel(dft3_centered_kernel, output, stage_input,
                    iterations, &stage_median[1], &stage_mad[1]);
     measure_kernel(ntt16_zero_kernel, stage_zero, stage_input,
                    iterations, &stage_median[2], &stage_mad[2]);
-    measure_kernel(round4c_split_intrinsic, output, stage_input,
+    measure_kernel(ntt16_zero_asm_kernel, stage_zero_asm, stage_input,
                    iterations, &stage_median[3], &stage_mad[3]);
+    measure_kernel(round4c_split_intrinsic, output, stage_input,
+                   iterations, &stage_median[4], &stage_mad[4]);
     printf("{\n  \"iterations\": %zu,\n  \"order\": \"%s\",\n",
            iterations, reverse ? "reverse" : "forward");
     if (!stages_only) {
@@ -181,8 +192,10 @@ int main(int argc, char **argv)
     printf("  \"stage_dft3_centered_mad\": %.4f,\n", stage_mad[1]);
     printf("  \"stage_ntt16_zero_tsc\": %.4f,\n", stage_median[2]);
     printf("  \"stage_ntt16_zero_mad\": %.4f,\n", stage_mad[2]);
-    printf("  \"stage_split_tsc\": %.4f,\n", stage_median[3]);
-    printf("  \"stage_split_mad\": %.4f,\n", stage_mad[3]);
+    printf("  \"stage_ntt16_asm_zero_tsc\": %.4f,\n", stage_median[3]);
+    printf("  \"stage_ntt16_asm_zero_mad\": %.4f,\n", stage_mad[3]);
+    printf("  \"stage_split_tsc\": %.4f,\n", stage_median[4]);
+    printf("  \"stage_split_mad\": %.4f,\n", stage_mad[4]);
     printf("  \"sink\": %llu\n}\n", (unsigned long long)sink);
     return 0;
 }

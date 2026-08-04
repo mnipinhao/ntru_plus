@@ -5,6 +5,7 @@ parent_checkpoint: a8f713c
 status: executable-forward-measured-chain-parity-gate-fail
 production_changed: false
 assembly_authorized: false
+benchmark_only_ct16_assembly_completed: true
 intrinsics_prototype_authorized: true
 intrinsics_prototype:
   correctness: pass
@@ -44,33 +45,41 @@ forward_prototype:
     - F0-DFT3-first-fused
     - F1-NTT16-first-materialized
     - F1-NTT16-first-fused
-  selected: F1-NTT16-first-fused
+  selected: F1-NTT16-first-hybrid-asm
   preweight_fusion: four-linear-products-plus-one-identity-Montgomery-reduction
   correctness_cases: 77
   scalar_component_congruence: pass
+  ct16_c_asm_bit_exact: pass
+  asm_guard_buffer: pass
   materialized_fused_representative: pass
   alias: pass
   maximum_observed_absolute: 9976
   signed_int16_range_proof: pass
   million_call_ab_ba:
-    frozen_gt32_tsc_mean_of_order_medians: 464.4815
-    f0_materialized_tsc_mean_of_order_medians: 787.97265
-    f0_fused_tsc_mean_of_order_medians: 792.7014
-    f1_materialized_tsc_mean_of_order_medians: 750.82635
-    f1_fused_tsc_mean_of_order_medians: 719.3613
-  best_regression_vs_frozen_tsc: 254.8798
-  required_parity_maximum_tsc: 381.7195
+    frozen_gt32_tsc_mean_of_order_medians: 463.5532
+    f0_materialized_tsc_mean_of_order_medians: 792.56145
+    f0_fused_tsc_mean_of_order_medians: 794.67745
+    f1_materialized_tsc_mean_of_order_medians: 752.356
+    f1_fused_tsc_mean_of_order_medians: 722.61095
+    f1_hybrid_asm_tsc_mean_of_order_medians: 678.98395
+  asm_gain_vs_f1_intrinsic_tsc: 43.627
+  asm_gain_vs_f1_intrinsic_percent: 6.0374
+  best_regression_vs_frozen_tsc: 215.43075
+  required_parity_maximum_tsc: 380.7912
   parity_gate: fail
   direct_stage_tsc:
-    frontend: 280.7912
-    dft3_centered_f0_boundary: 109.1102
-    ntt16_zero_arithmetic: 287.0803
-    quadratic_split: 102.6226
+    frontend: 286.77685
+    dft3_centered_f0_boundary: 108.9745
+    ntt16_intrinsic_zero_arithmetic: 288.3822
+    ntt16_asm_zero_arithmetic: 252.21765
+    quadratic_split: 102.9278
     warning: overlapping fusion buckets; not additive reconstruction
   disassembly:
     selected_vector_spill: false
-    ct16_vector_spill: false
-    note: generic CT16 retains public GPR loop-state stack references
+    ct16_asm_vector_spill: false
+    ct16_asm_stack_access: false
+    ct16_asm_linked_bytes: 2134
+    note: fixed public loops, generated execution-order constants, vzeroupper
 known_dynamic_boundary:
   terminal_saving_tsc: 48.84
   inverse_regression_tsc: 214.364
@@ -105,8 +114,8 @@ provisional_chain:
   projected_improvement_percent: 14.03196
   warning: mixed static floor and historical dynamic surrogate; not a cycle claim
 blockers:
-  - selected executable forward is 254.880 TSC slower than frozen GT32, rather than 82.762 faster
-  - legacy local 2F+B+I accounting regresses by 675.284 TSC before serialization/baseinv
+  - selected hybrid-asm forward is 215.431 TSC slower than frozen GT32, rather than 82.762 faster
+  - legacy local 2F+B+I accounting regresses by 596.386 TSC before serialization/baseinv
   - direct Official serialization consumers
   - 384-norm baseinv and keygen estimate
 environment_warning: local Intel powersave result is not comparable to frozen Ryzen data
