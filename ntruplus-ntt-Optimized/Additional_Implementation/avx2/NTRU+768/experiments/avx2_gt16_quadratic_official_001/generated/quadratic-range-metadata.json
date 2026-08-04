@@ -1,0 +1,29 @@
+{
+  "c0_vpmaddwd_bound": 11943936,
+  "c1_vpmaddwd_bound": 23887872,
+  "canonical_input_bound": 1728,
+  "five_instruction_montgomery32": {
+    "exact_input_interval": [
+      -23887872,
+      23887872
+    ],
+    "exact_output_interval": [
+      -2092,
+      2093
+    ],
+    "output_fits_int16": true,
+    "output_scale": "R^-1",
+    "qinv": 12929,
+    "sequence": [
+      "vpmullw-qinv",
+      "vpand-lowword",
+      "vpmaddwd-q",
+      "vpsubd",
+      "vpsrad-16"
+    ]
+  },
+  "negative_32768_excluded": true,
+  "signed_int32_safe": true,
+  "split_lazy_bound": 3456,
+  "weighted_operand_bound": 1728
+}

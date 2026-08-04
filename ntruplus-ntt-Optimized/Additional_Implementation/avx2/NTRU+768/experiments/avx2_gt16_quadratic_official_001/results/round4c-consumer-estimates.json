@@ -1,0 +1,18 @@
+{
+  "baseinv": {
+    "failure_semantics": "any zero norm => fixed-work failure and zero output",
+    "formula": "(a0-a1*x)/(a0^2-r*a1^2)",
+    "gate": "static estimate only; keygen benchmark required",
+    "norms": 384,
+    "scalar_batch_inversion_count": 384,
+    "vector_multiplyback_optimistic_instructions": 240,
+    "vector_norm_frontend_optimistic_instructions": 480
+  },
+  "serialization": {
+    "from_official": "unpack+Official permutation+split must be one pass",
+    "gate": "requires direct benchmark before integration",
+    "modq_compare": "pairwise quadratic lanes may compare directly after fixed centering",
+    "standalone_quadratic_wire_format_allowed": false,
+    "to_official": "merge+canonicalize+Official permutation+pack must be one pass"
+  }
+}

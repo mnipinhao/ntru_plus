@@ -1,0 +1,42 @@
+experiment: avx2_gt16_quadratic_official_001
+round: 4C
+branch: experiment/avx2-gt16-quadratic-official-001
+parent_checkpoint: a8f713c
+status: prototype-qbm-authorized
+production_changed: false
+assembly_authorized: false
+intrinsics_prototype_authorized: true
+algebra:
+  quartic_components: 192
+  quadratic_components: 384
+  alpha_order: 576
+  alpha_square: true
+  alpha_fourth_power: false
+  quadratic_factors_irreducible: true
+layout:
+  batch: k3
+  vector: k16
+  lane: 4*branch+2*sign+quadratic_degree
+  pair_crosses_128_bit_half: false
+selected_qbm:
+  name: QBM-PREWEIGHT
+  vectors: 48
+  instructions_per_vector: 22
+  instruction_floor: 1056
+  peak_live_ymm: 11
+  output_scale: R^-1
+range:
+  split_lazy_bound: 3456
+  maximum_vpmaddwd_absolute: 23887872
+  signed_int32_safe: true
+  reducer_output: [-2092, 2093]
+provisional_chain:
+  projected_instructions: 15288.836
+  five_percent_gate: 16895.10875
+  projected_improvement_percent: 14.03196
+  warning: mixed static floor and historical dynamic surrogate; not a cycle claim
+blockers:
+  - concrete paired vertical inverse trace
+  - benchmark-only intrinsic QBM differential and cycles
+  - direct Official serialization consumers
+  - 384-norm baseinv and keygen estimate

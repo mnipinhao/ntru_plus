@@ -1,0 +1,143 @@
+{
+  "abi_invariants": [
+    "quadratic pairs are adjacent",
+    "no pair crosses a 128-bit half",
+    "fixed public addresses and loop bounds",
+    "YMM15 remains available"
+  ],
+  "merge": {
+    "instructions_per_inverse": 432,
+    "inv2_absorbed_into_inverse_normalization": true,
+    "peak_live_ymm": 6,
+    "per_vector_ops": [
+      "vpshufb-duplicate-plus",
+      "vpshufb-duplicate-minus",
+      "vpaddw-sum",
+      "vpsubw-difference",
+      "vpmullw-inv-s",
+      "vpmulhw-inv-s",
+      "vpmulhw-q",
+      "vpsubw-mont",
+      "vpshufb-quartic-order"
+    ],
+    "standalone_traversal": 0,
+    "vectors_per_inverse": 48
+  },
+  "qbm_candidates": {
+    "QBM-ASYMMETRIC-DUAL": {
+      "expanded_bytes": 1536,
+      "expanded_operand": true,
+      "instructions": 1152,
+      "peak_live_ymm": 10,
+      "per_vector_ops": [
+        "load-a",
+        "load-b-normal",
+        "load-b-weighted",
+        "vpshufb-swap-b-pairs",
+        "vpmaddwd-c0",
+        "vpmaddwd-c1",
+        "c0-vpmullw-qinv",
+        "c0-vpand-lowword",
+        "c0-vpmaddwd-q",
+        "c0-vpsubd",
+        "c0-vpsrad-16",
+        "c1-vpmullw-qinv",
+        "c1-vpand-lowword",
+        "c1-vpmaddwd-q",
+        "c1-vpsubd",
+        "c1-vpsrad-16",
+        "vpackssdw-c0-c1",
+        "vpshufb-interleave-pairs",
+        "store-output"
+      ],
+      "qbm_instructions": 912,
+      "right_precompute_instructions": 240,
+      "right_precompute_ops_per_vector": 5
+    },
+    "QBM-POSTMULTIPLY": {
+      "expanded_operand": false,
+      "instructions": 1488,
+      "peak_live_ymm": 13,
+      "per_vector_ops": [
+        "load-a",
+        "load-b",
+        "vpshufb-swap-b-pairs",
+        "vpmaddwd-c0-unweighted",
+        "vpmaddwd-c1",
+        "vpshufb-isolate-a1",
+        "vpshufb-isolate-b1",
+        "vpmaddwd-a1b1",
+        "c0-vpmullw-qinv",
+        "c0-vpand-lowword",
+        "c0-vpmaddwd-q",
+        "c0-vpsubd",
+        "c0-vpsrad-16",
+        "c1-vpmullw-qinv",
+        "c1-vpand-lowword",
+        "c1-vpmaddwd-q",
+        "c1-vpsubd",
+        "c1-vpsrad-16",
+        "a1b1-vpmullw-qinv",
+        "a1b1-vpand-lowword",
+        "a1b1-vpmaddwd-q",
+        "a1b1-vpsubd",
+        "a1b1-vpsrad-16",
+        "vpmullw-rminus1",
+        "vpmulhw-rminus1",
+        "vpmulhw-q",
+        "vpsubw-weighted-a1b1",
+        "vpaddw-c0-correction",
+        "vpackssdw-c0-c1",
+        "vpshufb-interleave-pairs",
+        "store-output"
+      ],
+      "vectors": 48
+    },
+    "QBM-PREWEIGHT": {
+      "expanded_operand": false,
+      "instructions": 1056,
+      "peak_live_ymm": 11,
+      "per_vector_ops": [
+        "load-a",
+        "load-b",
+        "vpmullw-r",
+        "vpmulhw-r",
+        "vpmulhw-q",
+        "vpsubw-weighted-b",
+        "vpshufb-swap-b-pairs",
+        "vpmaddwd-c0",
+        "vpmaddwd-c1",
+        "c0-vpmullw-qinv",
+        "c0-vpand-lowword",
+        "c0-vpmaddwd-q",
+        "c0-vpsubd",
+        "c0-vpsrad-16",
+        "c1-vpmullw-qinv",
+        "c1-vpand-lowword",
+        "c1-vpmaddwd-q",
+        "c1-vpsubd",
+        "c1-vpsrad-16",
+        "vpackssdw-c0-c1",
+        "vpshufb-interleave-pairs",
+        "store-output"
+      ],
+      "vectors": 48
+    }
+  },
+  "selected": "QBM-PREWEIGHT",
+  "split": {
+    "instructions_per_forward": 336,
+    "peak_live_ymm": 6,
+    "per_vector_ops": [
+      "vpshufb-duplicate-low",
+      "vpshufb-duplicate-high",
+      "vpmullw-s",
+      "vpmulhw-s",
+      "vpmulhw-q",
+      "vpsubw-mont",
+      "vpaddw-signed-pairs"
+    ],
+    "standalone_traversal": 0,
+    "vectors_per_forward": 48
+  }
+}

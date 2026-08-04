@@ -1,0 +1,46 @@
+{
+  "candidate": {
+    "fused_merge": 432,
+    "kernel_subtotal": 7812,
+    "projected_complete_chain": 15288.836000000001,
+    "quadratic_bm": 1056,
+    "two_fused_splits": 672,
+    "two_vertical_forward_cores": 3768,
+    "vertical_inverse_floor": 1884
+  },
+  "comparison": "static candidate regions plus frozen dynamic-instruction surrogate",
+  "five_percent_gate": 16895.10875,
+  "frozen": {
+    "complete_chain": 17784.325,
+    "inverse_surrogate": 4731.42,
+    "kernel_subtotal": 10307.489,
+    "quartic_bm": 1523.549,
+    "residual_common": 7476.836000000001,
+    "two_forward": 4052.52
+  },
+  "limitations": [
+    "1884 is an optimistic vertical inverse symmetry floor, not an inverse execution trace",
+    "4731.420 is the tracked hybrid inverse dynamic count, not a same-binary Round 4C measurement",
+    "instruction projection does not predict cycles or frontend behavior",
+    "serialization and 384-norm baseinv have separate mandatory gates"
+  ],
+  "projected_improvement_percent": 14.03195791799801,
+  "round4b_hypothetical_terminal_boundary": {
+    "new_edges": {
+      "forward_a.fused_split": 336,
+      "forward_b.fused_split": 336,
+      "inverse.fused_merge": 432,
+      "quadratic_bm": 1056
+    },
+    "new_total": 2160,
+    "old_edges": {
+      "forward_a.vertical_to_quartic_bm": 288,
+      "forward_b.vertical_to_quartic_bm": 288,
+      "inverse.quartic_bm_to_vertical": 288,
+      "quartic_bm": 1523.549
+    },
+    "old_total": 2387.549,
+    "saving": 227.54899999999998
+  },
+  "static_gate": "pass"
+}
