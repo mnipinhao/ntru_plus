@@ -1,0 +1,77 @@
+{
+  "comparison": "same-binary quadratic GT16 I0 inverse versus frozen GT32 fused inverse",
+  "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cpu": "Intel Core Ultra 7 155H, CPU 1 requested",
+  "governor": "powersave",
+  "iterations_per_sample": 50000,
+  "process_samples": 8,
+  "calls_per_kernel_across_timed_samples": 1000000,
+  "i0_contract": [
+    "standalone scale-2 quadratic-to-quartic merge",
+    "inverse vertical NTT16 with inv16 normalization",
+    "inverse DFT3 with inv3 folded into postweight",
+    "F^n postweight",
+    "standard R2 with deferred halves",
+    "special R2 with R/4 scale removal",
+    "coefficient-order stores"
+  ],
+  "samples": {
+    "i0_i1_order": {
+      "stage1_i0": [270.126, 269.618, 269.620, 269.256],
+      "stage1_i1": [275.915, 274.152, 273.924, 274.100],
+      "ntt16_i0": [732.504, 728.841, 729.734, 733.339],
+      "ntt16_i1": [744.914, 740.882, 741.209, 741.903],
+      "full_i0": [1458.666, 1461.118, 1455.510, 1455.775],
+      "frozen_gt32": [913.839, 918.718, 920.670, 911.361]
+    },
+    "i1_i0_order": {
+      "stage1_i0": [270.201, 269.553, 269.595, 270.310],
+      "stage1_i1": [273.988, 274.131, 276.219, 274.046],
+      "ntt16_i0": [746.672, 734.404, 734.388, 734.077],
+      "ntt16_i1": [742.022, 741.562, 742.057, 742.546],
+      "full_i0": [1456.033, 1460.221, 1455.799, 1456.244],
+      "frozen_gt32": [913.558, 912.420, 910.667, 916.396]
+    }
+  },
+  "combined_summary_tsc": {
+    "stage1_i0_median": 269.619,
+    "stage1_i0_mad": 0.2145,
+    "stage1_i1_median": 274.1155,
+    "stage1_i1_mad": 0.0985,
+    "stage1_i1_regression_percent": 1.66772,
+    "ntt16_i0_median": 733.708,
+    "ntt16_i0_mad": 0.95,
+    "ntt16_i1_median": 741.9625,
+    "ntt16_i1_mad": 0.492,
+    "ntt16_i1_regression_percent": 1.12504,
+    "full_i0_median": 1456.1385,
+    "full_i0_mad": 0.496,
+    "frozen_gt32_median": 913.6985,
+    "frozen_gt32_mad": 2.5175,
+    "full_i0_regression_percent": 59.3675
+  },
+  "reduction_schedule": {
+    "initial_all_stages_center_twice_tsc": 1887.748,
+    "proved_single_correction_after_stage1_tsc": 1456.1385,
+    "improvement_percent": 22.8637
+  },
+  "terminal_saving_tsc": 48.84,
+  "inverse_regression_tsc": 542.44,
+  "known_terminal_plus_inverse_net_regression_tsc": 493.6,
+  "correctness": {
+    "boundary_and_random_cases": 1006,
+    "scalar_inverse_ntt16_differential": "pass",
+    "scalar_full_inverse_differential": "pass",
+    "centered_output_range": "pass",
+    "out_equals_input": "pass",
+    "asan_ubsan": "pass"
+  },
+  "decision": "select-I0-and-fail-direct-inverse-cycle-gate",
+  "assembly_authorized": false,
+  "limitations": [
+    "the frozen comparator has a different native GT32 layout but is the tracked production inverse boundary",
+    "the host and governor differ from the frozen Ryzen benchmark environment",
+    "no executable Round 4C vertical forward exists, so 2F+B+I is not closed",
+    "serialization and quadratic baseinv remain unmeasured"
+  ]
+}

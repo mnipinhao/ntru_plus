@@ -1,4 +1,5 @@
 #include "qbm_intrinsic.h"
+#include "inverse_stage1_intrinsic.h"
 #include "transpose_intrinsic.h"
 
 #include <stdint.h>
@@ -28,9 +29,85 @@ static int modq(int64_t value)
     return result < 0 ? result + Q : result;
 }
 
+static int powmod(int value, unsigned exponent)
+{
+    int result = 1;
+    while (exponent != 0) {
+        if (exponent & 1)
+            result = modq((int64_t)result * value);
+        value = modq((int64_t)value * value);
+        exponent >>= 1;
+    }
+    return result;
+}
+
 static int standard_constant(int16_t mont)
 {
     return modq((int64_t)mont * 2775); /* 2775 = R^-1 mod q. */
+}
+
+static int centered(int value)
+{
+    value = modq(value);
+    return value > CENTER ? value - Q : value;
+}
+
+static void scalar_full_inverse(int16_t out[ROUND4C_WORDS],
+                                const int16_t after_ntt16[ROUND4C_WORDS])
+{
+    int residues[4][4][48];
+    const int inv3 = powmod(3, Q - 2);
+    const int inverse_omega3 = 722;
+    for (size_t branch = 0; branch < 4; ++branch) {
+        for (size_t degree = 0; degree < 4; ++degree) {
+            for (size_t i3 = 0; i3 < 3; ++i3) {
+                for (size_t i16 = 0; i16 < 16; ++i16) {
+                    const size_t natural = (16 * i3 + 33 * i16) % 48;
+                    int64_t value = 0;
+                    for (size_t k3 = 0; k3 < 3; ++k3) {
+                        const size_t lane = 4 * branch + degree;
+                        value += (int64_t)after_ntt16[
+                            16 * (16 * k3 + i16) + lane]
+                            * powmod(inverse_omega3, (unsigned)(i3 * k3));
+                    }
+                    residues[branch][degree][natural] = modq(
+                        value * inv3 * powmod(round4c_branch_f[branch],
+                                               (unsigned)natural));
+                }
+            }
+        }
+    }
+
+    const int inv2 = powmod(2, Q - 2);
+    const int inv_delta = powmod(2735 - 723, Q - 2);
+    const int inverse_scale = modq((int64_t)R_MOD_Q * inv2);
+    for (size_t degree = 0; degree < 4; ++degree) {
+        for (size_t n = 0; n < 48; ++n) {
+            int top[2][2];
+            for (size_t top_index = 0; top_index < 2; ++top_index) {
+                const size_t plus = 2 * top_index;
+                const size_t minus = plus + 1;
+                const int inv2beta = powmod(
+                    2 * round4c_branch_beta[plus], Q - 2);
+                top[top_index][0] = modq(
+                    (residues[plus][degree][n] +
+                     residues[minus][degree][n]) * (int64_t)inv2);
+                top[top_index][1] = modq(
+                    (residues[plus][degree][n] -
+                     residues[minus][degree][n]) * (int64_t)inv2beta);
+            }
+            for (size_t half = 0; half < 2; ++half) {
+                const int high = modq(
+                    (top[0][half] - top[1][half]) * (int64_t)inv_delta);
+                const int low = modq(top[0][half] - (int64_t)2735 * high);
+                const size_t n96 = n + 48 * half;
+                out[4 * n96 + degree] = (int16_t)centered(
+                    modq((int64_t)low * inverse_scale));
+                out[4 * (n96 + 96) + degree] = (int16_t)centered(
+                    modq((int64_t)high * inverse_scale));
+            }
+        }
+    }
 }
 
 static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
@@ -46,6 +123,12 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     int16_t old_b[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t old_product[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t old_vertical[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_i0[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_i1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_ntt0[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_ntt1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_full[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_full_want[ROUND4C_WORDS] __attribute__((aligned(32)));
 
     round4c_split_intrinsic(qa, quartic_a);
     round4c_split_intrinsic(qb, quartic_b);
@@ -58,6 +141,59 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
         return 1;
     }
     round4c_merge2_intrinsic(merged, product0);
+    round4c_inverse_stage1_i0(inverse_i0, product0);
+    round4c_inverse_stage1_i1(inverse_i1, product0);
+    if (memcmp(inverse_i0, inverse_i1, sizeof(inverse_i0)) != 0) {
+        fprintf(stderr, "inverse I0/I1 stage-1 differential failed\n");
+        return 1;
+    }
+    for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+        if (inverse_i1[i] < -CENTER || inverse_i1[i] > CENTER) {
+            fprintf(stderr, "inverse stage-1 range failed i=%zu value=%d\n",
+                    i, inverse_i1[i]);
+            return 1;
+        }
+    }
+    round4c_inverse_ntt16_i0(inverse_ntt0, product0);
+    round4c_inverse_ntt16_i1(inverse_ntt1, product0);
+    if (memcmp(inverse_ntt0, inverse_ntt1, sizeof(inverse_ntt0)) != 0) {
+        fprintf(stderr, "inverse I0/I1 full NTT16 differential failed\n");
+        return 1;
+    }
+    const int inv16 = powmod(16, Q - 2);
+    for (size_t k3 = 0; k3 < 3; ++k3) {
+        for (size_t output_index = 0; output_index < 16; ++output_index) {
+            for (size_t lane = 0; lane < 16; ++lane) {
+                int64_t want = 0;
+                for (size_t frequency = 0; frequency < 16; ++frequency) {
+                    want += (int64_t)merged[16 * (16 * k3 + frequency) + lane]
+                        * powmod(3418, (unsigned)(output_index * frequency));
+                }
+                want = modq(want * inv16);
+                const int got = modq(inverse_ntt1[
+                    16 * (16 * k3 + output_index) + lane]);
+                if (got != want) {
+                    fprintf(stderr,
+                        "inverse NTT16 mismatch k3=%zu n=%zu lane=%zu got=%d want=%d\n",
+                        k3, output_index, lane, got, (int)want);
+                    return 1;
+                }
+            }
+        }
+    }
+    round4c_inverse_full_i0(inverse_full, product0);
+    scalar_full_inverse(inverse_full_want, inverse_ntt0);
+    if (memcmp(inverse_full, inverse_full_want, sizeof(inverse_full)) != 0) {
+        for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+            if (inverse_full[i] != inverse_full_want[i]) {
+                fprintf(stderr,
+                        "full inverse mismatch i=%zu got=%d want=%d\n",
+                        i, inverse_full[i], inverse_full_want[i]);
+                break;
+            }
+        }
+        return 1;
+    }
     round4c_vertical_to_soa(old_a, quartic_a);
     round4c_vertical_to_soa(old_b, quartic_b);
     gt_basemul_native_rminus1_c0lazy_asm_avx2(old_product, old_a, old_b);
@@ -111,6 +247,18 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     round4c_merge2_intrinsic(product4, product4);
     if (memcmp(product4, merged, sizeof(product4)) != 0)
         return 1;
+    memcpy(product4, product0, sizeof(product4));
+    round4c_inverse_stage1_i1(product4, product4);
+    if (memcmp(product4, inverse_i1, sizeof(product4)) != 0)
+        return 1;
+    memcpy(product4, product0, sizeof(product4));
+    round4c_inverse_ntt16_i1(product4, product4);
+    if (memcmp(product4, inverse_ntt1, sizeof(product4)) != 0)
+        return 1;
+    memcpy(product4, product0, sizeof(product4));
+    round4c_inverse_full_i0(product4, product4);
+    if (memcmp(product4, inverse_full, sizeof(product4)) != 0)
+        return 1;
     return 0;
 }
 
@@ -138,6 +286,6 @@ int main(void)
         if (check_case(a, b) != 0)
             return 1;
     }
-    puts("intrinsic split/QBM schedules/merge/alias differential: pass");
+    puts("intrinsic split/QBM/merge/full-inverse/alias differential: pass");
     return 0;
 }

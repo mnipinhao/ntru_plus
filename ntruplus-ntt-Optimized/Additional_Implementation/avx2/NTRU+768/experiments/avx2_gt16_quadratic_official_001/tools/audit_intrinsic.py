@@ -48,13 +48,32 @@ def main() -> int:
             "stack_data_references": len(re.findall(r"\[(?:rsp|rbp)[^]]*\]", text)),
             "vzeroupper": "vzeroupper" in text,
         }
+    inverse_records = {}
+    for label, symbol in (
+        ("stage1_i0", "round4c_inverse_stage1_i0"),
+        ("stage1_i1", "round4c_inverse_stage1_i1"),
+        ("ntt16_tail", "inverse_ntt16_tail"),
+        ("full_i0", "round4c_inverse_full_i0"),
+        ("frozen_gt32_fused", "gt_invntt_soa_avx2_fused_asm"),
+    ):
+        text = body(symbol)
+        inverse_records[label] = {
+            "linked_bytes": sizes[symbol],
+            "stack_data_references": len(re.findall(r"\[(?:rsp|rbp)[^]]*\]", text)),
+            "calls": re.findall(r"call\s+[0-9a-f]+\s+<([^>]+)>", text),
+            "vzeroupper": "vzeroupper" in text,
+        }
     finding = {
         "binary": str(BINARY.relative_to(HERE)),
         "qbm": records,
+        "inverse": inverse_records,
         "forbidden_avx512": re.findall(r"\b(?:zmm\d+|k[0-7])\b", disassembly),
         "interpretation": (
             "vector-at-a-time is spill-free; GCC spills two data values in the "
-            "4-vector helper and heavily spills the 8-vector helper"
+            "4-vector helper and heavily spills the 8-vector helper. The selected "
+            "inverse I0 keeps standalone merge; I1 is larger and slower. The "
+            "NTT16 tail spills two public loop-state GPRs; full I0 additionally "
+            "materializes two vector constants on the stack."
         ),
     }
     expected = json.dumps(finding, indent=2, sort_keys=True) + "\n"

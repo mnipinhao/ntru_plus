@@ -2,7 +2,7 @@ experiment: avx2_gt16_quadratic_official_001
 round: 4C
 branch: experiment/avx2-gt16-quadratic-official-001
 parent_checkpoint: a8f713c
-status: intrinsic-terminal-prototype-measured
+status: intrinsic-inverse-prototype-measured-direct-gate-fail
 production_changed: false
 assembly_authorized: false
 intrinsics_prototype_authorized: true
@@ -20,6 +20,22 @@ intrinsics_prototype:
     vector: spill-free
     interleaved4: two-data-value-spill
     interleaved8: heavy-spill-rejected
+inverse_prototype:
+  selected_boundary: I0-standalone-merge
+  i1_stage1_regression_percent: 1.66772
+  i1_ntt16_regression_percent: 1.12504
+  full_i0_tsc_median: 1456.1385
+  frozen_gt32_fused_tsc_median: 913.6985
+  regression_percent: 59.3675
+  direct_inverse_cycle_gate: fail
+  scalar_exact: pass
+  alias: pass
+  asan_ubsan: pass
+  output: centered-canonical-coefficient-order
+known_dynamic_boundary:
+  terminal_saving_tsc: 48.84
+  inverse_regression_tsc: 542.44
+  terminal_plus_inverse_net_regression_tsc: 493.6
 algebra:
   quartic_components: 192
   quadratic_components: 384
@@ -50,8 +66,8 @@ provisional_chain:
   projected_improvement_percent: 14.03196
   warning: mixed static floor and historical dynamic surrogate; not a cycle claim
 blockers:
-  - concrete paired vertical inverse trace
+  - executable vertical forward must recover at least the known 493.600 TSC terminal-plus-inverse deficit
+  - same-binary executable 2F+B+I remains unclosed
   - direct Official serialization consumers
   - 384-norm baseinv and keygen estimate
-  - executable same-binary 2F+B+I cycle gate
 environment_warning: local Intel powersave result is not comparable to frozen Ryzen data

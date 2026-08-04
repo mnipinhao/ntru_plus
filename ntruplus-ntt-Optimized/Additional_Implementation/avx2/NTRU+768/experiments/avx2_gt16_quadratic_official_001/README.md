@@ -33,8 +33,16 @@ vector-at-a-time QBM is spill-free; GCC spills two data values in the selected
 four-vector schedule but it is still 2.87% faster.  The eight-vector schedule
 spills heavily and is rejected.
 
+The paired inverse is now executable through coefficient-order stores.  I0
+(standalone merge) beats the fused-first-load I1 by 1.13% through inverse
+NTT16.  After removing redundant post-stage-1 corrections, complete I0 measures
+1456.139 TSC ticks versus 913.699 for the same-binary frozen GT32 fused inverse,
+a 59.37% regression.  The inverse deficit is 542.440 ticks, far larger than
+the terminal boundary's 48.840-tick gain.
+
 This is preliminary local evidence, not a promotion result: the host uses the
 powersave governor and differs from the frozen Ryzen benchmark machine.  There
-is still no executable vertical forward/inverse chain, serialization consumer,
-or quadratic baseinv/keygen benchmark.  Assembly remains unauthorized until
-those caller gates pass in a same-binary `2F+B+I` measurement.
+is still no executable vertical forward or complete `2F+B+I` chain,
+serialization consumer, or quadratic baseinv/keygen benchmark.  Assembly
+remains unauthorized; a forward prototype would first have to recover the
+known 493.600-tick terminal-plus-inverse deficit.

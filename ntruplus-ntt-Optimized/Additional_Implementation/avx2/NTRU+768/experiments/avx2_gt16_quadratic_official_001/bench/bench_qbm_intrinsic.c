@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include "qbm_intrinsic.h"
+#include "inverse_stage1_intrinsic.h"
 #include "transpose_intrinsic.h"
 
 #include <immintrin.h>
@@ -16,6 +17,7 @@ typedef void (*unary_kernel)(int16_t *, const int16_t *);
 
 void gt_basemul_native_rminus1_c0lazy_asm_avx2(
     int16_t out[768], const int16_t a[768], const int16_t b[768]);
+void gt_invntt_soa_avx2_fused_asm(int16_t out[768], const int16_t in[768]);
 
 static volatile uint64_t sink;
 
@@ -149,13 +151,18 @@ int main(int argc, char **argv)
 {
     size_t iterations = DEFAULT_ITERATIONS;
     int reverse = 0;
+    int inverse_only = 0;
     for (int arg = 1; arg < argc; ++arg) {
         if (strcmp(argv[arg], "--iterations") == 0 && arg + 1 < argc)
             iterations = strtoull(argv[++arg], NULL, 10);
         else if (strcmp(argv[arg], "--reverse") == 0)
             reverse = 1;
+        else if (strcmp(argv[arg], "--inverse-only") == 0)
+            inverse_only = 1;
         else {
-            fprintf(stderr, "usage: %s [--iterations N] [--reverse]\n", argv[0]);
+            fprintf(stderr,
+                    "usage: %s [--iterations N] [--reverse] [--inverse-only]\n",
+                    argv[0]);
             return 2;
         }
     }
@@ -168,6 +175,56 @@ int main(int argc, char **argv)
     fill_inputs(a, b);
     round4c_split_intrinsic(qa, a);
     round4c_split_intrinsic(qb, b);
+    round4c_qbm_vector_intrinsic(scratch_product, qa, qb);
+
+    if (inverse_only) {
+        double stage_i0;
+        double stage_i1;
+        double ntt16_i0;
+        double ntt16_i1;
+        double full_i0;
+        double frozen_inverse;
+        if (reverse) {
+            stage_i1 = bench_unary(round4c_inverse_stage1_i1, out,
+                                   scratch_product, iterations);
+            stage_i0 = bench_unary(round4c_inverse_stage1_i0, out,
+                                   scratch_product, iterations);
+            ntt16_i1 = bench_unary(round4c_inverse_ntt16_i1, out,
+                                   scratch_product, iterations);
+            ntt16_i0 = bench_unary(round4c_inverse_ntt16_i0, out,
+                                   scratch_product, iterations);
+            full_i0 = bench_unary(round4c_inverse_full_i0, out,
+                                  scratch_product, iterations);
+            frozen_inverse = bench_unary(gt_invntt_soa_avx2_fused_asm, out,
+                                         scratch_product, iterations);
+        } else {
+            stage_i0 = bench_unary(round4c_inverse_stage1_i0, out,
+                                   scratch_product, iterations);
+            stage_i1 = bench_unary(round4c_inverse_stage1_i1, out,
+                                   scratch_product, iterations);
+            ntt16_i0 = bench_unary(round4c_inverse_ntt16_i0, out,
+                                   scratch_product, iterations);
+            ntt16_i1 = bench_unary(round4c_inverse_ntt16_i1, out,
+                                   scratch_product, iterations);
+            frozen_inverse = bench_unary(gt_invntt_soa_avx2_fused_asm, out,
+                                         scratch_product, iterations);
+            full_i0 = bench_unary(round4c_inverse_full_i0, out,
+                                  scratch_product, iterations);
+        }
+        printf("{\n");
+        printf("  \"iterations\": %zu,\n", iterations);
+        printf("  \"boundary_order\": \"%s\",\n",
+               reverse ? "i1-i0" : "i0-i1");
+        printf("  \"inverse_i0_merge_then_stage1_tsc\": %.3f,\n", stage_i0);
+        printf("  \"inverse_i1_fused_merge_stage1_tsc\": %.3f,\n", stage_i1);
+        printf("  \"inverse_ntt16_i0_tsc\": %.3f,\n", ntt16_i0);
+        printf("  \"inverse_ntt16_i1_tsc\": %.3f,\n", ntt16_i1);
+        printf("  \"inverse_full_i0_tsc\": %.3f,\n", full_i0);
+        printf("  \"frozen_gt32_inverse_tsc\": %.3f,\n", frozen_inverse);
+        printf("  \"sink\": %llu\n", (unsigned long long)sink);
+        printf("}\n");
+        return 0;
+    }
 
     printf("{\n");
     printf("  \"iterations\": %zu,\n", iterations);
@@ -180,9 +237,41 @@ int main(int argc, char **argv)
            bench_binary(round4c_qbm_interleaved4_intrinsic, out, qa, qb, iterations));
     printf("  \"qbm_interleaved8_tsc\": %.3f,\n",
            bench_binary(round4c_qbm_interleaved8_intrinsic, out, qa, qb, iterations));
-    round4c_qbm_vector_intrinsic(scratch_product, qa, qb);
     printf("  \"merge2_tsc\": %.3f,\n",
            bench_unary(round4c_merge2_intrinsic, out, scratch_product, iterations));
+    double inverse_i0;
+    double inverse_i1;
+    if (reverse) {
+        inverse_i1 = bench_unary(round4c_inverse_stage1_i1, out,
+                                 scratch_product, iterations);
+        inverse_i0 = bench_unary(round4c_inverse_stage1_i0, out,
+                                 scratch_product, iterations);
+    } else {
+        inverse_i0 = bench_unary(round4c_inverse_stage1_i0, out,
+                                 scratch_product, iterations);
+        inverse_i1 = bench_unary(round4c_inverse_stage1_i1, out,
+                                 scratch_product, iterations);
+    }
+    printf("  \"inverse_i0_merge_then_stage1_tsc\": %.3f,\n", inverse_i0);
+    printf("  \"inverse_i1_fused_merge_stage1_tsc\": %.3f,\n", inverse_i1);
+    double inverse_ntt16_i0;
+    double inverse_ntt16_i1;
+    if (reverse) {
+        inverse_ntt16_i1 = bench_unary(round4c_inverse_ntt16_i1, out,
+                                       scratch_product, iterations);
+        inverse_ntt16_i0 = bench_unary(round4c_inverse_ntt16_i0, out,
+                                       scratch_product, iterations);
+    } else {
+        inverse_ntt16_i0 = bench_unary(round4c_inverse_ntt16_i0, out,
+                                       scratch_product, iterations);
+        inverse_ntt16_i1 = bench_unary(round4c_inverse_ntt16_i1, out,
+                                       scratch_product, iterations);
+    }
+    printf("  \"inverse_ntt16_i0_tsc\": %.3f,\n", inverse_ntt16_i0);
+    printf("  \"inverse_ntt16_i1_tsc\": %.3f,\n", inverse_ntt16_i1);
+    printf("  \"inverse_full_i0_tsc\": %.3f,\n",
+           bench_unary(round4c_inverse_full_i0, out,
+                       scratch_product, iterations));
     double old_terminal;
     double new4_terminal;
     if (reverse) {

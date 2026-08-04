@@ -1,7 +1,44 @@
 {
   "binary": "build/bench_qbm_intrinsic",
   "forbidden_avx512": [],
-  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper",
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge; I1 is larger and slower. The NTT16 tail spills two public loop-state GPRs; full I0 additionally materializes two vector constants on the stack.",
+  "inverse": {
+    "frozen_gt32_fused": {
+      "calls": [],
+      "linked_bytes": 1968,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    },
+    "full_i0": {
+      "calls": [
+        "round4c_merge2_intrinsic",
+        "inverse_ntt16_tail"
+      ],
+      "linked_bytes": 1233,
+      "stack_data_references": 5,
+      "vzeroupper": true
+    },
+    "ntt16_tail": {
+      "calls": [],
+      "linked_bytes": 529,
+      "stack_data_references": 5,
+      "vzeroupper": true
+    },
+    "stage1_i0": {
+      "calls": [
+        "round4c_merge2_intrinsic"
+      ],
+      "linked_bytes": 306,
+      "stack_data_references": 1,
+      "vzeroupper": true
+    },
+    "stage1_i1": {
+      "calls": [],
+      "linked_bytes": 490,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    }
+  },
   "qbm": {
     "interleaved4": {
       "linked_bytes": 549,

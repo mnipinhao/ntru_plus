@@ -13,6 +13,9 @@ Q = 3457
 R = 1 << 16
 QINV = pow(Q, -1, R)
 CENTER = (Q - 1) // 2
+OMEGA48 = pow(675, 2, Q)
+OMEGA16 = pow(OMEGA48, 3, Q)
+OMEGA3 = pow(OMEGA48, 16, Q)
 HERE = Path(__file__).resolve().parent.parent
 REPO = next(p for p in HERE.parents if (p / ".git").exists())
 HORIZONTAL = HERE.parent / "avx2_gt16_native_official_001"
@@ -68,6 +71,9 @@ def mont_constant(value: int) -> tuple[int, int]:
 
 
 def constant_header(factors: dict[str, Any]) -> str:
+    branches = json.loads(
+        (HORIZONTAL / "generated/gt16-branches.json").read_text()
+    )["branches"]
     by_vector: dict[tuple[int, int], list[dict[str, Any]]] = {}
     for factor in factors["factors"]:
         by_vector.setdefault((factor["k3"], factor["k16"]), []).append(factor)
@@ -125,6 +131,71 @@ def constant_header(factors: dict[str, Any]) -> str:
     ):
         lines.extend(array(name, rows))
         lines.append("")
+    inverse_twiddles = []
+    for length in (4, 8, 16):
+        for index in range(length // 2):
+            inverse_twiddles.append(pow(OMEGA16, -index * (16 // length), Q))
+    inverse_mont = [mont_constant(value)[0] for value in inverse_twiddles]
+    inverse_qinv = [mont_constant(value)[1] for value in inverse_twiddles]
+    norm_mont, norm_qinv = mont_constant(pow(16, -1, Q))
+    lines.append("static const int16_t round4c_inv16_twiddle_mont[14] __attribute__((aligned(32))) = {")
+    lines.append("    " + ", ".join(str(x) for x in inverse_mont) + ",")
+    lines.append("};")
+    lines.append("static const int16_t round4c_inv16_twiddle_qinv[14] __attribute__((aligned(32))) = {")
+    lines.append("    " + ", ".join(str(x) for x in inverse_qinv) + ",")
+    lines.append("};")
+    lines.append(f"static const int16_t round4c_inv16_norm_mont = {norm_mont};")
+    lines.append(f"static const int16_t round4c_inv16_norm_qinv = {norm_qinv};")
+    omega3_mont, omega3_qinv = mont_constant(OMEGA3)
+    lines.append(f"static const int16_t round4c_inv3_omega_mont = {omega3_mont};")
+    lines.append(f"static const int16_t round4c_inv3_omega_qinv = {omega3_qinv};")
+    lines.append("")
+    inverse3 = pow(3, -1, Q)
+    postweight_rows = []
+    postweight_qinv_rows = []
+    for i3 in range(3):
+        for i16 in range(16):
+            natural = (16 * i3 + 33 * i16) % 48
+            values = []
+            for branch in branches:
+                value = inverse3 * pow(branch["F"], natural, Q) % Q
+                values.extend((value,) * 4)
+            encoded = [mont_constant(value) for value in values]
+            postweight_rows.append([item[0] for item in encoded])
+            postweight_qinv_rows.append([item[1] for item in encoded])
+    lines.extend(array("round4c_inv48_postweight_mont", postweight_rows))
+    lines.append("")
+    lines.extend(array("round4c_inv48_postweight_qinv", postweight_qinv_rows))
+    lines.append("")
+
+    def scalar_array(name: str, values: list[int]) -> None:
+        pairs = [mont_constant(value % Q) for value in values]
+        lines.append(
+            f"static const int16_t {name}_mont[{len(values)}] = {{" +
+            ", ".join(str(pair[0]) for pair in pairs) + "};"
+        )
+        lines.append(
+            f"static const int16_t {name}_qinv[{len(values)}] = {{" +
+            ", ".join(str(pair[1]) for pair in pairs) + "};"
+        )
+
+    # The quadratic merge leaves scale 2*R^-1.  Omitting the two standard-R2
+    # inv2 multiplies makes both top residues carry scale 4*R^-1; the final
+    # constants remove that common scale while completing the special R2.
+    scalar_array("round4c_inv_beta", [pow(branches[index]["beta"], -1, Q)
+                                      for index in (0, 2)])
+    inverse_scale = (R % Q) * pow(4, -1, Q) % Q
+    inverse_delta = pow(2735 - 723, -1, Q)
+    scalar_array("round4c_final_merge", [
+        inverse_scale,
+        inverse_delta * inverse_scale % Q,
+        2735 * inverse_delta * inverse_scale % Q,
+    ])
+    lines.append("static const int16_t round4c_branch_f[4] = {" +
+                 ", ".join(str(branch["F"]) for branch in branches) + "};")
+    lines.append("static const int16_t round4c_branch_beta[4] = {" +
+                 ", ".join(str(branch["beta"]) for branch in branches) + "};")
+    lines.append("")
     lines.extend(["#endif", ""])
     return "\n".join(lines)
 
@@ -494,6 +565,7 @@ def artifacts() -> dict[Path, Any]:
             str((VERTICAL / "generated/vertical-forward-schedule.json").relative_to(REPO)): sha256(VERTICAL / "generated/vertical-forward-schedule.json"),
             str(BENCHMARK_FILE.relative_to(REPO)): sha256(BENCHMARK_FILE),
             str((HERE / "src/qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.c"),
+            str((HERE / "src/inverse_stage1_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/inverse_stage1_intrinsic.c"),
             str((HERE / "src/transpose_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/transpose_intrinsic.c"),
             str((HERE.parent / "gt_ntt/gt_basemul_layout_asm.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_basemul_layout_asm.S"),
         },
