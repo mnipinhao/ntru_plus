@@ -1,0 +1,24 @@
+schema_version: 1
+experiment_id: AVX2-GT16-NATIVE-OFFICIAL-001
+lifecycle: round4-prekernel-static-stop
+branch: experiment/avx2-gt16-native-official-001
+
+authority:
+  official_main: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+  round3: frozen-reference
+  vertical_native_source_revision: 76a0c183f73fb008a808c0c3ebe97af8415ecad5
+  backend_default: official
+
+architecture:
+  stages: [special-r2, standard-r2, weighted-gt-3x16, degree-4]
+  beta_branches: 4
+  ntt16_rows_per_beta_branch: 12
+  ntt16_rows_per_full_transform: 48
+  external_representation: unchanged-official
+
+current_gate:
+  name: full-horizontal-row-static-economics
+  math_root_wrap_scale_scalar: pass
+  static_five_percent_floor: fail
+  decision: stop-round4-prekernel-horizontal-single-ymm-gt16
+  avx2_kernel: not-started

@@ -1,0 +1,64 @@
+{
+  "comparison": "horizontal-GT16-full-graph-vs-frozen-vertical-GT32-native",
+  "five_percent_floor_required": 1924.947,
+  "five_percent_gate": "fail",
+  "floor_assumptions": [
+    "packed-int16 Montgomery constant multiply requires four AVX2 instructions",
+    "each horizontal stage requires one partner permutation and two low/high replication blends",
+    "signed combine uses the optimistic two-instruction sign-plus-add form",
+    "three cyclic stages are nonidentity and weighted canonical input requires one additional vector multiply per row",
+    "all radix-2, packing, correction, normalization, and control work is omitted from the floor"
+  ],
+  "frozen_vertical_champion": {
+    "dynamic_instructions_per_forward": 2026.26,
+    "source": "tracked BENCHMARK_RESULTS.md row2q2-lazy result"
+  },
+  "full_ntt16_rows_counted": 48,
+  "measure_before_asm": [
+    "shuffle-uops",
+    "multiply-uops",
+    "loads-stores",
+    "range-reset-cost",
+    "code-bytes",
+    "constant-bytes",
+    "constant-cache-lines",
+    "uop-cache-footprint",
+    "in-place-scratch-traffic"
+  ],
+  "optimistic_horizontal_instruction_floor": {
+    "all_48_ntt16_rows": 1728,
+    "mandatory_48_loads_plus_48_stores": 96,
+    "not_yet_counted": [
+      "special-R2",
+      "standard-R2",
+      "input-packing",
+      "branch-specific-corrections",
+      "normalization",
+      "loop-or-call-control"
+    ],
+    "optimistic_improvement_percent": 1.2959837335781188,
+    "per_ntt16_row": {
+      "low_high_replication_blends": 8,
+      "modular_multiply_instructions": 16,
+      "partner_permutations": 4,
+      "signed_combine_instructions": 8,
+      "total": 36
+    },
+    "sixteen_vector_dft3_groups": 176,
+    "total_before_unaccounted_work": 2000
+  },
+  "register_gate": {
+    "emergency_temporary_reserved": 1,
+    "spill_allowed": false,
+    "steady_state_data_ymm_max": 10,
+    "total_live_ymm_max": 15
+  },
+  "reopen_condition": "a concrete fixed-control AVX2 construction must invalidate at least one floor assumption and demonstrate a full-graph floor below 1924.947 instructions",
+  "required_tiles": [
+    "tile-by-row",
+    "tile-by-degree",
+    "tile-by-branch-pair"
+  ],
+  "scope": "single-transform-per-YMM canonical-s=1 schedule proposed for Round 4",
+  "status": "stop-horizontal-single-ymm-row-before-avx2"
+}
