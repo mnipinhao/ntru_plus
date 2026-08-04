@@ -1,0 +1,22 @@
+{
+  "binary": "build/bench_qbm_intrinsic",
+  "forbidden_avx512": [],
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper",
+  "qbm": {
+    "interleaved4": {
+      "linked_bytes": 549,
+      "stack_data_references": 6,
+      "vzeroupper": true
+    },
+    "interleaved8": {
+      "linked_bytes": 1264,
+      "stack_data_references": 33,
+      "vzeroupper": true
+    },
+    "vector": {
+      "linked_bytes": 211,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    }
+  }
+}

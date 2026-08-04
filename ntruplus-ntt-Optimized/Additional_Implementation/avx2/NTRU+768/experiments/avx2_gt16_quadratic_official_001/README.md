@@ -20,9 +20,21 @@ schoolbook multiplication.  The selected static QBM uses weighted-operand
 preparation, two `vpmaddwd`, and two five-instruction signed-32 Montgomery
 reducers.  It costs an optimistic 22 instructions for each of 48 vectors.
 
-The provisional complete-chain projection clears the 5% instruction gate, but
-does not authorize assembly.  Its vertical inverse is a symmetry floor and its
-frozen comparison uses a historical hybrid-inverse dynamic count.  Direct
-serialization and the 384-norm baseinv path remain mandatory consumer gates.
-Only a benchmark-only intrinsic QBM plus a concrete paired inverse schedule may
-promote this result to an assembly experiment.
+The benchmark-only intrinsic prototype now links both terminal paths in one
+binary.  The old boundary performs two AVX2 16x16 transposes, the frozen
+zero-spill quartic `R^-1` BM, and a reverse transpose.  The new boundary performs
+two split passes, QBM-PREWEIGHT, and the scale-2 merge contract.  Exact
+old/new congruence, alias cases, scalar differential, and ASan/UBSan pass.
+
+Ten AB/BA process samples on the local Intel Core Ultra 7 155H record medians
+of 601.868 TSC ticks for the old boundary and 553.028 for the four-vector QBM
+candidate: an 8.115% improvement, clearing the direct 5% cycle gate.  The
+vector-at-a-time QBM is spill-free; GCC spills two data values in the selected
+four-vector schedule but it is still 2.87% faster.  The eight-vector schedule
+spills heavily and is rejected.
+
+This is preliminary local evidence, not a promotion result: the host uses the
+powersave governor and differs from the frozen Ryzen benchmark machine.  There
+is still no executable vertical forward/inverse chain, serialization consumer,
+or quadratic baseinv/keygen benchmark.  Assembly remains unauthorized until
+those caller gates pass in a same-binary `2F+B+I` measurement.

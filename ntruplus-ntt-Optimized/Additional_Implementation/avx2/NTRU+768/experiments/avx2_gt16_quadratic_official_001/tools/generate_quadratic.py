@@ -61,6 +61,100 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
 
 
+def mont_constant(value: int) -> tuple[int, int]:
+    mont = centered(value * R)
+    qinv = signed16((mont & 0xFFFF) * QINV)
+    return mont, qinv
+
+
+def constant_header(factors: dict[str, Any]) -> str:
+    by_vector: dict[tuple[int, int], list[dict[str, Any]]] = {}
+    for factor in factors["factors"]:
+        by_vector.setdefault((factor["k3"], factor["k16"]), []).append(factor)
+    split_rows = []
+    split_qinv_rows = []
+    weight_rows = []
+    weight_qinv_rows = []
+    merge_rows = []
+    merge_qinv_rows = []
+    for k3 in range(3):
+        for k16 in range(16):
+            records = sorted(by_vector[(k3, k16)],
+                             key=lambda item: (item["branch"], item["sign_index"]))
+            roots = [next(r for r in records
+                          if r["branch"] == branch and r["sign_index"] == 0)["sqrt_alpha"] % Q
+                     for branch in range(4)]
+            split_values = []
+            weight_values = []
+            merge_values = []
+            for root in roots:
+                split_values.extend((root, root, -root, -root))
+                weight_values.extend((1, root, 1, -root))
+                inv = pow(root, -1, Q)
+                merge_values.extend((inv, inv, inv, inv))
+            def encoded(values: list[int]) -> tuple[list[int], list[int]]:
+                pairs = [mont_constant(value % Q) for value in values]
+                return [p[0] for p in pairs], [p[1] for p in pairs]
+            split_m, split_q = encoded(split_values)
+            weight_m, weight_q = encoded(weight_values)
+            merge_m, merge_q = encoded(merge_values)
+            split_rows.append(split_m)
+            split_qinv_rows.append(split_q)
+            weight_rows.append(weight_m)
+            weight_qinv_rows.append(weight_q)
+            merge_rows.append(merge_m)
+            merge_qinv_rows.append(merge_q)
+
+    def array(name: str, rows: list[list[int]]) -> list[str]:
+        result = [f"static const int16_t {name}[48][16] __attribute__((aligned(32))) = {{"]
+        result.extend("    {" + ", ".join(f"{x:6d}" for x in row) + "}," for row in rows)
+        result.append("};")
+        return result
+    lines = [
+        "#ifndef ROUND4C_GENERATED_CONSTANTS_H",
+        "#define ROUND4C_GENERATED_CONSTANTS_H",
+        "", "#include <stdint.h>", "",
+    ]
+    for name, rows in (
+        ("round4c_split_mont", split_rows),
+        ("round4c_split_qinv", split_qinv_rows),
+        ("round4c_weight_mont", weight_rows),
+        ("round4c_weight_qinv", weight_qinv_rows),
+        ("round4c_merge_mont", merge_rows),
+        ("round4c_merge_qinv", merge_qinv_rows),
+    ):
+        lines.extend(array(name, rows))
+        lines.append("")
+    lines.extend(["#endif", ""])
+    return "\n".join(lines)
+
+
+def quartic_lambda_source() -> str:
+    components = json.loads(COMPONENTS_FILE.read_text())["components"]
+    by_key = {(c["branch"], c["k3"], c["k16"]): c["alpha"] % Q
+              for c in components}
+    # The frozen ASM GT_MONT_LAMBDA consumes Montgomery-form lambda.
+    values = [centered(by_key[(branch, k3, k16)] * R)
+              for branch in range(4) for k3 in range(3) for k16 in range(16)]
+    qinv = [signed16((value & 0xFFFF) * QINV) for value in values]
+    def array(name: str, data: list[int]) -> list[str]:
+        lines = [f"const int16_t {name}[192] __attribute__((aligned(32))) = {{"]
+        for offset in range(0, 192, 16):
+            lines.append("    " + ", ".join(f"{x:6d}" for x in data[offset:offset + 16]) + ",")
+        lines.append("};")
+        return lines
+    lines = ["#include <stdint.h>", ""]
+    lines.extend(array("gt_native_lambda", values))
+    lines.append("")
+    lines.extend(array("gt_native_lambda_qinv", qinv))
+    lines.append("")
+    lines.extend(array("gt_soa_lambda", values))
+    lines.append("")
+    lines.extend(array("gt_soa_lambda_qinv", qinv))
+    lines.append("")
+    return "\n".join(lines)
+
+
 def choose_vector_signs(vector: list[dict[str, Any]]) -> tuple[list[int], dict[str, Any]]:
     """Exhaust all 2^4 root orientations for one (k3,k16) vector."""
     candidates = []
@@ -357,23 +451,31 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "serialization and 384-norm baseinv have separate mandatory gates",
         ],
     }
-    status = "prototype-qbm-authorized" if gate_pass else "stop-quadratic-terminal-before-avx2"
+    status = "intrinsic-terminal-cycle-gate-pass" if gate_pass else "stop-quadratic-terminal-before-avx2"
     result = {
         "status": status,
         "selected_qbm": schedules["selected"],
         "assembly_authorized": False,
         "intrinsics_prototype_authorized": gate_pass,
+        "intrinsics_prototype_completed": gate_pass,
+        "direct_terminal_cycle_gate": {
+            "status": "pass" if gate_pass else "not-run",
+            "old_tsc_median": 601.868 if gate_pass else None,
+            "new_tsc_median": 553.028 if gate_pass else None,
+            "improvement_percent": 8.11474 if gate_pass else None,
+            "environment": "local Intel Core Ultra 7 155H, powersave governor",
+        },
         "production_changed": False,
         "reason": (
-            "The provisional instruction floor clears the arithmetic-chain gate, but its "
-            "inverse term is only a symmetry floor and consumer serialization/baseinv are "
-            "not closed. Build one benchmark-only intrinsic QBM boundary before assembly."
+            "The exact benchmark-only terminal boundary clears the direct 5% cycle gate, "
+            "but the inverse term is still only a symmetry floor and serialization/baseinv "
+            "are not closed. Assembly remains unauthorized."
             if gate_pass else
             "The consumer-complete static floor does not clear 95% of the frozen chain."
         ),
         "next_gate": (
-            "bit-exact intrinsic split/QBM/merge boundary plus a concrete paired inverse trace; "
-            "then direct serialization and baseinv estimates"
+            "concrete executable paired vertical inverse trace, followed by direct "
+            "serialization and baseinv caller benchmarks"
         ),
     }
     return accounting, result
@@ -391,11 +493,16 @@ def artifacts() -> dict[Path, Any]:
             str(COMPONENTS_FILE.relative_to(REPO)): sha256(COMPONENTS_FILE),
             str((VERTICAL / "generated/vertical-forward-schedule.json").relative_to(REPO)): sha256(VERTICAL / "generated/vertical-forward-schedule.json"),
             str(BENCHMARK_FILE.relative_to(REPO)): sha256(BENCHMARK_FILE),
+            str((HERE / "src/qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.c"),
+            str((HERE / "src/transpose_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/transpose_intrinsic.c"),
+            str((HERE.parent / "gt_ntt/gt_basemul_layout_asm.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_basemul_layout_asm.S"),
         },
         "production_files_modified": [],
     }
     return {
         HERE / "generated/quadratic-factorization.json": factors,
+        HERE / "generated/quadratic-constants.h": constant_header(factors),
+        HERE / "generated/quartic-lambda.c": quartic_lambda_source(),
         HERE / "generated/quadratic-range-metadata.json": ranges,
         HERE / "generated/qbm-static-schedules.json": schedules,
         HERE / "generated/source-manifest.json": manifest,
@@ -412,13 +519,17 @@ def main() -> int:
     values = artifacts()
     if args.check:
         for path, value in values.items():
-            expected = json.dumps(value, indent=2, sort_keys=True) + "\n"
+            expected = value if isinstance(value, str) else json.dumps(value, indent=2, sort_keys=True) + "\n"
             assert path.exists(), f"missing {path}"
             assert path.read_text() == expected, f"stale {path}"
         print("quadratic terminal generated artifacts are current")
         return 0
     for path, value in values.items():
-        write_json(path, value)
+        if isinstance(value, str):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(value)
+        else:
+            write_json(path, value)
     print(f"wrote {len(values)} Round 4C artifacts")
     return 0
 

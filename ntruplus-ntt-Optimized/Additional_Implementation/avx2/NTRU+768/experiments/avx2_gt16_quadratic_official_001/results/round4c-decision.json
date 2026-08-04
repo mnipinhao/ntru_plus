@@ -1,9 +1,17 @@
 {
   "assembly_authorized": false,
+  "direct_terminal_cycle_gate": {
+    "environment": "local Intel Core Ultra 7 155H, powersave governor",
+    "improvement_percent": 8.11474,
+    "new_tsc_median": 553.028,
+    "old_tsc_median": 601.868,
+    "status": "pass"
+  },
   "intrinsics_prototype_authorized": true,
-  "next_gate": "bit-exact intrinsic split/QBM/merge boundary plus a concrete paired inverse trace; then direct serialization and baseinv estimates",
+  "intrinsics_prototype_completed": true,
+  "next_gate": "concrete executable paired vertical inverse trace, followed by direct serialization and baseinv caller benchmarks",
   "production_changed": false,
-  "reason": "The provisional instruction floor clears the arithmetic-chain gate, but its inverse term is only a symmetry floor and consumer serialization/baseinv are not closed. Build one benchmark-only intrinsic QBM boundary before assembly.",
+  "reason": "The exact benchmark-only terminal boundary clears the direct 5% cycle gate, but the inverse term is still only a symmetry floor and serialization/baseinv are not closed. Assembly remains unauthorized.",
   "selected_qbm": "QBM-PREWEIGHT",
-  "status": "prototype-qbm-authorized"
+  "status": "intrinsic-terminal-cycle-gate-pass"
 }

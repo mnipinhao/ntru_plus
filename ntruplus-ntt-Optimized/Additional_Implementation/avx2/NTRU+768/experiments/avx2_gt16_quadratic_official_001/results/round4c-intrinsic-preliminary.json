@@ -1,0 +1,50 @@
+{
+  "baseline": "two AVX2 16x16 transposes + frozen zero-spill quartic R^-1 BM + reverse transpose",
+  "candidate": "two fused-contract splits + QBM-PREWEIGHT + scale-2 fused-contract merge",
+  "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cpu": "Intel Core Ultra 7 155H, CPU 1 requested",
+  "governor": "powersave",
+  "iterations_per_sample": 200000,
+  "samples": {
+    "old_new": {
+      "old": [602.894, 601.900, 600.595, 634.714, 597.921, 601.836],
+      "new_interleaved4": [552.853, 554.323, 551.942, 556.913, 553.203, 554.144]
+    },
+    "new_old": {
+      "old": [600.387, 605.613, 601.089, 611.876],
+      "new_interleaved4": [553.322, 551.626, 551.585, 551.574]
+    },
+    "qbm_all_orders": {
+      "vector": [223.553, 223.166, 223.292, 225.688, 223.200, 223.112, 223.054, 223.936, 224.327, 223.271],
+      "interleaved4": [217.209, 216.803, 217.137, 216.865, 216.513, 216.797, 216.869, 217.028, 216.799, 217.095],
+      "interleaved8": [270.226, 270.063, 269.473, 270.587, 270.736, 271.673, 269.905, 270.170, 270.847, 269.541]
+    }
+  },
+  "summary_tsc": {
+    "old_new_old_median": 601.868,
+    "old_new_old_mad": 1.1495,
+    "old_new_candidate_median": 553.6735,
+    "old_new_candidate_mad": 0.735,
+    "old_new_improvement_percent": 8.00749,
+    "new_old_old_median": 603.351,
+    "new_old_old_mad": 2.613,
+    "new_old_candidate_median": 551.6055,
+    "new_old_candidate_mad": 0.026,
+    "new_old_improvement_percent": 8.57635,
+    "combined_old_median": 601.868,
+    "combined_candidate_median": 553.028,
+    "combined_improvement_percent": 8.11474,
+    "qbm_vector_median": 223.2815,
+    "qbm_interleaved4_median": 216.867,
+    "qbm_interleaved8_median": 270.198
+  },
+  "direct_five_percent_cycle_gate": "pass",
+  "selected_schedule": "interleaved4",
+  "limitations": [
+    "preliminary local TSC, not the frozen Ryzen/GCC16 benchmark host",
+    "CPU governor was powersave",
+    "no executable vertical forward or paired inverse exists yet",
+    "no serialization or quadratic baseinv caller benchmark exists yet",
+    "the interleaved4 compiler output contains two data spills"
+  ]
+}
