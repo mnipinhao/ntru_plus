@@ -16,6 +16,7 @@ implemented:
   - N5 contiguous quartic-qword loads and immediate vpblendd GT permutation
   - N5 branch/n3 execution-order twist streams and six 32-byte stores
   - combined N5 frontend plus pair-packed core leaf symbol
+  - inverse I1 pair-packed raw qword and Montgomery local-half stages
   - full coefficient-order input to TILE4 frequency-output forward candidate
   - five-layer register-resident AVX2 forward tile and six-tile wrapper
   - five-layer register-resident AVX2 inverse tile and six-tile wrapper
@@ -90,4 +91,15 @@ forward_gate_a_formal:
     tile4_vs_official_percent: 0.814
   selected_scratch_alignment: 64
   caveat: warm caller path wins; synthetic L1 eviction is near parity and slightly favors Official
+inverse_gate_b_core:
+  result: i1-passed-short
+  benchmark_kind: tile4-core-only-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  i0_duplicated_local_stages_tsc: 275.387
+  i1_pair_packed_local_stages_tsc: 228.541
+  saving_tsc: 46.846
+  saving_percent: 17.011
+  correctness: bit-exact-vs-scalar-and-i0
+  caveat: excludes inverse DFT3, untwist, normalization and coefficient stores
 promotion: false

@@ -51,6 +51,8 @@ void gt32_tile4_forward_all_pair_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_inverse_all_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_all_pair_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
 
 /* Full coefficient-order input -> TILE4 bit-reversed frequency output. */
 void gt32_tile4_forward_full_ref(int16_t out[GT32_TILE4_POLY_WORDS],

@@ -118,6 +118,19 @@ forward promotion claim is therefore limited to the normal warm caller path;
 it is not a claim that TILE4 wins from cold cache.  Full launch data and the
 machine governor metadata are in `results/tile4-forward-gate-a-formal.json`.
 
+## Gate B inverse core I1
+
+The first inverse optimization replaces eight duplicated raw-qword butterflies
+with four pair-packed butterflies and replaces eight duplicated local-half
+Montgomery chains with four pair-packed chains using inverse execution-order
+tables.  It leaves the remaining three cross-register stages unchanged.
+
+I1 is bit-exact with the scalar inverse and I0 over the full test set.  The
+2,000-call short benchmark measured 228.541 TSC versus 275.387 for I0, saving
+46.846 TSC or 17.011%.  This is only the TILE4 inverse NTT32 core; it excludes
+inverse DFT3, untwist, normalization, top merge, and coefficient-order stores,
+so it is not yet an Official `Delta I` measurement.
+
 ## N5 contiguous qword frontend
 
 `gt32_tile4_frontend_wide_raw_asm()` implements the quartic-native N5 shape.

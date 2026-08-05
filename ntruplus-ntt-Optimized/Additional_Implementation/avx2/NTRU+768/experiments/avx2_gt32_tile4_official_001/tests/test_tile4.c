@@ -184,6 +184,9 @@ int main(void)
 		gt32_tile4_inverse_all_asm(inverse_got, got);
 		compare_exact("inverse", trial, inverse_ref, inverse_got,
 			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_all_pair_asm(serial_got, got);
+		compare_exact("inverse-pair", trial, inverse_ref, serial_got,
+			GT32_TILE4_POLY_WORDS);
 		compare_roundtrip(input, inverse_got, GT32_TILE4_POLY_WORDS, trial);
 
 		memcpy(alias, input, sizeof(alias));

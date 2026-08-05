@@ -211,6 +211,15 @@
 	vpblendd $0xcc, %ymm10, %ymm8, \value
 .endm
 
+.macro RAW_LOCAL_QWORD_PAIR v0,v1
+	vpunpcklqdq \v1, \v0, %ymm8
+	vpunpckhqdq \v1, \v0, %ymm9
+	vpsubw %ymm9, %ymm8, %ymm10
+	vpaddw %ymm9, %ymm8, %ymm8
+	vpunpcklqdq %ymm10, %ymm8, \v0
+	vpunpckhqdq %ymm10, %ymm8, \v1
+.endm
+
 .macro LOAD_TILE
 	vmovdqu   0(%rsi), %ymm0
 	vmovdqu  32(%rsi), %ymm1
@@ -387,6 +396,22 @@
 	STORE_TILE
 .endm
 
+.macro INVERSE_BODY_PAIR
+	LOAD_TILE
+	RAW_LOCAL_QWORD_PAIR %ymm0,%ymm1
+	RAW_LOCAL_QWORD_PAIR %ymm2,%ymm3
+	RAW_LOCAL_QWORD_PAIR %ymm4,%ymm5
+	RAW_LOCAL_QWORD_PAIR %ymm6,%ymm7
+	MONT_LOCAL_HALF_PAIR %ymm0,%ymm1, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 0
+	MONT_LOCAL_HALF_PAIR %ymm2,%ymm3, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 32
+	MONT_LOCAL_HALF_PAIR %ymm4,%ymm5, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 64
+	MONT_LOCAL_HALF_PAIR %ymm6,%ymm7, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 96
+	MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_inv_s2_qinv, .Ltile4_inv_s2_factor
+	MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_inv_s3_qinv, .Ltile4_inv_s3_factor
+	MONT_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7, .Ltile4_inv_s4_qinv, .Ltile4_inv_s4_factor
+	STORE_TILE
+.endm
+
 .p2align 5
 .globl gt32_tile4_forward_tile_asm
 .type gt32_tile4_forward_tile_asm,@function
@@ -491,6 +516,23 @@ gt32_tile4_inverse_all_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_inverse_all_asm,.-gt32_tile4_inverse_all_asm
+
+.p2align 5
+.globl gt32_tile4_inverse_all_pair_asm
+.type gt32_tile4_inverse_all_pair_asm,@function
+gt32_tile4_inverse_all_pair_asm:
+	vmovdqa .Ltile4_q(%rip), %ymm15
+	movl $6, %ecx
+.p2align 5
+.Ltile4_inverse_all_pair_loop:
+	INVERSE_BODY_PAIR
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Ltile4_inverse_all_pair_loop
+	vzeroupper
+	ret
+.size gt32_tile4_inverse_all_pair_asm,.-gt32_tile4_inverse_all_pair_asm
 
 .macro FRONTEND_LOAD_FIXED low,high,original_high,even,odd
 	vmovq \even(%rsi), \low

@@ -151,6 +151,14 @@ def emit_asm(path: Path) -> None:
                 lines.append("\t.short " + ",".join(
                     str(transform(value)) for value in record
                 ))
+    inverse_s1 = inverse_tables()[0]
+    for suffix, transform in (("qinv", factor_qinv), ("factor", lambda x: x)):
+        lines.extend([".p2align 5", f".Ltile4_inv_s1_pair_{suffix}:"])
+        for pair in range(0, 8, 2):
+            record = inverse_s1[pair][8:16] + inverse_s1[pair + 1][8:16]
+            lines.append("\t.short " + ",".join(
+                str(transform(value)) for value in record
+            ))
     lines.extend([
         ".p2align 5",
         ".Ltile4_q:",

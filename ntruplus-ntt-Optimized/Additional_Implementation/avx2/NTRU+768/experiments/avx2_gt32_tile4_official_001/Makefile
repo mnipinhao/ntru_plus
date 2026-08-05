@@ -15,7 +15,7 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_asm.S \
 	tests/test_tile4.c
 
 .PHONY: all generate check test sanitize audit bench-short bench-official-short \
-	bench-official-cold clean
+	bench-official-cold bench-inverse-short clean
 
 all: test
 
@@ -49,6 +49,9 @@ bench-official-short: generate $(BUILD)/bench_official_short
 
 bench-official-cold: generate $(BUILD)/bench_official_short
 	$(BUILD)/bench_official_short 2000 cold
+
+bench-inverse-short: generate $(BUILD)/bench_inverse_short
+	$(BUILD)/bench_inverse_short 2000
 
 $(BUILD):
 	mkdir -p $@
@@ -93,6 +96,11 @@ $(BUILD)/bench_official_short: src/tile4_ref.c src/tile4_frontend.c \
 		bench/bench_official_short.c $(FROZEN)/gt_ntt_frontend_stage12_soa.S \
 		$(FROZEN)/gt_ntt_stage345_soa.s $(FROZEN)/gt_ntt_tables.c \
 		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/consts.c
+
+$(BUILD)/bench_inverse_short: src/tile4_ref.c src/tile4_frontend.c \
+		src/tile4_asm.S bench/bench_inverse_short.c $(GEN) | $(BUILD)
+	$(CC) $(CFLAGS) -Isrc -o $@ src/tile4_ref.c src/tile4_frontend.c \
+		src/tile4_asm.S bench/bench_inverse_short.c
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

@@ -1,0 +1,19 @@
+{
+  "status": "inverse-gate-b-i1-directional-short",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "same_binary": true,
+  "cpu_affinity": 1,
+  "input": "valid N5 forward output from repeating [-3,4] coefficients",
+  "median_tsc": {
+    "i0_duplicated_local_stages": 275.387,
+    "i1_pair_packed_local_stages": 228.541
+  },
+  "i1_saving": {
+    "tsc": 46.846,
+    "percent": 17.011
+  },
+  "correctness": "bit-exact against scalar inverse and I0",
+  "scope": "inverse NTT32 core only; no inverse tail",
+  "decision": "retain I1 as the inverse-core main candidate"
+}
