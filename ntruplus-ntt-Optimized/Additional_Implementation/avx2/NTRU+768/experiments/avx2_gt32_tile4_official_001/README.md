@@ -146,3 +146,30 @@ versus 177.774 for fixed-displacement gather.  The combined N5 plus pair-packed
 core measured 396.165 versus frozen GT32 at 469.036 TSC, directionally 15.536%
 faster.  The raw entry remains explicitly limited to coefficient inputs in
 `[-3,4]`; this is not yet a promotion benchmark or a general mod-q entry.
+
+## Native TILE4 scale contract and basemul B2
+
+The generated scale contract labels every boundary by the exponent in the
+stored representation `x*R^e mod q`.  Forward is `e=0 -> e=0`; native quartic
+basemul is `e=0 x e=0 -> e=-1`; inverse preserves `e=-1`; and its final fused
+normalization must carry `e=2` to return coefficient output at `e=0`.  Lambda
+is generated in physical TILE4 Q order as `lambda*R` (`e=1`).  An independent
+int64 schoolbook test converts the basemul result with one Montgomery `R^2`
+operation and checks every coefficient against the ordinary quartic product.
+
+B0 is the scalar alias-safe oracle.  The first intrinsic B1 is retained as a
+negative control: disassembly shows stack spills and its broadcast mapping
+duplicates arithmetic lanes.  B2 instead uses a self-inverse 12-unpack
+register network to transform four TILE4 vectors into four full coefficient
+planes, applies the zero-spill quartic Montgomery schedule, and transforms the
+result back to TILE4.  Its first version requires distinct output and inputs.
+
+The 2,000-call, 20-sample directional result is recorded in
+`results/tile4-basemul-b2-short.json`: Official measured 339.593 TSC, frozen
+GT32 `e=-1` measured 307.822, B1 measured 1502.951, and B2 measured 434.952.
+B2 is 95.359 TSC slower than Official, leaving 43.383 TSC of the formal
+138.742-TSC two-forward consumer budget for the inverse delta.  B2 temporarily
+stores four coefficient planes in its destination block before the inverse
+transpose.  The next experiment therefore fuses those planes directly into
+inverse stage 1, removing four stores, four reloads, and the inverse transpose
+rather than trying to schedule the rejected broadcast B1.

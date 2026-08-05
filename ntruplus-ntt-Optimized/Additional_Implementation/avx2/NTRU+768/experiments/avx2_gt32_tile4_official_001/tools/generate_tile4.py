@@ -267,6 +267,90 @@ def emit_frontend_header(path: Path) -> None:
     path.write_text("\n".join(lines))
 
 
+def lambda_montgomery(k3: int, q_index: int, branch: int) -> int:
+    logical = (32 * k3 + 3 * bitreverse(q_index, 5)) % 96
+    normal = (pow(OMEGA96, logical, Q)
+              * pow(BRANCH_SCALE[branch], -1, Q))
+    return centered(normal * R)
+
+
+def emit_basemul_header(path: Path) -> None:
+    lines = [
+        "/* Generated physical-TILE4 lambda streams; do not hand-edit. */",
+        "#ifndef NTRUPLUS_GT32_TILE4_BASEMUL_CONSTANTS_H",
+        "#define NTRUPLUS_GT32_TILE4_BASEMUL_CONSTANTS_H",
+        "#include <stdint.h>",
+        "static const int16_t gt32_tile4_lambda_mont[6][8][16]",
+        "\t__attribute__((aligned(32))) = {",
+    ]
+    for k3 in range(3):
+        for branch in range(2):
+            lines.append("\t{")
+            for vector in range(8):
+                row = []
+                for q in range(4 * vector, 4 * vector + 4):
+                    row.extend([lambda_montgomery(k3, q, branch)] * 4)
+                lines.append("\t\t{" + ", ".join(str(value) for value in row) + "},")
+            lines.append("\t},")
+    lines.extend(["};", "#endif", ""])
+    path.write_text("\n".join(lines))
+
+
+def emit_basemul_asm(path: Path) -> None:
+    # Four adjacent TILE4 vectors are transposed by the assembly into this
+    # order.  Keep the lambda stream in exactly the same physical Q order so
+    # the multiplication loop requires no runtime permutation or gather.
+    transpose_q = [0, 4, 8, 12, 1, 5, 9, 13,
+                   2, 6, 10, 14, 3, 7, 11, 15]
+    lambdas = []
+    for k3 in range(3):
+        for branch in range(2):
+            for group in range(2):
+                lambdas.append([
+                    lambda_montgomery(k3, 16 * group + q, branch)
+                    for q in transpose_q
+                ])
+
+    lines = [
+        "/* Generated register-transpose lambda streams; do not hand-edit. */",
+        ".p2align 5",
+        ".Ltile4_bm_lambda:",
+    ]
+    for row in lambdas:
+        lines.append("\t.short " + ", ".join(str(value) for value in row))
+    lines.extend([".p2align 5", ".Ltile4_bm_lambda_qinv:"])
+    for row in lambdas:
+        qinv_row = [signed16(value * QINV) for value in row]
+        lines.append("\t.short " + ", ".join(str(value) for value in qinv_row))
+    lines.append("")
+    path.write_text("\n".join(lines))
+
+
+def emit_scale_contract(path: Path) -> None:
+    path.write_text(json.dumps({
+        "notation": "stored value represents x*R^e mod q",
+        "montgomery_rule": "Mont(x*R^ea,y*R^eb)=xy*R^(ea+eb-1)",
+        "boundaries": [
+            {"operation": "forward-input", "layout": "coefficient-order",
+             "r_exponent": 0, "range": [-3, 4]},
+            {"operation": "forward-output", "layout": "tile4-physical-Q",
+             "r_exponent": 0},
+            {"operation": "basemul-input-a", "layout": "tile4-physical-Q",
+             "r_exponent": 0},
+            {"operation": "basemul-input-b", "layout": "tile4-physical-Q",
+             "r_exponent": 0},
+            {"operation": "basemul-output", "layout": "tile4-physical-Q",
+             "r_exponent": -1},
+            {"operation": "inverse-core-output", "layout": "tile4-natural-Q",
+             "r_exponent": -1},
+            {"operation": "final-output", "layout": "coefficient-order",
+             "r_exponent": 0, "required_final_factor_r_exponent": 2},
+        ],
+        "lambda_table": {"value": "lambda*R", "r_exponent": 1,
+                         "physical_order": "tile=2*k3+branch,Q=0..31"},
+    }, indent=2) + "\n")
+
+
 def emit_mapping(path: Path) -> None:
     with path.open("w", newline="") as output:
         writer = csv.writer(output, lineterminator="\n")
@@ -362,12 +446,18 @@ def main() -> None:
     frontend_path = GENERATED / "tile4_frontend_constants.h"
     frontend_fixed_path = GENERATED / "tile4_frontend_fixed.inc"
     frontend_wide_path = GENERATED / "tile4_frontend_wide.inc"
+    basemul_path = GENERATED / "tile4_basemul_constants.h"
+    basemul_asm_path = GENERATED / "tile4_basemul_constants.inc"
+    scale_path = GENERATED / "tile4_scale_contract.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
     emit_frontend_header(frontend_path)
     emit_frontend_fixed(frontend_fixed_path)
     emit_frontend_wide(frontend_wide_path)
+    emit_basemul_header(basemul_path)
+    emit_basemul_asm(basemul_asm_path)
+    emit_scale_contract(scale_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -409,6 +499,11 @@ def main() -> None:
             frontend_fixed_path.read_bytes()).hexdigest(),
         "frontend_wide_sha256": hashlib.sha256(
             frontend_wide_path.read_bytes()).hexdigest(),
+        "basemul_sha256": hashlib.sha256(basemul_path.read_bytes()).hexdigest(),
+        "basemul_asm_sha256": hashlib.sha256(
+            basemul_asm_path.read_bytes()).hexdigest(),
+        "scale_contract_sha256": hashlib.sha256(
+            scale_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

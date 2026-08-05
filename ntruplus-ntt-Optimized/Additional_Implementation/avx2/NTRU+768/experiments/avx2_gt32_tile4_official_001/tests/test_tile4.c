@@ -4,11 +4,18 @@
 #include <string.h>
 
 #include "tile4.h"
+#include "../generated/tile4_basemul_constants.h"
+
+#define TEST_QINV 12929
+#define TEST_RSQ 867
 
 void ntt_gt_rowbitrevlayout(int16_t r[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS]);
 
 static uint64_t rng_state = UINT64_C(0x6a09e667f3bcc909);
+
+static void fail_at(const char *name, unsigned trial, size_t index,
+	int16_t expected, int16_t actual);
 
 static uint32_t random32(void)
 {
@@ -26,6 +33,42 @@ static int16_t centered(int32_t value)
 	if (value > GT32_TILE4_Q / 2)
 		value -= GT32_TILE4_Q;
 	return (int16_t)value;
+}
+
+static int16_t test_montgomery(int16_t a, int16_t b)
+{
+	const int16_t low = (int16_t)(uint16_t)((uint32_t)(uint16_t)a
+		* (uint32_t)(uint16_t)b * TEST_QINV);
+	return (int16_t)(((int32_t)a * b >> 16)
+		- ((int32_t)low * GT32_TILE4_Q >> 16));
+}
+
+static void check_basemul_scale(const int16_t *a, const int16_t *b,
+	const int16_t *actual, unsigned trial)
+{
+	for (unsigned tile = 0; tile < GT32_TILE4_TILES; tile++) {
+		for (unsigned vector = 0; vector < 8; vector++) {
+			for (unsigned lane = 0; lane < 4; lane++) {
+				const unsigned base = 128U * tile + 16U * vector + 4U * lane;
+				const int64_t lambda = centered(test_montgomery(
+					gt32_tile4_lambda_mont[tile][vector][4U * lane], 1));
+				for (unsigned c = 0; c < 4; c++) {
+					int64_t expected = 0;
+					for (unsigned i = 0; i < 4; i++) {
+						const unsigned j = (c + 4U - i) & 3U;
+						const int64_t factor = i + j >= 4U ? lambda : 1;
+						expected += factor * a[base + i] * b[base + j];
+					}
+					const int16_t want = centered((int32_t)(expected % GT32_TILE4_Q));
+					const int16_t got = centered(test_montgomery(
+						actual[base + c], TEST_RSQ));
+					if (want != got)
+						fail_at("basemul-scale-e-minus-1", trial,
+							base + c, want, got);
+				}
+			}
+		}
+	}
 }
 
 static void fail_at(const char *name, unsigned trial, size_t index,
@@ -121,6 +164,19 @@ int main(void)
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
+		gt32_tile4_basemul_b0(ref, input, input);
+		gt32_tile4_basemul_b1(got, input, input);
+		compare_exact("basemul-b1", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_b2_asm(got, input, input);
+		compare_exact("basemul-b2-asm", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		memcpy(alias, input, sizeof(alias));
+		gt32_tile4_basemul_b1(alias, alias, alias);
+		compare_exact("basemul-b1-alias", trial, ref, alias,
+			GT32_TILE4_POLY_WORDS);
 		gt32_tile4_frontend_ref(frontend_ref, input);
 		gt32_tile4_frontend_intrinsic(frontend_got, input);
 		compare_exact("frontend", trial, frontend_ref, frontend_got,
@@ -198,6 +254,6 @@ int main(void)
 			GT32_TILE4_POLY_WORDS);
 	}
 
-	puts("gt32-tile4: mapping=passed frontend=passed frozen-parent=passed full-forward=passed forward=passed inverse=passed alias=passed roundtrip=passed trials=1000");
+	puts("gt32-tile4: mapping=passed frontend=passed frozen-parent=passed full-forward=passed forward=passed basemul=passed inverse=passed alias=passed roundtrip=passed trials=1000");
 	return 0;
 }

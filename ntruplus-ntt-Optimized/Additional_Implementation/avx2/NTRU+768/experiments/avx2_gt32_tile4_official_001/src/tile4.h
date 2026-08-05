@@ -8,6 +8,18 @@
 #define GT32_TILE4_TILES 6
 #define GT32_TILE4_POLY_WORDS (GT32_TILE4_WORDS * GT32_TILE4_TILES)
 
+/* Native quartic multiplication: TILE4 e=0 x e=0 -> TILE4 e=-1. */
+void gt32_tile4_basemul_b0(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_b1(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* Register-transpose assembly candidate.  Distinct buffers are required. */
+void gt32_tile4_basemul_b2_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_frontend_intrinsic(int16_t out[GT32_TILE4_POLY_WORDS],

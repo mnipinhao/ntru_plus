@@ -1,0 +1,51 @@
+{
+  "notation": "stored value represents x*R^e mod q",
+  "montgomery_rule": "Mont(x*R^ea,y*R^eb)=xy*R^(ea+eb-1)",
+  "boundaries": [
+    {
+      "operation": "forward-input",
+      "layout": "coefficient-order",
+      "r_exponent": 0,
+      "range": [
+        -3,
+        4
+      ]
+    },
+    {
+      "operation": "forward-output",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 0
+    },
+    {
+      "operation": "basemul-input-a",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 0
+    },
+    {
+      "operation": "basemul-input-b",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 0
+    },
+    {
+      "operation": "basemul-output",
+      "layout": "tile4-physical-Q",
+      "r_exponent": -1
+    },
+    {
+      "operation": "inverse-core-output",
+      "layout": "tile4-natural-Q",
+      "r_exponent": -1
+    },
+    {
+      "operation": "final-output",
+      "layout": "coefficient-order",
+      "r_exponent": 0,
+      "required_final_factor_r_exponent": 2
+    }
+  ],
+  "lambda_table": {
+    "value": "lambda*R",
+    "r_exponent": 1,
+    "physical_order": "tile=2*k3+branch,Q=0..31"
+  }
+}

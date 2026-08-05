@@ -1,0 +1,26 @@
+{
+  "benchmark_kind": "same-binary-directional-short",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "official_tsc": 339.593,
+  "frozen_rminus1_tsc": 307.822,
+  "tile4_b0_scalar_tsc": 8139.565,
+  "tile4_b1_intrinsic_tsc": 1502.951,
+  "tile4_b2_register_transpose_asm_tsc": 434.952,
+  "b2_vs_official_tsc": 95.359,
+  "b2_vs_official_percent": 28.081,
+  "correctness": {
+    "exact_vs_b0_trials": 1000,
+    "scale": "e=-1 converted by Mont(R^2) vs independent int64 schoolbook",
+    "asan_ubsan": "pass",
+    "stack_spill_audit": "pass"
+  },
+  "contracts": {
+    "input_layout": "tile4-physical-Q",
+    "input_r_exponent": 0,
+    "output_layout": "tile4-physical-Q",
+    "output_r_exponent": -1,
+    "alias": "out != a && out != b"
+  },
+  "decision": "continue-with-basemul-coefficient-plane-to-inverse-stage1-fusion"
+}

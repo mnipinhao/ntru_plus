@@ -1,5 +1,6 @@
 experiment: avx2_gt32_tile4_official_001
-status: n5-wide-qword-forward-directionally-wins
+status: native-tile4-basemul-b2-continues
+primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
 implemented:
@@ -17,6 +18,9 @@ implemented:
   - N5 branch/n3 execution-order twist streams and six 32-byte stores
   - combined N5 frontend plus pair-packed core leaf symbol
   - inverse I1 pair-packed raw qword and Montgomery local-half stages
+  - generator-owned R-exponent scale contract and physical-Q lambda streams
+  - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
+  - native TILE4 B2 register-transpose quartic assembly
   - full coefficient-order input to TILE4 frequency-output forward candidate
   - five-layer register-resident AVX2 forward tile and six-tile wrapper
   - five-layer register-resident AVX2 inverse tile and six-tile wrapper
@@ -27,7 +31,8 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
-  - TILE4-native quartic basemul and baseinv
+  - fuse B2 coefficient-plane output into inverse stage-1
+  - TILE4-native baseinv
   - inverse DFT3/untwist/top-merge consumer
   - same-binary caller benchmark
 forward_directional_gate:
@@ -102,4 +107,32 @@ inverse_gate_b_core:
   saving_percent: 17.011
   correctness: bit-exact-vs-scalar-and-i0
   caveat: excludes inverse DFT3, untwist, normalization and coefficient stores
+scale_contract:
+  notation: "stored x*R^e mod q"
+  forward_input_e: 0
+  forward_output_e: 0
+  basemul_input_e: 0
+  basemul_output_e: -1
+  inverse_core_e: -1
+  final_output_e: 0
+  required_final_factor_e: 2
+  lambda_table_e: 1
+  verification: independent-int64-schoolbook-after-Mont-R2
+native_basemul_gate:
+  result: b2-continues-short
+  benchmark_kind: same-binary-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  official_tsc: 339.593
+  frozen_rminus1_tsc: 307.822
+  tile4_b0_scalar_tsc: 8139.565
+  tile4_b1_intrinsic_rejected_tsc: 1502.951
+  tile4_b2_register_transpose_asm_tsc: 434.952
+  b2_delta_vs_official_tsc: 95.359
+  b2_delta_vs_official_percent: 28.081
+  two_forward_consumer_budget_tsc: 138.742
+  remaining_inverse_delta_budget_tsc: 43.383
+  b2_alias_contract: distinct-out-a-b
+  audit: zero-stack-spill-asan-ubsan-pass
+  next_gate: b2-coefficient-planes-fused-with-inverse-stage1
 promotion: false
