@@ -846,17 +846,17 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
             "inverse_regression": 214.364,
             "known_terminal_plus_inverse_net_regression": 165.524,
             "forward_break_even_each": 82.762,
-            "forward_frozen_gt32_ab_ba_mean": 463.5532,
-            "forward_f0_materialized_ab_ba_mean": 792.56145,
-            "forward_f0_fused_ab_ba_mean": 794.67745,
-            "forward_f1_materialized_ab_ba_mean": 752.356,
-            "forward_f1_fused_ab_ba_mean": 722.61095,
-            "forward_f1_hybrid_asm_ab_ba_mean": 678.98395,
-            "ct16_intrinsic_ab_ba_mean": 288.3822,
-            "ct16_asm_ab_ba_mean": 252.21765,
+            "forward_frozen_gt32_ab_ba_mean": 466.072,
+            "forward_f0_materialized_ab_ba_mean": 789.8764,
+            "forward_f0_fused_ab_ba_mean": 795.6455,
+            "forward_f1_materialized_ab_ba_mean": 750.7576,
+            "forward_f1_fused_ab_ba_mean": 719.85725,
+            "forward_f1_hybrid_asm_ab_ba_mean": 674.75315,
+            "ct16_intrinsic_ab_ba_mean": 286.15115,
+            "ct16_asm_ab_ba_mean": 239.91125,
             "selected_forward": "F1-NTT16-first-hybrid-asm",
-            "selected_forward_regression": 215.43075,
-            "legacy_chain_regression": 596.3855,
+            "selected_forward_regression": 208.68115,
+            "legacy_chain_regression": 582.8863,
         },
         "limitations": [
             "the static projection is retained as historical accounting and is superseded for inverse decisions by the executable CT result",
@@ -891,19 +891,19 @@ def decision(schedules: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
         "direct_forward_cycle_gate": {
             "status": "fail",
             "selected": "F1-NTT16-first-hybrid-asm",
-            "candidate_tsc_ab_ba_mean": 678.98395,
-            "frozen_gt32_tsc_ab_ba_mean": 463.5532,
-            "candidate_regression_tsc": 215.43075,
+            "candidate_tsc_ab_ba_mean": 674.75315,
+            "frozen_gt32_tsc_ab_ba_mean": 466.072,
+            "candidate_regression_tsc": 208.68115,
             "required_saving_tsc": 82.762,
-            "parity_maximum_tsc": 380.7912,
+            "parity_maximum_tsc": 383.31,
         },
         "production_changed": False,
         "reason": (
             "The terminal boundary passes, and a complete lazy Cooley-Tukey inverse is exact, "
             "but terminal plus inverse remains 165.524 local TSC ticks behind frozen GT32. "
-            "The handwritten CT16 improves the selected forward by 43.627 ticks, but "
-            "the hybrid still adds 215.431 ticks per call. The legacy local 2F+B+I "
-            "accounting therefore misses parity by 596.386 ticks."
+            "The register-resident length-2/4/8 CT16 improves the selected forward by "
+            "45.104 ticks, but the hybrid still adds 208.681 ticks per call. The legacy "
+            "local 2F+B+I accounting therefore misses parity by 582.886 ticks."
             if gate_pass else
             "The consumer-complete static floor does not clear 95% of the frozen chain."
         ),

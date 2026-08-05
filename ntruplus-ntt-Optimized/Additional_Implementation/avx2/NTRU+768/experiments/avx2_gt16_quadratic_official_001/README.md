@@ -52,29 +52,30 @@ length 4 and 16 remain lazy, and identity twiddles are omitted.
 
 All four candidates pass 77 scalar component-oracle cases, in-place aliasing,
 and materialized/fused representative differentials.  In two 20-sample runs
-of one million calls per sample, the mean of the AB/BA medians is 463.553 TSC
-for frozen GT32 and 722.611 for the intrinsic F1 fused producer.  F0
-materialized, F0 fused, and F1 materialized measure 792.561, 794.677, and
-752.356 respectively.
+of one million calls per sample, the mean of the AB/BA medians is 466.072 TSC
+for frozen GT32 and 719.857 for the intrinsic F1 fused producer.  F0
+materialized, F0 fused, and F1 materialized measure 789.876, 795.646, and
+750.758 respectively.
 
 A benchmark-only GNU assembler CT16 now replaces the intrinsic core in the F1
-producer.  It interleaves two independent butterflies, has fixed public loops,
-uses generated execution-order constants, and is a leaf with no stack access
-or vector spill.  Direct CT16 drops from 288.382 to 252.218 TSC (12.54%); the
-complete hybrid producer drops from 722.611 to 678.984 (6.04%).  Reversing
-benchmark order preserves the result.
+producer.  Each eight-vector half-tile stays in registers through length 2, 4,
+and 8; only then is it materialized for the cross-half length-16 layer.  The
+kernel has fixed public loops, generated execution-order constants, and no
+stack access or vector spill.  Direct CT16 drops from 286.151 to 239.911 TSC
+(16.16%); the complete hybrid producer drops from 719.857 to 674.753 (6.27%).
+Reversing benchmark order preserves the result.
 
-Million-call direct buckets measure 286.777 TSC for the fused-linear frontend,
-252.218 for the assembler CT16 arithmetic pass, 108.975 for the centered F0
-DFT3 boundary, and 102.928 for standalone quadratic split.  These buckets overlap
+Million-call direct buckets measure 283.176 TSC for the fused-linear frontend,
+239.911 for the assembler CT16 arithmetic pass, 109.244 for the centered F0
+DFT3 boundary, and 102.457 for standalone quadratic split.  These buckets overlap
 when fused and therefore are not summed as a reconstructed producer, but they
 show that the deficit is distributed across the mandatory frontend and CT16;
 it is not explained by a single spill or materialization pass.
 
-The assembler-assisted forward still regresses by 215.431 ticks instead of
+The assembler-assisted forward still regresses by 208.681 ticks instead of
 saving the required
 82.762.  Under the pre-existing local chain accounting, two forwards plus the
-known terminal/inverse deficit miss parity by 596.386 ticks.  This is a direct
+known terminal/inverse deficit miss parity by 582.886 ticks.  This is a direct
 gate failure, not a production or promotion result: the host still uses the
 powersave governor, but same-binary AB/BA evidence is decisive enough to stop
 before assembly, serialization, baseinv, or KEM integration.

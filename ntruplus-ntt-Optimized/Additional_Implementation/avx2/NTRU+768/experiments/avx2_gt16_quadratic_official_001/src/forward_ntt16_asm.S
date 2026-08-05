@@ -16,6 +16,35 @@
 	vpaddw \tmp, \reg, \reg
 .endm
 
+.macro IDENTITY_BUTTERFLY low, high, correct
+	vpaddw \high, \low, %ymm8
+	vpsubw \high, \low, \high
+	vmovdqa %ymm8, \low
+	.if \correct
+	CENTER_ONCE \low, %ymm8
+	CENTER_ONCE \high, %ymm8
+	.endif
+.endm
+
+.macro MONT_BUTTERFLY low, high, correct
+	vpmullw %ymm11, \high, %ymm8
+	vpmulhw %ymm12, \high, %ymm9
+	vpmulhw %ymm15, %ymm8, %ymm8
+	vpsubw %ymm8, %ymm9, \high
+	vpaddw \high, \low, %ymm8
+	vpsubw \high, \low, \high
+	vmovdqa %ymm8, \low
+	.if \correct
+	CENTER_ONCE \low, %ymm8
+	CENTER_ONCE \high, %ymm8
+	.endif
+.endm
+
+.macro LOAD_TWIDDLE index
+	vpbroadcastw .Lfwd16_mont+2*\index(%rip), %ymm12
+	vpbroadcastw .Lfwd16_qinv+2*\index(%rip), %ymm11
+.endm
+
 .macro RUN_GROUP2 stride, pairs, low, high, twiddle, correct
 	.if \twiddle >= 0
 	vpbroadcastw .Lfwd16_mont+2*\twiddle(%rip), %ymm12
@@ -94,18 +123,52 @@ round4c_forward_ntt16_asm:
 	vpbroadcastw .Lcenter(%rip), %ymm14
 	vpbroadcastw .Lnegative_center(%rip), %ymm13
 
-	/* length 2, offset 0, identity twiddle */
-	RUN_GROUP2 64, 12, 0, 32, -1, 1
+	/* Fuse length 2, 4, and 8 inside one register-resident 8-vector tile. */
+	movq %rdi, %rax
+	movl $6, %ecx
+.Lhalf_tile:
+	vmovdqa   0(%rax), %ymm0
+	vmovdqa  32(%rax), %ymm1
+	vmovdqa  64(%rax), %ymm2
+	vmovdqa  96(%rax), %ymm3
+	vmovdqa 128(%rax), %ymm4
+	vmovdqa 160(%rax), %ymm5
+	vmovdqa 192(%rax), %ymm6
+	vmovdqa 224(%rax), %ymm7
 
-	/* length 4, offset 1: [1, omega^4] */
-	RUN_GROUP2 128, 6, 0, 64, -1, 0
-	RUN_GROUP2 128, 6, 32, 96, 2, 0
+	/* length 2: all identity butterflies, one correction. */
+	IDENTITY_BUTTERFLY %ymm0, %ymm1, 1
+	IDENTITY_BUTTERFLY %ymm2, %ymm3, 1
+	IDENTITY_BUTTERFLY %ymm4, %ymm5, 1
+	IDENTITY_BUTTERFLY %ymm6, %ymm7, 1
 
-	/* length 8, offset 3: [1, omega^2, omega^4, omega^6] */
-	RUN_GROUP2 256, 3, 0, 128, -1, 1
-	RUN_GROUP2 256, 3, 32, 160, 4, 1
-	RUN_GROUP2 256, 3, 64, 192, 5, 1
-	RUN_GROUP2 256, 3, 96, 224, 6, 1
+	/* length 4: identity columns and shared omega^4 columns. */
+	IDENTITY_BUTTERFLY %ymm0, %ymm2, 0
+	IDENTITY_BUTTERFLY %ymm4, %ymm6, 0
+	LOAD_TWIDDLE 2
+	MONT_BUTTERFLY %ymm1, %ymm3, 0
+	MONT_BUTTERFLY %ymm5, %ymm7, 0
+
+	/* length 8: one identity plus omega^2, omega^4, omega^6. */
+	IDENTITY_BUTTERFLY %ymm0, %ymm4, 1
+	LOAD_TWIDDLE 4
+	MONT_BUTTERFLY %ymm1, %ymm5, 1
+	LOAD_TWIDDLE 5
+	MONT_BUTTERFLY %ymm2, %ymm6, 1
+	LOAD_TWIDDLE 6
+	MONT_BUTTERFLY %ymm3, %ymm7, 1
+
+	vmovdqa %ymm0,   0(%rax)
+	vmovdqa %ymm1,  32(%rax)
+	vmovdqa %ymm2,  64(%rax)
+	vmovdqa %ymm3,  96(%rax)
+	vmovdqa %ymm4, 128(%rax)
+	vmovdqa %ymm5, 160(%rax)
+	vmovdqa %ymm6, 192(%rax)
+	vmovdqa %ymm7, 224(%rax)
+	addq $256, %rax
+	decl %ecx
+	jnz .Lhalf_tile
 
 	/* length 16, offset 7: [1, omega, ..., omega^7] */
 	RUN_GROUP 512, 3, 0, 256, -1, 0
