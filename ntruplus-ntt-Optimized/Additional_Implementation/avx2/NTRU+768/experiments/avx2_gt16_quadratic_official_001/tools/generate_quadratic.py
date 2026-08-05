@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import json
 from pathlib import Path
@@ -369,6 +370,8 @@ def forward_asm_constants(factors: dict[str, Any]) -> str:
         "\t.short 1728",
         ".Lnegative_center:",
         "\t.short -1728",
+        ".Lcenter10:",
+        "\t.short 10",
         ".Lidentity_mont:",
         f"\t.short {identity_mont}",
         ".Lidentity_qinv:",
@@ -378,6 +381,7 @@ def forward_asm_constants(factors: dict[str, Any]) -> str:
         ".Lfwd3_omega_qinv:",
         f"\t.short {omega_qinv}",
     ]
+    lines.extend(shorts(".Lcenter10_vector", [10] * 16))
     lines.extend(shorts(".Lfrontend_input_offsets",
                         [8 * natural for natural in execution_natural], 2))
     for source, values in enumerate(linear_rows):
@@ -425,6 +429,7 @@ def choose_vector_signs(vector: list[dict[str, Any]]) -> tuple[list[int], dict[s
     }
 
 
+@functools.cache
 def factorization() -> dict[str, Any]:
     source = json.loads(COMPONENTS_FILE.read_text())["components"]
     by_key = {(c["k3"], c["k16"], c["branch"]): c for c in source}
@@ -647,7 +652,15 @@ def forward_ct_ranges() -> dict[str, Any]:
     frontend_bound = max(abs(value) for rows in frontend_by_branch
                          for interval in rows for value in interval)
 
-    def trace(start: tuple[int, int]) -> list[dict[str, Any]]:
+    def center10_interval(value: tuple[int, int]) -> tuple[int, int]:
+        image = [x - (((10 * x + (1 << 14)) >> 15) * Q)
+                 for x in range(value[0], value[1] + 1)]
+        return min(image), max(image)
+
+    def trace(start: tuple[int, int], corrected_lengths: set[int],
+              center10_lengths: set[int] | None = None) -> list[dict[str, Any]]:
+        if center10_lengths is None:
+            center10_lengths = set()
         positions = [start] * 16
         stages = []
         offset = 0
@@ -664,9 +677,12 @@ def forward_ct_ranges() -> dict[str, Any]:
                             mont16_interval(high_input, twiddle))
                     total = add_interval(low, high)
                     difference = subtract_interval(low, high)
-                    if length in (2, 8):
+                    if length in corrected_lengths:
                         total = center_once_interval(total)
                         difference = center_once_interval(difference)
+                    elif length in center10_lengths:
+                        total = center10_interval(total)
+                        difference = center10_interval(difference)
                     output[block + index] = total
                     output[block + index + half] = difference
             positions = [value for value in output if value is not None]
@@ -674,7 +690,9 @@ def forward_ct_ranges() -> dict[str, Any]:
                 "length": length,
                 "twiddle_offset": offset,
                 "identity_twiddle_montgomery_omitted": True,
-                "corrections_per_output": 1 if length in (2, 8) else 0,
+                "correction": ("center_once" if length in corrected_lengths else
+                               "center10" if length in center10_lengths else "none"),
+                "corrections_per_output": 1 if length in corrected_lengths else 0,
                 "overall_interval": [min(x[0] for x in positions),
                                      max(x[1] for x in positions)],
             })
@@ -683,8 +701,8 @@ def forward_ct_ranges() -> dict[str, Any]:
 
     f0_dft_raw = (-3 * frontend_bound, 3 * frontend_bound)
     f0_dft_centered = center_once_interval(f0_dft_raw)
-    f0_stages = trace(f0_dft_centered)
-    f1_stages = trace((-frontend_bound, frontend_bound))
+    f0_stages = trace(f0_dft_centered, {2, 8})
+    f1_stages = trace((-frontend_bound, frontend_bound), {2, 8})
     f1_ct_bound = max(abs(value) for value in
                       f1_stages[-1]["overall_interval"])
     f1_dft_bound = 3 * f1_ct_bound
@@ -693,6 +711,73 @@ def forward_ct_ranges() -> dict[str, Any]:
                   *(abs(value) for stage in f0_stages + f1_stages
                     for value in stage["overall_interval"]))
     assert maximum < 32768
+    lazy_candidates = {}
+    for name, corrected in (("N0_center_L2_L8", {2, 8}),
+                            ("N1_center_L8", {8}),
+                            ("N2_center_L2", {2}),
+                            ("N3_fully_lazy", set())):
+        stages = trace((-frontend_bound, frontend_bound), corrected)
+        ct_bound = max(abs(value) for value in stages[-1]["overall_interval"])
+        dft_bound = 3 * ct_bound
+        # For centered Montgomery constant c, |high(x*c)| is at most
+        # ceil(|x|*CENTER/R), while the signed q-correction contributes at
+        # most ceil(q/2).  This avoids making range generation depend on an
+        # expensive per-root exhaustive scan.
+        split_product_bound = ((dft_bound * CENTER + R - 1) // R
+                               + (Q + 1) // 2)
+        split_bound = dft_bound + split_product_bound
+        lazy_candidates[name] = {
+            "corrected_lengths": sorted(corrected),
+            "ntt16_stages": stages,
+            "dft3_conservative_interval": [-dft_bound, dft_bound],
+            "quadratic_split_conservative_interval": [-split_bound, split_bound],
+            "signed_int16_safe": split_bound < 32768,
+            "qbm_centered_lazy_bound_3456_compatible": split_bound <= 3456,
+        }
+    center10_stages = trace((-frontend_bound, frontend_bound), set(), {8})
+    center10_ct_bound = max(abs(value) for value in
+                            center10_stages[-1]["overall_interval"])
+    center10_dft_bound = 3 * center10_ct_bound
+    center10_product_bound = (
+        (center10_dft_bound * CENTER + R - 1) // R + (Q + 1) // 2)
+    center10_split_bound = center10_dft_bound + center10_product_bound
+    lazy_candidates["N4_lazy_to_L8_center10"] = {
+        "corrected_lengths": [],
+        "center10_lengths": [8],
+        "ntt16_stages": center10_stages,
+        "dft3_conservative_interval": [-center10_dft_bound,
+                                        center10_dft_bound],
+        "quadratic_split_conservative_interval": [-center10_split_bound,
+                                                    center10_split_bound],
+        "signed_int16_safe": center10_split_bound < 32768,
+        "qbm_centered_lazy_bound_3456_compatible": center10_split_bound <= 3456,
+        "dynamic_vector_instruction_saving_vs_N0": 432,
+    }
+    terminal_centered = center10_interval((-center10_dft_bound,
+                                           center10_dft_bound))
+    terminal_bound = max(abs(value) for value in terminal_centered)
+    terminal_roots = {
+        sign * (factor["sqrt_alpha"] % Q)
+        for factor in factorization()["factors"] for sign in (-1, 1)
+    }
+    terminal_product_bound = max(
+        max(abs(value) for value in
+            mont16_interval(terminal_centered, root % Q))
+        for root in terminal_roots)
+    terminal_split_bound = terminal_bound + terminal_product_bound
+    lazy_candidates["N5_N4_plus_terminal_center10"] = {
+        "corrected_lengths": [],
+        "center10_lengths": [8, "after_DFT3"],
+        "ntt16_stages": center10_stages,
+        "dft3_conservative_interval": [-center10_dft_bound,
+                                        center10_dft_bound],
+        "dft3_center10_exact_interval": list(terminal_centered),
+        "quadratic_split_conservative_interval": [-terminal_split_bound,
+                                                    terminal_split_bound],
+        "signed_int16_safe": terminal_split_bound < 32768,
+        "qbm_centered_lazy_bound_3456_compatible": terminal_split_bound <= 3456,
+        "dynamic_vector_instruction_saving_vs_N0": 288,
+    }
     return {
         "algorithm": "natural-input bit-reversed Cooley-Tukey forward NTT16",
         "input_contract": [-3, 4],
@@ -711,6 +796,7 @@ def forward_ct_ranges() -> dict[str, Any]:
             "ntt16_stages": f1_stages,
             "dft3_raw_conservative_interval": [-f1_dft_bound, f1_dft_bound],
         },
+        "MLKEM_lazy_candidates": lazy_candidates,
         "signed_int16_safe": True,
         "note": "Montgomery intervals are exhaustively evaluated; add/sub composition is conservative.",
     }
@@ -722,19 +808,33 @@ def range_metadata() -> dict[str, Any]:
     c1_bound = 2 * split_bound * split_bound
     assert c1_bound < 2**31 and split_bound < 32768
 
-    # For each low word, y is affine in the 16-bit quotient of x.  Checking
-    # the minimum and maximum legal quotient is exact over the full interval.
-    minimum = 10**9
-    maximum = -10**9
-    for low in range(R):
-        first = (-c1_bound - low + R - 1) // R
-        last = (c1_bound - low) // R
-        for high in {first, last}:
-            x = high * R + low
-            if -c1_bound <= x <= c1_bound:
-                value = mont32(x)
-                minimum = min(minimum, value)
-                maximum = max(maximum, value)
+    def mont32_interval(bound: int) -> tuple[int, int]:
+        # For each low word, y is affine in the 16-bit quotient of x. Checking
+        # the minimum and maximum legal quotient is exact over the interval.
+        minimum = 10**9
+        maximum = -10**9
+        for low in range(R):
+            first = (-bound - low + R - 1) // R
+            last = (bound - low) // R
+            for high in {first, last}:
+                x = high * R + low
+                if -bound <= x <= bound:
+                    value = mont32(x)
+                    minimum = min(minimum, value)
+                    maximum = max(maximum, value)
+        return minimum, maximum
+
+    minimum, maximum = mont32_interval(c1_bound)
+    forward_ranges = forward_ct_ranges()
+    n5_bound = max(abs(value) for value in
+                   forward_ranges["MLKEM_lazy_candidates"]
+                   ["N5_N4_plus_terminal_center10"]
+                   ["quadratic_split_conservative_interval"])
+    n5_weighted_bound = ((n5_bound * CENTER + R - 1) // R
+                         + (Q + 1) // 2)
+    n5_c0_bound = 2 * n5_bound * n5_weighted_bound
+    n5_c1_bound = 2 * n5_bound * n5_bound
+    n5_reducer_interval = mont32_interval(max(n5_c0_bound, n5_c1_bound))
     assert -32768 not in range(-split_bound, split_bound + 1)
     return {
         "canonical_input_bound": CENTER,
@@ -745,7 +845,17 @@ def range_metadata() -> dict[str, Any]:
         "signed_int32_safe": c1_bound < 2**31,
         "negative_32768_excluded": True,
         "inverse_ct_lazy": inverse_ct_ranges(),
-        "forward_ct_lazy": forward_ct_ranges(),
+        "forward_ct_lazy": forward_ranges,
+        "mlkem_n5_qbm_range": {
+            "input_bound": n5_bound,
+            "weighted_operand_bound": n5_weighted_bound,
+            "c0_vpmaddwd_bound": n5_c0_bound,
+            "c1_vpmaddwd_bound": n5_c1_bound,
+            "signed_int32_safe": max(n5_c0_bound, n5_c1_bound) < 2**31,
+            "reducer_exact_output_interval": list(n5_reducer_interval),
+            "packssdw_safe": (-32768 <= n5_reducer_interval[0]
+                               <= n5_reducer_interval[1] <= 32767),
+        },
         "five_instruction_montgomery32": {
             "qinv": QINV,
             "sequence": ["vpmullw-qinv", "vpand-lowword", "vpmaddwd-q",

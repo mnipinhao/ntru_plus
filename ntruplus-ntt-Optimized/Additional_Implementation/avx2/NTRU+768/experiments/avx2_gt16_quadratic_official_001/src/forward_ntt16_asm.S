@@ -233,6 +233,33 @@
 	vpsubw %ymm8, \target, \target
 .endm
 
+.macro CENTER10_4 a, b, c, d
+	vpmulhrsw %ymm12, \a, %ymm8
+	vpmulhrsw %ymm12, \b, %ymm9
+	vpmulhrsw %ymm12, \c, %ymm10
+	vpmulhrsw %ymm12, \d, %ymm11
+	vpmullw %ymm15, %ymm8, %ymm8
+	vpmullw %ymm15, %ymm9, %ymm9
+	vpmullw %ymm15, %ymm10, %ymm10
+	vpmullw %ymm15, %ymm11, %ymm11
+	vpsubw %ymm8, \a, \a
+	vpsubw %ymm9, \b, \b
+	vpsubw %ymm10, \c, \c
+	vpsubw %ymm11, \d, \d
+.endm
+
+.macro CENTER10_3 a, b, c
+	vpmulhrsw .Lcenter10_vector(%rip), \a, %ymm0
+	vpmulhrsw .Lcenter10_vector(%rip), \b, %ymm2
+	vpmulhrsw .Lcenter10_vector(%rip), \c, %ymm4
+	vpmullw %ymm15, %ymm0, %ymm0
+	vpmullw %ymm15, %ymm2, %ymm2
+	vpmullw %ymm15, %ymm4, %ymm4
+	vpsubw %ymm0, \a, \a
+	vpsubw %ymm2, \b, \b
+	vpsubw %ymm4, \c, \c
+.endm
+
 .p2align 5
 .globl round4c_forward_ntt16_asm
 .type round4c_forward_ntt16_asm,@function
@@ -273,22 +300,25 @@ round4c_forward_f1_full_asm:
 	FRONTEND_ONE %ymm6, 192, 12
 	FRONTEND_ONE %ymm7, 224, 14
 
-	IDENTITY_BUTTERFLY %ymm0, %ymm1, 1
-	IDENTITY_BUTTERFLY %ymm2, %ymm3, 1
-	IDENTITY_BUTTERFLY %ymm4, %ymm5, 1
-	IDENTITY_BUTTERFLY %ymm6, %ymm7, 1
+	IDENTITY_BUTTERFLY %ymm0, %ymm1, 0
+	IDENTITY_BUTTERFLY %ymm2, %ymm3, 0
+	IDENTITY_BUTTERFLY %ymm4, %ymm5, 0
+	IDENTITY_BUTTERFLY %ymm6, %ymm7, 0
 	IDENTITY_BUTTERFLY %ymm0, %ymm2, 0
 	IDENTITY_BUTTERFLY %ymm4, %ymm6, 0
 	LOAD_TWIDDLE 2
 	MONT_BUTTERFLY %ymm1, %ymm3, 0
 	MONT_BUTTERFLY %ymm5, %ymm7, 0
-	IDENTITY_BUTTERFLY %ymm0, %ymm4, 1
+	IDENTITY_BUTTERFLY %ymm0, %ymm4, 0
 	LOAD_TWIDDLE 4
-	MONT_BUTTERFLY %ymm1, %ymm5, 1
+	MONT_BUTTERFLY %ymm1, %ymm5, 0
 	LOAD_TWIDDLE 5
-	MONT_BUTTERFLY %ymm2, %ymm6, 1
+	MONT_BUTTERFLY %ymm2, %ymm6, 0
 	LOAD_TWIDDLE 6
-	MONT_BUTTERFLY %ymm3, %ymm7, 1
+	MONT_BUTTERFLY %ymm3, %ymm7, 0
+	vpbroadcastw .Lcenter10(%rip), %ymm12
+	CENTER10_4 %ymm0, %ymm1, %ymm2, %ymm3
+	CENTER10_4 %ymm4, %ymm5, %ymm6, %ymm7
 
 	vmovdqa %ymm0,   0(%rdi)
 	vmovdqa %ymm1,  32(%rdi)
@@ -349,10 +379,12 @@ round4c_forward_f1_full_asm:
 	vpbroadcastw .Lfwd3_omega_qinv(%rip), %ymm11
 	vpbroadcastw .Lfwd3_omega_mont(%rip), %ymm12
 	DFT3_VALUES %ymm0, %ymm2, %ymm4
+	CENTER10_3 %ymm7, %ymm8, %ymm9
 	SPLIT_STORE_TMP %ymm7, 0, %ymm0, %ymm2, %ymm4
 	SPLIT_STORE_TMP %ymm8, 512, %ymm0, %ymm2, %ymm4
 	SPLIT_STORE_TMP %ymm9, 1024, %ymm0, %ymm2, %ymm4
 	DFT3_VALUES %ymm1, %ymm3, %ymm5
+	CENTER10_3 %ymm7, %ymm8, %ymm9
 	SPLIT_STORE_TMP %ymm7, 256, %ymm0, %ymm2, %ymm4
 	SPLIT_STORE_TMP %ymm8, 768, %ymm0, %ymm2, %ymm4
 	SPLIT_STORE_TMP %ymm9, 1280, %ymm0, %ymm2, %ymm4

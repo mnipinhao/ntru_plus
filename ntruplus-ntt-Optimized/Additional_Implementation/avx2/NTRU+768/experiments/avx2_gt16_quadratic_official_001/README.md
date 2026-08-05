@@ -78,8 +78,29 @@ therefore saves 209.296 ticks (28.96%) versus the intrinsic producer and 158.075
 ticks (23.54%) versus the hybrid.  Benchmark order preserves the result.
 
 The full assembler result shows that the former 208.681-tick hybrid deficit was
-substantially implementation overhead.  The remaining same-binary deficit is
-47.923 ticks (10.30%) versus frozen GT32.  It still exceeds the existing 383.31
-forward parity ceiling by 130.094 ticks; the legacy local `2F+B+I` accounting
-therefore remains 260.187 ticks behind before serialization and baseinv.  This
-prototype stays default-off and is not integrated into the KEM.
+substantially implementation overhead.  A follow-up transfer audit compared
+the schedule with ML-KEM AVX2.  Montgomery correction fusion and four-way
+`center_once` scheduling regress on this host, but ML-KEM's lazy-representation
+principle transfers directly: length 2/4/8 now remain lazy, followed by one
+parallel three-instruction `center10` checkpoint.  DFT3 outputs receive the
+same fixed checkpoint before quadratic split.
+
+The selected N5 range trace proves a terminal bound of 4143.  Under that widened
+consumer contract, QBM `vpmaddwd` is bounded by 34,328,898, its exact reducer
+image is `[-2252,2252]`, and narrowing is safe.  Differential tests compare N5
+QBM against canonicalized inputs and carry both results through the complete
+inverse; all 77 cases pass.  The faster but consumer-incompatible N4 candidate
+measured 433.079 TSC preliminarily and was rejected at a 16257 terminal bound.
+
+Final million-call AB/BA medians average 474.053 TSC for N5 versus 463.551 for
+frozen GT32.  N5 saves 39.351 ticks (7.66%) against the previous 513.404-cycle
+full assembler and leaves a 10.501-tick (2.27%) deficit.  Frozen GT32 already
+contains four-way Montgomery ILP, global register renaming, parallel center10,
+load/store overlap, and a lazy terminal.  Its only applicable missing ML-KEM
+boundary trick—an internal entry without `vzeroupper`—regressed by 0.110 tick
+in million-call AB/BA and was removed, leaving the frozen oracle unchanged.
+
+GT16 still exceeds the existing 383.31 forward parity ceiling by 90.743 ticks;
+the legacy local `2F+B+I` accounting remains 181.486 ticks behind before
+serialization and baseinv.  The prototype therefore stays default-off and is
+not integrated into the KEM.

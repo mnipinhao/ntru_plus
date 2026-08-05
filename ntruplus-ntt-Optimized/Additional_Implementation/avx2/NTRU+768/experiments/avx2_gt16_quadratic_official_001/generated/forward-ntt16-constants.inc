@@ -11,6 +11,8 @@
 	.short 1728
 .Lnegative_center:
 	.short -1728
+.Lcenter10:
+	.short 10
 .Lidentity_mont:
 	.short -147
 .Lidentity_qinv:
@@ -19,6 +21,9 @@
 	.short -886
 .Lfwd3_omega_qinv:
 	.short 13706
+.p2align 5
+.Lcenter10_vector:
+	.short 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
 .p2align 2
 .Lfrontend_input_offsets:
 	.short 0, 192, 288, 96, 144, 336, 48, 240, 264, 72, 168, 360, 24, 216, 312, 120

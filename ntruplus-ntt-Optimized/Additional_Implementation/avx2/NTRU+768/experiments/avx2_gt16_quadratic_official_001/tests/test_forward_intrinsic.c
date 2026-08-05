@@ -1,10 +1,12 @@
 #include "forward_intrinsic.h"
+#include "inverse_stage1_intrinsic.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "quadratic-constants.h"
+#include "qbm_intrinsic.h"
 
 enum { Q = 3457, CENTER = 1728, R_INVERSE = 2775 };
 
@@ -97,6 +99,11 @@ static int check_case(const int16_t input[768], size_t case_index,
     int16_t want[768] __attribute__((aligned(32)));
     int16_t outputs[6][768] __attribute__((aligned(32)));
     int16_t alias[768] __attribute__((aligned(32)));
+    int16_t canonical[768] __attribute__((aligned(32)));
+    int16_t product[768] __attribute__((aligned(32)));
+    int16_t product_reference[768] __attribute__((aligned(32)));
+    int16_t inverse[768] __attribute__((aligned(32)));
+    int16_t inverse_reference[768] __attribute__((aligned(32)));
     scalar_forward_quadratic(want, input);
     for (size_t candidate = 0; candidate < 6; ++candidate) {
         kernels[candidate](outputs[candidate], input);
@@ -114,10 +121,26 @@ static int check_case(const int16_t input[768], size_t case_index,
     }
     if (memcmp(outputs[0], outputs[1], sizeof(outputs[0])) != 0 ||
         memcmp(outputs[2], outputs[3], sizeof(outputs[2])) != 0 ||
-        memcmp(outputs[3], outputs[4], sizeof(outputs[3])) != 0 ||
-        memcmp(outputs[4], outputs[5], sizeof(outputs[4])) != 0) {
+        memcmp(outputs[3], outputs[4], sizeof(outputs[3])) != 0) {
         fprintf(stderr, "materialized/fused representative mismatch case=%zu\n",
                 case_index);
+        return 1;
+    }
+    for (size_t i = 0; i < 768; ++i) {
+        int value = modq(outputs[5][i]);
+        canonical[i] = (int16_t)(value > CENTER ? value - Q : value);
+    }
+    round4c_qbm_vector_intrinsic(product, outputs[5], outputs[5]);
+    round4c_qbm_vector_intrinsic(product_reference, canonical, canonical);
+    if (congruent(product, product_reference, "F1-ASM/QBM",
+                  maximum)) {
+        fprintf(stderr, "case=%zu\n", case_index);
+        return 1;
+    }
+    round4c_inverse_full_i0(inverse, product);
+    round4c_inverse_full_i0(inverse_reference, product_reference);
+    if (memcmp(inverse, inverse_reference, sizeof(inverse)) != 0) {
+        fprintf(stderr, "F1-ASM/QBM/inverse mismatch case=%zu\n", case_index);
         return 1;
     }
     return 0;
@@ -157,8 +180,9 @@ static int check_asm_guard(void)
     }
     round4c_forward_f1_fused(want, input);
     round4c_forward_f1_full_asm(full_values, input);
-    if (memcmp(full_values, want, sizeof(want)) != 0) {
-        fprintf(stderr, "full forward asm guard result mismatch\n");
+    int full_maximum = 0;
+    if (congruent(full_values, want, "full forward asm guard",
+                  &full_maximum)) {
         return 1;
     }
     for (size_t i = 0; i < 16; ++i) {

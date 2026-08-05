@@ -38,7 +38,7 @@ inverse_prototype:
   output: centered-canonical-coefficient-order
 forward_prototype:
   scope: benchmark-only
-  algorithm: natural-input-bit-reversed-Cooley-Tukey-NTT16
+  algorithm: MLKEM-style-lazy-Cooley-Tukey-NTT16-with-center10-checkpoints
   input_contract: [-3, 4]
   output: quadratic-terminal-vertical-layout
   candidates:
@@ -51,6 +51,8 @@ forward_prototype:
   correctness_cases: 77
   candidate_count: 6
   scalar_component_congruence: pass
+  lazy_qbm_canonical_differential: pass
+  lazy_qbm_inverse_differential: pass
   ct16_c_asm_bit_exact: pass
   asm_guard_buffer: pass
   materialized_fused_representative: pass
@@ -58,32 +60,34 @@ forward_prototype:
   maximum_observed_absolute: 9976
   signed_int16_range_proof: pass
   million_call_ab_ba:
-    frozen_gt32_tsc_mean_of_order_medians: 465.4811
-    f0_materialized_tsc_mean_of_order_medians: 794.9094
-    f0_fused_tsc_mean_of_order_medians: 794.9689
-    f1_materialized_tsc_mean_of_order_medians: 754.7301
-    f1_fused_tsc_mean_of_order_medians: 722.70005
-    f1_hybrid_asm_tsc_mean_of_order_medians: 671.4785
-    f1_full_asm_tsc_mean_of_order_medians: 513.4037
-  asm_gain_vs_f1_intrinsic_tsc: 209.29635
-  asm_gain_vs_f1_intrinsic_percent: 28.9603
-  full_asm_gain_vs_hybrid_tsc: 158.0748
-  full_asm_gain_vs_hybrid_percent: 23.5413
-  best_regression_vs_frozen_tsc: 47.9226
+    frozen_gt32_tsc_mean_of_order_medians: 463.55145
+    f0_materialized_tsc_mean_of_order_medians: 799.2631
+    f0_fused_tsc_mean_of_order_medians: 792.8605
+    f1_materialized_tsc_mean_of_order_medians: 761.42235
+    f1_fused_tsc_mean_of_order_medians: 730.45195
+    f1_hybrid_asm_tsc_mean_of_order_medians: 674.1901
+    f1_full_asm_tsc_mean_of_order_medians: 474.05275
+  asm_gain_vs_f1_intrinsic_tsc: 256.3992
+  asm_gain_vs_f1_intrinsic_percent: 35.1015
+  full_asm_gain_vs_hybrid_tsc: 200.13735
+  full_asm_gain_vs_hybrid_percent: 29.6856
+  mlkem_lazy_gain_vs_previous_full_asm_tsc: 39.35095
+  mlkem_lazy_gain_vs_previous_full_asm_percent: 7.6647
+  best_regression_vs_frozen_tsc: 10.5013
   required_parity_maximum_tsc: 383.31
   parity_gate: fail
   direct_stage_tsc:
-    frontend: 288.0773
-    dft3_centered_f0_boundary: 109.03145
-    ntt16_intrinsic_zero_arithmetic: 290.38795
-    ntt16_asm_zero_arithmetic: 239.51305
-    quadratic_split: 103.2204
+    frontend: 290.70475
+    dft3_centered_f0_boundary: 109.63495
+    ntt16_intrinsic_zero_arithmetic: 291.3012
+    ntt16_asm_zero_arithmetic: 238.75
+    quadratic_split: 104.07425
     warning: overlapping fusion buckets; not additive reconstruction
   disassembly:
     selected_vector_spill: false
     selected_calls: 0
     selected_stack_access: false
-    selected_linked_bytes: 2432
+    selected_linked_bytes: 2205
     ct16_asm_vector_spill: false
     ct16_asm_stack_access: false
     ct16_asm_linked_bytes: 1632
@@ -116,14 +120,16 @@ range:
   maximum_vpmaddwd_absolute: 23887872
   signed_int32_safe: true
   reducer_output: [-2092, 2093]
+  mlkem_n5_qbm_input_bound: 4143
+  mlkem_n5_qbm_reducer_output: [-2252, 2252]
 provisional_chain:
   projected_instructions: 15288.836
   five_percent_gate: 16895.10875
   projected_improvement_percent: 14.03196
   warning: mixed static floor and historical dynamic surrogate; not a cycle claim
 blockers:
-  - selected full-asm forward is 47.923 TSC slower than frozen GT32 and remains 130.094 above the forward parity ceiling
-  - legacy local 2F+B+I accounting still regresses by 260.187 TSC before serialization/baseinv
+  - selected ML-KEM-lazy full-asm forward is 10.501 TSC slower than frozen GT32 and remains 90.743 above the forward parity ceiling
+  - legacy local 2F+B+I accounting still regresses by 181.486 TSC before serialization/baseinv
   - direct Official serialization consumers
   - 384-norm baseinv and keygen estimate
 environment_warning: local Intel powersave result is not comparable to frozen Ryzen data

@@ -1,0 +1,41 @@
+{
+  "status": "gt16-selected-frozen-no-change",
+  "source_idea": "ML-KEM AVX2 global scheduling and lazy range contracts",
+  "gt16": {
+    "selected": "N5-lazy-through-length8-center10-and-terminal-center10",
+    "rejected": {
+      "montgomery_correction_fusion": "standalone CT16 and complete-forward regression",
+      "four_way_center_once": "standalone CT16 regression",
+      "N1_N2_N3": "conservative DFT3 or split range exceeds signed-int16",
+      "N4_fully_lazy_terminal": "433.0791 TSC preliminary win but 16257 terminal bound is not the selected inverse contract"
+    },
+    "range": {
+      "terminal_input_bound": 4143,
+      "qbm_c0_vpmaddwd_bound": 15237954,
+      "qbm_c1_vpmaddwd_bound": 34328898,
+      "qbm_reducer_output": [-2252, 2252],
+      "signed_int32_safe": true,
+      "packssdw_safe": true
+    },
+    "million_call_ab_ba_mean_tsc": 474.05275,
+    "previous_full_asm_tsc": 513.4037,
+    "improvement_percent": 7.6647,
+    "regression_vs_frozen_percent": 2.2654
+  },
+  "frozen_gt32": {
+    "already_present": [
+      "four-way Montgomery ILP",
+      "tile-global register renaming",
+      "parallel center10 checkpoints",
+      "producer-load consumer-store overlap",
+      "lazy terminal representation"
+    ],
+    "rejected_internal_no_vzeroupper": {
+      "original_mean_tsc": 461.0739,
+      "internal_mean_tsc": 461.1838,
+      "delta_tsc": 0.1099,
+      "reason": "no measurable benefit; retain standalone ABI-safe frozen symbol"
+    },
+    "montgomery_correction_fusion": "not applied: all 16 YMM are live at the four-way butterfly peak, so the ML-KEM form lacks a spill-free destination register"
+  }
+}
