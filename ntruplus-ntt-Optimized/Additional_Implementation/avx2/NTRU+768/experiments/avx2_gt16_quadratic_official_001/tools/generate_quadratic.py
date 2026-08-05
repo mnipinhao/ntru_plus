@@ -301,12 +301,61 @@ def quartic_lambda_source() -> str:
     return "\n".join(lines)
 
 
-def forward_asm_constants() -> str:
+def forward_asm_constants(factors: dict[str, Any]) -> str:
     twiddles = [pow(OMEGA16, index * (16 // length), Q)
                 for length in (2, 4, 8, 16)
                 for index in range(length // 2)]
     encoded = [mont_constant(value) for value in twiddles]
-    return "\n".join([
+    branches = json.loads(
+        (HORIZONTAL / "generated/gt16-branches.json").read_text()
+    )["branches"]
+    bitreverse4 = [0, 8, 4, 12, 2, 10, 6, 14,
+                   1, 9, 5, 13, 3, 11, 7, 15]
+    execution_natural = [
+        (16 * i3 + 33 * bitreverse4[k16]) % 48
+        for i3 in range(3) for k16 in range(16)
+    ]
+    linear_rows: list[list[int]] = [[] for _ in range(4)]
+    for natural in execution_natural:
+        for source in range(4):
+            for branch in branches:
+                weight = pow(branch["F"], -natural, Q)
+                coefficients = (weight,
+                                branch["beta"] * weight,
+                                branch["gamma"] * weight,
+                                branch["beta"] * branch["gamma"] * weight)
+                linear_rows[source].extend(
+                    [centered(coefficients[source])] * 4)
+
+    by_vector: dict[tuple[int, int], list[dict[str, Any]]] = {}
+    for factor in factors["factors"]:
+        by_vector.setdefault((factor["k3"], factor["k16"]), []).append(factor)
+    split_mont: list[int] = []
+    split_qinv: list[int] = []
+    for k3 in range(3):
+        for k16 in range(16):
+            records = by_vector[(k3, k16)]
+            roots = [next(record for record in records
+                          if record["branch"] == branch
+                          and record["sign_index"] == 0)["sqrt_alpha"] % Q
+                     for branch in range(4)]
+            values = [value for root in roots
+                      for value in (root, root, -root, -root)]
+            pairs = [mont_constant(value % Q) for value in values]
+            split_mont.extend(pair[0] for pair in pairs)
+            split_qinv.extend(pair[1] for pair in pairs)
+
+    identity_mont, identity_qinv = mont_constant(1)
+    omega_mont, omega_qinv = mont_constant(OMEGA3)
+
+    def shorts(label: str, values: list[int], alignment: int = 5) -> list[str]:
+        result = [f".p2align {alignment}", f"{label}:"]
+        for offset in range(0, len(values), 16):
+            result.append("\t.short " + ", ".join(
+                str(value) for value in values[offset:offset + 16]))
+        return result
+
+    lines = [
         ".p2align 5",
         ".Lfwd16_mont:",
         "\t.short " + ", ".join(str(pair[0]) for pair in encoded),
@@ -320,8 +369,32 @@ def forward_asm_constants() -> str:
         "\t.short 1728",
         ".Lnegative_center:",
         "\t.short -1728",
+        ".Lidentity_mont:",
+        f"\t.short {identity_mont}",
+        ".Lidentity_qinv:",
+        f"\t.short {identity_qinv}",
+        ".Lfwd3_omega_mont:",
+        f"\t.short {omega_mont}",
+        ".Lfwd3_omega_qinv:",
+        f"\t.short {omega_qinv}",
+    ]
+    lines.extend(shorts(".Lfrontend_input_offsets",
+                        [8 * natural for natural in execution_natural], 2))
+    for source, values in enumerate(linear_rows):
+        lines.extend(shorts(f".Lfrontend_c{source}", values))
+    lines.extend(shorts(".Lsplit_mont", split_mont))
+    lines.extend(shorts(".Lsplit_qinv", split_qinv))
+    lines.extend([
+        ".p2align 5",
+        ".Lsplit_low_bytes:",
+        "\t.byte 0,1,2,3,0,1,2,3,8,9,10,11,8,9,10,11",
+        "\t.byte 0,1,2,3,0,1,2,3,8,9,10,11,8,9,10,11",
+        ".Lsplit_high_bytes:",
+        "\t.byte 4,5,6,7,4,5,6,7,12,13,14,15,12,13,14,15",
+        "\t.byte 4,5,6,7,4,5,6,7,12,13,14,15,12,13,14,15",
         "",
     ])
+    return "\n".join(lines)
 
 
 def choose_vector_signs(vector: list[dict[str, Any]]) -> tuple[list[int], dict[str, Any]]:
@@ -939,7 +1012,7 @@ def artifacts() -> dict[Path, Any]:
         HERE / "generated/quadratic-factorization.json": factors,
         HERE / "generated/quadratic-constants.h": constant_header(factors),
         HERE / "generated/quartic-lambda.c": quartic_lambda_source(),
-        HERE / "generated/forward-ntt16-constants.inc": forward_asm_constants(),
+        HERE / "generated/forward-ntt16-constants.inc": forward_asm_constants(factors),
         HERE / "generated/quadratic-range-metadata.json": ranges,
         HERE / "generated/qbm-static-schedules.json": schedules,
         HERE / "generated/source-manifest.json": manifest,

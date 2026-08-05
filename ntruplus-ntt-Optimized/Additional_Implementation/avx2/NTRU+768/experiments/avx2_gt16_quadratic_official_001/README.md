@@ -57,25 +57,29 @@ for frozen GT32 and 719.857 for the intrinsic F1 fused producer.  F0
 materialized, F0 fused, and F1 materialized measure 789.876, 795.646, and
 750.758 respectively.
 
-A benchmark-only GNU assembler CT16 now replaces the intrinsic core in the F1
-producer.  Each eight-vector half-tile stays in registers through length 2, 4,
-and 8; only then is it materialized for the cross-half length-16 layer.  The
-kernel has fixed public loops, generated execution-order constants, and no
-stack access or vector spill.  Direct CT16 drops from 286.151 to 239.911 TSC
-(16.16%); the complete hybrid producer drops from 719.857 to 674.753 (6.27%).
-Reversing benchmark order preserves the result.
+A benchmark-only GNU assembler CT16 first replaced the intrinsic core in the
+F1 producer.  The final complete F1 assembler now also owns the fused-linear
+frontend, preweight, identity Montgomery reduction, DFT3, quadratic split, and
+terminal-layout stores; it has no calls back into C.  Each generated group of
+eight frontend vectors remains in registers through length 2, 4, and 8.  The
+length-16 butterflies then feed DFT3 and split directly, without a complete
+consumer-side store/reload boundary.
 
-Million-call direct buckets measure 283.176 TSC for the fused-linear frontend,
-239.911 for the assembler CT16 arithmetic pass, 109.244 for the centered F0
-DFT3 boundary, and 102.457 for standalone quadratic split.  These buckets overlap
-when fused and therefore are not summed as a reconstructed producer, but they
-show that the deficit is distributed across the mandatory frontend and CT16;
-it is not explained by a single spill or materialization pass.
+All assembler constants are generator-owned and emitted in execution order.
+The complete symbol is a 2432-byte leaf with fixed public loops and addresses,
+no stack access, no vector spill, no AVX-512 instruction, and an explicit
+`vzeroupper`.  Guard-buffer, in-place alias, scalar component congruence,
+bit-exact C/hybrid/full-assembler differential, and ASan/UBSan all pass.
 
-The assembler-assisted forward still regresses by 208.681 ticks instead of
-saving the required
-82.762.  Under the pre-existing local chain accounting, two forwards plus the
-known terminal/inverse deficit miss parity by 582.886 ticks.  This is a direct
-gate failure, not a production or promotion result: the host still uses the
-powersave governor, but same-binary AB/BA evidence is decisive enough to stop
-before assembly, serialization, baseinv, or KEM integration.
+In the final two 20-sample runs of one million calls, the mean of the forward
+and reverse medians is 465.481 TSC for frozen GT32, 722.700 for intrinsic F1,
+671.479 for hybrid F1, and 513.404 for complete-assembler F1.  Complete assembly
+therefore saves 209.296 ticks (28.96%) versus the intrinsic producer and 158.075
+ticks (23.54%) versus the hybrid.  Benchmark order preserves the result.
+
+The full assembler result shows that the former 208.681-tick hybrid deficit was
+substantially implementation overhead.  The remaining same-binary deficit is
+47.923 ticks (10.30%) versus frozen GT32.  It still exceeds the existing 383.31
+forward parity ceiling by 130.094 ticks; the legacy local `2F+B+I` accounting
+therefore remains 260.187 ticks behind before serialization and baseinv.  This
+prototype stays default-off and is not integrated into the KEM.

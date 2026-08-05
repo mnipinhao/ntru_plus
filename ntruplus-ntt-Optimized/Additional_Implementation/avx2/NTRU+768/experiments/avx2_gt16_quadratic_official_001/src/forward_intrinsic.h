@@ -19,5 +19,6 @@ void round4c_forward_f0_fused(int16_t out[768], const int16_t in[768]);
 void round4c_forward_f1_materialized(int16_t out[768], const int16_t in[768]);
 void round4c_forward_f1_fused(int16_t out[768], const int16_t in[768]);
 void round4c_forward_f1_hybrid_asm(int16_t out[768], const int16_t in[768]);
+void round4c_forward_f1_full_asm(int16_t out[768], const int16_t in[768]);
 
 #endif

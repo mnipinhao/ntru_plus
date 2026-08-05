@@ -21,6 +21,13 @@
       "vector_stack_references": 0,
       "vzeroupper": true
     },
+    "f1_full_asm": {
+      "calls": [],
+      "linked_bytes": 2432,
+      "stack_data_references": 0,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
     "f1_fused": {
       "calls": [
         "frontend_bitreversed.constprop.0",
@@ -80,7 +87,7 @@
       "vzeroupper": true
     }
   },
-  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper. The handwritten CT16 is a leaf with fixed public loops, no stack access, no spill, and an explicit vzeroupper.",
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper. The handwritten CT16 and complete F1 producer are leaves with fixed public loops and addresses, no stack access or vector spill, and explicit vzeroupper. The complete producer preserves the benchmark-only static-scratch alias contract.",
   "inverse": {
     "frozen_gt32_fused": {
       "calls": [],

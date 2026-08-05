@@ -11,53 +11,58 @@
   },
   "order_medians_tsc": {
     "forward": {
-      "frozen_gt32": 466.0639,
-      "f0_materialized": 789.0674,
-      "f0_fused": 796.2871,
-      "f1_materialized": 749.1016,
-      "f1_fused": 717.6161,
-      "f1_hybrid_asm": 676.1928
+      "frozen_gt32": 465.1952,
+      "f0_materialized": 788.6703,
+      "f0_fused": 795.6876,
+      "f1_materialized": 750.161,
+      "f1_fused": 718.1827,
+      "f1_hybrid_asm": 670.5408,
+      "f1_full_asm": 514.9713
     },
     "reverse": {
-      "frozen_gt32": 466.0801,
-      "f0_materialized": 790.6854,
-      "f0_fused": 795.0039,
-      "f1_materialized": 752.4136,
-      "f1_fused": 722.0984,
-      "f1_hybrid_asm": 673.3135
+      "frozen_gt32": 465.767,
+      "f0_materialized": 801.1485,
+      "f0_fused": 794.2502,
+      "f1_materialized": 759.2992,
+      "f1_fused": 727.2174,
+      "f1_hybrid_asm": 672.4162,
+      "f1_full_asm": 511.8361
     }
   },
   "mean_of_order_medians_tsc": {
-    "frozen_gt32": 466.072,
-    "f0_materialized": 789.8764,
-    "f0_fused": 795.6455,
-    "f1_materialized": 750.7576,
-    "f1_fused": 719.85725,
-    "f1_hybrid_asm": 674.75315
+    "frozen_gt32": 465.4811,
+    "f0_materialized": 794.9094,
+    "f0_fused": 794.9689,
+    "f1_materialized": 754.7301,
+    "f1_fused": 722.70005,
+    "f1_hybrid_asm": 671.4785,
+    "f1_full_asm": 513.4037
   },
-  "selected": "f1_hybrid_asm",
+  "selected": "f1_full_asm",
   "direct_stage_medians_tsc": {
-    "frontend": 283.17605,
-    "dft3_centered_F0_boundary": 109.2437,
-    "ntt16_intrinsic_zero_arithmetic": 286.15115,
-    "ntt16_asm_zero_arithmetic": 239.91125,
-    "quadratic_split": 102.4566,
+    "frontend": 288.0773,
+    "dft3_centered_F0_boundary": 109.03145,
+    "ntt16_intrinsic_zero_arithmetic": 290.38795,
+    "ntt16_asm_zero_arithmetic": 239.51305,
+    "quadratic_split": 103.2204,
     "note": "Direct buckets overlap under fusion and must not be added as a reconstructed full producer."
   },
-  "selected_regression_vs_frozen_tsc": 208.68115,
-  "asm_gain_vs_intrinsic_f1_tsc": 45.1041,
-  "asm_gain_vs_intrinsic_f1_percent": 6.2656,
-  "asm_ct16_gain_tsc": 46.2399,
-  "asm_ct16_gain_percent": 16.1593,
+  "selected_regression_vs_frozen_tsc": 47.9226,
+  "asm_gain_vs_intrinsic_f1_tsc": 209.29635,
+  "asm_gain_vs_intrinsic_f1_percent": 28.9603,
+  "full_asm_gain_vs_hybrid_tsc": 158.0748,
+  "full_asm_gain_vs_hybrid_percent": 23.5413,
+  "asm_ct16_gain_tsc": 50.8749,
+  "asm_ct16_gain_percent": 17.5196,
   "known_terminal_plus_inverse_regression_tsc": 165.524,
-  "legacy_chain_regression_tsc": 582.8863,
-  "forward_parity_required_saving_tsc": 82.762,
+  "legacy_chain_regression_tsc": 260.1874,
+  "forward_parity_required_saving_tsc": 130.0937,
   "forward_parity_maximum_tsc": 383.31,
   "parity_gate": "fail",
   "five_percent_gate": "fail",
   "correctness": {
     "cases": 77,
-    "candidates": 5,
+    "candidates": 6,
     "component_oracle_congruence": "pass",
     "materialized_fused_bit_exact": "pass",
     "ct16_c_asm_bit_exact": "pass",
@@ -68,9 +73,9 @@
   "audit": {
     "selected_vector_spills": 0,
     "asm_stack_references": 0,
-    "asm_linked_bytes": 1632,
+    "asm_linked_bytes": 2432,
     "ct16_vector_spills": 0,
     "avx512": false
   },
-  "decision": "The register-resident length-2/4/8 CT16 assembly is a real 16.16% core improvement, but the hybrid producer still misses parity decisively. Do not expand into full-forward assembly or integration."
+  "decision": "The complete F1 assembly removes all C calls and fuses frontend production through length 2/4/8, then fuses length 16 into DFT3 and quadratic split. It is 28.96% faster than intrinsic F1 and only 10.30% behind same-binary frozen GT32, but still exceeds the 383.31 forward parity ceiling. Keep it benchmark-only and do not integrate."
 }

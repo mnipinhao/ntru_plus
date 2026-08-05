@@ -4,8 +4,9 @@ branch: experiment/avx2-gt16-quadratic-official-001
 parent_checkpoint: a8f713c
 status: executable-forward-measured-chain-parity-gate-fail
 production_changed: false
-assembly_authorized: false
+assembly_authorized: benchmark-only-forward-completed
 benchmark_only_ct16_assembly_completed: true
+benchmark_only_full_forward_assembly_completed: true
 intrinsics_prototype_authorized: true
 intrinsics_prototype:
   correctness: pass
@@ -45,9 +46,10 @@ forward_prototype:
     - F0-DFT3-first-fused
     - F1-NTT16-first-materialized
     - F1-NTT16-first-fused
-  selected: F1-NTT16-first-hybrid-asm
+  selected: F1-NTT16-first-full-asm
   preweight_fusion: four-linear-products-plus-one-identity-Montgomery-reduction
   correctness_cases: 77
+  candidate_count: 6
   scalar_component_congruence: pass
   ct16_c_asm_bit_exact: pass
   asm_guard_buffer: pass
@@ -56,26 +58,32 @@ forward_prototype:
   maximum_observed_absolute: 9976
   signed_int16_range_proof: pass
   million_call_ab_ba:
-    frozen_gt32_tsc_mean_of_order_medians: 466.072
-    f0_materialized_tsc_mean_of_order_medians: 789.8764
-    f0_fused_tsc_mean_of_order_medians: 795.6455
-    f1_materialized_tsc_mean_of_order_medians: 750.7576
-    f1_fused_tsc_mean_of_order_medians: 719.85725
-    f1_hybrid_asm_tsc_mean_of_order_medians: 674.75315
-  asm_gain_vs_f1_intrinsic_tsc: 45.1041
-  asm_gain_vs_f1_intrinsic_percent: 6.2656
-  best_regression_vs_frozen_tsc: 208.68115
+    frozen_gt32_tsc_mean_of_order_medians: 465.4811
+    f0_materialized_tsc_mean_of_order_medians: 794.9094
+    f0_fused_tsc_mean_of_order_medians: 794.9689
+    f1_materialized_tsc_mean_of_order_medians: 754.7301
+    f1_fused_tsc_mean_of_order_medians: 722.70005
+    f1_hybrid_asm_tsc_mean_of_order_medians: 671.4785
+    f1_full_asm_tsc_mean_of_order_medians: 513.4037
+  asm_gain_vs_f1_intrinsic_tsc: 209.29635
+  asm_gain_vs_f1_intrinsic_percent: 28.9603
+  full_asm_gain_vs_hybrid_tsc: 158.0748
+  full_asm_gain_vs_hybrid_percent: 23.5413
+  best_regression_vs_frozen_tsc: 47.9226
   required_parity_maximum_tsc: 383.31
   parity_gate: fail
   direct_stage_tsc:
-    frontend: 283.17605
-    dft3_centered_f0_boundary: 109.2437
-    ntt16_intrinsic_zero_arithmetic: 286.15115
-    ntt16_asm_zero_arithmetic: 239.91125
-    quadratic_split: 102.4566
+    frontend: 288.0773
+    dft3_centered_f0_boundary: 109.03145
+    ntt16_intrinsic_zero_arithmetic: 290.38795
+    ntt16_asm_zero_arithmetic: 239.51305
+    quadratic_split: 103.2204
     warning: overlapping fusion buckets; not additive reconstruction
   disassembly:
     selected_vector_spill: false
+    selected_calls: 0
+    selected_stack_access: false
+    selected_linked_bytes: 2432
     ct16_asm_vector_spill: false
     ct16_asm_stack_access: false
     ct16_asm_linked_bytes: 1632
@@ -114,8 +122,8 @@ provisional_chain:
   projected_improvement_percent: 14.03196
   warning: mixed static floor and historical dynamic surrogate; not a cycle claim
 blockers:
-  - selected hybrid-asm forward is 208.681 TSC slower than frozen GT32, rather than 82.762 faster
-  - legacy local 2F+B+I accounting regresses by 582.886 TSC before serialization/baseinv
+  - selected full-asm forward is 47.923 TSC slower than frozen GT32 and remains 130.094 above the forward parity ceiling
+  - legacy local 2F+B+I accounting still regresses by 260.187 TSC before serialization/baseinv
   - direct Official serialization consumers
   - 384-norm baseinv and keygen estimate
 environment_warning: local Intel powersave result is not comparable to frozen Ryzen data

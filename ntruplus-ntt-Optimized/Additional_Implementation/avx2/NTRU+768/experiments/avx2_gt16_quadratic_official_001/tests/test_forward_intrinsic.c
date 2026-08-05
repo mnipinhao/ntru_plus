@@ -83,21 +83,22 @@ static int congruent(const int16_t got[768], const int16_t want[768],
 static int check_case(const int16_t input[768], size_t case_index,
                       int *maximum)
 {
-    static const forward_kernel kernels[5] = {
+    static const forward_kernel kernels[6] = {
         round4c_forward_f0_materialized,
         round4c_forward_f0_fused,
         round4c_forward_f1_materialized,
         round4c_forward_f1_fused,
         round4c_forward_f1_hybrid_asm,
+        round4c_forward_f1_full_asm,
     };
-    static const char *const labels[5] = {
-        "F0-M", "F0-F", "F1-M", "F1-F", "F1-ASM",
+    static const char *const labels[6] = {
+        "F0-M", "F0-F", "F1-M", "F1-F", "F1-HYBRID", "F1-ASM",
     };
     int16_t want[768] __attribute__((aligned(32)));
-    int16_t outputs[5][768] __attribute__((aligned(32)));
+    int16_t outputs[6][768] __attribute__((aligned(32)));
     int16_t alias[768] __attribute__((aligned(32)));
     scalar_forward_quadratic(want, input);
-    for (size_t candidate = 0; candidate < 5; ++candidate) {
+    for (size_t candidate = 0; candidate < 6; ++candidate) {
         kernels[candidate](outputs[candidate], input);
         if (congruent(outputs[candidate], want, labels[candidate], maximum)) {
             fprintf(stderr, "case=%zu\n", case_index);
@@ -113,7 +114,8 @@ static int check_case(const int16_t input[768], size_t case_index,
     }
     if (memcmp(outputs[0], outputs[1], sizeof(outputs[0])) != 0 ||
         memcmp(outputs[2], outputs[3], sizeof(outputs[2])) != 0 ||
-        memcmp(outputs[3], outputs[4], sizeof(outputs[3])) != 0) {
+        memcmp(outputs[3], outputs[4], sizeof(outputs[3])) != 0 ||
+        memcmp(outputs[4], outputs[5], sizeof(outputs[4])) != 0) {
         fprintf(stderr, "materialized/fused representative mismatch case=%zu\n",
                 case_index);
         return 1;
@@ -124,14 +126,21 @@ static int check_case(const int16_t input[768], size_t case_index,
 static int check_asm_guard(void)
 {
     int16_t guarded[800] __attribute__((aligned(32)));
+    int16_t full_guarded[800] __attribute__((aligned(32)));
+    int16_t input[768] __attribute__((aligned(32)));
     int16_t want[768] __attribute__((aligned(32)));
     int16_t *const values = guarded + 16;
+    int16_t *const full_values = full_guarded + 16;
     for (size_t i = 0; i < 16; ++i) {
         guarded[i] = (int16_t)0x5a5a;
         guarded[784 + i] = (int16_t)0x5a5a;
+        full_guarded[i] = (int16_t)0x5a5a;
+        full_guarded[784 + i] = (int16_t)0x5a5a;
     }
-    for (size_t i = 0; i < 768; ++i)
+    for (size_t i = 0; i < 768; ++i) {
         values[i] = (int16_t)((int)(random32() % Q) - CENTER);
+        input[i] = (int16_t)((int)(random32() & 7) - 3);
+    }
     memcpy(want, values, sizeof(want));
     round4c_forward_ntt16_intrinsic(want);
     round4c_forward_ntt16_asm(values);
@@ -143,6 +152,19 @@ static int check_asm_guard(void)
         if (guarded[i] != (int16_t)0x5a5a ||
             guarded[784 + i] != (int16_t)0x5a5a) {
             fprintf(stderr, "direct CT16 asm guard mismatch i=%zu\n", i);
+            return 1;
+        }
+    }
+    round4c_forward_f1_fused(want, input);
+    round4c_forward_f1_full_asm(full_values, input);
+    if (memcmp(full_values, want, sizeof(want)) != 0) {
+        fprintf(stderr, "full forward asm guard result mismatch\n");
+        return 1;
+    }
+    for (size_t i = 0; i < 16; ++i) {
+        if (full_guarded[i] != (int16_t)0x5a5a ||
+            full_guarded[784 + i] != (int16_t)0x5a5a) {
+            fprintf(stderr, "full forward asm guard mismatch i=%zu\n", i);
             return 1;
         }
     }
@@ -178,7 +200,7 @@ int main(void)
         if (check_case(input, cases++, &maximum))
             return 1;
     }
-    printf("forward intrinsic cases=%zu candidates=5 alias=pass max_abs=%d failures=0\n",
+    printf("forward intrinsic cases=%zu candidates=6 alias=pass max_abs=%d failures=0\n",
            cases, maximum);
     return 0;
 }

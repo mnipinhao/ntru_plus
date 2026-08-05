@@ -86,12 +86,12 @@
 	jnz .Lpair_\@
 .endm
 
-.macro RUN_GROUP stride, count, low, high, twiddle, correct
+.macro RUN_GROUP base, stride, count, low, high, twiddle, correct
 	.if \twiddle >= 0
 	vpbroadcastw .Lfwd16_mont+2*\twiddle(%rip), %ymm12
 	vpbroadcastw .Lfwd16_qinv+2*\twiddle(%rip), %ymm11
 	.endif
-	movq %rdi, %rax
+	movq \base, %rax
 	movl $\count, %ecx
 .Lsingle_\@:
 	vmovdqa \low(%rax), %ymm0
@@ -115,18 +115,15 @@
 	jnz .Lsingle_\@
 .endm
 
-.p2align 5
-.globl round4c_forward_ntt16_asm
-.type round4c_forward_ntt16_asm,@function
-round4c_forward_ntt16_asm:
+.macro RUN_CT16 base
 	vpbroadcastw .Lq(%rip), %ymm15
 	vpbroadcastw .Lcenter(%rip), %ymm14
 	vpbroadcastw .Lnegative_center(%rip), %ymm13
 
 	/* Fuse length 2, 4, and 8 inside one register-resident 8-vector tile. */
-	movq %rdi, %rax
+	movq \base, %rax
 	movl $6, %ecx
-.Lhalf_tile:
+.Lhalf_tile_\@:
 	vmovdqa   0(%rax), %ymm0
 	vmovdqa  32(%rax), %ymm1
 	vmovdqa  64(%rax), %ymm2
@@ -168,21 +165,210 @@ round4c_forward_ntt16_asm:
 	vmovdqa %ymm7, 224(%rax)
 	addq $256, %rax
 	decl %ecx
-	jnz .Lhalf_tile
+	jnz .Lhalf_tile_\@
 
 	/* length 16, offset 7: [1, omega, ..., omega^7] */
-	RUN_GROUP 512, 3, 0, 256, -1, 0
-	RUN_GROUP 512, 3, 32, 288, 8, 0
-	RUN_GROUP 512, 3, 64, 320, 9, 0
-	RUN_GROUP 512, 3, 96, 352, 10, 0
-	RUN_GROUP 512, 3, 128, 384, 11, 0
-	RUN_GROUP 512, 3, 160, 416, 12, 0
-	RUN_GROUP 512, 3, 192, 448, 13, 0
-	RUN_GROUP 512, 3, 224, 480, 14, 0
+	RUN_GROUP \base, 512, 3, 0, 256, -1, 0
+	RUN_GROUP \base, 512, 3, 32, 288, 8, 0
+	RUN_GROUP \base, 512, 3, 64, 320, 9, 0
+	RUN_GROUP \base, 512, 3, 96, 352, 10, 0
+	RUN_GROUP \base, 512, 3, 128, 384, 11, 0
+	RUN_GROUP \base, 512, 3, 160, 416, 12, 0
+	RUN_GROUP \base, 512, 3, 192, 448, 13, 0
+	RUN_GROUP \base, 512, 3, 224, 480, 14, 0
+.endm
+
+.macro SPLIT_STORE value, displacement
+	vpshufb %ymm13, \value, %ymm7
+	vpshufb %ymm14, \value, %ymm8
+	vpmullw \displacement(%rdx,%rax), %ymm8, %ymm9
+	vpmulhw \displacement(%rcx,%rax), %ymm8, %ymm8
+	vpmulhw %ymm15, %ymm9, %ymm9
+	vpsubw %ymm9, %ymm8, %ymm8
+	vpaddw %ymm8, %ymm7, %ymm7
+	vmovdqu %ymm7, \displacement(%r8,%rax)
+.endm
+
+.macro SPLIT_STORE_TMP value, displacement, low, high, product
+	vpshufb %ymm13, \value, \low
+	vpshufb %ymm14, \value, \high
+	vpmullw \displacement(%rdx,%rax), \high, \product
+	vpmulhw \displacement(%rcx,%rax), \high, \high
+	vpmulhw %ymm15, \product, \product
+	vpsubw \product, \high, \high
+	vpaddw \high, \low, \low
+	vmovdqu \low, \displacement(%r8,%rax)
+.endm
+
+.macro DFT3_VALUES x0, x1, x2
+	vpsubw \x2, \x1, %ymm6
+	vpmullw %ymm11, %ymm6, %ymm8
+	vpmulhw %ymm12, %ymm6, %ymm6
+	vpmulhw %ymm15, %ymm8, %ymm8
+	vpsubw %ymm8, %ymm6, %ymm6
+	vpaddw \x1, \x0, %ymm7
+	vpaddw \x2, %ymm7, %ymm7
+	vpsubw \x2, \x0, %ymm8
+	vpaddw %ymm6, %ymm8, %ymm8
+	vpsubw \x1, \x0, %ymm9
+	vpsubw %ymm6, %ymm9, %ymm9
+.endm
+
+.macro FRONTEND_ONE target, coeff_offset, input_offset
+	movswq \input_offset(%rdx), %rax
+	vpbroadcastq    0(%rsi,%rax), \target
+	vpmullw \coeff_offset(%rcx), \target, \target
+	vpbroadcastq  384(%rsi,%rax), %ymm8
+	vpmullw 1536+\coeff_offset(%rcx), %ymm8, %ymm8
+	vpaddw %ymm8, \target, \target
+	vpbroadcastq  768(%rsi,%rax), %ymm8
+	vpmullw 3072+\coeff_offset(%rcx), %ymm8, %ymm8
+	vpaddw %ymm8, \target, \target
+	vpbroadcastq 1152(%rsi,%rax), %ymm8
+	vpmullw 4608+\coeff_offset(%rcx), %ymm8, %ymm8
+	vpaddw %ymm8, \target, \target
+	vpmullw %ymm11, \target, %ymm8
+	vpmulhw %ymm12, \target, \target
+	vpmulhw %ymm15, %ymm8, %ymm8
+	vpsubw %ymm8, \target, \target
+.endm
+
+.p2align 5
+.globl round4c_forward_ntt16_asm
+.type round4c_forward_ntt16_asm,@function
+round4c_forward_ntt16_asm:
+	RUN_CT16 %rdi
 
 	vzeroupper
 	ret
 .size round4c_forward_ntt16_asm,.-round4c_forward_ntt16_asm
+
+/*
+ * Complete benchmark-only F1 producer.  The static scratch preserves the
+ * existing alias contract while keeping this first all-assembly version
+ * directly comparable with the C and hybrid producers.
+ */
+.p2align 5
+.globl round4c_forward_f1_full_asm
+.type round4c_forward_f1_full_asm,@function
+round4c_forward_f1_full_asm:
+	movq %rdi, %r8
+	leaq .Lforward_scratch(%rip), %r10
+	leaq .Lfrontend_input_offsets(%rip), %rdx
+	leaq .Lfrontend_c0(%rip), %rcx
+	movq %r10, %rdi
+	vpbroadcastw .Lq(%rip), %ymm15
+	vpbroadcastw .Lcenter(%rip), %ymm14
+	vpbroadcastw .Lnegative_center(%rip), %ymm13
+	movl $6, %r9d
+.Lfrontend_half_tile:
+	vpbroadcastw .Lidentity_qinv(%rip), %ymm11
+	vpbroadcastw .Lidentity_mont(%rip), %ymm12
+	FRONTEND_ONE %ymm0,   0,  0
+	FRONTEND_ONE %ymm1,  32,  2
+	FRONTEND_ONE %ymm2,  64,  4
+	FRONTEND_ONE %ymm3,  96,  6
+	FRONTEND_ONE %ymm4, 128,  8
+	FRONTEND_ONE %ymm5, 160, 10
+	FRONTEND_ONE %ymm6, 192, 12
+	FRONTEND_ONE %ymm7, 224, 14
+
+	IDENTITY_BUTTERFLY %ymm0, %ymm1, 1
+	IDENTITY_BUTTERFLY %ymm2, %ymm3, 1
+	IDENTITY_BUTTERFLY %ymm4, %ymm5, 1
+	IDENTITY_BUTTERFLY %ymm6, %ymm7, 1
+	IDENTITY_BUTTERFLY %ymm0, %ymm2, 0
+	IDENTITY_BUTTERFLY %ymm4, %ymm6, 0
+	LOAD_TWIDDLE 2
+	MONT_BUTTERFLY %ymm1, %ymm3, 0
+	MONT_BUTTERFLY %ymm5, %ymm7, 0
+	IDENTITY_BUTTERFLY %ymm0, %ymm4, 1
+	LOAD_TWIDDLE 4
+	MONT_BUTTERFLY %ymm1, %ymm5, 1
+	LOAD_TWIDDLE 5
+	MONT_BUTTERFLY %ymm2, %ymm6, 1
+	LOAD_TWIDDLE 6
+	MONT_BUTTERFLY %ymm3, %ymm7, 1
+
+	vmovdqa %ymm0,   0(%rdi)
+	vmovdqa %ymm1,  32(%rdi)
+	vmovdqa %ymm2,  64(%rdi)
+	vmovdqa %ymm3,  96(%rdi)
+	vmovdqa %ymm4, 128(%rdi)
+	vmovdqa %ymm5, 160(%rdi)
+	vmovdqa %ymm6, 192(%rdi)
+	vmovdqa %ymm7, 224(%rdi)
+	addq $256, %rdi
+	addq $256, %rcx
+	addq $16, %rdx
+	decl %r9d
+	jnz .Lfrontend_half_tile
+
+	vmovdqa .Lsplit_low_bytes(%rip), %ymm13
+	vmovdqa .Lsplit_high_bytes(%rip), %ymm14
+	leaq .Lsplit_mont(%rip), %rcx
+	leaq .Lsplit_qinv(%rip), %rdx
+	xorl %eax, %eax
+	xorl %r9d, %r9d
+.Llength16_tail_loop:
+	vmovdqa    0(%r10,%rax), %ymm0
+	vmovdqa  256(%r10,%rax), %ymm1
+	vmovdqa  512(%r10,%rax), %ymm2
+	vmovdqa  768(%r10,%rax), %ymm3
+	vmovdqa 1024(%r10,%rax), %ymm4
+	vmovdqa 1280(%r10,%rax), %ymm5
+	testq %rax, %rax
+	jz .Llength16_identity
+	leaq .Lfwd16_mont+14(%rip), %rdi
+	vpbroadcastw (%rdi,%r9,2), %ymm12
+	leaq .Lfwd16_qinv+14(%rip), %rdi
+	vpbroadcastw (%rdi,%r9,2), %ymm11
+	vpmullw %ymm11, %ymm1, %ymm6
+	vpmulhw %ymm12, %ymm1, %ymm1
+	vpmulhw %ymm15, %ymm6, %ymm6
+	vpsubw %ymm6, %ymm1, %ymm1
+	vpmullw %ymm11, %ymm3, %ymm6
+	vpmulhw %ymm12, %ymm3, %ymm3
+	vpmulhw %ymm15, %ymm6, %ymm6
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpmullw %ymm11, %ymm5, %ymm6
+	vpmulhw %ymm12, %ymm5, %ymm5
+	vpmulhw %ymm15, %ymm6, %ymm6
+	vpsubw %ymm6, %ymm5, %ymm5
+.Llength16_identity:
+	vpaddw %ymm1, %ymm0, %ymm6
+	vpsubw %ymm1, %ymm0, %ymm1
+	vmovdqa %ymm6, %ymm0
+	vpaddw %ymm3, %ymm2, %ymm6
+	vpsubw %ymm3, %ymm2, %ymm3
+	vmovdqa %ymm6, %ymm2
+	vpaddw %ymm5, %ymm4, %ymm6
+	vpsubw %ymm5, %ymm4, %ymm5
+	vmovdqa %ymm6, %ymm4
+
+	vpbroadcastw .Lfwd3_omega_qinv(%rip), %ymm11
+	vpbroadcastw .Lfwd3_omega_mont(%rip), %ymm12
+	DFT3_VALUES %ymm0, %ymm2, %ymm4
+	SPLIT_STORE_TMP %ymm7, 0, %ymm0, %ymm2, %ymm4
+	SPLIT_STORE_TMP %ymm8, 512, %ymm0, %ymm2, %ymm4
+	SPLIT_STORE_TMP %ymm9, 1024, %ymm0, %ymm2, %ymm4
+	DFT3_VALUES %ymm1, %ymm3, %ymm5
+	SPLIT_STORE_TMP %ymm7, 256, %ymm0, %ymm2, %ymm4
+	SPLIT_STORE_TMP %ymm8, 768, %ymm0, %ymm2, %ymm4
+	SPLIT_STORE_TMP %ymm9, 1280, %ymm0, %ymm2, %ymm4
+	addq $32, %rax
+	incq %r9
+	cmpq $256, %rax
+	jne .Llength16_tail_loop
+
+	vzeroupper
+	ret
+.size round4c_forward_f1_full_asm,.-round4c_forward_f1_full_asm
+
+.bss
+.p2align 5
+.Lforward_scratch:
+	.zero 1536
 
 .section .rodata
 #include "../generated/forward-ntt16-constants.inc"
