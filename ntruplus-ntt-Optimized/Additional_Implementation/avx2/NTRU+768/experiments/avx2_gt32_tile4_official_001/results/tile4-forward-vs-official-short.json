@@ -1,0 +1,21 @@
+{
+  "status": "directional-short-not-promotion-benchmark",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "same_binary": true,
+  "cpu_affinity": 1,
+  "compiler": "gcc",
+  "input": "aligned repeating [-3,4]",
+  "median_tsc": {
+    "official_in_place": 453.125,
+    "frozen_gt32_out_of_place": 466.502,
+    "tile4_n5_out_of_place": 395.195
+  },
+  "tile4_n5_delta": {
+    "vs_official_tsc": -57.930,
+    "vs_official_percent": -12.785,
+    "vs_frozen_percent": -15.286
+  },
+  "caveat": "kernel-only comparison; Official is in-place and no copy is charged; timed control flow and addresses are data-independent",
+  "decision": "N5 wins the short kernel comparison; serious benchmark and consumer integration remain required"
+}

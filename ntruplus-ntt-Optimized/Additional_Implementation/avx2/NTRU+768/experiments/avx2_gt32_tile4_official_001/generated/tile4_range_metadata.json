@@ -1,0 +1,95 @@
+{
+  "method": "exhaustive fixed-factor Montgomery product bound plus triangle inequality",
+  "input_contract": [
+    -1728,
+    1728
+  ],
+  "signed_int16_limit": 32767,
+  "stages": [
+    {
+      "direction": "forward",
+      "stage": 1,
+      "distance": 16,
+      "input_abs_bound": 1728,
+      "product_abs_bound": 1728,
+      "output_abs_bound": 3456,
+      "reducer": "raw-identity"
+    },
+    {
+      "direction": "forward",
+      "stage": 2,
+      "distance": 8,
+      "input_abs_bound": 3456,
+      "product_abs_bound": 1743,
+      "output_abs_bound": 5199,
+      "reducer": "montgomery"
+    },
+    {
+      "direction": "forward",
+      "stage": 3,
+      "distance": 4,
+      "input_abs_bound": 5199,
+      "product_abs_bound": 1812,
+      "output_abs_bound": 7011,
+      "reducer": "montgomery"
+    },
+    {
+      "direction": "forward",
+      "stage": 4,
+      "distance": 2,
+      "input_abs_bound": 7011,
+      "product_abs_bound": 1844,
+      "output_abs_bound": 8855,
+      "reducer": "montgomery"
+    },
+    {
+      "direction": "forward",
+      "stage": 5,
+      "distance": 1,
+      "input_abs_bound": 8855,
+      "product_abs_bound": 1933,
+      "output_abs_bound": 10788,
+      "reducer": "montgomery"
+    },
+    {
+      "direction": "inverse",
+      "stage": 1,
+      "distance": 1,
+      "input_abs_bound": 10788,
+      "product_abs_bound": 10788,
+      "output_abs_bound": 21576
+    },
+    {
+      "direction": "inverse",
+      "stage": 2,
+      "distance": 2,
+      "input_abs_bound": 21576,
+      "product_abs_bound": 1841,
+      "output_abs_bound": 23417
+    },
+    {
+      "direction": "inverse",
+      "stage": 3,
+      "distance": 4,
+      "input_abs_bound": 23417,
+      "product_abs_bound": 2104,
+      "output_abs_bound": 25521
+    },
+    {
+      "direction": "inverse",
+      "stage": 4,
+      "distance": 8,
+      "input_abs_bound": 25521,
+      "product_abs_bound": 2249,
+      "output_abs_bound": 27770
+    },
+    {
+      "direction": "inverse",
+      "stage": 5,
+      "distance": 16,
+      "input_abs_bound": 27770,
+      "product_abs_bound": 2397,
+      "output_abs_bound": 30167
+    }
+  ]
+}

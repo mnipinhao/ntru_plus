@@ -1,0 +1,25 @@
+{
+  "status": "directional-short-not-promotion-benchmark",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "same_binary": true,
+  "cpu_affinity": 1,
+  "input_contract": "repeating [-3,4]",
+  "median_tsc": {
+    "frozen_gt32_full_forward": 462.615,
+    "tile4_full_generic_pair_core": 485.680,
+    "tile4_full_fixed_raw_pair_split_load": 443.030,
+    "tile4_full_fixed_raw_pair_wide_load": 448.973,
+    "tile4_frontend_generic": 227.088,
+    "tile4_frontend_raw": 191.499,
+    "tile4_frontend_fixed_raw": 180.976,
+    "tile4_core_serial": 339.709,
+    "tile4_core_parallel_3_3_2": 338.476,
+    "tile4_core_pair_packed": 230.601
+  },
+  "selected_full_delta_vs_frozen": {
+    "tsc": -19.584,
+    "percent": -4.233
+  },
+  "decision": "directional gate reopened; require explicit serious benchmark before basemul integration"
+}

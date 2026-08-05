@@ -1,0 +1,24 @@
+{
+  "status": "directional-short-not-promotion-benchmark",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "same_binary": true,
+  "cpu_affinity": 1,
+  "input": "repeating [-3,4]",
+  "median_tsc": {
+    "frozen_gt32_full_forward": 469.029,
+    "tile4_full_forward": 603.078,
+    "tile4_frontend_asm": 236.974,
+    "tile4_core_serial": 352.339,
+    "tile4_core_parallel_3_3_2": 352.431
+  },
+  "tile4_full_delta_vs_frozen": {
+    "tsc": 134.049,
+    "percent": 28.580
+  },
+  "local_schedule_delta_parallel_minus_serial": {
+    "tsc": 0.092,
+    "percent": 0.026
+  },
+  "decision": "select serial local schedule; do not start TILE4 basemul integration while full forward remains 28.58% behind frozen GT32"
+}

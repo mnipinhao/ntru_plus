@@ -1,0 +1,93 @@
+experiment: avx2_gt32_tile4_official_001
+status: n5-wide-qword-forward-directionally-wins
+frozen_parent: experiments/gt_ntt
+layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+implemented:
+  - generator-owned complete frontend/output/inverse mapping
+  - compact execution-order forward and inverse twiddle streams
+  - scalar forward and inverse TILE4 oracle
+  - scalar and AVX2 direct frontend materialization into TILE4
+  - leaf direct frontend assembly with generated Q-pair execution streams
+  - pair-packed stage-4/stage-5 schedule selected; serial and 3+3+2 retained as controls
+  - small-input raw -722 top split with proved [-2891,2896] output range
+  - generator-expanded fixed-displacement frontend
+  - combined fixed/raw frontend and pair-packed core leaf symbol
+  - matched 16-byte producer/consumer load experiment
+  - N5 contiguous quartic-qword loads and immediate vpblendd GT permutation
+  - N5 branch/n3 execution-order twist streams and six 32-byte stores
+  - combined N5 frontend plus pair-packed core leaf symbol
+  - full coefficient-order input to TILE4 frequency-output forward candidate
+  - five-layer register-resident AVX2 forward tile and six-tile wrapper
+  - five-layer register-resident AVX2 inverse tile and six-tile wrapper
+  - exact differential, modular round-trip, alias, sanitizer and spill audit
+  - frozen-parent row-bitrev versus TILE4 full-forward modular differential
+range:
+  input: [-1728, 1728]
+  conservative_max_abs: 30175
+  signed_int16_safe: true
+pending:
+  - TILE4-native quartic basemul and baseinv
+  - inverse DFT3/untwist/top-merge consumer
+  - same-binary caller benchmark
+forward_directional_gate:
+  result: reopened-by-t1-t4
+  benchmark_kind: same-binary-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  frozen_gt32_full_forward_tsc: 462.615
+  tile4_full_fixed_pair_tsc: 443.030
+  improvement_percent: 4.233
+  tile4_frontend_generic_tsc: 227.088
+  tile4_frontend_raw_tsc: 191.499
+  tile4_frontend_fixed_raw_tsc: 180.976
+  tile4_core_serial_tsc: 339.709
+  tile4_core_parallel_3_3_2_tsc: 338.476
+  tile4_core_pair_packed_tsc: 230.601
+  tile4_combined_wide_load_tsc: 448.973
+  decision: require-serious-benchmark-before-basemul-integration
+n5_directional_gate:
+  result: passed-short-only
+  benchmark_kind: same-binary-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  frozen_gt32_full_forward_tsc: 469.036
+  tile4_n5_full_forward_tsc: 396.165
+  improvement_percent: 15.536
+  fixed_gather_raw_frontend_tsc: 177.774
+  wide_qword_raw_frontend_tsc: 145.300
+  core_pair_packed_tsc: 230.537
+  contract: small-input-only-[-3,4]
+  decision: require-explicit-serious-benchmark-before-consumer-integration
+official_directional_comparison:
+  result: n5-faster-short-only
+  benchmark_kind: same-binary-kernel-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  official_in_place_tsc: 453.125
+  frozen_gt32_out_of_place_tsc: 466.502
+  tile4_n5_out_of_place_tsc: 395.195
+  tile4_vs_official_percent: -12.785
+  tile4_vs_frozen_percent: -15.286
+  caveat: kernel-only; official timed loop is in-place and data-independent, not a caller benchmark
+forward_gate_a_formal:
+  result: passed-warm-l1
+  iterations_per_sample: 100000
+  samples_per_launch: 20
+  process_launches: 5
+  aggregation: median-of-launch-medians
+  official_tsc: 452.801
+  frozen_gt32_tsc: 462.515
+  tile4_n5_align64_tsc: 383.430
+  tile4_vs_official_percent: -15.320
+  tile4_vs_frozen_percent: -17.099
+  forward_saving_vs_official_tsc: 69.371
+  two_forward_consumer_budget_vs_official_tsc: 138.742
+  alias_tsc: 394.313
+  cold_l1_evicted:
+    iterations_per_sample: 2000
+    official_tsc: 506.900
+    tile4_n5_align64_tsc: 511.027
+    tile4_vs_official_percent: 0.814
+  selected_scratch_alignment: 64
+  caveat: warm caller path wins; synthetic L1 eviction is near parity and slightly favors Official
+promotion: false

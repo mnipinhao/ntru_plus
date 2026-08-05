@@ -1,0 +1,22 @@
+{
+  "status": "directional-short-not-promotion-benchmark",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "same_binary": true,
+  "cpu_affinity": 1,
+  "input_contract": "repeating [-3,4]",
+  "median_tsc": {
+    "frozen_gt32_full_forward": 469.036,
+    "tile4_n5_full_forward": 396.165,
+    "tile4_fixed_raw_pair_full": 444.038,
+    "tile4_frontend_wide_qword_raw": 145.300,
+    "tile4_frontend_fixed_gather_raw": 177.774,
+    "tile4_core_pair_packed": 230.537,
+    "tile4_core_serial": 339.727
+  },
+  "n5_delta_vs_frozen": {
+    "tsc": -72.871,
+    "percent": -15.536
+  },
+  "decision": "N5 wins directional gate; require explicit serious benchmark before consumer integration"
+}

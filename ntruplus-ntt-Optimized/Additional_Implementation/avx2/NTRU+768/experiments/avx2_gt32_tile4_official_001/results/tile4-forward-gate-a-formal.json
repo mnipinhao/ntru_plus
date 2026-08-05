@@ -1,0 +1,47 @@
+{
+  "status": "gate-a-passed-warm-l1",
+  "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cpu_affinity": 1,
+  "cpu1_max_khz": 4800000,
+  "governor": "powersave",
+  "energy_performance_preference": "balance_performance",
+  "iterations_per_sample": 100000,
+  "samples_per_launch": 20,
+  "process_launches": 5,
+  "aggregation": "median-of-launch-medians",
+  "launch_median_tsc": {
+    "official": [452.565, 452.801, 452.436, 453.118, 494.595],
+    "frozen_gt32": [462.515, 458.943, 464.938, 475.391, 460.668],
+    "tile4_n5_unaligned": [417.840, 392.566, 396.299, 393.323, 393.273],
+    "tile4_n5_align32": [385.706, 384.894, 385.389, 385.286, 384.794],
+    "tile4_n5_align64": [384.020, 383.394, 384.870, 383.430, 383.380],
+    "tile4_n5_alias": [394.313, 394.210, 402.376, 394.650, 394.232]
+  },
+  "median_of_launch_medians_tsc": {
+    "official": 452.801,
+    "frozen_gt32": 462.515,
+    "tile4_n5_unaligned": 393.323,
+    "tile4_n5_align32": 385.286,
+    "tile4_n5_align64": 383.430,
+    "tile4_n5_alias": 394.313
+  },
+  "selected_delta": {
+    "tile4_vs_official_percent": -15.320,
+    "tile4_vs_frozen_percent": -17.099,
+    "forward_saving_vs_official_tsc": 69.371,
+    "two_forward_consumer_budget_vs_official_tsc": 138.742
+  },
+  "cold_l1_evicted_corroboration": {
+    "iterations_per_sample": 2000,
+    "official_tsc": 506.900,
+    "frozen_gt32_tsc": 696.206,
+    "tile4_n5_align64_tsc": 511.027,
+    "tile4_vs_official_percent": 0.814
+  },
+  "findings": [
+    "64-byte scratch alignment is selected",
+    "one Official launch was a retained high outlier at 494.595 TSC",
+    "warm-L1 Gate A passes",
+    "synthetic cold-L1 comparison is near parity and slightly favors Official"
+  ]
+}
