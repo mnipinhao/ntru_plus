@@ -33,6 +33,42 @@
 	vmovdqa %ymm11, \h3
 	.endm
 
+	/* Destructive four-way schedule: odd inputs become Montgomery temporaries. */
+	.macro FR_MONT_QWORD_PACKED4
+	vpunpckhqdq %ymm1, %ymm0, %ymm8
+	vpunpckhqdq %ymm3, %ymm2, %ymm9
+	vpunpckhqdq %ymm5, %ymm4, %ymm10
+	vpunpckhqdq %ymm7, %ymm6, %ymm11
+	vpunpcklqdq %ymm1, %ymm0, %ymm0
+	vpunpcklqdq %ymm3, %ymm2, %ymm2
+	vpunpcklqdq %ymm5, %ymm4, %ymm4
+	vpunpcklqdq %ymm7, %ymm6, %ymm6
+	vpmullw .Ltile4_fwd_s5_pair_qinv+0(%rip), %ymm8, %ymm1
+	vpmullw .Ltile4_fwd_s5_pair_qinv+32(%rip), %ymm9, %ymm3
+	vpmullw .Ltile4_fwd_s5_pair_qinv+64(%rip), %ymm10, %ymm5
+	vpmullw .Ltile4_fwd_s5_pair_qinv+96(%rip), %ymm11, %ymm7
+	vpmulhw .Ltile4_fwd_s5_pair_factor+0(%rip), %ymm8, %ymm8
+	vpmulhw .Ltile4_fwd_s5_pair_factor+32(%rip), %ymm9, %ymm9
+	vpmulhw .Ltile4_fwd_s5_pair_factor+64(%rip), %ymm10, %ymm10
+	vpmulhw .Ltile4_fwd_s5_pair_factor+96(%rip), %ymm11, %ymm11
+	vpmulhw %ymm15, %ymm1, %ymm1
+	vpmulhw %ymm15, %ymm3, %ymm3
+	vpmulhw %ymm15, %ymm5, %ymm5
+	vpmulhw %ymm15, %ymm7, %ymm7
+	vpsubw %ymm1, %ymm8, %ymm8
+	vpsubw %ymm3, %ymm9, %ymm9
+	vpsubw %ymm5, %ymm10, %ymm10
+	vpsubw %ymm7, %ymm11, %ymm11
+	vpsubw %ymm8, %ymm0, %ymm1
+	vpsubw %ymm9, %ymm2, %ymm3
+	vpsubw %ymm10, %ymm4, %ymm5
+	vpsubw %ymm11, %ymm6, %ymm7
+	vpaddw %ymm8, %ymm0, %ymm0
+	vpaddw %ymm9, %ymm2, %ymm2
+	vpaddw %ymm10, %ymm4, %ymm4
+	vpaddw %ymm11, %ymm6, %ymm6
+	.endm
+
 	.macro FR_RAW_CROSS4 l0,h0,l1,h1,l2,h2,l3,h3
 	vpsubw \h0, \l0, %ymm8
 	vpsubw \h1, \l1, %ymm9
@@ -131,6 +167,41 @@ gt32_tile4_attr_forward_all_bm_soa_asm:
 	vzeroupper
 	ret
 	.size gt32_tile4_attr_forward_all_bm_soa_asm,.-gt32_tile4_attr_forward_all_bm_soa_asm
+
+	.p2align 5
+	.globl gt32_tile4_attr_forward_all_bm_soa_s5x4_asm
+	.type gt32_tile4_attr_forward_all_bm_soa_s5x4_asm,@function
+gt32_tile4_attr_forward_all_bm_soa_s5x4_asm:
+	vmovdqa .Lfr_q(%rip), %ymm15
+	vmovdqa .Lfr_plane_pshufb(%rip), %ymm14
+	movl $6, %ecx
+	.p2align 5
+.Lfr_s5x4_loop:
+	vmovdqu   0(%rsi), %ymm0
+	vmovdqu  32(%rsi), %ymm1
+	vmovdqu  64(%rsi), %ymm2
+	vmovdqu  96(%rsi), %ymm3
+	vmovdqu 128(%rsi), %ymm4
+	vmovdqu 160(%rsi), %ymm5
+	vmovdqu 192(%rsi), %ymm6
+	vmovdqu 224(%rsi), %ymm7
+	FR_RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
+	FR_MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_fwd_s2_qinv,.Ltile4_fwd_s2_factor
+	FR_MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_fwd_s3_qinv,.Ltile4_fwd_s3_factor
+	FR_MONT_HALF_PAIR %ymm0,%ymm1,0
+	FR_MONT_HALF_PAIR %ymm2,%ymm3,32
+	FR_MONT_HALF_PAIR %ymm4,%ymm5,64
+	FR_MONT_HALF_PAIR %ymm6,%ymm7,96
+	FR_MONT_QWORD_PACKED4
+	FR_PACKED_TO_PLANES %ymm0,%ymm1,%ymm2,%ymm3,0
+	FR_PACKED_TO_PLANES %ymm4,%ymm5,%ymm6,%ymm7,128
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Lfr_s5x4_loop
+	vzeroupper
+	ret
+	.size gt32_tile4_attr_forward_all_bm_soa_s5x4_asm,.-gt32_tile4_attr_forward_all_bm_soa_s5x4_asm
 
 	.section .rodata
 	.p2align 5

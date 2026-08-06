@@ -1,0 +1,61 @@
+{
+  "schema": "ntruplus768-private-forward-s5x4-v1",
+  "benchmark": {
+    "iterations": 2000,
+    "samples": 20,
+    "cpu": 1,
+    "ordering": "paired-AB-BA"
+  },
+  "correctness": {
+    "status": "pass",
+    "checks": [
+      "private-forward-core-exact",
+      "two-forward-BM-I1-T9-exact"
+    ]
+  },
+  "static_change": {
+    "removed_register_moves_per_tile": 4,
+    "tiles_per_polynomial": 6,
+    "removed_register_moves_per_polynomial": 24,
+    "montgomery_chains_issued_in_parallel": 4,
+    "stage4_and_plane_mapping_unchanged": true
+  },
+  "gates": {
+    "forward_core": {
+      "baseline": {
+        "median_tsc": 264.7875,
+        "mad_tsc": 0.14500000000001023
+      },
+      "candidate": {
+        "median_tsc": 279.79449999999997,
+        "mad_tsc": 0.2720000000000198
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": 14.8855,
+        "mad_tsc": 0.46750000000000025
+      },
+      "candidate_wins": 0
+    },
+    "two_forward_bm_i1_t9": {
+      "baseline": {
+        "median_tsc": 1597.9985000000001,
+        "mad_tsc": 2.0014999999999645
+      },
+      "candidate": {
+        "median_tsc": 1632.942,
+        "mad_tsc": 1.9210000000000491
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": 33.644999999999996,
+        "mad_tsc": 2.719500000000002
+      },
+      "candidate_wins": 0
+    }
+  },
+  "thresholds": {
+    "forward_core_min_saving_tsc": 5,
+    "full_chain_min_saving_tsc": 8
+  },
+  "decision": "stop-stage5-scheduling-no-material-improvement",
+  "production_integration": false
+}

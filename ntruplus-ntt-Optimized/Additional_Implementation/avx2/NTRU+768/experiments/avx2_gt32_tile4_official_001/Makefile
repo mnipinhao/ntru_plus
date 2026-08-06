@@ -36,7 +36,8 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	bench-basemul-short bench-promotion promotion-serious \
 	promotion-serious-reversed promotion-pmu promotion-symbols \
 	bench-mixed-frombytes-short bench-basemul-attribution \
-	bench-forward-bm-redeposit bench-private-caller private-caller-serious clean
+	bench-forward-bm-redeposit bench-private-caller private-caller-serious \
+	bench-s5-schedule clean
 
 all: test
 
@@ -76,7 +77,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_forward_bm_soa_attribution_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_forward_bm_soa_attribution_asm.o | \
-		rg 'gt32_tile4_attr_forward_all_bm_soa_asm'
+		rg 'gt32_tile4_attr_forward_all_bm_soa(_s5x4)?_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -125,6 +126,10 @@ bench-forward-bm-redeposit: generate $(BUILD)/bench_forward_bm_redeposit
 	$(PYTHON) tools/run_forward_bm_redeposit.py \
 		$(BUILD)/bench_forward_bm_redeposit --iterations 2000 \
 		--output results/tile4-forward-bm-redeposit-short.json
+
+bench-s5-schedule: generate $(BUILD)/bench_s5_schedule
+	$(PYTHON) tools/run_s5_schedule.py $(BUILD)/bench_s5_schedule \
+		--iterations 2000 --output results/tile4-s5-schedule-short.json
 
 bench-private-caller: generate $(BUILD)/bench_private_caller \
 		$(BUILD)/bench_private_caller_reversed
@@ -347,6 +352,18 @@ $(BUILD)/bench_forward_bm_redeposit: src/tile4_asm.S \
 		src/tile4_basemul_attribution_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \
 		bench/bench_forward_bm_redeposit.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o
+
+$(BUILD)/bench_s5_schedule: src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_s5_schedule.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_s5_schedule.c \
 		$(BUILD)/tile4_inverse_tail_isolated.o
 
 $(BUILD)/bench_private_caller: src/tile4_asm.S \

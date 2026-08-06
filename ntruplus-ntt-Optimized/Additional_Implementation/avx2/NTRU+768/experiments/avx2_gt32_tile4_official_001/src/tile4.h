@@ -120,6 +120,8 @@ void gt32_tile4_attr_inverse_i1_cross3_asm(int16_t *out,
 	const int16_t *post_stage1);
 void gt32_tile4_attr_forward_all_bm_soa_asm(int16_t *out_soa,
 	const int16_t *frontend_tile4_scratch);
+void gt32_tile4_attr_forward_all_bm_soa_s5x4_asm(int16_t *out_soa,
+	const int16_t *frontend_tile4_scratch);
 
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);

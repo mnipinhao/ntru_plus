@@ -764,3 +764,42 @@ private_caller_representation_island_gate:
   artifacts:
     - results/tile4-private-caller-short.json
     - results/tile4-private-caller-serious.json
+
+private_forward_stage5_destructive_x4_gate:
+  result: exact-pass-performance-hard-stop
+  scope: benchmark-only-private-forward-stage5-scheduling
+  frozen_boundaries:
+    - stage4
+    - private-plane-mapping
+    - SoA-basemul
+    - I1
+    - T9
+  static_change:
+    removed_register_moves_per_tile: 4
+    tiles_per_polynomial: 6
+    removed_register_moves_per_polynomial: 24
+    parallel_montgomery_chains: 4
+    spills: 0
+  correctness:
+    private_forward_core_exact: true
+    two_forward_BM_I1_T9_exact: true
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    forward_core:
+      baseline_tsc: 264.787500
+      candidate_tsc: 279.794500
+      paired_regression_tsc: 14.885500
+      candidate_wins: 0-of-20
+    two_forward_BM_I1_T9:
+      baseline_tsc: 1597.998500
+      candidate_tsc: 1632.942000
+      paired_regression_tsc: 33.645000
+      candidate_wins: 0-of-20
+  thresholds:
+    forward_core_required_saving_tsc: 5
+    full_chain_required_saving_tsc: 8
+  decision: stop-stage5-scheduling-no-material-improvement
+  interpretation: deleted-moves-do-not-offset-longer-live-ranges-and-batched-operation-class-schedule
+  production_integration: false
+  artifact: results/tile4-s5-schedule-short.json

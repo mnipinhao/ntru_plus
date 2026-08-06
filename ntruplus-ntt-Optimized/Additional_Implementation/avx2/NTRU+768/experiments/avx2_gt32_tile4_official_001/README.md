@@ -580,3 +580,25 @@ stability gate and is classified
 and public ABI changes remain stopped.  The short and serious matrices are in
 `results/tile4-private-caller-short.json` and
 `results/tile4-private-caller-serious.json`.
+
+### Destructive four-way stage-5 schedule
+
+The first post-caller ASM experiment keeps stage 4, the private plane mapping,
+BM, I1, and T9 unchanged.  Its benchmark-only `FR_MONT_QWORD_PACKED4` extracts
+all four high and low qword pairs first, reuses the four dead odd data vectors
+as Montgomery temporaries, and issues four independent chains by operation
+class.  This removes four register moves per tile, or 24 per polynomial, and
+requires no spill.
+
+The output is exact at both the private-forward boundary and through
+`2F+BM+I1+T9`, but the shorter static schedule is slower.  Forward core rises
+from 264.788 to 279.794 TSC, a paired regression of 14.886 TSC with 0/20 wins.
+The complete chain rises from 1597.999 to 1632.942 TSC, a regression of 33.645
+TSC with 0/20 wins.  Batching all unpack and multiply classes lengthens the
+live ranges and produces a less favorable execution schedule than the older
+two-pair groups, despite deleting moves.
+
+This fails both predeclared gates, so stage-5 instruction-order tuning stops.
+The S5x4 symbol remains benchmark-only and is not used as the starting point
+for the stage-4/stage-5 combined-layout experiment.  Results are in
+`results/tile4-s5-schedule-short.json`.
