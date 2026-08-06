@@ -383,6 +383,162 @@ def emit_private_inverse_ranges(path: Path) -> None:
     }, indent=2) + "\n")
 
 
+def emit_inverse_tail_header(path: Path) -> None:
+    top_inv = pow(1445, -1, Q)
+    norm_inv = pow(96, -1, Q)
+    matrix = []
+    for group in range(8):
+        group_records = []
+        for segment in range(3):
+            vectors = [[], [], [], []]
+            for qlane in range(4):
+                n = 32 * segment + 4 * group + qlane
+                s0 = pow(BRANCH_SCALE[0], n, Q)
+                s1 = pow(BRANCH_SCALE[1], n, Q)
+                coefficients = (
+                    s0 * (1 - 722 * top_inv) * norm_inv,
+                    s1 * (722 * top_inv) * norm_inv,
+                    -s0 * top_inv * norm_inv,
+                    s1 * top_inv * norm_inv,
+                )
+                for index, coefficient in enumerate(coefficients):
+                    vectors[index].extend([centered(coefficient * R * R)] * 4)
+            group_records.append(vectors)
+        matrix.append(group_records)
+
+    lines = [
+        "/* Generated AoS inverse-tail branch matrix; do not hand-edit. */",
+        "#ifndef NTRUPLUS_GT32_TILE4_INVERSE_TAIL_CONSTANTS_H",
+        "#define NTRUPLUS_GT32_TILE4_INVERSE_TAIL_CONSTANTS_H",
+        "#include <stdint.h>",
+        "static const int16_t gt32_tile4_tail_matrix[8][3][4][16]",
+        "\t__attribute__((aligned(32))) = {",
+    ]
+    for group in matrix:
+        lines.append("\t{")
+        for segment in group:
+            lines.append("\t\t{")
+            for vector in segment:
+                lines.append("\t\t\t{" + ",".join(map(str, vector)) + "},")
+            lines.append("\t\t},")
+        lines.append("\t},")
+    lines.extend(["};", "", "static const int16_t gt32_tile4_tail_matrix_qinv[8][3][4][16]",
+                  "\t__attribute__((aligned(32))) = {"])
+    for group in matrix:
+        lines.append("\t{")
+        for segment in group:
+            lines.append("\t\t{")
+            for vector in segment:
+                lines.append("\t\t\t{" + ",".join(
+                    str(factor_qinv(value)) for value in vector) + "},")
+            lines.append("\t\t},")
+        lines.append("\t},")
+    lines.extend(["};", "#endif", ""])
+    path.write_text("\n".join(lines))
+
+
+def inverse_tail_matrix() -> list[list[list[list[int]]]]:
+    top_inv = pow(1445, -1, Q)
+    norm_inv = pow(96, -1, Q)
+    matrix = []
+    for group in range(8):
+        group_records = []
+        for segment in range(3):
+            vectors = [[], [], [], []]
+            for qlane in range(4):
+                n = 32 * segment + 4 * group + qlane
+                s0 = pow(BRANCH_SCALE[0], n, Q)
+                s1 = pow(BRANCH_SCALE[1], n, Q)
+                coefficients = (
+                    s0 * (1 - 722 * top_inv) * norm_inv,
+                    s1 * (722 * top_inv) * norm_inv,
+                    -s0 * top_inv * norm_inv,
+                    s1 * top_inv * norm_inv,
+                )
+                for index, coefficient in enumerate(coefficients):
+                    vectors[index].extend([centered(coefficient * R * R)] * 4)
+            group_records.append(vectors)
+        matrix.append(group_records)
+    return matrix
+
+
+def emit_inverse_tail_asm(path: Path) -> None:
+    matrix = inverse_tail_matrix()
+    lines = [
+        "/* Generated AoS inverse-tail execution streams; do not hand-edit. */",
+        ".p2align 5", ".Ltail_matrix_factor:",
+    ]
+    for group in matrix:
+        for segment in group:
+            for vector in segment:
+                lines.append("\t.short " + ",".join(map(str, vector)))
+    lines.extend([".p2align 5", ".Ltail_matrix_qinv:"])
+    for group in matrix:
+        for segment in group:
+            for vector in segment:
+                lines.append("\t.short " + ",".join(
+                    str(factor_qinv(value)) for value in vector))
+    for name, value in (
+        ("q", Q), ("center10", 10),
+        ("half_q", Q // 2), ("minus_half_q", -(Q // 2)),
+        ("w_factor", -886), ("w_qinv", 13706),
+        ("w2_factor", 1033), ("w2_qinv", -13687),
+    ):
+        lines.extend([".p2align 5", f".Ltail_{name}:", "\t.rept 16",
+                      f"\t.short {value}", "\t.endr"])
+    lines.append("")
+    path.write_text("\n".join(lines))
+
+
+def center10(value: int) -> int:
+    # AVX2 vpmulhrsw(value,10), followed by value - quotient*q.
+    quotient = (value * 10 + (1 << 14)) >> 15
+    return value - quotient * Q
+
+
+def center_canonical10(value: int) -> int:
+    value = center10(value)
+    if value > Q // 2:
+        value -= Q
+    if value < -(Q // 2):
+        value += Q
+    return value
+
+
+def emit_inverse_tail_ranges(path: Path) -> None:
+    i1_bound = 12150
+    centered_input_bound = max(abs(center10(value))
+                               for value in range(-i1_bound, i1_bound + 1))
+    w_factors = [-886, 1033]
+    dft_product_bound = product_bound(centered_input_bound, w_factors)
+    dft_sum_bound = max(3 * centered_input_bound,
+                        centered_input_bound + 2 * dft_product_bound)
+    assert dft_sum_bound < 32768
+
+    matrix = inverse_tail_matrix()
+    factor_values = [value for group in matrix for segment in group
+                     for vector in segment for value in vector]
+    matrix_product_bound = product_bound(dft_sum_bound, factor_values)
+    matrix_sum_bound = 2 * matrix_product_bound
+    assert matrix_sum_bound < 32768
+    output_bound = max(abs(center_canonical10(value))
+                       for value in range(-matrix_sum_bound,
+                                          matrix_sum_bound + 1))
+    path.write_text(json.dumps({
+        "input": "I1 TILE4 AoS, r_exponent=-1",
+        "i1_terminal_abs_bound": i1_bound,
+        "checkpoint": "vpmulhrsw(value,10) then value-q*quotient",
+        "checkpoint_output_abs_bound": centered_input_bound,
+        "idft3_montgomery_product_abs_bound": dft_product_bound,
+        "idft3_output_abs_bound": dft_sum_bound,
+        "branch_matrix_product_abs_bound": matrix_product_bound,
+        "branch_matrix_precenter_abs_bound": matrix_sum_bound,
+        "final_output_abs_bound": output_bound,
+        "all_int16_add_sub_safe": True,
+        "output_r_exponent": 0,
+    }, indent=2) + "\n")
+
+
 def emit_scale_contract(path: Path) -> None:
     path.write_text(json.dumps({
         "notation": "stored value represents x*R^e mod q",
@@ -522,6 +678,9 @@ def main() -> None:
     basemul_asm_path = GENERATED / "tile4_basemul_constants.inc"
     private_inverse_asm_path = GENERATED / "tile4_private_inverse_constants.inc"
     private_inverse_range_path = GENERATED / "tile4_private_inverse_range.json"
+    inverse_tail_path = GENERATED / "tile4_inverse_tail_constants.h"
+    inverse_tail_asm_path = GENERATED / "tile4_inverse_tail_constants.inc"
+    inverse_tail_range_path = GENERATED / "tile4_inverse_tail_range.json"
     scale_path = GENERATED / "tile4_scale_contract.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
@@ -533,6 +692,9 @@ def main() -> None:
     emit_basemul_asm(basemul_asm_path)
     emit_private_inverse_asm(private_inverse_asm_path)
     emit_private_inverse_ranges(private_inverse_range_path)
+    emit_inverse_tail_header(inverse_tail_path)
+    emit_inverse_tail_asm(inverse_tail_asm_path)
+    emit_inverse_tail_ranges(inverse_tail_range_path)
     emit_scale_contract(scale_path)
 
     expected_omega = [
@@ -582,6 +744,12 @@ def main() -> None:
             private_inverse_asm_path.read_bytes()).hexdigest(),
         "private_inverse_range_sha256": hashlib.sha256(
             private_inverse_range_path.read_bytes()).hexdigest(),
+        "inverse_tail_sha256": hashlib.sha256(
+            inverse_tail_path.read_bytes()).hexdigest(),
+        "inverse_tail_asm_sha256": hashlib.sha256(
+            inverse_tail_asm_path.read_bytes()).hexdigest(),
+        "inverse_tail_range_sha256": hashlib.sha256(
+            inverse_tail_range_path.read_bytes()).hexdigest(),
         "scale_contract_sha256": hashlib.sha256(
             scale_path.read_bytes()).hexdigest(),
     }

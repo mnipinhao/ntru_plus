@@ -12,6 +12,20 @@ typedef void (*inverse_fn)(int16_t *, const int16_t *);
 typedef void (*basemul_fn)(int16_t *, const int16_t *, const int16_t *);
 static volatile uint64_t sink;
 
+static void full_inverse_candidate(int16_t *out, const int16_t *in)
+{
+	int16_t scratch[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	gt32_tile4_inverse_all_pair_asm(scratch, in);
+	gt32_tile4_inverse_tail_intrinsic_rminus1(out, scratch);
+}
+
+static void full_inverse_asm_candidate(int16_t *out, const int16_t *in)
+{
+	int16_t scratch[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	gt32_tile4_inverse_all_pair_asm(scratch, in);
+	gt32_tile4_inverse_tail_asm_rminus1(out, scratch);
+}
+
 static uint64_t start_tsc(void)
 {
 	_mm_lfence();
@@ -81,6 +95,12 @@ int main(int argc, char **argv)
 	double d0[20];
 	double d2[20];
 	double d2_parallel[20];
+	double tail[20];
+	double tail_asm[20];
+	double full_inverse[20];
+	double full_inverse_asm[20];
+	double d0_full[20];
+	double d0_full_asm[20];
 	cpu_set_t cpuset;
 
 	CPU_ZERO(&cpuset);
@@ -95,12 +115,20 @@ int main(int argc, char **argv)
 	gt32_tile4_forward_full_wide_raw_pair_align64_asm(frequency_b, coefficients);
 	gt32_tile4_basemul_scale_soa_private_asm(private_frequency,
 		frequency, frequency_b);
+	gt32_tile4_basemul_b2_asm(scratch, frequency, frequency_b);
+	gt32_tile4_inverse_all_pair_asm(coefficients, scratch);
 	(void)measure(gt32_tile4_inverse_all_asm, output, frequency, 100);
 	(void)measure(gt32_tile4_inverse_all_pair_asm, output, frequency, 100);
 	(void)measure(gt32_tile4_inverse_soa_private_asm, output,
 		private_frequency, 100);
 	(void)measure(gt32_tile4_inverse_soa_private_parallel_asm, output,
 		private_frequency, 100);
+	(void)measure(gt32_tile4_inverse_tail_intrinsic_rminus1, output,
+		coefficients, 100);
+	(void)measure(gt32_tile4_inverse_tail_asm_rminus1, output,
+		coefficients, 100);
+	(void)measure(full_inverse_candidate, output, scratch, 100);
+	(void)measure(full_inverse_asm_candidate, output, scratch, 100);
 
 	for (unsigned sample = 0; sample < 20; sample++) {
 		if ((sample & 1U) == 0U) {
@@ -124,7 +152,35 @@ int main(int argc, char **argv)
 				gt32_tile4_basemul_scale_soa_private_asm,
 				gt32_tile4_inverse_soa_private_parallel_asm,
 				output, scratch, frequency, frequency_b, iterations);
+			tail[sample] = measure(gt32_tile4_inverse_tail_intrinsic_rminus1,
+				output, coefficients, iterations);
+			tail_asm[sample] = measure(gt32_tile4_inverse_tail_asm_rminus1,
+				output, coefficients, iterations);
+			full_inverse[sample] = measure(full_inverse_candidate,
+				output, scratch, iterations);
+			full_inverse_asm[sample] = measure(full_inverse_asm_candidate,
+				output, scratch, iterations);
+			d0_full[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_candidate, output, scratch,
+				frequency, frequency_b, iterations);
+			d0_full_asm[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_asm_candidate, output, scratch,
+				frequency, frequency_b, iterations);
 		} else {
+			d0_full_asm[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_asm_candidate, output, scratch,
+				frequency, frequency_b, iterations);
+			d0_full[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_candidate, output, scratch,
+				frequency, frequency_b, iterations);
+			full_inverse[sample] = measure(full_inverse_candidate,
+				output, scratch, iterations);
+			full_inverse_asm[sample] = measure(full_inverse_asm_candidate,
+				output, scratch, iterations);
+			tail[sample] = measure(gt32_tile4_inverse_tail_intrinsic_rminus1,
+				output, coefficients, iterations);
+			tail_asm[sample] = measure(gt32_tile4_inverse_tail_asm_rminus1,
+				output, coefficients, iterations);
 			d2_parallel[sample] = measure_pipeline(
 				gt32_tile4_basemul_scale_soa_private_asm,
 				gt32_tile4_inverse_soa_private_parallel_asm,
@@ -155,12 +211,22 @@ int main(int argc, char **argv)
 	const double d0_median = median(d0);
 	const double d2_median = median(d2);
 	const double d2_parallel_median = median(d2_parallel);
+	const double tail_median = median(tail);
+	const double tail_asm_median = median(tail_asm);
+	const double full_inverse_median = median(full_inverse);
+	const double full_inverse_asm_median = median(full_inverse_asm);
+	const double d0_full_median = median(d0_full);
+	const double d0_full_asm_median = median(d0_full_asm);
 	printf("iterations=%u samples=20 inverse_i0=%.3f inverse_i1_pair=%.3f "
 		"inverse_i2_private=%.3f inverse_i2_parallel=%.3f "
 		"d0_b2_i1=%.3f d2_b2s_i2=%.3f d2_parallel=%.3f "
+		"tail=%.3f tail_asm=%.3f full_inverse=%.3f full_inverse_asm=%.3f "
+		"d0_full=%.3f d0_full_asm=%.3f "
 		"d2_parallel_saving=%.3f saving=%.3f saving_pct=%.3f sink=%llu\n",
 		iterations, i0_median, i1_median, i2_median, i2_parallel_median,
-		d0_median, d2_median, d2_parallel_median,
+		d0_median, d2_median, d2_parallel_median, tail_median,
+		tail_asm_median, full_inverse_median, full_inverse_asm_median,
+		d0_full_median, d0_full_asm_median,
 		d0_median - d2_parallel_median, i0_median - i1_median,
 		100.0 * (1.0 - i1_median / i0_median),
 		(unsigned long long)sink);

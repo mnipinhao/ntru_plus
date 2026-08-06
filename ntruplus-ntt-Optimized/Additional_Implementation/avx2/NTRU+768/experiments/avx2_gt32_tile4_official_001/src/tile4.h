@@ -68,6 +68,18 @@ void gt32_tile4_inverse_soa_private_asm(
 void gt32_tile4_inverse_soa_private_parallel_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_tail_ref_e0(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_tail_ref_rminus1(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_tail_intrinsic_rminus1(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+/* AoS e=-1 -> coefficient order e=0; input and output must be disjoint. */
+void gt32_tile4_inverse_tail_asm_rminus1(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
 
 void gt32_tile4_forward_tile_asm(int16_t out[GT32_TILE4_WORDS],
 	const int16_t in[GT32_TILE4_WORDS]);

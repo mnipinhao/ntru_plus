@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-d2a-i2-hard-stop
+status: gate-t-aos-tail-correct-consumer-regression
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -26,6 +26,8 @@ implemented:
   - direct private-layout scalar inverse NTT32 oracle
   - serial and eight-vector parallel private I2 inverse assembly
   - generator-owned private-Q inverse twiddles and formal range bounds
+  - generator-owned AoS inverse-tail branch matrix and formal range bounds
+  - zero-spill AoS inverse-tail assembly with fused IDFT3, GT blend, untwist, top merge, normalization and canonical stores
   - full coefficient-order input to TILE4 frequency-output forward candidate
   - five-layer register-resident AVX2 forward tile and six-tile wrapper
   - five-layer register-resident AVX2 inverse tile and six-tile wrapper
@@ -38,8 +40,7 @@ range:
 pending:
   - Gate C add/tobytes caller measurements
   - TILE4-native baseinv
-  - inverse DFT3/untwist/top-merge consumer
-  - same-binary caller benchmark
+  - full KEM caller integration remains gated by consumer regression
 forward_directional_gate:
   result: reopened-by-t1-t4
   benchmark_kind: same-binary-directional-short
@@ -170,4 +171,32 @@ gate_d2a_private_producer:
   signed_int16_safe: true
   required_combined_saving_tsc: 40-to-60
   decision: stop-d2-before-tail
+aos_inverse_tail_gate:
+  result: correctness-pass-performance-insufficient
+  benchmark_kind: short-directional
+  iterations_per_sample: 2000
+  samples: 20
+  input_layout: tile4-aos-after-i1
+  input_r_exponent: -1
+  output_layout: coefficient-order-centered-canonical
+  output_r_exponent: 0
+  intrinsic_tail_tsc: 425.444
+  zero_spill_asm_tail_tsc: 370.502
+  i1_plus_asm_tail_tsc: 608.893
+  b2_plus_i1_plus_asm_tail_tsc: 1048.044
+  i1_terminal_abs_bound: 12150
+  post_checkpoint_abs_bound: 2359
+  idft3_output_abs_bound: 7077
+  branch_matrix_precenter_abs_bound: 3812
+  final_canonical_abs_bound: 1728
+  correctness: exact-centered-vs-scalar-1000-cases
+  audit: zero-stack-spill-asan-ubsan-pass
+same_binary_consumer_short:
+  result: tile4-beats-frozen-but-loses-official
+  official_basemul_inverse_tsc: 796.826
+  frozen_gt32_basemul_inverse_tsc: 1297.028
+  tile4_basemul_inverse_tsc: 1127.645
+  tile4_vs_official_percent: 41.516
+  tile4_vs_frozen_percent: -13.060
+  caveat: short directional; separate binary differs by about 7-8 percent and indicates code-placement sensitivity
 promotion: false

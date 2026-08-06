@@ -185,6 +185,23 @@ int main(void)
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
+		gt32_tile4_forward_full_ref(full_ref, input);
+		gt32_tile4_inverse_all_ref(inverse_ref, full_ref);
+		gt32_tile4_inverse_tail_ref_e0(full_got, inverse_ref);
+		compare_mod_q("inverse-tail-e0-roundtrip", trial, input, full_got,
+			GT32_TILE4_POLY_WORDS);
+		for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++)
+			full_ref[i] = centered((int32_t)full_ref[i] * 2775);
+		gt32_tile4_inverse_all_ref(inverse_ref, full_ref);
+		gt32_tile4_inverse_tail_ref_rminus1(full_got, inverse_ref);
+		compare_mod_q("inverse-tail-rminus1-roundtrip", trial, input,
+			full_got, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_intrinsic_rminus1(general_ref, inverse_ref);
+		compare_exact("inverse-tail-rminus1-intrinsic", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_asm_rminus1(general_ref, inverse_ref);
+		compare_exact("inverse-tail-rminus1-asm", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
 		gt32_tile4_basemul_b0(ref, input, input);
 		gt32_tile4_basemul_b1(got, input, input);
 		compare_exact("basemul-b1", trial, ref, got,

@@ -214,3 +214,28 @@ cross-register chains.  Generator-derived range propagation ends at absolute
 bound 12150, all exact tests pass, and neither assembly symbol spills.  This
 is therefore a performance hard stop rather than a correctness, scale, range,
 or ABI failure.  D2b tail work is not started; Gate C remains independent.
+
+## AoS inverse tail
+
+The active AoS path now has a complete inverse consumer.  Generator-owned
+branch matrices fold inverse twist, top reconstruction, the full `1/96`
+normalization, and the `R^2` factor that converts `e=-1` input to `e=0`.
+Assembly processes six TILE4 vectors per group, performs two IDFT3s and two
+self-inverse qword `GT_BLEND3` networks, then writes A/B/C directly in
+coefficient order.  It uses fixed public control flow and no stack operands.
+
+Final stores are exact centered-canonical.  The proved range chain is
+`12150 -> 2359` at the I1 checkpoint, at most `7077` after IDFT3, at most
+`3812` before final correction, and `[-1728,1728]` at the ABI.  Exact
+scalar/intrinsic/assembly differential and 1000 round trips pass, together
+with ASan/UBSan and the spill audit.
+
+The 2,000-call short run measured 425.444 TSC for the intrinsic tail and
+370.502 for zero-spill assembly.  I1 plus tail measured 608.893; B2 plus the
+complete inverse measured 1048.044.  A separate same-binary consumer run
+measured 796.826 for Official, 1297.028 for frozen GT32, and 1127.645 for
+TILE4.  TILE4 is directionally 13.060% faster than frozen, but 41.516% slower
+than Official.  A roughly 7--8% shift across the two link compositions is
+recorded as code-placement sensitivity; neither short result is a promotion
+benchmark.  See `results/tile4-aos-inverse-tail-short.json` and
+`results/tile4-consumer-vs-official-short.json`.
