@@ -553,3 +553,30 @@ chains nor enough representation work to recover A1.  A future reopening
 needs a factorization that shares a dynamic pre-twiddle across multiple
 reductions, or a wider SIMD integer domain.  Full expressions and bounds are
 recorded in `generated/tile4_a2f_dag.json`.
+
+### Caller-private polymul gate
+
+The representation island is now enclosed in a real benchmark-only entry
+whose public boundary is two ordinary small coefficient polynomials and one
+ordinary ternary result after `crepmod3`.  Both the AoS baseline and private-
+SoA candidate receive the same 7680-byte caller-owned scratch object.  The
+scratch is 64-byte aligned in the primary contract, function boundaries are
+preserved, and the dead frontend buffer is reused for the candidate's single
+SoA-to-AoS redeposit.  No private layout escapes the entry.
+
+The entry is exact over 64 deterministic random trials for distinct output,
+`out==a`, `out==b`, and squaring.  The selected short primary run measured
+1739.234 versus 1710.821 TSC: a paired saving of 29.548 TSC with MAD 4.818 and
+20/20 wins.  Across 32/64-byte scratch placement and normal/reversed link
+order, every configuration remained positive at 20.906--29.548 TSC, with
+77/80 aggregate wins.  This cleared the short continuation gate.
+
+The subsequent 100000-iteration run remained directionally positive in all
+four configurations at 23.824--29.278 TSC and 75/80 aggregate wins.  However,
+the primary 64-byte configuration measured a 25.327-TSC saving with only
+17/20 wins and paired MAD 20.341.  It therefore fails the predeclared primary
+stability gate and is classified
+`inconclusive-serious-primary-win-rate-fail`.  PMU work, production selection,
+and public ABI changes remain stopped.  The short and serious matrices are in
+`results/tile4-private-caller-short.json` and
+`results/tile4-private-caller-serious.json`.

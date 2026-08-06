@@ -36,7 +36,7 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	bench-basemul-short bench-promotion promotion-serious \
 	promotion-serious-reversed promotion-pmu promotion-symbols \
 	bench-mixed-frombytes-short bench-basemul-attribution \
-	bench-forward-bm-redeposit clean
+	bench-forward-bm-redeposit bench-private-caller private-caller-serious clean
 
 all: test
 
@@ -125,6 +125,20 @@ bench-forward-bm-redeposit: generate $(BUILD)/bench_forward_bm_redeposit
 	$(PYTHON) tools/run_forward_bm_redeposit.py \
 		$(BUILD)/bench_forward_bm_redeposit --iterations 2000 \
 		--output results/tile4-forward-bm-redeposit-short.json
+
+bench-private-caller: generate $(BUILD)/bench_private_caller \
+		$(BUILD)/bench_private_caller_reversed
+	$(PYTHON) tools/run_private_caller.py \
+		$(BUILD)/bench_private_caller --iterations 2000 \
+		--corroboration-binary $(BUILD)/bench_private_caller_reversed \
+		--output results/tile4-private-caller-short.json
+
+private-caller-serious: generate $(BUILD)/bench_private_caller \
+		$(BUILD)/bench_private_caller_reversed
+	$(PYTHON) tools/run_private_caller.py \
+		$(BUILD)/bench_private_caller --iterations 100000 --mode serious \
+		--corroboration-binary $(BUILD)/bench_private_caller_reversed \
+		--output results/tile4-private-caller-serious.json
 
 bench-promotion: generate $(BUILD)/bench_promotion
 	$(BUILD)/bench_promotion 100000 0
@@ -334,6 +348,33 @@ $(BUILD)/bench_forward_bm_redeposit: src/tile4_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \
 		bench/bench_forward_bm_redeposit.c \
 		$(BUILD)/tile4_inverse_tail_isolated.o
+
+$(BUILD)/bench_private_caller: src/tile4_asm.S \
+		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_private_caller.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -I$(OFFICIAL) -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_private_caller.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c
+
+$(BUILD)/bench_private_caller_reversed: src/tile4_asm.S \
+		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_private_caller.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -I$(OFFICIAL) -o $@ \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c \
+		bench/bench_private_caller.c \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		src/tile4_basemul_attribution_asm.S src/tile4_basemul_asm.S \
+		src/tile4_asm.S $(BUILD)/tile4_inverse_tail_isolated.o
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

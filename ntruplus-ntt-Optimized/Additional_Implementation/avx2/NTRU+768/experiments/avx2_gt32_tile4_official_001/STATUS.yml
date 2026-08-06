@@ -658,7 +658,7 @@ forward_terminal_bm_plane_redeposit_gate:
   reason: real-private-chain-benefits-but-forward-private-representation-is-too-expensive-as-a-standalone-contract
   production_integration: false
   artifact: results/tile4-forward-bm-redeposit-short.json
-  next_gate: real-private-caller-boundaries-before-any-serious-benchmark
+  next_gate: completed-by-private-caller-gate-below-serious-threshold
 
 a2f_symbolic_dag_gate:
   result: F1-proof-pass-F2-static-reject
@@ -698,3 +698,69 @@ a2f_symbolic_dag_gate:
     - split-plan-recomputes-A1-data-construction
   artifact: generated/tile4_a2f_dag.json
   continuation_condition: new-factorization-shares-dynamic-pre-twiddle-or-uses-wider-SIMD-integer-domain
+
+private_caller_representation_island_gate:
+  result: exact-pass-short-gate-pass-serious-primary-stability-fail
+  scope: benchmark-only-coefficient-polymul-through-crepmod3
+  contract:
+    input: two-coefficient-order-small-polynomials
+    output: coefficient-order-ternary-polynomial
+    scratch_bytes: 7680
+    primary_scratch_alignment: 64
+    alias:
+      - distinct
+      - out-equals-a
+      - out-equals-b
+      - squaring
+    private_layout_visible_outside_entry: false
+  paths:
+    baseline: N5-AoS-to-B3-to-I1-to-T9-to-crepmod3
+    candidate: N5-private-planes-to-SoA-BM-to-one-AoS-redeposit-to-I1-to-T9-to-crepmod3
+  correctness:
+    deterministic_random_trials: 64
+    distinct_exact: true
+    out_equals_a_exact: true
+    out_equals_b_exact: true
+    squaring_exact: true
+  primary_short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    baseline_tsc: 1739.234000
+    candidate_tsc: 1710.821000
+    paired_saving_tsc: 29.548000
+    paired_delta_mad_tsc: 4.817500
+    candidate_wins: 20-of-20
+  placement_corroboration:
+    configurations:
+      - primary-align64
+      - primary-align32
+      - reversed-link-align64
+      - reversed-link-align32
+    minimum_saving_tsc: 20.906000
+    maximum_saving_tsc: 29.548000
+    saving_spread_tsc: 8.642000
+    aggregate_wins: 77-of-80
+  serious_benchmark:
+    iterations_per_sample: 100000
+    samples_per_configuration: 20
+    primary_baseline_tsc: 1762.102350
+    primary_candidate_tsc: 1732.281640
+    primary_paired_saving_tsc: 25.326780
+    primary_paired_delta_mad_tsc: 20.340620
+    primary_candidate_wins: 17-of-20
+    minimum_saving_tsc: 23.824040
+    maximum_saving_tsc: 29.277510
+    saving_spread_tsc: 5.453470
+    aggregate_wins: 75-of-80
+    decision: inconclusive-serious-primary-win-rate-fail
+  thresholds:
+    serious_min_primary_saving_tsc: 25
+    serious_min_wins: 18-of-20
+  decision: inconclusive-serious-primary-win-rate-fail
+  serious_benchmark_run: true
+  pmu_run: false
+  production_integration: false
+  public_or_general_N5_ABI_changed: false
+  artifacts:
+    - results/tile4-private-caller-short.json
+    - results/tile4-private-caller-serious.json
