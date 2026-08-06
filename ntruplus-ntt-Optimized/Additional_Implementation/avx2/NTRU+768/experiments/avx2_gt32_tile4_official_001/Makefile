@@ -34,7 +34,7 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	bench-official-cold bench-inverse-short bench-consumer-short \
 	bench-basemul-short bench-promotion promotion-serious \
 	promotion-serious-reversed promotion-pmu promotion-symbols \
-	bench-mixed-frombytes-short clean
+	bench-mixed-frombytes-short bench-basemul-attribution clean
 
 all: test
 
@@ -50,6 +50,7 @@ sanitize: generate $(BUILD)/test_tile4_sanitize
 	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_tile4_sanitize
 
 audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
+		$(BUILD)/tile4_basemul_attribution_asm.o \
 		$(BUILD)/tile4_inverse_private_asm.o $(BUILD)/tile4_inverse_tail_asm.o \
 		$(BUILD)/tile4_inverse_tail_isolated.o $(BUILD)/tile4_frombytes_asm.o
 	objdump -drwC -Mintel $(BUILD)/tile4_asm.o > $(BUILD)/tile4_asm.dump
@@ -65,6 +66,10 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
 		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|scale_soa_aos_to_aos_private|raw_(soa|aos)_private|c3center(_late)?_aos_private)_asm'
+	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_attribution_asm.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
+	nm -g --defined-only $(BUILD)/tile4_basemul_attribution_asm.o | \
+		rg 'gt32_tile4_attr_(transpose_(one|two|three)|basemul_(raw|c3)_soa|center_c3_soa)_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -103,6 +108,11 @@ bench-basemul-short: generate $(BUILD)/bench_basemul_short
 bench-mixed-frombytes-short: generate $(BUILD)/bench_mixed_frombytes
 	$(PYTHON) tools/run_mixed_frombytes.py $(BUILD)/bench_mixed_frombytes \
 		--iterations 2000 --output results/tile4-mixed-frombytes-short.json
+
+bench-basemul-attribution: generate $(BUILD)/bench_basemul_attribution
+	$(PYTHON) tools/run_basemul_attribution.py \
+		$(BUILD)/bench_basemul_attribution --iterations 2000 \
+		--output results/tile4-basemul-attribution-short.json
 
 bench-promotion: generate $(BUILD)/bench_promotion
 	$(BUILD)/bench_promotion 100000 0
@@ -159,6 +169,11 @@ $(BUILD)/tile4_asm.o: src/tile4_asm.S generated/tile4_constants.inc | $(BUILD)
 $(BUILD)/tile4_basemul_asm.o: src/tile4_basemul_asm.S \
 		generated/tile4_basemul_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_basemul_asm.S
+
+$(BUILD)/tile4_basemul_attribution_asm.o: \
+		src/tile4_basemul_attribution_asm.S \
+		generated/tile4_basemul_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ src/tile4_basemul_attribution_asm.S
 
 $(BUILD)/tile4_inverse_private_asm.o: src/tile4_inverse_private_asm.S \
 		generated/tile4_private_inverse_constants.inc | $(BUILD)
@@ -277,6 +292,18 @@ $(BUILD)/bench_promotion_reversed: src/tile4_asm.S src/tile4_basemul_asm.S \
 		$(OFFICIAL)/consts.c \
 		bench/bench_promotion.c src/tile4_basemul_asm.S src/tile4_asm.S \
 		$(BUILD)/tile4_inverse_tail_isolated.o
+
+$(BUILD)/bench_basemul_attribution: src/tile4_asm.S \
+		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
+		bench/bench_basemul_attribution.c $(GEN) \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -I$(OFFICIAL) -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		bench/bench_basemul_attribution.c \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/consts.c
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

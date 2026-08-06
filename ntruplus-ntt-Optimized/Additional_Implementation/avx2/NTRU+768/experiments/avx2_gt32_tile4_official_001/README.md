@@ -439,3 +439,35 @@ but would need about 25% fewer cycles to reach the champion.  That gap is too
 large for scheduling alone, so A2 assembly is rejected under the bounded
 stop-loss.  See `generated/tile4_wide_aos_range.json` and
 `results/tile4-wide-a1-short.json`.
+
+## Basemul cost attribution
+
+N5 forward and the private I1 plus T9 inverse are frozen while this gate
+decomposes B3 in a benchmark-only object.  The object exports independent
+AoS/SoA transpose leaves, a true SoA-by-SoA arithmetic core, a c3-only repair
+leaf, and no production KEM symbols.  Exact checks establish that the
+transpose is self-inverse and that the raw, c3-repaired, and reconstructed B3
+boundaries match the existing implementation bit for bit.
+
+In the 2,000-call, 20-sample same-binary run, the empty call measured 2.531
+TSC.  After correcting repeated call overhead, two input transposes cost
+87.519, the production c3 arithmetic cost 264.869, and the output transpose
+cost 42.505 TSC.  Their reconstructed sum is 397.423 versus 397.429 for the
+fused B3 leaf, a residual of only 0.006 TSC.  The attribution therefore closes
+for this warm-L1 microbenchmark.
+
+The important comparison is arithmetic-only.  Official
+`poly_basemul_scale` in its native layout measured 265.947 TSC including the
+same call overhead, while TILE4's c3 production arithmetic measured 267.400;
+the difference is only 1.453 TSC.  Raw TILE4 arithmetic was 257.377 and the
+c3 range policy adds 10.023 TSC inside the arithmetic leaf.  In contrast,
+input plus output layout costs 130.024 TSC.  This accounts almost exactly for
+the complete B3 disadvantage of 131.482 TSC relative to Official.
+
+The result selects the layout case, not the arithmetic case: the current
+single-accumulator schoolbook schedule is already at Official arithmetic
+parity.  Further qinv-hoist, issue-order, or Karatsuba work is not the next
+gate.  A continuing design must remove at least one complete transpose at a
+real producer or consumer boundary without introducing another global
+permutation.  The raw samples, MADs, contracts, and corrected reconstruction
+are in `results/tile4-basemul-attribution-short.json`.

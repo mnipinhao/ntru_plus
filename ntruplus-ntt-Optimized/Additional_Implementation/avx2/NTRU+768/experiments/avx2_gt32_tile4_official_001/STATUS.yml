@@ -526,3 +526,45 @@ wide_direct_aos_a1_gate:
     range: generated/tile4_wide_aos_range.json
     benchmark: results/tile4-wide-a1-short.json
   a2_decision: reject-hand-assembly-stop-loss
+
+basemul_cost_attribution_gate:
+  result: closed-layout-dominates-arithmetic-parity
+  scope: benchmark-only-no-production-kernel-change
+  frozen_components:
+    forward: N5
+    private_inverse: I1-plus-T9
+  benchmark_kind: same-binary-short-alternating-forward-reverse
+  iterations_per_sample: 2000
+  samples: 20
+  official_comparator: poly_basemul_scale-native-layout
+  measured_median_tsc:
+    empty_call: 2.530500
+    transpose_one_TA: 45.031000
+    transpose_two_TAB: 90.049500
+    transpose_output_TO: 45.035000
+    transpose_all_TABO: 135.069000
+    tile4_arithmetic_raw: 257.376500
+    tile4_arithmetic_c3: 267.399500
+    explicit_c3_repair_boundary: 29.174000
+    tile4_full_b3: 397.429000
+    official_arithmetic_scale: 265.947000
+  call_overhead_corrected_tsc:
+    input_layout_TAB: 87.519000
+    output_layout_TO: 42.504500
+    tile4_arithmetic_c3: 264.869000
+    reconstructed_full: 397.423000
+  attribution:
+    reconstruction_residual_tsc: 0.006000
+    tile4_arithmetic_minus_official_tsc: 1.452500
+    tile4_full_minus_official_tsc: 131.482000
+    c3_range_delta_vs_raw_tsc: 10.023000
+    layout_total_tsc: 130.023500
+  correctness:
+    - transpose-self-inverse-exact
+    - raw-arithmetic-boundary-exact
+    - c3-repair-decomposition-exact
+    - full-b3-decomposition-exact
+  assembly_audit: fixed-public-loops-no-stack-operands-avx2-only
+  artifact: results/tile4-basemul-attribution-short.json
+  decision: arithmetic-is-at-parity-do-not-reschedule-schoolbook-next
+  next_gate: evaluate-a-producer-or-consumer-layout-that-removes-at-least-one-complete-transpose-without-a-new-global-permutation

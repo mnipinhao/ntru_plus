@@ -100,6 +100,21 @@ void gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm(
 	const int16_t a_soa[GT32_TILE4_POLY_WORDS],
 	const int16_t b_aos[GT32_TILE4_POLY_WORDS]);
 
+/* Benchmark-only basemul attribution leaves; never used by production KEM. */
+void gt32_tile4_attr_empty_asm(int16_t *out, const int16_t *a,
+	const int16_t *b);
+void gt32_tile4_attr_transpose_one_asm(int16_t *out, const int16_t *in);
+void gt32_tile4_attr_transpose_two_asm(int16_t *out_a, int16_t *out_b,
+	const int16_t *in_a, const int16_t *in_b);
+void gt32_tile4_attr_transpose_three_asm(int16_t *out_a, int16_t *out_b,
+	int16_t *out_c, const int16_t *in_a, const int16_t *in_b,
+	const int16_t *in_c);
+void gt32_tile4_attr_basemul_raw_soa_asm(int16_t *out,
+	const int16_t *a_soa, const int16_t *b_soa);
+void gt32_tile4_attr_basemul_c3_soa_asm(int16_t *out,
+	const int16_t *a_soa, const int16_t *b_soa);
+void gt32_tile4_attr_center_c3_soa_asm(int16_t *out, const int16_t *in);
+
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_frontend_intrinsic(int16_t out[GT32_TILE4_POLY_WORDS],

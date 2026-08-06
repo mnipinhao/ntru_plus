@@ -1,0 +1,79 @@
+{
+  "schema": "ntruplus768-tile4-basemul-attribution-v1",
+  "benchmark": {
+    "binary": "build/bench_basemul_attribution",
+    "iterations": 2000,
+    "samples": 20,
+    "cpu": 1,
+    "ordering": "alternating-forward-reverse",
+    "meta": "META,correctness=pass,iterations=2000,samples=20"
+  },
+  "correctness": {
+    "status": "pass",
+    "checks": [
+      "transpose-self-inverse-exact",
+      "raw-arithmetic-vs-frozen-boundary-exact",
+      "c3-repair-decomposition-exact",
+      "full-b3-decomposition-exact"
+    ]
+  },
+  "components": {
+    "empty": {
+      "median_tsc": 2.5445,
+      "mad_tsc": 0.014000000000000012
+    },
+    "TA": {
+      "median_tsc": 45.0315,
+      "mad_tsc": 0.006499999999999062
+    },
+    "TAB": {
+      "median_tsc": 90.0535,
+      "mad_tsc": 0.006999999999997897
+    },
+    "TO": {
+      "median_tsc": 45.037,
+      "mad_tsc": 0.008499999999997954
+    },
+    "TABO": {
+      "median_tsc": 135.071,
+      "mad_tsc": 0.009499999999988518
+    },
+    "tile4_arith_raw": {
+      "median_tsc": 257.372,
+      "mad_tsc": 0.03650000000001796
+    },
+    "tile4_arith_c3": {
+      "median_tsc": 265.366,
+      "mad_tsc": 0.014000000000010004
+    },
+    "c3_repair_boundary": {
+      "median_tsc": 27.573500000000003,
+      "mad_tsc": 0.027000000000001023
+    },
+    "tile4_full_b3": {
+      "median_tsc": 397.33000000000004,
+      "mad_tsc": 0.1890000000000498
+    },
+    "official_arith_scale": {
+      "median_tsc": 266.9345,
+      "mad_tsc": 1.015500000000003
+    }
+  },
+  "derived": {
+    "input_materialization_TAB_tsc": 87.509,
+    "output_materialization_TO_tsc": 42.4925,
+    "arithmetic_c3_tsc": 262.82149999999996,
+    "range_policy_delta_c3_minus_raw_tsc": 7.993999999999971,
+    "explicit_c3_repair_boundary_tsc": 25.029000000000003,
+    "reconstructed_TAB_arithmetic_TO_tsc": 395.36749999999995,
+    "measured_fused_B3_tsc": 397.33000000000004,
+    "fusion_or_reconstruction_residual_tsc": 1.962500000000091,
+    "tile4_arithmetic_minus_official_scale_tsc": -1.5685000000000286,
+    "tile4_full_minus_official_scale_tsc": 130.39550000000003
+  },
+  "interpretation": {
+    "official_comparator": "poly_basemul_scale on Official native NTT layout",
+    "tile4_arithmetic_contract": "SoA e=0 x SoA e=0 -> SoA e=-1; c3 centered",
+    "warning": "Component sums are call-overhead corrected but remain explicit materialization boundaries; the residual captures fusion, cache, and scheduling interactions."
+  }
+}
