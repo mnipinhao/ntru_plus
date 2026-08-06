@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-b5-raw-private-soa-consumer-pass-short
+status: gate-b5-aos-c3center-late-beats-official-short
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -24,6 +24,8 @@ implemented:
   - B3 late-finalizer and B4b partial-hoist multi-accumulator rejected controls
   - K1/K2 outer/full Karatsuba intrinsic gates and zero-spill K2 assembly control
   - B5 raw private-SoA e=-1 producer accepted through private inverse NTT32 core
+  - B5-AoS raw control, proof-safe inverse checkpoint control and selected c3-only BM checkpoint
+  - c3 register retention overlaps its center with output-plane reloads
   - Gate C general B2 with fused R-squared e=0 output
   - Gate D B2-S private coefficient-plane e=-1 producer
   - direct private-layout scalar inverse NTT32 oracle
@@ -286,4 +288,38 @@ basemul_round_b3_b5_gate:
     raw_bm_plus_i32_tsc: 721.155
     saving_tsc: 46.149
   caveat: private inverse-core output still needs a measured bridge into the selected inverse tail
+b5_aos_private_gate:
+  result: c3center-late-selected-short
+  benchmark_kind: same-binary-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  raw_aos:
+    basemul_tsc: 391.131
+    correctness: mod-q-through-i1-t9-and-crepmod3-1000-cases
+    proof_status: rejected-as-production-conservative-bound-fails-at-length16
+  inverse_selective_checkpoint:
+    checkpoint: after-length8-center-low-arm-vectors-0-1-4-5
+    correctness: pass
+    full_crep_delta_vs_official_tsc: 8.581
+    decision: rejected-performance
+  c3center_aos:
+    basemul_tsc: 407.567
+    full_crep_delta_vs_official_tsc: -3.872
+  c3center_late_aos:
+    basemul_tsc: 398.542
+    bm_i1_t9_tsc: 851.648
+    bm_i1_t9_saving_vs_centered_tsc: 32.847
+    full_2f_b_i:
+      official_tsc: 1712.184
+      candidate_tsc: 1703.792
+      delta_tsc: -8.392
+    full_2f_b_i_crepmod3:
+      official_tsc: 1830.726
+      candidate_tsc: 1822.669
+      delta_tsc: -8.057
+    contract: c0-c2-raw-c3-center10-tile4-aos-e-minus1
+    range_proof: generated/tile4_raw_aos_inverse_range.json
+    correctness: mod-q-and-crepmod3-1000-cases
+  decision: retain-c3center-late-require-serious-fixed-placement-gate
+  caveat: TSC ticks, short directional result; not core PMU cycles
 promotion: false

@@ -52,6 +52,20 @@ void gt32_tile4_basemul_raw_soa_private_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* Decap-only lazy candidate: TILE4 e=0 x e=0 -> raw TILE4 e=-1. */
+void gt32_tile4_basemul_raw_aos_private_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* Proof-safe lazy AoS: c0..c2 raw, only the SoA c3 plane is centered. */
+void gt32_tile4_basemul_c3center_aos_private_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_c3center_late_aos_private_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
 
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
@@ -140,6 +154,9 @@ void gt32_tile4_forward_all_pair_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 void gt32_tile4_inverse_all_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_inverse_all_pair_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_all_pair_selective_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 
 /* Full coefficient-order input -> TILE4 bit-reversed frequency output. */

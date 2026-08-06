@@ -54,6 +54,65 @@ static void tile4_private_consumer(int16_t *out, const int16_t *a,
 	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
 }
 
+static void tile4_centered_i1(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_b2_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(out, product);
+}
+
+static void tile4_raw_i1(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	gt32_tile4_basemul_raw_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(out, product);
+}
+
+static void tile4_raw_safe_i1(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_raw_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_selective_asm(out, product);
+}
+
+static void tile4_c3center_i1(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_c3center_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(out, product);
+}
+
+static void tile4_raw_private_consumer(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_raw_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_raw_safe_private_consumer(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_raw_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_selective_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_c3center_private_consumer(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_c3center_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_c3center_late_private_consumer(int16_t *out,
+	const int16_t *a, const int16_t *b)
+{
+	gt32_tile4_basemul_c3center_late_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
 static void official_full_chain(int16_t *out, const int16_t *a,
 	const int16_t *b)
 {
@@ -77,6 +136,54 @@ static void tile4_full_chain(int16_t *out, const int16_t *a,
 	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
 }
 
+static void tile4_raw_full_chain(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_raw_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_raw_safe_full_chain(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_raw_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_selective_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_c3center_full_chain(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_c3center_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void tile4_c3center_late_full_chain(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_c3center_late_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
 static void official_full_chain_crep(int16_t *out, const int16_t *a,
 	const int16_t *b)
 {
@@ -92,6 +199,58 @@ static void tile4_full_chain_crep(int16_t *out, const int16_t *a,
 	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
 	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
 	gt32_tile4_basemul_b2_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+	poly_crepmod3(out);
+}
+
+static void tile4_raw_full_chain_crep(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_raw_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+	poly_crepmod3(out);
+}
+
+static void tile4_raw_safe_full_chain_crep(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_raw_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_selective_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+	poly_crepmod3(out);
+}
+
+static void tile4_c3center_full_chain_crep(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_c3center_aos_private_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+	poly_crepmod3(out);
+}
+
+static void tile4_c3center_late_full_chain_crep(int16_t *out,
+	const int16_t *a, const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_c3center_late_aos_private_asm(product, work_a, work_b);
 	gt32_tile4_inverse_all_pair_asm(rows, product);
 	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
 	poly_crepmod3(out);
@@ -172,8 +331,19 @@ int main(int argc, char **argv)
 	int16_t official_result[WORDS] __attribute__((aligned(32)));
 	int16_t tile4_result[WORDS] __attribute__((aligned(32)));
 	double official[SAMPLES], frozen[SAMPLES], tile4[SAMPLES], private[SAMPLES];
-	double official_full[SAMPLES], tile4_full[SAMPLES];
-	double official_crep[SAMPLES], tile4_crep[SAMPLES], tile4_t10[SAMPLES];
+	double centered_i1[SAMPLES], raw_i1[SAMPLES], raw_safe_i1[SAMPLES];
+	double c3center_i1[SAMPLES], raw_private[SAMPLES], raw_safe_private[SAMPLES];
+	double c3center_private[SAMPLES];
+	double c3center_late_private[SAMPLES];
+	double official_full[SAMPLES], tile4_full[SAMPLES], raw_full[SAMPLES];
+	double raw_safe_full[SAMPLES];
+	double c3center_full[SAMPLES];
+	double c3center_late_full[SAMPLES];
+	double official_crep[SAMPLES], tile4_crep[SAMPLES], raw_crep[SAMPLES];
+	double raw_safe_crep[SAMPLES];
+	double c3center_crep[SAMPLES];
+	double c3center_late_crep[SAMPLES];
+	double tile4_t10[SAMPLES];
 	cpu_set_t set;
 	CPU_ZERO(&set);
 	CPU_SET(1, &set);
@@ -193,6 +363,15 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
+	tile4_raw_full_chain(tile4_result, a, b);
+	for (unsigned i = 0; i < WORDS; i++) {
+		if (centered_mod_q(official_result[i]) != centered_mod_q(tile4_result[i])
+			|| crepmod3_contract(official_result[i])
+				!= crepmod3_contract(tile4_result[i])) {
+			fprintf(stderr, "raw full-chain differential failed at %u\n", i);
+			return 1;
+		}
+	}
 	official_full_chain_crep(official_result, a, b);
 	tile4_full_chain_t10(tile4_result, a, b);
 	for (unsigned i = 0; i < WORDS; i++) {
@@ -207,10 +386,26 @@ int main(int argc, char **argv)
 			frozen_consumer(out, a, b);
 			tile4_consumer(out, a, b);
 			tile4_private_consumer(out, a, b);
+			tile4_centered_i1(out, a, b);
+			tile4_raw_i1(out, a, b);
+			tile4_raw_safe_i1(out, a, b);
+			tile4_c3center_i1(out, a, b);
+			tile4_raw_private_consumer(out, a, b);
+			tile4_raw_safe_private_consumer(out, a, b);
+			tile4_c3center_private_consumer(out, a, b);
+			tile4_c3center_late_private_consumer(out, a, b);
 			official_full_chain(out, a, b);
 			tile4_full_chain(out, a, b);
+			tile4_raw_full_chain(out, a, b);
+			tile4_raw_safe_full_chain(out, a, b);
+			tile4_c3center_full_chain(out, a, b);
+			tile4_c3center_late_full_chain(out, a, b);
 			official_full_chain_crep(out, a, b);
 			tile4_full_chain_crep(out, a, b);
+			tile4_raw_full_chain_crep(out, a, b);
+			tile4_raw_safe_full_chain_crep(out, a, b);
+			tile4_c3center_full_chain_crep(out, a, b);
+			tile4_c3center_late_full_chain_crep(out, a, b);
 			tile4_full_chain_t10(out, a, b);
 		}
 	}
@@ -220,19 +415,81 @@ int main(int argc, char **argv)
 			frozen[sample] = run(frozen_consumer, out, a, b, iterations);
 			tile4[sample] = run(tile4_consumer, out, a, b, iterations);
 			private[sample] = run(tile4_private_consumer, out, a, b, iterations);
+			centered_i1[sample] = run(tile4_centered_i1, out, a, b, iterations);
+			raw_i1[sample] = run(tile4_raw_i1, out, a, b, iterations);
+			raw_safe_i1[sample] = run(tile4_raw_safe_i1,
+				out, a, b, iterations);
+			c3center_i1[sample] = run(tile4_c3center_i1,
+				out, a, b, iterations);
+			raw_private[sample] = run(tile4_raw_private_consumer,
+				out, a, b, iterations);
+			raw_safe_private[sample] = run(tile4_raw_safe_private_consumer,
+				out, a, b, iterations);
+			c3center_private[sample] = run(tile4_c3center_private_consumer,
+				out, a, b, iterations);
+			c3center_late_private[sample] = run(
+				tile4_c3center_late_private_consumer,
+				out, a, b, iterations);
 			official_full[sample] = run(official_full_chain, out, a, b, iterations);
 			tile4_full[sample] = run(tile4_full_chain, out, a, b, iterations);
+			raw_full[sample] = run(tile4_raw_full_chain, out, a, b, iterations);
+			raw_safe_full[sample] = run(tile4_raw_safe_full_chain,
+				out, a, b, iterations);
+			c3center_full[sample] = run(tile4_c3center_full_chain,
+				out, a, b, iterations);
+			c3center_late_full[sample] = run(tile4_c3center_late_full_chain,
+				out, a, b, iterations);
 			official_crep[sample] = run(official_full_chain_crep, out, a, b,
 				iterations);
 			tile4_crep[sample] = run(tile4_full_chain_crep, out, a, b, iterations);
+			raw_crep[sample] = run(tile4_raw_full_chain_crep,
+				out, a, b, iterations);
+			raw_safe_crep[sample] = run(tile4_raw_safe_full_chain_crep,
+				out, a, b, iterations);
+			c3center_crep[sample] = run(tile4_c3center_full_chain_crep,
+				out, a, b, iterations);
+			c3center_late_crep[sample] = run(
+				tile4_c3center_late_full_chain_crep,
+				out, a, b, iterations);
 			tile4_t10[sample] = run(tile4_full_chain_t10, out, a, b, iterations);
 		} else {
 			tile4_t10[sample] = run(tile4_full_chain_t10, out, a, b, iterations);
+			c3center_late_crep[sample] = run(
+				tile4_c3center_late_full_chain_crep,
+				out, a, b, iterations);
+			c3center_crep[sample] = run(tile4_c3center_full_chain_crep,
+				out, a, b, iterations);
+			raw_safe_crep[sample] = run(tile4_raw_safe_full_chain_crep,
+				out, a, b, iterations);
+			raw_crep[sample] = run(tile4_raw_full_chain_crep,
+				out, a, b, iterations);
 			tile4_crep[sample] = run(tile4_full_chain_crep, out, a, b, iterations);
 			official_crep[sample] = run(official_full_chain_crep, out, a, b,
 				iterations);
+			c3center_late_full[sample] = run(tile4_c3center_late_full_chain,
+				out, a, b, iterations);
+			c3center_full[sample] = run(tile4_c3center_full_chain,
+				out, a, b, iterations);
+			raw_safe_full[sample] = run(tile4_raw_safe_full_chain,
+				out, a, b, iterations);
+			raw_full[sample] = run(tile4_raw_full_chain, out, a, b, iterations);
 			tile4_full[sample] = run(tile4_full_chain, out, a, b, iterations);
 			official_full[sample] = run(official_full_chain, out, a, b, iterations);
+			c3center_late_private[sample] = run(
+				tile4_c3center_late_private_consumer,
+				out, a, b, iterations);
+			c3center_private[sample] = run(tile4_c3center_private_consumer,
+				out, a, b, iterations);
+			raw_safe_private[sample] = run(tile4_raw_safe_private_consumer,
+				out, a, b, iterations);
+			raw_private[sample] = run(tile4_raw_private_consumer,
+				out, a, b, iterations);
+			c3center_i1[sample] = run(tile4_c3center_i1,
+				out, a, b, iterations);
+			raw_safe_i1[sample] = run(tile4_raw_safe_i1,
+				out, a, b, iterations);
+			raw_i1[sample] = run(tile4_raw_i1, out, a, b, iterations);
+			centered_i1[sample] = run(tile4_centered_i1, out, a, b, iterations);
 			private[sample] = run(tile4_private_consumer, out, a, b, iterations);
 			tile4[sample] = run(tile4_consumer, out, a, b, iterations);
 			frozen[sample] = run(frozen_consumer, out, a, b, iterations);
@@ -243,10 +500,26 @@ int main(int argc, char **argv)
 	const double frozen_median = median(frozen);
 	const double tile4_median = median(tile4);
 	const double private_median = median(private);
+	const double centered_i1_median = median(centered_i1);
+	const double raw_i1_median = median(raw_i1);
+	const double raw_safe_i1_median = median(raw_safe_i1);
+	const double c3center_i1_median = median(c3center_i1);
+	const double raw_private_median = median(raw_private);
+	const double raw_safe_private_median = median(raw_safe_private);
+	const double c3center_private_median = median(c3center_private);
+	const double c3center_late_private_median = median(c3center_late_private);
 	const double official_full_median = median(official_full);
 	const double tile4_full_median = median(tile4_full);
+	const double raw_full_median = median(raw_full);
+	const double raw_safe_full_median = median(raw_safe_full);
+	const double c3center_full_median = median(c3center_full);
+	const double c3center_late_full_median = median(c3center_late_full);
 	const double official_crep_median = median(official_crep);
 	const double tile4_crep_median = median(tile4_crep);
+	const double raw_crep_median = median(raw_crep);
+	const double raw_safe_crep_median = median(raw_safe_crep);
+	const double c3center_crep_median = median(c3center_crep);
+	const double c3center_late_crep_median = median(c3center_late_crep);
 	const double tile4_t10_median = median(tile4_t10);
 	printf("iterations=%u samples=%d official_bm_inv=%.3f frozen_bm_inv=%.3f "
 		"tile4_bm_inv=%.3f private_bm_inv=%.3f "
@@ -254,15 +527,62 @@ int main(int argc, char **argv)
 		"sink=%llu\n", iterations, SAMPLES, official_median, frozen_median,
 		tile4_median, private_median, private_median - official_median,
 		private_median - frozen_median, (unsigned long long)sink);
+	printf("aos_bm_i1 centered=%.3f raw=%.3f saving=%+.3f "
+		"bm_i1_t9_centered=%.3f raw=%.3f saving=%+.3f\n",
+		centered_i1_median, raw_i1_median,
+		centered_i1_median - raw_i1_median,
+		private_median, raw_private_median,
+		private_median - raw_private_median);
+	printf("aos_selective raw_i1=%.3f selective_i1=%.3f "
+		"selective_bm_i1_t9=%.3f selective_cost=%+.3f\n",
+		raw_i1_median, raw_safe_i1_median, raw_safe_private_median,
+		raw_safe_private_median - raw_private_median);
+	printf("aos_c3center i1=%.3f bm_i1_t9=%.3f "
+		"saving_vs_centered=%+.3f\n",
+		c3center_i1_median, c3center_private_median,
+		private_median - c3center_private_median);
+	printf("aos_c3center_late bm_i1_t9=%.3f saving_vs_centered=%+.3f\n",
+		c3center_late_private_median,
+		private_median - c3center_late_private_median);
 	printf("full_2f_b_i official=%.3f tile4_private=%.3f delta=%+.3f "
 		"delta_pct=%+.3f\n", official_full_median, tile4_full_median,
 		tile4_full_median - official_full_median,
 		100.0 * (tile4_full_median / official_full_median - 1.0));
+	printf("full_2f_b_i_raw official=%.3f centered=%.3f raw=%.3f "
+		"raw_vs_official=%+.3f raw_saving=%+.3f\n",
+		official_full_median, tile4_full_median, raw_full_median,
+		raw_full_median - official_full_median,
+		tile4_full_median - raw_full_median);
+	printf("full_2f_b_i_selective official=%.3f raw=%.3f selective=%.3f "
+		"selective_vs_official=%+.3f\n",
+		official_full_median, raw_full_median, raw_safe_full_median,
+		raw_safe_full_median - official_full_median);
+	printf("full_2f_b_i_c3center official=%.3f c3center=%.3f "
+		"delta=%+.3f\n", official_full_median, c3center_full_median,
+		c3center_full_median - official_full_median);
+	printf("full_2f_b_i_c3center_late official=%.3f candidate=%.3f "
+		"delta=%+.3f\n", official_full_median, c3center_late_full_median,
+		c3center_late_full_median - official_full_median);
 	printf("full_2f_b_i_crep official=%.3f tile4_t9=%.3f tile4_t10=%.3f "
 		"t9_delta=%+.3f t10_vs_t9=%+.3f\n", official_crep_median,
 		tile4_crep_median, tile4_t10_median,
 		tile4_crep_median - official_crep_median,
 		tile4_t10_median - tile4_crep_median);
+	printf("full_2f_b_i_crep_raw official=%.3f centered_t9=%.3f raw_t9=%.3f "
+		"raw_vs_official=%+.3f raw_saving=%+.3f\n",
+		official_crep_median, tile4_crep_median, raw_crep_median,
+		raw_crep_median - official_crep_median,
+		tile4_crep_median - raw_crep_median);
+	printf("full_2f_b_i_crep_selective official=%.3f raw=%.3f selective=%.3f "
+		"selective_vs_official=%+.3f\n",
+		official_crep_median, raw_crep_median, raw_safe_crep_median,
+		raw_safe_crep_median - official_crep_median);
+	printf("full_2f_b_i_crep_c3center official=%.3f c3center=%.3f "
+		"delta=%+.3f\n", official_crep_median, c3center_crep_median,
+		c3center_crep_median - official_crep_median);
+	printf("full_2f_b_i_crep_c3center_late official=%.3f candidate=%.3f "
+		"delta=%+.3f\n", official_crep_median, c3center_late_crep_median,
+		c3center_late_crep_median - official_crep_median);
 	printf("addresses official=%p frozen=%p tile4=%p private=%p\n",
 		(void *)(uintptr_t)official_consumer, (void *)(uintptr_t)frozen_consumer,
 		(void *)(uintptr_t)tile4_consumer,

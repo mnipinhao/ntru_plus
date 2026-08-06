@@ -396,6 +396,167 @@ def emit_private_inverse_ranges(path: Path) -> None:
     }, indent=2) + "\n")
 
 
+def emit_raw_aos_inverse_ranges(path: Path) -> None:
+    forward_bound = 10788
+    # REDC(a*b) = high(a*b)-high((low(a*b)*qinv)*q).  The second term
+    # is at most ceil(q/2), independent of the low word.
+    variable_product_bound = (
+        (forward_bound * forward_bound + 65535) // 65536 + 1729
+    )
+    lambda_factors = [
+        lambda_montgomery(k3, q, branch)
+        for k3 in range(3) for branch in range(2) for q in range(32)
+    ]
+    coefficient_bounds = []
+    for wrapped_terms, direct_terms in ((3, 1), (2, 2), (1, 3)):
+        wrapped_bound = product_bound(
+            wrapped_terms * variable_product_bound, lambda_factors)
+        coefficient_bounds.append(
+            wrapped_bound + direct_terms * variable_product_bound)
+    coefficient_bounds.append(4 * variable_product_bound)
+    raw_bm_bound = max(coefficient_bounds)
+
+    bounds = [raw_bm_bound] * 32
+    control_bounds = bounds[:]
+    stages = []
+    unsafe_without_checkpoint = None
+    for length in (2, 4, 8, 16, 32):
+        control_output = control_bounds[:]
+        for base in range(0, 32, length):
+            for j in range(length // 2):
+                low = control_bounds[base + j]
+                high = control_bounds[base + j + length // 2]
+                product = high if length == 2 else product_bound(
+                    high, [mont_root(-j * (32 // length))])
+                control_output[base + j] = low + product
+                control_output[base + j + length // 2] = low + product
+        control_bounds = control_output
+        if max(control_bounds) >= 32768 and unsafe_without_checkpoint is None:
+            unsafe_without_checkpoint = length
+        output = bounds[:]
+        for base in range(0, 32, length):
+            for j in range(length // 2):
+                low = bounds[base + j]
+                high = bounds[base + j + length // 2]
+                product = high if length == 2 else product_bound(
+                    high, [mont_root(-j * (32 // length))])
+                output[base + j] = low + product
+                output[base + j + length // 2] = low + product
+        safe_before_checkpoint = max(output) < 32768
+        stages.append({
+            "length": length,
+            "input_max_abs_bound": max(bounds),
+            "output_max_abs_bound_before_checkpoint": max(output),
+            "safe_before_checkpoint": safe_before_checkpoint,
+            "fully_raw_control_max_abs_bound": max(control_bounds),
+        })
+        bounds = output
+        if length == 8:
+            # These are precisely the low arms of the following length-16
+            # butterflies: physical Q 0..7 and 16..23 (vectors 0,1,4,5).
+            selected = list(range(0, 8)) + list(range(16, 24))
+            for q_index in selected:
+                bounds[q_index] = max(
+                    abs(center10(value))
+                    for value in range(-bounds[q_index], bounds[q_index] + 1)
+                )
+            stages[-1]["selective_center_q"] = selected
+            stages[-1]["output_max_abs_bound_after_checkpoint"] = max(bounds)
+
+    assert raw_bm_bound == 14020
+    assert stages[0]["output_max_abs_bound_before_checkpoint"] == 28040
+    assert unsafe_without_checkpoint == 16
+    assert all(stage["output_max_abs_bound_before_checkpoint"] < 32768
+               for stage in stages[:3])
+    assert all(stage["output_max_abs_bound_before_checkpoint"] < 32768
+               for stage in stages[3:])
+
+    # Refine by physical Q and quartic coefficient.  The forward bound is
+    # lane-dependent, and lambda is fixed by (tile,Q).  This proves that
+    # c0..c2 need no checkpoint; centering only c3 at the SoA BM boundary
+    # makes every subsequent inverse butterfly int16-safe.
+    forward_q_bounds = [1728] * 32
+    for stage in range(1, 6):
+        distance = 32 >> stage
+        output = forward_q_bounds[:]
+        for base in range(0, 32, 2 * distance):
+            factor = mont_root(forward_power(stage, base))
+            for j in range(distance):
+                low = forward_q_bounds[base + j]
+                high = forward_q_bounds[base + j + distance]
+                product = high if stage == 1 else product_bound(high, [factor])
+                output[base + j] = low + product
+                output[base + j + distance] = low + product
+        forward_q_bounds = output
+
+    coefficient_q_bounds = [[] for _ in range(4)]
+    for q_index, q_bound in enumerate(forward_q_bounds):
+        variable_bound = (
+            (q_bound * q_bound + 65535) // 65536 + 1729
+        )
+        q_lambdas = [lambda_montgomery(k3, q_index, branch)
+                     for k3 in range(3) for branch in range(2)]
+        for coefficient, (wrapped_terms, direct_terms) in enumerate(
+                ((3, 1), (2, 2), (1, 3), (0, 4))):
+            wrapped = 0 if wrapped_terms == 0 else product_bound(
+                wrapped_terms * variable_bound, q_lambdas)
+            coefficient_q_bounds[coefficient].append(
+                wrapped + direct_terms * variable_bound)
+    coefficient_q_bounds[3] = [
+        max(abs(center10(value)) for value in range(-bound, bound + 1))
+        for bound in coefficient_q_bounds[3]
+    ]
+
+    c3center_records = []
+    for coefficient, initial in enumerate(coefficient_q_bounds):
+        lane_bounds = initial[:]
+        coefficient_stages = []
+        for length in (2, 4, 8, 16, 32):
+            output = lane_bounds[:]
+            for base in range(0, 32, length):
+                for j in range(length // 2):
+                    low = lane_bounds[base + j]
+                    high = lane_bounds[base + j + length // 2]
+                    product = high if length == 2 else product_bound(
+                        high, [mont_root(-j * (32 // length))])
+                    output[base + j] = low + product
+                    output[base + j + length // 2] = low + product
+            coefficient_stages.append({
+                "length": length,
+                "max_abs_bound": max(output),
+                "signed_int16_safe": max(output) < 32768,
+            })
+            lane_bounds = output
+        assert all(record["signed_int16_safe"]
+                   for record in coefficient_stages)
+        c3center_records.append({
+            "coefficient": coefficient,
+            "bm_max_abs_bound": max(initial),
+            "bm_finalizer": "center10" if coefficient == 3 else "none",
+            "inverse_stages": coefficient_stages,
+            "terminal_max_abs_bound": max(lane_bounds),
+        })
+    path.write_text(json.dumps({
+        "input": "N5 TILE4 AoS e=0 with forward abs bound 10788",
+        "method": "Montgomery interval bound plus lane-wise inverse butterflies",
+        "forward_input_abs_bound": forward_bound,
+        "variable_montgomery_product_abs_bound": variable_product_bound,
+        "raw_basemul_coefficient_abs_bounds": coefficient_bounds,
+        "raw_basemul_abs_bound": raw_bm_bound,
+        "raw_stage1_double_abs_bound": 2 * raw_bm_bound,
+        "fully_raw_first_unsafe_length": unsafe_without_checkpoint,
+        "checkpoint": "after length-8; center physical vectors 0,1,4,5",
+        "stages": stages,
+        "all_int16_add_sub_safe_with_checkpoint": True,
+        "c3center_aos_path": {
+            "forward_q_max_abs_bound": max(forward_q_bounds),
+            "coefficient_records": c3center_records,
+            "all_int16_add_sub_safe": True,
+            "checkpoint": "center only coefficient plane c3 before AoS transpose",
+        },
+    }, indent=2) + "\n")
+
+
 def emit_inverse_tail_header(path: Path) -> None:
     top_inv = pow(1445, -1, Q)
     norm_inv = pow(96, -1, Q)
@@ -650,6 +811,11 @@ def emit_scale_contract(path: Path) -> None:
             {"operation": "basemul-scale-output",
              "layout": "tile4-physical-Q", "r_exponent": -1,
              "legal_consumers": ["inverse-tile4"]},
+            {"operation": "basemul-c3center-private-output",
+             "layout": "tile4-physical-Q", "r_exponent": -1,
+             "range_policy": "c0-c2 raw; c3 center10",
+             "legal_consumers": ["inverse-tile4"],
+             "scope": "decapsulation-only"},
             {"operation": "basemul-scale-private-output",
              "layout": "tile4-private-coefficient-planes",
              "r_exponent": -1,
@@ -779,6 +945,7 @@ def main() -> None:
     basemul_asm_path = GENERATED / "tile4_basemul_constants.inc"
     private_inverse_asm_path = GENERATED / "tile4_private_inverse_constants.inc"
     private_inverse_range_path = GENERATED / "tile4_private_inverse_range.json"
+    raw_aos_inverse_range_path = GENERATED / "tile4_raw_aos_inverse_range.json"
     inverse_tail_path = GENERATED / "tile4_inverse_tail_constants.h"
     inverse_tail_asm_path = GENERATED / "tile4_inverse_tail_constants.inc"
     inverse_tail_range_path = GENERATED / "tile4_inverse_tail_range.json"
@@ -793,6 +960,7 @@ def main() -> None:
     emit_basemul_asm(basemul_asm_path)
     emit_private_inverse_asm(private_inverse_asm_path)
     emit_private_inverse_ranges(private_inverse_range_path)
+    emit_raw_aos_inverse_ranges(raw_aos_inverse_range_path)
     emit_inverse_tail_header(inverse_tail_path)
     emit_inverse_tail_asm(inverse_tail_asm_path)
     emit_inverse_tail_ranges(inverse_tail_range_path)
@@ -845,6 +1013,8 @@ def main() -> None:
             private_inverse_asm_path.read_bytes()).hexdigest(),
         "private_inverse_range_sha256": hashlib.sha256(
             private_inverse_range_path.read_bytes()).hexdigest(),
+        "raw_aos_inverse_range_sha256": hashlib.sha256(
+            raw_aos_inverse_range_path.read_bytes()).hexdigest(),
         "inverse_tail_sha256": hashlib.sha256(
             inverse_tail_path.read_bytes()).hexdigest(),
         "inverse_tail_asm_sha256": hashlib.sha256(

@@ -1,0 +1,40 @@
+{
+  "benchmark_kind": "same-binary-directional-short",
+  "unit": "TSC ticks per call",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "basemul_tsc": {
+    "b2_centered_aos": 433.518,
+    "raw_aos": 391.131,
+    "c3center_aos": 407.567,
+    "c3center_late_aos": 398.542
+  },
+  "consumer_tsc": {
+    "b2_plus_i1_plus_t9": 884.495,
+    "raw_plus_i1_plus_t9": 847.751,
+    "c3center_late_plus_i1_plus_t9": 851.648,
+    "c3center_late_saving_vs_b2": 32.847
+  },
+  "full_2f_b_i_tsc": {
+    "official": 1712.184,
+    "c3center_late": 1703.792,
+    "delta": -8.392
+  },
+  "full_2f_b_i_crepmod3_tsc": {
+    "official": 1830.726,
+    "centered_t9": 1850.340,
+    "fully_raw_t9": 1812.776,
+    "proof_safe_inverse_selective": 1839.307,
+    "proof_safe_c3center": 1826.854,
+    "proof_safe_c3center_late": 1822.669,
+    "c3center_late_delta_vs_official": -8.057
+  },
+  "range": {
+    "fully_raw_first_conservative_failure": "inverse-length16",
+    "selected_contract": "c0-c2 raw; c3 center10 before AoS transpose",
+    "proof_artifact": "generated/tile4_raw_aos_inverse_range.json",
+    "all_int16_add_sub_safe": true
+  },
+  "correctness": "1000-case mod-q, T9 and crepmod3 differential pass",
+  "decision": "retain-c3center-late-require-serious-fixed-placement-gate"
+}

@@ -1,0 +1,212 @@
+{
+  "input": "N5 TILE4 AoS e=0 with forward abs bound 10788",
+  "method": "Montgomery interval bound plus lane-wise inverse butterflies",
+  "forward_input_abs_bound": 10788,
+  "variable_montgomery_product_abs_bound": 3505,
+  "raw_basemul_coefficient_abs_bounds": [
+    5504,
+    8917,
+    12331,
+    14020
+  ],
+  "raw_basemul_abs_bound": 14020,
+  "raw_stage1_double_abs_bound": 28040,
+  "fully_raw_first_unsafe_length": 16,
+  "checkpoint": "after length-8; center physical vectors 0,1,4,5",
+  "stages": [
+    {
+      "length": 2,
+      "input_max_abs_bound": 14020,
+      "output_max_abs_bound_before_checkpoint": 28040,
+      "safe_before_checkpoint": true,
+      "fully_raw_control_max_abs_bound": 28040
+    },
+    {
+      "length": 4,
+      "input_max_abs_bound": 28040,
+      "output_max_abs_bound_before_checkpoint": 29920,
+      "safe_before_checkpoint": true,
+      "fully_raw_control_max_abs_bound": 29920
+    },
+    {
+      "length": 8,
+      "input_max_abs_bound": 29920,
+      "output_max_abs_bound_before_checkpoint": 32145,
+      "safe_before_checkpoint": true,
+      "fully_raw_control_max_abs_bound": 32145,
+      "selective_center_q": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "output_max_abs_bound_after_checkpoint": 32145
+    },
+    {
+      "length": 16,
+      "input_max_abs_bound": 32145,
+      "output_max_abs_bound_before_checkpoint": 5800,
+      "safe_before_checkpoint": true,
+      "fully_raw_control_max_abs_bound": 34441
+    },
+    {
+      "length": 32,
+      "input_max_abs_bound": 5800,
+      "output_max_abs_bound_before_checkpoint": 7603,
+      "safe_before_checkpoint": true,
+      "fully_raw_control_max_abs_bound": 36999
+    }
+  ],
+  "all_int16_add_sub_safe_with_checkpoint": true,
+  "c3center_aos_path": {
+    "forward_q_max_abs_bound": 10788,
+    "coefficient_records": [
+      {
+        "coefficient": 0,
+        "bm_max_abs_bound": 5434,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 10868,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 12650,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 14495,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 16466,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 18403,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 18403
+      },
+      {
+        "coefficient": 1,
+        "bm_max_abs_bound": 8847,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 17694,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 19441,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 21407,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 23399,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 25464,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 25464
+      },
+      {
+        "coefficient": 2,
+        "bm_max_abs_bound": 12309,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 24618,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 26232,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 28300,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 30299,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 32557,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 32557
+      },
+      {
+        "coefficient": 3,
+        "bm_max_abs_bound": 2359,
+        "bm_finalizer": "center10",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 4718,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 6467,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 8304,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 10177,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 12146,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 12146
+      }
+    ],
+    "all_int16_add_sub_safe": true,
+    "checkpoint": "center only coefficient plane c3 before AoS transpose"
+  }
+}

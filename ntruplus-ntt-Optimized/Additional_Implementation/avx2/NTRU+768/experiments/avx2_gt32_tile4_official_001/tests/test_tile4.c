@@ -337,6 +337,52 @@ int main(void)
 		compare_exact("basemul-b2-asm", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_raw_aos_private_asm(alias, input, input);
+		compare_mod_q("basemul-raw-private-aos", trial, ref, alias,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_all_pair_asm(serial_got, alias);
+		gt32_tile4_inverse_all_pair_asm(general_ref, got);
+		compare_mod_q("raw-bm-to-inverse-aos", trial, general_ref,
+			serial_got, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse,
+			serial_got);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse_asm,
+			general_ref);
+		compare_mod_q("raw-bm-to-t9-aos", trial, private_inverse_asm,
+			private_inverse, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("raw-bm-to-t9-crepmod3", trial,
+			private_inverse_asm, private_inverse);
+		gt32_tile4_inverse_all_pair_selective_asm(serial_got, alias);
+		compare_mod_q("raw-bm-to-inverse-aos-selective", trial, general_ref,
+			serial_got, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse,
+			serial_got);
+		compare_mod_q("raw-bm-to-t9-aos-selective", trial,
+			private_inverse_asm, private_inverse, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("raw-bm-to-t9-selective-crepmod3", trial,
+			private_inverse_asm, private_inverse);
+		gt32_tile4_basemul_c3center_aos_private_asm(alias, input, input);
+		compare_mod_q("basemul-c3center-private-aos", trial, ref, alias,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_all_pair_asm(serial_got, alias);
+		compare_mod_q("c3center-bm-to-inverse-aos", trial, general_ref,
+			serial_got, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse,
+			serial_got);
+		compare_mod_q("c3center-bm-to-t9-aos", trial,
+			private_inverse_asm, private_inverse, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("c3center-bm-to-t9-crepmod3", trial,
+			private_inverse_asm, private_inverse);
+		gt32_tile4_basemul_c3center_late_aos_private_asm(alias, input, input);
+		compare_mod_q("basemul-c3center-late-private-aos", trial, ref, alias,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_all_pair_asm(serial_got, alias);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse,
+			serial_got);
+		compare_mod_q("c3center-late-bm-to-t9-aos", trial,
+			private_inverse_asm, private_inverse, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("c3center-late-bm-to-t9-crepmod3", trial,
+			private_inverse_asm, private_inverse);
 		gt32_tile4_basemul_b3_late_asm(got, input, input);
 		compare_exact("basemul-b3-late-asm", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);

@@ -15,6 +15,7 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_basemul_constants.inc generated/tile4_scale_contract.json \
 	generated/tile4_private_inverse_constants.inc \
 	generated/tile4_private_inverse_range.json \
+	generated/tile4_raw_aos_inverse_range.json \
 	generated/tile4_inverse_tail_constants.h \
 	generated/tile4_inverse_tail_constants.inc \
 	generated/tile4_inverse_tail_range.json
@@ -55,7 +56,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
-		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|raw_soa_private)_asm'
+		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|raw_(soa|aos)_private|c3center(_late)?_aos_private)_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \

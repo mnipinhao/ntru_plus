@@ -80,7 +80,8 @@ int main(int argc, char **argv)
 	int16_t out[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	double official[20], frozen[20], b0[20], b1[20], k1[20], k2[20], k2_asm[20];
 	double b2[20], b3[20], b4b[20];
-	double general[20], private_soa[20], raw_soa[20];
+	double general[20], private_soa[20], raw_soa[20], raw_aos[20], c3center[20];
+	double c3center_late[20];
 	double centered_pipeline[20], raw_pipeline[20];
 	cpu_set_t cpuset;
 
@@ -107,6 +108,11 @@ int main(int argc, char **argv)
 	(void)measure(gt32_tile4_basemul_general_b2_asm, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_scale_soa_private_asm, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_raw_soa_private_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_raw_aos_private_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_c3center_aos_private_asm,
+		out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_c3center_late_aos_private_asm,
+		out, a, b, 100);
 	(void)measure(centered_soa_inverse, out, a, b, 100);
 	(void)measure(raw_soa_inverse, out, a, b, 100);
 
@@ -135,11 +141,27 @@ int main(int argc, char **argv)
 				out, a, b, iterations);
 			raw_soa[sample] = measure(gt32_tile4_basemul_raw_soa_private_asm,
 				out, a, b, iterations);
+			raw_aos[sample] = measure(gt32_tile4_basemul_raw_aos_private_asm,
+				out, a, b, iterations);
+			c3center[sample] = measure(
+				gt32_tile4_basemul_c3center_aos_private_asm,
+				out, a, b, iterations);
+			c3center_late[sample] = measure(
+				gt32_tile4_basemul_c3center_late_aos_private_asm,
+				out, a, b, iterations);
 			centered_pipeline[sample] = measure(centered_soa_inverse,
 				out, a, b, iterations);
 			raw_pipeline[sample] = measure(raw_soa_inverse,
 				out, a, b, iterations);
 		} else {
+			c3center_late[sample] = measure(
+				gt32_tile4_basemul_c3center_late_aos_private_asm,
+				out, a, b, iterations);
+			c3center[sample] = measure(
+				gt32_tile4_basemul_c3center_aos_private_asm,
+				out, a, b, iterations);
+			raw_aos[sample] = measure(gt32_tile4_basemul_raw_aos_private_asm,
+				out, a, b, iterations);
 			raw_pipeline[sample] = measure(raw_soa_inverse,
 				out, a, b, iterations);
 			centered_pipeline[sample] = measure(centered_soa_inverse,
@@ -183,6 +205,9 @@ int main(int argc, char **argv)
 	const double general_median = median(general);
 	const double private_median = median(private_soa);
 	const double raw_median = median(raw_soa);
+	const double raw_aos_median = median(raw_aos);
+	const double c3center_median = median(c3center);
+	const double c3center_late_median = median(c3center_late);
 	const double centered_pipeline_median = median(centered_pipeline);
 	const double raw_pipeline_median = median(raw_pipeline);
 	printf("iterations=%u samples=20 official=%.3f frozen_rminus1=%.3f "
@@ -191,10 +216,13 @@ int main(int argc, char **argv)
 		"tile4_b2_asm=%.3f tile4_b3_late=%.3f "
 		"tile4_b4b_partial=%.3f "
 		"general_e0=%.3f private_soa_e_minus1=%.3f raw_soa_e_minus1=%.3f "
+		"raw_aos_e_minus1=%.3f c3center_aos_e_minus1=%.3f "
+		"c3center_late_aos_e_minus1=%.3f "
 		"b2_vs_official=%.3f b2_vs_official_pct=%.3f sink=%llu\n",
 		iterations, official_median, frozen_median, b0_median, b1_median,
 		k1_median, k2_median, k2_asm_median, b2_median, b3_median, b4b_median,
-		general_median, private_median, raw_median,
+		general_median, private_median, raw_median, raw_aos_median,
+		c3center_median, c3center_late_median,
 		b2_median - official_median,
 		100.0 * (b2_median / official_median - 1.0),
 		(unsigned long long)sink);

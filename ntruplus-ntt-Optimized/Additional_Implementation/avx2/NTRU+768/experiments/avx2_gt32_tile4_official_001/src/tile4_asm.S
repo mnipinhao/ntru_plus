@@ -412,6 +412,45 @@
 	STORE_TILE
 .endm
 
+.macro CENTER_I1_VECTOR value,tmp
+	vpmulhrsw .Ltile4_i1_center10(%rip), %\value, %\tmp
+	vpmullw %ymm15, %\tmp, %\tmp
+	vpsubw %\tmp, %\value, %\value
+.endm
+
+.macro CENTER_I1_LOW_ARMS4
+	vpmulhrsw %ymm14, %ymm0, %ymm8
+	vpmulhrsw %ymm14, %ymm1, %ymm9
+	vpmulhrsw %ymm14, %ymm4, %ymm10
+	vpmulhrsw %ymm14, %ymm5, %ymm11
+	vpmullw %ymm15, %ymm8, %ymm8
+	vpmullw %ymm15, %ymm9, %ymm9
+	vpmullw %ymm15, %ymm10, %ymm10
+	vpmullw %ymm15, %ymm11, %ymm11
+	vpsubw %ymm8, %ymm0, %ymm0
+	vpsubw %ymm9, %ymm1, %ymm1
+	vpsubw %ymm10, %ymm4, %ymm4
+	vpsubw %ymm11, %ymm5, %ymm5
+.endm
+
+/* Proof-safe raw-BM consumer: center only the next length-16 low arms. */
+.macro INVERSE_BODY_PAIR_SELECTIVE
+	LOAD_TILE
+	RAW_LOCAL_QWORD_PAIR %ymm0,%ymm1
+	RAW_LOCAL_QWORD_PAIR %ymm2,%ymm3
+	RAW_LOCAL_QWORD_PAIR %ymm4,%ymm5
+	RAW_LOCAL_QWORD_PAIR %ymm6,%ymm7
+	MONT_LOCAL_HALF_PAIR %ymm0,%ymm1, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 0
+	MONT_LOCAL_HALF_PAIR %ymm2,%ymm3, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 32
+	MONT_LOCAL_HALF_PAIR %ymm4,%ymm5, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 64
+	MONT_LOCAL_HALF_PAIR %ymm6,%ymm7, .Ltile4_inv_s1_pair_qinv, .Ltile4_inv_s1_pair_factor, 96
+	MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_inv_s2_qinv, .Ltile4_inv_s2_factor
+	CENTER_I1_LOW_ARMS4
+	MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_inv_s3_qinv, .Ltile4_inv_s3_factor
+	MONT_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7, .Ltile4_inv_s4_qinv, .Ltile4_inv_s4_factor
+	STORE_TILE
+.endm
+
 .p2align 5
 .globl gt32_tile4_forward_tile_asm
 .type gt32_tile4_forward_tile_asm,@function
@@ -533,6 +572,24 @@ gt32_tile4_inverse_all_pair_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_inverse_all_pair_asm,.-gt32_tile4_inverse_all_pair_asm
+
+.p2align 5
+.globl gt32_tile4_inverse_all_pair_selective_asm
+.type gt32_tile4_inverse_all_pair_selective_asm,@function
+gt32_tile4_inverse_all_pair_selective_asm:
+	vmovdqa .Ltile4_q(%rip), %ymm15
+	vmovdqa .Ltile4_i1_center10(%rip), %ymm14
+	movl $6, %ecx
+.p2align 5
+.Ltile4_inverse_all_pair_selective_loop:
+	INVERSE_BODY_PAIR_SELECTIVE
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Ltile4_inverse_all_pair_selective_loop
+	vzeroupper
+	ret
+.size gt32_tile4_inverse_all_pair_selective_asm,.-gt32_tile4_inverse_all_pair_selective_asm
 
 .macro FRONTEND_LOAD_FIXED low,high,original_high,even,odd
 	vmovq \even(%rsi), \low
@@ -899,6 +956,11 @@ gt32_tile4_forward_full_fixed_pair_asm:
 .size gt32_tile4_forward_full_fixed_pair_asm,.-gt32_tile4_forward_full_fixed_pair_asm
 
 .section .rodata
+.p2align 5
+.Ltile4_i1_center10:
+	.rept 16
+	.short 10
+	.endr
 #include "../generated/tile4_constants.inc"
 
 .section .note.GNU-stack,"",@progbits
