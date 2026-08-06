@@ -7,6 +7,19 @@
 #define GT32_TILE4_WORDS 128
 #define GT32_TILE4_TILES 6
 #define GT32_TILE4_POLY_WORDS (GT32_TILE4_WORDS * GT32_TILE4_TILES)
+#define GT32_TILE4_SERIALIZED_BYTES 1152
+
+/* Correctness-first P1 unpackers; inputs and outputs must be disjoint. */
+int gt32_tile4_frombytes_aos_ref(int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
+int gt32_tile4_frombytes_bm_soa_ref(int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
+int gt32_tile4_frombytes_aos_official_bridge(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
+int gt32_tile4_frombytes_bm_soa_official_bridge(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
 
 /* Native quartic multiplication: TILE4 e=0 x e=0 -> TILE4 e=-1. */
 void gt32_tile4_basemul_b0(int16_t out[GT32_TILE4_POLY_WORDS],
@@ -70,6 +83,11 @@ void gt32_tile4_basemul_c3center_late_aos_private_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* P1 mixed island: private BM SoA e=0 x TILE4 AoS e=0 -> lazy AoS e=-1. */
+void gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a_soa[GT32_TILE4_POLY_WORDS],
+	const int16_t b_aos[GT32_TILE4_POLY_WORDS]);
 
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);

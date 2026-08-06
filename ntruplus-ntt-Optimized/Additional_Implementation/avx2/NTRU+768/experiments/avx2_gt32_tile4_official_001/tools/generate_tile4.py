@@ -551,6 +551,50 @@ def emit_raw_aos_inverse_ranges(path: Path) -> None:
             "inverse_stages": coefficient_stages,
             "terminal_max_abs_bound": max(lane_bounds),
         })
+
+    canonical_input_bound = Q - 1
+    canonical_product_bound = (
+        (canonical_input_bound * canonical_input_bound + 65535) // 65536
+        + 1729
+    )
+    mixed_initial_bounds = []
+    for wrapped_terms, direct_terms in ((3, 1), (2, 2), (1, 3), (0, 4)):
+        wrapped = 0 if wrapped_terms == 0 else product_bound(
+            wrapped_terms * canonical_product_bound, lambda_factors)
+        mixed_initial_bounds.append(
+            wrapped + direct_terms * canonical_product_bound)
+    mixed_initial_bounds[3] = max(
+        abs(center10(value))
+        for value in range(-mixed_initial_bounds[3], mixed_initial_bounds[3] + 1)
+    )
+    mixed_records = []
+    for coefficient, initial_bound in enumerate(mixed_initial_bounds):
+        lane_bounds = [initial_bound] * 32
+        stages_for_coefficient = []
+        for length in (2, 4, 8, 16, 32):
+            output = lane_bounds[:]
+            for base in range(0, 32, length):
+                for j in range(length // 2):
+                    low = lane_bounds[base + j]
+                    high = lane_bounds[base + j + length // 2]
+                    product = high if length == 2 else product_bound(
+                        high, [mont_root(-j * (32 // length))])
+                    output[base + j] = low + product
+                    output[base + j + length // 2] = low + product
+            assert max(output) < 32768
+            stages_for_coefficient.append({
+                "length": length,
+                "max_abs_bound": max(output),
+                "signed_int16_safe": True,
+            })
+            lane_bounds = output
+        mixed_records.append({
+            "coefficient": coefficient,
+            "bm_max_abs_bound": initial_bound,
+            "bm_finalizer": "center10" if coefficient == 3 else "none",
+            "inverse_stages": stages_for_coefficient,
+            "terminal_max_abs_bound": max(lane_bounds),
+        })
     path.write_text(json.dumps({
         "input": "N5 TILE4 AoS e=0 with forward abs bound 10788",
         "method": "Montgomery interval bound plus lane-wise inverse butterflies",
@@ -568,6 +612,14 @@ def emit_raw_aos_inverse_ranges(path: Path) -> None:
             "coefficient_records": c3center_records,
             "all_int16_add_sub_safe": True,
             "checkpoint": "center only coefficient plane c3 before AoS transpose",
+        },
+        "mixed_frombytes_soa_aos_path": {
+            "input_range": [0, Q - 1],
+            "input_r_exponent": 0,
+            "variable_montgomery_product_abs_bound": canonical_product_bound,
+            "coefficient_records": mixed_records,
+            "all_int16_add_sub_safe": True,
+            "legal_consumer": "I1 AoS inverse then T9 only",
         },
     }, indent=2) + "\n")
 
@@ -820,6 +872,13 @@ def emit_scale_contract(path: Path) -> None:
              "r_exponent": 0},
             {"operation": "basemul-input-b", "layout": "tile4-physical-Q",
              "r_exponent": 0},
+            {"operation": "frombytes-bm-soa-private-output",
+             "layout": "tile4-private-coefficient-planes",
+             "r_exponent": 0, "range": [0, Q - 1],
+             "legal_consumers": ["basemul-scale-soa-aos-private"],
+             "forbidden_consumers": ["add", "sub", "inverse-tile4",
+                                     "tobytes-aos", "serialization"],
+             "scope": "single-use decoded operand only"},
             {"operation": "basemul-general-output",
              "layout": "tile4-physical-Q", "r_exponent": 0,
              "legal_consumers": ["add", "sub", "tobytes"]},
@@ -834,6 +893,14 @@ def emit_scale_contract(path: Path) -> None:
                                      "tobytes", "serialization"],
              "alias": "out-distinct-from-a-and-b",
              "scope": "decapsulation-only"},
+            {"operation": "basemul-scale-soa-aos-private-output",
+             "layout": "tile4-physical-Q", "r_exponent": -1,
+             "range_policy": "c0-c2 raw; c3 center10",
+             "legal_consumers": ["inverse-tile4"],
+             "forbidden_consumers": ["add", "sub", "tobytes",
+                                     "serialization"],
+             "alias": "three-distinct-buffers",
+             "scope": "decapsulation-first-product-only"},
             {"operation": "basemul-scale-private-output",
              "layout": "tile4-private-coefficient-planes",
              "r_exponent": -1,
@@ -918,6 +985,83 @@ def emit_mapping(path: Path) -> None:
                         ])
 
 
+def serialized_mappings() -> tuple[list[int], list[int], list[dict[str, int]]]:
+    q_order = [0, 4, 8, 12, 1, 5, 9, 13,
+               2, 6, 10, 14, 3, 7, 11, 15]
+    position = [0] * 16
+    for lane, q_value in enumerate(q_order):
+        position[q_value] = lane
+    inverse_block = {}
+    for k3 in range(3):
+        for physical_q in range(32):
+            block = (32 * k3 + 3 * physical_q) % 96
+            assert block not in inverse_block
+            inverse_block[block] = (k3, physical_q)
+    aos = []
+    soa = []
+    records = []
+    for serialized in range(768):
+        chunk = serialized // 128
+        within = serialized % 128
+        official_word = 128 * chunk + within // 8 + 16 * (within % 8)
+        branch = official_word // 384
+        block = (official_word % 384) // 4
+        coefficient = official_word % 4
+        k3, physical_q = inverse_block[block]
+        tile = 2 * k3 + branch
+        aos_word = (128 * tile + 16 * (physical_q // 4)
+                    + 4 * (physical_q % 4) + coefficient)
+        group = 2 * tile + physical_q // 16
+        soa_word = (64 * group + 16 * coefficient
+                    + position[physical_q % 16])
+        aos.append(aos_word)
+        soa.append(soa_word)
+        records.append({
+            "serialized_component": serialized,
+            "official_word": official_word,
+            "branch": branch,
+            "official_block": block,
+            "quartic_coefficient": coefficient,
+            "k3": k3,
+            "physical_q": physical_q,
+            "tile": tile,
+            "tile4_aos_word": aos_word,
+            "bm_soa_group": group,
+            "bm_soa_lane": position[physical_q % 16],
+            "bm_soa_word": soa_word,
+        })
+    assert sorted(aos) == list(range(768))
+    assert sorted(soa) == list(range(768))
+    return aos, soa, records
+
+
+def emit_serialized_mapping(header: Path, metadata: Path) -> None:
+    aos, soa, records = serialized_mappings()
+    with header.open("w") as output:
+        output.write("#ifndef NTRUPLUS_TILE4_SERIALIZED_MAPPING_H\n")
+        output.write("#define NTRUPLUS_TILE4_SERIALIZED_MAPPING_H\n\n")
+        output.write("#include <stdint.h>\n\n")
+        for name, values in (("gt32_tile4_serialized_to_aos", aos),
+                             ("gt32_tile4_serialized_to_bm_soa", soa)):
+            output.write(f"static const uint16_t {name}[768] = {{\n")
+            for offset in range(0, 768, 16):
+                row = ", ".join(str(value) for value in values[offset:offset + 16])
+                output.write(f"\t{row},\n")
+            output.write("};\n\n")
+        output.write("#endif\n")
+    metadata.write_text(json.dumps({
+        "serialized_format": "768 sequential 12-bit canonical components",
+        "official_pack_permutation":
+            "official_word=128*(slot/128)+(slot%128)/8+16*(slot%8)",
+        "official_word": "384*branch+4*block+coefficient",
+        "tile4_aos": "128*tile+16*(Q/4)+4*(Q%4)+coefficient",
+        "bm_soa": "64*(2*tile+Q/16)+16*coefficient+position[Q%16]",
+        "bm_soa_q_order": [0, 4, 8, 12, 1, 5, 9, 13,
+                            2, 6, 10, 14, 3, 7, 11, 15],
+        "records": records,
+    }, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -987,6 +1131,8 @@ def main() -> None:
     inverse_tail_asm_path = GENERATED / "tile4_inverse_tail_constants.inc"
     inverse_tail_range_path = GENERATED / "tile4_inverse_tail_range.json"
     scale_path = GENERATED / "tile4_scale_contract.json"
+    serialized_header_path = GENERATED / "tile4_serialized_mapping.h"
+    serialized_metadata_path = GENERATED / "tile4_serialized_mapping.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1002,6 +1148,7 @@ def main() -> None:
     emit_inverse_tail_asm(inverse_tail_asm_path)
     emit_inverse_tail_ranges(inverse_tail_range_path)
     emit_scale_contract(scale_path)
+    emit_serialized_mapping(serialized_header_path, serialized_metadata_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1060,6 +1207,10 @@ def main() -> None:
             inverse_tail_range_path.read_bytes()).hexdigest(),
         "scale_contract_sha256": hashlib.sha256(
             scale_path.read_bytes()).hexdigest(),
+        "serialized_mapping_header_sha256": hashlib.sha256(
+            serialized_header_path.read_bytes()).hexdigest(),
+        "serialized_mapping_metadata_sha256": hashlib.sha256(
+            serialized_metadata_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

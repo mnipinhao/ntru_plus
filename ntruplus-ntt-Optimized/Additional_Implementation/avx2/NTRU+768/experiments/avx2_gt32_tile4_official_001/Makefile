@@ -18,16 +18,20 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_raw_aos_inverse_range.json \
 	generated/tile4_inverse_tail_constants.h \
 	generated/tile4_inverse_tail_constants.inc \
-	generated/tile4_inverse_tail_range.json
+	generated/tile4_inverse_tail_range.json \
+	generated/tile4_serialized_mapping.h \
+	generated/tile4_serialized_mapping.json
 SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
-	src/tile4_inverse_tail.c src/tile4_inverse_tail_asm.S src/tile4_asm.S \
+	src/tile4_pack.c src/tile4_inverse_tail.c \
+	src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 	src/tile4_basemul_asm.S src/tile4_inverse_private_asm.S \
 	tests/test_tile4.c
 
 .PHONY: all generate check test sanitize audit bench-short bench-official-short \
 	bench-official-cold bench-inverse-short bench-consumer-short \
 	bench-basemul-short bench-promotion promotion-serious \
-	promotion-serious-reversed promotion-pmu promotion-symbols clean
+	promotion-serious-reversed promotion-pmu promotion-symbols \
+	bench-mixed-frombytes-short clean
 
 all: test
 
@@ -57,7 +61,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
-		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|raw_(soa|aos)_private|c3center(_late)?_aos_private)_asm'
+		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|scale_soa_aos_to_aos_private|raw_(soa|aos)_private|c3center(_late)?_aos_private)_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -89,6 +93,10 @@ bench-consumer-short: generate $(BUILD)/bench_consumer_short
 bench-basemul-short: generate $(BUILD)/bench_basemul_short
 	$(BUILD)/bench_basemul_short 2000
 
+bench-mixed-frombytes-short: generate $(BUILD)/bench_mixed_frombytes
+	$(PYTHON) tools/run_mixed_frombytes.py $(BUILD)/bench_mixed_frombytes \
+		--iterations 2000 --output results/tile4-mixed-frombytes-short.json
+
 bench-promotion: generate $(BUILD)/bench_promotion
 	$(BUILD)/bench_promotion 100000 0
 
@@ -116,15 +124,19 @@ $(BUILD):
 	mkdir -p $@
 
 $(BUILD)/test_tile4: $(SOURCES) src/tile4.h $(GEN) \
-		$(BUILD)/parent_ntt.o $(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+		$(BUILD)/parent_ntt.o $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -Werror -Isrc -o $@ $(SOURCES) $(BUILD)/parent_ntt.o \
-		$(BUILD)/tile4_inverse_tail_isolated.o
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c
 
 $(BUILD)/test_tile4_sanitize: $(SOURCES) src/tile4.h $(GEN) \
-		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -O1 -fno-omit-frame-pointer \
 		-fsanitize=address,undefined -Isrc -o $@ $(SOURCES) \
-		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o
+		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c
 
 $(BUILD)/parent_ntt.o: $(REFERENCE) | $(BUILD)
 	$(CC) $(CFLAGS) -Wno-conversion -Wno-sign-conversion -c -o $@ $<
@@ -217,6 +229,15 @@ $(BUILD)/bench_consumer_short: src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
 		$(OFFICIAL)/asm/crepmod3.s \
 		$(OFFICIAL)/consts.c
+
+$(BUILD)/bench_mixed_frombytes: src/tile4_pack.c src/tile4_asm.S \
+		src/tile4_basemul_asm.S bench/bench_mixed_frombytes.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o $(OFFICIAL)/asm/pack.s \
+		$(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ src/tile4_pack.c \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		bench/bench_mixed_frombytes.c $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c
 
 $(BUILD)/bench_promotion: src/tile4_asm.S src/tile4_basemul_asm.S \
 		bench/bench_promotion.c $(GEN) $(BUILD)/tile4_inverse_tail_isolated.o \

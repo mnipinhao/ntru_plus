@@ -5,12 +5,14 @@
 
 #include "tile4.h"
 #include "../generated/tile4_basemul_constants.h"
+#include "../generated/tile4_serialized_mapping.h"
 
 #define TEST_QINV 12929
 #define TEST_RSQ 867
 
 void ntt_gt_rowbitrevlayout(int16_t r[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS]);
+int poly_frombytes(int16_t *r, const uint8_t *a);
 
 static uint64_t rng_state = UINT64_C(0x6a09e667f3bcc909);
 
@@ -175,6 +177,29 @@ static int16_t crepmod3_contract(int16_t value)
 	return (int16_t)(value - 3 * quotient);
 }
 
+static uint16_t canonical_u12(int16_t value)
+{
+	int32_t result = value % GT32_TILE4_Q;
+	if (result < 0)
+		result += GT32_TILE4_Q;
+	return (uint16_t)result;
+}
+
+static void pack_tile4_aos(uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
+	const int16_t in[GT32_TILE4_POLY_WORDS])
+{
+	for (unsigned pair = 0; pair < 384; pair++) {
+		const uint16_t first = canonical_u12(
+			in[gt32_tile4_serialized_to_aos[2U * pair]]);
+		const uint16_t second = canonical_u12(
+			in[gt32_tile4_serialized_to_aos[2U * pair + 1U]]);
+		out[3U * pair] = (uint8_t)first;
+		out[3U * pair + 1U] = (uint8_t)((first >> 8)
+			| (uint16_t)(second << 4));
+		out[3U * pair + 2U] = (uint8_t)(second >> 4);
+	}
+}
+
 static void compare_crepmod3(const char *label, unsigned trial,
 	const int16_t *expected, const int16_t *actual)
 {
@@ -206,9 +231,62 @@ int main(void)
 	int16_t general_ref[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_inverse[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_inverse_asm[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t official_decoded[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	uint8_t packed[GT32_TILE4_SERIALIZED_BYTES];
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
+		if (trial < 100U) {
+			pack_tile4_aos(packed, input);
+			if (poly_frombytes(official_decoded, packed) != 0
+				|| gt32_tile4_frombytes_aos_ref(alias, packed) != 0
+				|| gt32_tile4_frombytes_bm_soa_ref(private_soa, packed) != 0
+				|| gt32_tile4_frombytes_aos_official_bridge(got, packed) != 0
+				|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
+					packed) != 0) {
+				fprintf(stderr, "canonical TILE4 frombytes rejected trial=%u\n", trial);
+				return 1;
+			}
+			for (unsigned serialized = 0; serialized < 768; serialized++) {
+				const unsigned aos = gt32_tile4_serialized_to_aos[serialized];
+				const unsigned soa = gt32_tile4_serialized_to_bm_soa[serialized];
+				const unsigned within = serialized % 128U;
+				const unsigned official_word = 128U * (serialized / 128U)
+					+ within / 8U + 16U * (within % 8U);
+				const int16_t expected = (int16_t)canonical_u12(input[aos]);
+				if (alias[aos] != expected)
+					fail_at("frombytes-aos", trial, aos, expected, alias[aos]);
+				if (got[aos] != expected)
+					fail_at("frombytes-aos-bridge", trial, aos, expected, got[aos]);
+				if (private_soa[soa] != expected)
+					fail_at("frombytes-bm-soa", trial, soa, expected,
+						private_soa[soa]);
+				if (general_ref[soa] != expected)
+					fail_at("frombytes-bm-soa-bridge", trial, soa, expected,
+						general_ref[soa]);
+				if (official_decoded[official_word] != expected)
+					fail_at("frombytes-official", trial, official_word, expected,
+						official_decoded[official_word]);
+			}
+			gt32_tile4_basemul_c3center_late_aos_private_asm(ref, alias, alias);
+			gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm(got,
+				private_soa, alias);
+			compare_exact("frombytes-mixed-basemul", trial, ref, got,
+				GT32_TILE4_POLY_WORDS);
+			if (trial == 0U) {
+				packed[0] = 0x81U;
+				packed[1] = (uint8_t)((packed[1] & 0xf0U) | 0x0dU);
+				if (poly_frombytes(official_decoded, packed) != 1
+					|| gt32_tile4_frombytes_aos_ref(alias, packed) != 1
+					|| gt32_tile4_frombytes_bm_soa_ref(private_soa, packed) != 1
+					|| gt32_tile4_frombytes_aos_official_bridge(got, packed) != 1
+					|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
+						packed) != 1) {
+					fprintf(stderr, "noncanonical TILE4 frombytes accepted\n");
+					return 1;
+				}
+			}
+		}
 		gt32_tile4_forward_full_ref(full_ref, input);
 		gt32_tile4_inverse_all_ref(inverse_ref, full_ref);
 		gt32_tile4_inverse_tail_ref_e0(full_got, inverse_ref);

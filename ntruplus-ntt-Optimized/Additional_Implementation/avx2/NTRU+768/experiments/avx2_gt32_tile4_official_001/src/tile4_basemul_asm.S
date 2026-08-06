@@ -381,8 +381,23 @@
 	.macro TILE4_OUTPUT_SOA_PRIVATE
 	.endm
 
+	.macro TILE4_INPUT_A_AOS
+	vmovdqu   0(%rsi), %ymm5
+	vmovdqu  32(%rsi), %ymm6
+	vmovdqu  64(%rsi), %ymm7
+	vmovdqu  96(%rsi), %ymm8
+	TILE4_TRANSPOSE ymm5,ymm6,ymm7,ymm8,ymm1,ymm2,ymm3,ymm4
+	.endm
+
+	.macro TILE4_INPUT_A_SOA
+	vmovdqu   0(%rsi), %ymm1
+	vmovdqu  32(%rsi), %ymm2
+	vmovdqu  64(%rsi), %ymm3
+	vmovdqu  96(%rsi), %ymm4
+	.endm
+
 	/* B3 ablation: raw planes c0..c2 spill; c3 remains register-resident. */
-	.macro TILE4_BASEMUL_B3_FUNCTION name,output
+	.macro TILE4_BASEMUL_B3_FUNCTION name,output,inputa
 	.p2align 5
 	.globl \name
 	.type \name,@function
@@ -400,11 +415,7 @@
 	vmovdqu  96(%rdx), %ymm4
 	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm4,ymm9,ymm10,ymm11,ymm12
 
-	vmovdqu   0(%rsi), %ymm5
-	vmovdqu  32(%rsi), %ymm6
-	vmovdqu  64(%rsi), %ymm7
-	vmovdqu  96(%rsi), %ymm8
-	TILE4_TRANSPOSE ymm5,ymm6,ymm7,ymm8,ymm1,ymm2,ymm3,ymm4
+	\inputa
 
 	vpmullw .Ltile4_bm_qinv(%rip), %ymm1, %ymm5
 	vpmullw .Ltile4_bm_qinv(%rip), %ymm2, %ymm6
@@ -550,11 +561,13 @@
 		TILE4_MONT_RSQ,TILE4_MONT_RSQ, \
 		TILE4_MONT_RSQ,TILE4_MONT_RSQ,TILE4_OUTPUT_AOS
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_b3_late_asm, \
-		TILE4_OUTPUT_AOS_LATE_CENTER
+		TILE4_OUTPUT_AOS_LATE_CENTER,TILE4_INPUT_A_AOS
 	.section .text.gt32_tile4_basemul_c3center_late_aos_private_asm,"ax",@progbits
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_c3center_late_aos_private_asm, \
-		TILE4_OUTPUT_AOS_LATE_C3CENTER
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_AOS
 	.text
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_SOA
 	TILE4_BASEMUL_B4B_FUNCTION gt32_tile4_basemul_b4b_partial_asm
 	TILE4_BASEMUL_K2_FUNCTION gt32_tile4_basemul_k2_asm
 

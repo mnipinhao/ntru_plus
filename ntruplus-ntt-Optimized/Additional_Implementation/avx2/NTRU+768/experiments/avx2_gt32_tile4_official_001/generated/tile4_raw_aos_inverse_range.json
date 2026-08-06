@@ -3448,5 +3448,149 @@
     ],
     "all_int16_add_sub_safe": true,
     "checkpoint": "center only coefficient plane c3 before AoS transpose"
+  },
+  "mixed_frombytes_soa_aos_path": {
+    "input_range": [
+      0,
+      3456
+    ],
+    "input_r_exponent": 0,
+    "variable_montgomery_product_abs_bound": 1912,
+    "coefficient_records": [
+      {
+        "coefficient": 0,
+        "bm_max_abs_bound": 3789,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 7578,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 9346,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 11231,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 13151,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 15192,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 15192
+      },
+      {
+        "coefficient": 1,
+        "bm_max_abs_bound": 5647,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 11294,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 13082,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 15017,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 17004,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 19134,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 19134
+      },
+      {
+        "coefficient": 2,
+        "bm_max_abs_bound": 7508,
+        "bm_finalizer": "none",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 15016,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 16824,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 18832,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 20889,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 23108,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 23108
+      },
+      {
+        "coefficient": 3,
+        "bm_max_abs_bound": 1998,
+        "bm_finalizer": "center10",
+        "inverse_stages": [
+          {
+            "length": 2,
+            "max_abs_bound": 3996,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 4,
+            "max_abs_bound": 5739,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 8,
+            "max_abs_bound": 7551,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 16,
+            "max_abs_bound": 9401,
+            "signed_int16_safe": true
+          },
+          {
+            "length": 32,
+            "max_abs_bound": 11351,
+            "signed_int16_safe": true
+          }
+        ],
+        "terminal_max_abs_bound": 11351
+      }
+    ],
+    "all_int16_add_sub_safe": true,
+    "legal_consumer": "I1 AoS inverse then T9 only"
   }
 }

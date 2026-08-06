@@ -27,6 +27,26 @@
       "r_exponent": 0
     },
     {
+      "operation": "frombytes-bm-soa-private-output",
+      "layout": "tile4-private-coefficient-planes",
+      "r_exponent": 0,
+      "range": [
+        0,
+        3456
+      ],
+      "legal_consumers": [
+        "basemul-scale-soa-aos-private"
+      ],
+      "forbidden_consumers": [
+        "add",
+        "sub",
+        "inverse-tile4",
+        "tobytes-aos",
+        "serialization"
+      ],
+      "scope": "single-use decoded operand only"
+    },
+    {
       "operation": "basemul-general-output",
       "layout": "tile4-physical-Q",
       "r_exponent": 0,
@@ -61,6 +81,23 @@
       ],
       "alias": "out-distinct-from-a-and-b",
       "scope": "decapsulation-only"
+    },
+    {
+      "operation": "basemul-scale-soa-aos-private-output",
+      "layout": "tile4-physical-Q",
+      "r_exponent": -1,
+      "range_policy": "c0-c2 raw; c3 center10",
+      "legal_consumers": [
+        "inverse-tile4"
+      ],
+      "forbidden_consumers": [
+        "add",
+        "sub",
+        "tobytes",
+        "serialization"
+      ],
+      "alias": "three-distinct-buffers",
+      "scope": "decapsulation-first-product-only"
     },
     {
       "operation": "basemul-scale-private-output",

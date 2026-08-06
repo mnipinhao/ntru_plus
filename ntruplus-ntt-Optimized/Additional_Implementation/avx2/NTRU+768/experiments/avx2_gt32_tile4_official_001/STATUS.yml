@@ -19,6 +19,9 @@ implemented:
   - combined N5 frontend plus pair-packed core leaf symbol
   - inverse I1 pair-packed raw qword and Montgomery local-half stages
   - generator-owned R-exponent scale contract and physical-Q lambda streams
+  - generator-owned serialized-to-TILE4-AoS and serialized-to-private-BM-SoA bijections
+  - correctness-first constant-work private frombytes layouts and rejection contract
+  - mixed private-SoA by TILE4-AoS basemul assembly without the a-input transpose
   - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
   - native TILE4 B2 register-transpose quartic assembly
   - B3 late-finalizer and B4b partial-hoist multi-accumulator rejected controls
@@ -44,6 +47,8 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
+  - replace correctness-first scattered P1 unpack with a vectorized fixed schedule before reconsidering integration
+  - P2 hinv SoA to general-BM SoA to specialized-tobytes remains gated by P1 unpack cost
   - real private-decap caller integration and deterministic byte-exact KEM gate
   - caller-native adversarial search approaching the proved c2 inverse bound
   - Gate C add/tobytes caller measurements
@@ -387,3 +392,39 @@ promotion_kernel_chain_gate:
   decision: preserve-candidate-and-start-real-private-decap-integration
   caveat: kernel-chain-only; not yet deterministic-byte-exact full KEM promotion
 promotion: false
+
+mixed_frombytes_p1_gate:
+  result: mixed-pipeline-pass-layout-bridge-production-fail-short
+  scope: decap-f-frombytes-plus-private-basemul-plus-I1-plus-T9
+  benchmark_kind: same-binary-short-directional-ABBA-BAAB
+  iterations_per_sample: 2000
+  samples: 40
+  frombytes:
+    official_asm_tsc: 94.207500
+    official_plus_aos_scalar_bridge_tsc: 1318.491000
+    aos_reference_tsc: 1107.272000
+    private_soa_reference_tsc: 1099.574500
+    reference_paired_ratio_median: 0.991606
+    aos_official_bridge_tsc: 1313.987500
+    private_soa_official_bridge_tsc: 1313.615000
+    bridge_paired_ratio_median: 1.001169
+  basemul:
+    aos_aos_to_aos_tsc: 404.255500
+    soa_aos_to_aos_tsc: 347.936500
+    paired_ratio_median: 0.864011
+    mixed_wins: 39-of-40
+  combined_frombytes_bm_i1_t9:
+    aos_baseline_tsc: 2164.625500
+    mixed_candidate_tsc: 2109.202500
+    paired_ratio_median: 0.974422
+    mixed_wins: 39-of-40
+  mapping: generated/tile4_serialized_mapping.json
+  range_proof: generated/tile4_raw_aos_inverse_range.json
+  inverse_terminal_abs_bounds:
+    c0: 15192
+    c1: 19134
+    c2: 23108
+    c3_centered: 11351
+  correctness: canonical-mapping-noncanonical-rejection-and-mixed-BM-exact-pass
+  decision: retain-mixed-BM-and-build-vectorized-fixed-layout-bridge-before-integration
+  caveat: mixed island wins relatively, but scalar GT layout conversion is over one thousand TSC slower than bare Official unpack

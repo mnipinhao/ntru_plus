@@ -329,3 +329,32 @@ symbol addresses, and reported sizes were collected from the minimal
 `results/tile4-promotion-serious-reversed.json`,
 `results/tile4-promotion-pmu.json`, and
 `results/tile4-promotion-symbols.json`.
+
+## P1 single-use decoded operand island
+
+The generator now owns a bijective mapping from each serialized 12-bit
+component through Official `(branch,block,coefficient)` order into both TILE4
+AoS and the private BM SoA `(group,plane,lane)` order.  Correctness-first
+unpackers preserve full-input processing and Official noncanonical rejection;
+tests cover canonical values, `q` rejection, both layouts, and exact mixed-BM
+output.  The mixed `SoA e=0 x AoS e=0 -> c0--c2 raw/c3 centered AoS e=-1`
+assembly skips one complete input transpose without changing arithmetic.
+
+In the 2,000-call ABBA/BAAB short gate, the existing AoS BM measured 404.256
+TSC and the mixed BM 347.937, a 13.6% reduction with 39/40 paired wins.  With
+the same correctness-first Official-unpack-plus-layout bridge on both paths,
+the complete `frombytes(f)+BM+I1+T9` path improved from 2164.626 to 2109.203
+TSC, or 2.6% by paired median with 39/40 wins.  AoS and private-SoA bridge
+costs themselves are effectively equal, so the BM transpose saving survives
+the consumer chain.
+
+The absolute boundary still rejects this implementation for integration:
+bare Official AVX2 `frombytes` measured 94.208 TSC, while Official unpack plus
+the scalar AoS bridge measured 1318.491.  P0 proves serialized slots first
+pass through Official's 128-word lane permutation and then a global
+Good--Thomas permutation, so the next P1 gate needs a generated AVX2 fixed
+schedule rather than scalar mapped stores.  P2 (`hinv` private SoA through
+SoA-output BM and specialized `tobytes`) remains deferred until that boundary
+is competitive.  See
+`generated/tile4_serialized_mapping.json` and
+`results/tile4-mixed-frombytes-short.json`.
