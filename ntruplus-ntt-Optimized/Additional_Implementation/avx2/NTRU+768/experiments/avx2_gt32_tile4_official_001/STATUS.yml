@@ -883,3 +883,63 @@ permutation_native_private_abi_gate:
   relaxed_note: 48-T9-repairs-remain-less-than-96-two-forward-deletions-but-need-separate-approved-gate
   artifact: generated/tile4_permutation_native_gate.json
   reopen_condition: paired-group-T9-reuses-required-cross-group-op-or-relaxed-end-to-end-gate-accepts-48-shuffle-lower-bound
+
+streaming_B_producer_consumer_gate:
+  result: exact-pass-performance-hard-stop
+  candidate: Forward-B-stage3-split-directly-feeds-SoA-BM
+  correctness:
+    deterministic_random_trials: 64
+    exact: true
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    forward_B_plus_BM_regression_tsc: 208.650
+    forward_B_plus_BM_delta_mad_tsc: 4.718
+    forward_B_plus_BM_wins: 0-of-20
+    through_I1_T9_regression_tsc: 213.664
+    through_I1_T9_delta_mad_tsc: 4.876
+    through_I1_T9_wins: 0-of-20
+  decision: hard-stop-current-streaming-B-schedule
+  production_integration: false
+  artifact: results/tile4-streaming-b-short.json
+
+relaxed_permutation_native_cost_gate:
+  result: exact-pass-short-cost-hard-stop
+  generator_feasibility:
+    Forward_P: pass
+    Basemul_P: pass
+    Inverse_P: pass
+    zero_debt_T9: fail
+    relaxed_T9: measured-materialized-control
+  correctness:
+    deterministic_random_trials: 64
+    Forward_P_mapping_exact: true
+    repair_exact: true
+    repair_plus_T9_exact: true
+  static:
+    two_Forward_removed_shuffles: 96
+    T9_minimum_repairs: 48
+    static_net_removed_shuffles: 48
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    Forward_P_single_saving_tsc: 3.402
+    Forward_P_single_delta_mad_tsc: 0.274
+    Forward_P_single_wins: 19-of-20
+    two_Forward_P_saving_tsc: 5.956
+    two_Forward_P_delta_mad_tsc: 1.536
+    two_Forward_P_wins: 20-of-20
+    materialized_repair_plus_T9_regression_tsc: 18.362
+    materialized_repair_plus_T9_delta_mad_tsc: 1.787
+    materialized_repair_plus_T9_wins: 0-of-20
+  necessary_gate: S_forward_P-greater-than-C_T9_repair-plus-8-TSC
+  zero_repair_optimistic_check: 5.956-greater-than-8-is-false
+  R1_fused_T9_emitted: false
+  R2_half_width_T9_emitted: false
+  Inverse_P_assembly_emitted: false
+  decision: hard-stop-current-P-at-relaxed-short-cost-gate
+  scope_of_stop: current-bit1-bit2-Q-permutation-on-this-AVX2-core
+  inverse_P_generator_feasibility: remains-pass
+  serious_benchmark_run: false
+  production_integration: false
+  artifact: results/tile4-permutation-relaxed-short.json

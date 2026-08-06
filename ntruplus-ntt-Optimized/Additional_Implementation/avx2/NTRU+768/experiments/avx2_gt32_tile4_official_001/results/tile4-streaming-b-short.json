@@ -1,0 +1,28 @@
+{
+  "candidate": "Forward-B stage3 split directly feeding SoA basemul",
+  "scope": "benchmark-only",
+  "correctness": {
+    "fixed_pattern": "exact-pass",
+    "deterministic_random_trials": 64,
+    "random_result": "exact-pass"
+  },
+  "benchmark": {
+    "cpu": 1,
+    "iterations_per_sample": 2000,
+    "samples": 20,
+    "paired_order": "AB/BA alternating",
+    "forward_b_plus_bm": {
+      "paired_regression_tsc": 208.650,
+      "paired_delta_mad_tsc": 4.718,
+      "candidate_wins": "0-of-20"
+    },
+    "forward_b_bm_i1_t9": {
+      "paired_regression_tsc": 213.664,
+      "paired_delta_mad_tsc": 4.876,
+      "candidate_wins": "0-of-20"
+    }
+  },
+  "decision": "hard-stop-current-streaming-B-schedule",
+  "reason": "saved B-plane materialization is overwhelmed by split-half scratch traffic and serialized BM consumption",
+  "production_integration": false
+}

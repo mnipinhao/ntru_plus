@@ -122,6 +122,9 @@ void gt32_tile4_attr_forward_all_bm_soa_asm(int16_t *out_soa,
 	const int16_t *frontend_tile4_scratch);
 void gt32_tile4_attr_forward_all_bm_soa_s5x4_asm(int16_t *out_soa,
 	const int16_t *frontend_tile4_scratch);
+void gt32_tile4_attr_forward_b_stream_bm_soa_asm(int16_t *out_soa,
+	const int16_t *a_soa, const int16_t *b_frontend_tile4,
+	int16_t inactive_half_scratch[64]);
 
 void gt32_tile4_frontend_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);

@@ -33,6 +33,86 @@
 	vmovdqa %ymm11, \h3
 	.endm
 
+	/* Standard 12-shuffle plane network, with outputs placed for streaming BM. */
+	.macro FR_PACKED_TO_BM_REGS v0,v1,v2,v3
+	vpshufb %ymm14, \v0, \v0
+	vpshufb %ymm14, \v1, \v1
+	vpshufb %ymm14, \v2, \v2
+	vpshufb %ymm14, \v3, \v3
+	vpunpckldq \v2, \v0, %ymm4
+	vpunpckhdq \v2, \v0, %ymm5
+	vpunpckldq \v3, \v1, %ymm6
+	vpunpckhdq \v3, \v1, %ymm7
+	vpunpcklqdq %ymm6, %ymm4, %ymm9
+	vpunpckhqdq %ymm6, %ymm4, %ymm10
+	vpunpcklqdq %ymm7, %ymm5, %ymm11
+	vpunpckhqdq %ymm7, %ymm5, %ymm12
+	.endm
+
+	.macro FR_STREAM_MONT_FIRST a,aq,b
+	vpmullw \aq, \b, %ymm13
+	vpmulhw \a, \b, %ymm0
+	vpmulhw %ymm15, %ymm13, %ymm13
+	vpsubw %ymm13, %ymm0, %ymm0
+	.endm
+
+	.macro FR_STREAM_MONT_ADD a,aq,b
+	vpmullw \aq, \b, %ymm13
+	vpmulhw \a, \b, %ymm14
+	vpmulhw %ymm15, %ymm13, %ymm13
+	vpsubw %ymm13, %ymm14, %ymm14
+	vpaddw %ymm14, %ymm0, %ymm0
+	.endm
+
+	.macro FR_STREAM_MONT_LAMBDA
+	vpmullw (%r9), %ymm0, %ymm13
+	vpmulhw (%r8), %ymm0, %ymm14
+	vpmulhw %ymm15, %ymm13, %ymm13
+	vpsubw %ymm13, %ymm14, %ymm0
+	.endm
+
+	/* A planes are loaded; B planes are already resident in ymm9..ymm12. */
+	.macro FR_STREAM_BM_BLOCK
+	vmovdqu   0(%rsi), %ymm1
+	vmovdqu  32(%rsi), %ymm2
+	vmovdqu  64(%rsi), %ymm3
+	vmovdqu  96(%rsi), %ymm4
+	vpmullw .Lfr_stream_qinv(%rip), %ymm1, %ymm5
+	vpmullw .Lfr_stream_qinv(%rip), %ymm2, %ymm6
+	vpmullw .Lfr_stream_qinv(%rip), %ymm3, %ymm7
+	vpmullw .Lfr_stream_qinv(%rip), %ymm4, %ymm8
+
+	FR_STREAM_MONT_FIRST %ymm2,%ymm6,%ymm12
+	FR_STREAM_MONT_ADD %ymm3,%ymm7,%ymm11
+	FR_STREAM_MONT_ADD %ymm4,%ymm8,%ymm10
+	FR_STREAM_MONT_LAMBDA
+	FR_STREAM_MONT_ADD %ymm1,%ymm5,%ymm9
+	vmovdqu %ymm0, 0(%rdi)
+
+	FR_STREAM_MONT_FIRST %ymm3,%ymm7,%ymm12
+	FR_STREAM_MONT_ADD %ymm4,%ymm8,%ymm11
+	FR_STREAM_MONT_LAMBDA
+	FR_STREAM_MONT_ADD %ymm1,%ymm5,%ymm10
+	FR_STREAM_MONT_ADD %ymm2,%ymm6,%ymm9
+	vmovdqu %ymm0, 32(%rdi)
+
+	FR_STREAM_MONT_FIRST %ymm4,%ymm8,%ymm12
+	FR_STREAM_MONT_LAMBDA
+	FR_STREAM_MONT_ADD %ymm1,%ymm5,%ymm11
+	FR_STREAM_MONT_ADD %ymm2,%ymm6,%ymm10
+	FR_STREAM_MONT_ADD %ymm3,%ymm7,%ymm9
+	vmovdqu %ymm0, 64(%rdi)
+
+	FR_STREAM_MONT_FIRST %ymm1,%ymm5,%ymm12
+	FR_STREAM_MONT_ADD %ymm2,%ymm6,%ymm11
+	FR_STREAM_MONT_ADD %ymm3,%ymm7,%ymm10
+	FR_STREAM_MONT_ADD %ymm4,%ymm8,%ymm9
+	vpmulhrsw .Lfr_stream_center10(%rip), %ymm0, %ymm14
+	vpmullw %ymm15, %ymm14, %ymm14
+	vpsubw %ymm14, %ymm0, %ymm0
+	vmovdqu %ymm0, 96(%rdi)
+	.endm
+
 	/* Destructive four-way schedule: odd inputs become Montgomery temporaries. */
 	.macro FR_MONT_QWORD_PACKED4
 	vpunpckhqdq %ymm1, %ymm0, %ymm8
@@ -203,6 +283,71 @@ gt32_tile4_attr_forward_all_bm_soa_s5x4_asm:
 	ret
 	.size gt32_tile4_attr_forward_all_bm_soa_s5x4_asm,.-gt32_tile4_attr_forward_all_bm_soa_s5x4_asm
 
+	/*
+	 * A is materialized private SoA.  B enters as post-frontend TILE4 rows.
+	 * Only the inactive post-stage3 half touches the 128-byte scratch buffer.
+	 */
+	.p2align 5
+	.globl gt32_tile4_attr_forward_b_stream_bm_soa_asm
+	.type gt32_tile4_attr_forward_b_stream_bm_soa_asm,@function
+gt32_tile4_attr_forward_b_stream_bm_soa_asm:
+	vmovdqa .Lfr_q(%rip), %ymm15
+	leaq .Ltile4_bm_lambda(%rip), %r8
+	leaq .Ltile4_bm_lambda_qinv(%rip), %r9
+	movl $6, %r10d
+	.p2align 5
+.Lfr_stream_bm_loop:
+	vmovdqu   0(%rdx), %ymm0
+	vmovdqu  32(%rdx), %ymm1
+	vmovdqu  64(%rdx), %ymm2
+	vmovdqu  96(%rdx), %ymm3
+	vmovdqu 128(%rdx), %ymm4
+	vmovdqu 160(%rdx), %ymm5
+	vmovdqu 192(%rdx), %ymm6
+	vmovdqu 224(%rdx), %ymm7
+	FR_RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
+	FR_MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_fwd_s2_qinv,.Ltile4_fwd_s2_factor
+	FR_MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_fwd_s3_qinv,.Ltile4_fwd_s3_factor
+
+	vmovdqu %ymm4,  0(%rcx)
+	vmovdqu %ymm5, 32(%rcx)
+	vmovdqu %ymm6, 64(%rcx)
+	vmovdqu %ymm7, 96(%rcx)
+	FR_MONT_HALF_PAIR %ymm0,%ymm1,0
+	FR_MONT_HALF_PAIR %ymm2,%ymm3,32
+	FR_MONT_QWORD_PACKED %ymm0,%ymm1,0
+	FR_MONT_QWORD_PACKED %ymm2,%ymm3,32
+	vmovdqa .Lfr_plane_pshufb(%rip), %ymm14
+	FR_PACKED_TO_BM_REGS %ymm0,%ymm1,%ymm2,%ymm3
+	FR_STREAM_BM_BLOCK
+
+	vmovdqu  0(%rcx), %ymm0
+	vmovdqu 32(%rcx), %ymm1
+	vmovdqu 64(%rcx), %ymm2
+	vmovdqu 96(%rcx), %ymm3
+	FR_MONT_HALF_PAIR %ymm0,%ymm1,64
+	FR_MONT_HALF_PAIR %ymm2,%ymm3,96
+	FR_MONT_QWORD_PACKED %ymm0,%ymm1,64
+	FR_MONT_QWORD_PACKED %ymm2,%ymm3,96
+	vmovdqa .Lfr_plane_pshufb(%rip), %ymm14
+	FR_PACKED_TO_BM_REGS %ymm0,%ymm1,%ymm2,%ymm3
+	addq $128, %rsi
+	addq $128, %rdi
+	addq $32, %r8
+	addq $32, %r9
+	FR_STREAM_BM_BLOCK
+
+	addq $128, %rsi
+	addq $128, %rdi
+	addq $32, %r8
+	addq $32, %r9
+	addq $256, %rdx
+	decl %r10d
+	jne .Lfr_stream_bm_loop
+	vzeroupper
+	ret
+	.size gt32_tile4_attr_forward_b_stream_bm_soa_asm,.-gt32_tile4_attr_forward_b_stream_bm_soa_asm
+
 	.section .rodata
 	.p2align 5
 .Lfr_q:
@@ -213,7 +358,17 @@ gt32_tile4_attr_forward_all_bm_soa_s5x4_asm:
 .Lfr_plane_pshufb:
 	.byte 0,1,8,9,2,3,10,11,4,5,12,13,6,7,14,15
 	.byte 0,1,8,9,2,3,10,11,4,5,12,13,6,7,14,15
+	.p2align 5
+.Lfr_stream_qinv:
+	.rept 16
+	.short 12929
+	.endr
+.Lfr_stream_center10:
+	.rept 16
+	.short 10
+	.endr
 
+#include "../generated/tile4_basemul_constants.inc"
 #include "../generated/tile4_constants.inc"
 
 	.section .note.GNU-stack,"",@progbits

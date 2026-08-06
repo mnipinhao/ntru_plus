@@ -151,6 +151,25 @@ def emit_asm(path: Path) -> None:
                 lines.append("\t.short " + ",".join(
                     str(transform(value)) for value in record
                 ))
+    # Stage-4-eliding private ABI: S/D-packed inputs make stage 5 execute in
+    # qword order [0,2,1,3].  Reorder the already proved standard pair stream
+    # so the arithmetic follows the same logical leaves without a repair.
+    stage5_records = forward[4]
+    for suffix, transform in (("qinv", factor_qinv),
+                              ("factor", lambda x: x)):
+        lines.extend([".p2align 5", f".Ltile4_fwd_s5_p_pair_{suffix}:"])
+        for pair in range(0, 8, 2):
+            standard = (stage5_records[pair][4:8]
+                        + stage5_records[pair + 1][4:8]
+                        + stage5_records[pair][12:16]
+                        + stage5_records[pair + 1][12:16])
+            qwords = [standard[4 * index:4 * index + 4]
+                      for index in range(4)]
+            record = [value for index in (0, 2, 1, 3)
+                      for value in qwords[index]]
+            lines.append("\t.short " + ",".join(
+                str(transform(value)) for value in record
+            ))
     inverse_s1 = inverse_tables()[0]
     for suffix, transform in (("qinv", factor_qinv), ("factor", lambda x: x)):
         lines.extend([".p2align 5", f".Ltile4_inv_s1_pair_{suffix}:"])

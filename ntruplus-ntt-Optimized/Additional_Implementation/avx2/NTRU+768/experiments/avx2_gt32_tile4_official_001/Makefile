@@ -367,6 +367,32 @@ $(BUILD)/bench_s5_schedule: src/tile4_asm.S src/tile4_basemul_asm.S \
 		bench/bench_s5_schedule.c \
 		$(BUILD)/tile4_inverse_tail_isolated.o
 
+$(BUILD)/bench_streaming_b: src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_streaming_b.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_streaming_b.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o
+
+$(BUILD)/bench_permutation_relaxed: src/tile4_asm.S \
+		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		src/tile4_permutation_relaxed_asm.S \
+		bench/bench_permutation_relaxed.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		src/tile4_permutation_relaxed_asm.S \
+		bench/bench_permutation_relaxed.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o
+
 $(BUILD)/bench_private_caller: src/tile4_asm.S \
 		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \

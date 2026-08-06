@@ -662,3 +662,33 @@ conjugated inverse.  The 48-repair lower bound is still smaller than the 96
 shuffles removed from two Forwards, but benchmarking that relaxed design
 requires a separately approved end-to-end gate.  The complete edge graph and
 proof are in `generated/tile4_permutation_native_gate.json`.
+
+### Relaxed permutation-native cost gate
+
+The relaxed gate implements the stage-4-eliding Forward-P terminal and a
+materialized 48-`vperm2i128` P-to-standard T9 repair control.  Sixty-four
+deterministic random trials pass the Forward-P mapping, exact repair, and
+repair-plus-T9 differential.  Disassembly confirms that the Forward loop
+drops from 16 to 8 static `vperm2i128` instructions, hence 48 dynamic
+instructions per Forward and 96 for the two-Forward caller shape.
+
+Real execution does not convert that static deletion into the anticipated
+8--12 TSC.  One Forward saves 3.402 TSC (MAD 0.274, 19/20 wins); two Forwards
+save 5.956 TSC (MAD 1.536, 20/20 wins).  The materialized repair control adds
+18.362 TSC over T9 (MAD 1.787, 0/20 wins), although that number includes the
+temporary repaired-buffer stores and reloads.
+
+The predeclared continuation condition was
+`S_forward_P > C_T9_repair + 8 TSC`.  It fails even under the impossible
+optimistic assumption `C_T9_repair=0`, because 5.956 is below the required
+8-TSC margin.  R1 fused T9, R2 half-width T9, and Inverse-P assembly are
+therefore not emitted.  This is a cost stop for the current bit-1/bit-2 Q
+permutation on this AVX2 core; the generator feasibility result for Inverse-P
+remains valid.  Results are in `results/tile4-permutation-relaxed-short.json`.
+
+The lower-risk streaming-B control also passes 64 exact random trials but is
+decisively slower: Forward-B plus BM regresses by 208.650 TSC, and the result
+remains 213.664 TSC slower through I1 and T9, both with 0/20 wins.  Its split-
+half scratch traffic and serialized BM schedule cost much more than the
+eliminated B-plane materialization.  See
+`results/tile4-streaming-b-short.json`.

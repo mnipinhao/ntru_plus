@@ -1,0 +1,60 @@
+{
+  "candidate": "relaxed permutation-native P with explicit T9 repair control",
+  "scope": "benchmark-only cost gate; no Inverse-P assembly",
+  "permutation": {
+    "plane_lane": [0, 8, 2, 10, 4, 12, 6, 14, 1, 9, 3, 11, 5, 13, 7, 15],
+    "semantic_Q": "swap bits 1 and 2"
+  },
+  "correctness": {
+    "fixed_pattern": "exact-pass",
+    "deterministic_random_trials": 64,
+    "forward_P_mapping": "exact-pass",
+    "P_rows_to_standard_repair": "exact-pass",
+    "repair_plus_T9": "exact-pass"
+  },
+  "static_audit": {
+    "baseline_forward_loop_vperm2i128": 16,
+    "forward_P_loop_vperm2i128": 8,
+    "dynamic_removed_per_forward": 48,
+    "dynamic_removed_for_two_forwards": 96,
+    "repair_vperm2i128": 48
+  },
+  "benchmark": {
+    "cpu": 1,
+    "iterations_per_sample": 2000,
+    "samples": 20,
+    "paired_order": "AB/BA alternating",
+    "forward_core": {
+      "baseline_median_tsc": 263.814,
+      "candidate_median_tsc": 260.500,
+      "paired_saving_tsc": 3.402,
+      "paired_delta_mad_tsc": 0.274,
+      "candidate_wins": "19-of-20"
+    },
+    "two_forward_cores": {
+      "baseline_median_tsc": 526.853,
+      "candidate_median_tsc": 520.897,
+      "paired_saving_tsc": 5.956,
+      "paired_delta_mad_tsc": 1.536,
+      "candidate_wins": "20-of-20"
+    },
+    "materialized_repair_plus_T9": {
+      "baseline_T9_median_tsc": 216.176,
+      "candidate_median_tsc": 237.433,
+      "paired_regression_tsc": 18.362,
+      "paired_delta_mad_tsc": 1.787,
+      "candidate_wins": "0-of-20",
+      "note": "upper-bound control includes repaired-buffer stores and reloads"
+    }
+  },
+  "predeclared_necessary_gate": "S_forward_P > C_T9_repair + 8 TSC",
+  "necessary_gate_even_with_zero_repair": "5.956 > 8 is false",
+  "decision": "hard-stop-current-P-at-relaxed-short-cost-gate",
+  "scope_of_stop": "current bit1-bit2 Q permutation on this AVX2 core",
+  "inverse_P_generator_feasibility": "remains-pass",
+  "R1_fused_T9_emitted": false,
+  "R2_half_width_T9_emitted": false,
+  "Inverse_P_assembly_emitted": false,
+  "serious_benchmark_run": false,
+  "production_integration": false
+}
