@@ -69,7 +69,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_attribution_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_attribution_asm.o | \
-		rg 'gt32_tile4_attr_(transpose_(one|two|three)|basemul_(raw|c3)_soa|center_c3_soa)_asm'
+		rg 'gt32_tile4_attr_(transpose_(one|two|three)|basemul_(raw|c3)_soa|basemul_i1_stage01_fused|inverse_i1_cross3|center_c3_soa)_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -172,7 +172,8 @@ $(BUILD)/tile4_basemul_asm.o: src/tile4_basemul_asm.S \
 
 $(BUILD)/tile4_basemul_attribution_asm.o: \
 		src/tile4_basemul_attribution_asm.S \
-		generated/tile4_basemul_constants.inc | $(BUILD)
+		generated/tile4_basemul_constants.inc \
+		generated/tile4_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_basemul_attribution_asm.S
 
 $(BUILD)/tile4_inverse_private_asm.o: src/tile4_inverse_private_asm.S \

@@ -538,27 +538,27 @@ basemul_cost_attribution_gate:
   samples: 20
   official_comparator: poly_basemul_scale-native-layout
   measured_median_tsc:
-    empty_call: 2.530500
+    empty_call: 2.527000
     transpose_one_TA: 45.031000
-    transpose_two_TAB: 90.049500
-    transpose_output_TO: 45.035000
-    transpose_all_TABO: 135.069000
-    tile4_arithmetic_raw: 257.376500
-    tile4_arithmetic_c3: 267.399500
-    explicit_c3_repair_boundary: 29.174000
-    tile4_full_b3: 397.429000
-    official_arithmetic_scale: 265.947000
+    transpose_two_TAB: 90.052500
+    transpose_output_TO: 45.041000
+    transpose_all_TABO: 135.069500
+    tile4_arithmetic_raw: 257.372000
+    tile4_arithmetic_c3: 265.379500
+    explicit_c3_repair_boundary: 28.565500
+    tile4_full_b3: 397.302000
+    official_arithmetic_scale: 265.971500
   call_overhead_corrected_tsc:
-    input_layout_TAB: 87.519000
-    output_layout_TO: 42.504500
-    tile4_arithmetic_c3: 264.869000
-    reconstructed_full: 397.423000
+    input_layout_TAB: 87.525500
+    output_layout_TO: 42.514000
+    tile4_arithmetic_c3: 262.852500
+    reconstructed_full: 395.419000
   attribution:
-    reconstruction_residual_tsc: 0.006000
-    tile4_arithmetic_minus_official_tsc: 1.452500
-    tile4_full_minus_official_tsc: 131.482000
-    c3_range_delta_vs_raw_tsc: 10.023000
-    layout_total_tsc: 130.023500
+    reconstruction_residual_tsc: 1.883000
+    tile4_arithmetic_minus_official_tsc: -0.592000
+    tile4_full_minus_official_tsc: 131.330500
+    c3_range_delta_vs_raw_tsc: 8.007500
+    layout_total_tsc: 130.039500
   correctness:
     - transpose-self-inverse-exact
     - raw-arithmetic-boundary-exact
@@ -568,3 +568,37 @@ basemul_cost_attribution_gate:
   artifact: results/tile4-basemul-attribution-short.json
   decision: arithmetic-is-at-parity-do-not-reschedule-schoolbook-next
   next_gate: evaluate-a-producer-or-consumer-layout-that-removes-at-least-one-complete-transpose-without-a-new-global-permutation
+
+basemul_i1_local_fusion_gate:
+  result: exact-pass-performance-stop
+  scope: benchmark-only-BM-planes-to-post-I1-stage1
+  implementation:
+    - retain-champion-SoA-schoolbook-and-c3-only-center
+    - cancel-final-four-transpose-qword-unpacks-with-I1-stage0-first-four-unpacks
+    - execute-I1-raw-stage0-and-Montgomery-stage1-before-first-AoS-store
+    - finish-I1-with-separate-three-cross-register-stages
+  static_saving_per_16_quartic_block:
+    eliminated_shuffle_instructions: 8
+    eliminated_AoS_store_reload_pairs: 4
+  correctness: exact-vs-champion-B3-plus-I1
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    champion_bm_plus_i1_tsc: 627.490000
+    fused_stage01_producer_tsc: 517.088000
+    inverse_cross3_remainder_tsc: 118.533500
+    fused_bm_plus_i1_tsc: 629.901000
+    paired_fused_minus_champion_tsc: 1.957500
+    paired_delta_mad_tsc: 4.067500
+    fused_wins: 7-of-20
+  controls:
+    compact-pointer-table-body_tsc: approximately-647
+    compact_pointer_decision: reject-extra-address-and-fixed-control-overhead
+  gates:
+    parity_target_tsc: 628
+    continue_target_tsc: 610
+    hard_stop_tsc: 650
+  decision: stop-no-measurable-saving-do-not-integrate
+  interpretation: removed-static-work-is-offset-by-the-longer-coupled-DAG-and-code-shape
+  artifact: results/tile4-basemul-attribution-short.json
+  next_candidate: A2-F-direct-AoS-wide-BM-plus-I1-only-if-new-DAG-eliminates-32-bit-finalization-and-pack-boundary

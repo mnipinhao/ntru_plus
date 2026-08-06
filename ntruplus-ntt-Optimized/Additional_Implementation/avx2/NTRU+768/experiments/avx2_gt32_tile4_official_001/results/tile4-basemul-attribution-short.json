@@ -1,5 +1,5 @@
 {
-  "schema": "ntruplus768-tile4-basemul-attribution-v1",
+  "schema": "ntruplus768-tile4-basemul-attribution-v2",
   "benchmark": {
     "binary": "build/bench_basemul_attribution",
     "iterations": 2000,
@@ -14,66 +14,100 @@
       "transpose-self-inverse-exact",
       "raw-arithmetic-vs-frozen-boundary-exact",
       "c3-repair-decomposition-exact",
-      "full-b3-decomposition-exact"
+      "full-b3-decomposition-exact",
+      "fused-bm-i1-vs-champion-exact"
     ]
   },
   "components": {
     "empty": {
-      "median_tsc": 2.5445,
-      "mad_tsc": 0.014000000000000012
+      "median_tsc": 2.527,
+      "mad_tsc": 0.018000000000000016
     },
     "TA": {
-      "median_tsc": 45.0315,
-      "mad_tsc": 0.006499999999999062
+      "median_tsc": 45.031,
+      "mad_tsc": 0.0030000000000001137
     },
     "TAB": {
-      "median_tsc": 90.0535,
-      "mad_tsc": 0.006999999999997897
+      "median_tsc": 90.05250000000001,
+      "mad_tsc": 0.005000000000002558
     },
     "TO": {
-      "median_tsc": 45.037,
-      "mad_tsc": 0.008499999999997954
+      "median_tsc": 45.041,
+      "mad_tsc": 0.006000000000000227
     },
     "TABO": {
-      "median_tsc": 135.071,
-      "mad_tsc": 0.009499999999988518
+      "median_tsc": 135.0695,
+      "mad_tsc": 0.004500000000007276
     },
     "tile4_arith_raw": {
       "median_tsc": 257.372,
-      "mad_tsc": 0.03650000000001796
+      "mad_tsc": 0.04400000000001114
     },
     "tile4_arith_c3": {
-      "median_tsc": 265.366,
-      "mad_tsc": 0.014000000000010004
+      "median_tsc": 265.3795,
+      "mad_tsc": 0.04250000000001819
     },
     "c3_repair_boundary": {
-      "median_tsc": 27.573500000000003,
-      "mad_tsc": 0.027000000000001023
+      "median_tsc": 28.5655,
+      "mad_tsc": 0.9484999999999992
     },
     "tile4_full_b3": {
-      "median_tsc": 397.33000000000004,
-      "mad_tsc": 0.1890000000000498
+      "median_tsc": 397.302,
+      "mad_tsc": 0.11450000000002092
     },
     "official_arith_scale": {
-      "median_tsc": 266.9345,
-      "mad_tsc": 1.015500000000003
+      "median_tsc": 265.9715,
+      "mad_tsc": 0.039500000000003865
+    },
+    "fused_stage01_producer": {
+      "median_tsc": 517.088,
+      "mad_tsc": 0.3019999999999641
+    },
+    "i1_cross3_remainder": {
+      "median_tsc": 118.5335,
+      "mad_tsc": 0.7245000000000061
+    },
+    "champion_bm_i1": {
+      "median_tsc": 627.49,
+      "mad_tsc": 0.2744999999999891
+    },
+    "fused_bm_i1": {
+      "median_tsc": 629.9010000000001,
+      "mad_tsc": 1.0300000000000864
+    }
+  },
+  "paired": {
+    "fused_minus_champion_bm_i1": {
+      "median_tsc": 1.9574999999999818,
+      "mad_tsc": 4.0674999999999955,
+      "left_wins": 7,
+      "right_wins": 13
     }
   },
   "derived": {
-    "input_materialization_TAB_tsc": 87.509,
-    "output_materialization_TO_tsc": 42.4925,
-    "arithmetic_c3_tsc": 262.82149999999996,
-    "range_policy_delta_c3_minus_raw_tsc": 7.993999999999971,
-    "explicit_c3_repair_boundary_tsc": 25.029000000000003,
-    "reconstructed_TAB_arithmetic_TO_tsc": 395.36749999999995,
-    "measured_fused_B3_tsc": 397.33000000000004,
-    "fusion_or_reconstruction_residual_tsc": 1.962500000000091,
-    "tile4_arithmetic_minus_official_scale_tsc": -1.5685000000000286,
-    "tile4_full_minus_official_scale_tsc": 130.39550000000003
+    "input_materialization_TAB_tsc": 87.52550000000001,
+    "output_materialization_TO_tsc": 42.513999999999996,
+    "arithmetic_c3_tsc": 262.8525,
+    "range_policy_delta_c3_minus_raw_tsc": 8.007499999999993,
+    "explicit_c3_repair_boundary_tsc": 26.0385,
+    "reconstructed_TAB_arithmetic_TO_tsc": 395.41900000000004,
+    "measured_fused_B3_tsc": 397.302,
+    "fusion_or_reconstruction_residual_tsc": 1.8829999999999814,
+    "tile4_arithmetic_minus_official_scale_tsc": -0.5919999999999845,
+    "tile4_full_minus_official_scale_tsc": 131.33050000000003,
+    "fused_bm_i1_saving_tsc": -2.411000000000058,
+    "fused_bm_i1_ratio": 1.0038422923074473,
+    "fused_reconstruction_tsc": 633.0944999999999
   },
   "interpretation": {
     "official_comparator": "poly_basemul_scale on Official native NTT layout",
     "tile4_arithmetic_contract": "SoA e=0 x SoA e=0 -> SoA e=-1; c3 centered",
-    "warning": "Component sums are call-overhead corrected but remain explicit materialization boundaries; the residual captures fusion, cache, and scheduling interactions."
+    "warning": "Component sums are call-overhead corrected but remain explicit materialization boundaries; the residual captures fusion, cache, and scheduling interactions.",
+    "fused_gate": {
+      "continue_below_tsc": 610,
+      "parity_below_tsc": 628,
+      "hard_stop_above_tsc": 650,
+      "decision": "stop-no-measurable-saving"
+    }
   }
 }

@@ -30,10 +30,26 @@ static int16_t aos_b[WORDS] __attribute__((aligned(64)));
 static int16_t soa_a[WORDS] __attribute__((aligned(64)));
 static int16_t soa_b[WORDS] __attribute__((aligned(64)));
 static int16_t raw_soa[WORDS] __attribute__((aligned(64)));
+static int16_t product[WORDS] __attribute__((aligned(64)));
+static int16_t post_stage1[WORDS] __attribute__((aligned(64)));
 static int16_t out0[WORDS] __attribute__((aligned(64)));
 static int16_t out1[WORDS] __attribute__((aligned(64)));
 static int16_t out2[WORDS] __attribute__((aligned(64)));
 static volatile uint64_t sink;
+
+__attribute__((noinline))
+static void champion_bm_i1(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	gt32_tile4_basemul_c3center_late_aos_private_asm(product, a, b);
+	gt32_tile4_inverse_all_pair_asm(out, product);
+}
+
+__attribute__((noinline))
+static void fused_bm_i1(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	gt32_tile4_attr_basemul_i1_stage01_fused_asm(post_stage1, a, b);
+	gt32_tile4_attr_inverse_i1_cross3_asm(out, post_stage1);
+}
 
 static uint64_t start_tsc(void)
 {
@@ -188,6 +204,13 @@ int main(int argc, char **argv)
 		return 1;
 
 	}
+	champion_bm_i1(out0, aos_a, aos_b);
+	fused_bm_i1(out1, aos_a, aos_b);
+	if (!exact_equal(out0, out1)) {
+		fprintf(stderr, "fused BM plus I1 differential failed\n");
+		return 1;
+	}
+	gt32_tile4_attr_basemul_i1_stage01_fused_asm(post_stage1, aos_a, aos_b);
 
 	const struct gate gates[] = {
 		{"empty", G_BINARY, {.binary = gt32_tile4_attr_empty_asm},
@@ -214,6 +237,16 @@ int main(int argc, char **argv)
 			out0, NULL, NULL, aos_a, aos_b, NULL},
 		{"official_arith_scale", G_BINARY, {.binary = poly_basemul_scale},
 			out0, NULL, NULL, official_a, official_b, NULL},
+		{"fused_stage01_producer", G_BINARY,
+			{.binary = gt32_tile4_attr_basemul_i1_stage01_fused_asm},
+			out0, NULL, NULL, aos_a, aos_b, NULL},
+		{"i1_cross3_remainder", G_UNARY,
+			{.unary = gt32_tile4_attr_inverse_i1_cross3_asm},
+			out0, NULL, NULL, post_stage1, NULL, NULL},
+		{"champion_bm_i1", G_BINARY, {.binary = champion_bm_i1},
+			out0, NULL, NULL, aos_a, aos_b, NULL},
+		{"fused_bm_i1", G_BINARY, {.binary = fused_bm_i1},
+			out0, NULL, NULL, aos_a, aos_b, NULL},
 	};
 	const size_t gate_count = sizeof(gates) / sizeof(gates[0]);
 	for (size_t gate = 0; gate < gate_count; gate++)

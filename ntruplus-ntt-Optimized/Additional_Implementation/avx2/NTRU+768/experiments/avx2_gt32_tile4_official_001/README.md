@@ -449,20 +449,20 @@ leaf, and no production KEM symbols.  Exact checks establish that the
 transpose is self-inverse and that the raw, c3-repaired, and reconstructed B3
 boundaries match the existing implementation bit for bit.
 
-In the 2,000-call, 20-sample same-binary run, the empty call measured 2.531
+In the expanded 2,000-call, 20-sample same-binary run, the empty call measured 2.527
 TSC.  After correcting repeated call overhead, two input transposes cost
-87.519, the production c3 arithmetic cost 264.869, and the output transpose
-cost 42.505 TSC.  Their reconstructed sum is 397.423 versus 397.429 for the
-fused B3 leaf, a residual of only 0.006 TSC.  The attribution therefore closes
-for this warm-L1 microbenchmark.
+87.526, the production c3 arithmetic cost 262.853, and the output transpose
+cost 42.514 TSC.  Their reconstructed sum is 395.419 versus 397.302 for the
+fused B3 leaf, a residual of 1.883 TSC or less than 0.5%.  The attribution
+therefore closes for this warm-L1 microbenchmark.
 
 The important comparison is arithmetic-only.  Official
-`poly_basemul_scale` in its native layout measured 265.947 TSC including the
-same call overhead, while TILE4's c3 production arithmetic measured 267.400;
-the difference is only 1.453 TSC.  Raw TILE4 arithmetic was 257.377 and the
-c3 range policy adds 10.023 TSC inside the arithmetic leaf.  In contrast,
-input plus output layout costs 130.024 TSC.  This accounts almost exactly for
-the complete B3 disadvantage of 131.482 TSC relative to Official.
+`poly_basemul_scale` in its native layout measured 265.972 TSC including the
+same call overhead, while TILE4's c3 production arithmetic measured 265.380;
+TILE4 is 0.592 TSC faster in this run.  Raw TILE4 arithmetic was 257.372 and
+the c3 range policy adds 8.008 TSC inside the arithmetic leaf.  In contrast,
+input plus output layout costs 130.040 TSC.  This accounts almost exactly for
+the complete B3 disadvantage of 131.331 TSC relative to Official.
 
 The result selects the layout case, not the arithmetic case: the current
 single-accumulator schoolbook schedule is already at Official arithmetic
@@ -471,3 +471,29 @@ gate.  A continuing design must remove at least one complete transpose at a
 real producer or consumer boundary without introducing another global
 permutation.  The raw samples, MADs, contracts, and corrected reconstruction
 are in `results/tile4-basemul-attribution-short.json`.
+
+### BM planes to local I1 fusion
+
+The first layout follow-up tests the highest-priority local fusion without
+changing the public or production ABI.  For each 16-quartic block, the final
+four qword unpacks of the plane-to-AoS transpose are algebraically cancelled
+with the first four unpacks of I1's raw stage 0.  The benchmark-only producer
+then executes the pair-packed Montgomery stage 1 before storing a post-stage1
+AoS boundary; a second leaf finishes the three cross-register I1 stages.
+This removes eight shuffle instructions and four AoS store/reload pairs per
+block, and its final I1 output matches the champion exactly.
+
+The static reduction does not survive as a cycle win.  The champion B3 plus
+I1 measured 627.490 TSC and the fused path 629.901.  The paired fused-minus-
+champion delta was +1.958 TSC with MAD 4.067, and the fused path won only 7 of
+20 samples.  Its producer and cross-stage remainder measured 517.088 and
+118.534 TSC respectively.  A compact single-body control using rotating
+constant pointers was worse at approximately 647 TSC.
+
+The candidate therefore fails both the 628-TSC parity and 610-TSC continuation
+gates.  It remains a useful negative result: deleting shuffle and a memory
+boundary is insufficient when the resulting coupled DAG and code shape lose
+the same amount elsewhere.  No production kernel calls these symbols.  A
+future Direct-AoS attempt must be the materially different A2-F DAG that also
+eliminates unnecessary 32-bit finalization and the standalone pack boundary;
+this local SoA fusion should not be extended further.

@@ -14,6 +14,14 @@ def median_mad(values: list[float]) -> dict[str, float]:
     return {"median_tsc": median, "mad_tsc": mad}
 
 
+def paired_summary(left: list[float], right: list[float]) -> dict[str, float | int]:
+    deltas = [a - b for a, b in zip(left, right)]
+    result: dict[str, float | int] = median_mad(deltas)
+    result["left_wins"] = sum(delta < 0.0 for delta in deltas)
+    result["right_wins"] = sum(delta > 0.0 for delta in deltas)
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("binary", type=Path)
@@ -37,6 +45,7 @@ def main() -> None:
             samples.setdefault(fields[1], []).append(float(fields[3]))
 
     summary = {name: median_mad(values) for name, values in samples.items()}
+    fused_pair = paired_summary(samples["fused_bm_i1"], samples["champion_bm_i1"])
     empty = summary["empty"]["median_tsc"]
     tab = summary["TAB"]["median_tsc"]
     to = summary["TO"]["median_tsc"]
@@ -47,7 +56,7 @@ def main() -> None:
     official = summary["official_arith_scale"]["median_tsc"]
 
     result = {
-        "schema": "ntruplus768-tile4-basemul-attribution-v1",
+        "schema": "ntruplus768-tile4-basemul-attribution-v2",
         "benchmark": {
             "binary": str(args.binary),
             "iterations": args.iterations,
@@ -63,9 +72,13 @@ def main() -> None:
                 "raw-arithmetic-vs-frozen-boundary-exact",
                 "c3-repair-decomposition-exact",
                 "full-b3-decomposition-exact",
+                "fused-bm-i1-vs-champion-exact",
             ],
         },
         "components": summary,
+        "paired": {
+            "fused_minus_champion_bm_i1": fused_pair,
+        },
         "derived": {
             "input_materialization_TAB_tsc": tab - empty,
             "output_materialization_TO_tsc": to - empty,
@@ -79,6 +92,19 @@ def main() -> None:
             "fusion_or_reconstruction_residual_tsc": full - reconstructed,
             "tile4_arithmetic_minus_official_scale_tsc": arithmetic - official,
             "tile4_full_minus_official_scale_tsc": full - official,
+            "fused_bm_i1_saving_tsc": (
+                summary["champion_bm_i1"]["median_tsc"]
+                - summary["fused_bm_i1"]["median_tsc"]
+            ),
+            "fused_bm_i1_ratio": (
+                summary["fused_bm_i1"]["median_tsc"]
+                / summary["champion_bm_i1"]["median_tsc"]
+            ),
+            "fused_reconstruction_tsc": (
+                summary["fused_stage01_producer"]["median_tsc"]
+                + summary["i1_cross3_remainder"]["median_tsc"]
+                - empty
+            ),
         },
         "interpretation": {
             "official_comparator": "poly_basemul_scale on Official native NTT layout",
@@ -88,6 +114,12 @@ def main() -> None:
                 "materialization boundaries; the residual captures fusion, cache, "
                 "and scheduling interactions."
             ),
+            "fused_gate": {
+                "continue_below_tsc": 610,
+                "parity_below_tsc": 628,
+                "hard_stop_above_tsc": 650,
+                "decision": "stop-no-measurable-saving",
+            },
         },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
