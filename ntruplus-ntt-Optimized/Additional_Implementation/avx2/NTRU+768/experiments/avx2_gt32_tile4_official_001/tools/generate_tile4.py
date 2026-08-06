@@ -462,6 +462,28 @@ def inverse_tail_matrix() -> list[list[list[list[int]]]]:
     return matrix
 
 
+def inverse_tail_matrix3() -> list[list[list[list[int]]]]:
+    top_inv = pow(1445, -1, Q)
+    norm_192 = pow(192, -1, Q)
+    matrix = []
+    for group in range(8):
+        group_records = []
+        for segment in range(3):
+            vectors = [[], [], []]
+            for qlane in range(4):
+                n = 32 * segment + 4 * group + qlane
+                factors = (
+                    pow(BRANCH_SCALE[0], n, Q) * norm_192 * R * R,
+                    pow(BRANCH_SCALE[1], n, Q) * norm_192 * R * R,
+                    -top_inv * R,
+                )
+                for index, factor in enumerate(factors):
+                    vectors[index].extend([centered(factor)] * 4)
+            group_records.append(vectors)
+        matrix.append(group_records)
+    return matrix
+
+
 def emit_inverse_tail_asm(path: Path) -> None:
     matrix = inverse_tail_matrix()
     lines = [
@@ -474,6 +496,18 @@ def emit_inverse_tail_asm(path: Path) -> None:
                 lines.append("\t.short " + ",".join(map(str, vector)))
     lines.extend([".p2align 5", ".Ltail_matrix_qinv:"])
     for group in matrix:
+        for segment in group:
+            for vector in segment:
+                lines.append("\t.short " + ",".join(
+                    str(factor_qinv(value)) for value in vector))
+    matrix3 = inverse_tail_matrix3()
+    lines.extend([".p2align 5", ".Ltail_matrix3_factor:"])
+    for group in matrix3:
+        for segment in group:
+            for vector in segment:
+                lines.append("\t.short " + ",".join(map(str, vector)))
+    lines.extend([".p2align 5", ".Ltail_matrix3_qinv:"])
+    for group in matrix3:
         for segment in group:
             for vector in segment:
                 lines.append("\t.short " + ",".join(
@@ -524,6 +558,31 @@ def emit_inverse_tail_ranges(path: Path) -> None:
     output_bound = max(abs(center_canonical10(value))
                        for value in range(-matrix_sum_bound,
                                           matrix_sum_bound + 1))
+    pair_sum_bound = 2 * i1_bound
+    pair_sum_centered_bound = max(abs(center10(value))
+                                  for value in range(-pair_sum_bound,
+                                                     pair_sum_bound + 1))
+    difference_bound = 2 * i1_bound
+    one_mont_bound = product_bound(difference_bound, [-886])
+    one_mont_dft_bound = max(i1_bound + pair_sum_centered_bound,
+                             2 * i1_bound + one_mont_bound)
+    assert one_mont_dft_bound < 32768
+    matrix3 = inverse_tail_matrix3()
+    normalized_factors = [value for group in matrix3 for segment in group
+                          for vector in segment[:2] for value in vector]
+    correction_factors = list({value for group in matrix3 for segment in group
+                               for value in segment[2]})
+    normalized_product_bound = product_bound(one_mont_dft_bound,
+                                              normalized_factors)
+    normalized_difference_bound = 2 * normalized_product_bound
+    correction_product_bound = product_bound(normalized_difference_bound,
+                                              correction_factors)
+    matrix3_output_bound = max(2 * normalized_product_bound,
+                               2 * correction_product_bound)
+    assert matrix3_output_bound < 32768
+    relaxed_output_bound = max(abs(center10(value))
+                               for value in range(-matrix3_output_bound,
+                                                  matrix3_output_bound + 1))
     path.write_text(json.dumps({
         "input": "I1 TILE4 AoS, r_exponent=-1",
         "i1_terminal_abs_bound": i1_bound,
@@ -534,6 +593,21 @@ def emit_inverse_tail_ranges(path: Path) -> None:
         "branch_matrix_product_abs_bound": matrix_product_bound,
         "branch_matrix_precenter_abs_bound": matrix_sum_bound,
         "final_output_abs_bound": output_bound,
+        "one_mont_reduced_center": {
+            "raw_pair_sum_abs_bound": pair_sum_bound,
+            "centered_pair_sum_abs_bound": pair_sum_centered_bound,
+            "raw_difference_abs_bound": difference_bound,
+            "mont_w_difference_abs_bound": one_mont_bound,
+            "idft3_output_abs_bound": one_mont_dft_bound,
+        },
+        "three_mont_matrix": {
+            "normalized_untwist_product_abs_bound": normalized_product_bound,
+            "normalized_difference_abs_bound": normalized_difference_bound,
+            "correction_product_abs_bound": correction_product_bound,
+            "precenter_output_abs_bound": matrix3_output_bound,
+            "relaxed_output_abs_bound": relaxed_output_bound,
+            "canonical_output_abs_bound": min(relaxed_output_bound, Q // 2),
+        },
         "all_int16_add_sub_safe": True,
         "output_r_exponent": 0,
     }, indent=2) + "\n")
@@ -566,6 +640,11 @@ def emit_scale_contract(path: Path) -> None:
              "r_exponent": -1},
             {"operation": "final-output", "layout": "coefficient-order",
              "r_exponent": 0, "required_final_factor_r_exponent": 2},
+            {"operation": "private-inverse-output",
+             "layout": "coefficient-order", "r_exponent": 0,
+             "range": [-1818, 1818], "canonical": False,
+             "legal_consumers": ["crepmod3"],
+             "scope": "decapsulation-only"},
         ],
         "lambda_table": {"value": "lambda*R", "r_exponent": 1,
                          "physical_order": "tile=2*k3+branch,Q=0..31"},

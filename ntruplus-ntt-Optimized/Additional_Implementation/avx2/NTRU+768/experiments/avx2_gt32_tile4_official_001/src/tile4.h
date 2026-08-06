@@ -80,6 +80,15 @@ void gt32_tile4_inverse_tail_intrinsic_rminus1(
 void gt32_tile4_inverse_tail_asm_rminus1(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_inverse_tail_t1_relaxed_asm(int16_t *out, const int16_t *in);
+void gt32_tile4_inverse_tail_t2_one_mont_asm(int16_t *out, const int16_t *in);
+void gt32_tile4_inverse_tail_t3_reduced_center_asm(int16_t *out, const int16_t *in);
+void gt32_tile4_inverse_tail_t3_relaxed_control_asm(int16_t *out,
+	const int16_t *in);
+void gt32_tile4_inverse_tail_t4_matrix3_asm(int16_t *out, const int16_t *in);
+/* Decapsulation-only: bounded mod-q representative for immediate crepmod3. */
+void gt32_tile4_inverse_tail_champion_private_asm(int16_t *out,
+	const int16_t *in);
 
 void gt32_tile4_forward_tile_asm(int16_t out[GT32_TILE4_WORDS],
 	const int16_t in[GT32_TILE4_WORDS]);

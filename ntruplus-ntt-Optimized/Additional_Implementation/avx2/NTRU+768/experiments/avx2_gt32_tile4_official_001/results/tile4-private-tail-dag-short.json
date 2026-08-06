@@ -1,0 +1,26 @@
+{
+  "benchmark_kind": "same-binary-short-directional",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "tail_tsc": {
+    "canonical_baseline": 368.808,
+    "t1_relaxed_output": 309.890,
+    "t2_one_mont": 352.894,
+    "t3_reduced_center": 298.990,
+    "t3_relaxed_four_mont_control": 228.909,
+    "t4_three_mont_canonical": 309.927,
+    "private_champion": 214.183
+  },
+  "private_champion_saving_percent": 41.926,
+  "private_matrix3_saving_vs_four_mont_tsc": 14.726,
+  "full_chain": {
+    "scope": "two forward plus basemul-scale plus inverse",
+    "official_tsc": 1709.562,
+    "tile4_private_tsc": 1728.023,
+    "delta_tsc": 18.461,
+    "delta_percent": 1.080
+  },
+  "correctness": "1000-case canonical exact; private mod-q and crepmod3 bit-exact; full-chain differential pass",
+  "private_output_abs_bound": 1818,
+  "caveat": "short result; formal fixed-placement real-caller gate still required"
+}

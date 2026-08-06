@@ -164,6 +164,30 @@ static void fill_case(int16_t *value, size_t words, unsigned trial)
 	}
 }
 
+static int16_t crepmod3_contract(int16_t value)
+{
+	const int16_t v = 10923;
+	value = (int16_t)(value + ((value >> 15) & 3457));
+	value = (int16_t)(value - 1729);
+	value = (int16_t)(value + ((value >> 15) & 3457));
+	value = (int16_t)(value - 1728);
+	const int16_t quotient = (int16_t)(((int32_t)v * value + 16384) >> 15);
+	return (int16_t)(value - 3 * quotient);
+}
+
+static void compare_crepmod3(const char *label, unsigned trial,
+	const int16_t *expected, const int16_t *actual)
+{
+	for (size_t i = 0; i < GT32_TILE4_POLY_WORDS; i++) {
+		if (actual[i] < -5185 || actual[i] > 5185)
+			fail_at(label, trial, i, 5185, actual[i]);
+		const int16_t want = crepmod3_contract(expected[i]);
+		const int16_t got = crepmod3_contract(actual[i]);
+		if (want != got)
+			fail_at(label, trial, i, want, got);
+	}
+}
+
 int main(void)
 {
 	int16_t input[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
@@ -202,6 +226,30 @@ int main(void)
 		gt32_tile4_inverse_tail_asm_rminus1(general_ref, inverse_ref);
 		compare_exact("inverse-tail-rminus1-asm", trial, full_got,
 			general_ref, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t1_relaxed_asm(general_ref, inverse_ref);
+		compare_mod_q("inverse-tail-t1-relaxed", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("inverse-tail-t1-crepmod3", trial, full_got,
+			general_ref);
+		gt32_tile4_inverse_tail_t2_one_mont_asm(general_ref, inverse_ref);
+		compare_exact("inverse-tail-t2-one-mont", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t3_reduced_center_asm(general_ref, inverse_ref);
+		compare_exact("inverse-tail-t3-reduced-center", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t4_matrix3_asm(general_ref, inverse_ref);
+		compare_exact("inverse-tail-t4-matrix3", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t3_relaxed_control_asm(general_ref, inverse_ref);
+		compare_mod_q("inverse-tail-t3-relaxed-control", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("inverse-tail-t3-relaxed-crepmod3", trial, full_got,
+			general_ref);
+		gt32_tile4_inverse_tail_champion_private_asm(general_ref, inverse_ref);
+		compare_mod_q("inverse-tail-champion-private", trial, full_got,
+			general_ref, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("inverse-tail-champion-crepmod3", trial, full_got,
+			general_ref);
 		gt32_tile4_basemul_b0(ref, input, input);
 		gt32_tile4_basemul_b1(got, input, input);
 		compare_exact("basemul-b1", trial, ref, got,

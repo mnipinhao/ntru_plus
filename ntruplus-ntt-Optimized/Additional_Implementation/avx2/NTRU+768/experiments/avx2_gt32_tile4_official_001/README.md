@@ -239,3 +239,33 @@ than Official.  A roughly 7--8% shift across the two link compositions is
 recorded as code-placement sensitivity; neither short result is a promotion
 benchmark.  See `results/tile4-aos-inverse-tail-short.json` and
 `results/tile4-consumer-vs-official-short.json`.
+
+## Private inverse-tail DAG reduction
+
+Four separately callable assembly controls isolate the remaining tail DAG.
+T1 changes only final canonical correction to a bounded private representative;
+T2 changes only IDFT3 from four Montgomery products to one; T3 additionally
+centers only `r1+r2`; and T4 uses two normalized untwists plus one correction
+product instead of the four-entry branch matrix.  The combined champion is a
+decapsulation-only entry and is not a replacement for the canonical inverse.
+
+All canonical variants are exact with the scalar oracle.  Relaxed variants are
+mod-q equal, stay within absolute bound 1818, and are bit-exact after the
+Official reference `crepmod3` formula over 1000 test cases.  Generator range
+metadata proves raw pair sum/difference at 24300, one-Mont IDFT3 output at
+26354, and all int16 add/sub operations safe.
+
+The same 2,000-call binary measured canonical baseline 368.808 TSC, T1
+309.890, T2 352.894, T3 298.990, T3 plus relaxed output 228.909, canonical T4
+309.927, and the combined private champion 214.183.  Matrix3 therefore saves
+14.726 TSC under the private contract but regresses 10.937 TSC in the
+canonical path.  The selected champion is 41.926% faster than the canonical
+baseline tail.
+
+A same-binary end-to-end target charges both backends two identical 1536-byte
+input copies, then measures two forwards, basemul-scale, and inverse.  Its
+output is checked mod q and after `crepmod3` before timing.  Official measured
+1709.562 TSC and TILE4 private measured 1728.023, a remaining 18.461 TSC or
+1.080% regression.  This is short directional evidence, not a formal parity
+claim; the next gate must control placement and use the real decapsulation
+caller.  See `results/tile4-private-tail-dag-short.json`.

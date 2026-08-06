@@ -26,6 +26,13 @@ static void full_inverse_asm_candidate(int16_t *out, const int16_t *in)
 	gt32_tile4_inverse_tail_asm_rminus1(out, scratch);
 }
 
+static void full_inverse_champion(int16_t *out, const int16_t *in)
+{
+	int16_t scratch[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	gt32_tile4_inverse_all_pair_asm(scratch, in);
+	gt32_tile4_inverse_tail_champion_private_asm(out, scratch);
+}
+
 static uint64_t start_tsc(void)
 {
 	_mm_lfence();
@@ -97,10 +104,13 @@ int main(int argc, char **argv)
 	double d2_parallel[20];
 	double tail[20];
 	double tail_asm[20];
+	double tail_t1[20], tail_t2[20], tail_t3[20], tail_t3_relaxed[20];
+	double tail_t4[20], tail_champion[20];
 	double full_inverse[20];
 	double full_inverse_asm[20];
 	double d0_full[20];
 	double d0_full_asm[20];
+	double d0_full_champion[20];
 	cpu_set_t cpuset;
 
 	CPU_ZERO(&cpuset);
@@ -126,6 +136,8 @@ int main(int argc, char **argv)
 	(void)measure(gt32_tile4_inverse_tail_intrinsic_rminus1, output,
 		coefficients, 100);
 	(void)measure(gt32_tile4_inverse_tail_asm_rminus1, output,
+		coefficients, 100);
+	(void)measure(gt32_tile4_inverse_tail_champion_private_asm, output,
 		coefficients, 100);
 	(void)measure(full_inverse_candidate, output, scratch, 100);
 	(void)measure(full_inverse_asm_candidate, output, scratch, 100);
@@ -156,6 +168,20 @@ int main(int argc, char **argv)
 				output, coefficients, iterations);
 			tail_asm[sample] = measure(gt32_tile4_inverse_tail_asm_rminus1,
 				output, coefficients, iterations);
+			tail_t1[sample] = measure(gt32_tile4_inverse_tail_t1_relaxed_asm,
+				output, coefficients, iterations);
+			tail_t2[sample] = measure(gt32_tile4_inverse_tail_t2_one_mont_asm,
+				output, coefficients, iterations);
+			tail_t3[sample] = measure(gt32_tile4_inverse_tail_t3_reduced_center_asm,
+				output, coefficients, iterations);
+			tail_t4[sample] = measure(gt32_tile4_inverse_tail_t4_matrix3_asm,
+				output, coefficients, iterations);
+			tail_t3_relaxed[sample] = measure(
+				gt32_tile4_inverse_tail_t3_relaxed_control_asm,
+				output, coefficients, iterations);
+			tail_champion[sample] = measure(
+				gt32_tile4_inverse_tail_champion_private_asm,
+				output, coefficients, iterations);
 			full_inverse[sample] = measure(full_inverse_candidate,
 				output, scratch, iterations);
 			full_inverse_asm[sample] = measure(full_inverse_asm_candidate,
@@ -166,7 +192,13 @@ int main(int argc, char **argv)
 			d0_full_asm[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
 				full_inverse_asm_candidate, output, scratch,
 				frequency, frequency_b, iterations);
+			d0_full_champion[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_champion, output, scratch,
+				frequency, frequency_b, iterations);
 		} else {
+			d0_full_champion[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_champion, output, scratch,
+				frequency, frequency_b, iterations);
 			d0_full_asm[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
 				full_inverse_asm_candidate, output, scratch,
 				frequency, frequency_b, iterations);
@@ -180,6 +212,20 @@ int main(int argc, char **argv)
 			tail[sample] = measure(gt32_tile4_inverse_tail_intrinsic_rminus1,
 				output, coefficients, iterations);
 			tail_asm[sample] = measure(gt32_tile4_inverse_tail_asm_rminus1,
+				output, coefficients, iterations);
+			tail_champion[sample] = measure(
+				gt32_tile4_inverse_tail_champion_private_asm,
+				output, coefficients, iterations);
+			tail_t3_relaxed[sample] = measure(
+				gt32_tile4_inverse_tail_t3_relaxed_control_asm,
+				output, coefficients, iterations);
+			tail_t4[sample] = measure(gt32_tile4_inverse_tail_t4_matrix3_asm,
+				output, coefficients, iterations);
+			tail_t3[sample] = measure(gt32_tile4_inverse_tail_t3_reduced_center_asm,
+				output, coefficients, iterations);
+			tail_t2[sample] = measure(gt32_tile4_inverse_tail_t2_one_mont_asm,
+				output, coefficients, iterations);
+			tail_t1[sample] = measure(gt32_tile4_inverse_tail_t1_relaxed_asm,
 				output, coefficients, iterations);
 			d2_parallel[sample] = measure_pipeline(
 				gt32_tile4_basemul_scale_soa_private_asm,
@@ -213,20 +259,32 @@ int main(int argc, char **argv)
 	const double d2_parallel_median = median(d2_parallel);
 	const double tail_median = median(tail);
 	const double tail_asm_median = median(tail_asm);
+	const double tail_t1_median = median(tail_t1);
+	const double tail_t2_median = median(tail_t2);
+	const double tail_t3_median = median(tail_t3);
+	const double tail_t3_relaxed_median = median(tail_t3_relaxed);
+	const double tail_t4_median = median(tail_t4);
+	const double tail_champion_median = median(tail_champion);
 	const double full_inverse_median = median(full_inverse);
 	const double full_inverse_asm_median = median(full_inverse_asm);
 	const double d0_full_median = median(d0_full);
 	const double d0_full_asm_median = median(d0_full_asm);
+	const double d0_full_champion_median = median(d0_full_champion);
 	printf("iterations=%u samples=20 inverse_i0=%.3f inverse_i1_pair=%.3f "
 		"inverse_i2_private=%.3f inverse_i2_parallel=%.3f "
 		"d0_b2_i1=%.3f d2_b2s_i2=%.3f d2_parallel=%.3f "
 		"tail=%.3f tail_asm=%.3f full_inverse=%.3f full_inverse_asm=%.3f "
+		"t1=%.3f t2=%.3f t3=%.3f t3_relaxed=%.3f t4=%.3f champion=%.3f "
 		"d0_full=%.3f d0_full_asm=%.3f "
+		"d0_full_champion=%.3f "
 		"d2_parallel_saving=%.3f saving=%.3f saving_pct=%.3f sink=%llu\n",
 		iterations, i0_median, i1_median, i2_median, i2_parallel_median,
 		d0_median, d2_median, d2_parallel_median, tail_median,
 		tail_asm_median, full_inverse_median, full_inverse_asm_median,
-		d0_full_median, d0_full_asm_median,
+		tail_t1_median, tail_t2_median, tail_t3_median,
+		tail_t3_relaxed_median, tail_t4_median,
+		tail_champion_median, d0_full_median, d0_full_asm_median,
+		d0_full_champion_median,
 		d0_median - d2_parallel_median, i0_median - i1_median,
 		100.0 * (1.0 - i1_median / i0_median),
 		(unsigned long long)sink);

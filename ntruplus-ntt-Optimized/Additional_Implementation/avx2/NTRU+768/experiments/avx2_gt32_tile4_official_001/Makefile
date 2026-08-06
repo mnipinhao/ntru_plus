@@ -62,7 +62,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_tail_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_tail_asm.o | \
-		rg 'gt32_tile4_inverse_tail_asm_rminus1'
+		rg 'gt32_tile4_inverse_tail_(asm_rminus1|t1_|t2_|t3_|t4_|champion_)'
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000
@@ -162,14 +162,16 @@ $(BUILD)/bench_consumer_short: src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN_LAMBDA) \
 		$(FROZEN)/gt_invntt_soa.c \
 		$(FROZEN)/gt_invntt_fused_soa.S $(OFFICIAL)/asm/basemul.s \
-		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/consts.c | $(BUILD)
+		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -DGT_HAVE_AVX2_ASM=1 -Isrc -I$(FROZEN) -I$(OFFICIAL) \
 		-o $@ src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		src/tile4_basemul_asm.S bench/bench_consumer_short.c \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN_LAMBDA) \
 		$(FROZEN)/gt_invntt_soa.c \
 		$(FROZEN)/gt_invntt_fused_soa.S $(OFFICIAL)/asm/basemul.s \
-		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/consts.c
+		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/consts.c
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

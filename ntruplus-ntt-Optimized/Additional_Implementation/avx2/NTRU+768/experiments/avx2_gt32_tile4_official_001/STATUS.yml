@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-t-aos-tail-correct-consumer-regression
+status: gate-t-private-champion-near-parity-short
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -28,6 +28,7 @@ implemented:
   - generator-owned private-Q inverse twiddles and formal range bounds
   - generator-owned AoS inverse-tail branch matrix and formal range bounds
   - zero-spill AoS inverse-tail assembly with fused IDFT3, GT blend, untwist, top merge, normalization and canonical stores
+  - decap-private inverse-tail champion with one-Mont IDFT3, reduced centers, three-Mont reconstruction and bounded relaxed output
   - full coefficient-order input to TILE4 frequency-output forward candidate
   - five-layer register-resident AVX2 forward tile and six-tile wrapper
   - five-layer register-resident AVX2 inverse tile and six-tile wrapper
@@ -199,4 +200,31 @@ same_binary_consumer_short:
   tile4_vs_official_percent: 41.516
   tile4_vs_frozen_percent: -13.060
   caveat: short directional; separate binary differs by about 7-8 percent and indicates code-placement sensitivity
+private_tail_dag_gate:
+  result: champion-selected-short
+  iterations_per_sample: 2000
+  samples: 20
+  canonical_baseline_tail_tsc: 368.808
+  t1_relaxed_four_mont_tsc: 309.890
+  t2_one_mont_canonical_tsc: 352.894
+  t3_reduced_center_canonical_tsc: 298.990
+  t3_relaxed_four_mont_tsc: 228.909
+  t4_three_mont_canonical_tsc: 309.927
+  champion_three_mont_relaxed_tsc: 214.183
+  champion_saving_vs_baseline_tsc: 154.625
+  champion_saving_percent: 41.926
+  matrix3_private_saving_tsc: 14.726
+  matrix3_canonical_result: regression-by-10.937-tsc
+  private_output_abs_bound: 1818
+  private_consumer: immediate-crepmod3-only
+  correctness: mod-q-and-crepmod3-bit-exact-1000-cases
+same_binary_full_chain_short:
+  scope: two-forward-plus-basemul-scale-plus-inverse
+  common_input_copy: two-times-1536-bytes
+  official_tsc: 1709.562
+  tile4_private_tsc: 1728.023
+  tile4_delta_tsc: 18.461
+  tile4_delta_percent: 1.080
+  end_to_end_correctness: mod-q-equal-and-crepmod3-bit-exact
+  decision: retain-private-champion-require-fixed-placement-caller-gate
 promotion: false
