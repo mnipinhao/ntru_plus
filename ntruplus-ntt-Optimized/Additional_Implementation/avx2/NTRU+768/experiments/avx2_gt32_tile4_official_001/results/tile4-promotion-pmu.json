@@ -1,0 +1,2705 @@
+{
+  "binary": "build/bench_promotion",
+  "binary_sha256": "58694557d2a506ad9a46dee299597e7771ca7a387876fa7f32fed342b786b5f1",
+  "binary_sections": {
+    ".text": 23301,
+    ".rodata": 26720
+  },
+  "binary_symbols": {
+    "tile4_inverse_core": {
+      "symbol": "gt32_tile4_inverse_all_pair_asm",
+      "address": 7936,
+      "reported_size": 968,
+      "kind": "T"
+    },
+    "tile4_forward_entry": {
+      "symbol": "gt32_tile4_forward_full_wide_raw_pair_align64_asm",
+      "address": 8960,
+      "reported_size": 19,
+      "kind": "T"
+    },
+    "tile4_forward_body": {
+      "symbol": "gt32_tile4_forward_full_wide_raw_pair_asm",
+      "address": 8992,
+      "reported_size": 4907,
+      "kind": "T"
+    },
+    "tile4_basemul": {
+      "symbol": "gt32_tile4_basemul_c3center_late_aos_private_asm",
+      "address": 13920,
+      "reported_size": 759,
+      "kind": "T"
+    },
+    "official_full_wrapper": {
+      "symbol": "official_full",
+      "address": 15056,
+      "reported_size": 97,
+      "kind": "t"
+    },
+    "tile4_full_wrapper": {
+      "symbol": "tile4_full",
+      "address": 15200,
+      "reported_size": 137,
+      "kind": "t"
+    },
+    "tile4_inverse_tail": {
+      "symbol": "gt32_tile4_inverse_tail_t9_isolated_private_asm",
+      "address": 15392,
+      "reported_size": 5578,
+      "kind": "T"
+    },
+    "official_basemul": {
+      "symbol": "poly_basemul",
+      "address": 20992,
+      "reported_size": null,
+      "kind": "T"
+    },
+    "official_inverse": {
+      "symbol": "poly_invntt_scale",
+      "address": 23488,
+      "reported_size": null,
+      "kind": "T"
+    },
+    "official_ntt": {
+      "symbol": "poly_ntt",
+      "address": 25472,
+      "reported_size": null,
+      "kind": "T"
+    },
+    "official_crepmod3": {
+      "symbol": "poly_crepmod3",
+      "address": 27264,
+      "reported_size": null,
+      "kind": "T"
+    }
+  },
+  "cpu": 1,
+  "iterations": 1000000,
+  "repeats": 3,
+  "groups": {
+    "cycles_instructions": {
+      "bm": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 432504020,
+                "count_per_call": 432.50402,
+                "time_running_ns": 98166671,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1467768973,
+                "count_per_call": 1467.768973,
+                "time_running_ns": 98166671,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 430174249,
+                "count_per_call": 430.174249,
+                "time_running_ns": 89804165,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1467831631,
+                "count_per_call": 1467.831631,
+                "time_running_ns": 89804165,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 430103719,
+                "count_per_call": 430.103719,
+                "time_running_ns": 89948826,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1467871871,
+                "count_per_call": 1467.871871,
+                "time_running_ns": 89948826,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 430.174249,
+            "cpu_core/instructions/u": 1467.831631
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 639693700,
+                "count_per_call": 639.6937,
+                "time_running_ns": 134088573,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1895186646,
+                "count_per_call": 1895.186646,
+                "time_running_ns": 134088573,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 640447384,
+                "count_per_call": 640.447384,
+                "time_running_ns": 133713185,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1895508671,
+                "count_per_call": 1895.508671,
+                "time_running_ns": 133713185,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 644808219,
+                "count_per_call": 644.808219,
+                "time_running_ns": 134598148,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 1895554721,
+                "count_per_call": 1895.554721,
+                "time_running_ns": 134598148,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 640.447384,
+            "cpu_core/instructions/u": 1895.508671
+          }
+        }
+      },
+      "bm_i1_t9": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1179674311,
+                "count_per_call": 1179.674311,
+                "time_running_ns": 246457198,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3955917376,
+                "count_per_call": 3955.917376,
+                "time_running_ns": 246457198,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1176359333,
+                "count_per_call": 1176.359333,
+                "time_running_ns": 245743881,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3955968517,
+                "count_per_call": 3955.968517,
+                "time_running_ns": 245743881,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1184434186,
+                "count_per_call": 1184.434186,
+                "time_running_ns": 249415693,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3955969732,
+                "count_per_call": 3955.969732,
+                "time_running_ns": 249415693,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 1179.674311,
+            "cpu_core/instructions/u": 3955.968517
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1374420627,
+                "count_per_call": 1374.420627,
+                "time_running_ns": 286853294,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3933784834,
+                "count_per_call": 3933.784834,
+                "time_running_ns": 286853294,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1373821950,
+                "count_per_call": 1373.82195,
+                "time_running_ns": 287800106,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3929222804,
+                "count_per_call": 3929.222804,
+                "time_running_ns": 287800106,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 1373379318,
+                "count_per_call": 1373.379318,
+                "time_running_ns": 286970897,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 3929404606,
+                "count_per_call": 3929.404606,
+                "time_running_ns": 286970897,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 1373.82195,
+            "cpu_core/instructions/u": 3929.404606
+          }
+        }
+      },
+      "full": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2731241044,
+                "count_per_call": 2731.241044,
+                "time_running_ns": 578462746,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8303172443,
+                "count_per_call": 8303.172443,
+                "time_running_ns": 578462746,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2721851362,
+                "count_per_call": 2721.851362,
+                "time_running_ns": 569267739,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8303104043,
+                "count_per_call": 8303.104043,
+                "time_running_ns": 569267739,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2742822368,
+                "count_per_call": 2742.822368,
+                "time_running_ns": 573138591,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8303367018,
+                "count_per_call": 8303.367018,
+                "time_running_ns": 573138591,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 2731.241044,
+            "cpu_core/instructions/u": 8303.172443
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2706780717,
+                "count_per_call": 2706.780717,
+                "time_running_ns": 565594451,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 7367936739,
+                "count_per_call": 7367.936739,
+                "time_running_ns": 565594451,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2701855918,
+                "count_per_call": 2701.855918,
+                "time_running_ns": 564497168,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 7367995902,
+                "count_per_call": 7367.995902,
+                "time_running_ns": 564497168,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2706849708,
+                "count_per_call": 2706.849708,
+                "time_running_ns": 567481014,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 7368277719,
+                "count_per_call": 7368.277719,
+                "time_running_ns": 567481014,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 2706.780717,
+            "cpu_core/instructions/u": 7367.995902
+          }
+        }
+      },
+      "full_crep": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2917945722,
+                "count_per_call": 2917.945722,
+                "time_running_ns": 618183192,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8980921659,
+                "count_per_call": 8980.921659,
+                "time_running_ns": 618183192,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2924075790,
+                "count_per_call": 2924.07579,
+                "time_running_ns": 611026577,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8980759213,
+                "count_per_call": 8980.759213,
+                "time_running_ns": 611026577,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2937895302,
+                "count_per_call": 2937.895302,
+                "time_running_ns": 614006130,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8980765912,
+                "count_per_call": 8980.765912,
+                "time_running_ns": 614006130,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 2924.07579,
+            "cpu_core/instructions/u": 8980.765912
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2898647203,
+                "count_per_call": 2898.647203,
+                "time_running_ns": 605666592,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8045462152,
+                "count_per_call": 8045.462152,
+                "time_running_ns": 605666592,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2905400385,
+                "count_per_call": 2905.400385,
+                "time_running_ns": 608907998,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8045240147,
+                "count_per_call": 8045.240147,
+                "time_running_ns": 608907998,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/cycles/u",
+                "count": 2949109106,
+                "count_per_call": 2949.109106,
+                "time_running_ns": 623370486,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/instructions/u",
+                "count": 8048948579,
+                "count_per_call": 8048.948579,
+                "time_running_ns": 623370486,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/cycles/u": 2905.400385,
+            "cpu_core/instructions/u": 8045.462152
+          }
+        }
+      }
+    },
+    "branches": {
+      "bm": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 10094202,
+                "count_per_call": 10.094202,
+                "time_running_ns": 89964758,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 484,
+                "count_per_call": 0.000484,
+                "time_running_ns": 89964758,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 10077186,
+                "count_per_call": 10.077186,
+                "time_running_ns": 90054133,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 473,
+                "count_per_call": 0.000473,
+                "time_running_ns": 90054133,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 10052189,
+                "count_per_call": 10.052189,
+                "time_running_ns": 89367596,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 475,
+                "count_per_call": 0.000475,
+                "time_running_ns": 89367596,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.000475,
+            "cpu_core/branches/u": 10.077186
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 16067600,
+                "count_per_call": 16.0676,
+                "time_running_ns": 135824806,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 592,
+                "count_per_call": 0.000592,
+                "time_running_ns": 135824806,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 16061223,
+                "count_per_call": 16.061223,
+                "time_running_ns": 136068608,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 2842,
+                "count_per_call": 0.002842,
+                "time_running_ns": 136068608,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 16069688,
+                "count_per_call": 16.069688,
+                "time_running_ns": 133940334,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 632,
+                "count_per_call": 0.000632,
+                "time_running_ns": 133940334,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.000632,
+            "cpu_core/branches/u": 16.0676
+          }
+        }
+      },
+      "bm_i1_t9": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 50157922,
+                "count_per_call": 50.157922,
+                "time_running_ns": 248951849,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 817,
+                "count_per_call": 0.000817,
+                "time_running_ns": 248951849,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 50129343,
+                "count_per_call": 50.129343,
+                "time_running_ns": 248008099,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 3094,
+                "count_per_call": 0.003094,
+                "time_running_ns": 248008099,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 50157542,
+                "count_per_call": 50.157542,
+                "time_running_ns": 248801688,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 913,
+                "count_per_call": 0.000913,
+                "time_running_ns": 248801688,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.000913,
+            "cpu_core/branches/u": 50.157542
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 26106110,
+                "count_per_call": 26.10611,
+                "time_running_ns": 287122935,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 740,
+                "count_per_call": 0.00074,
+                "time_running_ns": 287122935,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 26082975,
+                "count_per_call": 26.082975,
+                "time_running_ns": 290655058,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 738,
+                "count_per_call": 0.000738,
+                "time_running_ns": 290655058,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 26080481,
+                "count_per_call": 26.080481,
+                "time_running_ns": 288896152,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 743,
+                "count_per_call": 0.000743,
+                "time_running_ns": 288896152,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.00074,
+            "cpu_core/branches/u": 26.082975
+          }
+        }
+      },
+      "full": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 130321231,
+                "count_per_call": 130.321231,
+                "time_running_ns": 571561465,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1374,
+                "count_per_call": 0.001374,
+                "time_running_ns": 571561465,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 130399724,
+                "count_per_call": 130.399724,
+                "time_running_ns": 579211586,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1314,
+                "count_per_call": 0.001314,
+                "time_running_ns": 579211586,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 130325153,
+                "count_per_call": 130.325153,
+                "time_running_ns": 573250762,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1262,
+                "count_per_call": 0.001262,
+                "time_running_ns": 573250762,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.001314,
+            "cpu_core/branches/u": 130.325153
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 44113072,
+                "count_per_call": 44.113072,
+                "time_running_ns": 570221619,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 787,
+                "count_per_call": 0.000787,
+                "time_running_ns": 570221619,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 44129215,
+                "count_per_call": 44.129215,
+                "time_running_ns": 567924048,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 943,
+                "count_per_call": 0.000943,
+                "time_running_ns": 567924048,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 44113998,
+                "count_per_call": 44.113998,
+                "time_running_ns": 570610660,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 811,
+                "count_per_call": 0.000811,
+                "time_running_ns": 570610660,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.000811,
+            "cpu_core/branches/u": 44.113998
+          }
+        }
+      },
+      "full_crep": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 145353844,
+                "count_per_call": 145.353844,
+                "time_running_ns": 617314374,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1329,
+                "count_per_call": 0.001329,
+                "time_running_ns": 617314374,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 145357666,
+                "count_per_call": 145.357666,
+                "time_running_ns": 618300201,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1376,
+                "count_per_call": 0.001376,
+                "time_running_ns": 618300201,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 145353798,
+                "count_per_call": 145.353798,
+                "time_running_ns": 615045848,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1394,
+                "count_per_call": 0.001394,
+                "time_running_ns": 615045848,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.001376,
+            "cpu_core/branches/u": 145.353844
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 59147713,
+                "count_per_call": 59.147713,
+                "time_running_ns": 608294339,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 3135,
+                "count_per_call": 0.003135,
+                "time_running_ns": 608294339,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 59149616,
+                "count_per_call": 59.149616,
+                "time_running_ns": 611247748,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 1168,
+                "count_per_call": 0.001168,
+                "time_running_ns": 611247748,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/branches/u",
+                "count": 59155406,
+                "count_per_call": 59.155406,
+                "time_running_ns": 608698398,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/branch-misses/u",
+                "count": 2772,
+                "count_per_call": 0.002772,
+                "time_running_ns": 608698398,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/branch-misses/u": 0.002772,
+            "cpu_core/branches/u": 59.149616
+          }
+        }
+      }
+    },
+    "l1_data": {
+      "bm": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 196378664,
+                "count_per_call": 196.378664,
+                "time_running_ns": 91097024,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 469,
+                "count_per_call": 0.000469,
+                "time_running_ns": 91097024,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 196678407,
+                "count_per_call": 196.678407,
+                "time_running_ns": 89668063,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 487,
+                "count_per_call": 0.000487,
+                "time_running_ns": 89668063,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 196613498,
+                "count_per_call": 196.613498,
+                "time_running_ns": 100396232,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 593,
+                "count_per_call": 0.000593,
+                "time_running_ns": 100396232,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.000487,
+            "cpu_core/L1-dcache-loads/u": 196.613498
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 267036277,
+                "count_per_call": 267.036277,
+                "time_running_ns": 133350271,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 569,
+                "count_per_call": 0.000569,
+                "time_running_ns": 133350271,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 267046406,
+                "count_per_call": 267.046406,
+                "time_running_ns": 135800552,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 492,
+                "count_per_call": 0.000492,
+                "time_running_ns": 135800552,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 267607463,
+                "count_per_call": 267.607463,
+                "time_running_ns": 133428527,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 519,
+                "count_per_call": 0.000519,
+                "time_running_ns": 133428527,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.000519,
+            "cpu_core/L1-dcache-loads/u": 267.046406
+          }
+        }
+      },
+      "bm_i1_t9": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 466414252,
+                "count_per_call": 466.414252,
+                "time_running_ns": 249356793,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 927,
+                "count_per_call": 0.000927,
+                "time_running_ns": 249356793,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 466440177,
+                "count_per_call": 466.440177,
+                "time_running_ns": 246953696,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 948,
+                "count_per_call": 0.000948,
+                "time_running_ns": 246953696,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 466412271,
+                "count_per_call": 466.412271,
+                "time_running_ns": 246124393,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 907,
+                "count_per_call": 0.000907,
+                "time_running_ns": 246124393,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.000927,
+            "cpu_core/L1-dcache-loads/u": 466.414252
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 716040930,
+                "count_per_call": 716.04093,
+                "time_running_ns": 288016630,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 2040,
+                "count_per_call": 0.00204,
+                "time_running_ns": 288016630,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 716032335,
+                "count_per_call": 716.032335,
+                "time_running_ns": 288897073,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 1689,
+                "count_per_call": 0.001689,
+                "time_running_ns": 288897073,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 716042981,
+                "count_per_call": 716.042981,
+                "time_running_ns": 292089487,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 2066,
+                "count_per_call": 0.002066,
+                "time_running_ns": 292089487,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.00204,
+            "cpu_core/L1-dcache-loads/u": 716.04093
+          }
+        }
+      },
+      "full": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1003441418,
+                "count_per_call": 1003.441418,
+                "time_running_ns": 574146949,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 3296,
+                "count_per_call": 0.003296,
+                "time_running_ns": 574146949,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1003455933,
+                "count_per_call": 1003.455933,
+                "time_running_ns": 571087010,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 3897,
+                "count_per_call": 0.003897,
+                "time_running_ns": 571087010,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1003036893,
+                "count_per_call": 1003.036893,
+                "time_running_ns": 579348917,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 4551,
+                "count_per_call": 0.004551,
+                "time_running_ns": 579348917,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.003897,
+            "cpu_core/L1-dcache-loads/u": 1003.441418
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1606007914,
+                "count_per_call": 1606.007914,
+                "time_running_ns": 569043791,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 8634,
+                "count_per_call": 0.008634,
+                "time_running_ns": 569043791,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1605922102,
+                "count_per_call": 1605.922102,
+                "time_running_ns": 565847359,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 10494,
+                "count_per_call": 0.010494,
+                "time_running_ns": 565847359,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1606735495,
+                "count_per_call": 1606.735495,
+                "time_running_ns": 576183363,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 17152,
+                "count_per_call": 0.017152,
+                "time_running_ns": 576183363,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.010494,
+            "cpu_core/L1-dcache-loads/u": 1606.007914
+          }
+        }
+      },
+      "full_crep": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1058563018,
+                "count_per_call": 1058.563018,
+                "time_running_ns": 615014345,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 7097,
+                "count_per_call": 0.007097,
+                "time_running_ns": 615014345,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1058574094,
+                "count_per_call": 1058.574094,
+                "time_running_ns": 627013169,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 3452,
+                "count_per_call": 0.003452,
+                "time_running_ns": 627013169,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1059180742,
+                "count_per_call": 1059.180742,
+                "time_running_ns": 613996080,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 3520,
+                "count_per_call": 0.00352,
+                "time_running_ns": 613996080,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.00352,
+            "cpu_core/L1-dcache-loads/u": 1058.574094
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1661698489,
+                "count_per_call": 1661.698489,
+                "time_running_ns": 606198737,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 12668,
+                "count_per_call": 0.012668,
+                "time_running_ns": 606198737,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1661031968,
+                "count_per_call": 1661.031968,
+                "time_running_ns": 607611382,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 12751,
+                "count_per_call": 0.012751,
+                "time_running_ns": 607611382,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/L1-dcache-loads/u",
+                "count": 1661693807,
+                "count_per_call": 1661.693807,
+                "time_running_ns": 615800796,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/L1-dcache-load-misses/u",
+                "count": 16752,
+                "count_per_call": 0.016752,
+                "time_running_ns": 615800796,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/L1-dcache-load-misses/u": 0.012751,
+            "cpu_core/L1-dcache-loads/u": 1661.693807
+          }
+        }
+      }
+    },
+    "topdown": {
+      "bm": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 2593300787,
+                "count_per_call": 2593.300787,
+                "time_running_ns": 90300160,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 90300160,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1128848577,
+                "count_per_call": 1128.848577,
+                "time_running_ns": 90300160,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1464452208,
+                "count_per_call": 1464.452208,
+                "time_running_ns": 90300160,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 90300160,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 2578169550,
+                "count_per_call": 2578.16955,
+                "time_running_ns": 89677840,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 89677840,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1112151570,
+                "count_per_call": 1112.15157,
+                "time_running_ns": 89677840,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1466017979,
+                "count_per_call": 1466.017979,
+                "time_running_ns": 89677840,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 89677840,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 2576465084,
+                "count_per_call": 2576.465084,
+                "time_running_ns": 89320405,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 89320405,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1111416310,
+                "count_per_call": 1111.41631,
+                "time_running_ns": 89320405,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1465048773,
+                "count_per_call": 1465.048773,
+                "time_running_ns": 89320405,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 89320405,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 2578.16955,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 1112.15157,
+            "cpu_core/topdown-fe-bound/u": 0.0,
+            "cpu_core/topdown-retiring/u": 1465.048773
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 3867994253,
+                "count_per_call": 3867.994253,
+                "time_running_ns": 134484452,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 134484452,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1987087243,
+                "count_per_call": 1987.087243,
+                "time_running_ns": 134484452,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1880907009,
+                "count_per_call": 1880.907009,
+                "time_running_ns": 134484452,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 134484452,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 3861375832,
+                "count_per_call": 3861.375832,
+                "time_running_ns": 135372569,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 135372569,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1968544542,
+                "count_per_call": 1968.544542,
+                "time_running_ns": 135372569,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1892831289,
+                "count_per_call": 1892.831289,
+                "time_running_ns": 135372569,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 135372569,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 3886228576,
+                "count_per_call": 3886.228576,
+                "time_running_ns": 142542113,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 142542113,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 1996454679,
+                "count_per_call": 1996.454679,
+                "time_running_ns": 142542113,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 1889773895,
+                "count_per_call": 1889.773895,
+                "time_running_ns": 142542113,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 142542113,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 3867.994253,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 1987.087243,
+            "cpu_core/topdown-fe-bound/u": 0.0,
+            "cpu_core/topdown-retiring/u": 1889.773895
+          }
+        }
+      },
+      "bm_i1_t9": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 7058531623,
+                "count_per_call": 7058.531623,
+                "time_running_ns": 245776042,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 245776042,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 3155578842,
+                "count_per_call": 3155.578842,
+                "time_running_ns": 245776042,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3902952779,
+                "count_per_call": 3902.952779,
+                "time_running_ns": 245776042,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 245776042,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 7063327324,
+                "count_per_call": 7063.327324,
+                "time_running_ns": 246033988,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 246033988,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 3157722803,
+                "count_per_call": 3157.722803,
+                "time_running_ns": 246033988,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3905604519,
+                "count_per_call": 3905.604519,
+                "time_running_ns": 246033988,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 246033988,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 7096859776,
+                "count_per_call": 7096.859776,
+                "time_running_ns": 248091372,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 248091372,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 3172713782,
+                "count_per_call": 3172.713782,
+                "time_running_ns": 248091372,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3924145993,
+                "count_per_call": 3924.145993,
+                "time_running_ns": 248091372,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 248091372,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 7063.327324,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 3157.722803,
+            "cpu_core/topdown-fe-bound/u": 0.0,
+            "cpu_core/topdown-retiring/u": 3905.604519
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 8261325576,
+                "count_per_call": 8261.325576,
+                "time_running_ns": 287264919,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 287264919,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 4341245596,
+                "count_per_call": 4341.245596,
+                "time_running_ns": 287264919,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3920079979,
+                "count_per_call": 3920.079979,
+                "time_running_ns": 287264919,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 287264919,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 8246395088,
+                "count_per_call": 8246.395088,
+                "time_running_ns": 287380396,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 287380396,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 4333399771,
+                "count_per_call": 4333.399771,
+                "time_running_ns": 287380396,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3912995315,
+                "count_per_call": 3912.995315,
+                "time_running_ns": 287380396,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 287380396,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 8298482738,
+                "count_per_call": 8298.482738,
+                "time_running_ns": 288675011,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 288675011,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 4393314390,
+                "count_per_call": 4393.31439,
+                "time_running_ns": 288675011,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 3905168347,
+                "count_per_call": 3905.168347,
+                "time_running_ns": 288675011,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 288675011,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 8261.325576,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 4341.245596,
+            "cpu_core/topdown-fe-bound/u": 0.0,
+            "cpu_core/topdown-retiring/u": 3912.995315
+          }
+        }
+      },
+      "full": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16494667277,
+                "count_per_call": 16494.667277,
+                "time_running_ns": 574981738,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 323424848,
+                "count_per_call": 323.424848,
+                "time_running_ns": 574981738,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 7697511396,
+                "count_per_call": 7697.511396,
+                "time_running_ns": 574981738,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8473731032,
+                "count_per_call": 8473.731032,
+                "time_running_ns": 574981738,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 574981738,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16572449794,
+                "count_per_call": 16572.449794,
+                "time_running_ns": 577088297,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 324949995,
+                "count_per_call": 324.949995,
+                "time_running_ns": 577088297,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 7798799903,
+                "count_per_call": 7798.799903,
+                "time_running_ns": 577088297,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8448699895,
+                "count_per_call": 8448.699895,
+                "time_running_ns": 577088297,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 577088297,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16432250784,
+                "count_per_call": 16432.250784,
+                "time_running_ns": 579800223,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 322200995,
+                "count_per_call": 322.200995,
+                "time_running_ns": 579800223,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 7668383699,
+                "count_per_call": 7668.383699,
+                "time_running_ns": 579800223,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8441666088,
+                "count_per_call": 8441.666088,
+                "time_running_ns": 579800223,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 579800223,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 16494.667277,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 7697.511396,
+            "cpu_core/topdown-fe-bound/u": 323.424848,
+            "cpu_core/topdown-retiring/u": 8448.699895
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16392687409,
+                "count_per_call": 16392.687409,
+                "time_running_ns": 570869766,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 385710291,
+                "count_per_call": 385.710291,
+                "time_running_ns": 570869766,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8421341374,
+                "count_per_call": 8421.341374,
+                "time_running_ns": 570869766,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 7585635741,
+                "count_per_call": 7585.635741,
+                "time_running_ns": 570869766,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 570869766,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16407244806,
+                "count_per_call": 16407.244806,
+                "time_running_ns": 571798757,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 386052818,
+                "count_per_call": 386.052818,
+                "time_running_ns": 571798757,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8428819880,
+                "count_per_call": 8428.81988,
+                "time_running_ns": 571798757,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 7592372106,
+                "count_per_call": 7592.372106,
+                "time_running_ns": 571798757,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 571798757,
+                "running_percent": 100.0,
+                "scaling_factor": 1.0
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 16306793347,
+                "count_per_call": 16306.793347,
+                "time_running_ns": 568643466,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 383689254,
+                "count_per_call": 383.689254,
+                "time_running_ns": 568643466,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8377215405,
+                "count_per_call": 8377.215405,
+                "time_running_ns": 568643466,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 7609836895,
+                "count_per_call": 7609.836895,
+                "time_running_ns": 568643466,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 568643466,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 16392.687409,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 8421.341374,
+            "cpu_core/topdown-fe-bound/u": 385.710291,
+            "cpu_core/topdown-retiring/u": 7592.372106
+          }
+        }
+      },
+      "full_crep": {
+        "official": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17563483915,
+                "count_per_call": 17563.483915,
+                "time_running_ns": 611255549,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 344382037,
+                "count_per_call": 344.382037,
+                "time_running_ns": 611255549,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8127416085,
+                "count_per_call": 8127.416085,
+                "time_running_ns": 611255549,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 9091685790,
+                "count_per_call": 9091.68579,
+                "time_running_ns": 611255549,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 611255549,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17666111461,
+                "count_per_call": 17666.111461,
+                "time_running_ns": 614782756,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 346394341,
+                "count_per_call": 346.394341,
+                "time_running_ns": 614782756,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8244185348,
+                "count_per_call": 8244.185348,
+                "time_running_ns": 614782756,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 9075531770,
+                "count_per_call": 9075.53177,
+                "time_running_ns": 614782756,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 614782756,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17549087264,
+                "count_per_call": 17549.087264,
+                "time_running_ns": 618743971,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 344099749,
+                "count_per_call": 344.099749,
+                "time_running_ns": 618743971,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8051934155,
+                "count_per_call": 8051.934155,
+                "time_running_ns": 618743971,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 9153053357,
+                "count_per_call": 9153.053357,
+                "time_running_ns": 618743971,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 618743971,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 17563.483915,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 8127.416085,
+            "cpu_core/topdown-fe-bound/u": 344.382037,
+            "cpu_core/topdown-retiring/u": 9091.68579
+          }
+        },
+        "tile4": {
+          "repetitions": [
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17481230424,
+                "count_per_call": 17481.230424,
+                "time_running_ns": 608406697,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 342769223,
+                "count_per_call": 342.769223,
+                "time_running_ns": 608406697,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8843445979,
+                "count_per_call": 8843.445979,
+                "time_running_ns": 608406697,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8295015220,
+                "count_per_call": 8295.01522,
+                "time_running_ns": 608406697,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 608406697,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17500688030,
+                "count_per_call": 17500.68803,
+                "time_running_ns": 609033970,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 343150744,
+                "count_per_call": 343.150744,
+                "time_running_ns": 609033970,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8853289238,
+                "count_per_call": 8853.289238,
+                "time_running_ns": 609033970,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8304248045,
+                "count_per_call": 8304.248045,
+                "time_running_ns": 609033970,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 609033970,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ],
+            [
+              {
+                "event": "cpu_core/slots/u",
+                "count": 17563258206,
+                "count_per_call": 17563.258206,
+                "time_running_ns": 612020669,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-fe-bound/u",
+                "count": 344377611,
+                "count_per_call": 344.377611,
+                "time_running_ns": 612020669,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-be-bound/u",
+                "count": 8953817908,
+                "count_per_call": 8953.817908,
+                "time_running_ns": 612020669,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-retiring/u",
+                "count": 8265062684,
+                "count_per_call": 8265.062684,
+                "time_running_ns": 612020669,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              },
+              {
+                "event": "cpu_core/topdown-bad-spec/u",
+                "count": 0,
+                "count_per_call": 0.0,
+                "time_running_ns": 612020669,
+                "running_percent": 99.0,
+                "scaling_factor": 1.0101010101010102
+              }
+            ]
+          ],
+          "median_count_per_call": {
+            "cpu_core/slots/u": 17500.68803,
+            "cpu_core/topdown-bad-spec/u": 0.0,
+            "cpu_core/topdown-be-bound/u": 8853.289238,
+            "cpu_core/topdown-fe-bound/u": 343.150744,
+            "cpu_core/topdown-retiring/u": 8295.01522
+          }
+        }
+      }
+    }
+  }
+}

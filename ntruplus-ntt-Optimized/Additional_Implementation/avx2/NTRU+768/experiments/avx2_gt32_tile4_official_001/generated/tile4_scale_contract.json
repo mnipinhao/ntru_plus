@@ -52,6 +52,14 @@
       "legal_consumers": [
         "inverse-tile4"
       ],
+      "forbidden_consumers": [
+        "general-inverse",
+        "add",
+        "sub",
+        "tobytes",
+        "serialization"
+      ],
+      "alias": "out-distinct-from-a-and-b",
       "scope": "decapsulation-only"
     },
     {
@@ -84,6 +92,11 @@
       "canonical": false,
       "legal_consumers": [
         "crepmod3"
+      ],
+      "forbidden_consumers": [
+        "tobytes",
+        "serialization",
+        "canonical-compare"
       ],
       "scope": "decapsulation-only"
     },
@@ -128,5 +141,27 @@
       15
     ],
     "scope": "decap basemul_scale -> invntt_scale only"
-  }
+  },
+  "negative_contracts": [
+    {
+      "misuse": "non-small coefficient enters raw forward",
+      "prevention": "private symbol plus documented [-3,4] precondition"
+    },
+    {
+      "misuse": "partial-overlap basemul alias",
+      "prevention": "private symbol requires three distinct buffers"
+    },
+    {
+      "misuse": "c3center output enters general inverse",
+      "prevention": "only inverse-tile4 is a legal consumer"
+    },
+    {
+      "misuse": "private T9 output enters serialization",
+      "prevention": "only crepmod3 is a legal consumer"
+    },
+    {
+      "misuse": "artificial basemul input exceeds N5 proof range",
+      "prevention": "candidate is caller-scoped and has no public API"
+    }
+  ]
 }

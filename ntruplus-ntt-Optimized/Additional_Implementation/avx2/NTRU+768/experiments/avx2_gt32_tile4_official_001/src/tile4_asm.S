@@ -556,6 +556,7 @@ gt32_tile4_inverse_all_asm:
 	ret
 .size gt32_tile4_inverse_all_asm,.-gt32_tile4_inverse_all_asm
 
+	.section .text.gt32_tile4_inverse_all_pair_asm,"ax",@progbits
 .p2align 5
 .globl gt32_tile4_inverse_all_pair_asm
 .type gt32_tile4_inverse_all_pair_asm,@function
@@ -572,6 +573,7 @@ gt32_tile4_inverse_all_pair_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_inverse_all_pair_asm,.-gt32_tile4_inverse_all_pair_asm
+	.text
 
 .p2align 5
 .globl gt32_tile4_inverse_all_pair_selective_asm
@@ -854,6 +856,7 @@ gt32_tile4_frontend_wide_raw_asm:
 	ret
 .size gt32_tile4_frontend_wide_raw_asm,.-gt32_tile4_frontend_wide_raw_asm
 
+	.section .text.gt32_tile4_forward_promotion_asm,"ax",@progbits
 .p2align 5
 .globl gt32_tile4_forward_full_wide_raw_pair_align32_asm
 .type gt32_tile4_forward_full_wide_raw_pair_align32_asm,@function
@@ -903,6 +906,7 @@ gt32_tile4_forward_full_wide_raw_pair_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_forward_full_wide_raw_pair_asm,.-gt32_tile4_forward_full_wide_raw_pair_asm
+	.text
 
 /*
  * Small-input full forward: fixed frontend and pair-packed NTT32 in one leaf.

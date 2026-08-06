@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-b5-aos-c3center-late-beats-official-short
+status: promotion-kernel-chain-statistics-pass-integration-pending
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -44,6 +44,8 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
+  - real private-decap caller integration and deterministic byte-exact KEM gate
+  - caller-native adversarial search approaching the proved c2 inverse bound
   - Gate C add/tobytes caller measurements
   - TILE4-native baseinv
   - full KEM caller integration remains gated by consumer regression
@@ -322,4 +324,66 @@ b5_aos_private_gate:
     correctness: mod-q-and-crepmod3-1000-cases
   decision: retain-c3center-late-require-serious-fixed-placement-gate
   caveat: TSC ticks, short directional result; not core PMU cycles
+promotion_kernel_chain_gate:
+  result: serious-statistics-pass-full-kem-pending
+  arithmetic: frozen-at-c3center-late
+  unit: TSC-ticks-per-call
+  iterations_per_sample: 100000
+  samples_per_launch: 20
+  process_launches: 5
+  primary_link_order:
+    bm:
+      official_median: 266.808060
+      tile4_median: 398.382340
+      paired_ratio_median: 1.493116
+      tile4_launch_wins: 0-of-5
+    bm_i1_t9:
+      official_median: 734.283930
+      tile4_median: 856.244200
+      paired_ratio_median: 1.165891
+      tile4_launch_wins: 0-of-5
+    full_two_forward:
+      official_median: 1697.028220
+      tile4_median: 1691.794320
+      paired_ratio_median: 0.997310
+      paired_ratio_iqr: 0.011612
+      paired_ratio_mad: 0.005871
+      tile4_launch_wins: 5-of-5
+    full_two_forward_crepmod3:
+      official_median: 1815.907490
+      tile4_median: 1812.631750
+      paired_ratio_median: 0.996652
+      paired_ratio_iqr: 0.012691
+      paired_ratio_mad: 0.006460
+      tile4_launch_wins: 5-of-5
+  reversed_link_order:
+    full_two_forward:
+      paired_ratio_median: 0.993528
+      tile4_launch_wins: 4-of-5
+    full_two_forward_crepmod3:
+      paired_ratio_median: 0.996412
+      tile4_launch_wins: 4-of-5
+  pmu_median_per_call:
+    repetitions: 3
+    iterations: 1000000
+    full:
+      official_cycles: 2731.241044
+      tile4_cycles: 2706.780717
+      official_instructions: 8303.172443
+      tile4_instructions: 7367.995902
+    full_crepmod3:
+      official_cycles: 2924.075790
+      tile4_cycles: 2905.400385
+      official_instructions: 8980.765912
+      tile4_instructions: 8045.462152
+    interpretation: tile4-retires-fewer-instructions-but-is-more-backend-and-load-bound
+  artifacts:
+    serious_primary: results/tile4-promotion-serious.json
+    serious_reversed: results/tile4-promotion-serious-reversed.json
+    pmu: results/tile4-promotion-pmu.json
+    placement: results/tile4-promotion-symbols.json
+  correctness: pre-timing-mod-q-and-crepmod3-self-check-pass
+  binary_shape: gc-sections-minimal-official-plus-tile4-candidate-only
+  decision: preserve-candidate-and-start-real-private-decap-integration
+  caveat: kernel-chain-only; not yet deterministic-byte-exact full KEM promotion
 promotion: false

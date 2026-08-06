@@ -26,7 +26,8 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 
 .PHONY: all generate check test sanitize audit bench-short bench-official-short \
 	bench-official-cold bench-inverse-short bench-consumer-short \
-	bench-basemul-short clean
+	bench-basemul-short bench-promotion promotion-serious \
+	promotion-serious-reversed promotion-pmu promotion-symbols clean
 
 all: test
 
@@ -87,6 +88,29 @@ bench-consumer-short: generate $(BUILD)/bench_consumer_short
 
 bench-basemul-short: generate $(BUILD)/bench_basemul_short
 	$(BUILD)/bench_basemul_short 2000
+
+bench-promotion: generate $(BUILD)/bench_promotion
+	$(BUILD)/bench_promotion 100000 0
+
+promotion-serious: generate $(BUILD)/bench_promotion
+	$(PYTHON) tools/run_promotion.py $(BUILD)/bench_promotion \
+		--iterations 100000 --launches 5 \
+		--output results/tile4-promotion-serious.json
+
+promotion-serious-reversed: generate $(BUILD)/bench_promotion_reversed
+	$(PYTHON) tools/run_promotion.py $(BUILD)/bench_promotion_reversed \
+		--iterations 100000 --launches 5 \
+		--output results/tile4-promotion-serious-reversed.json
+
+promotion-pmu: generate $(BUILD)/bench_promotion
+	$(PYTHON) tools/run_promotion_pmu.py $(BUILD)/bench_promotion \
+		--iterations 1000000 --repeats 3 \
+		--output results/tile4-promotion-pmu.json
+
+promotion-symbols: $(BUILD)/bench_promotion $(BUILD)/bench_promotion_reversed
+	$(PYTHON) tools/report_promotion_symbols.py \
+		$(BUILD)/bench_promotion $(BUILD)/bench_promotion_reversed \
+		--output results/tile4-promotion-symbols.json
 
 $(BUILD):
 	mkdir -p $@
@@ -193,6 +217,32 @@ $(BUILD)/bench_consumer_short: src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
 		$(OFFICIAL)/asm/crepmod3.s \
 		$(OFFICIAL)/consts.c
+
+$(BUILD)/bench_promotion: src/tile4_asm.S src/tile4_basemul_asm.S \
+		bench/bench_promotion.c $(GEN) $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/invntt.s \
+		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/asm/crepmod3.s \
+		$(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -Werror \
+		-Wl,--gc-sections -Isrc -I$(OFFICIAL) -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S bench/bench_promotion.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/invntt.s \
+		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/asm/crepmod3.s \
+		$(OFFICIAL)/consts.c
+
+$(BUILD)/bench_promotion_reversed: src/tile4_asm.S src/tile4_basemul_asm.S \
+		bench/bench_promotion.c $(GEN) $(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/invntt.s \
+		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/asm/crepmod3.s \
+		$(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections -Werror \
+		-Wl,--gc-sections -Isrc -I$(OFFICIAL) -o $@ \
+		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/invntt.s \
+		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/asm/crepmod3.s \
+		$(OFFICIAL)/consts.c \
+		bench/bench_promotion.c src/tile4_basemul_asm.S src/tile4_asm.S \
+		$(BUILD)/tile4_inverse_tail_isolated.o
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

@@ -293,3 +293,39 @@ isolated T9 plus Official `crepmod3` 1867.057, and T10 1868.883.  T9 remains
 35.285 TSC or 1.926% behind Official.  T10 is a negative control; the next
 meaningful step is the real fixed-placement decapsulation caller, not more
 tail scheduling.  See `results/tile4-private-tail-microarch-short.json`.
+
+## C3-only lazy basemul promotion statistics
+
+The selected private chain is now frozen as N5 forward, c0--c2 raw/c3
+centered-late basemul, I1, T9, and the Official `crepmod3`.  The c3-only
+checkpoint is not a general basemul ABI: it is valid only for generated N5
+output bounds and the immediate private inverse consumer.  The leaf does not
+perform runtime range or alias checks.
+
+The serious same-binary gate uses 100,000 calls per sample, 20 ABBA/BAAB
+paired samples per launch, and five independent launches.  In the primary
+link order, the complete chain without `crepmod3` measured 1697.028 versus
+1691.794 TSC ticks (paired ratio 0.997310; TILE4 won 5/5 launches).  Including
+`crepmod3` measured 1815.907 versus 1812.632 (ratio 0.996652; 5/5).  The
+reversed-link corroboration measured ratios 0.993528 (4/5) and 0.996412
+(4/5), respectively.  Basemul alone remains 49.3% slower and basemul plus
+inverse remains 16.6% slower; the end-to-end win comes from the two N5
+forwards, not from a hidden consumer win.
+
+Core PMU measurements use one million calls, three repetitions, and separate
+non-multiplexed event groups.  On the full chain TILE4 retired about 11.3%
+fewer instructions and used about 0.9% fewer core cycles.  With `crepmod3`, it
+retired about 10.4% fewer instructions while core cycles were effectively at
+parity.  TILE4 has substantially more L1 load traffic and backend-bound slots;
+those remain the consumer-side risk for real caller integration.
+
+These results promote the arithmetic chain to an integration candidate, not
+the backend to production.  Full deterministic private decapsulation,
+byte-exact KEM/KAT behavior, and caller-native adversarial range tests remain
+required.  Raw samples, PMU scaling data, and both binaries' hashes, sections,
+symbol addresses, and reported sizes were collected from the minimal
+`--gc-sections` comparison binaries and recorded in
+`results/tile4-promotion-serious.json`,
+`results/tile4-promotion-serious-reversed.json`,
+`results/tile4-promotion-pmu.json`, and
+`results/tile4-promotion-symbols.json`.

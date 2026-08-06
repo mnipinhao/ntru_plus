@@ -57,7 +57,11 @@ void gt32_tile4_basemul_raw_aos_private_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
-/* Proof-safe lazy AoS: c0..c2 raw, only the SoA c3 plane is centered. */
+/*
+ * Decap-only proof-safe lazy AoS for N5 output: c0..c2 raw, only the SoA
+ * c3 plane is centered.  Inputs outside the generated N5 range contract are
+ * unsupported; this leaf performs no runtime range or alias validation.
+ */
 void gt32_tile4_basemul_c3center_aos_private_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],

@@ -551,8 +551,10 @@
 		TILE4_MONT_RSQ,TILE4_MONT_RSQ,TILE4_OUTPUT_AOS
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_b3_late_asm, \
 		TILE4_OUTPUT_AOS_LATE_CENTER
+	.section .text.gt32_tile4_basemul_c3center_late_aos_private_asm,"ax",@progbits
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_c3center_late_aos_private_asm, \
 		TILE4_OUTPUT_AOS_LATE_C3CENTER
+	.text
 	TILE4_BASEMUL_B4B_FUNCTION gt32_tile4_basemul_b4b_partial_asm
 	TILE4_BASEMUL_K2_FUNCTION gt32_tile4_basemul_k2_asm
 

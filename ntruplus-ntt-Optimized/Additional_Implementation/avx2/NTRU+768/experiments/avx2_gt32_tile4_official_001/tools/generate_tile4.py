@@ -513,19 +513,34 @@ def emit_raw_aos_inverse_ranges(path: Path) -> None:
         coefficient_stages = []
         for length in (2, 4, 8, 16, 32):
             output = lane_bounds[:]
+            butterflies = []
             for base in range(0, 32, length):
                 for j in range(length // 2):
                     low = lane_bounds[base + j]
                     high = lane_bounds[base + j + length // 2]
                     product = high if length == 2 else product_bound(
                         high, [mont_root(-j * (32 // length))])
-                    output[base + j] = low + product
-                    output[base + j + length // 2] = low + product
+                    add_bound = low + product
+                    sub_bound = low + product
+                    output[base + j] = add_bound
+                    output[base + j + length // 2] = sub_bound
+                    butterflies.append({
+                        "low_q": base + j,
+                        "high_q": base + j + length // 2,
+                        "low_input_abs_bound": low,
+                        "high_input_abs_bound": high,
+                        "montgomery_high_abs_bound": product,
+                        "vpaddw_output_abs_bound": add_bound,
+                        "vpsubw_output_abs_bound": sub_bound,
+                        "signed_int16_safe": max(add_bound, sub_bound) < 32768,
+                    })
             coefficient_stages.append({
                 "length": length,
                 "max_abs_bound": max(output),
                 "signed_int16_safe": max(output) < 32768,
+                "butterflies": butterflies,
             })
+            assert all(record["signed_int16_safe"] for record in butterflies)
             lane_bounds = output
         assert all(record["signed_int16_safe"]
                    for record in coefficient_stages)
@@ -793,7 +808,7 @@ def emit_inverse_tail_ranges(path: Path) -> None:
 
 
 def emit_scale_contract(path: Path) -> None:
-    path.write_text(json.dumps({
+    contract = {
         "notation": "stored value represents x*R^e mod q",
         "montgomery_rule": "Mont(x*R^ea,y*R^eb)=xy*R^(ea+eb-1)",
         "boundaries": [
@@ -815,6 +830,9 @@ def emit_scale_contract(path: Path) -> None:
              "layout": "tile4-physical-Q", "r_exponent": -1,
              "range_policy": "c0-c2 raw; c3 center10",
              "legal_consumers": ["inverse-tile4"],
+             "forbidden_consumers": ["general-inverse", "add", "sub",
+                                     "tobytes", "serialization"],
+             "alias": "out-distinct-from-a-and-b",
              "scope": "decapsulation-only"},
             {"operation": "basemul-scale-private-output",
              "layout": "tile4-private-coefficient-planes",
@@ -828,6 +846,8 @@ def emit_scale_contract(path: Path) -> None:
              "layout": "coefficient-order", "r_exponent": 0,
              "range": [-1818, 1818], "canonical": False,
              "legal_consumers": ["crepmod3"],
+             "forbidden_consumers": ["tobytes", "serialization",
+                                     "canonical-compare"],
              "scope": "decapsulation-only"},
             {"operation": "private-inverse-crepmod3-output",
              "layout": "coefficient-order", "representation": "ternary",
@@ -843,7 +863,24 @@ def emit_scale_contract(path: Path) -> None:
                         2, 6, 10, 14, 3, 7, 11, 15],
             "scope": "decap basemul_scale -> invntt_scale only",
         },
-    }, indent=2) + "\n")
+        "negative_contracts": [
+            {"misuse": "non-small coefficient enters raw forward",
+             "prevention": "private symbol plus documented [-3,4] precondition"},
+            {"misuse": "partial-overlap basemul alias",
+             "prevention": "private symbol requires three distinct buffers"},
+            {"misuse": "c3center output enters general inverse",
+             "prevention": "only inverse-tile4 is a legal consumer"},
+            {"misuse": "private T9 output enters serialization",
+             "prevention": "only crepmod3 is a legal consumer"},
+            {"misuse": "artificial basemul input exceeds N5 proof range",
+             "prevention": "candidate is caller-scoped and has no public API"},
+        ],
+    }
+    for boundary in contract["boundaries"]:
+        legal = set(boundary.get("legal_consumers", []))
+        forbidden = set(boundary.get("forbidden_consumers", []))
+        assert legal.isdisjoint(forbidden)
+    path.write_text(json.dumps(contract, indent=2) + "\n")
 
 
 def emit_mapping(path: Path) -> None:
