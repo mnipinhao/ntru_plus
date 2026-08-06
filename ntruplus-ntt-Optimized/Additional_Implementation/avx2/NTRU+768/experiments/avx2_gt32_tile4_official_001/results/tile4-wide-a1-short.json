@@ -1,0 +1,32 @@
+{
+  "candidate": "A1 direct TILE4 AoS vpmaddwd intrinsic",
+  "unit": "TSC ticks per call",
+  "benchmark_kind": "same-binary directional short",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "basemul": {
+    "official": 331.916,
+    "frozen_rminus1": 307.408,
+    "wide_a1": 529.311,
+    "c3center_late_champion": 397.222,
+    "wide_a1_delta": 132.089,
+    "wide_a1_regression_percent": 33.253
+  },
+  "basemul_plus_i1": {
+    "wide_a1": 758.155,
+    "c3center_late_champion": 628.798,
+    "wide_a1_delta": 129.357,
+    "wide_a1_regression_percent": 20.573
+  },
+  "compiler_shape": {
+    "stack_spills": 0,
+    "masks_hoisted": true,
+    "reducer_constants_hoisted": true,
+    "estimated_loop_instructions_per_four_quartics": 34,
+    "optimistic_hand_assembly_instructions_per_four_quartics": 32,
+    "required_cycle_improvement_percent": 24.955,
+    "credible_from_two_instruction_saving": false
+  },
+  "correctness": "mod-q, R-exponent, alias, I1, T9 and crepmod3 pass",
+  "decision": "reject A2 hand assembly under bounded stop-loss"
+}

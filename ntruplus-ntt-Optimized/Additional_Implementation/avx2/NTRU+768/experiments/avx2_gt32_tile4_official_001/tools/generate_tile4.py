@@ -1273,6 +1273,116 @@ def emit_direct_soa_plan(path: Path) -> None:
     path.write_text(json.dumps(metadata, indent=2) + "\n")
 
 
+def emit_wide_aos_ranges(path: Path) -> None:
+    """Prove A1 vpmaddwd, 32-bit Montgomery, and the complete I1 chain."""
+    forward_q_bounds = [1728] * 32
+    for stage in range(1, 6):
+        distance = 32 >> stage
+        output = forward_q_bounds[:]
+        for base in range(0, 32, 2 * distance):
+            factor = mont_root(forward_power(stage, base))
+            for j in range(distance):
+                low = forward_q_bounds[base + j]
+                high = forward_q_bounds[base + j + distance]
+                product = high if stage == 1 else product_bound(high, [factor])
+                output[base + j] = low + product
+                output[base + j + distance] = low + product
+        forward_q_bounds = output
+
+    coefficient_bounds = [[] for _ in range(4)]
+    q_records = []
+    for q_index, input_bound in enumerate(forward_q_bounds):
+        lambda_factors = [lambda_montgomery(k3, q_index, branch)
+                          for k3 in range(3) for branch in range(2)]
+        lambda_b_bound = product_bound(input_bound, lambda_factors)
+        square = input_bound * input_bound
+        lambda_product = input_bound * lambda_b_bound
+        pair_bounds = [
+            [square + lambda_product, 2 * lambda_product],
+            [2 * square, 2 * lambda_product],
+            [2 * square, square + lambda_product],
+            [2 * square, 2 * square],
+        ]
+        coefficient_record = []
+        for coefficient, pairs in enumerate(pair_bounds):
+            raw = sum(pairs)
+            numerator = raw + 65535 * Q
+            reduced = (numerator + 65535) // 65536
+            assert max(pairs) < 2**31
+            assert raw < 2**31
+            assert numerator < 2**31
+            assert reduced < 32768
+            coefficient_bounds[coefficient].append(reduced)
+            coefficient_record.append({
+                "coefficient": coefficient,
+                "vpmaddwd_pair_abs_bounds": pairs,
+                "four_term_raw_abs_bound": raw,
+                "x_minus_mq_abs_bound": numerator,
+                "montgomery32_output_abs_bound": reduced,
+            })
+        q_records.append({
+            "physical_q": q_index,
+            "forward_input_abs_bound": input_bound,
+            "lambda_b_montgomery_abs_bound": lambda_b_bound,
+            "coefficients": coefficient_record,
+        })
+
+    inverse_records = []
+    for coefficient, initial in enumerate(coefficient_bounds):
+        bounds = initial[:]
+        stages = []
+        for length in (2, 4, 8, 16, 32):
+            output = bounds[:]
+            for base in range(0, 32, length):
+                for j in range(length // 2):
+                    low = bounds[base + j]
+                    high = bounds[base + j + length // 2]
+                    product = high if length == 2 else product_bound(
+                        high, [mont_root(-j * (32 // length))])
+                    output[base + j] = low + product
+                    output[base + j + length // 2] = low + product
+            maximum = max(output)
+            assert maximum < 32768
+            stages.append({
+                "length": length,
+                "max_abs_bound": maximum,
+                "signed_int16_safe": True,
+            })
+            bounds = output
+        inverse_records.append({
+            "coefficient": coefficient,
+            "basemul_max_abs_bound": max(initial),
+            "inverse_stages": stages,
+            "terminal_max_abs_bound": max(bounds),
+        })
+
+    path.write_text(json.dumps({
+        "candidate": "A1 direct AoS vpmaddwd plus 32-bit Montgomery",
+        "input": "N5 TILE4 AoS e=0",
+        "output": "TILE4 AoS e=-1; every coefficient Montgomery-reduced",
+        "montgomery32": "m=(x*qinv)&65535; t=(x-m*q)>>16",
+        "signed_int32_limit": 2**31 - 1,
+        "q_records": q_records,
+        "inverse_i1": inverse_records,
+        "max_vpmaddwd_pair_abs_bound": max(
+            max(record["vpmaddwd_pair_abs_bounds"])
+            for q_record in q_records
+            for record in q_record["coefficients"]),
+        "max_four_term_raw_abs_bound": max(
+            record["four_term_raw_abs_bound"]
+            for q_record in q_records
+            for record in q_record["coefficients"]),
+        "max_x_minus_mq_abs_bound": max(
+            record["x_minus_mq_abs_bound"]
+            for q_record in q_records
+            for record in q_record["coefficients"]),
+        "max_basemul_output_abs_bound": max(
+            max(bounds) for bounds in coefficient_bounds),
+        "all_int32_safe": True,
+        "all_i1_int16_safe": True,
+    }, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1346,6 +1456,7 @@ def main() -> None:
     serialized_metadata_path = GENERATED / "tile4_serialized_mapping.json"
     frombytes_store_path = GENERATED / "tile4_frombytes_aos_stores.inc"
     direct_soa_plan_path = GENERATED / "tile4_frombytes_direct_soa_plan.json"
+    wide_aos_range_path = GENERATED / "tile4_wide_aos_range.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1364,6 +1475,7 @@ def main() -> None:
     emit_serialized_mapping(serialized_header_path, serialized_metadata_path)
     emit_frombytes_aos_stores(frombytes_store_path)
     emit_direct_soa_plan(direct_soa_plan_path)
+    emit_wide_aos_ranges(wide_aos_range_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1430,6 +1542,8 @@ def main() -> None:
             frombytes_store_path.read_bytes()).hexdigest(),
         "frombytes_direct_soa_plan_sha256": hashlib.sha256(
             direct_soa_plan_path.read_bytes()).hexdigest(),
+        "wide_aos_range_sha256": hashlib.sha256(
+            wide_aos_range_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

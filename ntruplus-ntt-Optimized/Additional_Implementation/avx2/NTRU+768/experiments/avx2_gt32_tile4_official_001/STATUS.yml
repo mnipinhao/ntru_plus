@@ -24,6 +24,8 @@ implemented:
   - Official-shaped AVX2 12-bit unpack with generated fixed serialized-to-TILE4 qword routing
   - paired two-block AoS-to-private-SoA transpose control for the P1-V break-even gate
   - exact static planner for coefficient-plane half-select plus vpshufb direct-SoA networks
+  - A1 direct-AoS vpmaddwd intrinsic with 32-bit Montgomery reduction
+  - generator-owned A1 int32 and complete I1 int16 range proof
   - mixed private-SoA by TILE4-AoS basemul assembly without the a-input transpose
   - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
   - native TILE4 B2 register-transpose quartic assembly
@@ -489,3 +491,38 @@ mixed_frombytes_v2_direct_static_gate:
   assembly_generated: false
   artifact: generated/tile4_frombytes_direct_soa_plan.json
   decision: do-not-benchmark-this-network-class
+
+wide_direct_aos_a1_gate:
+  result: correctness-pass-performance-reject
+  input: tile4-aos-e0
+  output: tile4-aos-e-minus1-all-coefficients-montgomery32-reduced
+  arithmetic: qword-local-D0-D3-plus-vpmaddwd-plus-vphaddd
+  range:
+    max_vpmaddwd_pair_abs_bound: 232761888
+    max_four_term_raw_abs_bound: 465523776
+    max_x_minus_mq_abs_bound: 692078271
+    max_basemul_output_abs_bound: 10561
+    int32_safe: true
+    complete_i1_int16_safe: true
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    wide_a1_basemul_tsc: 529.311
+    c3center_late_champion_tsc: 397.222
+    basemul_regression_tsc: 132.089
+    basemul_regression_percent: 33.253
+    wide_a1_plus_i1_tsc: 758.155
+    champion_plus_i1_tsc: 628.798
+    consumer_regression_tsc: 129.357
+  compiler_audit:
+    stack_spills: 0
+    masks_and_reducer_constants: hoisted
+    loop_shape: expected-vpmaddwd-vphaddd-two-montgomery32-reducers
+    estimated_current_instructions_per_vector: 34
+    optimistic_asm_instructions_per_vector: 32
+    required_cycle_improvement_percent: 24.955
+  correctness: mod-q-scale-alias-I1-T9-crepmod3-pass-1000-cases
+  artifacts:
+    range: generated/tile4_wide_aos_range.json
+    benchmark: results/tile4-wide-a1-short.json
+  a2_decision: reject-hand-assembly-stop-loss

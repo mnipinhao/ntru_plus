@@ -34,6 +34,11 @@ void gt32_tile4_basemul_b0(int16_t out[GT32_TILE4_POLY_WORDS],
 void gt32_tile4_basemul_b1(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* A1 gate: direct AoS vpmaddwd accumulation, e=0 x e=0 -> e=-1. */
+void gt32_tile4_basemul_wide_a1_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_basemul_k1_intrinsic(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);

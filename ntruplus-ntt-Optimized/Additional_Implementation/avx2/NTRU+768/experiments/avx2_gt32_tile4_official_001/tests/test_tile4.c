@@ -376,6 +376,10 @@ int main(void)
 		compare_exact("basemul-b1", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_wide_a1_intrinsic(got, input, input);
+		compare_mod_q("basemul-wide-a1", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
 		gt32_tile4_basemul_k1_intrinsic(got, input, input);
 		compare_mod_q("basemul-k1-outer-karatsuba", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
@@ -441,6 +445,16 @@ int main(void)
 			private_inverse, GT32_TILE4_POLY_WORDS);
 		compare_crepmod3("raw-bm-to-t9-crepmod3", trial,
 			private_inverse_asm, private_inverse);
+		gt32_tile4_basemul_wide_a1_intrinsic(alias, input, input);
+		gt32_tile4_inverse_all_pair_asm(serial_got, alias);
+		compare_mod_q("wide-a1-bm-to-inverse-aos", trial, general_ref,
+			serial_got, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_tail_t9_isolated_private_asm(private_inverse,
+			serial_got);
+		compare_mod_q("wide-a1-bm-to-t9-aos", trial,
+			private_inverse_asm, private_inverse, GT32_TILE4_POLY_WORDS);
+		compare_crepmod3("wide-a1-bm-to-t9-crepmod3", trial,
+			private_inverse_asm, private_inverse);
 		gt32_tile4_inverse_all_pair_selective_asm(serial_got, alias);
 		compare_mod_q("raw-bm-to-inverse-aos-selective", trial, general_ref,
 			serial_got, GT32_TILE4_POLY_WORDS);
@@ -483,6 +497,10 @@ int main(void)
 		memcpy(alias, input, sizeof(alias));
 		gt32_tile4_basemul_b1(alias, alias, alias);
 		compare_exact("basemul-b1-alias", trial, ref, alias,
+			GT32_TILE4_POLY_WORDS);
+		memcpy(alias, input, sizeof(alias));
+		gt32_tile4_basemul_wide_a1_intrinsic(alias, alias, alias);
+		compare_mod_q("basemul-wide-a1-alias", trial, ref, alias,
 			GT32_TILE4_POLY_WORDS);
 		gt32_tile4_frontend_ref(frontend_ref, input);
 		gt32_tile4_frontend_intrinsic(frontend_got, input);

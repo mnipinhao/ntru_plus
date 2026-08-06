@@ -1,0 +1,1649 @@
+{
+  "candidate": "A1 direct AoS vpmaddwd plus 32-bit Montgomery",
+  "input": "N5 TILE4 AoS e=0",
+  "output": "TILE4 AoS e=-1; every coefficient Montgomery-reduced",
+  "montgomery32": "m=(x*qinv)&65535; t=(x-m*q)>>16",
+  "signed_int32_limit": 2147483647,
+  "q_records": [
+    {
+      "physical_q": 0,
+      "forward_input_abs_bound": 10415,
+      "lambda_b_montgomery_abs_bound": 1915,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            128416950,
+            39889450
+          ],
+          "four_term_raw_abs_bound": 168306400,
+          "x_minus_mq_abs_bound": 394860895,
+          "montgomery32_output_abs_bound": 6026
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            39889450
+          ],
+          "four_term_raw_abs_bound": 256833900,
+          "x_minus_mq_abs_bound": 483388395,
+          "montgomery32_output_abs_bound": 7376
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            128416950
+          ],
+          "four_term_raw_abs_bound": 345361400,
+          "x_minus_mq_abs_bound": 571915895,
+          "montgomery32_output_abs_bound": 8727
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            216944450
+          ],
+          "four_term_raw_abs_bound": 433888900,
+          "x_minus_mq_abs_bound": 660443395,
+          "montgomery32_output_abs_bound": 10078
+        }
+      ]
+    },
+    {
+      "physical_q": 1,
+      "forward_input_abs_bound": 10415,
+      "lambda_b_montgomery_abs_bound": 1915,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            128416950,
+            39889450
+          ],
+          "four_term_raw_abs_bound": 168306400,
+          "x_minus_mq_abs_bound": 394860895,
+          "montgomery32_output_abs_bound": 6026
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            39889450
+          ],
+          "four_term_raw_abs_bound": 256833900,
+          "x_minus_mq_abs_bound": 483388395,
+          "montgomery32_output_abs_bound": 7376
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            128416950
+          ],
+          "four_term_raw_abs_bound": 345361400,
+          "x_minus_mq_abs_bound": 571915895,
+          "montgomery32_output_abs_bound": 8727
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            216944450,
+            216944450
+          ],
+          "four_term_raw_abs_bound": 433888900,
+          "x_minus_mq_abs_bound": 660443395,
+          "montgomery32_output_abs_bound": 10078
+        }
+      ]
+    },
+    {
+      "physical_q": 2,
+      "forward_input_abs_bound": 10438,
+      "lambda_b_montgomery_abs_bound": 1952,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            129326820,
+            40749952
+          ],
+          "four_term_raw_abs_bound": 170076772,
+          "x_minus_mq_abs_bound": 396631267,
+          "montgomery32_output_abs_bound": 6053
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            40749952
+          ],
+          "four_term_raw_abs_bound": 258653640,
+          "x_minus_mq_abs_bound": 485208135,
+          "montgomery32_output_abs_bound": 7404
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            129326820
+          ],
+          "four_term_raw_abs_bound": 347230508,
+          "x_minus_mq_abs_bound": 573785003,
+          "montgomery32_output_abs_bound": 8756
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            217903688
+          ],
+          "four_term_raw_abs_bound": 435807376,
+          "x_minus_mq_abs_bound": 662361871,
+          "montgomery32_output_abs_bound": 10107
+        }
+      ]
+    },
+    {
+      "physical_q": 3,
+      "forward_input_abs_bound": 10438,
+      "lambda_b_montgomery_abs_bound": 1952,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            129326820,
+            40749952
+          ],
+          "four_term_raw_abs_bound": 170076772,
+          "x_minus_mq_abs_bound": 396631267,
+          "montgomery32_output_abs_bound": 6053
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            40749952
+          ],
+          "four_term_raw_abs_bound": 258653640,
+          "x_minus_mq_abs_bound": 485208135,
+          "montgomery32_output_abs_bound": 7404
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            129326820
+          ],
+          "four_term_raw_abs_bound": 347230508,
+          "x_minus_mq_abs_bound": 573785003,
+          "montgomery32_output_abs_bound": 8756
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            217903688,
+            217903688
+          ],
+          "four_term_raw_abs_bound": 435807376,
+          "x_minus_mq_abs_bound": 662361871,
+          "montgomery32_output_abs_bound": 10107
+        }
+      ]
+    },
+    {
+      "physical_q": 4,
+      "forward_input_abs_bound": 10432,
+      "lambda_b_montgomery_abs_bound": 1991,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            129596736,
+            41540224
+          ],
+          "four_term_raw_abs_bound": 171136960,
+          "x_minus_mq_abs_bound": 397691455,
+          "montgomery32_output_abs_bound": 6069
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            41540224
+          ],
+          "four_term_raw_abs_bound": 259193472,
+          "x_minus_mq_abs_bound": 485747967,
+          "montgomery32_output_abs_bound": 7412
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            129596736
+          ],
+          "four_term_raw_abs_bound": 347249984,
+          "x_minus_mq_abs_bound": 573804479,
+          "montgomery32_output_abs_bound": 8756
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            217653248
+          ],
+          "four_term_raw_abs_bound": 435306496,
+          "x_minus_mq_abs_bound": 661860991,
+          "montgomery32_output_abs_bound": 10100
+        }
+      ]
+    },
+    {
+      "physical_q": 5,
+      "forward_input_abs_bound": 10432,
+      "lambda_b_montgomery_abs_bound": 1991,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            129596736,
+            41540224
+          ],
+          "four_term_raw_abs_bound": 171136960,
+          "x_minus_mq_abs_bound": 397691455,
+          "montgomery32_output_abs_bound": 6069
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            41540224
+          ],
+          "four_term_raw_abs_bound": 259193472,
+          "x_minus_mq_abs_bound": 485747967,
+          "montgomery32_output_abs_bound": 7412
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            129596736
+          ],
+          "four_term_raw_abs_bound": 347249984,
+          "x_minus_mq_abs_bound": 573804479,
+          "montgomery32_output_abs_bound": 8756
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            217653248,
+            217653248
+          ],
+          "four_term_raw_abs_bound": 435306496,
+          "x_minus_mq_abs_bound": 661860991,
+          "montgomery32_output_abs_bound": 10100
+        }
+      ]
+    },
+    {
+      "physical_q": 6,
+      "forward_input_abs_bound": 10552,
+      "lambda_b_montgomery_abs_bound": 1962,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132047728,
+            41406048
+          ],
+          "four_term_raw_abs_bound": 173453776,
+          "x_minus_mq_abs_bound": 400008271,
+          "montgomery32_output_abs_bound": 6104
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            41406048
+          ],
+          "four_term_raw_abs_bound": 264095456,
+          "x_minus_mq_abs_bound": 490649951,
+          "montgomery32_output_abs_bound": 7487
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            132047728
+          ],
+          "four_term_raw_abs_bound": 354737136,
+          "x_minus_mq_abs_bound": 581291631,
+          "montgomery32_output_abs_bound": 8870
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            222689408
+          ],
+          "four_term_raw_abs_bound": 445378816,
+          "x_minus_mq_abs_bound": 671933311,
+          "montgomery32_output_abs_bound": 10253
+        }
+      ]
+    },
+    {
+      "physical_q": 7,
+      "forward_input_abs_bound": 10552,
+      "lambda_b_montgomery_abs_bound": 1962,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132047728,
+            41406048
+          ],
+          "four_term_raw_abs_bound": 173453776,
+          "x_minus_mq_abs_bound": 400008271,
+          "montgomery32_output_abs_bound": 6104
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            41406048
+          ],
+          "four_term_raw_abs_bound": 264095456,
+          "x_minus_mq_abs_bound": 490649951,
+          "montgomery32_output_abs_bound": 7487
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            132047728
+          ],
+          "four_term_raw_abs_bound": 354737136,
+          "x_minus_mq_abs_bound": 581291631,
+          "montgomery32_output_abs_bound": 8870
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            222689408,
+            222689408
+          ],
+          "four_term_raw_abs_bound": 445378816,
+          "x_minus_mq_abs_bound": 671933311,
+          "montgomery32_output_abs_bound": 10253
+        }
+      ]
+    },
+    {
+      "physical_q": 8,
+      "forward_input_abs_bound": 10499,
+      "lambda_b_montgomery_abs_bound": 1921,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130397580,
+            40337158
+          ],
+          "four_term_raw_abs_bound": 170734738,
+          "x_minus_mq_abs_bound": 397289233,
+          "montgomery32_output_abs_bound": 6063
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            40337158
+          ],
+          "four_term_raw_abs_bound": 260795160,
+          "x_minus_mq_abs_bound": 487349655,
+          "montgomery32_output_abs_bound": 7437
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            130397580
+          ],
+          "four_term_raw_abs_bound": 350855582,
+          "x_minus_mq_abs_bound": 577410077,
+          "montgomery32_output_abs_bound": 8811
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            220458002
+          ],
+          "four_term_raw_abs_bound": 440916004,
+          "x_minus_mq_abs_bound": 667470499,
+          "montgomery32_output_abs_bound": 10185
+        }
+      ]
+    },
+    {
+      "physical_q": 9,
+      "forward_input_abs_bound": 10499,
+      "lambda_b_montgomery_abs_bound": 1921,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130397580,
+            40337158
+          ],
+          "four_term_raw_abs_bound": 170734738,
+          "x_minus_mq_abs_bound": 397289233,
+          "montgomery32_output_abs_bound": 6063
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            40337158
+          ],
+          "four_term_raw_abs_bound": 260795160,
+          "x_minus_mq_abs_bound": 487349655,
+          "montgomery32_output_abs_bound": 7437
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            130397580
+          ],
+          "four_term_raw_abs_bound": 350855582,
+          "x_minus_mq_abs_bound": 577410077,
+          "montgomery32_output_abs_bound": 8811
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220458002,
+            220458002
+          ],
+          "four_term_raw_abs_bound": 440916004,
+          "x_minus_mq_abs_bound": 667470499,
+          "montgomery32_output_abs_bound": 10185
+        }
+      ]
+    },
+    {
+      "physical_q": 10,
+      "forward_input_abs_bound": 10558,
+      "lambda_b_montgomery_abs_bound": 1987,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132450110,
+            41957492
+          ],
+          "four_term_raw_abs_bound": 174407602,
+          "x_minus_mq_abs_bound": 400962097,
+          "montgomery32_output_abs_bound": 6119
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            41957492
+          ],
+          "four_term_raw_abs_bound": 264900220,
+          "x_minus_mq_abs_bound": 491454715,
+          "montgomery32_output_abs_bound": 7500
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            132450110
+          ],
+          "four_term_raw_abs_bound": 355392838,
+          "x_minus_mq_abs_bound": 581947333,
+          "montgomery32_output_abs_bound": 8880
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            222942728
+          ],
+          "four_term_raw_abs_bound": 445885456,
+          "x_minus_mq_abs_bound": 672439951,
+          "montgomery32_output_abs_bound": 10261
+        }
+      ]
+    },
+    {
+      "physical_q": 11,
+      "forward_input_abs_bound": 10558,
+      "lambda_b_montgomery_abs_bound": 1987,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132450110,
+            41957492
+          ],
+          "four_term_raw_abs_bound": 174407602,
+          "x_minus_mq_abs_bound": 400962097,
+          "montgomery32_output_abs_bound": 6119
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            41957492
+          ],
+          "four_term_raw_abs_bound": 264900220,
+          "x_minus_mq_abs_bound": 491454715,
+          "montgomery32_output_abs_bound": 7500
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            132450110
+          ],
+          "four_term_raw_abs_bound": 355392838,
+          "x_minus_mq_abs_bound": 581947333,
+          "montgomery32_output_abs_bound": 8880
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            222942728,
+            222942728
+          ],
+          "four_term_raw_abs_bound": 445885456,
+          "x_minus_mq_abs_bound": 672439951,
+          "montgomery32_output_abs_bound": 10261
+        }
+      ]
+    },
+    {
+      "physical_q": 12,
+      "forward_input_abs_bound": 10562,
+      "lambda_b_montgomery_abs_bound": 1992,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132595348,
+            42079008
+          ],
+          "four_term_raw_abs_bound": 174674356,
+          "x_minus_mq_abs_bound": 401228851,
+          "montgomery32_output_abs_bound": 6123
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            42079008
+          ],
+          "four_term_raw_abs_bound": 265190696,
+          "x_minus_mq_abs_bound": 491745191,
+          "montgomery32_output_abs_bound": 7504
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            132595348
+          ],
+          "four_term_raw_abs_bound": 355707036,
+          "x_minus_mq_abs_bound": 582261531,
+          "montgomery32_output_abs_bound": 8885
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            223111688
+          ],
+          "four_term_raw_abs_bound": 446223376,
+          "x_minus_mq_abs_bound": 672777871,
+          "montgomery32_output_abs_bound": 10266
+        }
+      ]
+    },
+    {
+      "physical_q": 13,
+      "forward_input_abs_bound": 10562,
+      "lambda_b_montgomery_abs_bound": 1992,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            132595348,
+            42079008
+          ],
+          "four_term_raw_abs_bound": 174674356,
+          "x_minus_mq_abs_bound": 401228851,
+          "montgomery32_output_abs_bound": 6123
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            42079008
+          ],
+          "four_term_raw_abs_bound": 265190696,
+          "x_minus_mq_abs_bound": 491745191,
+          "montgomery32_output_abs_bound": 7504
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            132595348
+          ],
+          "four_term_raw_abs_bound": 355707036,
+          "x_minus_mq_abs_bound": 582261531,
+          "montgomery32_output_abs_bound": 8885
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            223111688,
+            223111688
+          ],
+          "four_term_raw_abs_bound": 446223376,
+          "x_minus_mq_abs_bound": 672777871,
+          "montgomery32_output_abs_bound": 10266
+        }
+      ]
+    },
+    {
+      "physical_q": 14,
+      "forward_input_abs_bound": 10659,
+      "lambda_b_montgomery_abs_bound": 1905,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133919676,
+            40610790
+          ],
+          "four_term_raw_abs_bound": 174530466,
+          "x_minus_mq_abs_bound": 401084961,
+          "montgomery32_output_abs_bound": 6121
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            40610790
+          ],
+          "four_term_raw_abs_bound": 267839352,
+          "x_minus_mq_abs_bound": 494393847,
+          "montgomery32_output_abs_bound": 7544
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            133919676
+          ],
+          "four_term_raw_abs_bound": 361148238,
+          "x_minus_mq_abs_bound": 587702733,
+          "montgomery32_output_abs_bound": 8968
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            227228562
+          ],
+          "four_term_raw_abs_bound": 454457124,
+          "x_minus_mq_abs_bound": 681011619,
+          "montgomery32_output_abs_bound": 10392
+        }
+      ]
+    },
+    {
+      "physical_q": 15,
+      "forward_input_abs_bound": 10659,
+      "lambda_b_montgomery_abs_bound": 1905,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133919676,
+            40610790
+          ],
+          "four_term_raw_abs_bound": 174530466,
+          "x_minus_mq_abs_bound": 401084961,
+          "montgomery32_output_abs_bound": 6121
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            40610790
+          ],
+          "four_term_raw_abs_bound": 267839352,
+          "x_minus_mq_abs_bound": 494393847,
+          "montgomery32_output_abs_bound": 7544
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            133919676
+          ],
+          "four_term_raw_abs_bound": 361148238,
+          "x_minus_mq_abs_bound": 587702733,
+          "montgomery32_output_abs_bound": 8968
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            227228562,
+            227228562
+          ],
+          "four_term_raw_abs_bound": 454457124,
+          "x_minus_mq_abs_bound": 681011619,
+          "montgomery32_output_abs_bound": 10392
+        }
+      ]
+    },
+    {
+      "physical_q": 16,
+      "forward_input_abs_bound": 10496,
+      "lambda_b_montgomery_abs_bound": 1974,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130885120,
+            41438208
+          ],
+          "four_term_raw_abs_bound": 172323328,
+          "x_minus_mq_abs_bound": 398877823,
+          "montgomery32_output_abs_bound": 6087
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            41438208
+          ],
+          "four_term_raw_abs_bound": 261770240,
+          "x_minus_mq_abs_bound": 488324735,
+          "montgomery32_output_abs_bound": 7452
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            130885120
+          ],
+          "four_term_raw_abs_bound": 351217152,
+          "x_minus_mq_abs_bound": 577771647,
+          "montgomery32_output_abs_bound": 8817
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            220332032
+          ],
+          "four_term_raw_abs_bound": 440664064,
+          "x_minus_mq_abs_bound": 667218559,
+          "montgomery32_output_abs_bound": 10181
+        }
+      ]
+    },
+    {
+      "physical_q": 17,
+      "forward_input_abs_bound": 10496,
+      "lambda_b_montgomery_abs_bound": 1974,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130885120,
+            41438208
+          ],
+          "four_term_raw_abs_bound": 172323328,
+          "x_minus_mq_abs_bound": 398877823,
+          "montgomery32_output_abs_bound": 6087
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            41438208
+          ],
+          "four_term_raw_abs_bound": 261770240,
+          "x_minus_mq_abs_bound": 488324735,
+          "montgomery32_output_abs_bound": 7452
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            130885120
+          ],
+          "four_term_raw_abs_bound": 351217152,
+          "x_minus_mq_abs_bound": 577771647,
+          "montgomery32_output_abs_bound": 8817
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220332032,
+            220332032
+          ],
+          "four_term_raw_abs_bound": 440664064,
+          "x_minus_mq_abs_bound": 667218559,
+          "montgomery32_output_abs_bound": 10181
+        }
+      ]
+    },
+    {
+      "physical_q": 18,
+      "forward_input_abs_bound": 10490,
+      "lambda_b_montgomery_abs_bound": 1992,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130936180,
+            41792160
+          ],
+          "four_term_raw_abs_bound": 172728340,
+          "x_minus_mq_abs_bound": 399282835,
+          "montgomery32_output_abs_bound": 6093
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            41792160
+          ],
+          "four_term_raw_abs_bound": 261872360,
+          "x_minus_mq_abs_bound": 488426855,
+          "montgomery32_output_abs_bound": 7453
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            130936180
+          ],
+          "four_term_raw_abs_bound": 351016380,
+          "x_minus_mq_abs_bound": 577570875,
+          "montgomery32_output_abs_bound": 8814
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            220080200
+          ],
+          "four_term_raw_abs_bound": 440160400,
+          "x_minus_mq_abs_bound": 666714895,
+          "montgomery32_output_abs_bound": 10174
+        }
+      ]
+    },
+    {
+      "physical_q": 19,
+      "forward_input_abs_bound": 10490,
+      "lambda_b_montgomery_abs_bound": 1992,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            130936180,
+            41792160
+          ],
+          "four_term_raw_abs_bound": 172728340,
+          "x_minus_mq_abs_bound": 399282835,
+          "montgomery32_output_abs_bound": 6093
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            41792160
+          ],
+          "four_term_raw_abs_bound": 261872360,
+          "x_minus_mq_abs_bound": 488426855,
+          "montgomery32_output_abs_bound": 7453
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            130936180
+          ],
+          "four_term_raw_abs_bound": 351016380,
+          "x_minus_mq_abs_bound": 577570875,
+          "montgomery32_output_abs_bound": 8814
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            220080200,
+            220080200
+          ],
+          "four_term_raw_abs_bound": 440160400,
+          "x_minus_mq_abs_bound": 666714895,
+          "montgomery32_output_abs_bound": 10174
+        }
+      ]
+    },
+    {
+      "physical_q": 20,
+      "forward_input_abs_bound": 10611,
+      "lambda_b_montgomery_abs_bound": 1989,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133698600,
+            42210558
+          ],
+          "four_term_raw_abs_bound": 175909158,
+          "x_minus_mq_abs_bound": 402463653,
+          "montgomery32_output_abs_bound": 6142
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            42210558
+          ],
+          "four_term_raw_abs_bound": 267397200,
+          "x_minus_mq_abs_bound": 493951695,
+          "montgomery32_output_abs_bound": 7538
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            133698600
+          ],
+          "four_term_raw_abs_bound": 358885242,
+          "x_minus_mq_abs_bound": 585439737,
+          "montgomery32_output_abs_bound": 8934
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            225186642
+          ],
+          "four_term_raw_abs_bound": 450373284,
+          "x_minus_mq_abs_bound": 676927779,
+          "montgomery32_output_abs_bound": 10330
+        }
+      ]
+    },
+    {
+      "physical_q": 21,
+      "forward_input_abs_bound": 10611,
+      "lambda_b_montgomery_abs_bound": 1989,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133698600,
+            42210558
+          ],
+          "four_term_raw_abs_bound": 175909158,
+          "x_minus_mq_abs_bound": 402463653,
+          "montgomery32_output_abs_bound": 6142
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            42210558
+          ],
+          "four_term_raw_abs_bound": 267397200,
+          "x_minus_mq_abs_bound": 493951695,
+          "montgomery32_output_abs_bound": 7538
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            133698600
+          ],
+          "four_term_raw_abs_bound": 358885242,
+          "x_minus_mq_abs_bound": 585439737,
+          "montgomery32_output_abs_bound": 8934
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            225186642,
+            225186642
+          ],
+          "four_term_raw_abs_bound": 450373284,
+          "x_minus_mq_abs_bound": 676927779,
+          "montgomery32_output_abs_bound": 10330
+        }
+      ]
+    },
+    {
+      "physical_q": 22,
+      "forward_input_abs_bound": 10525,
+      "lambda_b_montgomery_abs_bound": 1981,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            131625650,
+            41700050
+          ],
+          "four_term_raw_abs_bound": 173325700,
+          "x_minus_mq_abs_bound": 399880195,
+          "montgomery32_output_abs_bound": 6102
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            41700050
+          ],
+          "four_term_raw_abs_bound": 263251300,
+          "x_minus_mq_abs_bound": 489805795,
+          "montgomery32_output_abs_bound": 7474
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            131625650
+          ],
+          "four_term_raw_abs_bound": 353176900,
+          "x_minus_mq_abs_bound": 579731395,
+          "montgomery32_output_abs_bound": 8846
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            221551250
+          ],
+          "four_term_raw_abs_bound": 443102500,
+          "x_minus_mq_abs_bound": 669656995,
+          "montgomery32_output_abs_bound": 10219
+        }
+      ]
+    },
+    {
+      "physical_q": 23,
+      "forward_input_abs_bound": 10525,
+      "lambda_b_montgomery_abs_bound": 1981,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            131625650,
+            41700050
+          ],
+          "four_term_raw_abs_bound": 173325700,
+          "x_minus_mq_abs_bound": 399880195,
+          "montgomery32_output_abs_bound": 6102
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            41700050
+          ],
+          "four_term_raw_abs_bound": 263251300,
+          "x_minus_mq_abs_bound": 489805795,
+          "montgomery32_output_abs_bound": 7474
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            131625650
+          ],
+          "four_term_raw_abs_bound": 353176900,
+          "x_minus_mq_abs_bound": 579731395,
+          "montgomery32_output_abs_bound": 8846
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            221551250,
+            221551250
+          ],
+          "four_term_raw_abs_bound": 443102500,
+          "x_minus_mq_abs_bound": 669656995,
+          "montgomery32_output_abs_bound": 10219
+        }
+      ]
+    },
+    {
+      "physical_q": 24,
+      "forward_input_abs_bound": 10623,
+      "lambda_b_montgomery_abs_bound": 1938,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133435503,
+            41174748
+          ],
+          "four_term_raw_abs_bound": 174610251,
+          "x_minus_mq_abs_bound": 401164746,
+          "montgomery32_output_abs_bound": 6122
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            41174748
+          ],
+          "four_term_raw_abs_bound": 266871006,
+          "x_minus_mq_abs_bound": 493425501,
+          "montgomery32_output_abs_bound": 7530
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            133435503
+          ],
+          "four_term_raw_abs_bound": 359131761,
+          "x_minus_mq_abs_bound": 585686256,
+          "montgomery32_output_abs_bound": 8937
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            225696258
+          ],
+          "four_term_raw_abs_bound": 451392516,
+          "x_minus_mq_abs_bound": 677947011,
+          "montgomery32_output_abs_bound": 10345
+        }
+      ]
+    },
+    {
+      "physical_q": 25,
+      "forward_input_abs_bound": 10623,
+      "lambda_b_montgomery_abs_bound": 1938,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            133435503,
+            41174748
+          ],
+          "four_term_raw_abs_bound": 174610251,
+          "x_minus_mq_abs_bound": 401164746,
+          "montgomery32_output_abs_bound": 6122
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            41174748
+          ],
+          "four_term_raw_abs_bound": 266871006,
+          "x_minus_mq_abs_bound": 493425501,
+          "montgomery32_output_abs_bound": 7530
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            133435503
+          ],
+          "four_term_raw_abs_bound": 359131761,
+          "x_minus_mq_abs_bound": 585686256,
+          "montgomery32_output_abs_bound": 8937
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            225696258,
+            225696258
+          ],
+          "four_term_raw_abs_bound": 451392516,
+          "x_minus_mq_abs_bound": 677947011,
+          "montgomery32_output_abs_bound": 10345
+        }
+      ]
+    },
+    {
+      "physical_q": 26,
+      "forward_input_abs_bound": 10512,
+      "lambda_b_montgomery_abs_bound": 1999,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            131515632,
+            42026976
+          ],
+          "four_term_raw_abs_bound": 173542608,
+          "x_minus_mq_abs_bound": 400097103,
+          "montgomery32_output_abs_bound": 6105
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            42026976
+          ],
+          "four_term_raw_abs_bound": 263031264,
+          "x_minus_mq_abs_bound": 489585759,
+          "montgomery32_output_abs_bound": 7471
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            131515632
+          ],
+          "four_term_raw_abs_bound": 352519920,
+          "x_minus_mq_abs_bound": 579074415,
+          "montgomery32_output_abs_bound": 8836
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            221004288
+          ],
+          "four_term_raw_abs_bound": 442008576,
+          "x_minus_mq_abs_bound": 668563071,
+          "montgomery32_output_abs_bound": 10202
+        }
+      ]
+    },
+    {
+      "physical_q": 27,
+      "forward_input_abs_bound": 10512,
+      "lambda_b_montgomery_abs_bound": 1999,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            131515632,
+            42026976
+          ],
+          "four_term_raw_abs_bound": 173542608,
+          "x_minus_mq_abs_bound": 400097103,
+          "montgomery32_output_abs_bound": 6105
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            42026976
+          ],
+          "four_term_raw_abs_bound": 263031264,
+          "x_minus_mq_abs_bound": 489585759,
+          "montgomery32_output_abs_bound": 7471
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            131515632
+          ],
+          "four_term_raw_abs_bound": 352519920,
+          "x_minus_mq_abs_bound": 579074415,
+          "montgomery32_output_abs_bound": 8836
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            221004288,
+            221004288
+          ],
+          "four_term_raw_abs_bound": 442008576,
+          "x_minus_mq_abs_bound": 668563071,
+          "montgomery32_output_abs_bound": 10202
+        }
+      ]
+    },
+    {
+      "physical_q": 28,
+      "forward_input_abs_bound": 10652,
+      "lambda_b_montgomery_abs_bound": 1975,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            134502804,
+            42075400
+          ],
+          "four_term_raw_abs_bound": 176578204,
+          "x_minus_mq_abs_bound": 403132699,
+          "montgomery32_output_abs_bound": 6152
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            42075400
+          ],
+          "four_term_raw_abs_bound": 269005608,
+          "x_minus_mq_abs_bound": 495560103,
+          "montgomery32_output_abs_bound": 7562
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            134502804
+          ],
+          "four_term_raw_abs_bound": 361433012,
+          "x_minus_mq_abs_bound": 587987507,
+          "montgomery32_output_abs_bound": 8972
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            226930208
+          ],
+          "four_term_raw_abs_bound": 453860416,
+          "x_minus_mq_abs_bound": 680414911,
+          "montgomery32_output_abs_bound": 10383
+        }
+      ]
+    },
+    {
+      "physical_q": 29,
+      "forward_input_abs_bound": 10652,
+      "lambda_b_montgomery_abs_bound": 1975,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            134502804,
+            42075400
+          ],
+          "four_term_raw_abs_bound": 176578204,
+          "x_minus_mq_abs_bound": 403132699,
+          "montgomery32_output_abs_bound": 6152
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            42075400
+          ],
+          "four_term_raw_abs_bound": 269005608,
+          "x_minus_mq_abs_bound": 495560103,
+          "montgomery32_output_abs_bound": 7562
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            134502804
+          ],
+          "four_term_raw_abs_bound": 361433012,
+          "x_minus_mq_abs_bound": 587987507,
+          "montgomery32_output_abs_bound": 8972
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            226930208,
+            226930208
+          ],
+          "four_term_raw_abs_bound": 453860416,
+          "x_minus_mq_abs_bound": 680414911,
+          "montgomery32_output_abs_bound": 10383
+        }
+      ]
+    },
+    {
+      "physical_q": 30,
+      "forward_input_abs_bound": 10788,
+      "lambda_b_montgomery_abs_bound": 1936,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            137266512,
+            41771136
+          ],
+          "four_term_raw_abs_bound": 179037648,
+          "x_minus_mq_abs_bound": 405592143,
+          "montgomery32_output_abs_bound": 6189
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            41771136
+          ],
+          "four_term_raw_abs_bound": 274533024,
+          "x_minus_mq_abs_bound": 501087519,
+          "montgomery32_output_abs_bound": 7646
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            137266512
+          ],
+          "four_term_raw_abs_bound": 370028400,
+          "x_minus_mq_abs_bound": 596582895,
+          "montgomery32_output_abs_bound": 9104
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            232761888
+          ],
+          "four_term_raw_abs_bound": 465523776,
+          "x_minus_mq_abs_bound": 692078271,
+          "montgomery32_output_abs_bound": 10561
+        }
+      ]
+    },
+    {
+      "physical_q": 31,
+      "forward_input_abs_bound": 10788,
+      "lambda_b_montgomery_abs_bound": 1936,
+      "coefficients": [
+        {
+          "coefficient": 0,
+          "vpmaddwd_pair_abs_bounds": [
+            137266512,
+            41771136
+          ],
+          "four_term_raw_abs_bound": 179037648,
+          "x_minus_mq_abs_bound": 405592143,
+          "montgomery32_output_abs_bound": 6189
+        },
+        {
+          "coefficient": 1,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            41771136
+          ],
+          "four_term_raw_abs_bound": 274533024,
+          "x_minus_mq_abs_bound": 501087519,
+          "montgomery32_output_abs_bound": 7646
+        },
+        {
+          "coefficient": 2,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            137266512
+          ],
+          "four_term_raw_abs_bound": 370028400,
+          "x_minus_mq_abs_bound": 596582895,
+          "montgomery32_output_abs_bound": 9104
+        },
+        {
+          "coefficient": 3,
+          "vpmaddwd_pair_abs_bounds": [
+            232761888,
+            232761888
+          ],
+          "four_term_raw_abs_bound": 465523776,
+          "x_minus_mq_abs_bound": 692078271,
+          "montgomery32_output_abs_bound": 10561
+        }
+      ]
+    }
+  ],
+  "inverse_i1": [
+    {
+      "coefficient": 0,
+      "basemul_max_abs_bound": 6189,
+      "inverse_stages": [
+        {
+          "length": 2,
+          "max_abs_bound": 12378,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 4,
+          "max_abs_bound": 14098,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 8,
+          "max_abs_bound": 15996,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 16,
+          "max_abs_bound": 17936,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 32,
+          "max_abs_bound": 19961,
+          "signed_int16_safe": true
+        }
+      ],
+      "terminal_max_abs_bound": 19961
+    },
+    {
+      "coefficient": 1,
+      "basemul_max_abs_bound": 7646,
+      "inverse_stages": [
+        {
+          "length": 2,
+          "max_abs_bound": 15292,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 4,
+          "max_abs_bound": 16932,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 8,
+          "max_abs_bound": 18876,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 16,
+          "max_abs_bound": 20777,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 32,
+          "max_abs_bound": 22841,
+          "signed_int16_safe": true
+        }
+      ],
+      "terminal_max_abs_bound": 22841
+    },
+    {
+      "coefficient": 2,
+      "basemul_max_abs_bound": 9104,
+      "inverse_stages": [
+        {
+          "length": 2,
+          "max_abs_bound": 18208,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 4,
+          "max_abs_bound": 19771,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 8,
+          "max_abs_bound": 21751,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 16,
+          "max_abs_bound": 23626,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 32,
+          "max_abs_bound": 25734,
+          "signed_int16_safe": true
+        }
+      ],
+      "terminal_max_abs_bound": 25734
+    },
+    {
+      "coefficient": 3,
+      "basemul_max_abs_bound": 10561,
+      "inverse_stages": [
+        {
+          "length": 2,
+          "max_abs_bound": 21122,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 4,
+          "max_abs_bound": 22607,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 8,
+          "max_abs_bound": 24634,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 16,
+          "max_abs_bound": 26468,
+          "signed_int16_safe": true
+        },
+        {
+          "length": 32,
+          "max_abs_bound": 28594,
+          "signed_int16_safe": true
+        }
+      ],
+      "terminal_max_abs_bound": 28594
+    }
+  ],
+  "max_vpmaddwd_pair_abs_bound": 232761888,
+  "max_four_term_raw_abs_bound": 465523776,
+  "max_x_minus_mq_abs_bound": 692078271,
+  "max_basemul_output_abs_bound": 10561,
+  "all_int32_safe": true,
+  "all_i1_int16_safe": true
+}

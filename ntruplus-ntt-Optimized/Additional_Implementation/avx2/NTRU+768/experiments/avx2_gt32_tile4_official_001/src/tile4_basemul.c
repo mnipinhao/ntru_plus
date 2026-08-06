@@ -90,6 +90,22 @@ static const uint8_t broadcast_mask[4][32] __attribute__((aligned(32))) = {
 	{6,7,6,7,6,7,6,7,14,15,14,15,14,15,14,15, 6,7,6,7,6,7,6,7,14,15,14,15,14,15,14,15},
 };
 
+static const uint8_t wide_d_shuffle[4][32] __attribute__((aligned(32))) = {
+	{0,1,6,7,4,5,2,3, 8,9,14,15,12,13,10,11,
+	 0,1,6,7,4,5,2,3, 8,9,14,15,12,13,10,11},
+	{2,3,0,1,6,7,4,5, 10,11,8,9,14,15,12,13,
+	 2,3,0,1,6,7,4,5, 10,11,8,9,14,15,12,13},
+	{4,5,2,3,0,1,6,7, 12,13,10,11,8,9,14,15,
+	 4,5,2,3,0,1,6,7, 12,13,10,11,8,9,14,15},
+	{6,7,4,5,2,3,0,1, 14,15,12,13,10,11,8,9,
+	 6,7,4,5,2,3,0,1, 14,15,12,13,10,11,8,9},
+};
+
+static const uint8_t wide_pack_shuffle[32] __attribute__((aligned(32))) = {
+	0,1,4,5,8,9,12,13,2,3,6,7,10,11,14,15,
+	0,1,4,5,8,9,12,13,2,3,6,7,10,11,14,15,
+};
+
 static inline __m256i montgomery_vector(__m256i a, __m256i b)
 {
 	const __m256i q = _mm256_set1_epi16(GT32_TILE4_Q);
@@ -106,6 +122,65 @@ static inline __m256i center_rminus1_vector(__m256i value)
 		_mm256_set1_epi16(10));
 	return _mm256_sub_epi16(value,
 		_mm256_mullo_epi16(quotient, _mm256_set1_epi16(GT32_TILE4_Q)));
+}
+
+static inline __m256i montgomery32_vector(__m256i value)
+{
+	const __m256i qinv = _mm256_set1_epi32(GT_QINV);
+	const __m256i q = _mm256_set1_epi32(GT32_TILE4_Q);
+	const __m256i low_mask = _mm256_set1_epi32(0xffff);
+	__m256i correction = _mm256_mullo_epi32(value, qinv);
+	correction = _mm256_and_si256(correction, low_mask);
+	correction = _mm256_mullo_epi32(correction, q);
+	return _mm256_srai_epi32(_mm256_sub_epi32(value, correction), 16);
+}
+
+void gt32_tile4_basemul_wide_a1_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS])
+{
+	for (unsigned tile = 0; tile < GT32_TILE4_TILES; tile++) {
+		for (unsigned vector = 0; vector < 8U; vector++) {
+			const unsigned word = 128U * tile + 16U * vector;
+			const __m256i av = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(a + word));
+			const __m256i bv = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(b + word));
+			const __m256i lambda = _mm256_load_si256(
+				(const __m256i *)(const void *)
+				gt32_tile4_lambda_mont[tile][vector]);
+			const __m256i lambda_b = montgomery_vector(bv, lambda);
+			const __m256i mixed = _mm256_blend_epi16(bv, lambda_b, 0xee);
+			const __m256i d0 = _mm256_shuffle_epi8(mixed,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[0]));
+			const __m256i d1 = _mm256_shuffle_epi8(
+				_mm256_blend_epi16(bv, mixed, 0xcc),
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[1]));
+			const __m256i d2 = _mm256_shuffle_epi8(
+				_mm256_blend_epi16(bv, mixed, 0x88),
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[2]));
+			const __m256i d3 = _mm256_shuffle_epi8(bv,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[3]));
+			const __m256i p0 = _mm256_madd_epi16(av, d0);
+			const __m256i p1 = _mm256_madd_epi16(av, d1);
+			const __m256i p2 = _mm256_madd_epi16(av, d2);
+			const __m256i p3 = _mm256_madd_epi16(av, d3);
+			const __m256i c01 = montgomery32_vector(
+				_mm256_hadd_epi32(p0, p1));
+			const __m256i c23 = montgomery32_vector(
+				_mm256_hadd_epi32(p2, p3));
+			const __m256i packed = _mm256_shuffle_epi8(
+				_mm256_packs_epi32(c01, c23),
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_pack_shuffle));
+			_mm256_storeu_si256((__m256i *)(void *)(out + word), packed);
+		}
+	}
 }
 
 static inline void transpose4x16(__m256i value[4])

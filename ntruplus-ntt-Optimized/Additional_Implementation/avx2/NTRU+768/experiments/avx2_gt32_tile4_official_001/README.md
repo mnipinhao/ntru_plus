@@ -414,3 +414,28 @@ permutation, or co-design a different private consumer ABI.  Repeating this
 coefficient-plane network in hand assembly is not justified.  The full lane
 routes and static accounting are recorded in
 `generated/tile4_frombytes_direct_soa_plan.json`.
+
+## A1 wide direct-AoS basemul gate
+
+The direct-AoS `vpmaddwd` proposal is mathematically valid.  A1 constructs the
+four qword-local `D0..D3` vectors, forms four signed 32-bit dot products, uses
+two `vphaddd` operations, applies one 32-bit Montgomery reduction per output,
+and packs directly back to TILE4 AoS.  The output is uniformly `e=-1`; it does
+not use the champion's c0--c2 raw/c3-only center contract.
+
+Generator bounds prove a maximum `vpmaddwd` pair magnitude of 232761888, a
+four-term sum of 465523776, and an `x-m*q` numerator of 692078271.  All fit
+signed int32.  Montgomery32 output is bounded by 10561, and every subsequent
+I1 int16 butterfly remains safe through a worst terminal bound of 28594.
+Tests pass mod q, the R-exponent oracle, in-place alias, I1, T9, and `crepmod3`
+over 1000 cases.
+
+Performance rejects the implementation direction.  In the selected 2,000-call
+short run, A1 measured 529.311 TSC versus 397.222 for c3center-late; BM plus I1
+measured 758.155 versus 628.798.  Disassembly shows no spill and already
+hoists all shuffle masks and reducer constants.  A hand version can clearly
+remove roughly two of 34 loop instructions by using precomputed lambda-qinv,
+but would need about 25% fewer cycles to reach the champion.  That gap is too
+large for scheduling alone, so A2 assembly is rejected under the bounded
+stop-loss.  See `generated/tile4_wide_aos_range.json` and
+`results/tile4-wide-a1-short.json`.
