@@ -834,3 +834,52 @@ stage4_stage5_private_planes_layout_gate:
   decision: stop-before-assembly-permutation-debt-erases-saving
   artifact: generated/tile4_s45_layout_gate.json
   reopen_condition: separately-generated-forward-plus-inverse-private-ABI-native-to-bit0-bit3-swapped-leaf-order
+
+permutation_native_private_abi_gate:
+  result: conjugated-inverse-pass-zero-cost-T9-hard-stop
+  scope: benchmark-only-private-Forward-BM-Inverse-T9-ABI
+  permutation:
+    plane_lane: [0, 8, 2, 10, 4, 12, 6, 14, 1, 9, 3, 11, 5, 13, 7, 15]
+    plane_interpretation: swap-plane-lane-index-bits-0-and-3
+    semantic_Q_within_16: [0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15]
+    Q_interpretation: swap-semantic-Q-bits-1-and-2
+  forward:
+    removed_stage4_reconstruct_shuffles_per_tile: 8
+    removed_shuffles_per_forward: 48
+    removed_shuffles_for_two_forwards: 96
+  basemul:
+    lambda_reorder_sufficient: true
+    extra_arithmetic: 0
+    extra_reductions: 0
+  conjugated_inverse:
+    generated_mechanically: true
+    definition: P-I-P-inverse
+    butterflies: 80
+    nonidentity_fixed_factor_butterflies: 49
+    vector_montgomery_chains_per_tile: 16
+    peak_live_YMM: 13
+    same_register_peak_as_I1: true
+    same_counts_as_standard: true
+    explicit_repair_pass: false
+    topology_by_logical_length:
+      2: qword-local
+      4: cross-vector
+      8: cross-128-bit-half
+      16: cross-vector
+      32: cross-vector
+  T9_gate:
+    physical_group_bit0_becomes: logical-qlane-bit1
+    physical_qlane_bit1_becomes: logical-group-bit0
+    one_physical_YMM_contains_two_logical_groups: true
+    constants_absorb_factors: true
+    load_address_and_whole_YMM_store_absorb_permutation: false
+    existing_BLEND3_absorbs_permutation: false
+    minimum_cross_lane_repairs: 48
+    lower_bound: 6-streams-times-4-group-pairs-times-2-logical-vectors
+    zero_extra_cross_lane_shuffle: fail
+  assembly_emitted: false
+  decision: stop-current-permutation-native-ABI-at-zero-cost-T9-gate
+  scope_of_stop: existing-full-width-T9-cannot-absorb-P-at-zero-data-movement-cost
+  relaxed_note: 48-T9-repairs-remain-less-than-96-two-forward-deletions-but-need-separate-approved-gate
+  artifact: generated/tile4_permutation_native_gate.json
+  reopen_condition: paired-group-T9-reuses-required-cross-group-op-or-relaxed-end-to-end-gate-accepts-48-shuffle-lower-bound

@@ -24,7 +24,8 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_frombytes_aos_stores.inc \
 	generated/tile4_frombytes_direct_soa_plan.json \
 	generated/tile4_wide_aos_range.json \
-	generated/tile4_a2f_dag.json generated/tile4_s45_layout_gate.json
+	generated/tile4_a2f_dag.json generated/tile4_s45_layout_gate.json \
+	generated/tile4_permutation_native_gate.json
 SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	src/tile4_pack.c src/tile4_inverse_tail.c \
 	src/tile4_frombytes_asm.S src/tile4_inverse_tail_asm.S src/tile4_asm.S \

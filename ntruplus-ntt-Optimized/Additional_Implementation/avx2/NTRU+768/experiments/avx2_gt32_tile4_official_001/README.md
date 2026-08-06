@@ -630,3 +630,35 @@ network.  Assembly is not emitted.  Reopening this idea requires a separately
 generated inverse topology whose native leaf order already swaps bits 0 and
 3; that is a new forward-plus-inverse private ABI experiment rather than a
 forward-tail constant rewrite.  See `generated/tile4_s45_layout_gate.json`.
+
+### Permutation-native inverse and T9 gate
+
+The reopened generator gate carries the stage-4-eliding permutation through
+Basemul and a mechanically conjugated inverse instead of repairing it at the
+Forward boundary.  In private coefficient-plane coordinates the permutation
+is `[0,8,2,10,4,12,6,14,1,9,3,11,5,13,7,15]`.  Translating through the actual
+private-plane Q order shows that it swaps semantic Q bits 1 and 2.  The
+generated inverse graph therefore exchanges the length-4 cross-half topology
+with the length-8 cross-vector topology while preserving all 80 butterflies,
+49 non-identity fixed-factor butterflies, and 16 vector Montgomery chains per
+tile.  Its 13-YMM peak also matches I1.  The Forward and inverse
+algebraic gates pass without an explicit repair pass.
+
+The first hard T9 gate does not pass.  T9 addresses a vector by
+`group=Q/4` and a qword within it by `qlane=Q%4`.  Under the permutation,
+physical group bit 0 becomes logical qlane bit 1 and physical qlane bit 1
+becomes logical group bit 0.  Thus each physical YMM contains the two
+128-bit halves of two different logical output groups.  Constants can absorb
+all factors, but load addresses, whole-YMM store order, and the existing
+within-group `BLEND3` cannot move a half between adjacent groups.
+
+Keeping T9 full-width requires at least 48 cross-lane repairs: six streams,
+four adjacent group pairs, and two reconstructed logical vectors per pair.
+An XMM-only alternative avoids an explicit permute only by doubling vector
+arithmetic, reductions, and stores.  Consequently the required zero-extra-
+shuffle T9 absorption is false and no assembly is emitted.  This stop is
+specifically the zero-cost T9 gate, not an algebraic rejection of the
+conjugated inverse.  The 48-repair lower bound is still smaller than the 96
+shuffles removed from two Forwards, but benchmarking that relaxed design
+requires a separately approved end-to-end gate.  The complete edge graph and
+proof are in `generated/tile4_permutation_native_gate.json`.

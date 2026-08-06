@@ -1,0 +1,2300 @@
+{
+  "candidate": "permutation-native-forward-bm-inverse-t9-private-ABI",
+  "permutation": {
+    "plane_physical_to_standard_lane": [
+      0,
+      8,
+      2,
+      10,
+      4,
+      12,
+      6,
+      14,
+      1,
+      9,
+      3,
+      11,
+      5,
+      13,
+      7,
+      15
+    ],
+    "plane_interpretation": "swap plane lane-index bits 0 and 3",
+    "standard_private_plane_q_order": [
+      0,
+      4,
+      8,
+      12,
+      1,
+      5,
+      9,
+      13,
+      2,
+      6,
+      10,
+      14,
+      3,
+      7,
+      11,
+      15
+    ],
+    "logical_q_at_physical_plane_lane": [
+      0,
+      2,
+      8,
+      10,
+      1,
+      3,
+      9,
+      11,
+      4,
+      6,
+      12,
+      14,
+      5,
+      7,
+      13,
+      15
+    ],
+    "physical_plane_lane_of_logical_q": [
+      0,
+      4,
+      1,
+      5,
+      8,
+      12,
+      9,
+      13,
+      2,
+      6,
+      3,
+      7,
+      10,
+      14,
+      11,
+      15
+    ],
+    "logical_q_at_physical_q_within_16": [
+      0,
+      1,
+      4,
+      5,
+      2,
+      3,
+      6,
+      7,
+      8,
+      9,
+      12,
+      13,
+      10,
+      11,
+      14,
+      15
+    ],
+    "q_interpretation": "swap semantic Q bits 1 and 2",
+    "self_inverse": true
+  },
+  "forward": {
+    "removed_stage4_reconstruct_shuffles_per_tile": 8,
+    "tiles_per_forward": 6,
+    "removed_shuffles_per_forward": 48,
+    "removed_shuffles_for_two_forwards": 96,
+    "explicit_repair": 0
+  },
+  "basemul": {
+    "layout": "P-domain coefficient planes",
+    "lambda_table_reordered_by_logical_leaf": true,
+    "extra_arithmetic": 0,
+    "extra_reductions": 0
+  },
+  "conjugated_inverse": {
+    "definition": "I_P=P*I*P^-1",
+    "generated_from_standard_edges": true,
+    "topology_by_stage": [
+      {
+        "stage": 1,
+        "logical_length": 2,
+        "logical_distance": 1,
+        "physical_incidence": "qword-local",
+        "butterflies": 16,
+        "nonidentity_montgomery_chains": 0
+      },
+      {
+        "stage": 2,
+        "logical_length": 4,
+        "logical_distance": 2,
+        "physical_incidence": "cross-vector",
+        "butterflies": 16,
+        "nonidentity_montgomery_chains": 8
+      },
+      {
+        "stage": 3,
+        "logical_length": 8,
+        "logical_distance": 4,
+        "physical_incidence": "cross-128-bit-half",
+        "butterflies": 16,
+        "nonidentity_montgomery_chains": 12
+      },
+      {
+        "stage": 4,
+        "logical_length": 16,
+        "logical_distance": 8,
+        "physical_incidence": "cross-vector",
+        "butterflies": 16,
+        "nonidentity_montgomery_chains": 14
+      },
+      {
+        "stage": 5,
+        "logical_length": 32,
+        "logical_distance": 16,
+        "physical_incidence": "cross-vector",
+        "butterflies": 16,
+        "nonidentity_montgomery_chains": 15
+      }
+    ],
+    "edges": [
+      {
+        "stage": 1,
+        "logical_length": 2,
+        "edges": [
+          {
+            "logical_endpoints": [
+              0,
+              1
+            ],
+            "physical_endpoints": [
+              0,
+              1
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              2,
+              3
+            ],
+            "physical_endpoints": [
+              4,
+              5
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              4,
+              5
+            ],
+            "physical_endpoints": [
+              2,
+              3
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              6,
+              7
+            ],
+            "physical_endpoints": [
+              6,
+              7
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              8,
+              9
+            ],
+            "physical_endpoints": [
+              8,
+              9
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              10,
+              11
+            ],
+            "physical_endpoints": [
+              12,
+              13
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              12,
+              13
+            ],
+            "physical_endpoints": [
+              10,
+              11
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              14,
+              15
+            ],
+            "physical_endpoints": [
+              14,
+              15
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              16,
+              17
+            ],
+            "physical_endpoints": [
+              16,
+              17
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              18,
+              19
+            ],
+            "physical_endpoints": [
+              20,
+              21
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              20,
+              21
+            ],
+            "physical_endpoints": [
+              18,
+              19
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              22,
+              23
+            ],
+            "physical_endpoints": [
+              22,
+              23
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              24,
+              25
+            ],
+            "physical_endpoints": [
+              24,
+              25
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                0
+              ],
+              [
+                6,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              26,
+              27
+            ],
+            "physical_endpoints": [
+              28,
+              29
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                7,
+                0
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              28,
+              29
+            ],
+            "physical_endpoints": [
+              26,
+              27
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                2
+              ],
+              [
+                6,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          },
+          {
+            "logical_endpoints": [
+              30,
+              31
+            ],
+            "physical_endpoints": [
+              30,
+              31
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                7,
+                2
+              ],
+              [
+                7,
+                3
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "qword-local"
+          }
+        ]
+      },
+      {
+        "stage": 2,
+        "logical_length": 4,
+        "edges": [
+          {
+            "logical_endpoints": [
+              0,
+              2
+            ],
+            "physical_endpoints": [
+              0,
+              4
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              1,
+              3
+            ],
+            "physical_endpoints": [
+              1,
+              5
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              4,
+              6
+            ],
+            "physical_endpoints": [
+              2,
+              6
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              5,
+              7
+            ],
+            "physical_endpoints": [
+              3,
+              7
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              8,
+              10
+            ],
+            "physical_endpoints": [
+              8,
+              12
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              9,
+              11
+            ],
+            "physical_endpoints": [
+              9,
+              13
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              12,
+              14
+            ],
+            "physical_endpoints": [
+              10,
+              14
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              13,
+              15
+            ],
+            "physical_endpoints": [
+              11,
+              15
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              16,
+              18
+            ],
+            "physical_endpoints": [
+              16,
+              20
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                0
+              ],
+              [
+                5,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              17,
+              19
+            ],
+            "physical_endpoints": [
+              17,
+              21
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              20,
+              22
+            ],
+            "physical_endpoints": [
+              18,
+              22
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              21,
+              23
+            ],
+            "physical_endpoints": [
+              19,
+              23
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                3
+              ],
+              [
+                5,
+                3
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              24,
+              26
+            ],
+            "physical_endpoints": [
+              24,
+              28
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                0
+              ],
+              [
+                7,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              25,
+              27
+            ],
+            "physical_endpoints": [
+              25,
+              29
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                1
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              28,
+              30
+            ],
+            "physical_endpoints": [
+              26,
+              30
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                2
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              29,
+              31
+            ],
+            "physical_endpoints": [
+              27,
+              31
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                3
+              ],
+              [
+                7,
+                3
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          }
+        ]
+      },
+      {
+        "stage": 3,
+        "logical_length": 8,
+        "edges": [
+          {
+            "logical_endpoints": [
+              0,
+              4
+            ],
+            "physical_endpoints": [
+              0,
+              2
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              1,
+              5
+            ],
+            "physical_endpoints": [
+              1,
+              3
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                3
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              2,
+              6
+            ],
+            "physical_endpoints": [
+              4,
+              6
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              3,
+              7
+            ],
+            "physical_endpoints": [
+              5,
+              7
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              8,
+              12
+            ],
+            "physical_endpoints": [
+              8,
+              10
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              9,
+              13
+            ],
+            "physical_endpoints": [
+              9,
+              11
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              10,
+              14
+            ],
+            "physical_endpoints": [
+              12,
+              14
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              11,
+              15
+            ],
+            "physical_endpoints": [
+              13,
+              15
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              16,
+              20
+            ],
+            "physical_endpoints": [
+              16,
+              18
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              17,
+              21
+            ],
+            "physical_endpoints": [
+              17,
+              19
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                3
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              18,
+              22
+            ],
+            "physical_endpoints": [
+              20,
+              22
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                0
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              19,
+              23
+            ],
+            "physical_endpoints": [
+              21,
+              23
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                3
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              24,
+              28
+            ],
+            "physical_endpoints": [
+              24,
+              26
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                0
+              ],
+              [
+                6,
+                2
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              25,
+              29
+            ],
+            "physical_endpoints": [
+              25,
+              27
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                6,
+                1
+              ],
+              [
+                6,
+                3
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              26,
+              30
+            ],
+            "physical_endpoints": [
+              28,
+              30
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                7,
+                0
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-128-bit-half"
+          },
+          {
+            "logical_endpoints": [
+              27,
+              31
+            ],
+            "physical_endpoints": [
+              29,
+              31
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                7,
+                1
+              ],
+              [
+                7,
+                3
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-128-bit-half"
+          }
+        ]
+      },
+      {
+        "stage": 4,
+        "logical_length": 16,
+        "edges": [
+          {
+            "logical_endpoints": [
+              0,
+              8
+            ],
+            "physical_endpoints": [
+              0,
+              8
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              1,
+              9
+            ],
+            "physical_endpoints": [
+              1,
+              9
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                1
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "twiddle_power": 30,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              2,
+              10
+            ],
+            "physical_endpoints": [
+              4,
+              12
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              3,
+              11
+            ],
+            "physical_endpoints": [
+              5,
+              13
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ],
+            "twiddle_power": 26,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              4,
+              12
+            ],
+            "physical_endpoints": [
+              2,
+              10
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              5,
+              13
+            ],
+            "physical_endpoints": [
+              3,
+              11
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "twiddle_power": 22,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              6,
+              14
+            ],
+            "physical_endpoints": [
+              6,
+              14
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              7,
+              15
+            ],
+            "physical_endpoints": [
+              7,
+              15
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            "twiddle_power": 18,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              16,
+              24
+            ],
+            "physical_endpoints": [
+              16,
+              24
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                0
+              ],
+              [
+                6,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              17,
+              25
+            ],
+            "physical_endpoints": [
+              17,
+              25
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                1
+              ],
+              [
+                6,
+                1
+              ]
+            ],
+            "twiddle_power": 30,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              18,
+              26
+            ],
+            "physical_endpoints": [
+              20,
+              28
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                0
+              ],
+              [
+                7,
+                0
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              19,
+              27
+            ],
+            "physical_endpoints": [
+              21,
+              29
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                1
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "twiddle_power": 26,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              20,
+              28
+            ],
+            "physical_endpoints": [
+              18,
+              26
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                2
+              ],
+              [
+                6,
+                2
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              21,
+              29
+            ],
+            "physical_endpoints": [
+              19,
+              27
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                4,
+                3
+              ],
+              [
+                6,
+                3
+              ]
+            ],
+            "twiddle_power": 22,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              22,
+              30
+            ],
+            "physical_endpoints": [
+              22,
+              30
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                2
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              23,
+              31
+            ],
+            "physical_endpoints": [
+              23,
+              31
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                5,
+                3
+              ],
+              [
+                7,
+                3
+              ]
+            ],
+            "twiddle_power": 18,
+            "incidence": "cross-vector"
+          }
+        ]
+      },
+      {
+        "stage": 5,
+        "logical_length": 32,
+        "edges": [
+          {
+            "logical_endpoints": [
+              0,
+              16
+            ],
+            "physical_endpoints": [
+              0,
+              16
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ],
+            "twiddle_power": 0,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              1,
+              17
+            ],
+            "physical_endpoints": [
+              1,
+              17
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ],
+            "twiddle_power": 31,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              2,
+              18
+            ],
+            "physical_endpoints": [
+              4,
+              20
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                0
+              ],
+              [
+                5,
+                0
+              ]
+            ],
+            "twiddle_power": 30,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              3,
+              19
+            ],
+            "physical_endpoints": [
+              5,
+              21
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "twiddle_power": 29,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              4,
+              20
+            ],
+            "physical_endpoints": [
+              2,
+              18
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                2
+              ],
+              [
+                4,
+                2
+              ]
+            ],
+            "twiddle_power": 28,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              5,
+              21
+            ],
+            "physical_endpoints": [
+              3,
+              19
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                0,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ],
+            "twiddle_power": 27,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              6,
+              22
+            ],
+            "physical_endpoints": [
+              6,
+              22
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "twiddle_power": 26,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              7,
+              23
+            ],
+            "physical_endpoints": [
+              7,
+              23
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                1,
+                3
+              ],
+              [
+                5,
+                3
+              ]
+            ],
+            "twiddle_power": 25,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              8,
+              24
+            ],
+            "physical_endpoints": [
+              8,
+              24
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                0
+              ],
+              [
+                6,
+                0
+              ]
+            ],
+            "twiddle_power": 24,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              9,
+              25
+            ],
+            "physical_endpoints": [
+              9,
+              25
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                1
+              ],
+              [
+                6,
+                1
+              ]
+            ],
+            "twiddle_power": 23,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              10,
+              26
+            ],
+            "physical_endpoints": [
+              12,
+              28
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                0
+              ],
+              [
+                7,
+                0
+              ]
+            ],
+            "twiddle_power": 22,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              11,
+              27
+            ],
+            "physical_endpoints": [
+              13,
+              29
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                1
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "twiddle_power": 21,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              12,
+              28
+            ],
+            "physical_endpoints": [
+              10,
+              26
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                2
+              ],
+              [
+                6,
+                2
+              ]
+            ],
+            "twiddle_power": 20,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              13,
+              29
+            ],
+            "physical_endpoints": [
+              11,
+              27
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                2,
+                3
+              ],
+              [
+                6,
+                3
+              ]
+            ],
+            "twiddle_power": 19,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              14,
+              30
+            ],
+            "physical_endpoints": [
+              14,
+              30
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                2
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "twiddle_power": 18,
+            "incidence": "cross-vector"
+          },
+          {
+            "logical_endpoints": [
+              15,
+              31
+            ],
+            "physical_endpoints": [
+              15,
+              31
+            ],
+            "physical_vector_qword_endpoints": [
+              [
+                3,
+                3
+              ],
+              [
+                7,
+                3
+              ]
+            ],
+            "twiddle_power": 17,
+            "incidence": "cross-vector"
+          }
+        ]
+      }
+    ],
+    "total_nonidentity_fixed_factor_butterflies": 49,
+    "vector_montgomery_chains_per_tile": 16,
+    "same_edge_and_reduction_count_as_standard": true,
+    "minimum_register_plan": {
+      "data_ymm": 8,
+      "maximum_temporary_ymm": 4,
+      "q_constant_ymm": 1,
+      "peak_live_ymm": 13,
+      "same_as_I1_peak": true,
+      "spill_required": false
+    },
+    "explicit_repair_pass": false,
+    "assembly_emitted": false
+  },
+  "t9_absorption": {
+    "standard_coordinates": "group=Q/4, qlane=Q%4",
+    "derived_relation": {
+      "logical_group_bit0": "physical_qlane_bit1",
+      "logical_qlane_bit1": "physical_group_bit0",
+      "unchanged": [
+        "group bits 1 and 2",
+        "qlane bit 0"
+      ]
+    },
+    "physical_group_records": [
+      {
+        "physical_group": 0,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 0,
+            "logical_group": 0,
+            "logical_qlane": 0,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 1,
+            "logical_group": 0,
+            "logical_qlane": 1,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 4,
+            "logical_group": 1,
+            "logical_qlane": 0,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 5,
+            "logical_group": 1,
+            "logical_qlane": 1,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          0,
+          1
+        ]
+      },
+      {
+        "physical_group": 1,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 2,
+            "logical_group": 0,
+            "logical_qlane": 2,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 3,
+            "logical_group": 0,
+            "logical_qlane": 3,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 6,
+            "logical_group": 1,
+            "logical_qlane": 2,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 7,
+            "logical_group": 1,
+            "logical_qlane": 3,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          0,
+          1
+        ]
+      },
+      {
+        "physical_group": 2,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 8,
+            "logical_group": 2,
+            "logical_qlane": 0,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 9,
+            "logical_group": 2,
+            "logical_qlane": 1,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 12,
+            "logical_group": 3,
+            "logical_qlane": 0,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 13,
+            "logical_group": 3,
+            "logical_qlane": 1,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          2,
+          3
+        ]
+      },
+      {
+        "physical_group": 3,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 10,
+            "logical_group": 2,
+            "logical_qlane": 2,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 11,
+            "logical_group": 2,
+            "logical_qlane": 3,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 14,
+            "logical_group": 3,
+            "logical_qlane": 2,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 15,
+            "logical_group": 3,
+            "logical_qlane": 3,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          2,
+          3
+        ]
+      },
+      {
+        "physical_group": 4,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 16,
+            "logical_group": 4,
+            "logical_qlane": 0,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 17,
+            "logical_group": 4,
+            "logical_qlane": 1,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 20,
+            "logical_group": 5,
+            "logical_qlane": 0,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 21,
+            "logical_group": 5,
+            "logical_qlane": 1,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          4,
+          5
+        ]
+      },
+      {
+        "physical_group": 5,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 18,
+            "logical_group": 4,
+            "logical_qlane": 2,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 19,
+            "logical_group": 4,
+            "logical_qlane": 3,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 22,
+            "logical_group": 5,
+            "logical_qlane": 2,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 23,
+            "logical_group": 5,
+            "logical_qlane": 3,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          4,
+          5
+        ]
+      },
+      {
+        "physical_group": 6,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 24,
+            "logical_group": 6,
+            "logical_qlane": 0,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 25,
+            "logical_group": 6,
+            "logical_qlane": 1,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 28,
+            "logical_group": 7,
+            "logical_qlane": 0,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 29,
+            "logical_group": 7,
+            "logical_qlane": 1,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          6,
+          7
+        ]
+      },
+      {
+        "physical_group": 7,
+        "lanes": [
+          {
+            "physical_qlane": 0,
+            "logical_q": 26,
+            "logical_group": 6,
+            "logical_qlane": 2,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 1,
+            "logical_q": 27,
+            "logical_group": 6,
+            "logical_qlane": 3,
+            "physical_128_half": 0
+          },
+          {
+            "physical_qlane": 2,
+            "logical_q": 30,
+            "logical_group": 7,
+            "logical_qlane": 2,
+            "physical_128_half": 1
+          },
+          {
+            "physical_qlane": 3,
+            "logical_q": 31,
+            "logical_group": 7,
+            "logical_qlane": 3,
+            "physical_128_half": 1
+          }
+        ],
+        "logical_groups_in_one_ymm": [
+          6,
+          7
+        ]
+      }
+    ],
+    "one_physical_ymm_contains_two_logical_groups": true,
+    "constants_can_absorb_factors": true,
+    "load_address_only_can_absorb": false,
+    "whole_ymm_store_order_only_can_absorb": false,
+    "existing_blend3_can_absorb": false,
+    "reason": "BLEND3 combines k3 streams inside one group; P instead exchanges a group-address bit with the 128-bit-half bit",
+    "minimum_cross_lane_repairs_for_full_width_t9": 48,
+    "lower_bound_derivation": "6 streams * 4 adjacent group pairs * 2 reconstructed logical YMM vectors",
+    "split_xmm_alternative": {
+      "explicit_permute_can_be_avoided": true,
+      "cost": "doubles vector arithmetic/reduction instructions and stores",
+      "meets_same_reduction_and_register_cost_gate": false
+    },
+    "extra_montgomery_reductions_with_full_width_repair": 0,
+    "extra_cross_lane_shuffles": 48,
+    "zero_cost_absorption": false
+  },
+  "hard_gates": {
+    "forward_saves_8_shuffles_per_tile": true,
+    "basemul_arithmetic_and_reductions_unchanged": true,
+    "inverse_has_no_explicit_repair_pass": true,
+    "inverse_reduction_count_matches_standard": true,
+    "t9_adds_no_cross_lane_shuffle": false,
+    "representation_private": true
+  },
+  "assembly_emitted": false,
+  "decision": "stop-current-permutation-native-ABI-at-zero-cost-T9-gate",
+  "scope_of_stop": "P cannot be absorbed by the existing full-width T9 load/blend/store topology at zero data-movement cost; the conjugated inverse itself remains algebraically and statically feasible",
+  "relaxed_end_to_end_note": "48 minimum T9 repairs are fewer than the 96 shuffles removed from two forwards, but evaluating that nonzero-debt design is outside this hard gate and requires a separately approved gate",
+  "reopen_condition": "a paired-group T9 topology must reuse an already-required cross-group operation, or a relaxed end-to-end gate must accept and benchmark the 48-shuffle lower bound"
+}

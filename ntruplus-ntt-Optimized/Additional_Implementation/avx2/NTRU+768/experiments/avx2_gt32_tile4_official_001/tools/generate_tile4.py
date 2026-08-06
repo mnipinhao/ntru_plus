@@ -1663,6 +1663,240 @@ def emit_s45_layout_gate(path: Path) -> None:
     path.write_text(json.dumps(result, indent=2) + "\n")
 
 
+def emit_permutation_native_gate(path: Path) -> None:
+    """Gate the bit-swapped private ABI through conjugated inverse and T9.
+
+    The stage-4-eliding forward writes coefficient planes.  In that plane
+    layout P swaps position bits 0 and 3.  Convert that permutation back to
+    semantic Q labels, conjugate every inverse edge mechanically, and test
+    whether the existing full-width T9 topology can absorb the remaining
+    permutation without a data-movement instruction.
+    """
+    q_order = [0, 4, 8, 12, 1, 5, 9, 13,
+               2, 6, 10, 14, 3, 7, 11, 15]
+    position = [0] * 16
+    for lane, q_value in enumerate(q_order):
+        position[q_value] = lane
+
+    plane_p = [
+        (lane & 0x6) | ((lane & 0x1) << 3) | ((lane & 0x8) >> 3)
+        for lane in range(16)
+    ]
+    assert [plane_p[value] for value in plane_p] == list(range(16))
+
+    # physical plane lane -> standard logical Q within one 16-Q half.
+    logical_q_at_physical_lane = [q_order[plane_p[lane]]
+                                  for lane in range(16)]
+    physical_lane_of_logical_q = [0] * 16
+    for lane, logical_q in enumerate(logical_q_at_physical_lane):
+        physical_lane_of_logical_q[logical_q] = lane
+
+    # Express the same permutation in semantic Q numbering.  It swaps Q bits
+    # 1 and 2 and preserves bit 0, bit 3, and the high-half bit 4.
+    logical_q_at_physical_q = [
+        q_order[plane_p[position[physical_q]]]
+        for physical_q in range(16)
+    ]
+    expected_q_swap = [
+        (q & ~0x6) | ((q & 0x2) << 1) | ((q & 0x4) >> 1)
+        for q in range(16)
+    ]
+    assert logical_q_at_physical_q == expected_q_swap
+    assert [logical_q_at_physical_q[value]
+            for value in logical_q_at_physical_q] == list(range(16))
+
+    def permute_q(q: int) -> int:
+        return (q & 0x10) | logical_q_at_physical_q[q & 0x0f]
+
+    # P is self-inverse, so this also maps a logical endpoint to its physical
+    # endpoint in the P-domain representation.
+    inverse_edges = []
+    topology_by_stage = []
+    reduction_chains = 0
+    for stage, length in enumerate((2, 4, 8, 16, 32), 1):
+        distance = length // 2
+        stage_edges = []
+        incidence = set()
+        for base in range(0, 32, length):
+            for j in range(distance):
+                logical_low = base + j
+                logical_high = logical_low + distance
+                physical_low = permute_q(logical_low)
+                physical_high = permute_q(logical_high)
+                low_vector, low_qword = divmod(physical_low, 4)
+                high_vector, high_qword = divmod(physical_high, 4)
+                if low_vector != high_vector:
+                    physical_incidence = "cross-vector"
+                elif (low_qword < 2) != (high_qword < 2):
+                    physical_incidence = "cross-128-bit-half"
+                else:
+                    physical_incidence = "qword-local"
+                incidence.add(physical_incidence)
+                stage_edges.append({
+                    "logical_endpoints": [logical_low, logical_high],
+                    "physical_endpoints": [physical_low, physical_high],
+                    "physical_vector_qword_endpoints": [
+                        [low_vector, low_qword],
+                        [high_vector, high_qword],
+                    ],
+                    "twiddle_power": 0 if length == 2 else (
+                        -j * (32 // length)) % 32,
+                    "incidence": physical_incidence,
+                })
+        assert len(incidence) == 1
+        nontrivial = sum(edge["twiddle_power"] != 0 for edge in stage_edges)
+        reduction_chains += nontrivial
+        topology_by_stage.append({
+            "stage": stage,
+            "logical_length": length,
+            "logical_distance": distance,
+            "physical_incidence": next(iter(incidence)),
+            "butterflies": len(stage_edges),
+            "nonidentity_montgomery_chains": nontrivial,
+        })
+        inverse_edges.append({
+            "stage": stage,
+            "logical_length": length,
+            "edges": stage_edges,
+        })
+
+    # T9 consumes group=floor(Q/4), qlane=Q mod 4.  After P, the
+    # physical group parity becomes logical qlane bit 1, while physical
+    # qlane bit 1 becomes logical group parity.  Consequently every input
+    # YMM is split across two logical output groups at its 128-bit boundary.
+    t9_records = []
+    for physical_group in range(8):
+        lanes = []
+        for physical_qlane in range(4):
+            physical_q = 4 * physical_group + physical_qlane
+            logical_q = permute_q(physical_q)
+            lanes.append({
+                "physical_qlane": physical_qlane,
+                "logical_q": logical_q,
+                "logical_group": logical_q // 4,
+                "logical_qlane": logical_q % 4,
+                "physical_128_half": physical_qlane // 2,
+            })
+        assert len({record["logical_group"] for record in lanes}) == 2
+        t9_records.append({
+            "physical_group": physical_group,
+            "lanes": lanes,
+            "logical_groups_in_one_ymm": sorted({
+                record["logical_group"] for record in lanes
+            }),
+        })
+
+    t9_streams = 6
+    adjacent_group_pairs = 4
+    logical_vectors_per_pair = 2
+    minimum_repairs = (t9_streams * adjacent_group_pairs
+                       * logical_vectors_per_pair)
+    assert minimum_repairs == 48
+
+    result = {
+        "candidate": "permutation-native-forward-bm-inverse-t9-private-ABI",
+        "permutation": {
+            "plane_physical_to_standard_lane": plane_p,
+            "plane_interpretation": "swap plane lane-index bits 0 and 3",
+            "standard_private_plane_q_order": q_order,
+            "logical_q_at_physical_plane_lane": logical_q_at_physical_lane,
+            "physical_plane_lane_of_logical_q": physical_lane_of_logical_q,
+            "logical_q_at_physical_q_within_16": logical_q_at_physical_q,
+            "q_interpretation": "swap semantic Q bits 1 and 2",
+            "self_inverse": True,
+        },
+        "forward": {
+            "removed_stage4_reconstruct_shuffles_per_tile": 8,
+            "tiles_per_forward": 6,
+            "removed_shuffles_per_forward": 48,
+            "removed_shuffles_for_two_forwards": 96,
+            "explicit_repair": 0,
+        },
+        "basemul": {
+            "layout": "P-domain coefficient planes",
+            "lambda_table_reordered_by_logical_leaf": True,
+            "extra_arithmetic": 0,
+            "extra_reductions": 0,
+        },
+        "conjugated_inverse": {
+            "definition": "I_P=P*I*P^-1",
+            "generated_from_standard_edges": True,
+            "topology_by_stage": topology_by_stage,
+            "edges": inverse_edges,
+            "total_nonidentity_fixed_factor_butterflies": reduction_chains,
+            "vector_montgomery_chains_per_tile": 16,
+            "same_edge_and_reduction_count_as_standard": True,
+            "minimum_register_plan": {
+                "data_ymm": 8,
+                "maximum_temporary_ymm": 4,
+                "q_constant_ymm": 1,
+                "peak_live_ymm": 13,
+                "same_as_I1_peak": True,
+                "spill_required": False,
+            },
+            "explicit_repair_pass": False,
+            "assembly_emitted": False,
+        },
+        "t9_absorption": {
+            "standard_coordinates": "group=Q/4, qlane=Q%4",
+            "derived_relation": {
+                "logical_group_bit0": "physical_qlane_bit1",
+                "logical_qlane_bit1": "physical_group_bit0",
+                "unchanged": ["group bits 1 and 2", "qlane bit 0"],
+            },
+            "physical_group_records": t9_records,
+            "one_physical_ymm_contains_two_logical_groups": True,
+            "constants_can_absorb_factors": True,
+            "load_address_only_can_absorb": False,
+            "whole_ymm_store_order_only_can_absorb": False,
+            "existing_blend3_can_absorb": False,
+            "reason": (
+                "BLEND3 combines k3 streams inside one group; P instead "
+                "exchanges a group-address bit with the 128-bit-half bit"
+            ),
+            "minimum_cross_lane_repairs_for_full_width_t9": minimum_repairs,
+            "lower_bound_derivation": (
+                "6 streams * 4 adjacent group pairs * 2 reconstructed "
+                "logical YMM vectors"
+            ),
+            "split_xmm_alternative": {
+                "explicit_permute_can_be_avoided": True,
+                "cost": "doubles vector arithmetic/reduction instructions and stores",
+                "meets_same_reduction_and_register_cost_gate": False,
+            },
+            "extra_montgomery_reductions_with_full_width_repair": 0,
+            "extra_cross_lane_shuffles": minimum_repairs,
+            "zero_cost_absorption": False,
+        },
+        "hard_gates": {
+            "forward_saves_8_shuffles_per_tile": True,
+            "basemul_arithmetic_and_reductions_unchanged": True,
+            "inverse_has_no_explicit_repair_pass": True,
+            "inverse_reduction_count_matches_standard": True,
+            "t9_adds_no_cross_lane_shuffle": False,
+            "representation_private": True,
+        },
+        "assembly_emitted": False,
+        "decision": "stop-current-permutation-native-ABI-at-zero-cost-T9-gate",
+        "scope_of_stop": (
+            "P cannot be absorbed by the existing full-width T9 load/blend/"
+            "store topology at zero data-movement cost; the conjugated "
+            "inverse itself remains algebraically and statically feasible"
+        ),
+        "relaxed_end_to_end_note": (
+            "48 minimum T9 repairs are fewer than the 96 shuffles removed "
+            "from two forwards, but evaluating that nonzero-debt design is "
+            "outside this hard gate and requires a separately approved gate"
+        ),
+        "reopen_condition": (
+            "a paired-group T9 topology must reuse an already-required "
+            "cross-group operation, or a relaxed end-to-end gate must accept "
+            "and benchmark the 48-shuffle lower bound"
+        ),
+    }
+    path.write_text(json.dumps(result, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1739,6 +1973,7 @@ def main() -> None:
     wide_aos_range_path = GENERATED / "tile4_wide_aos_range.json"
     a2f_dag_path = GENERATED / "tile4_a2f_dag.json"
     s45_layout_path = GENERATED / "tile4_s45_layout_gate.json"
+    permutation_native_path = GENERATED / "tile4_permutation_native_gate.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1760,6 +1995,7 @@ def main() -> None:
     emit_wide_aos_ranges(wide_aos_range_path)
     emit_a2f_dag(a2f_dag_path)
     emit_s45_layout_gate(s45_layout_path)
+    emit_permutation_native_gate(permutation_native_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1832,6 +2068,8 @@ def main() -> None:
             a2f_dag_path.read_bytes()).hexdigest(),
         "s45_layout_gate_sha256": hashlib.sha256(
             s45_layout_path.read_bytes()).hexdigest(),
+        "permutation_native_gate_sha256": hashlib.sha256(
+            permutation_native_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
