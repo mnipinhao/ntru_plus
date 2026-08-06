@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-c-contract-pass-d2a-producer-pass
+status: gate-d2a-i2-hard-stop
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -24,6 +24,8 @@ implemented:
   - Gate C general B2 with fused R-squared e=0 output
   - Gate D B2-S private coefficient-plane e=-1 producer
   - direct private-layout scalar inverse NTT32 oracle
+  - serial and eight-vector parallel private I2 inverse assembly
+  - generator-owned private-Q inverse twiddles and formal range bounds
   - full coefficient-order input to TILE4 frequency-output forward candidate
   - five-layer register-resident AVX2 forward tile and six-tile wrapper
   - five-layer register-resident AVX2 inverse tile and six-tile wrapper
@@ -34,7 +36,6 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
-  - I2 private coefficient-plane inverse NTT32 assembly
   - Gate C add/tobytes caller measurements
   - TILE4-native baseinv
   - inverse DFT3/untwist/top-merge consumer
@@ -148,7 +149,7 @@ gate_c_general_basemul:
   output_r_exponent: 0
   correctness: modular-vs-independent-e-minus1-times-R2
 gate_d2a_private_producer:
-  result: producer-pass-i2-assembly-pending
+  result: i2-hard-stop
   tile4_scale_aos_tsc: 434.435
   tile4_scale_private_soa_tsc: 390.957
   producer_saving_tsc: 43.478
@@ -156,7 +157,17 @@ gate_d2a_private_producer:
   output_r_exponent: -1
   correctness: exact-after-benchmark-excluded-layout-conversion
   inverse_oracle: direct-private-layout-scalar-exact-vs-tile4-inverse
-  d2a_baseline_b2_plus_i1_tsc: 662.976
+  executable_d0_b2_plus_i1_tsc: 660.577
+  hypothetical_b2s_plus_i1_tsc: 619.498
+  hypothetical_only_reason: private-SoA-producer-cannot-feed-AoS-I1
+  i2_hard_gate_tsc: 272.019
+  i2_strong_gate_tsc: 228.541
+  i2_serial_tsc: 468.802
+  i2_parallel_eight_vector_tsc: 361.092
+  executable_d2_b2s_plus_i2_parallel_tsc: 757.904
+  d2_regression_vs_d0_tsc: 97.327
+  range_terminal_abs_bound: 12150
+  signed_int16_safe: true
   required_combined_saving_tsc: 40-to-60
-  next_gate: implement-and-measure-i2-private-inverse-core
+  decision: stop-d2-before-tail
 promotion: false

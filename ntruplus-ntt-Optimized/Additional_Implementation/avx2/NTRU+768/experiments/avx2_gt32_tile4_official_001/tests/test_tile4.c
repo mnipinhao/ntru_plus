@@ -181,6 +181,7 @@ int main(void)
 	int16_t private_soa[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t general_ref[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_inverse[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t private_inverse_asm[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
@@ -194,6 +195,17 @@ int main(void)
 		compare_exact("basemul-scale-private-soa", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		gt32_tile4_inverse_soa_private_ref(private_inverse, private_soa);
+		gt32_tile4_inverse_soa_private_asm(private_inverse_asm, private_soa);
+		compare_exact("inverse-private-soa-asm", trial, private_inverse,
+			private_inverse_asm, GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_soa_private_parallel_asm(private_inverse_asm,
+			private_soa);
+		compare_exact("inverse-private-soa-parallel-asm", trial,
+			private_inverse, private_inverse_asm, GT32_TILE4_POLY_WORDS);
+		memcpy(alias, private_soa, sizeof(alias));
+		gt32_tile4_inverse_soa_private_parallel_asm(alias, alias);
+		compare_exact("inverse-private-soa-parallel-alias", trial,
+			private_inverse, alias, GT32_TILE4_POLY_WORDS);
 		private_soa_to_tile4(got, private_inverse);
 		gt32_tile4_inverse_all_ref(general_ref, ref);
 		compare_exact("inverse-private-soa-ref", trial, general_ref, got,

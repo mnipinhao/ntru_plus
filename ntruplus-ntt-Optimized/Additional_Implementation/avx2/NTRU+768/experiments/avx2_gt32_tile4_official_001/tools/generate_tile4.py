@@ -326,6 +326,63 @@ def emit_basemul_asm(path: Path) -> None:
     path.write_text("\n".join(lines))
 
 
+def emit_private_inverse_asm(path: Path) -> None:
+    q_order = [0, 4, 8, 12, 1, 5, 9, 13,
+               2, 6, 10, 14, 3, 7, 11, 15]
+    records = []
+    # len=4 is packed from the unique upper 128-bit halves of two vectors.
+    records.append(("s2", [mont_root(-(q_order[p] % 2) * 8)
+                            for p in range(8, 16)] * 2))
+    # len=8 and len=16 are lane-local shuffled butterflies.
+    for stage, length in ((3, 8), (4, 16)):
+        distance = length // 2
+        records.append((f"s{stage}", [
+            mont_root(-(q_order[p] % distance) * (32 // length))
+            for p in range(16)
+        ]))
+    # len=32 crosses the two 16-Q vectors.
+    records.append(("s5", [mont_root(-q) for q in q_order]))
+
+    lines = ["/* Generated private-SoA inverse tables; do not hand-edit. */"]
+    for name, record in records:
+        for suffix, transform in (("qinv", factor_qinv),
+                                  ("factor", lambda x: x)):
+            lines.extend([f".p2align 5", f".Li2_{name}_{suffix}:"])
+            lines.append("\t.short " + ",".join(
+                str(transform(value)) for value in record))
+    lines.append("")
+    path.write_text("\n".join(lines))
+
+
+def emit_private_inverse_ranges(path: Path) -> None:
+    bound = 2359
+    records = []
+    for length in (2, 4, 8, 16, 32):
+        input_bound = bound
+        if length == 2:
+            product = input_bound
+        else:
+            factors = [mont_root(-j * (32 // length))
+                       for j in range(length // 2)]
+            product = product_bound(input_bound, factors)
+        bound = input_bound + product
+        records.append({
+            "length": length,
+            "input_abs_bound": input_bound,
+            "product_abs_bound": product,
+            "output_abs_bound": bound,
+            "signed_int16_safe": bound <= 32767,
+        })
+    assert all(record["signed_int16_safe"] for record in records)
+    path.write_text(json.dumps({
+        "input": "centered B2-S e=-1 output",
+        "input_abs_bound": 2359,
+        "method": "exhaustive fixed-factor Montgomery bound plus triangle inequality",
+        "stages": records,
+        "terminal_abs_bound": bound,
+    }, indent=2) + "\n")
+
+
 def emit_scale_contract(path: Path) -> None:
     path.write_text(json.dumps({
         "notation": "stored value represents x*R^e mod q",
@@ -463,6 +520,8 @@ def main() -> None:
     frontend_wide_path = GENERATED / "tile4_frontend_wide.inc"
     basemul_path = GENERATED / "tile4_basemul_constants.h"
     basemul_asm_path = GENERATED / "tile4_basemul_constants.inc"
+    private_inverse_asm_path = GENERATED / "tile4_private_inverse_constants.inc"
+    private_inverse_range_path = GENERATED / "tile4_private_inverse_range.json"
     scale_path = GENERATED / "tile4_scale_contract.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
@@ -472,6 +531,8 @@ def main() -> None:
     emit_frontend_wide(frontend_wide_path)
     emit_basemul_header(basemul_path)
     emit_basemul_asm(basemul_asm_path)
+    emit_private_inverse_asm(private_inverse_asm_path)
+    emit_private_inverse_ranges(private_inverse_range_path)
     emit_scale_contract(scale_path)
 
     expected_omega = [
@@ -517,6 +578,10 @@ def main() -> None:
         "basemul_sha256": hashlib.sha256(basemul_path.read_bytes()).hexdigest(),
         "basemul_asm_sha256": hashlib.sha256(
             basemul_asm_path.read_bytes()).hexdigest(),
+        "private_inverse_asm_sha256": hashlib.sha256(
+            private_inverse_asm_path.read_bytes()).hexdigest(),
+        "private_inverse_range_sha256": hashlib.sha256(
+            private_inverse_range_path.read_bytes()).hexdigest(),
         "scale_contract_sha256": hashlib.sha256(
             scale_path.read_bytes()).hexdigest(),
     }

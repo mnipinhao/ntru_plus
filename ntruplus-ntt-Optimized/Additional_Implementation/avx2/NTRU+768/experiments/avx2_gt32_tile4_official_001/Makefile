@@ -11,9 +11,11 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_manifest.json generated/tile4_range_metadata.json \
 	generated/tile4_frontend_constants.h generated/tile4_frontend_fixed.inc \
 	generated/tile4_frontend_wide.inc generated/tile4_basemul_constants.h \
-	generated/tile4_basemul_constants.inc generated/tile4_scale_contract.json
+	generated/tile4_basemul_constants.inc generated/tile4_scale_contract.json \
+	generated/tile4_private_inverse_constants.inc \
+	generated/tile4_private_inverse_range.json
 SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c src/tile4_asm.S \
-	src/tile4_basemul_asm.S \
+	src/tile4_basemul_asm.S src/tile4_inverse_private_asm.S \
 	tests/test_tile4.c
 
 .PHONY: all generate check test sanitize audit bench-short bench-official-short \
@@ -32,7 +34,8 @@ test: check
 sanitize: generate $(BUILD)/test_tile4_sanitize
 	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_tile4_sanitize
 
-audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o
+audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
+		$(BUILD)/tile4_inverse_private_asm.o
 	objdump -drwC -Mintel $(BUILD)/tile4_asm.o > $(BUILD)/tile4_asm.dump
 	! objdump -drwC -Mintel --disassemble=gt32_tile4_forward_tile_asm \
 		$(BUILD)/tile4_asm.o | rg -n '\[(?:r|e)?sp[+\-]'
@@ -46,6 +49,10 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
 		rg 'gt32_tile4_basemul_(b2|general_b2|scale_soa_private)_asm'
+	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
+	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
+		rg 'gt32_tile4_inverse_soa_private(_parallel)?_asm'
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000
@@ -90,6 +97,10 @@ $(BUILD)/tile4_basemul_asm.o: src/tile4_basemul_asm.S \
 		generated/tile4_basemul_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_basemul_asm.S
 
+$(BUILD)/tile4_inverse_private_asm.o: src/tile4_inverse_private_asm.S \
+		generated/tile4_private_inverse_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ src/tile4_inverse_private_asm.S
+
 $(BUILD)/bench_forward_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_asm.S bench/bench_forward_short.c $(GEN) \
 		$(FROZEN)/gt_ntt_frontend_stage12_soa.S \
@@ -111,9 +122,11 @@ $(BUILD)/bench_official_short: src/tile4_ref.c src/tile4_frontend.c \
 		$(OFFICIAL)/asm/ntt.s $(OFFICIAL)/consts.c
 
 $(BUILD)/bench_inverse_short: src/tile4_ref.c src/tile4_frontend.c \
-		src/tile4_asm.S bench/bench_inverse_short.c $(GEN) | $(BUILD)
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c $(GEN) | $(BUILD)
 	$(CC) $(CFLAGS) -Isrc -o $@ src/tile4_ref.c src/tile4_frontend.c \
-		src/tile4_asm.S bench/bench_inverse_short.c
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c
 
 $(BUILD)/bench_basemul_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_basemul.c src/tile4_asm.S bench/bench_basemul_short.c $(GEN) \

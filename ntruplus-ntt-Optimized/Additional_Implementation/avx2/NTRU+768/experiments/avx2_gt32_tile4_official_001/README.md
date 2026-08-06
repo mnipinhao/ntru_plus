@@ -193,3 +193,24 @@ The direct-layout scalar `gt32_tile4_inverse_soa_private_ref` is exact with the
 TILE4 inverse after benchmark-excluded conversion and is the oracle for I2.
 The next D2a step is an assembly inverse NTT32 that consumes these planes; no
 claim is made by adding its cost to an incompatible Frozen inverse layout.
+
+## Gate D2a I2 hard stop
+
+The executable D0 baseline is B2 AoS plus I1 AoS, not the incompatible sum of
+B2-S and I1.  In the current short paired run D0 measured 660.577 TSC.  The
+I2 hard gate was therefore fixed at 272.019 TSC from the earlier producer
+measurement; 228.541 TSC was the strong gate.
+
+Two exact private-layout I2 implementations were measured.  The serial
+coefficient implementation measured 468.802 TSC.  The intended eight-data-YMM
+version removes the coefficient loop, shares stage constants, and measured
+361.092 TSC, but still exceeds the hard gate.  The executable B2-S plus
+parallel-I2 pipeline measured 757.904 TSC, regressing 97.327 TSC from D0.
+
+The private Q permutation makes the first two inverse stages pair-pack well,
+but maps the next two Montgomery stages to lane-wise shuffle butterflies;
+their arithmetic/shuffle DAG is materially larger than I1's fully occupied
+cross-register chains.  Generator-derived range propagation ends at absolute
+bound 12150, all exact tests pass, and neither assembly symbol spills.  This
+is therefore a performance hard stop rather than a correctness, scale, range,
+or ABI failure.  D2b tail work is not started; Gate C remains independent.
