@@ -1,0 +1,81 @@
+{
+  "candidate": "stage4-packed-to-stage5-to-private-planes",
+  "baseline_boundary": "stage4 S/D -> two vperm2i128 reconstruct -> two qword unpacks",
+  "candidate_boundary": "stage4 S/D -> two direct qword unpacks",
+  "stage5_direct_qword_order": [
+    0,
+    2,
+    1,
+    3
+  ],
+  "stage5_direct_word_order": [
+    0,
+    1,
+    2,
+    3,
+    8,
+    9,
+    10,
+    11,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14,
+    15
+  ],
+  "plane_lane_permutation_direct_position_to_standard_position": [
+    0,
+    8,
+    2,
+    10,
+    4,
+    12,
+    6,
+    14,
+    1,
+    9,
+    3,
+    11,
+    5,
+    13,
+    7,
+    15
+  ],
+  "permutation_interpretation": "swap physical lane-index bits 0 and 3",
+  "crosses_128_bit_lane": true,
+  "lanes_crossing_128_bit_halves_per_plane": 8,
+  "allowed_network_search": {
+    "stage5_factor_and_qinv_reorder": "absorbs arithmetic lane order",
+    "lambda_reorder": "absorbs quartic modulus lane order",
+    "vpshufb_mask": "cannot cross 128-bit halves",
+    "dword_and_qword_unpacks": "cannot cross 128-bit halves",
+    "whole_plane_store_order": "cannot change lanes within a plane",
+    "solution_with_at_most_current_12_plane_shuffles": false
+  },
+  "inverse_consumer": {
+    "lambda_constants_only": "sufficient for BM arithmetic",
+    "inverse_twiddle_constants_only": false,
+    "reason": "twiddle constants cannot change the inverse butterfly incidence graph after the bit-0/bit-3 leaf permutation",
+    "required_change": "cross-lane data repair or a separately generated inverse butterfly topology"
+  },
+  "static_shuffle_accounting_per_tile": {
+    "removed_stage4_reconstruct_shuffles": 8,
+    "minimum_cross_lane_repairs_for_standard_consumer": 8,
+    "best_proved_net_shuffle_saving": 0
+  },
+  "necessary_conditions": {
+    "delete_at_least_two_reconstruct_shuffles_per_pair": true,
+    "no_new_montgomery_multiplication": true,
+    "no_new_memory_materialization": true,
+    "at_most_two_live_stage5_pairs": true,
+    "no_extra_resident_mask": true,
+    "plane_conversion_at_most_12_shuffles": false,
+    "private_leaf_permutation_absorbed_by_constants_only": false
+  },
+  "assembly_emitted": false,
+  "decision": "stop-before-assembly-permutation-debt-erases-saving",
+  "reopen_condition": "co-design a new inverse butterfly topology for the bit-0/bit-3 leaf order and gate it as a separate forward-plus-inverse ABI"
+}

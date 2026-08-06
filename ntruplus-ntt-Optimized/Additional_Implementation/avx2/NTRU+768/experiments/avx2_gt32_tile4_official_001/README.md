@@ -602,3 +602,31 @@ This fails both predeclared gates, so stage-5 instruction-order tuning stops.
 The S5x4 symbol remains benchmark-only and is not used as the starting point
 for the stage-4/stage-5 combined-layout experiment.  Results are in
 `results/tile4-s5-schedule-short.json`.
+
+### Stage-4 to stage-5 to planes layout gate
+
+The generator symbolically tracks every 16-bit lane from stage-4 S/D state,
+through standard reconstruct or direct qword unpack, and through the complete
+12-shuffle private-plane network.  Direct consumption changes stage-5 qword
+order from `[0,1,2,3]` to `[0,2,1,3]`.  After plane conversion, every
+coefficient plane has the same lane permutation:
+
+```text
+[0,8,2,10,4,12,6,14,1,9,3,11,5,13,7,15]
+```
+
+This is a swap of physical lane-index bits 0 and 3.  It moves eight of sixteen
+lanes across the 128-bit AVX2 boundary.  Reordered stage-5 tables can preserve
+the arithmetic, and reordered lambda tables can preserve each quartic
+modulus, but `vpshufb`, the existing dword/qword unpack topology, and whole-
+plane store order cannot cross that boundary.  Twiddle constants alone also
+cannot change the inverse butterfly incidence graph.
+
+The candidate deletes eight stage-4 reconstruct shuffles per tile, but a
+standard downstream consumer needs at least one cross-lane repair for each of
+the eight output plane vectors.  The proved best net shuffle saving is
+therefore zero, and no solution exists within the current 12-shuffle plane
+network.  Assembly is not emitted.  Reopening this idea requires a separately
+generated inverse topology whose native leaf order already swaps bits 0 and
+3; that is a new forward-plus-inverse private ABI experiment rather than a
+forward-tail constant rewrite.  See `generated/tile4_s45_layout_gate.json`.

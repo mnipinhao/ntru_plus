@@ -1532,6 +1532,137 @@ def emit_a2f_dag(path: Path) -> None:
     path.write_text(json.dumps(result, indent=2) + "\n")
 
 
+def emit_s45_layout_gate(path: Path) -> None:
+    """Prove whether stage-4 packed state can reach standard BM planes free."""
+
+    def unpack(a: list[str], b: list[str], unit: int,
+               high: bool) -> list[str]:
+        result = []
+        half_units = 8 // unit
+        start_unit = half_units // 2 if high else 0
+        for half in (0, 8):
+            for index in range(start_unit, start_unit + half_units // 2):
+                start = half + index * unit
+                result.extend(a[start:start + unit])
+                result.extend(b[start:start + unit])
+        return result
+
+    def plane_pshufb(value: list[str]) -> list[str]:
+        order = [0, 4, 1, 5, 2, 6, 3, 7]
+        return [value[half + index]
+                for half in (0, 8) for index in order]
+
+    def packed_to_planes(values: list[list[str]]) -> list[list[str]]:
+        shuffled = [plane_pshufb(value) for value in values]
+        lo02 = unpack(shuffled[0], shuffled[2], 2, False)
+        hi02 = unpack(shuffled[0], shuffled[2], 2, True)
+        lo13 = unpack(shuffled[1], shuffled[3], 2, False)
+        hi13 = unpack(shuffled[1], shuffled[3], 2, True)
+        return [
+            unpack(lo02, lo13, 4, False),
+            unpack(lo02, lo13, 4, True),
+            unpack(hi02, hi13, 4, False),
+            unpack(hi02, hi13, 4, True),
+        ]
+
+    # Directly unpacking stage-4 S=[S0|S1] and D=[D0|D1] changes
+    # stage-5 lane order from [S0,S1,D0,D1] to [S0,D0,S1,D1].
+    direct_qword_order = [0, 2, 1, 3]
+    direct_word_order = [
+        word for qword in direct_qword_order
+        for word in range(4 * qword, 4 * qword + 4)
+    ]
+    standard_packed = [
+        [f"packed{vector}.word{word}" for word in range(16)]
+        for vector in range(4)
+    ]
+    direct_packed = [
+        [value[index] for index in direct_word_order]
+        for value in standard_packed
+    ]
+    standard_planes = packed_to_planes(standard_packed)
+    direct_planes = packed_to_planes(direct_packed)
+    plane_permutations = []
+    for standard, direct in zip(standard_planes, direct_planes):
+        assert sorted(standard) == sorted(direct)
+        plane_permutations.append([standard.index(value) for value in direct])
+    assert all(permutation == plane_permutations[0]
+               for permutation in plane_permutations)
+    plane_permutation = plane_permutations[0]
+    expected_bit_swap = [
+        (index & 0x6) | ((index & 0x1) << 3) | ((index & 0x8) >> 3)
+        for index in range(16)
+    ]
+    assert plane_permutation == expected_bit_swap
+    cross_half_lanes = sum((index < 8) != (source < 8)
+                           for index, source in enumerate(plane_permutation))
+    assert cross_half_lanes == 8
+
+    removed_reconstruct_per_pair = 2
+    pairs_per_tile = 4
+    removed_reconstruct_per_tile = removed_reconstruct_per_pair * pairs_per_tile
+    plane_vectors_per_tile = 8
+    minimum_cross_lane_repairs = plane_vectors_per_tile
+    result = {
+        "candidate": "stage4-packed-to-stage5-to-private-planes",
+        "baseline_boundary": (
+            "stage4 S/D -> two vperm2i128 reconstruct -> two qword unpacks"
+        ),
+        "candidate_boundary": "stage4 S/D -> two direct qword unpacks",
+        "stage5_direct_qword_order": direct_qword_order,
+        "stage5_direct_word_order": direct_word_order,
+        "plane_lane_permutation_direct_position_to_standard_position":
+            plane_permutation,
+        "permutation_interpretation": "swap physical lane-index bits 0 and 3",
+        "crosses_128_bit_lane": True,
+        "lanes_crossing_128_bit_halves_per_plane": cross_half_lanes,
+        "allowed_network_search": {
+            "stage5_factor_and_qinv_reorder": "absorbs arithmetic lane order",
+            "lambda_reorder": "absorbs quartic modulus lane order",
+            "vpshufb_mask": "cannot cross 128-bit halves",
+            "dword_and_qword_unpacks": "cannot cross 128-bit halves",
+            "whole_plane_store_order": "cannot change lanes within a plane",
+            "solution_with_at_most_current_12_plane_shuffles": False,
+        },
+        "inverse_consumer": {
+            "lambda_constants_only": "sufficient for BM arithmetic",
+            "inverse_twiddle_constants_only": False,
+            "reason": (
+                "twiddle constants cannot change the inverse butterfly "
+                "incidence graph after the bit-0/bit-3 leaf permutation"
+            ),
+            "required_change": (
+                "cross-lane data repair or a separately generated inverse "
+                "butterfly topology"
+            ),
+        },
+        "static_shuffle_accounting_per_tile": {
+            "removed_stage4_reconstruct_shuffles": removed_reconstruct_per_tile,
+            "minimum_cross_lane_repairs_for_standard_consumer":
+                minimum_cross_lane_repairs,
+            "best_proved_net_shuffle_saving": (
+                removed_reconstruct_per_tile - minimum_cross_lane_repairs
+            ),
+        },
+        "necessary_conditions": {
+            "delete_at_least_two_reconstruct_shuffles_per_pair": True,
+            "no_new_montgomery_multiplication": True,
+            "no_new_memory_materialization": True,
+            "at_most_two_live_stage5_pairs": True,
+            "no_extra_resident_mask": True,
+            "plane_conversion_at_most_12_shuffles": False,
+            "private_leaf_permutation_absorbed_by_constants_only": False,
+        },
+        "assembly_emitted": False,
+        "decision": "stop-before-assembly-permutation-debt-erases-saving",
+        "reopen_condition": (
+            "co-design a new inverse butterfly topology for the bit-0/bit-3 "
+            "leaf order and gate it as a separate forward-plus-inverse ABI"
+        ),
+    }
+    path.write_text(json.dumps(result, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1607,6 +1738,7 @@ def main() -> None:
     direct_soa_plan_path = GENERATED / "tile4_frombytes_direct_soa_plan.json"
     wide_aos_range_path = GENERATED / "tile4_wide_aos_range.json"
     a2f_dag_path = GENERATED / "tile4_a2f_dag.json"
+    s45_layout_path = GENERATED / "tile4_s45_layout_gate.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1627,6 +1759,7 @@ def main() -> None:
     emit_direct_soa_plan(direct_soa_plan_path)
     emit_wide_aos_ranges(wide_aos_range_path)
     emit_a2f_dag(a2f_dag_path)
+    emit_s45_layout_gate(s45_layout_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1697,6 +1830,8 @@ def main() -> None:
             wide_aos_range_path.read_bytes()).hexdigest(),
         "a2f_dag_sha256": hashlib.sha256(
             a2f_dag_path.read_bytes()).hexdigest(),
+        "s45_layout_gate_sha256": hashlib.sha256(
+            s45_layout_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

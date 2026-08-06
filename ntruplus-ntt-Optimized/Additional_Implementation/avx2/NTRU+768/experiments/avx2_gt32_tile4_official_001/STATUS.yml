@@ -803,3 +803,34 @@ private_forward_stage5_destructive_x4_gate:
   interpretation: deleted-moves-do-not-offset-longer-live-ranges-and-batched-operation-class-schedule
   production_integration: false
   artifact: results/tile4-s5-schedule-short.json
+
+stage4_stage5_private_planes_layout_gate:
+  result: symbolic-proof-pass-assembly-hard-stop
+  candidate: stage4-packed-SD-direct-to-stage5-to-private-planes
+  mapping:
+    standard_stage5_qword_order: [0, 1, 2, 3]
+    direct_stage5_qword_order: [0, 2, 1, 3]
+    plane_lane_permutation: [0, 8, 2, 10, 4, 12, 6, 14, 1, 9, 3, 11, 5, 13, 7, 15]
+    interpretation: swap-physical-lane-index-bits-0-and-3
+    lanes_crossing_128_bit_halves_per_plane: 8
+  absorption:
+    stage5_factor_qinv_tables: sufficient-for-arithmetic
+    lambda_tables: sufficient-for-quartic-modulus
+    vpshufb_mask: insufficient-cross-128-bit
+    whole_plane_store_order: insufficient-within-plane
+    inverse_twiddle_constants: insufficient-to-change-butterfly-incidence
+  static_shuffle_accounting_per_tile:
+    removed_stage4_reconstruct_shuffles: 8
+    minimum_standard-consumer_cross_lane_repairs: 8
+    best_proved_net_shuffle_saving: 0
+  necessary_conditions:
+    no_new_montgomery: pass
+    no_new_materialization: pass
+    preserve_two_pair_cadence: pass
+    no_extra_resident_mask: pass
+    plane_conversion_at_most_12_shuffles: fail
+    leaf_permutation_constants_only: fail
+  assembly_emitted: false
+  decision: stop-before-assembly-permutation-debt-erases-saving
+  artifact: generated/tile4_s45_layout_gate.json
+  reopen_condition: separately-generated-forward-plus-inverse-private-ABI-native-to-bit0-bit3-swapped-leaf-order
