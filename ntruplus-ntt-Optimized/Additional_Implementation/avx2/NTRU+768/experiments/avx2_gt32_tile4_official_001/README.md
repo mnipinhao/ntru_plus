@@ -389,3 +389,28 @@ integration remains stopped until a generated shuffle network writes private
 SoA directly from unpack registers, or proves that this permutation cannot fit
 under the same-run mixed-BM saving.  The selected short samples are in
 `results/tile4-mixed-frombytes-short.json`.
+
+### Direct private-SoA static network gate
+
+The generator now expands the most plausible direct network class before any
+assembly is written.  It symbolically applies the same four-vector transpose
+used by the BM, maps every target private-SoA lane back to an unpacked source
+lane, and finds the minimum number of source-half selections in a network made
+from `vperm2i128`, zeroing `vpshufb`, and `vpor`.  Masks are shared across the
+four coefficient planes; dynamic operations are not.
+
+This class fails decisively.  The global mod-3 Good--Thomas permutation makes
+each coefficient plane lose the qword locality that makes V1 cheap.  The exact
+plan needs 72 distinct masks applied four times: 288 `vpshufb`, 288 cross-half
+`vperm2i128`, 192 accumulator ORs, 48 memory-merge ORs, 96 wide stores, and 144
+source-transpose shuffles.  Its 1056 estimated layout instructions exceed the
+selected AoS-materialization control's 480 by 576 instructions.
+
+No assembly is emitted for this rejected class.  This is not a proof that
+every conceivable AVX2 direct decoder is impossible; it is a proof-backed
+stop for the suggested `permute halves -> pshufb -> blend` shape.  A continuing
+V2 attempt must preserve quartic qword SIMD utilization across the mod-3
+permutation, or co-design a different private consumer ABI.  Repeating this
+coefficient-plane network in hand assembly is not justified.  The full lane
+routes and static accounting are recorded in
+`generated/tile4_frombytes_direct_soa_plan.json`.

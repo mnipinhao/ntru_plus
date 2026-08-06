@@ -23,6 +23,7 @@ implemented:
   - correctness-first constant-work private frombytes layouts and rejection contract
   - Official-shaped AVX2 12-bit unpack with generated fixed serialized-to-TILE4 qword routing
   - paired two-block AoS-to-private-SoA transpose control for the P1-V break-even gate
+  - exact static planner for coefficient-plane half-select plus vpshufb direct-SoA networks
   - mixed private-SoA by TILE4-AoS basemul assembly without the a-input transpose
   - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
   - native TILE4 B2 register-transpose quartic assembly
@@ -49,7 +50,7 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
-  - replace the AoS-materializing V2 control with a true unpack-register-to-private-SoA schedule
+  - find a direct-SoA network outside the rejected coefficient-plane half-select class, or stop P1 integration
   - P2 hinv SoA to general-BM SoA to specialized-tobytes remains gated by P1 unpack cost
   - real private-decap caller integration and deterministic byte-exact KEM gate
   - caller-native adversarial search approaching the proved c2 inverse bound
@@ -468,3 +469,23 @@ mixed_frombytes_p1v_gate:
     - duplicated-inline-unpack-did-not-repay-code-size
   artifact: results/tile4-mixed-frombytes-short.json
   next_gate: generated-direct-private-soa-shuffle-network-or-stop-p1-integration
+
+mixed_frombytes_v2_direct_static_gate:
+  result: natural-direct-network-class-rejected-before-assembly
+  network_class: coefficient-plane-transpose-plus-half-select-plus-vpshufb
+  target: private-bm-soa-e0
+  source_transpose_shuffles: 144
+  unique_masks: 72
+  applied_routes_four_coefficients: 288
+  vperm2i128: 288
+  vpshufb: 288
+  accumulator_vpor: 192
+  memory_merge_vpor: 48
+  wide_stores: 96
+  estimated_direct_layout_instructions: 1056
+  selected_aos_control_layout_instructions: 480
+  estimated_regression_instructions: 576
+  reason: global-mod3-permutation-destroys-coefficient-plane-source-locality-and-every-route-crosses-128-bit-halves
+  assembly_generated: false
+  artifact: generated/tile4_frombytes_direct_soa_plan.json
+  decision: do-not-benchmark-this-network-class

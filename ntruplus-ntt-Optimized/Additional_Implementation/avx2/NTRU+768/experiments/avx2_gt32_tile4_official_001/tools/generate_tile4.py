@@ -1087,6 +1087,192 @@ def emit_frombytes_aos_stores(path: Path) -> None:
             output.write("\t.endm\n\n")
 
 
+def symbolic_unpack(left: list[int], right: list[int], unit: int,
+                    high: bool) -> list[int]:
+    """Model one AVX2 lane-local unpack in units of int16 words."""
+    result = []
+    lane_words = 8
+    for lane in range(2):
+        a = left[lane * lane_words:(lane + 1) * lane_words]
+        b = right[lane * lane_words:(lane + 1) * lane_words]
+        units = lane_words // unit
+        first = (units // 2 if high else 0) * unit
+        last = first + (units // 2) * unit
+        for offset in range(first, last, unit):
+            result.extend(a[offset:offset + unit])
+            result.extend(b[offset:offset + unit])
+    assert len(result) == 16
+    return result
+
+
+def symbolic_tile4_transpose(inputs: list[list[int]]) -> list[list[int]]:
+    assert len(inputs) == 4 and all(len(vector) == 16 for vector in inputs)
+    t0 = symbolic_unpack(inputs[0], inputs[1], 1, False)
+    t1 = symbolic_unpack(inputs[0], inputs[1], 1, True)
+    t2 = symbolic_unpack(inputs[2], inputs[3], 1, False)
+    t3 = symbolic_unpack(inputs[2], inputs[3], 1, True)
+    s0 = symbolic_unpack(t0, t2, 2, False)
+    s1 = symbolic_unpack(t0, t2, 2, True)
+    s2 = symbolic_unpack(t1, t3, 2, False)
+    s3 = symbolic_unpack(t1, t3, 2, True)
+    return [
+        symbolic_unpack(s0, s2, 4, False),
+        symbolic_unpack(s0, s2, 4, True),
+        symbolic_unpack(s1, s3, 4, False),
+        symbolic_unpack(s1, s3, 4, True),
+    ]
+
+
+def emit_direct_soa_plan(path: Path) -> None:
+    """Cost the natural half-select + vpshufb direct-SoA network.
+
+    This is an exact minimum inside this network class: unpacked quartics are
+    first transposed into coefficient planes, then each source 128-bit half is
+    selected at most once per target half and routed with a zeroing vpshufb.
+    The artifact is a static gate; assembly is generated only if this class is
+    competitive with the selected AoS-materialization control.
+    """
+    _, _, records = serialized_mappings()
+    chunks_by_group: dict[int, set[int]] = {}
+    for record in records:
+        chunks_by_group.setdefault(record["bm_soa_group"], set()).add(
+            record["official_word"] // 128)
+
+    plan = []
+    unique_masks = 0
+    applied_routes = 0
+    permutes = 0
+    shuffles = 0
+    accumulator_ors = 0
+    stores = 0
+    memory_merge_ors = 0
+    for chunk in range(6):
+        planes = []
+        for half in range(2):
+            source_vectors = [
+                list(range(128 * chunk + 16 * (4 * half + vector),
+                           128 * chunk + 16 * (4 * half + vector + 1)))
+                for vector in range(4)
+            ]
+            planes.append(symbolic_tile4_transpose(source_vectors))
+        groups = sorted({
+            record["bm_soa_group"] for record in records
+            if record["official_word"] // 128 == chunk
+        })
+        chunk_record = {"chunk": chunk, "groups": []}
+        for group in groups:
+            locations = []
+            for destination_lane in range(16):
+                matches = [
+                    record for record in records
+                    if record["bm_soa_group"] == group
+                    and record["quartic_coefficient"] == 0
+                    and record["bm_soa_lane"] == destination_lane
+                    and record["official_word"] // 128 == chunk
+                ]
+                if not matches:
+                    continue
+                assert len(matches) == 1
+                official_word = matches[0]["official_word"]
+                found = []
+                for source_plane in range(2):
+                    if official_word in planes[source_plane][0]:
+                        found.append((source_plane,
+                                      planes[source_plane][0].index(official_word)))
+                assert len(found) == 1
+                locations.append((destination_lane, *found[0]))
+
+            routes = []
+            for source_plane in range(2):
+                source_locations = [location for location in locations
+                                    if location[1] == source_plane]
+                halves: dict[int, list[int]] = {}
+                for destination_lane, _, source_lane in source_locations:
+                    halves.setdefault(destination_lane // 8, []).append(
+                        source_lane // 8)
+                choices = {destination_half: sorted(set(values))
+                           for destination_half, values in halves.items()}
+                variants = max((len(values) for values in choices.values()),
+                               default=0)
+                for variant in range(variants):
+                    selected: dict[int, int] = {}
+                    for destination_half in range(2):
+                        values = choices.get(destination_half, [])
+                        if variant < len(values):
+                            selected[destination_half] = values[variant]
+                    # Choose unused halves to make the identity 0x10 free when
+                    # possible; otherwise the exact duplicated/swapped form is
+                    # recorded for vperm2i128.
+                    low = selected.get(0, 0)
+                    high = selected.get(1, 1)
+                    immediate = low | (high << 4)
+                    lane_map = []
+                    for destination_lane, _, source_lane in source_locations:
+                        destination_half = destination_lane // 8
+                        if selected.get(destination_half) == source_lane // 8:
+                            lane_map.append({
+                                "destination_lane": destination_lane,
+                                "source_lane": source_lane,
+                            })
+                    assert lane_map
+                    routes.append({
+                        "source_plane": source_plane,
+                        "perm2i128_imm": immediate,
+                        "identity_half_selection": immediate == 0x10,
+                        "lane_map": lane_map,
+                    })
+            covered = sorted(
+                lane["destination_lane"]
+                for route in routes for lane in route["lane_map"]
+            )
+            assert covered == sorted(location[0] for location in locations)
+            route_count = len(routes)
+            unique_masks += route_count
+            applied_routes += 4 * route_count
+            shuffles += 4 * route_count
+            permutes += 4 * sum(
+                not route["identity_half_selection"] for route in routes
+            )
+            accumulator_ors += 4 * (route_count - 1)
+            stores += 4
+            is_second = chunk == max(chunks_by_group[group])
+            memory_merge_ors += 4 * is_second
+            chunk_record["groups"].append({
+                "group": group,
+                "source_values": len(locations),
+                "second_chunk_merge": is_second,
+                "routes": routes,
+            })
+        plan.append(chunk_record)
+
+    source_transpose_shuffles = 6 * 2 * 12
+    direct_total = (source_transpose_shuffles + permutes + shuffles
+                    + accumulator_ors + stores + memory_merge_ors)
+    control_aos_scatter = 6 * 8 * 5
+    control_transpose = 6 * (8 + 24 + 8)
+    control_total = control_aos_scatter + control_transpose
+    metadata = {
+        "network_class": "coefficient-plane-transpose+half-select+vpshufb",
+        "status": "rejected-static-cost" if direct_total >= control_total
+                  else "eligible-for-assembly",
+        "target": "private BM SoA e=0",
+        "source_transpose_shuffles": source_transpose_shuffles,
+        "unique_vpshufb_masks": unique_masks,
+        "applied_routes_four_coefficients": applied_routes,
+        "vperm2i128": permutes,
+        "vpshufb": shuffles,
+        "accumulator_vpor": accumulator_ors,
+        "memory_merge_vpor": memory_merge_ors,
+        "wide_stores": stores,
+        "estimated_direct_instructions": direct_total,
+        "selected_control_instructions": control_total,
+        "estimated_instruction_delta": direct_total - control_total,
+        "gate": "generate assembly only when direct class beats control static cost",
+        "plan": plan,
+    }
+    path.write_text(json.dumps(metadata, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1159,6 +1345,7 @@ def main() -> None:
     serialized_header_path = GENERATED / "tile4_serialized_mapping.h"
     serialized_metadata_path = GENERATED / "tile4_serialized_mapping.json"
     frombytes_store_path = GENERATED / "tile4_frombytes_aos_stores.inc"
+    direct_soa_plan_path = GENERATED / "tile4_frombytes_direct_soa_plan.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1176,6 +1363,7 @@ def main() -> None:
     emit_scale_contract(scale_path)
     emit_serialized_mapping(serialized_header_path, serialized_metadata_path)
     emit_frombytes_aos_stores(frombytes_store_path)
+    emit_direct_soa_plan(direct_soa_plan_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1240,6 +1428,8 @@ def main() -> None:
             serialized_metadata_path.read_bytes()).hexdigest(),
         "frombytes_aos_stores_sha256": hashlib.sha256(
             frombytes_store_path.read_bytes()).hexdigest(),
+        "frombytes_direct_soa_plan_sha256": hashlib.sha256(
+            direct_soa_plan_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
