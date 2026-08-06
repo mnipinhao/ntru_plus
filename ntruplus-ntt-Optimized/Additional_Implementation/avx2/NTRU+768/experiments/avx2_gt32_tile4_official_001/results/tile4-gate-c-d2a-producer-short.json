@@ -1,0 +1,26 @@
+{
+  "benchmark_kind": "same-binary-directional-short",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "gate_c": {
+    "official_general_basemul_tsc": 331.988,
+    "tile4_general_e0_tsc": 444.477,
+    "delta_vs_official_tsc": 112.489,
+    "result": "kernel-contract-pass-caller-pending"
+  },
+  "gate_d2a": {
+    "tile4_scale_aos_e_minus1_tsc": 434.435,
+    "tile4_scale_private_soa_e_minus1_tsc": 390.957,
+    "producer_saving_tsc": 43.478,
+    "previous_i1_core_tsc": 228.541,
+    "updated_b2_plus_i1_baseline_tsc": 662.976,
+    "result": "producer-pass-i2-assembly-pending"
+  },
+  "correctness": {
+    "trials": 1000,
+    "general_e0": "mod-q vs independent e=-1 result converted by Mont(R^2)",
+    "private_producer": "exact vs B0 after benchmark-excluded conversion",
+    "private_inverse_oracle": "exact vs TILE4 scalar inverse"
+  },
+  "note": "short directional data only; no 100000-call promotion benchmark"
+}

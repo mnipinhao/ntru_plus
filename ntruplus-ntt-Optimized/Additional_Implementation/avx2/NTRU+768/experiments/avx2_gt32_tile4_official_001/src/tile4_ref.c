@@ -137,3 +137,31 @@ void gt32_tile4_inverse_all_ref(int16_t out[GT32_TILE4_POLY_WORDS],
 		gt32_tile4_inverse_tile_ref(out + tile * GT32_TILE4_WORDS,
 			in + tile * GT32_TILE4_WORDS);
 }
+
+void gt32_tile4_inverse_soa_private_ref(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS])
+{
+	static const uint8_t q_order[16] = {
+		0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15
+	};
+	uint8_t position[16];
+	for (unsigned lane = 0; lane < 16; lane++)
+		position[q_order[lane]] = (uint8_t)lane;
+	for (unsigned tile = 0; tile < GT32_TILE4_TILES; tile++) {
+		for (unsigned coefficient = 0; coefficient < 4; coefficient++) {
+			int16_t stream[32];
+			for (unsigned q = 0; q < 32; q++) {
+				const unsigned group = 2U * tile + q / 16U;
+				stream[q] = in[64U * group + 16U * coefficient
+					+ position[q & 15U]];
+			}
+			inverse_one_coefficient(stream);
+			for (unsigned q = 0; q < 32; q++) {
+				const unsigned group = 2U * tile + q / 16U;
+				out[64U * group + 16U * coefficient
+					+ position[q & 15U]] = stream[q];
+			}
+		}
+	}
+}

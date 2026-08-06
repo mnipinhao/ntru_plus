@@ -57,17 +57,43 @@
 	vpsubw   %ymm14, %ymm15, %ymm15
 	.endm
 
+	/* e=-1 times R^2 through Mont gives the general-ABI e=0 output. */
+	.macro TILE4_MONT_RSQ
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm15, %ymm13
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm15, %ymm14
+	vpmulhw %ymm0, %ymm13, %ymm13
+	vpsubw  %ymm13, %ymm14, %ymm15
+	.endm
+
+	.macro TILE4_OUTPUT_AOS
+	/* Four coefficient planes -> final native TILE4 output. */
+	vmovdqu   0(%rdi), %ymm1
+	vmovdqu  32(%rdi), %ymm2
+	vmovdqu  64(%rdi), %ymm3
+	vmovdqu  96(%rdi), %ymm4
+	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7,ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
+	/* Private consumer island keeps the four coefficient planes as stored. */
+	.macro TILE4_OUTPUT_SOA_PRIVATE
+	.endm
+
+	.macro TILE4_BASEMUL_FUNCTION name,finalizer,output
 	.p2align 5
-	.globl gt32_tile4_basemul_b2_asm
-	.type gt32_tile4_basemul_b2_asm,@function
-gt32_tile4_basemul_b2_asm:
+	.globl \name
+	.type \name,@function
+\name:
 	leaq .Ltile4_bm_lambda(%rip), %r8
 	leaq .Ltile4_bm_lambda_qinv(%rip), %r9
 	vmovdqa .Ltile4_bm_q(%rip), %ymm0
 	movl $12, %ecx
 
 	.p2align 5
-.Ltile4_bm_loop:
+.Ltile4_bm_loop\@:
 	/* b AoS -> b0..b3 in ymm9..ymm12. */
 	vmovdqu   0(%rdx), %ymm1
 	vmovdqu  32(%rdx), %ymm2
@@ -94,7 +120,7 @@ gt32_tile4_basemul_b2_asm:
 	TILE4_MONT_ADD   ymm4,ymm8,ymm10
 	TILE4_MONT_LAMBDA
 	TILE4_MONT_ADD   ymm1,ymm5,ymm9
-	TILE4_CENTER_RMINUS1
+	\finalizer
 	vmovdqu %ymm15, 0(%rdi)
 
 	/* c1 = a0*b1 + a1*b0 + lambda*(a2*b3 + a3*b2). */
@@ -103,7 +129,7 @@ gt32_tile4_basemul_b2_asm:
 	TILE4_MONT_LAMBDA
 	TILE4_MONT_ADD   ymm1,ymm5,ymm10
 	TILE4_MONT_ADD   ymm2,ymm6,ymm9
-	TILE4_CENTER_RMINUS1
+	\finalizer
 	vmovdqu %ymm15, 32(%rdi)
 
 	/* c2 = a0*b2 + a1*b1 + a2*b0 + lambda*a3*b3. */
@@ -112,7 +138,7 @@ gt32_tile4_basemul_b2_asm:
 	TILE4_MONT_ADD   ymm1,ymm5,ymm11
 	TILE4_MONT_ADD   ymm2,ymm6,ymm10
 	TILE4_MONT_ADD   ymm3,ymm7,ymm9
-	TILE4_CENTER_RMINUS1
+	\finalizer
 	vmovdqu %ymm15, 64(%rdi)
 
 	/* c3 = a0*b3 + a1*b2 + a2*b1 + a3*b0. */
@@ -120,19 +146,10 @@ gt32_tile4_basemul_b2_asm:
 	TILE4_MONT_ADD   ymm2,ymm6,ymm11
 	TILE4_MONT_ADD   ymm3,ymm7,ymm10
 	TILE4_MONT_ADD   ymm4,ymm8,ymm9
-	TILE4_CENTER_RMINUS1
+	\finalizer
 	vmovdqu %ymm15, 96(%rdi)
 
-	/* Four coefficient planes -> final native TILE4 output. */
-	vmovdqu   0(%rdi), %ymm1
-	vmovdqu  32(%rdi), %ymm2
-	vmovdqu  64(%rdi), %ymm3
-	vmovdqu  96(%rdi), %ymm4
-	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7,ymm8
-	vmovdqu %ymm5,   0(%rdi)
-	vmovdqu %ymm6,  32(%rdi)
-	vmovdqu %ymm7,  64(%rdi)
-	vmovdqu %ymm8,  96(%rdi)
+	\output
 
 	addq $128, %rsi
 	addq $128, %rdx
@@ -140,10 +157,18 @@ gt32_tile4_basemul_b2_asm:
 	addq $32, %r8
 	addq $32, %r9
 	decl %ecx
-	jne .Ltile4_bm_loop
+	jne .Ltile4_bm_loop\@
 	vzeroupper
 	ret
-	.size gt32_tile4_basemul_b2_asm,.-gt32_tile4_basemul_b2_asm
+	.size \name,.-\name
+	.endm
+
+	TILE4_BASEMUL_FUNCTION gt32_tile4_basemul_b2_asm, \
+		TILE4_CENTER_RMINUS1, TILE4_OUTPUT_AOS
+	TILE4_BASEMUL_FUNCTION gt32_tile4_basemul_scale_soa_private_asm, \
+		TILE4_CENTER_RMINUS1, TILE4_OUTPUT_SOA_PRIVATE
+	TILE4_BASEMUL_FUNCTION gt32_tile4_basemul_general_b2_asm, \
+		TILE4_MONT_RSQ, TILE4_OUTPUT_AOS
 
 	.section .rodata
 	.p2align 5
@@ -158,6 +183,14 @@ gt32_tile4_basemul_b2_asm:
 .Ltile4_bm_center10:
 	.rept 16
 	.short 10
+	.endr
+.Ltile4_bm_rsq:
+	.rept 16
+	.short 867
+	.endr
+.Ltile4_bm_rsq_qinv:
+	.rept 16
+	.short 2787
 	.endr
 
 #include "../generated/tile4_basemul_constants.inc"

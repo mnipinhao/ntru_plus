@@ -42,10 +42,10 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o
 		$(BUILD)/tile4_asm.dump
 	nm -g --defined-only $(BUILD)/tile4_asm.o | \
 		rg 'gt32_tile4_(frontend.*|forward.*|inverse.*)_asm'
-	! objdump -drwC -Mintel --disassemble=gt32_tile4_basemul_b2_asm \
-		$(BUILD)/tile4_basemul_asm.o | rg -n '\[(?:r|e)?sp[+\-]'
+	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_asm.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
-		rg 'gt32_tile4_basemul_b2_asm'
+		rg 'gt32_tile4_basemul_(b2|general_b2|scale_soa_private)_asm'
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000

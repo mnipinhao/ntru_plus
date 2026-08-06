@@ -71,6 +71,23 @@ static void check_basemul_scale(const int16_t *a, const int16_t *b,
 	}
 }
 
+static void private_soa_to_tile4(int16_t *out, const int16_t *in)
+{
+	static const uint8_t q_order[16] = {
+		0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15
+	};
+	uint8_t position[16];
+	for (unsigned lane = 0; lane < 16; lane++)
+		position[q_order[lane]] = (uint8_t)lane;
+	for (unsigned group = 0; group < 12; group++) {
+		for (unsigned q = 0; q < 16; q++) {
+			for (unsigned c = 0; c < 4; c++)
+				out[64U * group + 4U * q + c] =
+					in[64U * group + 16U * c + position[q]];
+		}
+	}
+}
+
 static void fail_at(const char *name, unsigned trial, size_t index,
 	int16_t expected, int16_t actual)
 {
@@ -161,6 +178,9 @@ int main(void)
 	int16_t full_ref[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t full_got[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t serial_got[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t private_soa[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t general_ref[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t private_inverse[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
@@ -169,6 +189,20 @@ int main(void)
 		compare_exact("basemul-b1", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_scale_soa_private_asm(private_soa, input, input);
+		private_soa_to_tile4(got, private_soa);
+		compare_exact("basemul-scale-private-soa", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_soa_private_ref(private_inverse, private_soa);
+		private_soa_to_tile4(got, private_inverse);
+		gt32_tile4_inverse_all_ref(general_ref, ref);
+		compare_exact("inverse-private-soa-ref", trial, general_ref, got,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_basemul_general_b2_asm(got, input, input);
+		for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++)
+			general_ref[i] = test_montgomery(ref[i], TEST_RSQ);
+		compare_mod_q("basemul-general-e0", trial, general_ref, got,
+			GT32_TILE4_POLY_WORDS);
 		gt32_tile4_basemul_b2_asm(got, input, input);
 		compare_exact("basemul-b2-asm", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);

@@ -339,8 +339,16 @@ def emit_scale_contract(path: Path) -> None:
              "r_exponent": 0},
             {"operation": "basemul-input-b", "layout": "tile4-physical-Q",
              "r_exponent": 0},
-            {"operation": "basemul-output", "layout": "tile4-physical-Q",
-             "r_exponent": -1},
+            {"operation": "basemul-general-output",
+             "layout": "tile4-physical-Q", "r_exponent": 0,
+             "legal_consumers": ["add", "sub", "tobytes"]},
+            {"operation": "basemul-scale-output",
+             "layout": "tile4-physical-Q", "r_exponent": -1,
+             "legal_consumers": ["inverse-tile4"]},
+            {"operation": "basemul-scale-private-output",
+             "layout": "tile4-private-coefficient-planes",
+             "r_exponent": -1,
+             "legal_consumers": ["inverse-soa-private"]},
             {"operation": "inverse-core-output", "layout": "tile4-natural-Q",
              "r_exponent": -1},
             {"operation": "final-output", "layout": "coefficient-order",
@@ -348,6 +356,13 @@ def emit_scale_contract(path: Path) -> None:
         ],
         "lambda_table": {"value": "lambda*R", "r_exponent": 1,
                          "physical_order": "tile=2*k3+branch,Q=0..31"},
+        "private_layout": {
+            "group": "2*tile+Q/16",
+            "word": "64*group+16*coefficient+position[Q%16]",
+            "q_order": [0, 4, 8, 12, 1, 5, 9, 13,
+                        2, 6, 10, 14, 3, 7, 11, 15],
+            "scope": "decap basemul_scale -> invntt_scale only",
+        },
     }, indent=2) + "\n")
 
 

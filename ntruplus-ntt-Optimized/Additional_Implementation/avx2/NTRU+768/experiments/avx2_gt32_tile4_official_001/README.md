@@ -173,3 +173,23 @@ stores four coefficient planes in its destination block before the inverse
 transpose.  The next experiment therefore fuses those planes directly into
 inverse stage 1, removing four stores, four reloads, and the inverse transpose
 rather than trying to schedule the rejected broadcast B1.
+
+## Split Gate C and Gate D contracts
+
+The ordinary and decapsulation-only basemul paths are now separate symbols.
+`gt32_tile4_basemul_general_b2_asm` fuses the Montgomery `R^2` finalizer and
+returns the common TILE4 AoS ABI at `e=0`; it is the only B2 variant eligible
+for later `add`, `sub`, or `tobytes` callers.  In the directional short run it
+measured 444.477 TSC versus Official at 331.988.  The arithmetic contract is
+correct, but Gate C remains open until the real keygen/encap/verification
+consumer chains are measured.
+
+`gt32_tile4_basemul_scale_soa_private_asm` is restricted to the decapsulation
+`basemul_scale -> invntt_scale` island.  It stops before the B2 output
+inverse-transpose, returns private coefficient planes at `e=-1`, and measured
+390.957 TSC versus 434.435 for the AoS scale result, saving 43.478 TSC.  Its
+layout and sole legal consumer are generated into `tile4_scale_contract.json`.
+The direct-layout scalar `gt32_tile4_inverse_soa_private_ref` is exact with the
+TILE4 inverse after benchmark-excluded conversion and is the oracle for I2.
+The next D2a step is an assembly inverse NTT32 that consumes these planes; no
+claim is made by adding its cost to an incompatible Frozen inverse layout.

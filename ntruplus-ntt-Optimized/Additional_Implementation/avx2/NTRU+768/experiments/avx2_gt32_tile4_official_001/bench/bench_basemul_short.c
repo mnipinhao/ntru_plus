@@ -63,6 +63,7 @@ int main(int argc, char **argv)
 	int16_t b[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t out[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	double official[20], frozen[20], b0[20], b1[20], b2[20];
+	double general[20], private_soa[20];
 	cpu_set_t cpuset;
 
 	CPU_ZERO(&cpuset);
@@ -80,6 +81,8 @@ int main(int argc, char **argv)
 	(void)measure(gt32_tile4_basemul_b0, out, a, b, 10);
 	(void)measure(gt32_tile4_basemul_b1, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_b2_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_general_b2_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_scale_soa_private_asm, out, a, b, 100);
 
 	for (unsigned sample = 0; sample < 20; sample++) {
 		if ((sample & 1U) == 0U) {
@@ -89,7 +92,17 @@ int main(int argc, char **argv)
 			b0[sample] = measure(gt32_tile4_basemul_b0, out, a, b, iterations);
 			b1[sample] = measure(gt32_tile4_basemul_b1, out, a, b, iterations);
 			b2[sample] = measure(gt32_tile4_basemul_b2_asm, out, a, b, iterations);
+			general[sample] = measure(gt32_tile4_basemul_general_b2_asm,
+				out, a, b, iterations);
+			private_soa[sample] = measure(
+				gt32_tile4_basemul_scale_soa_private_asm,
+				out, a, b, iterations);
 		} else {
+			private_soa[sample] = measure(
+				gt32_tile4_basemul_scale_soa_private_asm,
+				out, a, b, iterations);
+			general[sample] = measure(gt32_tile4_basemul_general_b2_asm,
+				out, a, b, iterations);
 			b2[sample] = measure(gt32_tile4_basemul_b2_asm, out, a, b, iterations);
 			b1[sample] = measure(gt32_tile4_basemul_b1, out, a, b, iterations);
 			b0[sample] = measure(gt32_tile4_basemul_b0, out, a, b, iterations);
@@ -104,11 +117,15 @@ int main(int argc, char **argv)
 	const double b0_median = median(b0);
 	const double b1_median = median(b1);
 	const double b2_median = median(b2);
+	const double general_median = median(general);
+	const double private_median = median(private_soa);
 	printf("iterations=%u samples=20 official=%.3f frozen_rminus1=%.3f "
 		"tile4_b0=%.3f tile4_b1=%.3f tile4_b2_asm=%.3f "
+		"general_e0=%.3f private_soa_e_minus1=%.3f "
 		"b2_vs_official=%.3f b2_vs_official_pct=%.3f sink=%llu\n",
 		iterations, official_median, frozen_median, b0_median, b1_median,
-		b2_median, b2_median - official_median,
+		b2_median, general_median, private_median,
+		b2_median - official_median,
 		100.0 * (b2_median / official_median - 1.0),
 		(unsigned long long)sink);
 	return 0;
