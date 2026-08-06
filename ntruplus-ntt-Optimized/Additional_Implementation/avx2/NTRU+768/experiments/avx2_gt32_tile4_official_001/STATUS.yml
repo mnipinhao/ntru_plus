@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-t-private-champion-near-parity-short
+status: gate-t9-isolated-private-near-parity-short
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -227,4 +227,26 @@ same_binary_full_chain_short:
   tile4_delta_percent: 1.080
   end_to_end_correctness: mod-q-equal-and-crepmod3-bit-exact
   decision: retain-private-champion-require-fixed-placement-caller-gate
+private_tail_microarchitecture_gate:
+  result: t9-isolated-selected-t10-rejected
+  benchmark_kind: short-directional-multiple-link-compositions
+  t5_specialized_prologue_inplace_tsc: 214.130
+  t6_dual_idft3_tsc: 215.344
+  t7_matrix_triple_tsc: 213.401
+  t8_blend_renamed_tsc: 213.796
+  t9_isolated_tsc: 214.651
+  t8_plus_official_crepmod3_tsc: 331.465
+  t10_fused_crepmod3_tsc: 338.487
+  ordering_caveat: t5-t9 differ below one tsc and reorder between launches
+  selection_reason: isolated-production-footprint-and-placement-control
+  isolated_function_bytes: 5578
+  ablation_object_text_rodata_bytes: 63058
+  isolated_object_text_rodata_bytes: 16714
+  full_chain_with_crepmod3:
+    official_tsc: 1831.771
+    tile4_t9_tsc: 1867.057
+    tile4_t10_tsc: 1868.883
+    t9_delta_tsc: 35.285
+    t9_delta_percent: 1.926
+  t10_decision: reject-fusion-does-not-repay-expanded-mod3-schedule
 promotion: false

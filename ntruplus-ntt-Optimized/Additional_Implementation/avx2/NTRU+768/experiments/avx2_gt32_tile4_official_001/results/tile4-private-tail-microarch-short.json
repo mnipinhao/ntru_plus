@@ -1,0 +1,30 @@
+{
+  "benchmark_kind": "short-directional-multiple-link-compositions",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "tail_tsc": {
+    "t5_specialized_inplace": 214.130,
+    "t6_dual_idft3": 215.344,
+    "t7_matrix_triple": 213.401,
+    "t8_blend_renamed": 213.796,
+    "t9_isolated": 214.651,
+    "t8_plus_official_crepmod3": 331.465,
+    "t10_fused_crepmod3": 338.487
+  },
+  "selection": "t9-isolated",
+  "selection_reason": "sub-TSC variants reorder between runs; choose isolated production footprint",
+  "code_size_bytes": {
+    "t9_function": 5578,
+    "ablation_object_text_rodata": 63058,
+    "isolated_object_text_rodata": 16714
+  },
+  "full_2f_b_i_crepmod3_tsc": {
+    "official": 1831.771,
+    "tile4_t9": 1867.057,
+    "tile4_t10": 1868.883,
+    "t9_delta": 35.285,
+    "t9_delta_percent": 1.926
+  },
+  "t10_decision": "rejected-performance-correctness-pass",
+  "caveat": "short gate only; code placement remains frontend sensitive"
+}

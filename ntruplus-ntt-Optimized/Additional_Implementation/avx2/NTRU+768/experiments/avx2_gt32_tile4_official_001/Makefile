@@ -41,7 +41,8 @@ sanitize: generate $(BUILD)/test_tile4_sanitize
 	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_tile4_sanitize
 
 audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
-		$(BUILD)/tile4_inverse_private_asm.o $(BUILD)/tile4_inverse_tail_asm.o
+		$(BUILD)/tile4_inverse_private_asm.o $(BUILD)/tile4_inverse_tail_asm.o \
+		$(BUILD)/tile4_inverse_tail_isolated.o
 	objdump -drwC -Mintel $(BUILD)/tile4_asm.o > $(BUILD)/tile4_asm.dump
 	! objdump -drwC -Mintel --disassemble=gt32_tile4_forward_tile_asm \
 		$(BUILD)/tile4_asm.o | rg -n '\[(?:r|e)?sp[+\-]'
@@ -62,7 +63,11 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_tail_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_tail_asm.o | \
-		rg 'gt32_tile4_inverse_tail_(asm_rminus1|t1_|t2_|t3_|t4_|champion_)'
+		rg 'gt32_tile4_inverse_tail_(asm_rminus1|t[1-8]_|t10_|champion_)'
+	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_tail_isolated.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
+	nm -g --defined-only $(BUILD)/tile4_inverse_tail_isolated.o | \
+		rg 'gt32_tile4_inverse_tail_t9_isolated_private_asm'
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000
@@ -86,14 +91,15 @@ $(BUILD):
 	mkdir -p $@
 
 $(BUILD)/test_tile4: $(SOURCES) src/tile4.h $(GEN) \
-		$(BUILD)/parent_ntt.o | $(BUILD)
-	$(CC) $(CFLAGS) -Werror -Isrc -o $@ $(SOURCES) $(BUILD)/parent_ntt.o
+		$(BUILD)/parent_ntt.o $(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ $(SOURCES) $(BUILD)/parent_ntt.o \
+		$(BUILD)/tile4_inverse_tail_isolated.o
 
 $(BUILD)/test_tile4_sanitize: $(SOURCES) src/tile4.h $(GEN) \
-		$(BUILD)/parent_ntt_sanitize.o | $(BUILD)
+		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
 	$(CC) $(CFLAGS) -O1 -fno-omit-frame-pointer \
 		-fsanitize=address,undefined -Isrc -o $@ $(SOURCES) \
-		$(BUILD)/parent_ntt_sanitize.o
+		$(BUILD)/parent_ntt_sanitize.o $(BUILD)/tile4_inverse_tail_isolated.o
 
 $(BUILD)/parent_ntt.o: $(REFERENCE) | $(BUILD)
 	$(CC) $(CFLAGS) -Wno-conversion -Wno-sign-conversion -c -o $@ $<
@@ -118,6 +124,10 @@ $(BUILD)/tile4_inverse_tail_asm.o: src/tile4_inverse_tail_asm.S \
 		generated/tile4_inverse_tail_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_inverse_tail_asm.S
 
+$(BUILD)/tile4_inverse_tail_isolated.o: src/tile4_inverse_tail_asm.S \
+		generated/tile4_inverse_tail_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -DTILE4_ISOLATED=1 -c -o $@ src/tile4_inverse_tail_asm.S
+
 $(BUILD)/bench_forward_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_asm.S bench/bench_forward_short.c $(GEN) \
 		$(FROZEN)/gt_ntt_frontend_stage12_soa.S \
@@ -141,11 +151,15 @@ $(BUILD)/bench_official_short: src/tile4_ref.c src/tile4_frontend.c \
 $(BUILD)/bench_inverse_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_inverse_tail.c \
 		src/tile4_inverse_tail_asm.S src/tile4_asm.S src/tile4_basemul_asm.S \
-		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c $(GEN) | $(BUILD)
+		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -Isrc -o $@ src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_inverse_tail.c \
 		src/tile4_inverse_tail_asm.S src/tile4_asm.S src/tile4_basemul_asm.S \
-		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c
+		src/tile4_inverse_private_asm.S bench/bench_inverse_short.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
+		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c
 
 $(BUILD)/bench_basemul_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_basemul.c src/tile4_asm.S bench/bench_basemul_short.c $(GEN) \
@@ -159,18 +173,22 @@ $(BUILD)/bench_basemul_short: src/tile4_ref.c src/tile4_frontend.c \
 
 $(BUILD)/bench_consumer_short: src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		src/tile4_basemul_asm.S bench/bench_consumer_short.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN_LAMBDA) \
 		$(FROZEN)/gt_invntt_soa.c \
 		$(FROZEN)/gt_invntt_fused_soa.S $(OFFICIAL)/asm/basemul.s \
 		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/asm/crepmod3.s \
 		$(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -DGT_HAVE_AVX2_ASM=1 -Isrc -I$(FROZEN) -I$(OFFICIAL) \
 		-o $@ src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		src/tile4_basemul_asm.S bench/bench_consumer_short.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN_LAMBDA) \
 		$(FROZEN)/gt_invntt_soa.c \
 		$(FROZEN)/gt_invntt_fused_soa.S $(OFFICIAL)/asm/basemul.s \
 		$(OFFICIAL)/asm/invntt.s $(OFFICIAL)/asm/ntt.s \
+		$(OFFICIAL)/asm/crepmod3.s \
 		$(OFFICIAL)/consts.c
 
 clean:

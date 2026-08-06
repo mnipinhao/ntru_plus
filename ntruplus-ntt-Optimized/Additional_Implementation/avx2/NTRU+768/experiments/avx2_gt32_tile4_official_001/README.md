@@ -269,3 +269,27 @@ output is checked mod q and after `crepmod3` before timing.  Official measured
 1.080% regression.  This is short directional evidence, not a formal parity
 claim; the next gate must control placement and use the real decapsulation
 caller.  See `results/tile4-private-tail-dag-short.json`.
+
+## Private tail microarchitecture and crepmod3 boundary
+
+T5 specializes the prologue, keeps `w/w_qinv` resident, overlaps center and
+Montgomery chains, and writes IDFT3 outputs in place.  T6 schedules both
+branches together; T7 batches six untwists, three corrections, and six final
+centers; T8 removes half of the blend-result moves.  All pass the complete
+mod-q and `crepmod3` differential suite.
+
+T5--T9 remain within roughly one TSC and reorder between short launches.  One
+run measured T5 214.130, T6 215.344, T7 213.401, T8 213.796, and isolated T9
+214.651 TSC.  There is no defensible speed winner.  T9 is selected because it
+exports only the production body: its function is 5578 bytes and its object
+including constants is 16714 bytes, versus 63058 bytes for the ablation
+object.
+
+T10 directly reduces the proved raw matrix output (absolute bound 4810) to
+ternary coefficients.  It is correct but not faster: standalone T8 plus
+Official `crepmod3` measured 331.465 TSC versus 338.487 fused.  In the final
+short full-chain composition, Official `2F+B+I+crepmod3` measured 1831.771,
+isolated T9 plus Official `crepmod3` 1867.057, and T10 1868.883.  T9 remains
+35.285 TSC or 1.926% behind Official.  T10 is a negative control; the next
+meaningful step is the real fixed-placement decapsulation caller, not more
+tail scheduling.  See `results/tile4-private-tail-microarch-short.json`.

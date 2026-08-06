@@ -364,6 +364,26 @@
 	.short -1728
 	.endr
 .p2align 5
+.Ltail_qp1_half:
+	.rept 16
+	.short 1729
+	.endr
+.p2align 5
+.Ltail_qm1_half:
+	.rept 16
+	.short 1728
+	.endr
+.p2align 5
+.Ltail_mod3_v:
+	.rept 16
+	.short 10923
+	.endr
+.p2align 5
+.Ltail_three:
+	.rept 16
+	.short 3
+	.endr
+.p2align 5
 .Ltail_w_factor:
 	.rept 16
 	.short -886

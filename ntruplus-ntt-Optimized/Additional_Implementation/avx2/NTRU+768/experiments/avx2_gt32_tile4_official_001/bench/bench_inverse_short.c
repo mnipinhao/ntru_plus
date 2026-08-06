@@ -11,6 +11,13 @@
 typedef void (*inverse_fn)(int16_t *, const int16_t *);
 typedef void (*basemul_fn)(int16_t *, const int16_t *, const int16_t *);
 static volatile uint64_t sink;
+void poly_crepmod3(int16_t *value);
+
+static void tail_t8_then_crepmod3(int16_t *out, const int16_t *in)
+{
+	gt32_tile4_inverse_tail_t8_renamed_private_asm(out, in);
+	poly_crepmod3(out);
+}
 
 static void full_inverse_candidate(int16_t *out, const int16_t *in)
 {
@@ -31,6 +38,13 @@ static void full_inverse_champion(int16_t *out, const int16_t *in)
 	int16_t scratch[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	gt32_tile4_inverse_all_pair_asm(scratch, in);
 	gt32_tile4_inverse_tail_champion_private_asm(out, scratch);
+}
+
+static void full_inverse_t10(int16_t *out, const int16_t *in)
+{
+	int16_t scratch[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	gt32_tile4_inverse_all_pair_asm(scratch, in);
+	gt32_tile4_inverse_tail_t10_crepmod3_asm(out, scratch);
 }
 
 static uint64_t start_tsc(void)
@@ -106,6 +120,9 @@ int main(int argc, char **argv)
 	double tail_asm[20];
 	double tail_t1[20], tail_t2[20], tail_t3[20], tail_t3_relaxed[20];
 	double tail_t4[20], tail_champion[20];
+	double tail_t5[20], tail_t6[20], tail_t7[20], tail_t8[20];
+	double tail_t8_crep[20], tail_t10[20], d0_full_t10[20];
+	double tail_t9[20];
 	double full_inverse[20];
 	double full_inverse_asm[20];
 	double d0_full[20];
@@ -182,6 +199,20 @@ int main(int argc, char **argv)
 			tail_champion[sample] = measure(
 				gt32_tile4_inverse_tail_champion_private_asm,
 				output, coefficients, iterations);
+			tail_t5[sample] = measure(gt32_tile4_inverse_tail_t5_private_asm,
+				output, coefficients, iterations);
+			tail_t6[sample] = measure(gt32_tile4_inverse_tail_t6_dual_private_asm,
+				output, coefficients, iterations);
+			tail_t7[sample] = measure(gt32_tile4_inverse_tail_t7_triple_private_asm,
+				output, coefficients, iterations);
+			tail_t8[sample] = measure(gt32_tile4_inverse_tail_t8_renamed_private_asm,
+				output, coefficients, iterations);
+			tail_t8_crep[sample] = measure(tail_t8_then_crepmod3,
+				output, coefficients, iterations);
+			tail_t10[sample] = measure(gt32_tile4_inverse_tail_t10_crepmod3_asm,
+				output, coefficients, iterations);
+			tail_t9[sample] = measure(gt32_tile4_inverse_tail_t9_isolated_private_asm,
+				output, coefficients, iterations);
 			full_inverse[sample] = measure(full_inverse_candidate,
 				output, scratch, iterations);
 			full_inverse_asm[sample] = measure(full_inverse_asm_candidate,
@@ -195,7 +226,13 @@ int main(int argc, char **argv)
 			d0_full_champion[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
 				full_inverse_champion, output, scratch,
 				frequency, frequency_b, iterations);
+			d0_full_t10[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_t10, output, scratch,
+				frequency, frequency_b, iterations);
 		} else {
+			d0_full_t10[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
+				full_inverse_t10, output, scratch,
+				frequency, frequency_b, iterations);
 			d0_full_champion[sample] = measure_pipeline(gt32_tile4_basemul_b2_asm,
 				full_inverse_champion, output, scratch,
 				frequency, frequency_b, iterations);
@@ -215,6 +252,20 @@ int main(int argc, char **argv)
 				output, coefficients, iterations);
 			tail_champion[sample] = measure(
 				gt32_tile4_inverse_tail_champion_private_asm,
+				output, coefficients, iterations);
+			tail_t6[sample] = measure(gt32_tile4_inverse_tail_t6_dual_private_asm,
+				output, coefficients, iterations);
+			tail_t7[sample] = measure(gt32_tile4_inverse_tail_t7_triple_private_asm,
+				output, coefficients, iterations);
+			tail_t8[sample] = measure(gt32_tile4_inverse_tail_t8_renamed_private_asm,
+				output, coefficients, iterations);
+			tail_t10[sample] = measure(gt32_tile4_inverse_tail_t10_crepmod3_asm,
+				output, coefficients, iterations);
+			tail_t9[sample] = measure(gt32_tile4_inverse_tail_t9_isolated_private_asm,
+				output, coefficients, iterations);
+			tail_t8_crep[sample] = measure(tail_t8_then_crepmod3,
+				output, coefficients, iterations);
+			tail_t5[sample] = measure(gt32_tile4_inverse_tail_t5_private_asm,
 				output, coefficients, iterations);
 			tail_t3_relaxed[sample] = measure(
 				gt32_tile4_inverse_tail_t3_relaxed_control_asm,
@@ -265,26 +316,37 @@ int main(int argc, char **argv)
 	const double tail_t3_relaxed_median = median(tail_t3_relaxed);
 	const double tail_t4_median = median(tail_t4);
 	const double tail_champion_median = median(tail_champion);
+	const double tail_t5_median = median(tail_t5);
+	const double tail_t6_median = median(tail_t6);
+	const double tail_t7_median = median(tail_t7);
+	const double tail_t8_median = median(tail_t8);
+	const double tail_t8_crep_median = median(tail_t8_crep);
+	const double tail_t10_median = median(tail_t10);
+	const double tail_t9_median = median(tail_t9);
 	const double full_inverse_median = median(full_inverse);
 	const double full_inverse_asm_median = median(full_inverse_asm);
 	const double d0_full_median = median(d0_full);
 	const double d0_full_asm_median = median(d0_full_asm);
 	const double d0_full_champion_median = median(d0_full_champion);
+	const double d0_full_t10_median = median(d0_full_t10);
 	printf("iterations=%u samples=20 inverse_i0=%.3f inverse_i1_pair=%.3f "
 		"inverse_i2_private=%.3f inverse_i2_parallel=%.3f "
 		"d0_b2_i1=%.3f d2_b2s_i2=%.3f d2_parallel=%.3f "
 		"tail=%.3f tail_asm=%.3f full_inverse=%.3f full_inverse_asm=%.3f "
 		"t1=%.3f t2=%.3f t3=%.3f t3_relaxed=%.3f t4=%.3f champion=%.3f "
+		"t5=%.3f t6=%.3f t7=%.3f t8=%.3f t9=%.3f t8_crep=%.3f t10=%.3f "
 		"d0_full=%.3f d0_full_asm=%.3f "
-		"d0_full_champion=%.3f "
+		"d0_full_champion=%.3f d0_full_t10=%.3f "
 		"d2_parallel_saving=%.3f saving=%.3f saving_pct=%.3f sink=%llu\n",
 		iterations, i0_median, i1_median, i2_median, i2_parallel_median,
 		d0_median, d2_median, d2_parallel_median, tail_median,
 		tail_asm_median, full_inverse_median, full_inverse_asm_median,
 		tail_t1_median, tail_t2_median, tail_t3_median,
 		tail_t3_relaxed_median, tail_t4_median,
-		tail_champion_median, d0_full_median, d0_full_asm_median,
-		d0_full_champion_median,
+		tail_champion_median, tail_t5_median, tail_t6_median, tail_t7_median,
+		tail_t8_median, tail_t9_median, tail_t8_crep_median, tail_t10_median,
+		d0_full_median, d0_full_asm_median,
+		d0_full_champion_median, d0_full_t10_median,
 		d0_median - d2_parallel_median, i0_median - i1_median,
 		100.0 * (1.0 - i1_median / i0_median),
 		(unsigned long long)sink);

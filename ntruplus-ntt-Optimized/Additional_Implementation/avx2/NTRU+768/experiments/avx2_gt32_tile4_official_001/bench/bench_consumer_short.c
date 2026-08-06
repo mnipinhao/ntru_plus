@@ -22,6 +22,7 @@ static volatile uint64_t sink;
 void poly_basemul_scale(int16_t *, const int16_t *, const int16_t *);
 void poly_invntt_scale(int16_t *);
 void poly_ntt(int16_t *);
+void poly_crepmod3(int16_t *);
 void gt_basemul_native_rminus1_c0lazy_asm_avx2(
 	int16_t *, const int16_t *, const int16_t *);
 void gt_invntt_soa_avx2_fused_asm(int16_t *, const int16_t *);
@@ -74,6 +75,38 @@ static void tile4_full_chain(int16_t *out, const int16_t *a,
 	gt32_tile4_basemul_b2_asm(product, work_a, work_b);
 	gt32_tile4_inverse_all_pair_asm(rows, product);
 	gt32_tile4_inverse_tail_champion_private_asm(out, rows);
+}
+
+static void official_full_chain_crep(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	official_full_chain(out, a, b);
+	poly_crepmod3(out);
+}
+
+static void tile4_full_chain_crep(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_b2_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+	poly_crepmod3(out);
+}
+
+static void tile4_full_chain_t10(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	memcpy(work_a, a, sizeof(work_a));
+	memcpy(work_b, b, sizeof(work_b));
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_a, work_a);
+	gt32_tile4_forward_full_wide_raw_pair_align64_asm(work_b, work_b);
+	gt32_tile4_basemul_b2_asm(product, work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t10_crepmod3_asm(out, rows);
 }
 
 static uint64_t ticks(void)
@@ -140,6 +173,7 @@ int main(int argc, char **argv)
 	int16_t tile4_result[WORDS] __attribute__((aligned(32)));
 	double official[SAMPLES], frozen[SAMPLES], tile4[SAMPLES], private[SAMPLES];
 	double official_full[SAMPLES], tile4_full[SAMPLES];
+	double official_crep[SAMPLES], tile4_crep[SAMPLES], tile4_t10[SAMPLES];
 	cpu_set_t set;
 	CPU_ZERO(&set);
 	CPU_SET(1, &set);
@@ -159,6 +193,14 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
+	official_full_chain_crep(official_result, a, b);
+	tile4_full_chain_t10(tile4_result, a, b);
+	for (unsigned i = 0; i < WORDS; i++) {
+		if (official_result[i] != tile4_result[i]) {
+			fprintf(stderr, "full-chain crep differential failed at %u\n", i);
+			return 1;
+		}
+	}
 	for (unsigned warm = 0; warm < 2; warm++) {
 		for (unsigned i = 0; i < 32; i++) {
 			official_consumer(out, a, b);
@@ -167,6 +209,9 @@ int main(int argc, char **argv)
 			tile4_private_consumer(out, a, b);
 			official_full_chain(out, a, b);
 			tile4_full_chain(out, a, b);
+			official_full_chain_crep(out, a, b);
+			tile4_full_chain_crep(out, a, b);
+			tile4_full_chain_t10(out, a, b);
 		}
 	}
 	for (unsigned sample = 0; sample < SAMPLES; sample++) {
@@ -177,7 +222,15 @@ int main(int argc, char **argv)
 			private[sample] = run(tile4_private_consumer, out, a, b, iterations);
 			official_full[sample] = run(official_full_chain, out, a, b, iterations);
 			tile4_full[sample] = run(tile4_full_chain, out, a, b, iterations);
+			official_crep[sample] = run(official_full_chain_crep, out, a, b,
+				iterations);
+			tile4_crep[sample] = run(tile4_full_chain_crep, out, a, b, iterations);
+			tile4_t10[sample] = run(tile4_full_chain_t10, out, a, b, iterations);
 		} else {
+			tile4_t10[sample] = run(tile4_full_chain_t10, out, a, b, iterations);
+			tile4_crep[sample] = run(tile4_full_chain_crep, out, a, b, iterations);
+			official_crep[sample] = run(official_full_chain_crep, out, a, b,
+				iterations);
 			tile4_full[sample] = run(tile4_full_chain, out, a, b, iterations);
 			official_full[sample] = run(official_full_chain, out, a, b, iterations);
 			private[sample] = run(tile4_private_consumer, out, a, b, iterations);
@@ -192,6 +245,9 @@ int main(int argc, char **argv)
 	const double private_median = median(private);
 	const double official_full_median = median(official_full);
 	const double tile4_full_median = median(tile4_full);
+	const double official_crep_median = median(official_crep);
+	const double tile4_crep_median = median(tile4_crep);
+	const double tile4_t10_median = median(tile4_t10);
 	printf("iterations=%u samples=%d official_bm_inv=%.3f frozen_bm_inv=%.3f "
 		"tile4_bm_inv=%.3f private_bm_inv=%.3f "
 		"private_vs_official=%+.3f private_vs_frozen=%+.3f "
@@ -202,6 +258,11 @@ int main(int argc, char **argv)
 		"delta_pct=%+.3f\n", official_full_median, tile4_full_median,
 		tile4_full_median - official_full_median,
 		100.0 * (tile4_full_median / official_full_median - 1.0));
+	printf("full_2f_b_i_crep official=%.3f tile4_t9=%.3f tile4_t10=%.3f "
+		"t9_delta=%+.3f t10_vs_t9=%+.3f\n", official_crep_median,
+		tile4_crep_median, tile4_t10_median,
+		tile4_crep_median - official_crep_median,
+		tile4_t10_median - tile4_crep_median);
 	printf("addresses official=%p frozen=%p tile4=%p private=%p\n",
 		(void *)(uintptr_t)official_consumer, (void *)(uintptr_t)frozen_consumer,
 		(void *)(uintptr_t)tile4_consumer,

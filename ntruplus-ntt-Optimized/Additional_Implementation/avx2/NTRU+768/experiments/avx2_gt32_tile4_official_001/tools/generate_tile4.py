@@ -515,6 +515,8 @@ def emit_inverse_tail_asm(path: Path) -> None:
     for name, value in (
         ("q", Q), ("center10", 10),
         ("half_q", Q // 2), ("minus_half_q", -(Q // 2)),
+        ("qp1_half", (Q + 1) // 2), ("qm1_half", (Q - 1) // 2),
+        ("mod3_v", ((1 << 15) + 1) // 3), ("three", 3),
         ("w_factor", -886), ("w_qinv", 13706),
         ("w2_factor", 1033), ("w2_qinv", -13687),
     ):
@@ -580,6 +582,7 @@ def emit_inverse_tail_ranges(path: Path) -> None:
     matrix3_output_bound = max(2 * normalized_product_bound,
                                2 * correction_product_bound)
     assert matrix3_output_bound < 32768
+    assert matrix3_output_bound <= 5185
     relaxed_output_bound = max(abs(center10(value))
                                for value in range(-matrix3_output_bound,
                                                   matrix3_output_bound + 1))
@@ -607,6 +610,8 @@ def emit_inverse_tail_ranges(path: Path) -> None:
             "precenter_output_abs_bound": matrix3_output_bound,
             "relaxed_output_abs_bound": relaxed_output_bound,
             "canonical_output_abs_bound": min(relaxed_output_bound, Q // 2),
+            "direct_crepmod3_accepted_abs_bound": 5185,
+            "direct_crepmod3_safe": True,
         },
         "all_int16_add_sub_safe": True,
         "output_r_exponent": 0,
@@ -645,6 +650,10 @@ def emit_scale_contract(path: Path) -> None:
              "range": [-1818, 1818], "canonical": False,
              "legal_consumers": ["crepmod3"],
              "scope": "decapsulation-only"},
+            {"operation": "private-inverse-crepmod3-output",
+             "layout": "coefficient-order", "representation": "ternary",
+             "range": [-1, 1], "legal_consumers": ["decapsulation-message"],
+             "scope": "benchmark-only-rejected-t10"},
         ],
         "lambda_table": {"value": "lambda*R", "r_exponent": 1,
                          "physical_order": "tile=2*k3+branch,Q=0..31"},

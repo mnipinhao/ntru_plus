@@ -89,6 +89,18 @@ void gt32_tile4_inverse_tail_t4_matrix3_asm(int16_t *out, const int16_t *in);
 /* Decapsulation-only: bounded mod-q representative for immediate crepmod3. */
 void gt32_tile4_inverse_tail_champion_private_asm(int16_t *out,
 	const int16_t *in);
+void gt32_tile4_inverse_tail_t5_private_asm(int16_t *out, const int16_t *in);
+void gt32_tile4_inverse_tail_t6_dual_private_asm(int16_t *out,
+	const int16_t *in);
+void gt32_tile4_inverse_tail_t7_triple_private_asm(int16_t *out,
+	const int16_t *in);
+void gt32_tile4_inverse_tail_t8_renamed_private_asm(int16_t *out,
+	const int16_t *in);
+/* Decapsulation-only fused inverse tail and crepmod3; output is ternary. */
+void gt32_tile4_inverse_tail_t10_crepmod3_asm(int16_t *out,
+	const int16_t *in);
+void gt32_tile4_inverse_tail_t9_isolated_private_asm(int16_t *out,
+	const int16_t *in);
 
 void gt32_tile4_forward_tile_asm(int16_t out[GT32_TILE4_WORDS],
 	const int16_t in[GT32_TILE4_WORDS]);
