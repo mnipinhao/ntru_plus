@@ -292,6 +292,19 @@ def emit_basemul_header(path: Path) -> None:
                     row.extend([lambda_montgomery(k3, q, branch)] * 4)
                 lines.append("\t\t{" + ", ".join(str(value) for value in row) + "},")
             lines.append("\t},")
+    lines.append("};")
+    transpose_q = [0, 4, 8, 12, 1, 5, 9, 13,
+                   2, 6, 10, 14, 3, 7, 11, 15]
+    lines.extend([
+        "static const int16_t gt32_tile4_lambda_transpose_mont[12][16]",
+        "\t__attribute__((aligned(32))) = {",
+    ])
+    for k3 in range(3):
+        for branch in range(2):
+            for group in range(2):
+                row = [lambda_montgomery(k3, 16 * group + q, branch)
+                       for q in transpose_q]
+                lines.append("\t{" + ", ".join(str(value) for value in row) + "},")
     lines.extend(["};", "#endif", ""])
     path.write_text("\n".join(lines))
 

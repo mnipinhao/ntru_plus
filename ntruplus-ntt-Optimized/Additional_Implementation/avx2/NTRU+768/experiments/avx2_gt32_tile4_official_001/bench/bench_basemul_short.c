@@ -14,6 +14,22 @@ void gt_basemul_native_rminus1_asm_avx2(int16_t *out,
 
 typedef void (*basemul_fn)(int16_t *, const int16_t *, const int16_t *);
 static volatile uint64_t sink;
+static int16_t private_product[GT32_TILE4_POLY_WORDS]
+	__attribute__((aligned(32)));
+
+static void centered_soa_inverse(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_scale_soa_private_asm(private_product, a, b);
+	gt32_tile4_inverse_soa_private_parallel_asm(out, private_product);
+}
+
+static void raw_soa_inverse(int16_t *out, const int16_t *a,
+	const int16_t *b)
+{
+	gt32_tile4_basemul_raw_soa_private_asm(private_product, a, b);
+	gt32_tile4_inverse_soa_private_parallel_asm(out, private_product);
+}
 
 static uint64_t start_tsc(void)
 {
@@ -62,8 +78,10 @@ int main(int argc, char **argv)
 	int16_t a[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t b[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t out[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
-	double official[20], frozen[20], b0[20], b1[20], b2[20];
-	double general[20], private_soa[20];
+	double official[20], frozen[20], b0[20], b1[20], k1[20], k2[20], k2_asm[20];
+	double b2[20], b3[20], b4b[20];
+	double general[20], private_soa[20], raw_soa[20];
+	double centered_pipeline[20], raw_pipeline[20];
 	cpu_set_t cpuset;
 
 	CPU_ZERO(&cpuset);
@@ -80,9 +98,17 @@ int main(int argc, char **argv)
 	(void)measure(gt_basemul_native_rminus1_asm_avx2, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_b0, out, a, b, 10);
 	(void)measure(gt32_tile4_basemul_b1, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_k1_intrinsic, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_k2_intrinsic, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_k2_asm, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_b2_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_b3_late_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_b4b_partial_asm, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_general_b2_asm, out, a, b, 100);
 	(void)measure(gt32_tile4_basemul_scale_soa_private_asm, out, a, b, 100);
+	(void)measure(gt32_tile4_basemul_raw_soa_private_asm, out, a, b, 100);
+	(void)measure(centered_soa_inverse, out, a, b, 100);
+	(void)measure(raw_soa_inverse, out, a, b, 100);
 
 	for (unsigned sample = 0; sample < 20; sample++) {
 		if ((sample & 1U) == 0U) {
@@ -91,19 +117,51 @@ int main(int argc, char **argv)
 				out, a, b, iterations);
 			b0[sample] = measure(gt32_tile4_basemul_b0, out, a, b, iterations);
 			b1[sample] = measure(gt32_tile4_basemul_b1, out, a, b, iterations);
+			k1[sample] = measure(gt32_tile4_basemul_k1_intrinsic,
+				out, a, b, iterations);
+			k2[sample] = measure(gt32_tile4_basemul_k2_intrinsic,
+				out, a, b, iterations);
+			k2_asm[sample] = measure(gt32_tile4_basemul_k2_asm,
+				out, a, b, iterations);
 			b2[sample] = measure(gt32_tile4_basemul_b2_asm, out, a, b, iterations);
+			b3[sample] = measure(gt32_tile4_basemul_b3_late_asm,
+				out, a, b, iterations);
+			b4b[sample] = measure(gt32_tile4_basemul_b4b_partial_asm,
+				out, a, b, iterations);
 			general[sample] = measure(gt32_tile4_basemul_general_b2_asm,
 				out, a, b, iterations);
 			private_soa[sample] = measure(
 				gt32_tile4_basemul_scale_soa_private_asm,
+				out, a, b, iterations);
+			raw_soa[sample] = measure(gt32_tile4_basemul_raw_soa_private_asm,
+				out, a, b, iterations);
+			centered_pipeline[sample] = measure(centered_soa_inverse,
+				out, a, b, iterations);
+			raw_pipeline[sample] = measure(raw_soa_inverse,
 				out, a, b, iterations);
 		} else {
+			raw_pipeline[sample] = measure(raw_soa_inverse,
+				out, a, b, iterations);
+			centered_pipeline[sample] = measure(centered_soa_inverse,
+				out, a, b, iterations);
+			raw_soa[sample] = measure(gt32_tile4_basemul_raw_soa_private_asm,
+				out, a, b, iterations);
 			private_soa[sample] = measure(
 				gt32_tile4_basemul_scale_soa_private_asm,
 				out, a, b, iterations);
 			general[sample] = measure(gt32_tile4_basemul_general_b2_asm,
 				out, a, b, iterations);
+			b4b[sample] = measure(gt32_tile4_basemul_b4b_partial_asm,
+				out, a, b, iterations);
+			b3[sample] = measure(gt32_tile4_basemul_b3_late_asm,
+				out, a, b, iterations);
 			b2[sample] = measure(gt32_tile4_basemul_b2_asm, out, a, b, iterations);
+			k2_asm[sample] = measure(gt32_tile4_basemul_k2_asm,
+				out, a, b, iterations);
+			k2[sample] = measure(gt32_tile4_basemul_k2_intrinsic,
+				out, a, b, iterations);
+			k1[sample] = measure(gt32_tile4_basemul_k1_intrinsic,
+				out, a, b, iterations);
 			b1[sample] = measure(gt32_tile4_basemul_b1, out, a, b, iterations);
 			b0[sample] = measure(gt32_tile4_basemul_b0, out, a, b, iterations);
 			frozen[sample] = measure(gt_basemul_native_rminus1_asm_avx2,
@@ -116,17 +174,32 @@ int main(int argc, char **argv)
 	const double frozen_median = median(frozen);
 	const double b0_median = median(b0);
 	const double b1_median = median(b1);
+	const double k1_median = median(k1);
+	const double k2_median = median(k2);
+	const double k2_asm_median = median(k2_asm);
 	const double b2_median = median(b2);
+	const double b3_median = median(b3);
+	const double b4b_median = median(b4b);
 	const double general_median = median(general);
 	const double private_median = median(private_soa);
+	const double raw_median = median(raw_soa);
+	const double centered_pipeline_median = median(centered_pipeline);
+	const double raw_pipeline_median = median(raw_pipeline);
 	printf("iterations=%u samples=20 official=%.3f frozen_rminus1=%.3f "
-		"tile4_b0=%.3f tile4_b1=%.3f tile4_b2_asm=%.3f "
-		"general_e0=%.3f private_soa_e_minus1=%.3f "
+		"tile4_b0=%.3f tile4_b1=%.3f tile4_k1=%.3f tile4_k2=%.3f "
+		"tile4_k2_asm=%.3f "
+		"tile4_b2_asm=%.3f tile4_b3_late=%.3f "
+		"tile4_b4b_partial=%.3f "
+		"general_e0=%.3f private_soa_e_minus1=%.3f raw_soa_e_minus1=%.3f "
 		"b2_vs_official=%.3f b2_vs_official_pct=%.3f sink=%llu\n",
 		iterations, official_median, frozen_median, b0_median, b1_median,
-		b2_median, general_median, private_median,
+		k1_median, k2_median, k2_asm_median, b2_median, b3_median, b4b_median,
+		general_median, private_median, raw_median,
 		b2_median - official_median,
 		100.0 * (b2_median / official_median - 1.0),
 		(unsigned long long)sink);
+	printf("private_bm_i32 centered=%.3f raw=%.3f saving=%+.3f\n",
+		centered_pipeline_median, raw_pipeline_median,
+		centered_pipeline_median - raw_pipeline_median);
 	return 0;
 }

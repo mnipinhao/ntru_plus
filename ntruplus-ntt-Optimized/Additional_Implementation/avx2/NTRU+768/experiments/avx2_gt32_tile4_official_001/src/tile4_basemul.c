@@ -108,6 +108,148 @@ static inline __m256i center_rminus1_vector(__m256i value)
 		_mm256_mullo_epi16(quotient, _mm256_set1_epi16(GT32_TILE4_Q)));
 }
 
+static inline void transpose4x16(__m256i value[4])
+{
+	const __m256i t0 = _mm256_unpacklo_epi16(value[0], value[1]);
+	const __m256i t1 = _mm256_unpackhi_epi16(value[0], value[1]);
+	const __m256i t2 = _mm256_unpacklo_epi16(value[2], value[3]);
+	const __m256i t3 = _mm256_unpackhi_epi16(value[2], value[3]);
+	const __m256i u0 = _mm256_unpacklo_epi32(t0, t2);
+	const __m256i u1 = _mm256_unpackhi_epi32(t0, t2);
+	const __m256i u2 = _mm256_unpacklo_epi32(t1, t3);
+	const __m256i u3 = _mm256_unpackhi_epi32(t1, t3);
+	value[0] = _mm256_unpacklo_epi64(u0, u2);
+	value[1] = _mm256_unpackhi_epi64(u0, u2);
+	value[2] = _mm256_unpacklo_epi64(u1, u3);
+	value[3] = _mm256_unpackhi_epi64(u1, u3);
+}
+
+/* K1 gate: outer Karatsuba, linear products remain schoolbook (15 Monts). */
+void gt32_tile4_basemul_k1_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS])
+{
+	for (unsigned block = 0; block < 12U; block++) {
+		__m256i av[4];
+		__m256i bv[4];
+		for (unsigned i = 0; i < 4U; i++) {
+			const unsigned word = 64U * block + 16U * i;
+			av[i] = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(a + word));
+			bv[i] = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(b + word));
+		}
+		transpose4x16(av);
+		transpose4x16(bv);
+		const __m256i lambda = _mm256_load_si256(
+			(const __m256i *)(const void *)
+			gt32_tile4_lambda_transpose_mont[block]);
+
+		const __m256i p0 = montgomery_vector(av[0], bv[0]);
+		const __m256i p1 = _mm256_add_epi16(
+			montgomery_vector(av[0], bv[1]),
+			montgomery_vector(av[1], bv[0]));
+		const __m256i p2 = montgomery_vector(av[1], bv[1]);
+		const __m256i q0 = montgomery_vector(av[2], bv[2]);
+		const __m256i q1 = _mm256_add_epi16(
+			montgomery_vector(av[2], bv[3]),
+			montgomery_vector(av[3], bv[2]));
+		const __m256i q2 = montgomery_vector(av[3], bv[3]);
+
+		const __m256i a02 = _mm256_add_epi16(av[0], av[2]);
+		const __m256i a13 = _mm256_add_epi16(av[1], av[3]);
+		const __m256i b02 = _mm256_add_epi16(bv[0], bv[2]);
+		const __m256i b13 = _mm256_add_epi16(bv[1], bv[3]);
+		const __m256i r0 = _mm256_sub_epi16(
+			_mm256_sub_epi16(montgomery_vector(a02, b02), p0), q0);
+		const __m256i r1 = _mm256_sub_epi16(
+			_mm256_sub_epi16(_mm256_add_epi16(
+				montgomery_vector(a02, b13),
+				montgomery_vector(a13, b02)), p1), q1);
+		const __m256i r2 = _mm256_sub_epi16(
+			_mm256_sub_epi16(montgomery_vector(a13, b13), p2), q2);
+
+		__m256i cv[4];
+		cv[0] = _mm256_add_epi16(p0, montgomery_vector(
+			_mm256_add_epi16(q0, r2), lambda));
+		cv[1] = _mm256_add_epi16(p1, montgomery_vector(q1, lambda));
+		cv[2] = _mm256_add_epi16(_mm256_add_epi16(p2, r0),
+			montgomery_vector(q2, lambda));
+		cv[3] = r1;
+		for (unsigned i = 0; i < 4U; i++)
+			cv[i] = center_rminus1_vector(cv[i]);
+		transpose4x16(cv);
+		for (unsigned i = 0; i < 4U; i++) {
+			const unsigned word = 64U * block + 16U * i;
+			_mm256_storeu_si256((__m256i *)(void *)(out + word), cv[i]);
+		}
+	}
+}
+
+static inline void linear_karatsuba(__m256i out[3], __m256i a0, __m256i a1,
+	__m256i b0, __m256i b1)
+{
+	out[0] = montgomery_vector(a0, b0);
+	out[2] = montgomery_vector(a1, b1);
+	out[1] = montgomery_vector(_mm256_add_epi16(a0, a1),
+		_mm256_add_epi16(b0, b1));
+	out[1] = _mm256_sub_epi16(_mm256_sub_epi16(out[1], out[0]), out[2]);
+}
+
+/* K2 gate: two-level Karatsuba, 9 variable plus 3 lambda Mont chains. */
+void gt32_tile4_basemul_k2_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS])
+{
+	for (unsigned block = 0; block < 12U; block++) {
+		__m256i av[4];
+		__m256i bv[4];
+		for (unsigned i = 0; i < 4U; i++) {
+			const unsigned word = 64U * block + 16U * i;
+			av[i] = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(a + word));
+			bv[i] = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(b + word));
+		}
+		transpose4x16(av);
+		transpose4x16(bv);
+
+		__m256i p[3];
+		__m256i q[3];
+		__m256i s[3];
+		linear_karatsuba(p, av[0], av[1], bv[0], bv[1]);
+		linear_karatsuba(q, av[2], av[3], bv[2], bv[3]);
+		linear_karatsuba(s,
+			_mm256_add_epi16(av[0], av[2]),
+			_mm256_add_epi16(av[1], av[3]),
+			_mm256_add_epi16(bv[0], bv[2]),
+			_mm256_add_epi16(bv[1], bv[3]));
+		__m256i r[3];
+		for (unsigned i = 0; i < 3U; i++)
+			r[i] = _mm256_sub_epi16(_mm256_sub_epi16(s[i], p[i]), q[i]);
+
+		const __m256i lambda = _mm256_load_si256(
+			(const __m256i *)(const void *)
+			gt32_tile4_lambda_transpose_mont[block]);
+		__m256i cv[4];
+		cv[0] = _mm256_add_epi16(p[0], montgomery_vector(
+			_mm256_add_epi16(q[0], r[2]), lambda));
+		cv[1] = _mm256_add_epi16(p[1], montgomery_vector(q[1], lambda));
+		cv[2] = _mm256_add_epi16(_mm256_add_epi16(p[2], r[0]),
+			montgomery_vector(q[2], lambda));
+		cv[3] = r[1];
+		for (unsigned i = 0; i < 4U; i++)
+			cv[i] = center_rminus1_vector(cv[i]);
+		transpose4x16(cv);
+		for (unsigned i = 0; i < 4U; i++) {
+			const unsigned word = 64U * block + 16U * i;
+			_mm256_storeu_si256((__m256i *)(void *)(out + word), cv[i]);
+		}
+	}
+}
+
 static inline __m256i product_coefficient(const __m256i a[4],
 	const __m256i b[4], __m256i lambda, unsigned coefficient)
 {

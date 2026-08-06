@@ -55,7 +55,7 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 	! objdump -drwC -Mintel $(BUILD)/tile4_basemul_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_asm.o | \
-		rg 'gt32_tile4_basemul_(b2|general_b2|scale_soa_private)_asm'
+		rg 'gt32_tile4_basemul_(b2|b3_late|b4b_partial|k2|general_b2|scale_soa_private|raw_soa_private)_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -162,12 +162,14 @@ $(BUILD)/bench_inverse_short: src/tile4_ref.c src/tile4_frontend.c \
 		$(OFFICIAL)/asm/crepmod3.s $(OFFICIAL)/consts.c
 
 $(BUILD)/bench_basemul_short: src/tile4_ref.c src/tile4_frontend.c \
-		src/tile4_basemul.c src/tile4_asm.S bench/bench_basemul_short.c $(GEN) \
+		src/tile4_basemul.c src/tile4_asm.S src/tile4_inverse_private_asm.S \
+		bench/bench_basemul_short.c $(GEN) \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN)/gt_basemul_soa.c \
 		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -Isrc -I$(FROZEN) -I$(OFFICIAL) -o $@ \
 		src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
-		src/tile4_asm.S src/tile4_basemul_asm.S bench/bench_basemul_short.c \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_inverse_private_asm.S bench/bench_basemul_short.c \
 		$(FROZEN)/gt_basemul_layout_asm.S $(FROZEN)/gt_basemul_soa.c \
 		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/consts.c
 

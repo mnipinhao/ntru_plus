@@ -1,5 +1,5 @@
 experiment: avx2_gt32_tile4_official_001
-status: gate-t9-isolated-private-near-parity-short
+status: gate-b5-raw-private-soa-consumer-pass-short
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
@@ -21,6 +21,9 @@ implemented:
   - generator-owned R-exponent scale contract and physical-Q lambda streams
   - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
   - native TILE4 B2 register-transpose quartic assembly
+  - B3 late-finalizer and B4b partial-hoist multi-accumulator rejected controls
+  - K1/K2 outer/full Karatsuba intrinsic gates and zero-spill K2 assembly control
+  - B5 raw private-SoA e=-1 producer accepted through private inverse NTT32 core
   - Gate C general B2 with fused R-squared e=0 output
   - Gate D B2-S private coefficient-plane e=-1 producer
   - direct private-layout scalar inverse NTT32 oracle
@@ -42,6 +45,7 @@ pending:
   - Gate C add/tobytes caller measurements
   - TILE4-native baseinv
   - full KEM caller integration remains gated by consumer regression
+  - bridge private SoA inverse-core output into the selected coefficient-order tail
 forward_directional_gate:
   result: reopened-by-t1-t4
   benchmark_kind: same-binary-directional-short
@@ -249,4 +253,37 @@ private_tail_microarchitecture_gate:
     t9_delta_tsc: 35.285
     t9_delta_percent: 1.926
   t10_decision: reject-fusion-does-not-repay-expanded-mod3-schedule
+basemul_round_b3_b5_gate:
+  result: b5-raw-private-soa-selected-short
+  benchmark_kind: same-binary-directional-short
+  iterations_per_sample: 2000
+  samples: 20
+  representative_run:
+    official_tsc: 331.898
+    frozen_rminus1_tsc: 307.354
+    b2_schoolbook_aos_tsc: 433.570
+    b3_late_finalizer_tsc: 443.403
+    b4b_partial_hoist_multiacc_tsc: 473.424
+    k1_outer_karatsuba_intrinsic_tsc: 503.856
+    k2_full_karatsuba_intrinsic_tsc: 449.867
+    k2_full_karatsuba_zero_spill_asm_tsc: 515.206
+    centered_private_soa_tsc: 392.957
+    raw_private_soa_tsc: 341.195
+  b3_decision: rejected-regression
+  b4b_decision: rejected-recompute-uops-exceed-ilp-saving
+  karatsuba_decision: rejected-standalone-k2-near-but-does-not-beat-b2
+  k2_intrinsic_stack_frame_bytes: 200
+  k2_asm_audit: zero-stack-spill
+  b5_contract:
+    layout: tile4-private-coefficient-planes
+    r_exponent: -1
+    finalizer: none
+    legal_consumer: gt32_tile4_inverse_soa_private_parallel_asm
+    public_api: false
+  b5_correctness: raw-bm-and-raw-bm-to-i32-mod-q-1000-cases
+  b5_pipeline_short:
+    centered_bm_plus_i32_tsc: 767.304
+    raw_bm_plus_i32_tsc: 721.155
+    saving_tsc: 46.149
+  caveat: private inverse-core output still needs a measured bridge into the selected inverse tail
 promotion: false

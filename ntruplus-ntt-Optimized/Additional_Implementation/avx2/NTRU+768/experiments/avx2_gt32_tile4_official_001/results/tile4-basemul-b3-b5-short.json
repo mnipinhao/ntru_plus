@@ -1,0 +1,36 @@
+{
+  "benchmark_kind": "same-binary-directional-short",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "tsc": {
+    "official": 331.898,
+    "frozen_rminus1": 307.354,
+    "b2_schoolbook_aos": 433.570,
+    "b3_late_finalizer": 443.403,
+    "b4b_partial_hoist_multiacc": 473.424,
+    "k1_outer_karatsuba_intrinsic": 503.856,
+    "k2_full_karatsuba_intrinsic": 449.867,
+    "k2_full_karatsuba_zero_spill_asm": 515.206,
+    "centered_private_soa": 392.957,
+    "raw_private_soa": 341.195
+  },
+  "private_bm_plus_inverse32_tsc": {
+    "centered": 767.304,
+    "raw": 721.155,
+    "saving": 46.149
+  },
+  "correctness": {
+    "trials": 1000,
+    "b3_b4b": "exact-and-scale-pass",
+    "k1_k2": "mod-q-and-scale-pass",
+    "raw_private_bm": "mod-q-pass",
+    "raw_private_bm_to_inverse32": "mod-q-pass"
+  },
+  "decisions": {
+    "b3": "rejected-regression",
+    "b4b": "rejected-regression",
+    "standalone_karatsuba": "rejected-does-not-beat-b2",
+    "b5_raw_private_soa": "selected-for-tail-bridge-gate"
+  },
+  "caveat": "short gate only; raw private path is benchmark-only and has not reached the coefficient-order inverse tail"
+}

@@ -287,10 +287,31 @@ int main(void)
 		compare_exact("basemul-b1", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_k1_intrinsic(got, input, input);
+		compare_mod_q("basemul-k1-outer-karatsuba", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_k2_intrinsic(got, input, input);
+		compare_mod_q("basemul-k2-full-karatsuba", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_k2_asm(got, input, input);
+		compare_mod_q("basemul-k2-asm", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
 		gt32_tile4_basemul_scale_soa_private_asm(private_soa, input, input);
 		private_soa_to_tile4(got, private_soa);
 		compare_exact("basemul-scale-private-soa", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_basemul_raw_soa_private_asm(alias, input, input);
+		private_soa_to_tile4(got, alias);
+		compare_mod_q("basemul-raw-private-soa", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		gt32_tile4_inverse_soa_private_parallel_asm(private_inverse_asm,
+			alias);
+		gt32_tile4_inverse_soa_private_ref(private_inverse, private_soa);
+		compare_mod_q("raw-bm-to-inverse-private", trial, private_inverse,
+			private_inverse_asm, GT32_TILE4_POLY_WORDS);
 		gt32_tile4_inverse_soa_private_ref(private_inverse, private_soa);
 		gt32_tile4_inverse_soa_private_asm(private_inverse_asm, private_soa);
 		compare_exact("inverse-private-soa-asm", trial, private_inverse,
@@ -314,6 +335,14 @@ int main(void)
 			GT32_TILE4_POLY_WORDS);
 		gt32_tile4_basemul_b2_asm(got, input, input);
 		compare_exact("basemul-b2-asm", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_b3_late_asm(got, input, input);
+		compare_exact("basemul-b3-late-asm", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
+		check_basemul_scale(input, input, got, trial);
+		gt32_tile4_basemul_b4b_partial_asm(got, input, input);
+		compare_exact("basemul-b4b-partial-asm", trial, ref, got,
 			GT32_TILE4_POLY_WORDS);
 		check_basemul_scale(input, input, got, trial);
 		memcpy(alias, input, sizeof(alias));

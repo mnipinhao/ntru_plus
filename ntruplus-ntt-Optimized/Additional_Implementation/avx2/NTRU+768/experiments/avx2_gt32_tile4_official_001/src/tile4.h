@@ -15,8 +15,26 @@ void gt32_tile4_basemul_b0(int16_t out[GT32_TILE4_POLY_WORDS],
 void gt32_tile4_basemul_b1(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_k1_intrinsic(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_k2_intrinsic(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_k2_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
 /* Register-transpose assembly candidate.  Distinct buffers are required. */
 void gt32_tile4_basemul_b2_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* B3 late-finalizer ablation.  Distinct buffers are required. */
+void gt32_tile4_basemul_b3_late_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* B4b partial-qinv-hoist, multi-accumulator schoolbook ablation. */
+void gt32_tile4_basemul_b4b_partial_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
 /* General NTT ABI: TILE4 e=0 x e=0 -> TILE4 e=0, distinct buffers. */
@@ -26,6 +44,11 @@ void gt32_tile4_basemul_general_b2_asm(
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
 /* Decap-only bridge: TILE4 e=0 x e=0 -> private coefficient planes e=-1. */
 void gt32_tile4_basemul_scale_soa_private_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
+/* Benchmark-only raw e=-1 SoA producer; only validated private consumers. */
+void gt32_tile4_basemul_raw_soa_private_asm(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS],
 	const int16_t b[GT32_TILE4_POLY_WORDS]);
