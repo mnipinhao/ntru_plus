@@ -1062,6 +1062,31 @@ def emit_serialized_mapping(header: Path, metadata: Path) -> None:
     }, indent=2) + "\n")
 
 
+def emit_frombytes_aos_stores(path: Path) -> None:
+    _, _, records = serialized_mappings()
+    aos_by_official = {
+        record["official_word"]: record["tile4_aos_word"]
+        for record in records
+    }
+    registers = (11, 12, 13, 14, 7, 8, 9, 10)
+    with path.open("w") as output:
+        for chunk in range(6):
+            output.write(f"\t.macro TILE4_STORE_AOS_CHUNK_{chunk}\n")
+            for register_index, register in enumerate(registers):
+                official_base = 128 * chunk + 16 * register_index
+                destinations = [2 * aos_by_official[official_base + 4 * qword]
+                                for qword in range(4)]
+                assert all(destination % 8 == 0 for destination in destinations)
+                output.write(
+                    f"\tvmovq %xmm{register}, {destinations[0]}(%rdi)\n")
+                output.write(
+                    f"\tvpextrq $1, %xmm{register}, {destinations[1]}(%rdi)\n")
+                output.write(f"\tvextracti128 $1, %ymm{register}, %xmm6\n")
+                output.write(f"\tvmovq %xmm6, {destinations[2]}(%rdi)\n")
+                output.write(f"\tvpextrq $1, %xmm6, {destinations[3]}(%rdi)\n")
+            output.write("\t.endm\n\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1133,6 +1158,7 @@ def main() -> None:
     scale_path = GENERATED / "tile4_scale_contract.json"
     serialized_header_path = GENERATED / "tile4_serialized_mapping.h"
     serialized_metadata_path = GENERATED / "tile4_serialized_mapping.json"
+    frombytes_store_path = GENERATED / "tile4_frombytes_aos_stores.inc"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1149,6 +1175,7 @@ def main() -> None:
     emit_inverse_tail_ranges(inverse_tail_range_path)
     emit_scale_contract(scale_path)
     emit_serialized_mapping(serialized_header_path, serialized_metadata_path)
+    emit_frombytes_aos_stores(frombytes_store_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1211,6 +1238,8 @@ def main() -> None:
             serialized_header_path.read_bytes()).hexdigest(),
         "serialized_mapping_metadata_sha256": hashlib.sha256(
             serialized_metadata_path.read_bytes()).hexdigest(),
+        "frombytes_aos_stores_sha256": hashlib.sha256(
+            frombytes_store_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

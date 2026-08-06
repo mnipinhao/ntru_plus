@@ -83,6 +83,19 @@ static void bridge_soa_decode(int16_t *out)
 }
 
 __attribute__((noinline))
+static void v1_aos_decode(int16_t *out)
+{
+	sink += (unsigned)gt32_tile4_frombytes_aos_asm(out, encoded_f);
+}
+
+__attribute__((noinline))
+static void v2_soa_control_decode(int16_t *out)
+{
+	sink += (unsigned)gt32_tile4_frombytes_bm_soa_aos_control_asm(out,
+		encoded_f);
+}
+
+__attribute__((noinline))
 static void baseline_bm(int16_t *out)
 {
 	gt32_tile4_basemul_c3center_late_aos_private_asm(out, f_aos, c_aos);
@@ -107,6 +120,25 @@ __attribute__((noinline))
 static void mixed_pipeline(int16_t *out)
 {
 	sink += (unsigned)gt32_tile4_frombytes_bm_soa_official_bridge(f_soa,
+		encoded_f);
+	mixed_bm(product);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+}
+
+__attribute__((noinline))
+static void v1_pipeline(int16_t *out)
+{
+	sink += (unsigned)gt32_tile4_frombytes_aos_asm(f_aos, encoded_f);
+	baseline_bm(product);
+	gt32_tile4_inverse_all_pair_asm(rows, product);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, rows);
+}
+
+__attribute__((noinline))
+static void v2_control_pipeline(int16_t *out)
+{
+	sink += (unsigned)gt32_tile4_frombytes_bm_soa_aos_control_asm(f_soa,
 		encoded_f);
 	mixed_bm(product);
 	gt32_tile4_inverse_all_pair_asm(rows, product);
@@ -160,13 +192,24 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
+	v1_pipeline(out_a);
+	v2_control_pipeline(out_b);
+	for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++) {
+		if (centered(out_a[i]) != centered(out_b[i])) {
+			fprintf(stderr, "P1-V pipeline mismatch at %u\n", i);
+			return 1;
+		}
+	}
 	struct gate { const char *name; bench_fn baseline; bench_fn mixed; };
 	const struct gate gates[] = {
 		{"official_vs_aos_bridge", official_decode, bridge_aos_decode},
 		{"reference_frombytes", baseline_decode, mixed_decode},
 		{"bridge_frombytes", bridge_aos_decode, bridge_soa_decode},
+		{"official_vs_v1_aos", official_decode, v1_aos_decode},
+		{"v1_aos_vs_v2_soa_control", v1_aos_decode, v2_soa_control_decode},
 		{"basemul", baseline_bm, mixed_bm},
 		{"frombytes_bm_i1_t9", baseline_pipeline, mixed_pipeline},
+		{"p1v_frombytes_bm_i1_t9", v1_pipeline, v2_control_pipeline},
 	};
 	printf("META,iterations=%u,pattern=%s,correctness=pass\n", iterations,
 		reverse ? "BAAB" : "ABBA");

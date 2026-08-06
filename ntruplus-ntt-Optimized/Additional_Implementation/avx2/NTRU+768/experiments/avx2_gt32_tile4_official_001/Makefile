@@ -20,10 +20,11 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_inverse_tail_constants.inc \
 	generated/tile4_inverse_tail_range.json \
 	generated/tile4_serialized_mapping.h \
-	generated/tile4_serialized_mapping.json
+	generated/tile4_serialized_mapping.json \
+	generated/tile4_frombytes_aos_stores.inc
 SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	src/tile4_pack.c src/tile4_inverse_tail.c \
-	src/tile4_inverse_tail_asm.S src/tile4_asm.S \
+	src/tile4_frombytes_asm.S src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 	src/tile4_basemul_asm.S src/tile4_inverse_private_asm.S \
 	tests/test_tile4.c
 
@@ -48,7 +49,7 @@ sanitize: generate $(BUILD)/test_tile4_sanitize
 
 audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 		$(BUILD)/tile4_inverse_private_asm.o $(BUILD)/tile4_inverse_tail_asm.o \
-		$(BUILD)/tile4_inverse_tail_isolated.o
+		$(BUILD)/tile4_inverse_tail_isolated.o $(BUILD)/tile4_frombytes_asm.o
 	objdump -drwC -Mintel $(BUILD)/tile4_asm.o > $(BUILD)/tile4_asm.dump
 	! objdump -drwC -Mintel --disassemble=gt32_tile4_forward_tile_asm \
 		$(BUILD)/tile4_asm.o | rg -n '\[(?:r|e)?sp[+\-]'
@@ -74,6 +75,10 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_tail_isolated.o | \
 		rg 'gt32_tile4_inverse_tail_t9_isolated_private_asm'
+	! objdump -drwC -Mintel $(BUILD)/tile4_frombytes_asm.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
+	nm -g --defined-only $(BUILD)/tile4_frombytes_asm.o | \
+		rg 'gt32_tile4_frombytes_(aos|bm_soa_aos_control)_asm'
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000
@@ -165,6 +170,10 @@ $(BUILD)/tile4_inverse_tail_isolated.o: src/tile4_inverse_tail_asm.S \
 		generated/tile4_inverse_tail_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -DTILE4_ISOLATED=1 -c -o $@ src/tile4_inverse_tail_asm.S
 
+$(BUILD)/tile4_frombytes_asm.o: src/tile4_frombytes_asm.S \
+		generated/tile4_frombytes_aos_stores.inc | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ src/tile4_frombytes_asm.S
+
 $(BUILD)/bench_forward_short: src/tile4_ref.c src/tile4_frontend.c \
 		src/tile4_asm.S bench/bench_forward_short.c $(GEN) \
 		$(FROZEN)/gt_ntt_frontend_stage12_soa.S \
@@ -231,10 +240,12 @@ $(BUILD)/bench_consumer_short: src/tile4_inverse_tail_asm.S src/tile4_asm.S \
 		$(OFFICIAL)/consts.c
 
 $(BUILD)/bench_mixed_frombytes: src/tile4_pack.c src/tile4_asm.S \
-		src/tile4_basemul_asm.S bench/bench_mixed_frombytes.c $(GEN) \
+		src/tile4_frombytes_asm.S src/tile4_basemul_asm.S \
+		bench/bench_mixed_frombytes.c $(GEN) \
 		$(BUILD)/tile4_inverse_tail_isolated.o $(OFFICIAL)/asm/pack.s \
 		$(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -Werror -Isrc -o $@ src/tile4_pack.c \
+		src/tile4_frombytes_asm.S \
 		src/tile4_asm.S src/tile4_basemul_asm.S \
 		bench/bench_mixed_frombytes.c $(BUILD)/tile4_inverse_tail_isolated.o \
 		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/consts.c

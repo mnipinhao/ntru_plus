@@ -21,6 +21,8 @@ implemented:
   - generator-owned R-exponent scale contract and physical-Q lambda streams
   - generator-owned serialized-to-TILE4-AoS and serialized-to-private-BM-SoA bijections
   - correctness-first constant-work private frombytes layouts and rejection contract
+  - Official-shaped AVX2 12-bit unpack with generated fixed serialized-to-TILE4 qword routing
+  - paired two-block AoS-to-private-SoA transpose control for the P1-V break-even gate
   - mixed private-SoA by TILE4-AoS basemul assembly without the a-input transpose
   - native TILE4 B0 scalar oracle and exact e=-1 schoolbook scale check
   - native TILE4 B2 register-transpose quartic assembly
@@ -47,7 +49,7 @@ range:
   conservative_max_abs: 30175
   signed_int16_safe: true
 pending:
-  - replace correctness-first scattered P1 unpack with a vectorized fixed schedule before reconsidering integration
+  - replace the AoS-materializing V2 control with a true unpack-register-to-private-SoA schedule
   - P2 hinv SoA to general-BM SoA to specialized-tobytes remains gated by P1 unpack cost
   - real private-decap caller integration and deterministic byte-exact KEM gate
   - caller-native adversarial search approaching the proved c2 inverse bound
@@ -428,3 +430,41 @@ mixed_frombytes_p1_gate:
   correctness: canonical-mapping-noncanonical-rejection-and-mixed-BM-exact-pass
   decision: retain-mixed-BM-and-build-vectorized-fixed-layout-bridge-before-integration
   caveat: mixed island wins relatively, but scalar GT layout conversion is over one thousand TSC slower than bare Official unpack
+
+mixed_frombytes_p1v_gate:
+  result: v1-pass-v2-control-near-break-even-caller-inconclusive-short
+  scope: vectorized-frombytes-f-plus-private-basemul-plus-I1-plus-T9
+  benchmark_kind: same-binary-short-directional-ABBA-BAAB
+  iterations_per_sample: 2000
+  samples: 40
+  v1_aos:
+    implementation: official-vector-unpack-plus-generated-fixed-qword-routing
+    layout: tile4-aos-e0
+    rejection: exact-full-input-noncanonical-mask
+    target_status: directional-pass-but-above-100-to-130-tsc-stretch-target
+    representative_median_tsc: 143.990
+    paired_delta_vs_official_tsc: 47.297
+  v2_control:
+    implementation: v1-aos-materialization-plus-paired-register-transpose
+    layout: private-bm-soa-e0
+    direct_private_soa: false
+    reason_retained: measures-a-concrete-upper-bound-and-store-reload-boundary
+  local_gate:
+    condition: D_S-minus-D_A-less-than-same-run-B_AA-minus-B_SA
+    v2_minus_v1_paired_delta_tsc: 57.716
+    v2_minus_v1_paired_delta_mad_tsc: 0.173
+    mixed_bm_paired_saving_tsc: 56.488
+    shortfall_tsc: 1.228
+    decision: narrow-fail-in-representative-short-run
+  caller_gate:
+    paired_candidate_saving_tsc: 4.932
+    paired_delta_mad_tsc: 5.916
+    candidate_wins: 28-of-40
+    decision: inconclusive-short
+    reason: paired-saving-is-smaller-than-paired-delta-MAD
+  rejected_controls:
+    - wide-store-36-of-48-aos-vectors-reduced-transpose-delta-but-raised-absolute-decoder-cost
+    - memory-source-first-transpose-layer-regressed
+    - duplicated-inline-unpack-did-not-repay-code-size
+  artifact: results/tile4-mixed-frombytes-short.json
+  next_gate: generated-direct-private-soa-shuffle-network-or-stop-p1-integration

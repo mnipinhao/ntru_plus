@@ -20,6 +20,12 @@ int gt32_tile4_frombytes_aos_official_bridge(
 int gt32_tile4_frombytes_bm_soa_official_bridge(
 	int16_t out[GT32_TILE4_POLY_WORDS],
 	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
+int gt32_tile4_frombytes_aos_asm(int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
+/* P1-V control: direct AoS decoder followed by an in-place SoA transpose. */
+int gt32_tile4_frombytes_bm_soa_aos_control_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const uint8_t in[GT32_TILE4_SERIALIZED_BYTES]);
 
 /* Native quartic multiplication: TILE4 e=0 x e=0 -> TILE4 e=-1. */
 void gt32_tile4_basemul_b0(int16_t out[GT32_TILE4_POLY_WORDS],

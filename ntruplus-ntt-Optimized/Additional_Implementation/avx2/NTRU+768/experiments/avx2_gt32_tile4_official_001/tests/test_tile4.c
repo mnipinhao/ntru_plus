@@ -243,6 +243,9 @@ int main(void)
 				|| gt32_tile4_frombytes_bm_soa_ref(private_soa, packed) != 0
 				|| gt32_tile4_frombytes_aos_official_bridge(got, packed) != 0
 				|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
+					packed) != 0
+				|| gt32_tile4_frombytes_aos_asm(full_got, packed) != 0
+				|| gt32_tile4_frombytes_bm_soa_aos_control_asm(full_ref,
 					packed) != 0) {
 				fprintf(stderr, "canonical TILE4 frombytes rejected trial=%u\n", trial);
 				return 1;
@@ -258,12 +261,17 @@ int main(void)
 					fail_at("frombytes-aos", trial, aos, expected, alias[aos]);
 				if (got[aos] != expected)
 					fail_at("frombytes-aos-bridge", trial, aos, expected, got[aos]);
+				if (full_got[aos] != expected)
+					fail_at("frombytes-aos-asm", trial, aos, expected, full_got[aos]);
 				if (private_soa[soa] != expected)
 					fail_at("frombytes-bm-soa", trial, soa, expected,
 						private_soa[soa]);
 				if (general_ref[soa] != expected)
 					fail_at("frombytes-bm-soa-bridge", trial, soa, expected,
 						general_ref[soa]);
+				if (full_ref[soa] != expected)
+					fail_at("frombytes-bm-soa-control-asm", trial, soa,
+						expected, full_ref[soa]);
 				if (official_decoded[official_word] != expected)
 					fail_at("frombytes-official", trial, official_word, expected,
 						official_decoded[official_word]);
@@ -281,6 +289,9 @@ int main(void)
 					|| gt32_tile4_frombytes_bm_soa_ref(private_soa, packed) != 1
 					|| gt32_tile4_frombytes_aos_official_bridge(got, packed) != 1
 					|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
+						packed) != 1
+					|| gt32_tile4_frombytes_aos_asm(full_got, packed) != 1
+					|| gt32_tile4_frombytes_bm_soa_aos_control_asm(full_ref,
 						packed) != 1) {
 					fprintf(stderr, "noncanonical TILE4 frombytes accepted\n");
 					return 1;

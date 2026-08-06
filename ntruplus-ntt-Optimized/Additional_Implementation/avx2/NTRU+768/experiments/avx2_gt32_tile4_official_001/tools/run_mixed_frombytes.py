@@ -42,9 +42,15 @@ def main() -> None:
         baseline = [value["baseline_tsc"] for value in values]
         mixed = [value["mixed_tsc"] for value in values]
         ratios = [value["ratio"] for value in values]
+        deltas = [candidate - reference
+                  for reference, candidate in zip(baseline, mixed)]
+        delta_median = statistics.median(deltas)
         result["gates"][gate] = {
             "baseline_median": statistics.median(baseline),
             "mixed_median": statistics.median(mixed),
+            "paired_delta_median": delta_median,
+            "paired_delta_mad": statistics.median(
+                abs(delta - delta_median) for delta in deltas),
             "paired_ratio_median": statistics.median(ratios),
             "paired_mixed_wins": sum(ratio < 1.0 for ratio in ratios),
             "samples": len(values),

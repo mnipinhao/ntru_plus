@@ -358,3 +358,34 @@ SoA-output BM and specialized `tobytes`) remains deferred until that boundary
 is competitive.  See
 `generated/tile4_serialized_mapping.json` and
 `results/tile4-mixed-frombytes-short.json`.
+
+## P1-V vectorized decoder gate
+
+V1 now reuses the Official six-chunk AVX2 12-bit unpack and invalid-mask
+arithmetic, but replaces Official stores with generator-owned fixed qword
+destinations in TILE4 AoS order.  It never materializes Official component
+layout and preserves full-input noncanonical rejection.  Canonical mapping and
+malformed-input tests pass exactly.
+
+The current V2 symbol is deliberately named a control: it runs V1 and then
+transposes twelve 128-byte blocks into the private BM SoA layout.  Its selected
+transpose processes two blocks concurrently through all three unpack levels.
+This is faster than the serial block schedule, but it still creates the AoS
+store/reload boundary and therefore is not the requested direct private-SoA
+decoder.
+
+The 2,000-call ABBA/BAAB measurements place V1 roughly 50 TSC ticks above bare
+Official unpack.  V2's extra transpose remains approximately the same size as,
+and in the representative same-run paired comparison slightly larger than,
+the mixed basemul saving.  The complete caller alternates between a very small
+win and loss; its paired delta is below its MAD, so the short gate is
+inconclusive rather than a promotion result.
+
+Three controls were rejected.  Wide stores for the 36 single-chunk AoS vectors
+reduced the later transpose differential but made the absolute decoder slower;
+memory-source first-level transpose increased load uops; and duplicating the
+unpack body to remove one internal call did not repay its code-size cost.  P1
+integration remains stopped until a generated shuffle network writes private
+SoA directly from unpack registers, or proves that this permutation cannot fit
+under the same-run mixed-BM saving.  The selected short samples are in
+`results/tile4-mixed-frombytes-short.json`.
