@@ -1,0 +1,91 @@
+{
+  "schema": "ntruplus768-forward-bm-redeposit-v1",
+  "benchmark": {
+    "iterations": 2000,
+    "samples": 20,
+    "cpu": 1,
+    "ordering": "paired-AB-BA"
+  },
+  "correctness": {
+    "status": "pass",
+    "checks": [
+      "forward-private-soa-to-aos-exact",
+      "soa-input-basemul-to-champion-exact",
+      "two-forward-basemul-I1-exact"
+    ]
+  },
+  "static_network": {
+    "baseline_stage5_reconstruct_plus_transpose_shuffles_per_block": 16,
+    "combined_packed_stage5_to_planes_shuffles_per_block": 12,
+    "eliminated_shuffles_per_block": 4,
+    "blocks_per_polynomial": 12
+  },
+  "gates": {
+    "forward_core": {
+      "baseline": {
+        "median_tsc": 235.67950000000002,
+        "mad_tsc": 0.7900000000000063
+      },
+      "candidate": {
+        "median_tsc": 269.453,
+        "mad_tsc": 0.3354999999999677
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": 33.9135,
+        "mad_tsc": 1.1850000000000023
+      },
+      "candidate_wins": 0
+    },
+    "full_forward": {
+      "baseline": {
+        "median_tsc": 396.3085,
+        "mad_tsc": 0.2034999999999627
+      },
+      "candidate": {
+        "median_tsc": 423.19100000000003,
+        "mad_tsc": 0.36650000000003047
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": 26.647,
+        "mad_tsc": 1.7185000000000006
+      },
+      "candidate_wins": 0
+    },
+    "basemul": {
+      "baseline": {
+        "median_tsc": 406.5095,
+        "mad_tsc": 1.508499999999998
+      },
+      "candidate": {
+        "median_tsc": 313.7215,
+        "mad_tsc": 0.04749999999998522
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -92.72999999999999,
+        "mad_tsc": 1.5870000000000104
+      },
+      "candidate_wins": 20
+    },
+    "two_forward_bm_i1": {
+      "baseline": {
+        "median_tsc": 1401.1715,
+        "mad_tsc": 5.933999999999969
+      },
+      "candidate": {
+        "median_tsc": 1374.152,
+        "mad_tsc": 2.100999999999999
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -21.2505,
+        "mad_tsc": 3.6769999999999996
+      },
+      "candidate_wins": 17
+    }
+  },
+  "decision": "conditional-pass-chain-gate-only",
+  "thresholds": {
+    "continue_chain_saving_tsc": 20,
+    "hard_stop_below_saving_tsc": 10,
+    "max_extra_per_forward_tsc": 8
+  }
+}

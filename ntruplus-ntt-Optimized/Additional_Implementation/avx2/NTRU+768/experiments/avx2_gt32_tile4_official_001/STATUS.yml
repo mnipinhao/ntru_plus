@@ -602,3 +602,53 @@ basemul_i1_local_fusion_gate:
   interpretation: removed-static-work-is-offset-by-the-longer-coupled-DAG-and-code-shape
   artifact: results/tile4-basemul-attribution-short.json
   next_candidate: A2-F-direct-AoS-wide-BM-plus-I1-only-if-new-DAG-eliminates-32-bit-finalization-and-pack-boundary
+
+forward_terminal_bm_plane_redeposit_gate:
+  result: exact-pass-chain-gate-pass-forward-budget-fail
+  scope: benchmark-only-N5-NTT32-terminal-to-private-BM-SoA
+  network:
+    input: post-forward-stage4-TILE4-registers
+    terminal: Montgomery-stage5-pair-packed-sum-difference
+    output: private-BM-coefficient-planes-e0
+    baseline_stage5_reconstruct_plus_transpose_shuffles_per_block: 16
+    combined_stage5_to_planes_shuffles_per_block: 12
+    eliminated_shuffles_per_block: 4
+    blocks_per_polynomial: 12
+  correctness:
+    - direct-SoA-forward-to-AoS-exact
+    - SoA-input-BM-to-champion-exact
+    - two-forward-BM-I1-exact
+  short_benchmark:
+    iterations_per_sample: 2000
+    samples: 20
+    forward_core:
+      baseline_tsc: 235.679500
+      private_soa_tsc: 269.453000
+      paired_delta_tsc: 33.913500
+      candidate_wins: 0-of-20
+    full_forward:
+      baseline_tsc: 396.308500
+      private_soa_tsc: 423.191000
+      paired_delta_tsc: 26.647000
+      candidate_wins: 0-of-20
+    basemul:
+      aos_champion_tsc: 406.509500
+      soa_input_plus_output_redeposit_tsc: 313.721500
+      paired_saving_tsc: 92.730000
+      candidate_wins: 20-of-20
+    two_forward_bm_i1:
+      baseline_tsc: 1401.171500
+      candidate_tsc: 1374.152000
+      paired_saving_tsc: 21.250500
+      paired_delta_mad_tsc: 3.677000
+      candidate_wins: 17-of-20
+  gates:
+    max_extra_per_forward_tsc: 8
+    measured_extra_per_forward_tsc: 26.647000
+    complete_chain_required_saving_tsc: 20
+    complete_chain_measured_saving_tsc: 21.250500
+  decision: conditional-pass-chain-gate-only
+  reason: real-private-chain-benefits-but-forward-private-representation-is-too-expensive-as-a-standalone-contract
+  production_integration: false
+  artifact: results/tile4-forward-bm-redeposit-short.json
+  next_gate: add-T9-and-real-private-caller-boundaries-before-any-serious-benchmark

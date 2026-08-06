@@ -34,7 +34,8 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	bench-official-cold bench-inverse-short bench-consumer-short \
 	bench-basemul-short bench-promotion promotion-serious \
 	promotion-serious-reversed promotion-pmu promotion-symbols \
-	bench-mixed-frombytes-short bench-basemul-attribution clean
+	bench-mixed-frombytes-short bench-basemul-attribution \
+	bench-forward-bm-redeposit clean
 
 all: test
 
@@ -51,6 +52,7 @@ sanitize: generate $(BUILD)/test_tile4_sanitize
 
 audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 		$(BUILD)/tile4_basemul_attribution_asm.o \
+		$(BUILD)/tile4_forward_bm_soa_attribution_asm.o \
 		$(BUILD)/tile4_inverse_private_asm.o $(BUILD)/tile4_inverse_tail_asm.o \
 		$(BUILD)/tile4_inverse_tail_isolated.o $(BUILD)/tile4_frombytes_asm.o
 	objdump -drwC -Mintel $(BUILD)/tile4_asm.o > $(BUILD)/tile4_asm.dump
@@ -70,6 +72,10 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_basemul_attribution_asm.o | \
 		rg 'gt32_tile4_attr_(transpose_(one|two|three)|basemul_(raw|c3)_soa|basemul_i1_stage01_fused|inverse_i1_cross3|center_c3_soa)_asm'
+	! objdump -drwC -Mintel $(BUILD)/tile4_forward_bm_soa_attribution_asm.o | \
+		rg -n '\[(?:r|e)?sp[+\-]'
+	nm -g --defined-only $(BUILD)/tile4_forward_bm_soa_attribution_asm.o | \
+		rg 'gt32_tile4_attr_forward_all_bm_soa_asm'
 	! objdump -drwC -Mintel $(BUILD)/tile4_inverse_private_asm.o | \
 		rg -n '\[(?:r|e)?sp[+\-]'
 	nm -g --defined-only $(BUILD)/tile4_inverse_private_asm.o | \
@@ -113,6 +119,11 @@ bench-basemul-attribution: generate $(BUILD)/bench_basemul_attribution
 	$(PYTHON) tools/run_basemul_attribution.py \
 		$(BUILD)/bench_basemul_attribution --iterations 2000 \
 		--output results/tile4-basemul-attribution-short.json
+
+bench-forward-bm-redeposit: generate $(BUILD)/bench_forward_bm_redeposit
+	$(PYTHON) tools/run_forward_bm_redeposit.py \
+		$(BUILD)/bench_forward_bm_redeposit --iterations 2000 \
+		--output results/tile4-forward-bm-redeposit-short.json
 
 bench-promotion: generate $(BUILD)/bench_promotion
 	$(BUILD)/bench_promotion 100000 0
@@ -175,6 +186,11 @@ $(BUILD)/tile4_basemul_attribution_asm.o: \
 		generated/tile4_basemul_constants.inc \
 		generated/tile4_constants.inc | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_basemul_attribution_asm.S
+
+$(BUILD)/tile4_forward_bm_soa_attribution_asm.o: \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		generated/tile4_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ src/tile4_forward_bm_soa_attribution_asm.S
 
 $(BUILD)/tile4_inverse_private_asm.o: src/tile4_inverse_private_asm.S \
 		generated/tile4_private_inverse_constants.inc | $(BUILD)
@@ -305,6 +321,16 @@ $(BUILD)/bench_basemul_attribution: src/tile4_asm.S \
 		bench/bench_basemul_attribution.c \
 		$(OFFICIAL)/asm/basemul.s $(OFFICIAL)/asm/ntt.s \
 		$(OFFICIAL)/consts.c
+
+$(BUILD)/bench_forward_bm_redeposit: src/tile4_asm.S \
+		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_forward_bm_redeposit.c $(GEN) | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_basemul_attribution_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S \
+		bench/bench_forward_bm_redeposit.c
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

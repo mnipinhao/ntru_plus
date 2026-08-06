@@ -497,3 +497,29 @@ the same amount elsewhere.  No production kernel calls these symbols.  A
 future Direct-AoS attempt must be the materially different A2-F DAG that also
 eliminates unnecessary 32-bit finalization and the standalone pack boundary;
 this local SoA fusion should not be extended further.
+
+### Forward terminal to private BM planes
+
+The input-side follow-up keeps the N5 frontend and the first four NTT32 stages
+unchanged.  Instead of reconstructing each final stage-5 pair as TILE4 AoS,
+the benchmark-only core retains pair-packed sums and differences and maps
+them directly into the four private BM coefficient planes.  A generated
+`vpshufb`, dword-unpack, and qword-unpack network needs 12 shuffles per
+16-quartic block, versus four stage-5 reconstruction shuffles plus the normal
+12-shuffle transpose.  The composition therefore deletes four real shuffles
+per block rather than merely moving the transpose.
+
+The new representation is exact: converting its output back to AoS matches
+N5 bit for bit, its SoA-input BM matches B3 exactly, and the complete
+`2F + BM + I1` output is exact.  A private-SoA forward costs 26.647 TSC more
+than the matched AoS forward, while the SoA-input arithmetic plus one output
+redeposit saves 92.730 TSC in BM.  The selected repeat of the complete local
+chain measures 1401.172 versus 1374.152 TSC.  Its paired saving is 21.251 TSC
+with MAD 3.677, and it wins 17 of 20 short samples.
+
+This is a conditional pass.  It clears the 20-TSC complete-chain gate but
+misses the original 5--8 TSC per-forward budget by a wide margin.  The result
+is therefore evidence for a caller-private representation island, not a new
+general forward ABI.  It remains benchmark-only until the saving survives
+T9 and the real private caller boundaries; no 100,000-iteration benchmark is
+justified yet.  See `results/tile4-forward-bm-redeposit-short.json`.
