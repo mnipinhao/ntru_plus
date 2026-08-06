@@ -11,7 +11,8 @@
     "checks": [
       "forward-private-soa-to-aos-exact",
       "soa-input-basemul-to-champion-exact",
-      "two-forward-basemul-I1-exact"
+      "two-forward-basemul-I1-exact",
+      "two-forward-basemul-I1-T9-exact"
     ]
   },
   "static_network": {
@@ -23,63 +24,78 @@
   "gates": {
     "forward_core": {
       "baseline": {
-        "median_tsc": 235.67950000000002,
-        "mad_tsc": 0.7900000000000063
+        "median_tsc": 240.951,
+        "mad_tsc": 0.4555000000000007
       },
       "candidate": {
-        "median_tsc": 269.453,
-        "mad_tsc": 0.3354999999999677
+        "median_tsc": 275.3465,
+        "mad_tsc": 0.19449999999997658
       },
       "paired_candidate_minus_baseline": {
-        "median_tsc": 33.9135,
-        "mad_tsc": 1.1850000000000023
+        "median_tsc": 35.1625,
+        "mad_tsc": 1.2085000000000008
       },
       "candidate_wins": 0
     },
     "full_forward": {
       "baseline": {
-        "median_tsc": 396.3085,
-        "mad_tsc": 0.2034999999999627
+        "median_tsc": 399.96500000000003,
+        "mad_tsc": 0.1915000000000191
       },
       "candidate": {
-        "median_tsc": 423.19100000000003,
-        "mad_tsc": 0.36650000000003047
+        "median_tsc": 432.4495,
+        "mad_tsc": 0.32499999999998863
       },
       "paired_candidate_minus_baseline": {
-        "median_tsc": 26.647,
-        "mad_tsc": 1.7185000000000006
+        "median_tsc": 32.513000000000005,
+        "mad_tsc": 1.4935000000000063
       },
       "candidate_wins": 0
     },
     "basemul": {
       "baseline": {
-        "median_tsc": 406.5095,
-        "mad_tsc": 1.508499999999998
+        "median_tsc": 405.364,
+        "mad_tsc": 7.441999999999979
       },
       "candidate": {
-        "median_tsc": 313.7215,
-        "mad_tsc": 0.04749999999998522
+        "median_tsc": 307.2505,
+        "mad_tsc": 0.05850000000000932
       },
       "paired_candidate_minus_baseline": {
-        "median_tsc": -92.72999999999999,
-        "mad_tsc": 1.5870000000000104
+        "median_tsc": -93.944,
+        "mad_tsc": 3.217500000000001
       },
       "candidate_wins": 20
     },
     "two_forward_bm_i1": {
       "baseline": {
-        "median_tsc": 1401.1715,
-        "mad_tsc": 5.933999999999969
+        "median_tsc": 1465.5475000000001,
+        "mad_tsc": 1.6535000000000082
       },
       "candidate": {
-        "median_tsc": 1374.152,
-        "mad_tsc": 2.100999999999999
+        "median_tsc": 1441.5985,
+        "mad_tsc": 2.475999999999999
       },
       "paired_candidate_minus_baseline": {
-        "median_tsc": -21.2505,
-        "mad_tsc": 3.6769999999999996
+        "median_tsc": -23.243000000000002,
+        "mad_tsc": 3.5344999999999995
       },
-      "candidate_wins": 17
+      "candidate_wins": 20
+    },
+    "two_forward_bm_i1_t9": {
+      "baseline": {
+        "median_tsc": 1713.992,
+        "mad_tsc": 8.285999999999945
+      },
+      "candidate": {
+        "median_tsc": 1678.3885,
+        "mad_tsc": 7.275999999999954
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -39.05,
+        "mad_tsc": 8.504000000000001
+      },
+      "candidate_wins": 20
     }
   },
   "decision": "conditional-pass-chain-gate-only",

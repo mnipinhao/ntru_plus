@@ -511,15 +511,45 @@ per block rather than merely moving the transpose.
 
 The new representation is exact: converting its output back to AoS matches
 N5 bit for bit, its SoA-input BM matches B3 exactly, and the complete
-`2F + BM + I1` output is exact.  A private-SoA forward costs 26.647 TSC more
-than the matched AoS forward, while the SoA-input arithmetic plus one output
-redeposit saves 92.730 TSC in BM.  The selected repeat of the complete local
-chain measures 1401.172 versus 1374.152 TSC.  Its paired saving is 21.251 TSC
-with MAD 3.677, and it wins 17 of 20 short samples.
+`2F + BM + I1` output is exact.  In the T9-linked corroboration binary, a
+private-SoA forward costs 32.513 TSC more than the matched AoS forward, while
+the SoA-input arithmetic plus one output redeposit saves 93.944 TSC in BM.
+The local chain measures 1465.548 versus 1441.599 TSC, a paired saving of
+23.243 TSC with MAD 3.535 and 20/20 wins.
+
+Adding the unchanged T9 tail preserves and enlarges the directional result:
+`2F + BM + I1 + T9` measures 1713.992 versus 1678.389 TSC.  The paired saving
+is 39.050 TSC with MAD 8.504 and 20/20 wins.  This remains a short kernel-chain
+gate rather than a real decapsulation caller result, but T9 is no longer the
+blocker.
 
 This is a conditional pass.  It clears the 20-TSC complete-chain gate but
 misses the original 5--8 TSC per-forward budget by a wide margin.  The result
 is therefore evidence for a caller-private representation island, not a new
 general forward ABI.  It remains benchmark-only until the saving survives
-T9 and the real private caller boundaries; no 100,000-iteration benchmark is
-justified yet.  See `results/tile4-forward-bm-redeposit-short.json`.
+the real private caller boundaries; no 100,000-iteration benchmark is justified
+yet.  See `results/tile4-forward-bm-redeposit-short.json`.
+
+### A2-F common bilinear DAG feasibility
+
+The generator now expands every post-I1-stage1 quartic coefficient into its
+source leaf, `a_i*b_j`, lambda, sign, inverse-twiddle, and Montgomery-scale
+terms.  The minimal two-leaf A2-F1 proof succeeds: the worst raw `U+/-V` is
+931047552, its REDC numerator is 1157602047, and narrowing is bounded by
+17664.  All remain within signed int32 and int16 respectively.
+
+The four-leaf A2-F2 candidate fails before assembly.  The nontrivial ordinary
+inverse twiddle is 708, so directly evaluating the weighted raw expression is
+bounded by 660112714368, far outside int32.  Folding the twiddle into dynamic
+B operands is safe, but its two B pre-twiddle Montgomery chains merely replace
+the two original stage-1 twiddle chains: the reduction count stays six per
+four leaves.  A one-pass allocation also needs all 16 YMM before reserving a
+shuffle mask or reducer constant; splitting c01/c23 avoids spills only by
+rebuilding the A1 D-vectors.
+
+Consequently no A2-F assembly is emitted.  This is the requested aggressive
+gate applying its stop rule: the safe factorization removes neither reduction
+chains nor enough representation work to recover A1.  A future reopening
+needs a factorization that shares a dynamic pre-twiddle across multiple
+reductions, or a wider SIMD integer domain.  Full expressions and bounds are
+recorded in `generated/tile4_a2f_dag.json`.

@@ -1383,6 +1383,155 @@ def emit_wide_aos_ranges(path: Path) -> None:
     }, indent=2) + "\n")
 
 
+def emit_a2f_dag(path: Path) -> None:
+    """Expand and gate the Direct-AoS BM plus inverse stage-0/1 DAG."""
+    tau_mont = mont_root(-8)
+    r_mod_q = (1 << 16) % Q
+    tau = (tau_mont * pow(r_mod_q, -1, Q)) % Q
+    if tau > Q // 2:
+        tau -= Q
+    assert tau == 708
+
+    transform = [
+        [1, 1, tau, tau],
+        [1, -1, tau, -tau],
+        [1, 1, -tau, -tau],
+        [1, -1, -tau, tau],
+    ]
+    outputs = []
+    for output_leaf, weights in enumerate(transform):
+        coefficients = []
+        for coefficient in range(4):
+            terms = []
+            for source_leaf, weight in enumerate(weights):
+                for a_coefficient in range(4):
+                    b_coefficient = (coefficient - a_coefficient) % 4
+                    terms.append({
+                        "source_leaf": source_leaf,
+                        "a_coefficient": a_coefficient,
+                        "b_coefficient": b_coefficient,
+                        "lambda_power": int(a_coefficient + b_coefficient >= 4),
+                        "weight": weight,
+                        "sign": 1 if weight > 0 else -1,
+                        "abs_weight": abs(weight),
+                        "accumulator_scale_before_redc": "R^0",
+                    })
+            coefficients.append({
+                "coefficient": coefficient,
+                "term_count": len(terms),
+                "terms": terms,
+            })
+        outputs.append({
+            "output_leaf": output_leaf,
+            "source_weights": weights,
+            "coefficients": coefficients,
+        })
+
+    wide_metadata = json.loads(
+        (GENERATED / "tile4_wide_aos_range.json").read_text())
+    raw_bound = wide_metadata["max_four_term_raw_abs_bound"]
+    stage0_bound = 2 * raw_bound
+    redc_correction_bound = 65535 * Q
+    stage0_redc_numerator_bound = stage0_bound + redc_correction_bound
+    stage0_redc_output_bound = (
+        stage0_redc_numerator_bound + 65535) // 65536
+    weighted_raw_bound = (2 + 2 * abs(tau)) * raw_bound
+
+    # Folding tau into the dynamic right operand keeps int16 inputs safe, but
+    # needs two extra Montgomery operand transforms for leaves 2 and 3.  The
+    # original DAG instead pays two stage-1 twiddle Montgomery chains.
+    baseline_reductions = {
+        "leaf_final_redc": 4,
+        "stage1_twiddle_montgomery": 2,
+        "total_excluding_common_lambda_preprocessing": 6,
+    }
+    folded_operand_reductions = {
+        "weighted_leaf_final_redc": 4,
+        "dynamic_B_pre_twiddle_montgomery": 2,
+        "total_excluding_common_lambda_preprocessing": 6,
+    }
+
+    # One-pass c0..c3 processing needs two dword vectors per transformed leaf.
+    # Even with memory-source constants, eight output accumulators plus the
+    # live A/B and reducer temporaries leave no legal AVX2 allocation.
+    one_pass_registers = {
+        "post_stage1_i32_accumulators": 8,
+        "live_A_and_B": 2,
+        "lambda_or_weighted_B": 2,
+        "vpmaddwd_and_hadd_temporaries": 2,
+        "redc_temporaries": 2,
+        "minimum_live_ymm": 16,
+        "constant_or_shuffle_mask_slots_remaining": 0,
+        "spill_free_with_constants": False,
+    }
+    split_registers = {
+        "strategy": "process-c01-and-c23-separately",
+        "spill_free_possible": True,
+        "cost": "reload-and-rebuild-A1-D-vectors-for-the-second-half",
+        "eliminates_standalone_pack": True,
+        "reduces_finalization_chains": False,
+    }
+
+    result = {
+        "candidate": "A2-F Direct AoS BM plus inverse stage0/1 common bilinear DAG",
+        "input": "four N5 TILE4 AoS leaves, e=0",
+        "output_target": "four post-I1-stage1 leaves, e=-1",
+        "inverse_nontrivial_twiddle": {
+            "power": -8,
+            "montgomery_form": tau_mont,
+            "ordinary_centered": tau,
+        },
+        "expanded_outputs": outputs,
+        "proof_gate_A2_F1": {
+            "raw_leaf_abs_bound": raw_bound,
+            "wide_stage0_U_plus_or_minus_V_abs_bound": stage0_bound,
+            "redc_numerator_abs_bound": stage0_redc_numerator_bound,
+            "redc_output_abs_bound": stage0_redc_output_bound,
+            "signed_int32_safe": stage0_redc_numerator_bound < 2**31,
+            "signed_int16_narrow_safe": stage0_redc_output_bound < 32768,
+            "representation": "REDC(U+/-V): R^0 accumulator -> R^-1 output",
+            "decision": "pass-proof-only",
+        },
+        "proof_gate_A2_F2_direct_weighting": {
+            "formula_bound": "(2+2*abs(tau))*max_raw_leaf",
+            "weighted_raw_abs_bound": weighted_raw_bound,
+            "signed_int32_safe": weighted_raw_bound < 2**31,
+            "decision": "reject-int32-overflow",
+        },
+        "fold_tau_into_dynamic_B_control": {
+            "centered_weighted_B_abs_bound": Q // 2,
+            "vpmaddwd_safe": True,
+            "baseline_reduction_chains_per_four_leaves": baseline_reductions,
+            "folded_reduction_chains_per_four_leaves": folded_operand_reductions,
+            "reduction_chain_saving": 0,
+            "reason": "two dynamic B pre-twiddles replace two stage1 twiddle chains",
+        },
+        "register_gate": {
+            "one_pass": one_pass_registers,
+            "split_control": split_registers,
+        },
+        "assembly_requirements": {
+            "no_standalone_tile4_pack": True,
+            "stage1_twiddle_not_independent": True,
+            "must_reduce_finalization_or_twiddle_chains": True,
+            "maximum_live_ymm": 16,
+        },
+        "assembly_emitted": False,
+        "decision": "stop-current-A2-F2-DAG-before-assembly",
+        "failed_requirements": [
+            "direct weighted int32 accumulators overflow",
+            "safe operand-folding does not reduce reduction chains",
+            "one-pass register plan leaves no constant or mask register",
+            "spill-free split plan recomputes A1 data construction",
+        ],
+        "continuation_condition": (
+            "new factorization must share a dynamic pre-twiddle across more "
+            "than one required reduction or use a wider SIMD integer domain"
+        ),
+    }
+    path.write_text(json.dumps(result, indent=2) + "\n")
+
+
 def emit_ranges(path: Path) -> list[dict[str, int | str]]:
     records: list[dict[str, int | str]] = []
     bound = 1728
@@ -1457,6 +1606,7 @@ def main() -> None:
     frombytes_store_path = GENERATED / "tile4_frombytes_aos_stores.inc"
     direct_soa_plan_path = GENERATED / "tile4_frombytes_direct_soa_plan.json"
     wide_aos_range_path = GENERATED / "tile4_wide_aos_range.json"
+    a2f_dag_path = GENERATED / "tile4_a2f_dag.json"
     emit_asm(asm_path)
     emit_mapping(mapping_path)
     range_records = emit_ranges(range_path)
@@ -1476,6 +1626,7 @@ def main() -> None:
     emit_frombytes_aos_stores(frombytes_store_path)
     emit_direct_soa_plan(direct_soa_plan_path)
     emit_wide_aos_ranges(wide_aos_range_path)
+    emit_a2f_dag(a2f_dag_path)
 
     expected_omega = [
         -147, 484, -794, 874, 109, 864, -446, -554,
@@ -1544,6 +1695,8 @@ def main() -> None:
             direct_soa_plan_path.read_bytes()).hexdigest(),
         "wide_aos_range_sha256": hashlib.sha256(
             wide_aos_range_path.read_bytes()).hexdigest(),
+        "a2f_dag_sha256": hashlib.sha256(
+            a2f_dag_path.read_bytes()).hexdigest(),
     }
     (GENERATED / "tile4_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

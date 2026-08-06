@@ -23,7 +23,8 @@ GEN := generated/tile4_constants.inc generated/tile4_mapping.csv \
 	generated/tile4_serialized_mapping.json \
 	generated/tile4_frombytes_aos_stores.inc \
 	generated/tile4_frombytes_direct_soa_plan.json \
-	generated/tile4_wide_aos_range.json
+	generated/tile4_wide_aos_range.json \
+	generated/tile4_a2f_dag.json
 SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	src/tile4_pack.c src/tile4_inverse_tail.c \
 	src/tile4_frombytes_asm.S src/tile4_inverse_tail_asm.S src/tile4_asm.S \
@@ -325,12 +326,14 @@ $(BUILD)/bench_basemul_attribution: src/tile4_asm.S \
 $(BUILD)/bench_forward_bm_redeposit: src/tile4_asm.S \
 		src/tile4_basemul_asm.S src/tile4_basemul_attribution_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \
-		bench/bench_forward_bm_redeposit.c $(GEN) | $(BUILD)
+		bench/bench_forward_bm_redeposit.c $(GEN) \
+		$(BUILD)/tile4_inverse_tail_isolated.o | $(BUILD)
 	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
 		src/tile4_asm.S src/tile4_basemul_asm.S \
 		src/tile4_basemul_attribution_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \
-		bench/bench_forward_bm_redeposit.c
+		bench/bench_forward_bm_redeposit.c \
+		$(BUILD)/tile4_inverse_tail_isolated.o
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

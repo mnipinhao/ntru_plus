@@ -45,7 +45,7 @@ def main() -> None:
             "paired_candidate_minus_baseline": stats(values["delta"]),
             "candidate_wins": sum(value < 0.0 for value in values["delta"]),
         }
-    chain_delta = summary["two_forward_bm_i1"]["paired_candidate_minus_baseline"]["median_tsc"]
+    chain_delta = summary["two_forward_bm_i1_t9"]["paired_candidate_minus_baseline"]["median_tsc"]
     forward_delta = summary["full_forward"]["paired_candidate_minus_baseline"]["median_tsc"]
     if chain_delta <= -20.0 and forward_delta <= 8.0:
         decision = "pass"
@@ -69,6 +69,7 @@ def main() -> None:
                 "forward-private-soa-to-aos-exact",
                 "soa-input-basemul-to-champion-exact",
                 "two-forward-basemul-I1-exact",
+                "two-forward-basemul-I1-T9-exact",
             ],
         },
         "static_network": {

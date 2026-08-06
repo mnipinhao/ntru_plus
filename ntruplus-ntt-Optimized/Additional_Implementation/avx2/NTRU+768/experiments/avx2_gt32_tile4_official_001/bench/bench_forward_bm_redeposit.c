@@ -19,6 +19,7 @@ static int16_t work_a[WORDS] __attribute__((aligned(64)));
 static int16_t work_b[WORDS] __attribute__((aligned(64)));
 static int16_t product_soa[WORDS] __attribute__((aligned(64)));
 static int16_t product_aos[WORDS] __attribute__((aligned(64)));
+static int16_t inverse_rows[WORDS] __attribute__((aligned(64)));
 static volatile uint64_t sink;
 
 static uint64_t start_tsc(void)
@@ -109,6 +110,28 @@ static void chain_soa(int16_t *out, const int16_t *a, const int16_t *b)
 	gt32_tile4_inverse_all_pair_asm(out, product_aos);
 }
 
+__attribute__((noinline))
+static void chain_aos_t9(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	forward_aos(work_a, a, NULL);
+	forward_aos(work_b, b, NULL);
+	gt32_tile4_basemul_c3center_late_aos_private_asm(product_aos,
+		work_a, work_b);
+	gt32_tile4_inverse_all_pair_asm(inverse_rows, product_aos);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, inverse_rows);
+}
+
+__attribute__((noinline))
+static void chain_soa_t9(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	forward_soa(work_a, a, NULL);
+	forward_soa(work_b, b, NULL);
+	gt32_tile4_attr_basemul_c3_soa_asm(product_soa, work_a, work_b);
+	gt32_tile4_attr_transpose_one_asm(product_aos, product_soa);
+	gt32_tile4_inverse_all_pair_asm(inverse_rows, product_aos);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, inverse_rows);
+}
+
 struct gate {
 	const char *name;
 	kernel_fn baseline;
@@ -182,6 +205,12 @@ int main(int argc, char **argv)
 		fprintf(stderr, "SoA forward plus BM differential failed\n");
 		return 1;
 	}
+	chain_aos_t9(out0, coefficients_a, coefficients_b);
+	chain_soa_t9(out1, coefficients_a, coefficients_b);
+	if (!exact_equal(out0, out1)) {
+		fprintf(stderr, "full redeposit chain plus T9 differential failed\n");
+		return 1;
+	}
 	chain_aos(out0, coefficients_a, coefficients_b);
 	chain_soa(out1, coefficients_a, coefficients_b);
 	if (!exact_equal(out0, out1)) {
@@ -197,6 +226,8 @@ int main(int argc, char **argv)
 		{"basemul", bm_aos, bm_soa,
 			ntt_aos_a, ntt_aos_b, ntt_soa_a, ntt_soa_b},
 		{"two_forward_bm_i1", chain_aos, chain_soa,
+			coefficients_a, coefficients_b, coefficients_a, coefficients_b},
+		{"two_forward_bm_i1_t9", chain_aos_t9, chain_soa_t9,
 			coefficients_a, coefficients_b, coefficients_a, coefficients_b},
 	};
 	const size_t gate_count = sizeof(gates) / sizeof(gates[0]);

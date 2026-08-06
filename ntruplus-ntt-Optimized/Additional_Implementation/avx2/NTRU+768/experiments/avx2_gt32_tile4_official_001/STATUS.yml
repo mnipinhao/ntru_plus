@@ -618,37 +618,83 @@ forward_terminal_bm_plane_redeposit_gate:
     - direct-SoA-forward-to-AoS-exact
     - SoA-input-BM-to-champion-exact
     - two-forward-BM-I1-exact
+    - two-forward-BM-I1-T9-exact
   short_benchmark:
     iterations_per_sample: 2000
     samples: 20
     forward_core:
-      baseline_tsc: 235.679500
-      private_soa_tsc: 269.453000
-      paired_delta_tsc: 33.913500
+      baseline_tsc: 240.951000
+      private_soa_tsc: 275.346500
+      paired_delta_tsc: 35.162500
       candidate_wins: 0-of-20
     full_forward:
-      baseline_tsc: 396.308500
-      private_soa_tsc: 423.191000
-      paired_delta_tsc: 26.647000
+      baseline_tsc: 399.965000
+      private_soa_tsc: 432.449500
+      paired_delta_tsc: 32.513000
       candidate_wins: 0-of-20
     basemul:
-      aos_champion_tsc: 406.509500
-      soa_input_plus_output_redeposit_tsc: 313.721500
-      paired_saving_tsc: 92.730000
+      aos_champion_tsc: 405.364000
+      soa_input_plus_output_redeposit_tsc: 307.250500
+      paired_saving_tsc: 93.944000
       candidate_wins: 20-of-20
     two_forward_bm_i1:
-      baseline_tsc: 1401.171500
-      candidate_tsc: 1374.152000
-      paired_saving_tsc: 21.250500
-      paired_delta_mad_tsc: 3.677000
-      candidate_wins: 17-of-20
+      baseline_tsc: 1465.547500
+      candidate_tsc: 1441.598500
+      paired_saving_tsc: 23.243000
+      paired_delta_mad_tsc: 3.534500
+      candidate_wins: 20-of-20
+    two_forward_bm_i1_t9:
+      baseline_tsc: 1713.992000
+      candidate_tsc: 1678.388500
+      paired_saving_tsc: 39.050000
+      paired_delta_mad_tsc: 8.504000
+      candidate_wins: 20-of-20
   gates:
     max_extra_per_forward_tsc: 8
-    measured_extra_per_forward_tsc: 26.647000
+    measured_extra_per_forward_tsc: 32.513000
     complete_chain_required_saving_tsc: 20
-    complete_chain_measured_saving_tsc: 21.250500
+    complete_chain_measured_saving_tsc: 39.050000
   decision: conditional-pass-chain-gate-only
   reason: real-private-chain-benefits-but-forward-private-representation-is-too-expensive-as-a-standalone-contract
   production_integration: false
   artifact: results/tile4-forward-bm-redeposit-short.json
-  next_gate: add-T9-and-real-private-caller-boundaries-before-any-serious-benchmark
+  next_gate: real-private-caller-boundaries-before-any-serious-benchmark
+
+a2f_symbolic_dag_gate:
+  result: F1-proof-pass-F2-static-reject
+  candidate: Direct-AoS-BM-plus-I1-stage0-stage1-common-bilinear-DAG
+  inverse_twiddle:
+    montgomery_form: -366
+    ordinary_centered: 708
+  A2_F1_two_leaf_stage0:
+    raw_leaf_abs_bound: 465523776
+    U_plus_or_minus_V_abs_bound: 931047552
+    redc_numerator_abs_bound: 1157602047
+    redc_output_abs_bound: 17664
+    int32_safe: true
+    int16_narrow_safe: true
+    decision: proof-pass-only
+  A2_F2_four_leaf_weighted:
+    direct_weighted_raw_abs_bound: 660112714368
+    int32_safe: false
+    decision: reject-direct-weighted-accumulator
+  folded_dynamic_B_control:
+    centered_weighted_B_abs_bound: 1728
+    vpmaddwd_safe: true
+    baseline_reduction_chains_per_four_leaves: 6
+    folded_reduction_chains_per_four_leaves: 6
+    reduction_chain_saving: 0
+  register_gate:
+    one_pass_minimum_live_ymm: 16
+    constant_or_mask_slots_remaining: 0
+    spill_free_with_constants: false
+    split_control: spill-free-but-rebuilds-A1-D-vectors
+  assembly_emitted: false
+  decision: stop-current-A2-F2-DAG-before-assembly
+  failed_requirements:
+    - direct-weighted-int32-overflow
+    - safe-operand-folding-does-not-reduce-reduction-chains
+    - one-pass-register-plan-has-no-constant-or-mask-slot
+    - split-plan-recomputes-A1-data-construction
+  artifact: generated/tile4_a2f_dag.json
+  continuation_condition: new-factorization-shares-dynamic-pre-twiddle-or-uses-wider-SIMD-integer-domain
