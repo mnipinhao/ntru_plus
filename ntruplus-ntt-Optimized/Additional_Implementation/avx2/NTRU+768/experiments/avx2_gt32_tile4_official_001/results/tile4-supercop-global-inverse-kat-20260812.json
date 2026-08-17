@@ -1,0 +1,32 @@
+{
+  "experiment": "GT32-SUPERCOP-GLOBAL-INVERSE-KAT-20260812",
+  "implementation": "/home/nuc/supercop-20260627/crypto_kem/ntruplus768/avx2-gt-global-inverse",
+  "format": "NIST PQCgenKAT_kem",
+  "parameter_set": "NTRU+768",
+  "vector_file": "PQCkemKAT_2336",
+  "vectors": 100,
+  "deterministic_rng": "AES256-CTR-DRBG",
+  "initial_entropy": "00..2f",
+  "fields_compared": ["count", "seed", "pk", "sk", "ct", "ss"],
+  "comparison": {
+    "canonical_directory": "/home/nuc/supercop-20260627/import/ntruplus-20260723/KAT/NTRU+768",
+    "request_byte_exact": true,
+    "response_byte_exact": true,
+    "keypair_vectors_passed": 100,
+    "encapsulation_vectors_passed": 100,
+    "decapsulation_shared_secrets_passed": 100
+  },
+  "sha256": {
+    "PQCkemKAT_2336.req": "36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa",
+    "PQCkemKAT_2336.rsp": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
+  },
+  "compiler": "gcc -O3 -mavx2 -mbmi2 -mpopcnt -maes -march=native -mtune=native",
+  "result": "pass",
+  "scope_note": "The standard KAT contains valid deterministic KEM vectors. Malformed ciphertext and noncanonical encoding behavior remain covered by the existing GT differential and SUPERcop try tests, not by PQCgenKAT_kem.",
+  "reproduce": "tools/run_supercop_global_inverse_kat.sh",
+  "artifacts": {
+    "response": "results/kat-supercop-global-inverse-20260812/PQCkemKAT_2336.rsp",
+    "summary": "results/kat-supercop-global-inverse-20260812/result.txt",
+    "hashes": "results/kat-supercop-global-inverse-20260812/sha256.txt"
+  }
+}

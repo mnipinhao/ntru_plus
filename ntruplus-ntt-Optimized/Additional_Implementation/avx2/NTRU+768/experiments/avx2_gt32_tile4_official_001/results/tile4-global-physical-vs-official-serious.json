@@ -1,0 +1,635 @@
+{
+  "schema": "ntruplus768-gt32-global-physical-whole-short-v1",
+  "experiment": "GT32-GLOBAL-PHYSICAL-001",
+  "scope": "coefficient-input 2F+B3+inverse-core+T9 coefficient-output; whole-only",
+  "control": "Official Main poly_ntt x2 + basemul_scale + invntt_scale",
+  "candidate": "typed GT frontend + global Forward-to-M x2 + B3-to-M + global inverse M-to-AoS + T9",
+  "comparison": "official-main",
+  "benchmark": {
+    "iterations": 100000,
+    "samples_per_launch": 20,
+    "launches": 4,
+    "ordering": "paired AB/BA",
+    "placements": [
+      "normal",
+      "reversed-link-order"
+    ],
+    "primary": "region-scoped core cycles when perf_event is available",
+    "secondary": "TSC",
+    "hierarchical_gate": "all launch medians negative, aggregate paired wins >=90%, placement median saving >=20 TSC"
+  },
+  "correctness": "1000-trial exact Forward/inverse/core-whole and alias pass; each benchmark launch checks exact coefficient output",
+  "placements": {
+    "normal": {
+      "binary": "build/bench_global_physical_official",
+      "launches": [
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -161.69431,
+              "mad": 16.774900000000002
+            },
+            "core_cycles": {
+              "median": -259.63142,
+              "mad": 29.743359999999996
+            },
+            "instructions": {
+              "median": -1515.00005,
+              "mad": 1.0000000202126103e-05
+            },
+            "ref_cycles": {
+              "median": -161.7876,
+              "mad": 14.584050000000005
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1728.21226,
+              "mad": 25.450129999999945
+            },
+            "core_cycles": {
+              "median": 2751.6084849999997,
+              "mad": 44.32959499999993
+            },
+            "instructions": {
+              "median": 8280.50112,
+              "mad": 1.0000001566368155e-05
+            },
+            "ref_cycles": {
+              "median": 1726.18251,
+              "mad": 26.33319000000006
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1560.62802,
+              "mad": 24.460820000000126
+            },
+            "core_cycles": {
+              "median": 2482.1990100000003,
+              "mad": 33.41762500000027
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1551.99993,
+              "mad": 20.89346999999998
+            }
+          },
+          "candidate_wins_tsc": 19,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -169.18836,
+              "mad": 21.627089999999995
+            },
+            "core_cycles": {
+              "median": -264.18091000000004,
+              "mad": 29.278435000000044
+            },
+            "instructions": {
+              "median": -1515.00006,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -169.16055,
+              "mad": 25.129259999999988
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1709.1595,
+              "mad": 16.08283999999992
+            },
+            "core_cycles": {
+              "median": 2726.227415,
+              "mad": 21.11422999999968
+            },
+            "instructions": {
+              "median": 8280.501115,
+              "mad": 5.000001692678779e-06
+            },
+            "ref_cycles": {
+              "median": 1707.3751499999998,
+              "mad": 17.04065999999989
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1536.0563200000001,
+              "mad": 3.9075100000001157
+            },
+            "core_cycles": {
+              "median": 2454.1454700000004,
+              "mad": 5.7902449999999135
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1534.45851,
+              "mad": 3.6176399999999376
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -160.52865,
+              "mad": 6.379270000000005
+            },
+            "core_cycles": {
+              "median": -256.38945,
+              "mad": 8.640109999999993
+            },
+            "instructions": {
+              "median": -1515.000055,
+              "mad": 5.000000101063051e-06
+            },
+            "ref_cycles": {
+              "median": -160.30793999999997,
+              "mad": 5.445570000000032
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1697.132,
+              "mad": 3.4606699999999364
+            },
+            "core_cycles": {
+              "median": 2711.732485,
+              "mad": 4.7339150000000245
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1695.51798,
+              "mad": 2.9597100000000864
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1537.6633000000002,
+              "mad": 3.2532799999999042
+            },
+            "core_cycles": {
+              "median": 2457.00832,
+              "mad": 5.156479999999874
+            },
+            "instructions": {
+              "median": 6765.501055,
+              "mad": 4.999999873689376e-06
+            },
+            "ref_cycles": {
+              "median": 1536.25056,
+              "mad": 3.2237400000000207
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -158.23266,
+              "mad": 5.610509999999991
+            },
+            "core_cycles": {
+              "median": -252.96935,
+              "mad": 8.731960000000015
+            },
+            "instructions": {
+              "median": -1515.00005,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -158.16294,
+              "mad": 5.462729999999993
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1699.22848,
+              "mad": 3.54191000000003
+            },
+            "core_cycles": {
+              "median": 2714.17612,
+              "mad": 4.952080000000024
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1697.1376500000001,
+              "mad": 3.1878600000001143
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1540.46969,
+              "mad": 4.639789999999948
+            },
+            "core_cycles": {
+              "median": 2460.87831,
+              "mad": 8.799369999999954
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 4.999999873689376e-06
+            },
+            "ref_cycles": {
+              "median": 1538.66895,
+              "mad": 5.4260699999999815
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        }
+      ],
+      "launch_median_summary": {
+        "tsc": {
+          "median": -161.11148,
+          "mad": 1.7308249999999958
+        },
+        "core_cycles": {
+          "median": -258.01043500000003,
+          "mad": 3.3310350000000284
+        },
+        "instructions": {
+          "median": -1515.0000525,
+          "mad": 2.499999936844688e-06
+        },
+        "ref_cycles": {
+          "median": -161.04776999999999,
+          "mad": 1.8123300000000029
+        }
+      },
+      "control_launch_median_summary": {
+        "tsc": {
+          "median": 1704.19399,
+          "mad": 6.013749999999959
+        },
+        "core_cycles": {
+          "median": 2720.2017674999997,
+          "mad": 7.24746499999992
+        },
+        "instructions": {
+          "median": 8280.501112499998,
+          "mad": 2.499999936844688e-06
+        },
+        "ref_cycles": {
+          "median": 1702.2564,
+          "mad": 5.9285849999998845
+        }
+      },
+      "candidate_launch_median_summary": {
+        "tsc": {
+          "median": 1539.066495,
+          "mad": 2.2066849999998794
+        },
+        "core_cycles": {
+          "median": 2458.943315,
+          "mad": 3.3664199999998345
+        },
+        "instructions": {
+          "median": 6765.50106,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": 1537.4597549999999,
+          "mad": 2.105220000000031
+        }
+      },
+      "negative_launch_medians": {
+        "tsc": 4,
+        "core_cycles": 4,
+        "instructions": 4,
+        "ref_cycles": 4
+      },
+      "aggregate_candidate_wins_tsc": 79,
+      "aggregate_candidate_wins_core_cycles": 80,
+      "total_paired_samples": 80,
+      "all_launches_at_least_18_of_20_tsc_wins": true
+    },
+    "reversed": {
+      "binary": "build/bench_global_physical_official_reversed",
+      "launches": [
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -157.99590999999998,
+              "mad": 6.484649999999988
+            },
+            "core_cycles": {
+              "median": -250.728445,
+              "mad": 9.531140000000008
+            },
+            "instructions": {
+              "median": -1515.000055,
+              "mad": 5.000000101063051e-06
+            },
+            "ref_cycles": {
+              "median": -156.77025,
+              "mad": 5.962710000000001
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1705.7260099999999,
+              "mad": 7.6709799999997585
+            },
+            "core_cycles": {
+              "median": 2723.449005,
+              "mad": 10.564209999999775
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1702.83945,
+              "mad": 6.599189999999908
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1546.52654,
+              "mad": 5.197239999999965
+            },
+            "core_cycles": {
+              "median": 2470.2710349999998,
+              "mad": 8.447365000000218
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1544.7065400000001,
+              "mad": 5.143320000000017
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -158.26242000000002,
+              "mad": 9.353709999999992
+            },
+            "core_cycles": {
+              "median": -249.699255,
+              "mad": 12.315224999999998
+            },
+            "instructions": {
+              "median": -1515.00005,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -156.67626,
+              "mad": 7.702500000000001
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1701.05991,
+              "mad": 9.47962999999993
+            },
+            "core_cycles": {
+              "median": 2714.998445,
+              "mad": 12.559970000000249
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1697.5569,
+              "mad": 7.854600000000005
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1544.21134,
+              "mad": 7.216650000000072
+            },
+            "core_cycles": {
+              "median": 2467.28233,
+              "mad": 11.323454999999967
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1542.67191,
+              "mad": 7.075770000000034
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -155.74203,
+              "mad": 15.153559999999999
+            },
+            "core_cycles": {
+              "median": -249.07875,
+              "mad": 15.673419999999993
+            },
+            "instructions": {
+              "median": -1515.00005,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -155.73050999999998,
+              "mad": 9.795240000000007
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1708.41219,
+              "mad": 15.258989999999926
+            },
+            "core_cycles": {
+              "median": 2726.46206,
+              "mad": 21.937239999999974
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1704.72666,
+              "mad": 13.63713000000007
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1546.80758,
+              "mad": 12.224659999999972
+            },
+            "core_cycles": {
+              "median": 2471.0654999999997,
+              "mad": 19.463994999999613
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1545.03609,
+              "mad": 12.164100000000076
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -156.50025,
+              "mad": 7.699769999999987
+            },
+            "core_cycles": {
+              "median": -248.40944,
+              "mad": 13.284430000000015
+            },
+            "instructions": {
+              "median": -1515.000055,
+              "mad": 5.000000101063051e-06
+            },
+            "ref_cycles": {
+              "median": -157.71756,
+              "mad": 10.042109999999994
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1698.04062,
+              "mad": 5.275269999999978
+            },
+            "core_cycles": {
+              "median": 2711.957415,
+              "mad": 6.936519999999973
+            },
+            "instructions": {
+              "median": 8280.50111,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1695.65877,
+              "mad": 4.2030300000000125
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1542.8754,
+              "mad": 8.151969999999892
+            },
+            "core_cycles": {
+              "median": 2464.9232,
+              "mad": 13.77863500000035
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1541.20122,
+              "mad": 8.616269999999872
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        }
+      ],
+      "launch_median_summary": {
+        "tsc": {
+          "median": -157.24808,
+          "mad": 0.881085000000013
+        },
+        "core_cycles": {
+          "median": -249.3890025,
+          "mad": 0.6449075000000022
+        },
+        "instructions": {
+          "median": -1515.0000525,
+          "mad": 2.499999936844688e-06
+        },
+        "ref_cycles": {
+          "median": -156.723255,
+          "mad": 0.5198700000000116
+        }
+      },
+      "control_launch_median_summary": {
+        "tsc": {
+          "median": 1703.39296,
+          "mad": 3.676140000000032
+        },
+        "core_cycles": {
+          "median": 2719.223725,
+          "mad": 5.731807500000059
+        },
+        "instructions": {
+          "median": 8280.50111,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": 1700.198175,
+          "mad": 3.5848799999999983
+        }
+      },
+      "candidate_launch_median_summary": {
+        "tsc": {
+          "median": 1545.36894,
+          "mad": 1.2981199999999262
+        },
+        "core_cycles": {
+          "median": 2468.7766825,
+          "mad": 1.89158499999985
+        },
+        "instructions": {
+          "median": 6765.50106,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": 1543.689225,
+          "mad": 1.1820900000000165
+        }
+      },
+      "negative_launch_medians": {
+        "tsc": 4,
+        "core_cycles": 4,
+        "instructions": 4,
+        "ref_cycles": 4
+      },
+      "aggregate_candidate_wins_tsc": 80,
+      "aggregate_candidate_wins_core_cycles": 80,
+      "total_paired_samples": 80,
+      "all_launches_at_least_18_of_20_tsc_wins": true
+    }
+  },
+  "decision": "serious-qualified-private-caller-integration"
+}

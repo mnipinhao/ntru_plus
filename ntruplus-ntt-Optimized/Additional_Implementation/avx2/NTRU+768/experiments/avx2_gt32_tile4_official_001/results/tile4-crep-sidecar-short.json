@@ -1,0 +1,372 @@
+{
+  "schema": "ntruplus768-gt32-crep-sidecar-benchmark-v1",
+  "experiment": "GT32-CREPMOD3-SIDECAR-TAP-001",
+  "method": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 8,
+    "order": "paired AB/BA",
+    "primary_unit": "launch median",
+    "full_m_materialized": true,
+    "n5_path": "unchanged"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_crep_sidecar",
+      "gates": {
+        "producer_s1": {
+          "paired_delta": {
+            "median": 31.344,
+            "mad": 1.2140000000000022
+          },
+          "wins": 3,
+          "samples": 160,
+          "launch_medians": [
+            30.713,
+            30.7675,
+            33.290000000000006,
+            30.872999999999998,
+            31.408,
+            31.7915,
+            32.206500000000005,
+            31.516
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            30.7675,
+            32.206500000000005
+          ]
+        },
+        "producer_s2": {
+          "paired_delta": {
+            "median": 31.3965,
+            "mad": 1.6795000000000009
+          },
+          "wins": 2,
+          "samples": 160,
+          "launch_medians": [
+            31.258499999999998,
+            31.3525,
+            33.0945,
+            26.866999999999997,
+            31.945,
+            30.903,
+            31.351,
+            30.287999999999997
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            30.287999999999997,
+            31.945
+          ]
+        },
+        "sotp": {
+          "paired_delta": {
+            "median": -78.83850000000001,
+            "mad": 0.40100000000001046
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -78.8555,
+            -78.99549999999999,
+            -79.058,
+            -78.3045,
+            -78.894,
+            -78.14699999999999,
+            -77.042,
+            -76.005
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -78.99549999999999,
+            -77.042
+          ]
+        },
+        "crep_sotp_s1": {
+          "paired_delta": {
+            "median": -40.824,
+            "mad": 1.654
+          },
+          "wins": 158,
+          "samples": 160,
+          "launch_medians": [
+            -41.5675,
+            -41.2355,
+            -39.9,
+            -37.7175,
+            -41.302499999999995,
+            -38.872,
+            -40.715500000000006,
+            -40.881
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -41.302499999999995,
+            -38.872
+          ]
+        },
+        "crep_sotp_s2": {
+          "paired_delta": {
+            "median": -40.7165,
+            "mad": 0.8120000000000012
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -41.138,
+            -41.4945,
+            -40.322500000000005,
+            -42.0065,
+            -40.715,
+            -40.221000000000004,
+            -41.3805,
+            -40.628
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -41.4945,
+            -40.322500000000005
+          ]
+        },
+        "crep_n5_sotp_s1": {
+          "paired_delta": {
+            "median": -45.631,
+            "mad": 1.6394999999999982
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -46.423,
+            -46.548,
+            -43.894999999999996,
+            -46.428,
+            -45.919,
+            -45.460499999999996,
+            -44.4985,
+            -43.022999999999996
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -46.428,
+            -43.894999999999996
+          ]
+        },
+        "crep_n5_sotp_s2": {
+          "paired_delta": {
+            "median": -44.8965,
+            "mad": 1.7575000000000003
+          },
+          "wins": 159,
+          "samples": 160,
+          "launch_medians": [
+            -45.406000000000006,
+            -45.062,
+            -43.728,
+            -45.547,
+            -44.8655,
+            -44.7635,
+            -43.965999999999994,
+            -44.574
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -45.406000000000006,
+            -43.965999999999994
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_crep_sidecar_reversed",
+      "gates": {
+        "producer_s1": {
+          "paired_delta": {
+            "median": 31.003,
+            "mad": 0.7814999999999994
+          },
+          "wins": 0,
+          "samples": 160,
+          "launch_medians": [
+            31.9155,
+            29.487000000000002,
+            31.162999999999997,
+            31.2715,
+            30.866,
+            30.8465,
+            30.8165,
+            30.32
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            30.32,
+            31.2715
+          ]
+        },
+        "producer_s2": {
+          "paired_delta": {
+            "median": 31.2775,
+            "mad": 0.5890000000000004
+          },
+          "wins": 1,
+          "samples": 160,
+          "launch_medians": [
+            32.201,
+            29.868,
+            31.576,
+            31.683,
+            31.352,
+            31.127,
+            31.127,
+            30.012999999999998
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            30.012999999999998,
+            31.683
+          ]
+        },
+        "sotp": {
+          "paired_delta": {
+            "median": -78.951,
+            "mad": 0.12050000000000693
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -78.9925,
+            -78.72749999999999,
+            -78.96449999999999,
+            -78.9545,
+            -79.04750000000001,
+            -74.011,
+            -79.01150000000001,
+            -77.3345
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -79.01150000000001,
+            -77.3345
+          ]
+        },
+        "crep_sotp_s1": {
+          "paired_delta": {
+            "median": -41.585499999999996,
+            "mad": 0.7905000000000015
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -41.5595,
+            -41.565,
+            -41.723,
+            -41.552,
+            -41.7935,
+            -35.033,
+            -42.158,
+            -40.1255
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -41.7935,
+            -40.1255
+          ]
+        },
+        "crep_sotp_s2": {
+          "paired_delta": {
+            "median": -41.0225,
+            "mad": 1.0504999999999995
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -40.9625,
+            -41.099000000000004,
+            -40.469,
+            -40.647999999999996,
+            -42.771,
+            -40.8665,
+            -41.450500000000005,
+            -39.2
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -41.450500000000005,
+            -40.469
+          ]
+        },
+        "crep_n5_sotp_s1": {
+          "paired_delta": {
+            "median": -45.7465,
+            "mad": 1.6910000000000025
+          },
+          "wins": 159,
+          "samples": 160,
+          "launch_medians": [
+            -45.775499999999994,
+            -46.245999999999995,
+            -45.6965,
+            -45.3275,
+            -47.2275,
+            -44.7585,
+            -42.4905,
+            -45.837999999999994
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -46.245999999999995,
+            -44.7585
+          ]
+        },
+        "crep_n5_sotp_s2": {
+          "paired_delta": {
+            "median": -45.962,
+            "mad": 1.4440000000000026
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -46.042500000000004,
+            -45.972,
+            -45.613,
+            -45.683499999999995,
+            -45.628,
+            -46.007999999999996,
+            -46.4755,
+            -45.7315
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -46.042500000000004,
+            -45.628
+          ]
+        }
+      }
+    }
+  },
+  "continuation_gate": {
+    "minimum_full_region_saving_tsc": 30.0,
+    "maximum_producer_cost_tsc": 50.0,
+    "engineering_target_producer_cost_tsc": 40.0,
+    "bootstrap_upper_must_be_negative": true,
+    "passing_candidates": [
+      "crep_n5_sotp_s1",
+      "crep_n5_sotp_s2"
+    ]
+  },
+  "decision": "continue-full-decap-integration"
+}

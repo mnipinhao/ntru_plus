@@ -1,0 +1,88 @@
+{
+  "schema": "ntruplus768-gt32-q24-b3-frontier-benchmark-v1",
+  "experiment": "GT32-Q24-DECODE2-B3-FRONTIER-001",
+  "control": "Q24 Decode(c,f) -> two full private-SoA stores -> scale-B3 reload",
+  "candidate": "four Q24 packets per operand -> register SoA block -> unchanged scale-B3",
+  "method": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 16,
+    "order": "paired AB/BA",
+    "primary_unit": "launch median"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_q24_b3_frontier",
+      "paired_delta": {
+        "median": 65.8065,
+        "mad": 5.265499999999996
+      },
+      "wins": 3,
+      "samples": 320,
+      "launch_medians": [
+        65.362,
+        67.7005,
+        69.2945,
+        69.6665,
+        68.52250000000001,
+        66.965,
+        66.5445,
+        64.78399999999999,
+        63.2355,
+        65.7995,
+        65.85,
+        65.2135,
+        63.2385,
+        62.4885,
+        66.5215,
+        65.2465
+      ],
+      "negative_launch_medians": 0,
+      "launches": 16,
+      "launch_median_bootstrap_95_ci": [
+        65.073,
+        67.111
+      ]
+    },
+    "reversed": {
+      "binary": "build/bench_q24_b3_frontier_reversed",
+      "paired_delta": {
+        "median": 64.269,
+        "mad": 4.760000000000005
+      },
+      "wins": 7,
+      "samples": 320,
+      "launch_medians": [
+        60.745000000000005,
+        65.90799999999999,
+        63.9365,
+        67.4125,
+        65.66749999999999,
+        62.349999999999994,
+        59.785,
+        62.5025,
+        64.289,
+        65.2345,
+        66.21950000000001,
+        67.11,
+        67.4105,
+        64.84700000000001,
+        65.20400000000001,
+        61.5945
+      ],
+      "negative_launch_medians": 0,
+      "launches": 16,
+      "launch_median_bootstrap_95_ci": [
+        62.5025,
+        65.90799999999999
+      ]
+    }
+  },
+  "continuation_gate": {
+    "minimum_saving_tsc": 30.0,
+    "minimum_negative_launch_medians": 15,
+    "bootstrap_upper_must_be_negative": true,
+    "pass": false
+  },
+  "decision": "hard-stop-decap-micro-optimization-shift-keygen-encap"
+}

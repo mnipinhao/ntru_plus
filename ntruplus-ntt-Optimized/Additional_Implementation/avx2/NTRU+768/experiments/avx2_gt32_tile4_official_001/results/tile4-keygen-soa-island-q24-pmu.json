@@ -1,0 +1,4633 @@
+{
+  "schema": "ntruplus768-gt32-keygen-p-q24-pmu-v1",
+  "experiment": "GT32-KEYGEN-P-Q24-001",
+  "primary_metric": "cpu_core/cycles per two keygen edges",
+  "secondary_metric": "TSC per two keygen edges",
+  "iterations": 10000,
+  "repeats": 20,
+  "placements": {
+    "normal": {
+      "binary": "build/bench_keygen_soa_island",
+      "sha256": "682a4679418241fb7b7e063d0c999935efa784cfefdb0bf5bd5acccdfb250bca",
+      "gates": {
+        "fbi": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 4161.6849,
+              "gt_median": 3951.3121499999997,
+              "paired_delta_median": -153.80044999999996,
+              "paired_delta_bootstrap_95_ci": [
+                -255.23299999999995,
+                -59.76109999999994
+              ],
+              "gt_wins": 16,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 11728.26005,
+              "gt_median": 8902.524099999999,
+              "paired_delta_median": -2623.1908000000003,
+              "paired_delta_bootstrap_95_ci": [
+                -2940.5697,
+                -2391.58925
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 1436.8854000000001,
+              "gt_median": 1558.7844,
+              "paired_delta_median": 145.04020000000003,
+              "paired_delta_bootstrap_95_ci": [
+                102.77335000000005,
+                179.29025000000001
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1336.0883,
+              "gt_median": 670.4638,
+              "paired_delta_median": -648.7591,
+              "paired_delta_bootstrap_95_ci": [
+                -675.3156,
+                -621.51305
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 2269.9899,
+              "gt_median": 2189.0330999999996,
+              "paired_delta_median": -74.20100000000002,
+              "paired_delta_bootstrap_95_ci": [
+                -98.58339999999976,
+                -58.030700000000024
+              ],
+              "gt_wins": 19,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 2378.4324,
+                "per_call": {
+                  "cpu_core/cycles": 4188.5381,
+                  "cpu_core/instructions": 11789.8332,
+                  "cpu_core/mem_inst_retired.all_loads": 1444.4291,
+                  "cpu_core/mem_inst_retired.all_stores": 1343.1025
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2270.247,
+                "per_call": {
+                  "cpu_core/cycles": 4250.4593,
+                  "cpu_core/instructions": 9608.8522,
+                  "cpu_core/mem_inst_retired.all_loads": 1680.9983,
+                  "cpu_core/mem_inst_retired.all_stores": 722.6746
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2198.7344,
+                "per_call": {
+                  "cpu_core/cycles": 3886.2171,
+                  "cpu_core/instructions": 8736.7134,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7957,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9934
+                }
+              },
+              "official": {
+                "tsc_per_call": 2248.2118,
+                "per_call": {
+                  "cpu_core/cycles": 4316.4049,
+                  "cpu_core/instructions": 12179.4388,
+                  "cpu_core/mem_inst_retired.all_loads": 1492.1614,
+                  "cpu_core/mem_inst_retired.all_stores": 1387.4866
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2257.1722,
+                "per_call": {
+                  "cpu_core/cycles": 4285.4819,
+                  "cpu_core/instructions": 12032.3141,
+                  "cpu_core/mem_inst_retired.all_loads": 1474.1366,
+                  "cpu_core/mem_inst_retired.all_stores": 1370.7266
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2184.8468,
+                "per_call": {
+                  "cpu_core/cycles": 3896.959,
+                  "cpu_core/instructions": 8736.7125,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7959,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9934
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2180.5972,
+                "per_call": {
+                  "cpu_core/cycles": 3893.3232,
+                  "cpu_core/instructions": 8736.7009,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7944,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9917
+                }
+              },
+              "official": {
+                "tsc_per_call": 2347.0328,
+                "per_call": {
+                  "cpu_core/cycles": 4013.9763,
+                  "cpu_core/instructions": 11242.5065,
+                  "cpu_core/mem_inst_retired.all_loads": 1380.1949,
+                  "cpu_core/mem_inst_retired.all_stores": 1280.593
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2282.7164,
+                "per_call": {
+                  "cpu_core/cycles": 4143.7703,
+                  "cpu_core/instructions": 11602.4241,
+                  "cpu_core/mem_inst_retired.all_loads": 1424.2314,
+                  "cpu_core/mem_inst_retired.all_stores": 1321.6766
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2187.8752,
+                "per_call": {
+                  "cpu_core/cycles": 3968.3298,
+                  "cpu_core/instructions": 8941.2655,
+                  "cpu_core/mem_inst_retired.all_loads": 1564.7123,
+                  "cpu_core/mem_inst_retired.all_stores": 672.9595
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2218.4296,
+                "per_call": {
+                  "cpu_core/cycles": 3894.1798,
+                  "cpu_core/instructions": 8736.7124,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7958,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9934
+                }
+              },
+              "official": {
+                "tsc_per_call": 2265.9414,
+                "per_call": {
+                  "cpu_core/cycles": 4158.2415,
+                  "cpu_core/instructions": 11715.5013,
+                  "cpu_core/mem_inst_retired.all_loads": 1435.3223,
+                  "cpu_core/mem_inst_retired.all_stores": 1334.6346
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2318.3528,
+                "per_call": {
+                  "cpu_core/cycles": 4163.5833,
+                  "cpu_core/instructions": 11737.3805,
+                  "cpu_core/mem_inst_retired.all_loads": 1438.0029,
+                  "cpu_core/mem_inst_retired.all_stores": 1337.1271
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2182.8984,
+                "per_call": {
+                  "cpu_core/cycles": 4051.4216,
+                  "cpu_core/instructions": 9152.1575,
+                  "cpu_core/mem_inst_retired.all_loads": 1601.1034,
+                  "cpu_core/mem_inst_retired.all_stores": 688.326
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2277.359,
+                "per_call": {
+                  "cpu_core/cycles": 3955.8678,
+                  "cpu_core/instructions": 8909.5657,
+                  "cpu_core/mem_inst_retired.all_loads": 1560.0398,
+                  "cpu_core/mem_inst_retired.all_stores": 671.0014
+                }
+              },
+              "official": {
+                "tsc_per_call": 2251.6104,
+                "per_call": {
+                  "cpu_core/cycles": 4161.0959,
+                  "cpu_core/instructions": 11736.7588,
+                  "cpu_core/mem_inst_retired.all_loads": 1437.9265,
+                  "cpu_core/mem_inst_retired.all_stores": 1337.0561
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2251.4816,
+                "per_call": {
+                  "cpu_core/cycles": 4011.5556,
+                  "cpu_core/instructions": 11242.5022,
+                  "cpu_core/mem_inst_retired.all_loads": 1380.1941,
+                  "cpu_core/mem_inst_retired.all_stores": 1280.5919
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2177.7734,
+                "per_call": {
+                  "cpu_core/cycles": 3916.6734,
+                  "cpu_core/instructions": 8794.9931,
+                  "cpu_core/mem_inst_retired.all_loads": 1539.9961,
+                  "cpu_core/mem_inst_retired.all_stores": 662.3799
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2182.9186,
+                "per_call": {
+                  "cpu_core/cycles": 3888.7217,
+                  "cpu_core/instructions": 8736.7102,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7958,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9934
+                }
+              },
+              "official": {
+                "tsc_per_call": 2408.6586,
+                "per_call": {
+                  "cpu_core/cycles": 4020.8821,
+                  "cpu_core/instructions": 11242.528,
+                  "cpu_core/mem_inst_retired.all_loads": 1380.1936,
+                  "cpu_core/mem_inst_retired.all_stores": 1280.5916
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2283.401,
+                "per_call": {
+                  "cpu_core/cycles": 4352.1537,
+                  "cpu_core/instructions": 12256.2632,
+                  "cpu_core/mem_inst_retired.all_loads": 1501.5735,
+                  "cpu_core/mem_inst_retired.all_stores": 1396.2387
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2181.0754,
+                "per_call": {
+                  "cpu_core/cycles": 3899.0193,
+                  "cpu_core/instructions": 8736.7032,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7943,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9917
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2271.642,
+                "per_call": {
+                  "cpu_core/cycles": 3891.3703,
+                  "cpu_core/instructions": 8736.7165,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7959,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9935
+                }
+              },
+              "official": {
+                "tsc_per_call": 2274.0384,
+                "per_call": {
+                  "cpu_core/cycles": 4172.2054,
+                  "cpu_core/instructions": 11734.3988,
+                  "cpu_core/mem_inst_retired.all_loads": 1437.6377,
+                  "cpu_core/mem_inst_retired.all_stores": 1336.7878
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2347.1212,
+                "per_call": {
+                  "cpu_core/cycles": 4162.2739,
+                  "cpu_core/instructions": 11722.1213,
+                  "cpu_core/mem_inst_retired.all_loads": 1436.1331,
+                  "cpu_core/mem_inst_retired.all_stores": 1335.3888
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2271.615,
+                "per_call": {
+                  "cpu_core/cycles": 3975.5541,
+                  "cpu_core/instructions": 8951.5823,
+                  "cpu_core/mem_inst_retired.all_loads": 1567.4022,
+                  "cpu_core/mem_inst_retired.all_stores": 674.1661
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2269.4726,
+                "per_call": {
+                  "cpu_core/cycles": 4248.7051,
+                  "cpu_core/instructions": 9600.7404,
+                  "cpu_core/mem_inst_retired.all_loads": 1679.5795,
+                  "cpu_core/mem_inst_retired.all_stores": 722.0638
+                }
+              },
+              "official": {
+                "tsc_per_call": 2320.9048,
+                "per_call": {
+                  "cpu_core/cycles": 4022.7356,
+                  "cpu_core/instructions": 11242.5349,
+                  "cpu_core/mem_inst_retired.all_loads": 1380.1948,
+                  "cpu_core/mem_inst_retired.all_stores": 1280.5927
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2405.0458,
+                "per_call": {
+                  "cpu_core/cycles": 4071.4094,
+                  "cpu_core/instructions": 11424.4469,
+                  "cpu_core/mem_inst_retired.all_loads": 1402.3822,
+                  "cpu_core/mem_inst_retired.all_stores": 1301.3905
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2271.2802,
+                "per_call": {
+                  "cpu_core/cycles": 4074.0819,
+                  "cpu_core/instructions": 9198.2348,
+                  "cpu_core/mem_inst_retired.all_loads": 1609.4857,
+                  "cpu_core/mem_inst_retired.all_stores": 692.1668
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2190.191,
+                "per_call": {
+                  "cpu_core/cycles": 4038.0408,
+                  "cpu_core/instructions": 9114.46,
+                  "cpu_core/mem_inst_retired.all_loads": 1594.5079,
+                  "cpu_core/mem_inst_retired.all_stores": 685.4915
+                }
+              },
+              "official": {
+                "tsc_per_call": 2254.8202,
+                "per_call": {
+                  "cpu_core/cycles": 4062.6808,
+                  "cpu_core/instructions": 11397.1165,
+                  "cpu_core/mem_inst_retired.all_loads": 1399.0279,
+                  "cpu_core/mem_inst_retired.all_stores": 1298.2887
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2253.5358,
+                "per_call": {
+                  "cpu_core/cycles": 4010.3432,
+                  "cpu_core/instructions": 11242.4998,
+                  "cpu_core/mem_inst_retired.all_loads": 1380.1939,
+                  "cpu_core/mem_inst_retired.all_stores": 1280.5919
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2178.842,
+                "per_call": {
+                  "cpu_core/cycles": 4025.1267,
+                  "cpu_core/instructions": 9099.7926,
+                  "cpu_core/mem_inst_retired.all_loads": 1591.9423,
+                  "cpu_core/mem_inst_retired.all_stores": 684.3877
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2181.2946,
+                "per_call": {
+                  "cpu_core/cycles": 3946.7565,
+                  "cpu_core/instructions": 8895.4825,
+                  "cpu_core/mem_inst_retired.all_loads": 1557.529,
+                  "cpu_core/mem_inst_retired.all_stores": 669.9262
+                }
+              },
+              "official": {
+                "tsc_per_call": 2246.6938,
+                "per_call": {
+                  "cpu_core/cycles": 4193.1608,
+                  "cpu_core/instructions": 11797.833,
+                  "cpu_core/mem_inst_retired.all_loads": 1446.4558,
+                  "cpu_core/mem_inst_retired.all_stores": 1343.9162
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2256.9416,
+                "per_call": {
+                  "cpu_core/cycles": 4173.1006,
+                  "cpu_core/instructions": 11737.9594,
+                  "cpu_core/mem_inst_retired.all_loads": 1438.0736,
+                  "cpu_core/mem_inst_retired.all_stores": 1337.1931
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2212.605,
+                "per_call": {
+                  "cpu_core/cycles": 4166.4687,
+                  "cpu_core/instructions": 9402.29,
+                  "cpu_core/mem_inst_retired.all_loads": 1644.9744,
+                  "cpu_core/mem_inst_retired.all_stores": 707.2462
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2175.5464,
+                "per_call": {
+                  "cpu_core/cycles": 3888.8545,
+                  "cpu_core/instructions": 8736.7354,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7947,
+                  "cpu_core/mem_inst_retired.all_stores": 657.992
+                }
+              },
+              "official": {
+                "tsc_per_call": 2254.1128,
+                "per_call": {
+                  "cpu_core/cycles": 4183.8674,
+                  "cpu_core/instructions": 11754.8967,
+                  "cpu_core/mem_inst_retired.all_loads": 1441.9189,
+                  "cpu_core/mem_inst_retired.all_stores": 1339.0536
+                }
+              }
+            }
+          ]
+        },
+        "consumer": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 1318.85585,
+              "gt_median": 1217.24635,
+              "paired_delta_median": -96.75789999999995,
+              "paired_delta_bootstrap_95_ci": [
+                -149.66605000000004,
+                -59.46995000000004
+              ],
+              "gt_wins": 16,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 4473.967049999999,
+              "gt_median": 3732.24665,
+              "paired_delta_median": -639.6059,
+              "paired_delta_bootstrap_95_ci": [
+                -920.2414999999999,
+                -581.2640999999996
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 613.2349,
+              "gt_median": 762.6156,
+              "paired_delta_median": 169.33215,
+              "paired_delta_bootstrap_95_ci": [
+                113.60744999999997,
+                180.44445000000002
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 243.08455,
+              "gt_median": 120.9439,
+              "paired_delta_median": -120.0316,
+              "paired_delta_bootstrap_95_ci": [
+                -125.18885,
+                -113.8392
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 690.5898,
+              "gt_median": 642.9812999999999,
+              "paired_delta_median": -43.25210000000004,
+              "paired_delta_bootstrap_95_ci": [
+                -62.34019999999998,
+                -33.205899999999986
+              ],
+              "gt_wins": 18,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 893.4174,
+                "per_call": {
+                  "cpu_core/cycles": 1277.866,
+                  "cpu_core/instructions": 4313.945,
+                  "cpu_core/mem_inst_retired.all_loads": 591.3014,
+                  "cpu_core/mem_inst_retired.all_stores": 234.3902
+                }
+              },
+              "gt": {
+                "tsc_per_call": 647.9172,
+                "per_call": {
+                  "cpu_core/cycles": 1260.0042,
+                  "cpu_core/instructions": 3886.1067,
+                  "cpu_core/mem_inst_retired.all_loads": 793.8404,
+                  "cpu_core/mem_inst_retired.all_stores": 125.1056
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 617.1254,
+                "per_call": {
+                  "cpu_core/cycles": 1265.3235,
+                  "cpu_core/instructions": 3904.2441,
+                  "cpu_core/mem_inst_retired.all_loads": 797.5457,
+                  "cpu_core/mem_inst_retired.all_stores": 125.688
+                }
+              },
+              "official": {
+                "tsc_per_call": 667.2978,
+                "per_call": {
+                  "cpu_core/cycles": 1347.1442,
+                  "cpu_core/instructions": 4561.0086,
+                  "cpu_core/mem_inst_retired.all_loads": 625.1657,
+                  "cpu_core/mem_inst_retired.all_stores": 247.8139
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 675.3978,
+                "per_call": {
+                  "cpu_core/cycles": 1327.1857,
+                  "cpu_core/instructions": 4500.0017,
+                  "cpu_core/mem_inst_retired.all_loads": 616.8037,
+                  "cpu_core/mem_inst_retired.all_stores": 244.5003
+                }
+              },
+              "gt": {
+                "tsc_per_call": 627.9514,
+                "per_call": {
+                  "cpu_core/cycles": 1176.2802,
+                  "cpu_core/instructions": 3564.3988,
+                  "cpu_core/mem_inst_retired.all_loads": 728.7554,
+                  "cpu_core/mem_inst_retired.all_stores": 116.8276
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 681.3684,
+                "per_call": {
+                  "cpu_core/cycles": 1259.7297,
+                  "cpu_core/instructions": 3882.9238,
+                  "cpu_core/mem_inst_retired.all_loads": 793.1901,
+                  "cpu_core/mem_inst_retired.all_stores": 125.0031
+                }
+              },
+              "official": {
+                "tsc_per_call": 679.0926,
+                "per_call": {
+                  "cpu_core/cycles": 1317.5634,
+                  "cpu_core/instructions": 4477.5641,
+                  "cpu_core/mem_inst_retired.all_loads": 613.7282,
+                  "cpu_core/mem_inst_retired.all_stores": 243.281
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 683.2248,
+                "per_call": {
+                  "cpu_core/cycles": 1344.9904,
+                  "cpu_core/instructions": 4552.5474,
+                  "cpu_core/mem_inst_retired.all_loads": 624.006,
+                  "cpu_core/mem_inst_retired.all_stores": 247.3553
+                }
+              },
+              "gt": {
+                "tsc_per_call": 631.6358,
+                "per_call": {
+                  "cpu_core/cycles": 1280.2325,
+                  "cpu_core/instructions": 3942.8547,
+                  "cpu_core/mem_inst_retired.all_loads": 805.433,
+                  "cpu_core/mem_inst_retired.all_stores": 126.9312
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 718.768,
+                "per_call": {
+                  "cpu_core/cycles": 1242.7156,
+                  "cpu_core/instructions": 3838.6354,
+                  "cpu_core/mem_inst_retired.all_loads": 784.1435,
+                  "cpu_core/mem_inst_retired.all_stores": 123.5758
+                }
+              },
+              "official": {
+                "tsc_per_call": 718.9778,
+                "per_call": {
+                  "cpu_core/cycles": 1209.6696,
+                  "cpu_core/instructions": 3984.7731,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5897,
+                  "cpu_core/mem_inst_retired.all_stores": 217.985
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 714.618,
+                "per_call": {
+                  "cpu_core/cycles": 1322.1374,
+                  "cpu_core/instructions": 4473.7732,
+                  "cpu_core/mem_inst_retired.all_loads": 613.2082,
+                  "cpu_core/mem_inst_retired.all_stores": 243.0739
+                }
+              },
+              "gt": {
+                "tsc_per_call": 710.504,
+                "per_call": {
+                  "cpu_core/cycles": 1167.0371,
+                  "cpu_core/instructions": 3533.1053,
+                  "cpu_core/mem_inst_retired.all_loads": 722.3582,
+                  "cpu_core/mem_inst_retired.all_stores": 115.8019
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 701.4022,
+                "per_call": {
+                  "cpu_core/cycles": 1256.6535,
+                  "cpu_core/instructions": 3875.6564,
+                  "cpu_core/mem_inst_retired.all_loads": 791.7057,
+                  "cpu_core/mem_inst_retired.all_stores": 124.7686
+                }
+              },
+              "official": {
+                "tsc_per_call": 690.182,
+                "per_call": {
+                  "cpu_core/cycles": 1203.249,
+                  "cpu_core/instructions": 3984.6846,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5891,
+                  "cpu_core/mem_inst_retired.all_stores": 217.9887
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 665.2308,
+                "per_call": {
+                  "cpu_core/cycles": 1351.2535,
+                  "cpu_core/instructions": 4525.7367,
+                  "cpu_core/mem_inst_retired.all_loads": 620.3308,
+                  "cpu_core/mem_inst_retired.all_stores": 245.8973
+                }
+              },
+              "gt": {
+                "tsc_per_call": 664.4742,
+                "per_call": {
+                  "cpu_core/cycles": 1174.6678,
+                  "cpu_core/instructions": 3575.3326,
+                  "cpu_core/mem_inst_retired.all_loads": 730.9976,
+                  "cpu_core/mem_inst_retired.all_stores": 117.1743
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 627.8466,
+                "per_call": {
+                  "cpu_core/cycles": 1135.8796,
+                  "cpu_core/instructions": 3425.8977,
+                  "cpu_core/mem_inst_retired.all_loads": 700.3914,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3908
+                }
+              },
+              "official": {
+                "tsc_per_call": 719.5628,
+                "per_call": {
+                  "cpu_core/cycles": 1247.5747,
+                  "cpu_core/instructions": 4175.2212,
+                  "cpu_core/mem_inst_retired.all_loads": 574.6862,
+                  "cpu_core/mem_inst_retired.all_stores": 228.3192
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 702.632,
+                "per_call": {
+                  "cpu_core/cycles": 1320.1483,
+                  "cpu_core/instructions": 4476.8659,
+                  "cpu_core/mem_inst_retired.all_loads": 613.6326,
+                  "cpu_core/mem_inst_retired.all_stores": 243.2431
+                }
+              },
+              "gt": {
+                "tsc_per_call": 666.0986,
+                "per_call": {
+                  "cpu_core/cycles": 1253.9033,
+                  "cpu_core/instructions": 3866.2642,
+                  "cpu_core/mem_inst_retired.all_loads": 789.7874,
+                  "cpu_core/mem_inst_retired.all_stores": 124.4652
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 691.4746,
+                "per_call": {
+                  "cpu_core/cycles": 1230.2369,
+                  "cpu_core/instructions": 3803.1071,
+                  "cpu_core/mem_inst_retired.all_loads": 776.886,
+                  "cpu_core/mem_inst_retired.all_stores": 122.4323
+                }
+              },
+              "official": {
+                "tsc_per_call": 764.566,
+                "per_call": {
+                  "cpu_core/cycles": 1211.7956,
+                  "cpu_core/instructions": 3984.685,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5894,
+                  "cpu_core/mem_inst_retired.all_stores": 217.989
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 714.9394,
+                "per_call": {
+                  "cpu_core/cycles": 1258.9787,
+                  "cpu_core/instructions": 4209.5097,
+                  "cpu_core/mem_inst_retired.all_loads": 578.7203,
+                  "cpu_core/mem_inst_retired.all_stores": 229.8231
+                }
+              },
+              "gt": {
+                "tsc_per_call": 638.0454,
+                "per_call": {
+                  "cpu_core/cycles": 1264.8777,
+                  "cpu_core/instructions": 3904.4909,
+                  "cpu_core/mem_inst_retired.all_loads": 797.596,
+                  "cpu_core/mem_inst_retired.all_stores": 125.6971
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 621.9134,
+                "per_call": {
+                  "cpu_core/cycles": 1204.2558,
+                  "cpu_core/instructions": 3661.3862,
+                  "cpu_core/mem_inst_retired.all_loads": 748.3452,
+                  "cpu_core/mem_inst_retired.all_stores": 119.4555
+                }
+              },
+              "official": {
+                "tsc_per_call": 666.2344,
+                "per_call": {
+                  "cpu_core/cycles": 1265.362,
+                  "cpu_core/instructions": 4229.2741,
+                  "cpu_core/mem_inst_retired.all_loads": 582.0609,
+                  "cpu_core/mem_inst_retired.all_stores": 231.2055
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 654.8918,
+                "per_call": {
+                  "cpu_core/cycles": 1293.2867,
+                  "cpu_core/instructions": 4355.6273,
+                  "cpu_core/mem_inst_retired.all_loads": 597.765,
+                  "cpu_core/mem_inst_retired.all_stores": 237.2635
+                }
+              },
+              "gt": {
+                "tsc_per_call": 619.152,
+                "per_call": {
+                  "cpu_core/cycles": 1140.5749,
+                  "cpu_core/instructions": 3425.9194,
+                  "cpu_core/mem_inst_retired.all_loads": 700.39,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3891
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 625.4936,
+                "per_call": {
+                  "cpu_core/cycles": 1153.3852,
+                  "cpu_core/instructions": 3425.8896,
+                  "cpu_core/mem_inst_retired.all_loads": 700.39,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3894
+                }
+              },
+              "official": {
+                "tsc_per_call": 726.3848,
+                "per_call": {
+                  "cpu_core/cycles": 1307.2721,
+                  "cpu_core/instructions": 4349.6493,
+                  "cpu_core/mem_inst_retired.all_loads": 598.7196,
+                  "cpu_core/mem_inst_retired.all_stores": 237.8735
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 656.9194,
+                "per_call": {
+                  "cpu_core/cycles": 1481.8398,
+                  "cpu_core/instructions": 5015.9772,
+                  "cpu_core/mem_inst_retired.all_loads": 687.5272,
+                  "cpu_core/mem_inst_retired.all_stores": 272.535
+                }
+              },
+              "gt": {
+                "tsc_per_call": 617.5818,
+                "per_call": {
+                  "cpu_core/cycles": 1141.3947,
+                  "cpu_core/instructions": 3425.8909,
+                  "cpu_core/mem_inst_retired.all_loads": 700.3902,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3894
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 633.1594,
+                "per_call": {
+                  "cpu_core/cycles": 1178.9934,
+                  "cpu_core/instructions": 3575.0176,
+                  "cpu_core/mem_inst_retired.all_loads": 730.9341,
+                  "cpu_core/mem_inst_retired.all_stores": 117.1629
+                }
+              },
+              "official": {
+                "tsc_per_call": 710.8342,
+                "per_call": {
+                  "cpu_core/cycles": 1327.42,
+                  "cpu_core/instructions": 4491.7409,
+                  "cpu_core/mem_inst_retired.all_loads": 615.6709,
+                  "cpu_core/mem_inst_retired.all_stores": 244.05
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 683.1684,
+                "per_call": {
+                  "cpu_core/cycles": 1323.7302,
+                  "cpu_core/instructions": 4474.1609,
+                  "cpu_core/mem_inst_retired.all_loads": 613.2616,
+                  "cpu_core/mem_inst_retired.all_stores": 243.0952
+                }
+              },
+              "gt": {
+                "tsc_per_call": 652.4964,
+                "per_call": {
+                  "cpu_core/cycles": 1190.0255,
+                  "cpu_core/instructions": 3615.2216,
+                  "cpu_core/mem_inst_retired.all_loads": 739.1135,
+                  "cpu_core/mem_inst_retired.all_stores": 118.2016
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 648.8144,
+                "per_call": {
+                  "cpu_core/cycles": 1259.4163,
+                  "cpu_core/instructions": 3876.2162,
+                  "cpu_core/mem_inst_retired.all_loads": 791.8199,
+                  "cpu_core/mem_inst_retired.all_stores": 124.7872
+                }
+              },
+              "official": {
+                "tsc_per_call": 690.9976,
+                "per_call": {
+                  "cpu_core/cycles": 1371.256,
+                  "cpu_core/instructions": 4498.6635,
+                  "cpu_core/mem_inst_retired.all_loads": 616.6199,
+                  "cpu_core/mem_inst_retired.all_stores": 244.4263
+                }
+              }
+            }
+          ]
+        },
+        "island": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 5303.8628499999995,
+              "gt_median": 5114.10835,
+              "paired_delta_median": -191.31984999999986,
+              "paired_delta_bootstrap_95_ci": [
+                -224.16915000000017,
+                -179.33915000000025
+              ],
+              "gt_wins": 17,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 15710.078300000001,
+              "gt_median": 12548.859550000001,
+              "paired_delta_median": -3159.0183500000003,
+              "paired_delta_bootstrap_95_ci": [
+                -3426.8386499999997,
+                -3119.0189500000006
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 1982.47005,
+              "gt_median": 2297.5072,
+              "paired_delta_median": 315.3125000000001,
+              "paired_delta_bootstrap_95_ci": [
+                270.34245,
+                321.63585
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1545.15695,
+              "gt_median": 791.435,
+              "paired_delta_median": -753.5039999999999,
+              "paired_delta_bootstrap_95_ci": [
+                -778.7579000000001,
+                -749.33535
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 2917.5236,
+              "gt_median": 2797.4543999999996,
+              "paired_delta_median": -115.95630000000028,
+              "paired_delta_bootstrap_95_ci": [
+                -125.4978000000001,
+                -108.94830000000002
+              ],
+              "gt_wins": 16,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 2900.9816,
+                "per_call": {
+                  "cpu_core/cycles": 5578.2991,
+                  "cpu_core/instructions": 16497.8433,
+                  "cpu_core/mem_inst_retired.all_loads": 2081.8786,
+                  "cpu_core/mem_inst_retired.all_stores": 1622.6368
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2784.4078,
+                "per_call": {
+                  "cpu_core/cycles": 5096.781,
+                  "cpu_core/instructions": 12526.5158,
+                  "cpu_core/mem_inst_retired.all_loads": 2293.4166,
+                  "cpu_core/mem_inst_retired.all_stores": 790.0254
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2783.662,
+                "per_call": {
+                  "cpu_core/cycles": 5109.2333,
+                  "cpu_core/instructions": 12556.7269,
+                  "cpu_core/mem_inst_retired.all_loads": 2298.9475,
+                  "cpu_core/mem_inst_retired.all_stores": 791.9312
+                }
+              },
+              "official": {
+                "tsc_per_call": 2900.0726,
+                "per_call": {
+                  "cpu_core/cycles": 5307.3866,
+                  "cpu_core/instructions": 15716.4142,
+                  "cpu_core/mem_inst_retired.all_loads": 1983.2695,
+                  "cpu_core/mem_inst_retired.all_stores": 1545.7802
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2903.6624,
+                "per_call": {
+                  "cpu_core/cycles": 5306.263,
+                  "cpu_core/instructions": 15674.9037,
+                  "cpu_core/mem_inst_retired.all_loads": 1978.0313,
+                  "cpu_core/mem_inst_retired.all_stores": 1541.6971
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2785.093,
+                "per_call": {
+                  "cpu_core/cycles": 5116.0416,
+                  "cpu_core/instructions": 12567.6172,
+                  "cpu_core/mem_inst_retired.all_loads": 2300.9416,
+                  "cpu_core/mem_inst_retired.all_stores": 792.6178
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2786.376,
+                "per_call": {
+                  "cpu_core/cycles": 5113.2579,
+                  "cpu_core/instructions": 12569.4068,
+                  "cpu_core/mem_inst_retired.all_loads": 2301.2694,
+                  "cpu_core/mem_inst_retired.all_stores": 792.7297
+                }
+              },
+              "official": {
+                "tsc_per_call": 2918.8022,
+                "per_call": {
+                  "cpu_core/cycles": 5301.4627,
+                  "cpu_core/instructions": 15701.4798,
+                  "cpu_core/mem_inst_retired.all_loads": 1981.3849,
+                  "cpu_core/mem_inst_retired.all_stores": 1544.311
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3037.658,
+                "per_call": {
+                  "cpu_core/cycles": 5151.7155,
+                  "cpu_core/instructions": 15187.1164,
+                  "cpu_core/mem_inst_retired.all_loads": 1919.1962,
+                  "cpu_core/mem_inst_retired.all_stores": 1493.9933
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2821.635,
+                "per_call": {
+                  "cpu_core/cycles": 4972.9542,
+                  "cpu_core/instructions": 12122.5395,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.596,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7919
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2801.6274,
+                "per_call": {
+                  "cpu_core/cycles": 4958.6215,
+                  "cpu_core/instructions": 12122.5194,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5969,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7933
+                }
+              },
+              "official": {
+                "tsc_per_call": 3028.4132,
+                "per_call": {
+                  "cpu_core/cycles": 5300.5579,
+                  "cpu_core/instructions": 15712.7701,
+                  "cpu_core/mem_inst_retired.all_loads": 1982.81,
+                  "cpu_core/mem_inst_retired.all_stores": 1545.4221
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3029.9672,
+                "per_call": {
+                  "cpu_core/cycles": 5287.7732,
+                  "cpu_core/instructions": 15662.4241,
+                  "cpu_core/mem_inst_retired.all_loads": 1976.4565,
+                  "cpu_core/mem_inst_retired.all_stores": 1540.4697
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2915.198,
+                "per_call": {
+                  "cpu_core/cycles": 5099.7776,
+                  "cpu_core/instructions": 12531.6727,
+                  "cpu_core/mem_inst_retired.all_loads": 2294.3605,
+                  "cpu_core/mem_inst_retired.all_stores": 790.3511
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2986.0686,
+                "per_call": {
+                  "cpu_core/cycles": 5273.0789,
+                  "cpu_core/instructions": 12948.7553,
+                  "cpu_core/mem_inst_retired.all_loads": 2370.7224,
+                  "cpu_core/mem_inst_retired.all_stores": 816.6545
+                }
+              },
+              "official": {
+                "tsc_per_call": 2916.245,
+                "per_call": {
+                  "cpu_core/cycles": 5490.2713,
+                  "cpu_core/instructions": 16221.5204,
+                  "cpu_core/mem_inst_retired.all_loads": 2047.0097,
+                  "cpu_core/mem_inst_retired.all_stores": 1595.4602
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2920.4848,
+                "per_call": {
+                  "cpu_core/cycles": 5157.6662,
+                  "cpu_core/instructions": 15187.1035,
+                  "cpu_core/mem_inst_retired.all_loads": 1919.1951,
+                  "cpu_core/mem_inst_retired.all_stores": 1493.9918
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2803.1284,
+                "per_call": {
+                  "cpu_core/cycles": 5306.3967,
+                  "cpu_core/instructions": 13027.8567,
+                  "cpu_core/mem_inst_retired.all_loads": 2385.2045,
+                  "cpu_core/mem_inst_retired.all_stores": 821.6434
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2791.6276,
+                "per_call": {
+                  "cpu_core/cycles": 5114.9588,
+                  "cpu_core/instructions": 12540.9922,
+                  "cpu_core/mem_inst_retired.all_loads": 2296.0669,
+                  "cpu_core/mem_inst_retired.all_stores": 790.9388
+                }
+              },
+              "official": {
+                "tsc_per_call": 2907.1296,
+                "per_call": {
+                  "cpu_core/cycles": 5312.8793,
+                  "cpu_core/instructions": 15725.133,
+                  "cpu_core/mem_inst_retired.all_loads": 1984.3696,
+                  "cpu_core/mem_inst_retired.all_stores": 1546.6374
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2931.4508,
+                "per_call": {
+                  "cpu_core/cycles": 5298.0677,
+                  "cpu_core/instructions": 15699.2615,
+                  "cpu_core/mem_inst_retired.all_loads": 1981.105,
+                  "cpu_core/mem_inst_retired.all_stores": 1544.0928
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2786.9332,
+                "per_call": {
+                  "cpu_core/cycles": 5105.6494,
+                  "cpu_core/instructions": 12540.9121,
+                  "cpu_core/mem_inst_retired.all_loads": 2296.052,
+                  "cpu_core/mem_inst_retired.all_stores": 790.9338
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2920.492,
+                "per_call": {
+                  "cpu_core/cycles": 5174.2368,
+                  "cpu_core/instructions": 12122.5081,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5955,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7916
+                }
+              },
+              "official": {
+                "tsc_per_call": 2907.48,
+                "per_call": {
+                  "cpu_core/cycles": 5339.7845,
+                  "cpu_core/instructions": 15731.3969,
+                  "cpu_core/mem_inst_retired.all_loads": 1985.16,
+                  "cpu_core/mem_inst_retired.all_stores": 1547.2531
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2900.4562,
+                "per_call": {
+                  "cpu_core/cycles": 5525.5079,
+                  "cpu_core/instructions": 16352.2524,
+                  "cpu_core/mem_inst_retired.all_loads": 2063.5063,
+                  "cpu_core/mem_inst_retired.all_stores": 1608.3172
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2789.414,
+                "per_call": {
+                  "cpu_core/cycles": 5120.3124,
+                  "cpu_core/instructions": 12577.7199,
+                  "cpu_core/mem_inst_retired.all_loads": 2302.7914,
+                  "cpu_core/mem_inst_retired.all_stores": 793.254
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2792.1756,
+                "per_call": {
+                  "cpu_core/cycles": 4967.9805,
+                  "cpu_core/instructions": 12122.5073,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5958,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7922
+                }
+              },
+              "official": {
+                "tsc_per_call": 3020.6666,
+                "per_call": {
+                  "cpu_core/cycles": 5362.993,
+                  "cpu_core/instructions": 15868.3403,
+                  "cpu_core/mem_inst_retired.all_loads": 2002.4413,
+                  "cpu_core/mem_inst_retired.all_stores": 1560.7223
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3122.133,
+                "per_call": {
+                  "cpu_core/cycles": 5159.9496,
+                  "cpu_core/instructions": 15187.1433,
+                  "cpu_core/mem_inst_retired.all_loads": 1919.1966,
+                  "cpu_core/mem_inst_retired.all_stores": 1493.9936
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2870.3684,
+                "per_call": {
+                  "cpu_core/cycles": 5162.5466,
+                  "cpu_core/instructions": 12683.6171,
+                  "cpu_core/mem_inst_retired.all_loads": 2322.1792,
+                  "cpu_core/mem_inst_retired.all_stores": 799.9337
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2982.784,
+                "per_call": {
+                  "cpu_core/cycles": 5130.2738,
+                  "cpu_core/instructions": 12604.8844,
+                  "cpu_core/mem_inst_retired.all_loads": 2307.7648,
+                  "cpu_core/mem_inst_retired.all_stores": 794.9672
+                }
+              },
+              "official": {
+                "tsc_per_call": 2949.521,
+                "per_call": {
+                  "cpu_core/cycles": 5151.8145,
+                  "cpu_core/instructions": 15187.1024,
+                  "cpu_core/mem_inst_retired.all_loads": 1919.1947,
+                  "cpu_core/mem_inst_retired.all_stores": 1493.9916
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2900.1358,
+                "per_call": {
+                  "cpu_core/cycles": 5300.8554,
+                  "cpu_core/instructions": 15707.3865,
+                  "cpu_core/mem_inst_retired.all_loads": 1982.1301,
+                  "cpu_core/mem_inst_retired.all_stores": 1544.8918
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2793.2814,
+                "per_call": {
+                  "cpu_core/cycles": 5120.9384,
+                  "cpu_core/instructions": 12576.0837,
+                  "cpu_core/mem_inst_retired.all_loads": 2302.4915,
+                  "cpu_core/mem_inst_retired.all_stores": 793.152
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2785.021,
+                "per_call": {
+                  "cpu_core/cycles": 4957.5918,
+                  "cpu_core/instructions": 12122.5049,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5952,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7914
+                }
+              },
+              "official": {
+                "tsc_per_call": 2896.0976,
+                "per_call": {
+                  "cpu_core/cycles": 5301.17,
+                  "cpu_core/instructions": 15703.4171,
+                  "cpu_core/mem_inst_retired.all_loads": 1981.6294,
+                  "cpu_core/mem_inst_retired.all_stores": 1544.5015
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2910.4466,
+                "per_call": {
+                  "cpu_core/cycles": 5334.6286,
+                  "cpu_core/instructions": 15763.1016,
+                  "cpu_core/mem_inst_retired.all_loads": 1989.161,
+                  "cpu_core/mem_inst_retired.all_stores": 1550.3718
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2908.7172,
+                "per_call": {
+                  "cpu_core/cycles": 5103.4827,
+                  "cpu_core/instructions": 12528.8778,
+                  "cpu_core/mem_inst_retired.all_loads": 2293.8489,
+                  "cpu_core/mem_inst_retired.all_stores": 790.1737
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2970.0392,
+                "per_call": {
+                  "cpu_core/cycles": 5534.8907,
+                  "cpu_core/instructions": 12796.1988,
+                  "cpu_core/mem_inst_retired.all_loads": 2342.7918,
+                  "cpu_core/mem_inst_retired.all_stores": 807.0327
+                }
+              },
+              "official": {
+                "tsc_per_call": 2938.8628,
+                "per_call": {
+                  "cpu_core/cycles": 5376.162,
+                  "cpu_core/instructions": 15713.6146,
+                  "cpu_core/mem_inst_retired.all_loads": 1982.9165,
+                  "cpu_core/mem_inst_retired.all_stores": 1545.5053
+                }
+              }
+            }
+          ]
+        },
+        "pack": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 906.7666,
+              "gt_median": 1089.7147,
+              "paired_delta_median": 176.94955000000004,
+              "paired_delta_bootstrap_95_ci": [
+                161.12845,
+                194.42545
+              ],
+              "gt_wins": 1,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 2794.8638,
+              "gt_median": 3163.1214,
+              "paired_delta_median": 335.2176999999999,
+              "paired_delta_bootstrap_95_ci": [
+                281.5584000000001,
+                407.1383500000002
+              ],
+              "gt_wins": 2,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 202.5563,
+              "gt_median": 565.0935,
+              "paired_delta_median": 360.7357999999999,
+              "paired_delta_bootstrap_95_ci": [
+                351.41474999999997,
+                366.70765
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 146.3039,
+              "gt_median": 376.39459999999997,
+              "paired_delta_median": 228.47125,
+              "paired_delta_bootstrap_95_ci": [
+                222.62124999999997,
+                234.01525
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 492.8055,
+              "gt_median": 568.4709,
+              "paired_delta_median": 78.89379999999997,
+              "paired_delta_bootstrap_95_ci": [
+                53.921100000000024,
+                124.41499999999999
+              ],
+              "gt_wins": 3,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 427.3558,
+                "per_call": {
+                  "cpu_core/cycles": 1117.8722,
+                  "cpu_core/instructions": 3455.6706,
+                  "cpu_core/mem_inst_retired.all_loads": 250.449,
+                  "cpu_core/mem_inst_retired.all_stores": 180.8969
+                }
+              },
+              "gt": {
+                "tsc_per_call": 525.2706,
+                "per_call": {
+                  "cpu_core/cycles": 1102.8884,
+                  "cpu_core/instructions": 3212.8648,
+                  "cpu_core/mem_inst_retired.all_loads": 573.9804,
+                  "cpu_core/mem_inst_retired.all_stores": 382.3138
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 524.0146,
+                "per_call": {
+                  "cpu_core/cycles": 1104.9754,
+                  "cpu_core/instructions": 3220.3521,
+                  "cpu_core/mem_inst_retired.all_loads": 575.3178,
+                  "cpu_core/mem_inst_retired.all_stores": 383.2048
+                }
+              },
+              "official": {
+                "tsc_per_call": 501.0244,
+                "per_call": {
+                  "cpu_core/cycles": 897.5552,
+                  "cpu_core/instructions": 2792.5466,
+                  "cpu_core/mem_inst_retired.all_loads": 202.3878,
+                  "cpu_core/mem_inst_retired.all_stores": 146.1819
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 625.9322,
+                "per_call": {
+                  "cpu_core/cycles": 869.3934,
+                  "cpu_core/instructions": 2709.5832,
+                  "cpu_core/mem_inst_retired.all_loads": 196.3765,
+                  "cpu_core/mem_inst_retired.all_stores": 141.8408
+                }
+              },
+              "gt": {
+                "tsc_per_call": 677.0058,
+                "per_call": {
+                  "cpu_core/cycles": 1012.6351,
+                  "cpu_core/instructions": 2768.0906,
+                  "cpu_core/mem_inst_retired.all_loads": 495.791,
+                  "cpu_core/mem_inst_retired.all_stores": 329.089
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 641.6604,
+                "per_call": {
+                  "cpu_core/cycles": 1068.0182,
+                  "cpu_core/instructions": 3119.1275,
+                  "cpu_core/mem_inst_retired.all_loads": 557.2341,
+                  "cpu_core/mem_inst_retired.all_stores": 371.1596
+                }
+              },
+              "official": {
+                "tsc_per_call": 437.5974,
+                "per_call": {
+                  "cpu_core/cycles": 846.7833,
+                  "cpu_core/instructions": 2582.065,
+                  "cpu_core/mem_inst_retired.all_loads": 191.1778,
+                  "cpu_core/mem_inst_retired.all_stores": 136.7027
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 452.4868,
+                "per_call": {
+                  "cpu_core/cycles": 848.8366,
+                  "cpu_core/instructions": 2590.5151,
+                  "cpu_core/mem_inst_retired.all_loads": 191.7621,
+                  "cpu_core/mem_inst_retired.all_stores": 137.0888
+                }
+              },
+              "gt": {
+                "tsc_per_call": 522.64,
+                "per_call": {
+                  "cpu_core/cycles": 1017.737,
+                  "cpu_core/instructions": 2919.7033,
+                  "cpu_core/mem_inst_retired.all_loads": 522.8669,
+                  "cpu_core/mem_inst_retired.all_stores": 347.2327
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 522.8932,
+                "per_call": {
+                  "cpu_core/cycles": 978.1986,
+                  "cpu_core/instructions": 2768.1021,
+                  "cpu_core/mem_inst_retired.all_loads": 495.7927,
+                  "cpu_core/mem_inst_retired.all_stores": 329.091
+                }
+              },
+              "official": {
+                "tsc_per_call": 435.2588,
+                "per_call": {
+                  "cpu_core/cycles": 914.3808,
+                  "cpu_core/instructions": 2847.7657,
+                  "cpu_core/mem_inst_retired.all_loads": 206.3902,
+                  "cpu_core/mem_inst_retired.all_stores": 149.0732
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 580.415,
+                "per_call": {
+                  "cpu_core/cycles": 881.5905,
+                  "cpu_core/instructions": 2740.9454,
+                  "cpu_core/mem_inst_retired.all_loads": 198.6493,
+                  "cpu_core/mem_inst_retired.all_stores": 143.4824
+                }
+              },
+              "gt": {
+                "tsc_per_call": 717.1928,
+                "per_call": {
+                  "cpu_core/cycles": 1069.1633,
+                  "cpu_core/instructions": 3082.1926,
+                  "cpu_core/mem_inst_retired.all_loads": 550.6357,
+                  "cpu_core/mem_inst_retired.all_stores": 366.7642
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 566.1632,
+                "per_call": {
+                  "cpu_core/cycles": 1099.0879,
+                  "cpu_core/instructions": 3191.4058,
+                  "cpu_core/mem_inst_retired.all_loads": 570.1465,
+                  "cpu_core/mem_inst_retired.all_stores": 379.7606
+                }
+              },
+              "official": {
+                "tsc_per_call": 428.3006,
+                "per_call": {
+                  "cpu_core/cycles": 932.862,
+                  "cpu_core/instructions": 2895.9362,
+                  "cpu_core/mem_inst_retired.all_loads": 209.8821,
+                  "cpu_core/mem_inst_retired.all_stores": 151.5954
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 424.939,
+                "per_call": {
+                  "cpu_core/cycles": 934.4085,
+                  "cpu_core/instructions": 2901.0694,
+                  "cpu_core/mem_inst_retired.all_loads": 210.2533,
+                  "cpu_core/mem_inst_retired.all_stores": 151.8633
+                }
+              },
+              "gt": {
+                "tsc_per_call": 575.007,
+                "per_call": {
+                  "cpu_core/cycles": 1090.4395,
+                  "cpu_core/instructions": 3168.7166,
+                  "cpu_core/mem_inst_retired.all_loads": 566.093,
+                  "cpu_core/mem_inst_retired.all_stores": 377.0603
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 570.7786,
+                "per_call": {
+                  "cpu_core/cycles": 1078.7142,
+                  "cpu_core/instructions": 3147.0384,
+                  "cpu_core/mem_inst_retired.all_loads": 562.2201,
+                  "cpu_core/mem_inst_retired.all_stores": 374.4809
+                }
+              },
+              "official": {
+                "tsc_per_call": 507.742,
+                "per_call": {
+                  "cpu_core/cycles": 807.4496,
+                  "cpu_core/instructions": 2433.5683,
+                  "cpu_core/mem_inst_retired.all_loads": 180.612,
+                  "cpu_core/mem_inst_retired.all_stores": 128.9467
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 534.8892,
+                "per_call": {
+                  "cpu_core/cycles": 895.7409,
+                  "cpu_core/instructions": 2784.91,
+                  "cpu_core/mem_inst_retired.all_loads": 201.8359,
+                  "cpu_core/mem_inst_retired.all_stores": 145.784
+                }
+              },
+              "gt": {
+                "tsc_per_call": 521.8622,
+                "per_call": {
+                  "cpu_core/cycles": 1102.3426,
+                  "cpu_core/instructions": 3210.3072,
+                  "cpu_core/mem_inst_retired.all_loads": 573.5235,
+                  "cpu_core/mem_inst_retired.all_stores": 382.0092
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 533.9412,
+                "per_call": {
+                  "cpu_core/cycles": 1098.1674,
+                  "cpu_core/instructions": 3199.6127,
+                  "cpu_core/mem_inst_retired.all_loads": 571.6125,
+                  "cpu_core/mem_inst_retired.all_stores": 380.7371
+                }
+              },
+              "official": {
+                "tsc_per_call": 485.1264,
+                "per_call": {
+                  "cpu_core/cycles": 911.7607,
+                  "cpu_core/instructions": 2835.1783,
+                  "cpu_core/mem_inst_retired.all_loads": 205.4789,
+                  "cpu_core/mem_inst_retired.all_stores": 148.4153
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 500.4846,
+                "per_call": {
+                  "cpu_core/cycles": 894.0078,
+                  "cpu_core/instructions": 2786.4205,
+                  "cpu_core/mem_inst_retired.all_loads": 201.9443,
+                  "cpu_core/mem_inst_retired.all_stores": 145.8614
+                }
+              },
+              "gt": {
+                "tsc_per_call": 626.3406,
+                "per_call": {
+                  "cpu_core/cycles": 996.2363,
+                  "cpu_core/instructions": 2861.3846,
+                  "cpu_core/mem_inst_retired.all_loads": 512.492,
+                  "cpu_core/mem_inst_retired.all_stores": 340.2712
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 620.3812,
+                "per_call": {
+                  "cpu_core/cycles": 1072.2624,
+                  "cpu_core/instructions": 3131.5503,
+                  "cpu_core/mem_inst_retired.all_loads": 559.4535,
+                  "cpu_core/mem_inst_retired.all_stores": 372.6373
+                }
+              },
+              "official": {
+                "tsc_per_call": 424.7196,
+                "per_call": {
+                  "cpu_core/cycles": 926.4146,
+                  "cpu_core/instructions": 2878.3962,
+                  "cpu_core/mem_inst_retired.all_loads": 208.6104,
+                  "cpu_core/mem_inst_retired.all_stores": 150.6766
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 423.84,
+                "per_call": {
+                  "cpu_core/cycles": 932.7371,
+                  "cpu_core/instructions": 2899.4552,
+                  "cpu_core/mem_inst_retired.all_loads": 210.1374,
+                  "cpu_core/mem_inst_retired.all_stores": 151.7804
+                }
+              },
+              "gt": {
+                "tsc_per_call": 542.6902,
+                "per_call": {
+                  "cpu_core/cycles": 1099.1798,
+                  "cpu_core/instructions": 3198.1111,
+                  "cpu_core/mem_inst_retired.all_loads": 571.3446,
+                  "cpu_core/mem_inst_retired.all_stores": 380.5577
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 582.2814,
+                "per_call": {
+                  "cpu_core/cycles": 1089.6164,
+                  "cpu_core/instructions": 3178.7569,
+                  "cpu_core/mem_inst_retired.all_loads": 567.8868,
+                  "cpu_core/mem_inst_retired.all_stores": 378.2554
+                }
+              },
+              "official": {
+                "tsc_per_call": 525.5128,
+                "per_call": {
+                  "cpu_core/cycles": 909.1715,
+                  "cpu_core/instructions": 2798.5266,
+                  "cpu_core/mem_inst_retired.all_loads": 202.8224,
+                  "cpu_core/mem_inst_retired.all_stores": 146.4967
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 580.809,
+                "per_call": {
+                  "cpu_core/cycles": 919.9699,
+                  "cpu_core/instructions": 2763.132,
+                  "cpu_core/mem_inst_retired.all_loads": 200.2573,
+                  "cpu_core/mem_inst_retired.all_stores": 144.6435
+                }
+              },
+              "gt": {
+                "tsc_per_call": 522.8852,
+                "per_call": {
+                  "cpu_core/cycles": 1114.8878,
+                  "cpu_core/instructions": 3243.8179,
+                  "cpu_core/mem_inst_retired.all_loads": 579.5101,
+                  "cpu_core/mem_inst_retired.all_stores": 385.9968
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 529.881,
+                "per_call": {
+                  "cpu_core/cycles": 1113.2741,
+                  "cpu_core/instructions": 3243.3506,
+                  "cpu_core/mem_inst_retired.all_loads": 579.4264,
+                  "cpu_core/mem_inst_retired.all_stores": 385.9415
+                }
+              },
+              "official": {
+                "tsc_per_call": 473.0398,
+                "per_call": {
+                  "cpu_core/cycles": 919.3411,
+                  "cpu_core/instructions": 2854.4711,
+                  "cpu_core/mem_inst_retired.all_loads": 206.8764,
+                  "cpu_core/mem_inst_retired.all_stores": 149.4239
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 508.671,
+                "per_call": {
+                  "cpu_core/cycles": 904.3617,
+                  "cpu_core/instructions": 2797.181,
+                  "cpu_core/mem_inst_retired.all_loads": 202.7248,
+                  "cpu_core/mem_inst_retired.all_stores": 146.4259
+                }
+              },
+              "gt": {
+                "tsc_per_call": 631.645,
+                "per_call": {
+                  "cpu_core/cycles": 1077.8159,
+                  "cpu_core/instructions": 3117.9212,
+                  "cpu_core/mem_inst_retired.all_loads": 557.0186,
+                  "cpu_core/mem_inst_retired.all_stores": 371.0162
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 614.3806,
+                "per_call": {
+                  "cpu_core/cycles": 1089.813,
+                  "cpu_core/instructions": 3157.5262,
+                  "cpu_core/mem_inst_retired.all_loads": 564.094,
+                  "cpu_core/mem_inst_retired.all_stores": 375.7289
+                }
+              },
+              "official": {
+                "tsc_per_call": 725.6604,
+                "per_call": {
+                  "cpu_core/cycles": 877.4321,
+                  "cpu_core/instructions": 2715.5966,
+                  "cpu_core/mem_inst_retired.all_loads": 196.8123,
+                  "cpu_core/mem_inst_retired.all_stores": 142.1553
+                }
+              }
+            }
+          ]
+        },
+        "island-pack": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 6041.665300000001,
+              "gt_median": 6062.85065,
+              "paired_delta_median": 16.27039999999988,
+              "paired_delta_bootstrap_95_ci": [
+                -20.78264999999965,
+                38.41370000000006
+              ],
+              "gt_wins": 8,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 18090.9819,
+              "gt_median": 15290.1254,
+              "paired_delta_median": -2794.2995499999997,
+              "paired_delta_bootstrap_95_ci": [
+                -2896.0143,
+                -2763.2437499999987
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 2148.89685,
+              "gt_median": 2785.71875,
+              "paired_delta_median": 637.60895,
+              "paired_delta_bootstrap_95_ci": [
+                624.193,
+                641.3977
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1665.75655,
+              "gt_median": 1121.57665,
+              "paired_delta_median": -543.5789,
+              "paired_delta_bootstrap_95_ci": [
+                -552.55035,
+                -540.7488500000001
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 3331.9175999999998,
+              "gt_median": 3386.0849,
+              "paired_delta_median": 23.292599999999993,
+              "paired_delta_bootstrap_95_ci": [
+                10.425500000000056,
+                60.02319999999986
+              ],
+              "gt_wins": 4,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 3328.3592,
+                "per_call": {
+                  "cpu_core/cycles": 6331.9484,
+                  "cpu_core/instructions": 18923.1202,
+                  "cpu_core/mem_inst_retired.all_loads": 2247.7409,
+                  "cpu_core/mem_inst_retired.all_stores": 1742.3777
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3420.205,
+                "per_call": {
+                  "cpu_core/cycles": 6308.9167,
+                  "cpu_core/instructions": 15339.3314,
+                  "cpu_core/mem_inst_retired.all_loads": 2794.6833,
+                  "cpu_core/mem_inst_retired.all_stores": 1125.1861
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3391.453,
+                "per_call": {
+                  "cpu_core/cycles": 6061.4209,
+                  "cpu_core/instructions": 15292.7284,
+                  "cpu_core/mem_inst_retired.all_loads": 2786.1929,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.768
+                }
+              },
+              "official": {
+                "tsc_per_call": 3371.8164,
+                "per_call": {
+                  "cpu_core/cycles": 6030.2378,
+                  "cpu_core/instructions": 18073.2279,
+                  "cpu_core/mem_inst_retired.all_loads": 2146.7882,
+                  "cpu_core/mem_inst_retired.all_stores": 1664.1218
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3329.7308,
+                "per_call": {
+                  "cpu_core/cycles": 6061.4852,
+                  "cpu_core/instructions": 18161.3122,
+                  "cpu_core/mem_inst_retired.all_loads": 2157.2509,
+                  "cpu_core/mem_inst_retired.all_stores": 1672.2328
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3467.9992,
+                "per_call": {
+                  "cpu_core/cycles": 6041.6696,
+                  "cpu_core/instructions": 15261.9445,
+                  "cpu_core/mem_inst_retired.all_loads": 2780.5846,
+                  "cpu_core/mem_inst_retired.all_stores": 1119.509
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3397.839,
+                "per_call": {
+                  "cpu_core/cycles": 6070.8611,
+                  "cpu_core/instructions": 15276.2544,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.1913,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.5596
+                }
+              },
+              "official": {
+                "tsc_per_call": 3334.1044,
+                "per_call": {
+                  "cpu_core/cycles": 6202.2734,
+                  "cpu_core/instructions": 18588.8545,
+                  "cpu_core/mem_inst_retired.all_loads": 2208.0355,
+                  "cpu_core/mem_inst_retired.all_stores": 1711.5988
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3383.6382,
+                "per_call": {
+                  "cpu_core/cycles": 6026.4174,
+                  "cpu_core/instructions": 18058.504,
+                  "cpu_core/mem_inst_retired.all_loads": 2145.0395,
+                  "cpu_core/mem_inst_retired.all_stores": 1662.7667
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3390.2664,
+                "per_call": {
+                  "cpu_core/cycles": 6157.8153,
+                  "cpu_core/instructions": 15559.8046,
+                  "cpu_core/mem_inst_retired.all_loads": 2834.8517,
+                  "cpu_core/mem_inst_retired.all_stores": 1141.3586
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3323.2158,
+                "per_call": {
+                  "cpu_core/cycles": 6052.8057,
+                  "cpu_core/instructions": 15278.7044,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.6376,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.7393
+                }
+              },
+              "official": {
+                "tsc_per_call": 3311.698,
+                "per_call": {
+                  "cpu_core/cycles": 6038.4098,
+                  "cpu_core/instructions": 18104.1815,
+                  "cpu_core/mem_inst_retired.all_loads": 2150.4651,
+                  "cpu_core/mem_inst_retired.all_stores": 1666.9726
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3311.949,
+                "per_call": {
+                  "cpu_core/cycles": 6032.3472,
+                  "cpu_core/instructions": 18064.3585,
+                  "cpu_core/mem_inst_retired.all_loads": 2145.7346,
+                  "cpu_core/mem_inst_retired.all_stores": 1663.3049
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3321.2822,
+                "per_call": {
+                  "cpu_core/cycles": 6057.5816,
+                  "cpu_core/instructions": 15303.7362,
+                  "cpu_core/mem_inst_retired.all_loads": 2788.1985,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.5746
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3437.8682,
+                "per_call": {
+                  "cpu_core/cycles": 6052.4023,
+                  "cpu_core/instructions": 15276.4875,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.234,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.5767
+                }
+              },
+              "official": {
+                "tsc_per_call": 3652.5302,
+                "per_call": {
+                  "cpu_core/cycles": 6077.751,
+                  "cpu_core/instructions": 18169.1484,
+                  "cpu_core/mem_inst_retired.all_loads": 2158.1817,
+                  "cpu_core/mem_inst_retired.all_stores": 1672.9536
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3560.398,
+                "per_call": {
+                  "cpu_core/cycles": 5897.3499,
+                  "cpu_core/instructions": 17558.7369,
+                  "cpu_core/mem_inst_retired.all_loads": 2088.596,
+                  "cpu_core/mem_inst_retired.all_stores": 1617.1917
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3535.13,
+                "per_call": {
+                  "cpu_core/cycles": 6083.2303,
+                  "cpu_core/instructions": 15354.9844,
+                  "cpu_core/mem_inst_retired.all_loads": 2797.5356,
+                  "cpu_core/mem_inst_retired.all_stores": 1126.3334
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3393.7486,
+                "per_call": {
+                  "cpu_core/cycles": 6105.2155,
+                  "cpu_core/instructions": 15411.7225,
+                  "cpu_core/mem_inst_retired.all_loads": 2807.8724,
+                  "cpu_core/mem_inst_retired.all_stores": 1130.4966
+                }
+              },
+              "official": {
+                "tsc_per_call": 3321.4684,
+                "per_call": {
+                  "cpu_core/cycles": 6044.9208,
+                  "cpu_core/instructions": 18085.03,
+                  "cpu_core/mem_inst_retired.all_loads": 2148.1899,
+                  "cpu_core/mem_inst_retired.all_stores": 1665.2085
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3319.7836,
+                "per_call": {
+                  "cpu_core/cycles": 6129.8938,
+                  "cpu_core/instructions": 18371.3885,
+                  "cpu_core/mem_inst_retired.all_loads": 2182.2044,
+                  "cpu_core/mem_inst_retired.all_stores": 1691.5754
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3347.8052,
+                "per_call": {
+                  "cpu_core/cycles": 6101.4689,
+                  "cpu_core/instructions": 15312.499,
+                  "cpu_core/mem_inst_retired.all_loads": 2789.7949,
+                  "cpu_core/mem_inst_retired.all_stores": 1123.218
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3348.71,
+                "per_call": {
+                  "cpu_core/cycles": 6064.2804,
+                  "cpu_core/instructions": 15282.6341,
+                  "cpu_core/mem_inst_retired.all_loads": 2784.3538,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.0261
+                }
+              },
+              "official": {
+                "tsc_per_call": 3353.0138,
+                "per_call": {
+                  "cpu_core/cycles": 6064.6203,
+                  "cpu_core/instructions": 18139.1109,
+                  "cpu_core/mem_inst_retired.all_loads": 2154.6137,
+                  "cpu_core/mem_inst_retired.all_stores": 1670.1879
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3463.3412,
+                "per_call": {
+                  "cpu_core/cycles": 6030.9419,
+                  "cpu_core/instructions": 18048.4131,
+                  "cpu_core/mem_inst_retired.all_loads": 2143.8405,
+                  "cpu_core/mem_inst_retired.all_stores": 1661.8376
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3340.5212,
+                "per_call": {
+                  "cpu_core/cycles": 6148.9141,
+                  "cpu_core/instructions": 15506.3757,
+                  "cpu_core/mem_inst_retired.all_loads": 2825.1176,
+                  "cpu_core/mem_inst_retired.all_stores": 1137.4386
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3354.9464,
+                "per_call": {
+                  "cpu_core/cycles": 6118.8016,
+                  "cpu_core/instructions": 15292.9907,
+                  "cpu_core/mem_inst_retired.all_loads": 2786.2404,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.7872
+                }
+              },
+              "official": {
+                "tsc_per_call": 3338.7818,
+                "per_call": {
+                  "cpu_core/cycles": 6073.3007,
+                  "cpu_core/instructions": 18096.9338,
+                  "cpu_core/mem_inst_retired.all_loads": 2149.6038,
+                  "cpu_core/mem_inst_retired.all_stores": 1666.3046
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3328.8172,
+                "per_call": {
+                  "cpu_core/cycles": 6030.9131,
+                  "cpu_core/instructions": 18052.3448,
+                  "cpu_core/mem_inst_retired.all_loads": 2144.3075,
+                  "cpu_core/mem_inst_retired.all_stores": 1662.1997
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3355.7658,
+                "per_call": {
+                  "cpu_core/cycles": 6049.058,
+                  "cpu_core/instructions": 15279.5937,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.8001,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.8037
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3477.7556,
+                "per_call": {
+                  "cpu_core/cycles": 6050.5603,
+                  "cpu_core/instructions": 15279.9325,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.8615,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.8294
+                }
+              },
+              "official": {
+                "tsc_per_call": 3349.8466,
+                "per_call": {
+                  "cpu_core/cycles": 6019.2338,
+                  "cpu_core/instructions": 18045.7977,
+                  "cpu_core/mem_inst_retired.all_loads": 2143.53,
+                  "cpu_core/mem_inst_retired.all_stores": 1661.5968
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3338.754,
+                "per_call": {
+                  "cpu_core/cycles": 6174.5857,
+                  "cpu_core/instructions": 18367.8081,
+                  "cpu_core/mem_inst_retired.all_loads": 2181.7792,
+                  "cpu_core/mem_inst_retired.all_stores": 1691.2465
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3385.4762,
+                "per_call": {
+                  "cpu_core/cycles": 6152.836,
+                  "cpu_core/instructions": 15279.6274,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.806,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.8062
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3386.6936,
+                "per_call": {
+                  "cpu_core/cycles": 6051.2341,
+                  "cpu_core/instructions": 15287.5224,
+                  "cpu_core/mem_inst_retired.all_loads": 2785.2446,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.3853
+                }
+              },
+              "official": {
+                "tsc_per_call": 3316.8504,
+                "per_call": {
+                  "cpu_core/cycles": 6038.3968,
+                  "cpu_core/instructions": 18072.1784,
+                  "cpu_core/mem_inst_retired.all_loads": 2146.6633,
+                  "cpu_core/mem_inst_retired.all_stores": 1664.0257
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3314.229,
+                "per_call": {
+                  "cpu_core/cycles": 6085.9885,
+                  "cpu_core/instructions": 18226.7502,
+                  "cpu_core/mem_inst_retired.all_loads": 2165.024,
+                  "cpu_core/mem_inst_retired.all_stores": 1678.2583
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3330.186,
+                "per_call": {
+                  "cpu_core/cycles": 6043.4648,
+                  "cpu_core/instructions": 15273.3582,
+                  "cpu_core/mem_inst_retired.all_loads": 2782.6639,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.3459
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3374.177,
+                "per_call": {
+                  "cpu_core/cycles": 6053.4837,
+                  "cpu_core/instructions": 15294.8418,
+                  "cpu_core/mem_inst_retired.all_loads": 2786.578,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.9219
+                }
+              },
+              "official": {
+                "tsc_per_call": 3317.8652,
+                "per_call": {
+                  "cpu_core/cycles": 5888.6938,
+                  "cpu_core/instructions": 17558.7373,
+                  "cpu_core/mem_inst_retired.all_loads": 2088.5964,
+                  "cpu_core/mem_inst_retired.all_stores": 1617.1923
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_keygen_soa_island_reversed",
+      "sha256": "95e959d821d13b61fb0f19452677b001ecdacef3c63d19090f217f0bfab25f85",
+      "gates": {
+        "fbi": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 4171.096,
+              "gt_median": 4040.6809000000003,
+              "paired_delta_median": -131.41984999999977,
+              "paired_delta_bootstrap_95_ci": [
+                -134.22699999999986,
+                -123.93704999999977
+              ],
+              "gt_wins": 18,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 11745.01115,
+              "gt_median": 9129.45625,
+              "paired_delta_median": -2615.23185,
+              "paired_delta_bootstrap_95_ci": [
+                -2619.7189499999995,
+                -2602.4005500000003
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 1438.93755,
+              "gt_median": 1597.1315,
+              "paired_delta_median": 158.9660500000001,
+              "paired_delta_bootstrap_95_ci": [
+                157.61360000000002,
+                160.67815000000007
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1337.9965499999998,
+              "gt_median": 686.61915,
+              "paired_delta_median": -651.54005,
+              "paired_delta_bootstrap_95_ci": [
+                -652.112,
+                -649.6681
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 2261.7767,
+              "gt_median": 2181.0963,
+              "paired_delta_median": -78.04040000000009,
+              "paired_delta_bootstrap_95_ci": [
+                -90.22289999999998,
+                -70.98300000000017
+              ],
+              "gt_wins": 19,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 2471.3296,
+                "per_call": {
+                  "cpu_core/cycles": 4199.0706,
+                  "cpu_core/instructions": 11607.0169,
+                  "cpu_core/mem_inst_retired.all_loads": 1422.0314,
+                  "cpu_core/mem_inst_retired.all_stores": 1322.2759
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2181.2666,
+                "per_call": {
+                  "cpu_core/cycles": 4064.0907,
+                  "cpu_core/instructions": 9159.371,
+                  "cpu_core/mem_inst_retired.all_loads": 1602.365,
+                  "cpu_core/mem_inst_retired.all_stores": 688.8693
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2179.702,
+                "per_call": {
+                  "cpu_core/cycles": 4245.357,
+                  "cpu_core/instructions": 9584.5375,
+                  "cpu_core/mem_inst_retired.all_loads": 1676.7448,
+                  "cpu_core/mem_inst_retired.all_stores": 720.8447
+                }
+              },
+              "official": {
+                "tsc_per_call": 2270.119,
+                "per_call": {
+                  "cpu_core/cycles": 4162.3692,
+                  "cpu_core/instructions": 11733.1768,
+                  "cpu_core/mem_inst_retired.all_loads": 1437.4874,
+                  "cpu_core/mem_inst_retired.all_stores": 1336.6478
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2258.736,
+                "per_call": {
+                  "cpu_core/cycles": 4179.098,
+                  "cpu_core/instructions": 11765.9359,
+                  "cpu_core/mem_inst_retired.all_loads": 1441.5013,
+                  "cpu_core/mem_inst_retired.all_stores": 1340.3806
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2192.0586,
+                "per_call": {
+                  "cpu_core/cycles": 4048.9173,
+                  "cpu_core/instructions": 9149.3043,
+                  "cpu_core/mem_inst_retired.all_loads": 1600.6039,
+                  "cpu_core/mem_inst_retired.all_stores": 688.1122
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2201.9106,
+                "per_call": {
+                  "cpu_core/cycles": 4047.6439,
+                  "cpu_core/instructions": 9151.2251,
+                  "cpu_core/mem_inst_retired.all_loads": 1600.9398,
+                  "cpu_core/mem_inst_retired.all_stores": 688.2556
+                }
+              },
+              "official": {
+                "tsc_per_call": 2253.8414,
+                "per_call": {
+                  "cpu_core/cycles": 4155.7987,
+                  "cpu_core/instructions": 11705.0198,
+                  "cpu_core/mem_inst_retired.all_loads": 1434.0382,
+                  "cpu_core/mem_inst_retired.all_stores": 1333.441
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2252.5986,
+                "per_call": {
+                  "cpu_core/cycles": 4156.0754,
+                  "cpu_core/instructions": 11713.0686,
+                  "cpu_core/mem_inst_retired.all_loads": 1435.0242,
+                  "cpu_core/mem_inst_retired.all_stores": 1334.3579
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2181.573,
+                "per_call": {
+                  "cpu_core/cycles": 4039.2492,
+                  "cpu_core/instructions": 9126.7603,
+                  "cpu_core/mem_inst_retired.all_loads": 1596.6598,
+                  "cpu_core/mem_inst_retired.all_stores": 686.4169
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2178.0844,
+                "per_call": {
+                  "cpu_core/cycles": 4041.7653,
+                  "cpu_core/instructions": 9127.7452,
+                  "cpu_core/mem_inst_retired.all_loads": 1596.8323,
+                  "cpu_core/mem_inst_retired.all_stores": 686.4899
+                }
+              },
+              "official": {
+                "tsc_per_call": 2290.6474,
+                "per_call": {
+                  "cpu_core/cycles": 4177.4103,
+                  "cpu_core/instructions": 11762.4628,
+                  "cpu_core/mem_inst_retired.all_loads": 1441.0758,
+                  "cpu_core/mem_inst_retired.all_stores": 1339.9848
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2265.645,
+                "per_call": {
+                  "cpu_core/cycles": 4161.0806,
+                  "cpu_core/instructions": 11718.7173,
+                  "cpu_core/mem_inst_retired.all_loads": 1435.7164,
+                  "cpu_core/mem_inst_retired.all_stores": 1335.0014
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2175.6162,
+                "per_call": {
+                  "cpu_core/cycles": 4033.3362,
+                  "cpu_core/instructions": 9118.951,
+                  "cpu_core/mem_inst_retired.all_loads": 1595.2936,
+                  "cpu_core/mem_inst_retired.all_stores": 685.8296
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2181.0662,
+                "per_call": {
+                  "cpu_core/cycles": 4057.1466,
+                  "cpu_core/instructions": 9167.1944,
+                  "cpu_core/mem_inst_retired.all_loads": 1603.7338,
+                  "cpu_core/mem_inst_retired.all_stores": 689.4568
+                }
+              },
+              "official": {
+                "tsc_per_call": 2270.4416,
+                "per_call": {
+                  "cpu_core/cycles": 4180.6007,
+                  "cpu_core/instructions": 11775.4689,
+                  "cpu_core/mem_inst_retired.all_loads": 1442.6689,
+                  "cpu_core/mem_inst_retired.all_stores": 1341.4659
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2251.9464,
+                "per_call": {
+                  "cpu_core/cycles": 4167.4073,
+                  "cpu_core/instructions": 11728.4208,
+                  "cpu_core/mem_inst_retired.all_loads": 1436.9053,
+                  "cpu_core/mem_inst_retired.all_stores": 1336.1068
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2179.9054,
+                "per_call": {
+                  "cpu_core/cycles": 4035.8346,
+                  "cpu_core/instructions": 9123.386,
+                  "cpu_core/mem_inst_retired.all_loads": 1596.0697,
+                  "cpu_core/mem_inst_retired.all_stores": 686.1621
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2175.4864,
+                "per_call": {
+                  "cpu_core/cycles": 4029.5353,
+                  "cpu_core/instructions": 9109.4483,
+                  "cpu_core/mem_inst_retired.all_loads": 1593.6312,
+                  "cpu_core/mem_inst_retired.all_stores": 685.1149
+                }
+              },
+              "official": {
+                "tsc_per_call": 2297.8944,
+                "per_call": {
+                  "cpu_core/cycles": 4170.5539,
+                  "cpu_core/instructions": 11738.5908,
+                  "cpu_core/mem_inst_retired.all_loads": 1438.151,
+                  "cpu_core/mem_inst_retired.all_stores": 1337.2649
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2290.7054,
+                "per_call": {
+                  "cpu_core/cycles": 4166.0107,
+                  "cpu_core/instructions": 11731.5903,
+                  "cpu_core/mem_inst_retired.all_loads": 1437.2933,
+                  "cpu_core/mem_inst_retired.all_stores": 1336.4676
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2175.6304,
+                "per_call": {
+                  "cpu_core/cycles": 4041.5907,
+                  "cpu_core/instructions": 9135.5386,
+                  "cpu_core/mem_inst_retired.all_loads": 1598.1956,
+                  "cpu_core/mem_inst_retired.all_stores": 687.0761
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2185.8696,
+                "per_call": {
+                  "cpu_core/cycles": 3898.4937,
+                  "cpu_core/instructions": 8736.7124,
+                  "cpu_core/mem_inst_retired.all_loads": 1529.7959,
+                  "cpu_core/mem_inst_retired.all_stores": 657.9934
+                }
+              },
+              "official": {
+                "tsc_per_call": 2270.6456,
+                "per_call": {
+                  "cpu_core/cycles": 4180.437,
+                  "cpu_core/instructions": 11784.6627,
+                  "cpu_core/mem_inst_retired.all_loads": 1443.7955,
+                  "cpu_core/mem_inst_retired.all_stores": 1342.5138
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2253.9798,
+                "per_call": {
+                  "cpu_core/cycles": 4187.9304,
+                  "cpu_core/instructions": 11796.9485,
+                  "cpu_core/mem_inst_retired.all_loads": 1445.3006,
+                  "cpu_core/mem_inst_retired.all_stores": 1343.913
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2183.0742,
+                "per_call": {
+                  "cpu_core/cycles": 4039.0543,
+                  "cpu_core/instructions": 9128.3286,
+                  "cpu_core/mem_inst_retired.all_loads": 1596.9344,
+                  "cpu_core/mem_inst_retired.all_stores": 686.5338
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2185.2016,
+                "per_call": {
+                  "cpu_core/cycles": 4038.4068,
+                  "cpu_core/instructions": 9129.9724,
+                  "cpu_core/mem_inst_retired.all_loads": 1597.2216,
+                  "cpu_core/mem_inst_retired.all_stores": 686.6583
+                }
+              },
+              "official": {
+                "tsc_per_call": 2264.8174,
+                "per_call": {
+                  "cpu_core/cycles": 4171.1539,
+                  "cpu_core/instructions": 11744.9284,
+                  "cpu_core/mem_inst_retired.all_loads": 1438.9274,
+                  "cpu_core/mem_inst_retired.all_stores": 1337.9874
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2255.9342,
+                "per_call": {
+                  "cpu_core/cycles": 4168.637,
+                  "cpu_core/instructions": 11736.0519,
+                  "cpu_core/mem_inst_retired.all_loads": 1437.84,
+                  "cpu_core/mem_inst_retired.all_stores": 1336.9756
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2275.4848,
+                "per_call": {
+                  "cpu_core/cycles": 4171.7117,
+                  "cpu_core/instructions": 9120.5442,
+                  "cpu_core/mem_inst_retired.all_loads": 1595.5727,
+                  "cpu_core/mem_inst_retired.all_stores": 685.9485
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2178.9238,
+                "per_call": {
+                  "cpu_core/cycles": 4039.3788,
+                  "cpu_core/instructions": 9129.982,
+                  "cpu_core/mem_inst_retired.all_loads": 1597.2235,
+                  "cpu_core/mem_inst_retired.all_stores": 686.6584
+                }
+              },
+              "official": {
+                "tsc_per_call": 2255.3888,
+                "per_call": {
+                  "cpu_core/cycles": 4174.8853,
+                  "cpu_core/instructions": 11751.4728,
+                  "cpu_core/mem_inst_retired.all_loads": 1439.729,
+                  "cpu_core/mem_inst_retired.all_stores": 1338.7324
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2253.1716,
+                "per_call": {
+                  "cpu_core/cycles": 4168.8691,
+                  "cpu_core/instructions": 11746.2631,
+                  "cpu_core/mem_inst_retired.all_loads": 1439.0908,
+                  "cpu_core/mem_inst_retired.all_stores": 1338.1389
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2180.6158,
+                "per_call": {
+                  "cpu_core/cycles": 4035.395,
+                  "cpu_core/instructions": 9122.994,
+                  "cpu_core/mem_inst_retired.all_loads": 1596.0011,
+                  "cpu_core/mem_inst_retired.all_stores": 686.1326
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2179.5968,
+                "per_call": {
+                  "cpu_core/cycles": 4046.5001,
+                  "cpu_core/instructions": 9147.1638,
+                  "cpu_core/mem_inst_retired.all_loads": 1600.2292,
+                  "cpu_core/mem_inst_retired.all_stores": 687.9514
+                }
+              },
+              "official": {
+                "tsc_per_call": 2250.5372,
+                "per_call": {
+                  "cpu_core/cycles": 4179.2278,
+                  "cpu_core/instructions": 11765.1109,
+                  "cpu_core/mem_inst_retired.all_loads": 1441.3997,
+                  "cpu_core/mem_inst_retired.all_stores": 1340.2859
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2352.4364,
+                "per_call": {
+                  "cpu_core/cycles": 4171.0381,
+                  "cpu_core/instructions": 11745.0939,
+                  "cpu_core/mem_inst_retired.all_loads": 1438.9477,
+                  "cpu_core/mem_inst_retired.all_stores": 1338.0057
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2181.1264,
+                "per_call": {
+                  "cpu_core/cycles": 4039.7711,
+                  "cpu_core/instructions": 9128.9401,
+                  "cpu_core/mem_inst_retired.all_loads": 1597.0414,
+                  "cpu_core/mem_inst_retired.all_stores": 686.58
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2213.1794,
+                "per_call": {
+                  "cpu_core/cycles": 4073.9345,
+                  "cpu_core/instructions": 9156.656,
+                  "cpu_core/mem_inst_retired.all_loads": 1601.89,
+                  "cpu_core/mem_inst_retired.all_stores": 688.6653
+                }
+              },
+              "official": {
+                "tsc_per_call": 2257.033,
+                "per_call": {
+                  "cpu_core/cycles": 4181.5871,
+                  "cpu_core/instructions": 11765.4033,
+                  "cpu_core/mem_inst_retired.all_loads": 1441.436,
+                  "cpu_core/mem_inst_retired.all_stores": 1340.3197
+                }
+              }
+            }
+          ]
+        },
+        "consumer": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 1325.7723999999998,
+              "gt_median": 1268.01575,
+              "paired_delta_median": -64.80595000000005,
+              "paired_delta_bootstrap_95_ci": [
+                -70.23035000000004,
+                -42.49154999999996
+              ],
+              "gt_wins": 17,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 4487.14805,
+              "gt_median": 3898.0432,
+              "paired_delta_median": -589.8150500000002,
+              "paired_delta_bootstrap_95_ci": [
+                -624.48435,
+                -521.5257500000002
+              ],
+              "gt_wins": 19,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 615.04165,
+              "gt_median": 796.2788,
+              "paired_delta_median": 178.07445,
+              "paired_delta_bootstrap_95_ci": [
+                174.40385000000003,
+                189.35819999999995
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 243.80165,
+              "gt_median": 125.489,
+              "paired_delta_median": -118.30455,
+              "paired_delta_bootstrap_95_ci": [
+                -120.0161,
+                -109.28670000000001
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 687.1743,
+              "gt_median": 638.7864999999999,
+              "paired_delta_median": -47.27309999999994,
+              "paired_delta_bootstrap_95_ci": [
+                -77.67929999999996,
+                -37.33679999999998
+              ],
+              "gt_wins": 18,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 1031.3202,
+                "per_call": {
+                  "cpu_core/cycles": 1269.4585,
+                  "cpu_core/instructions": 4256.3948,
+                  "cpu_core/mem_inst_retired.all_loads": 585.2654,
+                  "cpu_core/mem_inst_retired.all_stores": 232.43
+                }
+              },
+              "gt": {
+                "tsc_per_call": 615.2242,
+                "per_call": {
+                  "cpu_core/cycles": 1266.2774,
+                  "cpu_core/instructions": 3895.1102,
+                  "cpu_core/mem_inst_retired.all_loads": 795.6793,
+                  "cpu_core/mem_inst_retired.all_stores": 125.3954
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 631.8588,
+                "per_call": {
+                  "cpu_core/cycles": 1136.9667,
+                  "cpu_core/instructions": 3425.9248,
+                  "cpu_core/mem_inst_retired.all_loads": 700.3917,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3908
+                }
+              },
+              "official": {
+                "tsc_per_call": 741.7726,
+                "per_call": {
+                  "cpu_core/cycles": 1202.413,
+                  "cpu_core/instructions": 3984.7153,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5897,
+                  "cpu_core/mem_inst_retired.all_stores": 217.9893
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 756.0754,
+                "per_call": {
+                  "cpu_core/cycles": 1201.7425,
+                  "cpu_core/instructions": 3984.6947,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5909,
+                  "cpu_core/mem_inst_retired.all_stores": 217.9904
+                }
+              },
+              "gt": {
+                "tsc_per_call": 621.4086,
+                "per_call": {
+                  "cpu_core/cycles": 1418.8555,
+                  "cpu_core/instructions": 4359.3075,
+                  "cpu_core/mem_inst_retired.all_loads": 890.504,
+                  "cpu_core/mem_inst_retired.all_stores": 140.339
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 618.7518,
+                "per_call": {
+                  "cpu_core/cycles": 1282.754,
+                  "cpu_core/instructions": 3944.6685,
+                  "cpu_core/mem_inst_retired.all_loads": 805.8034,
+                  "cpu_core/mem_inst_retired.all_stores": 126.9895
+                }
+              },
+              "official": {
+                "tsc_per_call": 655.7016,
+                "per_call": {
+                  "cpu_core/cycles": 1336.5047,
+                  "cpu_core/instructions": 4523.7195,
+                  "cpu_core/mem_inst_retired.all_loads": 620.0547,
+                  "cpu_core/mem_inst_retired.all_stores": 245.7886
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 656.126,
+                "per_call": {
+                  "cpu_core/cycles": 1337.3768,
+                  "cpu_core/instructions": 4519.5183,
+                  "cpu_core/mem_inst_retired.all_loads": 619.4786,
+                  "cpu_core/mem_inst_retired.all_stores": 245.5606
+                }
+              },
+              "gt": {
+                "tsc_per_call": 689.446,
+                "per_call": {
+                  "cpu_core/cycles": 1275.7828,
+                  "cpu_core/instructions": 3896.6657,
+                  "cpu_core/mem_inst_retired.all_loads": 795.9977,
+                  "cpu_core/mem_inst_retired.all_stores": 125.4438
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 719.385,
+                "per_call": {
+                  "cpu_core/cycles": 1159.0728,
+                  "cpu_core/instructions": 3425.8982,
+                  "cpu_core/mem_inst_retired.all_loads": 700.3919,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3909
+                }
+              },
+              "official": {
+                "tsc_per_call": 925.1006,
+                "per_call": {
+                  "cpu_core/cycles": 1325.1389,
+                  "cpu_core/instructions": 4438.0607,
+                  "cpu_core/mem_inst_retired.all_loads": 608.3134,
+                  "cpu_core/mem_inst_retired.all_stores": 241.1341
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 864.9014,
+                "per_call": {
+                  "cpu_core/cycles": 1287.3348,
+                  "cpu_core/instructions": 4318.7307,
+                  "cpu_core/mem_inst_retired.all_loads": 591.9573,
+                  "cpu_core/mem_inst_retired.all_stores": 234.6509
+                }
+              },
+              "gt": {
+                "tsc_per_call": 772.2006,
+                "per_call": {
+                  "cpu_core/cycles": 1241.102,
+                  "cpu_core/instructions": 3824.245,
+                  "cpu_core/mem_inst_retired.all_loads": 781.2039,
+                  "cpu_core/mem_inst_retired.all_stores": 123.1121
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 691.0466,
+                "per_call": {
+                  "cpu_core/cycles": 1140.2857,
+                  "cpu_core/instructions": 3425.9036,
+                  "cpu_core/mem_inst_retired.all_loads": 700.3901,
+                  "cpu_core/mem_inst_retired.all_stores": 112.3889
+                }
+              },
+              "official": {
+                "tsc_per_call": 701.2478,
+                "per_call": {
+                  "cpu_core/cycles": 1323.8681,
+                  "cpu_core/instructions": 4487.872,
+                  "cpu_core/mem_inst_retired.all_loads": 615.1408,
+                  "cpu_core/mem_inst_retired.all_stores": 243.8408
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 686.5954,
+                "per_call": {
+                  "cpu_core/cycles": 1336.8897,
+                  "cpu_core/instructions": 4522.5959,
+                  "cpu_core/mem_inst_retired.all_loads": 619.9003,
+                  "cpu_core/mem_inst_retired.all_stores": 245.7268
+                }
+              },
+              "gt": {
+                "tsc_per_call": 642.1918,
+                "per_call": {
+                  "cpu_core/cycles": 1270.2635,
+                  "cpu_core/instructions": 3909.8527,
+                  "cpu_core/mem_inst_retired.all_loads": 798.6909,
+                  "cpu_core/mem_inst_retired.all_stores": 125.87
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 649.3762,
+                "per_call": {
+                  "cpu_core/cycles": 1254.8178,
+                  "cpu_core/instructions": 3862.0813,
+                  "cpu_core/mem_inst_retired.all_loads": 788.9329,
+                  "cpu_core/mem_inst_retired.all_stores": 124.3308
+                }
+              },
+              "official": {
+                "tsc_per_call": 663.0094,
+                "per_call": {
+                  "cpu_core/cycles": 1326.4059,
+                  "cpu_core/instructions": 4488.1974,
+                  "cpu_core/mem_inst_retired.all_loads": 615.1853,
+                  "cpu_core/mem_inst_retired.all_stores": 243.8573
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 709.1276,
+                "per_call": {
+                  "cpu_core/cycles": 1205.1445,
+                  "cpu_core/instructions": 3984.7139,
+                  "cpu_core/mem_inst_retired.all_loads": 548.5893,
+                  "cpu_core/mem_inst_retired.all_stores": 217.9888
+                }
+              },
+              "gt": {
+                "tsc_per_call": 669.6084,
+                "per_call": {
+                  "cpu_core/cycles": 1259.7299,
+                  "cpu_core/instructions": 3882.4962,
+                  "cpu_core/mem_inst_retired.all_loads": 793.1027,
+                  "cpu_core/mem_inst_retired.all_stores": 124.989
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 682.3142,
+                "per_call": {
+                  "cpu_core/cycles": 1247.0054,
+                  "cpu_core/instructions": 3840.8523,
+                  "cpu_core/mem_inst_retired.all_loads": 784.5963,
+                  "cpu_core/mem_inst_retired.all_stores": 123.6474
+                }
+              },
+              "official": {
+                "tsc_per_call": 743.9406,
+                "per_call": {
+                  "cpu_core/cycles": 1311.171,
+                  "cpu_core/instructions": 4441.4314,
+                  "cpu_core/mem_inst_retired.all_loads": 608.7754,
+                  "cpu_core/mem_inst_retired.all_stores": 241.3166
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 687.7532,
+                "per_call": {
+                  "cpu_core/cycles": 1329.2069,
+                  "cpu_core/instructions": 4486.4241,
+                  "cpu_core/mem_inst_retired.all_loads": 614.9425,
+                  "cpu_core/mem_inst_retired.all_stores": 243.7625
+                }
+              },
+              "gt": {
+                "tsc_per_call": 625.0954,
+                "per_call": {
+                  "cpu_core/cycles": 1290.4566,
+                  "cpu_core/instructions": 3937.8583,
+                  "cpu_core/mem_inst_retired.all_loads": 804.4123,
+                  "cpu_core/mem_inst_retired.all_stores": 126.7699
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 621.3082,
+                "per_call": {
+                  "cpu_core/cycles": 1279.3171,
+                  "cpu_core/instructions": 3947.0731,
+                  "cpu_core/mem_inst_retired.all_loads": 806.2947,
+                  "cpu_core/mem_inst_retired.all_stores": 127.0666
+                }
+              },
+              "official": {
+                "tsc_per_call": 757.5454,
+                "per_call": {
+                  "cpu_core/cycles": 1379.7736,
+                  "cpu_core/instructions": 4506.9287,
+                  "cpu_core/mem_inst_retired.all_loads": 617.7531,
+                  "cpu_core/mem_inst_retired.all_stores": 244.8766
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 679.6788,
+                "per_call": {
+                  "cpu_core/cycles": 1272.081,
+                  "cpu_core/instructions": 4239.6577,
+                  "cpu_core/mem_inst_retired.all_loads": 583.4656,
+                  "cpu_core/mem_inst_retired.all_stores": 231.7958
+                }
+              },
+              "gt": {
+                "tsc_per_call": 669.6168,
+                "per_call": {
+                  "cpu_core/cycles": 1268.3734,
+                  "cpu_core/instructions": 3903.3787,
+                  "cpu_core/mem_inst_retired.all_loads": 797.3689,
+                  "cpu_core/mem_inst_retired.all_stores": 125.6603
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 635.3812,
+                "per_call": {
+                  "cpu_core/cycles": 1268.1044,
+                  "cpu_core/instructions": 3906.0305,
+                  "cpu_core/mem_inst_retired.all_loads": 797.9106,
+                  "cpu_core/mem_inst_retired.all_stores": 125.7454
+                }
+              },
+              "official": {
+                "tsc_per_call": 683.3266,
+                "per_call": {
+                  "cpu_core/cycles": 1346.4892,
+                  "cpu_core/instructions": 4552.1201,
+                  "cpu_core/mem_inst_retired.all_loads": 623.9474,
+                  "cpu_core/mem_inst_retired.all_stores": 247.332
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 683.4402,
+                "per_call": {
+                  "cpu_core/cycles": 1333.6323,
+                  "cpu_core/instructions": 4517.499,
+                  "cpu_core/mem_inst_retired.all_loads": 619.2016,
+                  "cpu_core/mem_inst_retired.all_stores": 245.4496
+                }
+              },
+              "gt": {
+                "tsc_per_call": 633.5666,
+                "per_call": {
+                  "cpu_core/cycles": 1267.9271,
+                  "cpu_core/instructions": 3899.4207,
+                  "cpu_core/mem_inst_retired.all_loads": 796.5599,
+                  "cpu_core/mem_inst_retired.all_stores": 125.5342
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 718.9694,
+                "per_call": {
+                  "cpu_core/cycles": 1242.2881,
+                  "cpu_core/instructions": 3828.4995,
+                  "cpu_core/mem_inst_retired.all_loads": 782.0725,
+                  "cpu_core/mem_inst_retired.all_stores": 123.251
+                }
+              },
+              "official": {
+                "tsc_per_call": 684.097,
+                "per_call": {
+                  "cpu_core/cycles": 1233.4352,
+                  "cpu_core/instructions": 4116.3034,
+                  "cpu_core/mem_inst_retired.all_loads": 566.6079,
+                  "cpu_core/mem_inst_retired.all_stores": 225.1358
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 666.9172,
+                "per_call": {
+                  "cpu_core/cycles": 1355.3316,
+                  "cpu_core/instructions": 4584.2538,
+                  "cpu_core/mem_inst_retired.all_loads": 628.3519,
+                  "cpu_core/mem_inst_retired.all_stores": 249.0779
+                }
+              },
+              "gt": {
+                "tsc_per_call": 620.3164,
+                "per_call": {
+                  "cpu_core/cycles": 1268.7991,
+                  "cpu_core/instructions": 3899.501,
+                  "cpu_core/mem_inst_retired.all_loads": 796.5768,
+                  "cpu_core/mem_inst_retired.all_stores": 125.5351
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 617.8768,
+                "per_call": {
+                  "cpu_core/cycles": 1272.5582,
+                  "cpu_core/instructions": 3904.486,
+                  "cpu_core/mem_inst_retired.all_loads": 797.5951,
+                  "cpu_core/mem_inst_retired.all_stores": 125.6959
+                }
+              },
+              "official": {
+                "tsc_per_call": 655.6006,
+                "per_call": {
+                  "cpu_core/cycles": 1341.4308,
+                  "cpu_core/instructions": 4543.3899,
+                  "cpu_core/mem_inst_retired.all_loads": 622.7506,
+                  "cpu_core/mem_inst_retired.all_stores": 246.8571
+                }
+              }
+            }
+          ]
+        },
+        "island": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 5316.9673999999995,
+              "gt_median": 5108.8096000000005,
+              "paired_delta_median": -201.96510000000035,
+              "paired_delta_bootstrap_95_ci": [
+                -332.35149999999976,
+                -153.8803499999999
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 15732.670399999999,
+              "gt_median": 12556.34995,
+              "paired_delta_median": -3181.4238000000005,
+              "paired_delta_bootstrap_95_ci": [
+                -3525.36755,
+                -3059.7479000000003
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 1985.32095,
+              "gt_median": 2298.8785,
+              "paired_delta_median": 314.27430000000004,
+              "paired_delta_bootstrap_95_ci": [
+                262.8360999999999,
+                332.30539999999985
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1547.3792,
+              "gt_median": 791.90675,
+              "paired_delta_median": -755.99435,
+              "paired_delta_bootstrap_95_ci": [
+                -783.6702,
+                -747.5879500000001
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 2905.2192999999997,
+              "gt_median": 2788.1112,
+              "paired_delta_median": -116.45659999999998,
+              "paired_delta_bootstrap_95_ci": [
+                -139.44830000000002,
+                -111.9956000000002
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 2901.424,
+                "per_call": {
+                  "cpu_core/cycles": 5501.8054,
+                  "cpu_core/instructions": 16288.5487,
+                  "cpu_core/mem_inst_retired.all_loads": 2055.4677,
+                  "cpu_core/mem_inst_retired.all_stores": 1602.0524
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2831.1712,
+                "per_call": {
+                  "cpu_core/cycles": 4962.8846,
+                  "cpu_core/instructions": 12122.5354,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.596,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7922
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2785.6768,
+                "per_call": {
+                  "cpu_core/cycles": 5111.304,
+                  "cpu_core/instructions": 12562.4401,
+                  "cpu_core/mem_inst_retired.all_loads": 2299.9936,
+                  "cpu_core/mem_inst_retired.all_stores": 792.2905
+                }
+              },
+              "official": {
+                "tsc_per_call": 2903.844,
+                "per_call": {
+                  "cpu_core/cycles": 5322.2603,
+                  "cpu_core/instructions": 15718.0519,
+                  "cpu_core/mem_inst_retired.all_loads": 1983.476,
+                  "cpu_core/mem_inst_retired.all_stores": 1545.9406
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2912.566,
+                "per_call": {
+                  "cpu_core/cycles": 5313.6265,
+                  "cpu_core/instructions": 15724.0007,
+                  "cpu_core/mem_inst_retired.all_loads": 1984.2271,
+                  "cpu_core/mem_inst_retired.all_stores": 1546.5267
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2811.6346,
+                "per_call": {
+                  "cpu_core/cycles": 5115.9087,
+                  "cpu_core/instructions": 12564.7579,
+                  "cpu_core/mem_inst_retired.all_loads": 2300.4177,
+                  "cpu_core/mem_inst_retired.all_stores": 792.4376
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2795.9162,
+                "per_call": {
+                  "cpu_core/cycles": 4958.606,
+                  "cpu_core/instructions": 12122.5126,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5963,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7922
+                }
+              },
+              "official": {
+                "tsc_per_call": 2938.4804,
+                "per_call": {
+                  "cpu_core/cycles": 5469.7913,
+                  "cpu_core/instructions": 16142.4641,
+                  "cpu_core/mem_inst_retired.all_loads": 2037.0333,
+                  "cpu_core/mem_inst_retired.all_stores": 1587.6842
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2899.6736,
+                "per_call": {
+                  "cpu_core/cycles": 5338.7952,
+                  "cpu_core/instructions": 15814.7563,
+                  "cpu_core/mem_inst_retired.all_loads": 1995.6794,
+                  "cpu_core/mem_inst_retired.all_stores": 1555.4522
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2840.358,
+                "per_call": {
+                  "cpu_core/cycles": 5146.5171,
+                  "cpu_core/instructions": 12615.5418,
+                  "cpu_core/mem_inst_retired.all_loads": 2309.7158,
+                  "cpu_core/mem_inst_retired.all_stores": 795.639
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2784.7864,
+                "per_call": {
+                  "cpu_core/cycles": 4954.3289,
+                  "cpu_core/instructions": 12122.518,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5972,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7936
+                }
+              },
+              "official": {
+                "tsc_per_call": 2899.5324,
+                "per_call": {
+                  "cpu_core/cycles": 5308.2586,
+                  "cpu_core/instructions": 15725.1855,
+                  "cpu_core/mem_inst_retired.all_loads": 1984.3763,
+                  "cpu_core/mem_inst_retired.all_stores": 1546.6425
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2899.8212,
+                "per_call": {
+                  "cpu_core/cycles": 5318.5871,
+                  "cpu_core/instructions": 15729.6939,
+                  "cpu_core/mem_inst_retired.all_loads": 1984.9454,
+                  "cpu_core/mem_inst_retired.all_stores": 1547.0866
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2786.8052,
+                "per_call": {
+                  "cpu_core/cycles": 4994.28,
+                  "cpu_core/instructions": 12239.6446,
+                  "cpu_core/mem_inst_retired.all_loads": 2242.0528,
+                  "cpu_core/mem_inst_retired.all_stores": 773.1594
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2784.3052,
+                "per_call": {
+                  "cpu_core/cycles": 5106.3152,
+                  "cpu_core/instructions": 12550.2598,
+                  "cpu_core/mem_inst_retired.all_loads": 2297.7634,
+                  "cpu_core/mem_inst_retired.all_stores": 791.523
+                }
+              },
+              "official": {
+                "tsc_per_call": 2938.8198,
+                "per_call": {
+                  "cpu_core/cycles": 5309.8063,
+                  "cpu_core/instructions": 15741.0755,
+                  "cpu_core/mem_inst_retired.all_loads": 1986.3816,
+                  "cpu_core/mem_inst_retired.all_stores": 1548.2054
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2897.3526,
+                "per_call": {
+                  "cpu_core/cycles": 5169.8465,
+                  "cpu_core/instructions": 15236.8063,
+                  "cpu_core/mem_inst_retired.all_loads": 1925.4762,
+                  "cpu_core/mem_inst_retired.all_stores": 1498.8811
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2785.357,
+                "per_call": {
+                  "cpu_core/cycles": 5114.2453,
+                  "cpu_core/instructions": 12570.8598,
+                  "cpu_core/mem_inst_retired.all_loads": 2301.5348,
+                  "cpu_core/mem_inst_retired.all_stores": 792.8225
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2787.912,
+                "per_call": {
+                  "cpu_core/cycles": 5099.3061,
+                  "cpu_core/instructions": 12537.6214,
+                  "cpu_core/mem_inst_retired.all_loads": 2295.4494,
+                  "cpu_core/mem_inst_retired.all_stores": 790.7262
+                }
+              },
+              "official": {
+                "tsc_per_call": 2896.1308,
+                "per_call": {
+                  "cpu_core/cycles": 5299.7452,
+                  "cpu_core/instructions": 15696.4304,
+                  "cpu_core/mem_inst_retired.all_loads": 1980.7479,
+                  "cpu_core/mem_inst_retired.all_stores": 1543.8148
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2924.6072,
+                "per_call": {
+                  "cpu_core/cycles": 5381.5795,
+                  "cpu_core/instructions": 15818.1582,
+                  "cpu_core/mem_inst_retired.all_loads": 1996.1089,
+                  "cpu_core/mem_inst_retired.all_stores": 1555.7873
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2791.9872,
+                "per_call": {
+                  "cpu_core/cycles": 4958.0961,
+                  "cpu_core/instructions": 12122.5126,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5963,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7922
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2789.6498,
+                "per_call": {
+                  "cpu_core/cycles": 5117.5523,
+                  "cpu_core/instructions": 12579.2332,
+                  "cpu_core/mem_inst_retired.all_loads": 2303.0683,
+                  "cpu_core/mem_inst_retired.all_stores": 793.3496
+                }
+              },
+              "official": {
+                "tsc_per_call": 2903.9234,
+                "per_call": {
+                  "cpu_core/cycles": 5453.0676,
+                  "cpu_core/instructions": 16115.9686,
+                  "cpu_core/mem_inst_retired.all_loads": 2033.6897,
+                  "cpu_core/mem_inst_retired.all_stores": 1585.0776
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2900.4556,
+                "per_call": {
+                  "cpu_core/cycles": 5311.7745,
+                  "cpu_core/instructions": 15735.6469,
+                  "cpu_core/mem_inst_retired.all_loads": 1985.6965,
+                  "cpu_core/mem_inst_retired.all_stores": 1547.6718
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2788.1292,
+                "per_call": {
+                  "cpu_core/cycles": 5117.1596,
+                  "cpu_core/instructions": 12563.615,
+                  "cpu_core/mem_inst_retired.all_loads": 2300.2087,
+                  "cpu_core/mem_inst_retired.all_stores": 792.3655
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2805.8314,
+                "per_call": {
+                  "cpu_core/cycles": 5128.9246,
+                  "cpu_core/instructions": 12600.1523,
+                  "cpu_core/mem_inst_retired.all_loads": 2306.8983,
+                  "cpu_core/mem_inst_retired.all_stores": 794.6687
+                }
+              },
+              "official": {
+                "tsc_per_call": 2968.7954,
+                "per_call": {
+                  "cpu_core/cycles": 5156.4635,
+                  "cpu_core/instructions": 15187.1187,
+                  "cpu_core/mem_inst_retired.all_loads": 1919.1978,
+                  "cpu_core/mem_inst_retired.all_stores": 1493.9935
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2894.6,
+                "per_call": {
+                  "cpu_core/cycles": 5346.1045,
+                  "cpu_core/instructions": 15841.862,
+                  "cpu_core/mem_inst_retired.all_loads": 1999.1001,
+                  "cpu_core/mem_inst_retired.all_stores": 1558.1189
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2787.9134,
+                "per_call": {
+                  "cpu_core/cycles": 5264.5586,
+                  "cpu_core/instructions": 12938.8605,
+                  "cpu_core/mem_inst_retired.all_loads": 2368.9103,
+                  "cpu_core/mem_inst_retired.all_stores": 816.0316
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2788.0932,
+                "per_call": {
+                  "cpu_core/cycles": 5202.3316,
+                  "cpu_core/instructions": 12763.9455,
+                  "cpu_core/mem_inst_retired.all_loads": 2336.886,
+                  "cpu_core/mem_inst_retired.all_stores": 804.9998
+                }
+              },
+              "official": {
+                "tsc_per_call": 2906.5152,
+                "per_call": {
+                  "cpu_core/cycles": 5315.3477,
+                  "cpu_core/instructions": 15727.8295,
+                  "cpu_core/mem_inst_retired.all_loads": 1984.7101,
+                  "cpu_core/mem_inst_retired.all_stores": 1546.9031
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2953.3394,
+                "per_call": {
+                  "cpu_core/cycles": 5243.566,
+                  "cpu_core/instructions": 15508.8272,
+                  "cpu_core/mem_inst_retired.all_loads": 1958.0145,
+                  "cpu_core/mem_inst_retired.all_stores": 1525.4659
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2788.726,
+                "per_call": {
+                  "cpu_core/cycles": 5137.1714,
+                  "cpu_core/instructions": 12594.5441,
+                  "cpu_core/mem_inst_retired.all_loads": 2306.1077,
+                  "cpu_core/mem_inst_retired.all_stores": 794.9007
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2794.4956,
+                "per_call": {
+                  "cpu_core/cycles": 5103.5441,
+                  "cpu_core/instructions": 12516.1439,
+                  "cpu_core/mem_inst_retired.all_loads": 2292.2063,
+                  "cpu_core/mem_inst_retired.all_stores": 790.2238
+                }
+              },
+              "official": {
+                "tsc_per_call": 2964.9858,
+                "per_call": {
+                  "cpu_core/cycles": 5432.7318,
+                  "cpu_core/instructions": 16030.1436,
+                  "cpu_core/mem_inst_retired.all_loads": 2023.6415,
+                  "cpu_core/mem_inst_retired.all_stores": 1576.7153
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 2920.2438,
+                "per_call": {
+                  "cpu_core/cycles": 5221.5266,
+                  "cpu_core/instructions": 15292.8799,
+                  "cpu_core/mem_inst_retired.all_loads": 1932.562,
+                  "cpu_core/mem_inst_retired.all_stores": 1504.3971
+                }
+              },
+              "gt": {
+                "tsc_per_call": 2783.9114,
+                "per_call": {
+                  "cpu_core/cycles": 5106.044,
+                  "cpu_core/instructions": 12543.6806,
+                  "cpu_core/mem_inst_retired.all_loads": 2296.5588,
+                  "cpu_core/mem_inst_retired.all_stores": 791.1083
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 2785.8388,
+                "per_call": {
+                  "cpu_core/cycles": 4955.6779,
+                  "cpu_core/instructions": 12122.5191,
+                  "cpu_core/mem_inst_retired.all_loads": 2220.5972,
+                  "cpu_core/mem_inst_retired.all_stores": 765.7936
+                }
+              },
+              "official": {
+                "tsc_per_call": 3030.4248,
+                "per_call": {
+                  "cpu_core/cycles": 5355.9876,
+                  "cpu_core/instructions": 15849.5926,
+                  "cpu_core/mem_inst_retired.all_loads": 2000.0754,
+                  "cpu_core/mem_inst_retired.all_stores": 1558.8789
+                }
+              }
+            }
+          ]
+        },
+        "pack": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 901.6301,
+              "gt_median": 1063.5529499999998,
+              "paired_delta_median": 170.17200000000003,
+              "paired_delta_bootstrap_95_ci": [
+                145.09329999999994,
+                186.07549999999998
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 2797.5362999999998,
+              "gt_median": 3086.2309999999998,
+              "paired_delta_median": 323.1346500000002,
+              "paired_delta_bootstrap_95_ci": [
+                225.6315999999997,
+                364.7192500000001
+              ],
+              "gt_wins": 2,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 203.08495,
+              "gt_median": 551.47765,
+              "paired_delta_median": 351.3961,
+              "paired_delta_bootstrap_95_ci": [
+                337.5508,
+                362.17105000000004
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 146.5749,
+              "gt_median": 367.16859999999997,
+              "paired_delta_median": 222.79505,
+              "paired_delta_bootstrap_95_ci": [
+                213.13565,
+                229.868
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 446.49940000000004,
+              "gt_median": 547.8234,
+              "paired_delta_median": 99.68129999999996,
+              "paired_delta_bootstrap_95_ci": [
+                95.17280000000002,
+                113.23950000000005
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 425.96,
+                "per_call": {
+                  "cpu_core/cycles": 949.9334,
+                  "cpu_core/instructions": 2950.775,
+                  "cpu_core/mem_inst_retired.all_loads": 213.857,
+                  "cpu_core/mem_inst_retired.all_stores": 154.4668
+                }
+              },
+              "gt": {
+                "tsc_per_call": 567.6628,
+                "per_call": {
+                  "cpu_core/cycles": 1082.0575,
+                  "cpu_core/instructions": 3127.364,
+                  "cpu_core/mem_inst_retired.all_loads": 558.8096,
+                  "cpu_core/mem_inst_retired.all_stores": 372.0812
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 713.3682,
+                "per_call": {
+                  "cpu_core/cycles": 1053.5352,
+                  "cpu_core/instructions": 3073.9912,
+                  "cpu_core/mem_inst_retired.all_loads": 549.1705,
+                  "cpu_core/mem_inst_retired.all_stores": 365.7881
+                }
+              },
+              "official": {
+                "tsc_per_call": 549.856,
+                "per_call": {
+                  "cpu_core/cycles": 885.044,
+                  "cpu_core/instructions": 2759.2669,
+                  "cpu_core/mem_inst_retired.all_loads": 199.9773,
+                  "cpu_core/mem_inst_retired.all_stores": 144.4417
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 423.3246,
+                "per_call": {
+                  "cpu_core/cycles": 922.0231,
+                  "cpu_core/instructions": 2865.1372,
+                  "cpu_core/mem_inst_retired.all_loads": 207.6501,
+                  "cpu_core/mem_inst_retired.all_stores": 149.9837
+                }
+              },
+              "gt": {
+                "tsc_per_call": 530.6924,
+                "per_call": {
+                  "cpu_core/cycles": 1058.889,
+                  "cpu_core/instructions": 3048.3032,
+                  "cpu_core/mem_inst_retired.all_loads": 544.8819,
+                  "cpu_core/mem_inst_retired.all_stores": 362.5601
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 548.3278,
+                "per_call": {
+                  "cpu_core/cycles": 1100.5733,
+                  "cpu_core/instructions": 3221.8269,
+                  "cpu_core/mem_inst_retired.all_loads": 575.5813,
+                  "cpu_core/mem_inst_retired.all_stores": 383.3798
+                }
+              },
+              "official": {
+                "tsc_per_call": 445.2928,
+                "per_call": {
+                  "cpu_core/cycles": 865.2423,
+                  "cpu_core/instructions": 2672.1137,
+                  "cpu_core/mem_inst_retired.all_loads": 195.4264,
+                  "cpu_core/mem_inst_retired.all_stores": 140.6256
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 443.0466,
+                "per_call": {
+                  "cpu_core/cycles": 898.155,
+                  "cpu_core/instructions": 2775.2127,
+                  "cpu_core/mem_inst_retired.all_loads": 201.802,
+                  "cpu_core/mem_inst_retired.all_stores": 145.5377
+                }
+              },
+              "gt": {
+                "tsc_per_call": 525.5368,
+                "per_call": {
+                  "cpu_core/cycles": 1086.3204,
+                  "cpu_core/instructions": 3164.07,
+                  "cpu_core/mem_inst_retired.all_loads": 565.3476,
+                  "cpu_core/mem_inst_retired.all_stores": 376.4632
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 546.736,
+                "per_call": {
+                  "cpu_core/cycles": 1078.8646,
+                  "cpu_core/instructions": 3145.4025,
+                  "cpu_core/mem_inst_retired.all_loads": 561.9809,
+                  "cpu_core/mem_inst_retired.all_stores": 374.2644
+                }
+              },
+              "official": {
+                "tsc_per_call": 447.706,
+                "per_call": {
+                  "cpu_core/cycles": 807.8359,
+                  "cpu_core/instructions": 2411.6889,
+                  "cpu_core/mem_inst_retired.all_loads": 178.9902,
+                  "cpu_core/mem_inst_retired.all_stores": 127.7889
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 448.4614,
+                "per_call": {
+                  "cpu_core/cycles": 921.1399,
+                  "cpu_core/instructions": 2860.2733,
+                  "cpu_core/mem_inst_retired.all_loads": 207.2969,
+                  "cpu_core/mem_inst_retired.all_stores": 149.7279
+                }
+              },
+              "gt": {
+                "tsc_per_call": 548.794,
+                "per_call": {
+                  "cpu_core/cycles": 1038.1422,
+                  "cpu_core/instructions": 3015.084,
+                  "cpu_core/mem_inst_retired.all_loads": 538.9435,
+                  "cpu_core/mem_inst_retired.all_stores": 358.6095
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 547.0612,
+                "per_call": {
+                  "cpu_core/cycles": 1014.3851,
+                  "cpu_core/instructions": 2922.832,
+                  "cpu_core/mem_inst_retired.all_loads": 523.4961,
+                  "cpu_core/mem_inst_retired.all_stores": 347.5818
+                }
+              },
+              "official": {
+                "tsc_per_call": 452.3042,
+                "per_call": {
+                  "cpu_core/cycles": 842.5323,
+                  "cpu_core/instructions": 2569.586,
+                  "cpu_core/mem_inst_retired.all_loads": 190.2453,
+                  "cpu_core/mem_inst_retired.all_stores": 136.035
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 489.716,
+                "per_call": {
+                  "cpu_core/cycles": 905.1052,
+                  "cpu_core/instructions": 2819.8599,
+                  "cpu_core/mem_inst_retired.all_loads": 204.3679,
+                  "cpu_core/mem_inst_retired.all_stores": 147.6121
+                }
+              },
+              "gt": {
+                "tsc_per_call": 654.02,
+                "per_call": {
+                  "cpu_core/cycles": 1022.7357,
+                  "cpu_core/instructions": 2949.9266,
+                  "cpu_core/mem_inst_retired.all_loads": 527.7719,
+                  "cpu_core/mem_inst_retired.all_stores": 350.8618
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 613.1152,
+                "per_call": {
+                  "cpu_core/cycles": 1068.3792,
+                  "cpu_core/instructions": 3102.2966,
+                  "cpu_core/mem_inst_retired.all_loads": 554.2327,
+                  "cpu_core/mem_inst_retired.all_stores": 369.1592
+                }
+              },
+              "official": {
+                "tsc_per_call": 556.2636,
+                "per_call": {
+                  "cpu_core/cycles": 888.699,
+                  "cpu_core/instructions": 2768.32,
+                  "cpu_core/mem_inst_retired.all_loads": 200.6337,
+                  "cpu_core/mem_inst_retired.all_stores": 144.9155
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 564.841,
+                "per_call": {
+                  "cpu_core/cycles": 881.1592,
+                  "cpu_core/instructions": 2733.322,
+                  "cpu_core/mem_inst_retired.all_loads": 198.6206,
+                  "cpu_core/mem_inst_retired.all_stores": 143.2868
+                }
+              },
+              "gt": {
+                "tsc_per_call": 615.3018,
+                "per_call": {
+                  "cpu_core/cycles": 1034.4799,
+                  "cpu_core/instructions": 3001.4192,
+                  "cpu_core/mem_inst_retired.all_loads": 536.4904,
+                  "cpu_core/mem_inst_retired.all_stores": 356.9817
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 585.2532,
+                "per_call": {
+                  "cpu_core/cycles": 975.1965,
+                  "cpu_core/instructions": 2768.135,
+                  "cpu_core/mem_inst_retired.all_loads": 495.7927,
+                  "cpu_core/mem_inst_retired.all_stores": 329.091
+                }
+              },
+              "official": {
+                "tsc_per_call": 453.3626,
+                "per_call": {
+                  "cpu_core/cycles": 916.7234,
+                  "cpu_core/instructions": 2853.4368,
+                  "cpu_core/mem_inst_retired.all_loads": 206.8024,
+                  "cpu_core/mem_inst_retired.all_stores": 149.3712
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 442.7918,
+                "per_call": {
+                  "cpu_core/cycles": 920.3939,
+                  "cpu_core/instructions": 2864.955,
+                  "cpu_core/mem_inst_retired.all_loads": 207.6364,
+                  "cpu_core/mem_inst_retired.all_stores": 149.9729
+                }
+              },
+              "gt": {
+                "tsc_per_call": 547.319,
+                "per_call": {
+                  "cpu_core/cycles": 1095.0123,
+                  "cpu_core/instructions": 3194.4477,
+                  "cpu_core/mem_inst_retired.all_loads": 570.6897,
+                  "cpu_core/mem_inst_retired.all_stores": 380.1224
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 524.8194,
+                "per_call": {
+                  "cpu_core/cycles": 1095.7584,
+                  "cpu_core/instructions": 3195.9304,
+                  "cpu_core/mem_inst_retired.all_loads": 570.9547,
+                  "cpu_core/mem_inst_retired.all_stores": 380.2988
+                }
+              },
+              "official": {
+                "tsc_per_call": 436.2044,
+                "per_call": {
+                  "cpu_core/cycles": 931.576,
+                  "cpu_core/instructions": 2892.9619,
+                  "cpu_core/mem_inst_retired.all_loads": 209.6659,
+                  "cpu_core/mem_inst_retired.all_stores": 151.4388
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 425.2414,
+                "per_call": {
+                  "cpu_core/cycles": 912.4355,
+                  "cpu_core/instructions": 2841.3408,
+                  "cpu_core/mem_inst_retired.all_loads": 205.9257,
+                  "cpu_core/mem_inst_retired.all_stores": 148.738
+                }
+              },
+              "gt": {
+                "tsc_per_call": 520.83,
+                "per_call": {
+                  "cpu_core/cycles": 1100.5572,
+                  "cpu_core/instructions": 3210.0199,
+                  "cpu_core/mem_inst_retired.all_loads": 573.4722,
+                  "cpu_core/mem_inst_retired.all_stores": 381.974
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 523.7766,
+                "per_call": {
+                  "cpu_core/cycles": 1110.4655,
+                  "cpu_core/instructions": 3242.0889,
+                  "cpu_core/mem_inst_retired.all_loads": 579.2013,
+                  "cpu_core/mem_inst_retired.all_stores": 385.7909
+                }
+              },
+              "official": {
+                "tsc_per_call": 425.3638,
+                "per_call": {
+                  "cpu_core/cycles": 926.4362,
+                  "cpu_core/instructions": 2881.3295,
+                  "cpu_core/mem_inst_retired.all_loads": 208.8231,
+                  "cpu_core/mem_inst_retired.all_stores": 150.8301
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 522.8764,
+                "per_call": {
+                  "cpu_core/cycles": 884.2247,
+                  "cpu_core/instructions": 2742.0303,
+                  "cpu_core/mem_inst_retired.all_loads": 198.8406,
+                  "cpu_core/mem_inst_retired.all_stores": 143.5788
+                }
+              },
+              "gt": {
+                "tsc_per_call": 641.9876,
+                "per_call": {
+                  "cpu_core/cycles": 1049.727,
+                  "cpu_core/instructions": 3058.8069,
+                  "cpu_core/mem_inst_retired.all_loads": 546.5093,
+                  "cpu_core/mem_inst_retired.all_stores": 363.9601
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 526.7378,
+                "per_call": {
+                  "cpu_core/cycles": 972.2839,
+                  "cpu_core/instructions": 2768.1054,
+                  "cpu_core/mem_inst_retired.all_loads": 495.7928,
+                  "cpu_core/mem_inst_retired.all_stores": 329.091
+                }
+              },
+              "official": {
+                "tsc_per_call": 430.0614,
+                "per_call": {
+                  "cpu_core/cycles": 916.8423,
+                  "cpu_core/instructions": 2856.6592,
+                  "cpu_core/mem_inst_retired.all_loads": 207.0357,
+                  "cpu_core/mem_inst_retired.all_stores": 149.5393
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 427.7624,
+                "per_call": {
+                  "cpu_core/cycles": 803.0224,
+                  "cpu_core/instructions": 2411.7201,
+                  "cpu_core/mem_inst_retired.all_loads": 178.9908,
+                  "cpu_core/mem_inst_retired.all_stores": 127.7895
+                }
+              },
+              "gt": {
+                "tsc_per_call": 559.7428,
+                "per_call": {
+                  "cpu_core/cycles": 1033.0057,
+                  "cpu_core/instructions": 3004.7478,
+                  "cpu_core/mem_inst_retired.all_loads": 537.118,
+                  "cpu_core/mem_inst_retired.all_stores": 357.376
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 527.3002,
+                "per_call": {
+                  "cpu_core/cycles": 1068.2169,
+                  "cpu_core/instructions": 3098.4708,
+                  "cpu_core/mem_inst_retired.all_loads": 553.7848,
+                  "cpu_core/mem_inst_retired.all_stores": 368.5491
+                }
+              },
+              "official": {
+                "tsc_per_call": 483.055,
+                "per_call": {
+                  "cpu_core/cycles": 865.9975,
+                  "cpu_core/instructions": 2668.5632,
+                  "cpu_core/mem_inst_retired.all_loads": 195.1667,
+                  "cpu_core/mem_inst_retired.all_stores": 140.4371
+                }
+              }
+            }
+          ]
+        },
+        "island-pack": {
+          "summary": {
+            "cpu_core/cycles": {
+              "official_median": 6048.4258,
+              "gt_median": 6041.4806499999995,
+              "paired_delta_median": -9.117149999999583,
+              "paired_delta_bootstrap_95_ci": [
+                -65.4704999999999,
+                10.550599999999577
+              ],
+              "gt_wins": 13,
+              "pairs": 20
+            },
+            "cpu_core/instructions": {
+              "official_median": 18109.26065,
+              "gt_median": 15299.455399999999,
+              "paired_delta_median": -2816.2662500000006,
+              "paired_delta_bootstrap_95_ci": [
+                -3156.194400000001,
+                -2743.0854500000005
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_loads": {
+              "official_median": 2151.0681999999997,
+              "gt_median": 2787.4183000000003,
+              "paired_delta_median": 634.6921499999999,
+              "paired_delta_bootstrap_95_ci": [
+                597.9920499999998,
+                640.079
+              ],
+              "gt_wins": 0,
+              "pairs": 20
+            },
+            "cpu_core/mem_inst_retired.all_stores": {
+              "official_median": 1667.4398,
+              "gt_median": 1122.2611499999998,
+              "paired_delta_median": -545.8544,
+              "paired_delta_bootstrap_95_ci": [
+                -574.0156,
+                -538.93595
+              ],
+              "gt_wins": 20,
+              "pairs": 20
+            },
+            "tsc": {
+              "official_median": 3320.8512,
+              "gt_median": 3317.7616,
+              "paired_delta_median": -1.0929000000000997,
+              "paired_delta_bootstrap_95_ci": [
+                -8.820300000000316,
+                14.067699999999832
+              ],
+              "gt_wins": 11,
+              "pairs": 20
+            }
+          },
+          "samples": [
+            {
+              "official": {
+                "tsc_per_call": 3320.5276,
+                "per_call": {
+                  "cpu_core/cycles": 5896.5222,
+                  "cpu_core/instructions": 17558.7198,
+                  "cpu_core/mem_inst_retired.all_loads": 2088.5977,
+                  "cpu_core/mem_inst_retired.all_stores": 1617.1934
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3405.2434,
+                "per_call": {
+                  "cpu_core/cycles": 6202.6217,
+                  "cpu_core/instructions": 15311.3792,
+                  "cpu_core/mem_inst_retired.all_loads": 2789.5905,
+                  "cpu_core/mem_inst_retired.all_stores": 1123.1358
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3318.4902,
+                "per_call": {
+                  "cpu_core/cycles": 6114.5748,
+                  "cpu_core/instructions": 15440.6572,
+                  "cpu_core/mem_inst_retired.all_loads": 2813.8422,
+                  "cpu_core/mem_inst_retired.all_stores": 1133.2884
+                }
+              },
+              "official": {
+                "tsc_per_call": 3327.7554,
+                "per_call": {
+                  "cpu_core/cycles": 6038.2878,
+                  "cpu_core/instructions": 18069.1258,
+                  "cpu_core/mem_inst_retired.all_loads": 2146.3005,
+                  "cpu_core/mem_inst_retired.all_stores": 1663.744
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3342.5626,
+                "per_call": {
+                  "cpu_core/cycles": 6045.7237,
+                  "cpu_core/instructions": 18101.6074,
+                  "cpu_core/mem_inst_retired.all_loads": 2150.1591,
+                  "cpu_core/mem_inst_retired.all_stores": 1666.7348
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3506.8202,
+                "per_call": {
+                  "cpu_core/cycles": 6037.6108,
+                  "cpu_core/instructions": 14850.5133,
+                  "cpu_core/mem_inst_retired.all_loads": 2706.797,
+                  "cpu_core/mem_inst_retired.all_stores": 1090.2918
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3325.2756,
+                "per_call": {
+                  "cpu_core/cycles": 6059.9672,
+                  "cpu_core/instructions": 15350.7775,
+                  "cpu_core/mem_inst_retired.all_loads": 2796.7687,
+                  "cpu_core/mem_inst_retired.all_stores": 1126.026
+                }
+              },
+              "official": {
+                "tsc_per_call": 3314.995,
+                "per_call": {
+                  "cpu_core/cycles": 5973.2663,
+                  "cpu_core/instructions": 17865.5189,
+                  "cpu_core/mem_inst_retired.all_loads": 2123.1533,
+                  "cpu_core/mem_inst_retired.all_stores": 1645.1807
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3316.2472,
+                "per_call": {
+                  "cpu_core/cycles": 6054.419,
+                  "cpu_core/instructions": 18124.1753,
+                  "cpu_core/mem_inst_retired.all_loads": 2152.8397,
+                  "cpu_core/mem_inst_retired.all_stores": 1668.8135
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3317.033,
+                "per_call": {
+                  "cpu_core/cycles": 6031.2373,
+                  "cpu_core/instructions": 15299.5776,
+                  "cpu_core/mem_inst_retired.all_loads": 2787.4406,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.2701
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3313.787,
+                "per_call": {
+                  "cpu_core/cycles": 6040.0792,
+                  "cpu_core/instructions": 15307.6349,
+                  "cpu_core/mem_inst_retired.all_loads": 2788.9084,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.8614
+                }
+              },
+              "official": {
+                "tsc_per_call": 3317.6686,
+                "per_call": {
+                  "cpu_core/cycles": 6050.2006,
+                  "cpu_core/instructions": 18116.9139,
+                  "cpu_core/mem_inst_retired.all_loads": 2151.9773,
+                  "cpu_core/mem_inst_retired.all_stores": 1668.1448
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3313.396,
+                "per_call": {
+                  "cpu_core/cycles": 6059.5761,
+                  "cpu_core/instructions": 18141.6417,
+                  "cpu_core/mem_inst_retired.all_loads": 2155.9094,
+                  "cpu_core/mem_inst_retired.all_stores": 1670.5847
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3331.2508,
+                "per_call": {
+                  "cpu_core/cycles": 6038.0552,
+                  "cpu_core/instructions": 15299.3332,
+                  "cpu_core/mem_inst_retired.all_loads": 2787.396,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.2522
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3312.0074,
+                "per_call": {
+                  "cpu_core/cycles": 6046.07,
+                  "cpu_core/instructions": 15316.5718,
+                  "cpu_core/mem_inst_retired.all_loads": 2790.5366,
+                  "cpu_core/mem_inst_retired.all_stores": 1123.5165
+                }
+              },
+              "official": {
+                "tsc_per_call": 3312.0042,
+                "per_call": {
+                  "cpu_core/cycles": 6276.6229,
+                  "cpu_core/instructions": 18807.2226,
+                  "cpu_core/mem_inst_retired.all_loads": 2233.9741,
+                  "cpu_core/mem_inst_retired.all_stores": 1731.7057
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3320.5328,
+                "per_call": {
+                  "cpu_core/cycles": 6180.2748,
+                  "cpu_core/instructions": 18510.2939,
+                  "cpu_core/mem_inst_retired.all_loads": 2198.704,
+                  "cpu_core/mem_inst_retired.all_stores": 1704.3658
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3319.3702,
+                "per_call": {
+                  "cpu_core/cycles": 6034.9609,
+                  "cpu_core/instructions": 15278.033,
+                  "cpu_core/mem_inst_retired.all_loads": 2783.5418,
+                  "cpu_core/mem_inst_retired.all_stores": 1120.7122
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3351.6366,
+                "per_call": {
+                  "cpu_core/cycles": 5928.7793,
+                  "cpu_core/instructions": 14937.1733,
+                  "cpu_core/mem_inst_retired.all_loads": 2722.5962,
+                  "cpu_core/mem_inst_retired.all_stores": 1096.68
+                }
+              },
+              "official": {
+                "tsc_per_call": 3313.4814,
+                "per_call": {
+                  "cpu_core/cycles": 5887.9018,
+                  "cpu_core/instructions": 17558.7111,
+                  "cpu_core/mem_inst_retired.all_loads": 2088.5967,
+                  "cpu_core/mem_inst_retired.all_stores": 1617.1923
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3414.3172,
+                "per_call": {
+                  "cpu_core/cycles": 6187.079,
+                  "cpu_core/instructions": 18491.3303,
+                  "cpu_core/mem_inst_retired.all_loads": 2196.4515,
+                  "cpu_core/mem_inst_retired.all_stores": 1702.6199
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3473.3708,
+                "per_call": {
+                  "cpu_core/cycles": 5898.0489,
+                  "cpu_core/instructions": 14850.5423,
+                  "cpu_core/mem_inst_retired.all_loads": 2706.7973,
+                  "cpu_core/mem_inst_retired.all_stores": 1090.2921
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3488.1222,
+                "per_call": {
+                  "cpu_core/cycles": 6121.3486,
+                  "cpu_core/instructions": 15342.5515,
+                  "cpu_core/mem_inst_retired.all_loads": 2795.2701,
+                  "cpu_core/mem_inst_retired.all_stores": 1125.4226
+                }
+              },
+              "official": {
+                "tsc_per_call": 3465.4038,
+                "per_call": {
+                  "cpu_core/cycles": 5910.4002,
+                  "cpu_core/instructions": 17558.7373,
+                  "cpu_core/mem_inst_retired.all_loads": 2088.5964,
+                  "cpu_core/mem_inst_retired.all_stores": 1617.192
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3335.0286,
+                "per_call": {
+                  "cpu_core/cycles": 6078.843,
+                  "cpu_core/instructions": 18123.1863,
+                  "cpu_core/mem_inst_retired.all_loads": 2152.722,
+                  "cpu_core/mem_inst_retired.all_stores": 1668.7215
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3315.8098,
+                "per_call": {
+                  "cpu_core/cycles": 6039.6913,
+                  "cpu_core/instructions": 15299.9328,
+                  "cpu_core/mem_inst_retired.all_loads": 2787.5054,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.2961
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3312.7538,
+                "per_call": {
+                  "cpu_core/cycles": 6043.209,
+                  "cpu_core/instructions": 15297.4203,
+                  "cpu_core/mem_inst_retired.all_loads": 2787.0476,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.1121
+                }
+              },
+              "official": {
+                "tsc_per_call": 3317.7836,
+                "per_call": {
+                  "cpu_core/cycles": 6041.9452,
+                  "cpu_core/instructions": 18086.5786,
+                  "cpu_core/mem_inst_retired.all_loads": 2148.3738,
+                  "cpu_core/mem_inst_retired.all_stores": 1665.351
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3326.3416,
+                "per_call": {
+                  "cpu_core/cycles": 6174.5429,
+                  "cpu_core/instructions": 18484.5848,
+                  "cpu_core/mem_inst_retired.all_loads": 2195.65,
+                  "cpu_core/mem_inst_retired.all_stores": 1701.9981
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3307.5652,
+                "per_call": {
+                  "cpu_core/cycles": 6082.7536,
+                  "cpu_core/instructions": 15404.4569,
+                  "cpu_core/mem_inst_retired.all_loads": 2806.7963,
+                  "cpu_core/mem_inst_retired.all_stores": 1130.4099
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3312.403,
+                "per_call": {
+                  "cpu_core/cycles": 6030.8358,
+                  "cpu_core/instructions": 15282.4185,
+                  "cpu_core/mem_inst_retired.all_loads": 2784.337,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.033
+                }
+              },
+              "official": {
+                "tsc_per_call": 3321.1696,
+                "per_call": {
+                  "cpu_core/cycles": 6273.9062,
+                  "cpu_core/instructions": 18790.2853,
+                  "cpu_core/mem_inst_retired.all_loads": 2231.9619,
+                  "cpu_core/mem_inst_retired.all_stores": 1730.1459
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3338.8574,
+                "per_call": {
+                  "cpu_core/cycles": 6026.6904,
+                  "cpu_core/instructions": 17996.9025,
+                  "cpu_core/mem_inst_retired.all_loads": 2138.1737,
+                  "cpu_core/mem_inst_retired.all_stores": 1657.1586
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3323.078,
+                "per_call": {
+                  "cpu_core/cycles": 6046.5278,
+                  "cpu_core/instructions": 15286.4355,
+                  "cpu_core/mem_inst_retired.all_loads": 2785.0461,
+                  "cpu_core/mem_inst_retired.all_stores": 1121.3061
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3313.1516,
+                "per_call": {
+                  "cpu_core/cycles": 5886.3887,
+                  "cpu_core/instructions": 14856.5969,
+                  "cpu_core/mem_inst_retired.all_loads": 2707.9003,
+                  "cpu_core/mem_inst_retired.all_stores": 1090.7366
+                }
+              },
+              "official": {
+                "tsc_per_call": 3328.8058,
+                "per_call": {
+                  "cpu_core/cycles": 6062.4455,
+                  "cpu_core/instructions": 18152.7333,
+                  "cpu_core/mem_inst_retired.all_loads": 2156.2318,
+                  "cpu_core/mem_inst_retired.all_stores": 1671.4421
+                }
+              }
+            },
+            {
+              "official": {
+                "tsc_per_call": 3325.5734,
+                "per_call": {
+                  "cpu_core/cycles": 6045.7572,
+                  "cpu_core/instructions": 18074.1562,
+                  "cpu_core/mem_inst_retired.all_loads": 2146.8981,
+                  "cpu_core/mem_inst_retired.all_stores": 1664.2072
+                }
+              },
+              "gt": {
+                "tsc_per_call": 3316.6994,
+                "per_call": {
+                  "cpu_core/cycles": 6042.8821,
+                  "cpu_core/instructions": 15298.4523,
+                  "cpu_core/mem_inst_retired.all_loads": 2787.2356,
+                  "cpu_core/mem_inst_retired.all_stores": 1122.1878
+                }
+              }
+            },
+            {
+              "gt": {
+                "tsc_per_call": 3312.275,
+                "per_call": {
+                  "cpu_core/cycles": 6044.7875,
+                  "cpu_core/instructions": 15311.9298,
+                  "cpu_core/mem_inst_retired.all_loads": 2789.6913,
+                  "cpu_core/mem_inst_retired.all_stores": 1123.1753
+                }
+              },
+              "official": {
+                "tsc_per_call": 3313.2982,
+                "per_call": {
+                  "cpu_core/cycles": 6046.651,
+                  "cpu_core/instructions": 18099.1819,
+                  "cpu_core/mem_inst_retired.all_loads": 2149.8708,
+                  "cpu_core/mem_inst_retired.all_stores": 1666.5115
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "decision": "stop-before-full-keygen"
+}

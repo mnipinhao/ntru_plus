@@ -1,0 +1,81 @@
+{
+  "schema": "ntruplus768-supercop-delivery-keygen-load-provenance-v1",
+  "date": "2026-08-12",
+  "host": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "cpu": "Intel(R) Core(TM) Ultra 7 155H",
+  "benchmark_method": "SUPERCOP stabilized quartiles; Q2 primary",
+  "excluded_runtime_outlier": {
+    "result_dir": "/home/nuc/supercop-20260627/results/ntruplus768-avx2-gt-global-inverse-20260812-144300",
+    "reason": "all three operations inflated by roughly 50 percent in one launch; excluded from the compiler matrix rather than attributing a whole-system runtime state to O3 code generation"
+  },
+  "compiler_matrix": {
+    "official_O2": {"keypair": 21581.104, "enc": 28038.375, "dec": 19486.021},
+    "official_O3": {"keypair": 21584.104, "enc": 28145.396, "dec": 19428.500},
+    "gt_O2": {"keypair": 21576.792, "enc": 28018.208, "dec": 19281.521},
+    "gt_O3": {"keypair": 21636.083, "enc": 28511.604, "dec": 19524.062}
+  },
+  "same_compiler_delta_gt_minus_official": {
+    "O2": {"keypair": -4.312, "enc": -20.167, "dec": -204.500},
+    "O3": {"keypair": 51.979, "enc": 366.208, "dec": 95.562}
+  },
+  "gt_O2_placement_matrix": {
+    "official_O2_reference": {"keypair": 21581.104, "enc": 28038.375, "dec": 19486.021},
+    "original": {"keypair": 21576.792, "enc": 28018.208, "dec": 19281.521},
+    "pad32": {"keypair": 21654.000, "enc": 28264.542, "dec": 19513.146},
+    "pad64": {"keypair": 21617.333, "enc": 28075.312, "dec": 19313.042},
+    "pad96": {"keypair": 21569.167, "enc": 28015.812, "dec": 19317.479}
+  },
+  "placement_delta_gt_minus_official_O2": {
+    "original": {"keypair": -4.312, "enc": -20.167, "dec": -204.500},
+    "pad32": {"keypair": 72.896, "enc": 226.167, "dec": 27.125},
+    "pad64": {"keypair": 36.229, "enc": 36.937, "dec": -172.979},
+    "pad96": {"keypair": -11.937, "enc": -22.563, "dec": -168.542}
+  },
+  "delivery_decision": {
+    "decap_winning_placements": "3/4",
+    "all_operations_winning_placements": "2/4",
+    "production_default_promotion": false,
+    "reason": "compiler and 32-byte code placement can reverse the sub-percent result"
+  },
+  "keygen_load_provenance": {
+    "whole_keygen_extra_loads": {"normal": 910.514, "reversed": 901.177},
+    "cumulative_extra_loads": {
+      "normal": {"C1": 147.245, "C2": 280.483, "C3": 534.959, "C4": 927.163, "C5": 921.323, "C6": 910.514},
+      "reversed": {"C1": 152.945, "C2": 289.318, "C3": 534.187, "C4": 952.903, "C5": 921.876, "C6": 901.177}
+    },
+    "adjacent_extra_loads": {
+      "normal": {"first_attempt": 147.245, "second_attempt": 133.238, "first_BM_and_pack": 254.477, "second_BM_and_two_packs": 392.204, "hash": -5.841, "clear_return": -10.809},
+      "reversed": {"first_attempt": 152.945, "second_attempt": 136.372, "first_BM_and_pack": 244.869, "second_BM_and_two_packs": 418.717, "hash": -31.027, "clear_return": -20.698}
+    },
+    "independent_component_medians": {
+      "two_forward_plus_baseinv": {"extra_loads": 159.098, "share_of_full_percent": 17.56},
+      "two_basemul_consumers": {"extra_loads": 178.374, "share_of_full_percent": 19.69},
+      "three_Q24_halfscatter_packs": {"extra_loads": 540.639, "share_of_full_percent": 59.68}
+    },
+    "conclusion": "approximately 60% of the +900-load debt is the three Q24 keygen packs; about 20% is the two native BaseMul consumers; BaseInv/Forward is not the dominant source"
+  },
+  "keygen_cache_pressure_control": {
+    "normal": {
+      "extra_retired_loads": 860.232,
+      "extra_L1_misses": 0.224,
+      "extra_L2_misses": 0.004,
+      "extra_L1_pending_cycles": 5.056,
+      "extra_L1_stall_cycles": 2.458
+    },
+    "reversed": {
+      "extra_retired_loads": 843.955,
+      "extra_L1_misses": 0.183,
+      "extra_L2_misses": 0.007,
+      "extra_L1_pending_cycles": 1.834,
+      "extra_L1_stall_cycles": 0.940
+    },
+    "conclusion": "the extra retired loads are almost entirely L1 hits; cache-miss latency does not explain the placement-sensitive Keygen cycle delta"
+  },
+  "artifacts": {
+    "compiler_matrix": "results/tile4-supercop-cross-compiler-20260812.json",
+    "placement_matrix": "results/tile4-supercop-placement-robustness-20260812.json",
+    "keygen_cumulative": "results/tile4-keygen-production-cumulative-serious.json",
+    "keygen_components": "results/tile4-keygen-soa-island-q24-halfscatter-pmu.json",
+    "keygen_cache_pressure": "results/tile4-keygen-load-provenance-pmu-20260812.json"
+  }
+}

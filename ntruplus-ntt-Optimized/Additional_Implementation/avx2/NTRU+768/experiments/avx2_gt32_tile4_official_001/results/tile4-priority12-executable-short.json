@@ -1,0 +1,292 @@
+{
+  "schema": "ntruplus768-gt32-priority12-executable-v1",
+  "priority1_i112": {
+    "correctness": "1000-trial M<->I112, bounded entry, and BM+inverse common-AoS endpoint pass",
+    "placements": {
+      "normal": {
+        "control_tsc": 534.749,
+        "candidate_tsc": 698.841,
+        "delta_tsc": 164.092,
+        "wins": "0/20"
+      },
+      "reversed": {
+        "control_tsc": 528.531,
+        "candidate_tsc": 696.76,
+        "delta_tsc": 168.228,
+        "wins": "0/20"
+      }
+    },
+    "decision": "cycle-hard-stop",
+    "reason": "the generated zero-instruction inverse-consumer assertion was not executable; the exact entry needs four half permutes per tile and the candidate is slower in both placements"
+  },
+  "priority2_n5_half_terminal": {
+    "correctness": "1000-trial exact N5-to-half-native route pass",
+    "route": {
+      "vperm2i128": 32,
+      "source_loads": 48,
+      "destination_stores": 48,
+      "reason_materialized": "N5 completes one 8-vector (k3,branch) tile at a time; half-native output needs three k3 tiles, or 24 live data YMM"
+    },
+    "placements": {
+      "normal": {
+        "samples": [
+          {
+            "sample": 0,
+            "control_tsc": 1628.896,
+            "candidate_tsc": 1733.3488,
+            "delta_tsc": 104.4528
+          },
+          {
+            "sample": 1,
+            "control_tsc": 1556.8188,
+            "candidate_tsc": 1767.0192,
+            "delta_tsc": 210.2004
+          },
+          {
+            "sample": 2,
+            "control_tsc": 1497.4432,
+            "candidate_tsc": 1523.0716,
+            "delta_tsc": 25.6284
+          },
+          {
+            "sample": 3,
+            "control_tsc": 1496.6416,
+            "candidate_tsc": 1520.2904,
+            "delta_tsc": 23.6488
+          },
+          {
+            "sample": 4,
+            "control_tsc": 1494.7932,
+            "candidate_tsc": 1523.4428,
+            "delta_tsc": 28.6496
+          },
+          {
+            "sample": 5,
+            "control_tsc": 1498.068,
+            "candidate_tsc": 1522.0948,
+            "delta_tsc": 24.0268
+          },
+          {
+            "sample": 6,
+            "control_tsc": 1499.08,
+            "candidate_tsc": 1525.0588,
+            "delta_tsc": 25.9788
+          },
+          {
+            "sample": 7,
+            "control_tsc": 1498.8852,
+            "candidate_tsc": 1523.7484,
+            "delta_tsc": 24.8632
+          },
+          {
+            "sample": 8,
+            "control_tsc": 1501.554,
+            "candidate_tsc": 1645.2332,
+            "delta_tsc": 143.6792
+          },
+          {
+            "sample": 9,
+            "control_tsc": 1495.6624,
+            "candidate_tsc": 1524.27,
+            "delta_tsc": 28.6076
+          },
+          {
+            "sample": 10,
+            "control_tsc": 1502.0692,
+            "candidate_tsc": 1523.0828,
+            "delta_tsc": 21.0136
+          },
+          {
+            "sample": 11,
+            "control_tsc": 1495.2136,
+            "candidate_tsc": 1521.0668,
+            "delta_tsc": 25.8532
+          },
+          {
+            "sample": 12,
+            "control_tsc": 1497.7476,
+            "candidate_tsc": 1523.3076,
+            "delta_tsc": 25.56
+          },
+          {
+            "sample": 13,
+            "control_tsc": 1500.668,
+            "candidate_tsc": 1526.1368,
+            "delta_tsc": 25.4688
+          },
+          {
+            "sample": 14,
+            "control_tsc": 1497.668,
+            "candidate_tsc": 1582.6364,
+            "delta_tsc": 84.9684
+          },
+          {
+            "sample": 15,
+            "control_tsc": 1941.8432,
+            "candidate_tsc": 2036.5608,
+            "delta_tsc": 94.7176
+          },
+          {
+            "sample": 16,
+            "control_tsc": 1564.5664,
+            "candidate_tsc": 1589.2148,
+            "delta_tsc": 24.6484
+          },
+          {
+            "sample": 17,
+            "control_tsc": 1522.5844,
+            "candidate_tsc": 1542.3272,
+            "delta_tsc": 19.7428
+          },
+          {
+            "sample": 18,
+            "control_tsc": 1583.2776,
+            "candidate_tsc": 1601.9136,
+            "delta_tsc": 18.636
+          },
+          {
+            "sample": 19,
+            "control_tsc": 1516.2324,
+            "candidate_tsc": 1561.8124,
+            "delta_tsc": 45.58
+          }
+        ],
+        "median_control_tsc": 1499.8739999999998,
+        "median_candidate_tsc": 1525.5978,
+        "median_delta_tsc": 25.7408,
+        "candidate_wins": 0,
+        "mad_delta_tsc": 2.8878000000000004
+      },
+      "reversed": {
+        "samples": [
+          {
+            "sample": 0,
+            "control_tsc": 1519.3576,
+            "candidate_tsc": 1541.1964,
+            "delta_tsc": 21.8388
+          },
+          {
+            "sample": 1,
+            "control_tsc": 1516.4056,
+            "candidate_tsc": 1534.4908,
+            "delta_tsc": 18.0852
+          },
+          {
+            "sample": 2,
+            "control_tsc": 1516.2772,
+            "candidate_tsc": 1574.234,
+            "delta_tsc": 57.9568
+          },
+          {
+            "sample": 3,
+            "control_tsc": 1496.5984,
+            "candidate_tsc": 1540.4496,
+            "delta_tsc": 43.8512
+          },
+          {
+            "sample": 4,
+            "control_tsc": 1508.5916,
+            "candidate_tsc": 1551.4892,
+            "delta_tsc": 42.8976
+          },
+          {
+            "sample": 5,
+            "control_tsc": 2509.5812,
+            "candidate_tsc": 4935.5828,
+            "delta_tsc": 2426.0016
+          },
+          {
+            "sample": 6,
+            "control_tsc": 1654.5444,
+            "candidate_tsc": 1524.9216,
+            "delta_tsc": -129.6228
+          },
+          {
+            "sample": 7,
+            "control_tsc": 1493.5,
+            "candidate_tsc": 1530.7848,
+            "delta_tsc": 37.2848
+          },
+          {
+            "sample": 8,
+            "control_tsc": 1504.0028,
+            "candidate_tsc": 1556.18,
+            "delta_tsc": 52.1772
+          },
+          {
+            "sample": 9,
+            "control_tsc": 1503.6588,
+            "candidate_tsc": 1546.2464,
+            "delta_tsc": 42.5876
+          },
+          {
+            "sample": 10,
+            "control_tsc": 1513.234,
+            "candidate_tsc": 1539.6396,
+            "delta_tsc": 26.4056
+          },
+          {
+            "sample": 11,
+            "control_tsc": 1562.3856,
+            "candidate_tsc": 1595.784,
+            "delta_tsc": 33.3984
+          },
+          {
+            "sample": 12,
+            "control_tsc": 1559.9876,
+            "candidate_tsc": 1594.1844,
+            "delta_tsc": 34.1968
+          },
+          {
+            "sample": 13,
+            "control_tsc": 1558.2724,
+            "candidate_tsc": 1599.2056,
+            "delta_tsc": 40.9332
+          },
+          {
+            "sample": 14,
+            "control_tsc": 1566.5484,
+            "candidate_tsc": 1598.594,
+            "delta_tsc": 32.0456
+          },
+          {
+            "sample": 15,
+            "control_tsc": 1518.0524,
+            "candidate_tsc": 1590.4416,
+            "delta_tsc": 72.3892
+          },
+          {
+            "sample": 16,
+            "control_tsc": 1498.3544,
+            "candidate_tsc": 1525.7008,
+            "delta_tsc": 27.3464
+          },
+          {
+            "sample": 17,
+            "control_tsc": 1493.5364,
+            "candidate_tsc": 1525.2412,
+            "delta_tsc": 31.7048
+          },
+          {
+            "sample": 18,
+            "control_tsc": 1493.3824,
+            "candidate_tsc": 1524.478,
+            "delta_tsc": 31.0956
+          },
+          {
+            "sample": 19,
+            "control_tsc": 1493.5876,
+            "candidate_tsc": 1531.836,
+            "delta_tsc": 38.2484
+          }
+        ],
+        "median_control_tsc": 1514.7556,
+        "median_candidate_tsc": 1543.7214,
+        "median_delta_tsc": 35.7408,
+        "candidate_wins": 1,
+        "mad_delta_tsc": 7.633599999999998
+      }
+    },
+    "decision": "cycle-hard-stop"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "ntruplus768-gt32-inv-radix4-short-v1",
+  "experiment": "GT32-INV-RADIX4-01-ASM-001",
+  "mode": "short",
+  "benchmark": {
+    "iterations": 2000,
+    "samples": 20,
+    "warmups": 2,
+    "cpu": 1,
+    "unit": "TSC ticks per kernel/region",
+    "paired_order": "alternating AB/BA",
+    "placements": ["normal", "reversed"]
+  },
+  "correctness": {
+    "status": "pass",
+    "trials": 1000,
+    "checks": ["inverse-core-mod-q", "out-equals-in-alias-mod-q", "inverse-plus-T9-mod-q"],
+    "patterns": ["zero", "maximum-alternating", "random-centered"]
+  },
+  "candidates": {
+    "R4A": {
+      "result": "static-stop",
+      "reason": "pure stage0-stage1 fusion preserves the same butterfly, shuffle, and Montgomery DAG"
+    },
+    "R4B": {
+      "symbol": "gt32_tile4_inverse_radix4_identity_asm",
+      "result": "cycle-hard-stop",
+      "mechanism": "compact identity qwords across two pairs and Montgomery-reduce only the nonidentity qwords",
+      "spill": false,
+      "vpmulld": false,
+      "symbol_bytes": 956,
+      "static_instructions": 213
+    }
+  },
+  "control": {
+    "symbol": "gt32_tile4_inverse_all_pair_asm",
+    "symbol_bytes": 968,
+    "static_instructions": 217
+  },
+  "placements": {
+    "normal": {
+      "core": {
+        "control_median_tsc": 225.133,
+        "candidate_median_tsc": 238.549,
+        "paired_delta_median_tsc": 13.648,
+        "paired_delta_mad_tsc": 1.9165,
+        "candidate_wins": 1
+      },
+      "inverse_plus_T9": {
+        "control_median_tsc": 457.166,
+        "candidate_median_tsc": 466.6755,
+        "paired_delta_median_tsc": 12.365,
+        "paired_delta_mad_tsc": 9.6815,
+        "candidate_wins": 5
+      }
+    },
+    "reversed": {
+      "core": {
+        "control_median_tsc": 224.0365,
+        "candidate_median_tsc": 238.3105,
+        "paired_delta_median_tsc": 14.389,
+        "paired_delta_mad_tsc": 0.7505,
+        "candidate_wins": 0
+      },
+      "inverse_plus_T9": {
+        "control_median_tsc": 452.6545,
+        "candidate_median_tsc": 466.4445,
+        "paired_delta_median_tsc": 13.4645,
+        "paired_delta_mad_tsc": 2.213,
+        "candidate_wins": 1
+      }
+    }
+  },
+  "decision": "hard-stop-inverse-radix4-01",
+  "reason": "replacing one full-width Montgomery chain with qword compaction and redeposit shifts work from multiply ports to shuffle dependencies but makes the inverse core and inverse-plus-T9 region about 12-14 TSC slower"
+}

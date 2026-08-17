@@ -1,0 +1,63 @@
+{
+  "experiment": "GT32-KEYPAIR-P-SUFFIX-SECTION-ISOLATION-001",
+  "date": "2026-08-13",
+  "status": "hard-stop-no-stable-production-plateau",
+  "methodology": {
+    "benchmark": "SUPERcop stabilized quartiles, forced O3, symmetric interleaving",
+    "correctness": "canonical 100-vector request/response KAT differential",
+    "primary_estimator": "Q2 cycles",
+    "bounded_padding_bytes": [0, 64, 128, 256]
+  },
+  "source_audit": {
+    "current_supercop_export_contains_p_suffix": false,
+    "initial_candidate_problem": "fresh whole-worktree export linked unrelated global-physical experiments and retained a second .c source after wrapper creation",
+    "clean_wrapper_result": "removed translation-unit pollution but still imported the whole newer global-physical object",
+    "clean_text_growth_bytes_vs_current": 17472,
+    "isolated_object": {
+      "assembly": "src/tile4_p_suffix_isolated_asm.S",
+      "function_bytes": 926,
+      "approx_text_rodata_bytes": 2014,
+      "section": ".text.gt32_keypair_psuffix",
+      "rodata_section": ".rodata.gt32_keypair_psuffix"
+    }
+  },
+  "kat": {
+    "implementation": "avx2-gt-global-inverse-p-suffix-isolated",
+    "vectors": 100,
+    "canonical_request_byte_exact": "pass",
+    "canonical_response_byte_exact": "pass"
+  },
+  "clean_reexport_q2_cycles": {
+    "Official": {"keypair": 21594.067708, "enc": 28158.807292, "dec": 19442.187500},
+    "current_GT": {"keypair": 21660.536458, "enc": 28138.458333, "dec": 19398.609375},
+    "clean_whole_reexport": {"keypair": 21562.656250, "enc": 28233.052083, "dec": 19413.057292},
+    "clean_vs_current_GT": {"keypair": -97.880208, "enc": 94.593750, "dec": 14.447917}
+  },
+  "isolated_late_object_q2_cycles": {
+    "Official": {"keypair": 21691.234375, "enc": 28239.026042, "dec": 19518.994792},
+    "current_GT": {"keypair": 21631.276042, "enc": 28255.869792, "dec": 19415.687500},
+    "isolated": {"keypair": 21667.447917, "enc": 28171.906250, "dec": 19368.739583},
+    "isolated_vs_current_GT": {"keypair": 36.171875, "enc": -83.963542, "dec": -46.947917}
+  },
+  "bounded_padding_sweep": {
+    "observations_per_operation": 384,
+    "current_GT": {"keypair": 21651.041667, "enc": 28152.770833, "dec": 19430.489583},
+    "pad0_delta_vs_current_GT": {"keypair": -32.697917, "enc": -20.708333, "dec": 7.187500},
+    "pad64_delta_vs_current_GT": {"keypair": -25.197917, "enc": 42.916667, "dec": 22.135417},
+    "pad128_delta_vs_current_GT": {"keypair": -3.375000, "enc": -37.500000, "dec": -58.656250},
+    "pad256_delta_vs_current_GT": {"keypair": -34.395834, "enc": -44.583333, "dec": -31.104166}
+  },
+  "decision": [
+    "P-suffix remains algorithmically and locally qualified",
+    "true section isolation protects unrelated Encap/Decap better than the whole-worktree export",
+    "none of the bounded placements retains the required 50-cycle Keypair gain",
+    "padding changes unrelated operation delivery materially, so no magic padding is production-safe",
+    "do not change the production selector",
+    "retain the isolated generator and exports as reproducible dormant controls"
+  ],
+  "reopen_only_if": [
+    "the linker can bind an operation-specific implementation without perturbing the shared image",
+    "function multiversioning or separate DSOs permit independent Keypair text layout",
+    "a future whole-image change creates a stable negative Keypair plateau in both layouts"
+  ]
+}

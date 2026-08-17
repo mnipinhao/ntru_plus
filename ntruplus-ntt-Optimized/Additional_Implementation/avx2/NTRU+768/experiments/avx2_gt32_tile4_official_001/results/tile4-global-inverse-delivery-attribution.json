@@ -1,0 +1,78 @@
+{
+  "schema": "ntruplus768-gt32-global-inverse-delivery-attribution-v1",
+  "date": "2026-08-12",
+  "experiment": "GT32-GLOBAL-PHYSICAL-KEM-DECAP-DELIVERY-001",
+  "scope": "current Q24 GT decapsulation versus the opt-in B3-to-M plus global-inverse decapsulation",
+  "method": {
+    "calls_per_variant": 400000,
+    "iterations_per_sample": 20000,
+    "samples": 20,
+    "order": "paired AB-BA",
+    "pmu_groups": ["memory", "frontend", "fetch"]
+  },
+  "normal": {
+    "retired_per_call_delta": {
+      "loads": -40.99919,
+      "stores": -42.000075,
+      "instructions_from_100k_gate": -261.000281
+    },
+    "frontend_per_call_delta": {
+      "idq_dsb_uops": 2940.083733,
+      "idq_mite_uops": -678.50987,
+      "idq_uops_not_delivered_core": -380.307098
+    },
+    "fetch_per_call_delta": {
+      "icache_data_stalls": -0.051488,
+      "itlb_walk_completed": 0.002008
+    },
+    "core_cycles_per_call_delta_from_100k_gate": -176.993703,
+    "tsc_per_call_delta_vs_current_from_100k_gate": -59.4736,
+    "tsc_per_call_delta_vs_official_from_100k_gate": 33.68871
+  },
+  "reversed": {
+    "retired_per_call_delta": {
+      "loads": -40.999228,
+      "stores": -42.000075,
+      "instructions_from_100k_gate": -261.000211
+    },
+    "frontend_per_call_delta": {
+      "idq_dsb_uops": 634.657988,
+      "idq_mite_uops": 134.50939,
+      "idq_uops_not_delivered_core": -202.339775
+    },
+    "fetch_per_call_delta": {
+      "icache_data_stalls": 0.002173,
+      "itlb_walk_completed": 0.003385
+    },
+    "core_cycles_per_call_delta_from_100k_gate": -49.44497,
+    "tsc_per_call_delta_vs_current_from_100k_gate": -93.6588,
+    "tsc_per_call_delta_vs_official_from_100k_gate": -89.29657
+  },
+  "symbol_offsets": {
+    "normal": {
+      "candidate_caller": "0x7960",
+      "global_inverse": "0x8ea0",
+      "current_i1": "0x118e0",
+      "b3_to_aos": "0x15f00",
+      "b3_to_m": "0x161a0",
+      "q24_body": "0x26b40",
+      "t9": "0x33820"
+    },
+    "reversed": {
+      "q24_body": "0x16860",
+      "b3_to_aos": "0x2df40",
+      "b3_to_m": "0x2e1e0",
+      "current_i1": "0x391a0",
+      "global_inverse": "0x3c340",
+      "candidate_caller": "0x3d480",
+      "t9": "0x3e600"
+    }
+  },
+  "conclusion": {
+    "intrinsic_work_reduction": "stable across link placements",
+    "classic_l1i_or_itlb_miss_explanation": "not supported; measured event rates are negligible",
+    "primary_attribution": "link-order-dependent instruction-front-end delivery, especially the DSB/MITE supply mix and hot-code address mapping",
+    "causality_limit": "the counters support a front-end delivery attribution but do not uniquely prove a particular DSB set-conflict mechanism",
+    "promotion": "not placement-stable against Official Main"
+  }
+}

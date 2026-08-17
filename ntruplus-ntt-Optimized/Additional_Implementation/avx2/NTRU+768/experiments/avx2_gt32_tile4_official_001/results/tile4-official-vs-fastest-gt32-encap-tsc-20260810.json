@@ -1,0 +1,755 @@
+{
+  "schema": "ntruplus768-gt32-keygen-encap-attribution-v1",
+  "mode": "short",
+  "iterations_per_sample": 2000,
+  "launches": 8,
+  "placements": {
+    "normal": {
+      "metadata": [
+        "META,correctness=byte-exact-pass,iterations=2000,samples=20"
+      ],
+      "coverage": [
+        [
+          "keygen",
+          "K3_baseinv",
+          "official-only",
+          "GT-BaseInv-J1-missing"
+        ],
+        [
+          "keygen",
+          "K4_two_general_basemuls",
+          "official-only",
+          "depends-on-K3"
+        ],
+        [
+          "keygen",
+          "K5_three_serializations",
+          "official-only",
+          "depends-on-K4"
+        ]
+      ],
+      "phases": {
+        "encap.E1_input_decode_cbd_sotp": {
+          "official_median_tsc": 248.3995,
+          "gt32_median_tsc": 259.8635,
+          "launch_median_delta_tsc": 11.9605,
+          "launch_delta_mad_tsc": 0.11374999999999957,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 1,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            12.052,
+            12.044,
+            12.026,
+            11.346499999999999,
+            11.8245,
+            11.5285,
+            12.126000000000001,
+            11.895
+          ]
+        },
+        "encap.E2_two_forwards": {
+          "official_median_tsc": 949.8820000000001,
+          "gt32_median_tsc": 828.85825,
+          "launch_median_delta_tsc": -120.10925,
+          "launch_delta_mad_tsc": 0.5647499999999965,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 158,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -120.10849999999999,
+            -119.917,
+            -118.52850000000001,
+            -120.8505,
+            -119.13550000000001,
+            -120.4975,
+            -122.2495,
+            -120.11
+          ]
+        },
+        "encap.E3_general_basemul": {
+          "official_median_tsc": 326.1025,
+          "gt32_median_tsc": 314.7985,
+          "launch_median_delta_tsc": -11.855250000000002,
+          "launch_delta_mad_tsc": 1.0690000000000017,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 125,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -12.3545,
+            -10.836,
+            -12.1865,
+            -10.7365,
+            -8.228,
+            -14.3575,
+            -11.524000000000001,
+            -13.153500000000001
+          ]
+        },
+        "encap.E4_add_two_serializations": {
+          "official_median_tsc": 309.887,
+          "gt32_median_tsc": 354.48125,
+          "launch_median_delta_tsc": 43.116,
+          "launch_delta_mad_tsc": 5.5440000000000005,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 0,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            36.869,
+            50.414,
+            49.378,
+            38.275,
+            38.843,
+            39.027,
+            47.205,
+            50.486999999999995
+          ]
+        },
+        "encap.E4a_add_m": {
+          "official_median_tsc": 45.500750000000004,
+          "gt32_median_tsc": 44.397999999999996,
+          "launch_median_delta_tsc": -0.6547499999999999,
+          "launch_delta_mad_tsc": 0.58,
+          "negative_launch_medians": 7,
+          "launches": 8,
+          "sample_wins": 102,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -3.3754999999999997,
+            -0.041499999999999995,
+            -2.0955,
+            -0.576,
+            0.045,
+            -0.108,
+            -1.0505,
+            -0.7335
+          ]
+        },
+        "encap.E4b_serialize_rhat": {
+          "official_median_tsc": 140.3475,
+          "gt32_median_tsc": 162.55374999999998,
+          "launch_median_delta_tsc": 22.155499999999996,
+          "launch_delta_mad_tsc": 1.8939999999999984,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 0,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            22.863999999999997,
+            19.238,
+            21.447,
+            26.073999999999998,
+            26.0265,
+            19.826500000000003,
+            23.6145,
+            21.362000000000002
+          ]
+        },
+        "encap.E4c_serialize_chat": {
+          "official_median_tsc": 140.13074999999998,
+          "gt32_median_tsc": 161.901,
+          "launch_median_delta_tsc": 20.98575,
+          "launch_delta_mad_tsc": 0.9979999999999993,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 1,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            20.765,
+            20.740000000000002,
+            19.312,
+            32.876000000000005,
+            20.6635,
+            25.7115,
+            28.9035,
+            21.2065
+          ]
+        },
+        "encap.E4c_bridge_control": {
+          "official_median_tsc": 139.743,
+          "gt32_median_tsc": 200.767,
+          "launch_median_delta_tsc": 60.960750000000004,
+          "launch_delta_mad_tsc": 0.1875,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 0,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            60.8535,
+            60.9555,
+            60.42,
+            61.426500000000004,
+            61.084,
+            60.966,
+            61.8095,
+            60.709
+          ]
+        },
+        "encap.E4c_hr_h1_vs_bridge": {
+          "official_median_tsc": 200.84925,
+          "gt32_median_tsc": 165.6995,
+          "launch_median_delta_tsc": -37.229749999999996,
+          "launch_delta_mad_tsc": 4.195,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 154,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -33.17,
+            -37.129,
+            -37.7665,
+            -29.4995,
+            -37.3305,
+            -41.56,
+            -29.106499999999997,
+            -43.525
+          ]
+        },
+        "encap.E4c_hr_h2_vs_bridge": {
+          "official_median_tsc": 200.47199999999998,
+          "gt32_median_tsc": 165.21099999999998,
+          "launch_median_delta_tsc": -36.69975,
+          "launch_delta_mad_tsc": 1.7752500000000033,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 158,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -37.006,
+            -37.9595,
+            -36.3935,
+            -35.0725,
+            -34.7765,
+            -39.583,
+            -32.601,
+            -39.7405
+          ]
+        },
+        "encap.E5_hash_glue": {
+          "official_median_tsc": 15749.97675,
+          "gt32_median_tsc": 15768.31075,
+          "launch_median_delta_tsc": 16.746000000000002,
+          "launch_delta_mad_tsc": 7.2174999999999985,
+          "negative_launch_medians": 1,
+          "launches": 8,
+          "sample_wins": 60,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            17.423000000000002,
+            -26.107,
+            0.6345000000000001,
+            16.069,
+            52.14149999999999,
+            20.935499999999998,
+            6.500500000000001,
+            17.487000000000002
+          ]
+        },
+        "keygen.K1_cbd_triple": {
+          "official_median_tsc": 116.9865,
+          "gt32_median_tsc": 116.99775,
+          "launch_median_delta_tsc": 0.0755,
+          "launch_delta_mad_tsc": 0.473,
+          "negative_launch_medians": 3,
+          "launches": 8,
+          "sample_wins": 75,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            0.108,
+            0.043,
+            -0.2685,
+            0.73,
+            0.6775,
+            -0.0495,
+            -1.1905000000000001,
+            1.1215
+          ]
+        },
+        "keygen.K2_two_forwards": {
+          "official_median_tsc": 1015.27775,
+          "gt32_median_tsc": 941.2707499999999,
+          "launch_median_delta_tsc": -73.38024999999999,
+          "launch_delta_mad_tsc": 0.6367499999999993,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 147,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -75.30199999999999,
+            -73.4785,
+            -73.282,
+            -74.117,
+            -74.014,
+            -72.7405,
+            -70.80699999999999,
+            -72.8725
+          ]
+        },
+        "keygen.K6_hash_glue": {
+          "official_median_tsc": 6727.85175,
+          "gt32_median_tsc": 6727.40675,
+          "launch_median_delta_tsc": 0.89475,
+          "launch_delta_mad_tsc": 3.0527500000000005,
+          "negative_launch_medians": 3,
+          "launches": 8,
+          "sample_wins": 80,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -21.466,
+            -2.8655000000000004,
+            10.3225,
+            0.26750000000000007,
+            -1.4505,
+            15.377,
+            1.522,
+            1.7820000000000003
+          ]
+        }
+      },
+      "full": {
+        "encap": {
+          "official_median_tsc": 17468.698,
+          "gt32_median_tsc": 17523.573750000003,
+          "launch_median_delta_tsc": 70.389,
+          "launch_delta_mad_tsc": 34.8925,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 37,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            82.45349999999999,
+            30.061,
+            36.802,
+            404.5915,
+            18.351,
+            58.3245,
+            90.019,
+            106.587
+          ]
+        }
+      },
+      "official_only": {
+        "keygen.K3_baseinv": {
+          "official_launch_median_tsc": 1341.48,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            1347.9535,
+            1338.8875,
+            1342.441,
+            1338.3600000000001,
+            1342.7134999999998,
+            1340.519,
+            1339.0535,
+            1344.702
+          ]
+        },
+        "keygen.K4_two_general_basemuls": {
+          "official_launch_median_tsc": 649.9830000000001,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            659.4929999999999,
+            651.9685,
+            649.7325000000001,
+            648.1685,
+            649.8575000000001,
+            650.1085,
+            651.9459999999999,
+            649.606
+          ]
+        },
+        "keygen.K5_three_serializations": {
+          "official_launch_median_tsc": 417.4565,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            418.476,
+            417.466,
+            417.589,
+            417.379,
+            417.438,
+            417.48,
+            417.442,
+            417.447
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "metadata": [
+        "META,correctness=byte-exact-pass,iterations=2000,samples=20"
+      ],
+      "coverage": [
+        [
+          "keygen",
+          "K3_baseinv",
+          "official-only",
+          "GT-BaseInv-J1-missing"
+        ],
+        [
+          "keygen",
+          "K4_two_general_basemuls",
+          "official-only",
+          "depends-on-K3"
+        ],
+        [
+          "keygen",
+          "K5_three_serializations",
+          "official-only",
+          "depends-on-K4"
+        ]
+      ],
+      "phases": {
+        "encap.E1_input_decode_cbd_sotp": {
+          "official_median_tsc": 248.14975,
+          "gt32_median_tsc": 259.87874999999997,
+          "launch_median_delta_tsc": 11.901250000000001,
+          "launch_delta_mad_tsc": 0.23525000000000063,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 2,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            12.0545,
+            11.094999999999999,
+            11.936,
+            12.114,
+            12.448,
+            11.6435,
+            11.5925,
+            11.8665
+          ]
+        },
+        "encap.E2_two_forwards": {
+          "official_median_tsc": 950.2735,
+          "gt32_median_tsc": 828.9612500000001,
+          "launch_median_delta_tsc": -120.74974999999999,
+          "launch_delta_mad_tsc": 0.7147500000000022,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 155,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -120.69049999999999,
+            -119.0415,
+            -121.236,
+            -121.12,
+            -122.24600000000001,
+            -120.809,
+            -119.7935,
+            -119.8065
+          ]
+        },
+        "encap.E3_general_basemul": {
+          "official_median_tsc": 328.50325,
+          "gt32_median_tsc": 320.2525,
+          "launch_median_delta_tsc": -10.863499999999998,
+          "launch_delta_mad_tsc": 1.3192500000000003,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 112,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -11.469,
+            -8.655000000000001,
+            -12.662,
+            -9.376,
+            -12.0145,
+            -11.74,
+            -10.258,
+            -4.349
+          ]
+        },
+        "encap.E4_add_two_serializations": {
+          "official_median_tsc": 310.52125,
+          "gt32_median_tsc": 359.80899999999997,
+          "launch_median_delta_tsc": 47.789,
+          "launch_delta_mad_tsc": 6.952750000000002,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 2,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            43.501,
+            34.7285,
+            41.579499999999996,
+            67.162,
+            55.485,
+            49.0475,
+            46.5305,
+            57.090999999999994
+          ]
+        },
+        "encap.E4a_add_m": {
+          "official_median_tsc": 47.842749999999995,
+          "gt32_median_tsc": 46.31325,
+          "launch_median_delta_tsc": -0.11975,
+          "launch_delta_mad_tsc": 0.243,
+          "negative_launch_medians": 5,
+          "launches": 8,
+          "sample_wins": 90,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -4.309,
+            -0.1765,
+            -0.1825,
+            0.1725,
+            0.074,
+            1.7635,
+            -1.0845,
+            -0.063
+          ]
+        },
+        "encap.E4b_serialize_rhat": {
+          "official_median_tsc": 140.0035,
+          "gt32_median_tsc": 166.09500000000003,
+          "launch_median_delta_tsc": 26.304250000000003,
+          "launch_delta_mad_tsc": 4.4747499999999985,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 0,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            22.344,
+            17.8995,
+            20.950499999999998,
+            31.293499999999998,
+            27.498,
+            30.075,
+            36.2565,
+            25.110500000000002
+          ]
+        },
+        "encap.E4c_serialize_chat": {
+          "official_median_tsc": 140.053,
+          "gt32_median_tsc": 167.24450000000002,
+          "launch_median_delta_tsc": 26.1415,
+          "launch_delta_mad_tsc": 4.325000000000001,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 1,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            21.348,
+            22.6145,
+            22.285,
+            31.007,
+            37.4725,
+            26.068,
+            43.554,
+            26.215
+          ]
+        },
+        "encap.E4c_bridge_control": {
+          "official_median_tsc": 139.76225,
+          "gt32_median_tsc": 201.3735,
+          "launch_median_delta_tsc": 61.4535,
+          "launch_delta_mad_tsc": 0.5632500000000036,
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "sample_wins": 0,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            61.0505,
+            60.211,
+            60.775999999999996,
+            61.4785,
+            62.161,
+            61.4285,
+            62.9675,
+            61.9025
+          ]
+        },
+        "encap.E4c_hr_h1_vs_bridge": {
+          "official_median_tsc": 201.43275,
+          "gt32_median_tsc": 167.57049999999998,
+          "launch_median_delta_tsc": -37.2225,
+          "launch_delta_mad_tsc": 3.3644999999999996,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 143,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -30.2065,
+            -41.466499999999996,
+            -39.707499999999996,
+            -36.041,
+            -39.1085,
+            -30.677999999999997,
+            -26.432499999999997,
+            -38.403999999999996
+          ]
+        },
+        "encap.E4c_hr_h2_vs_bridge": {
+          "official_median_tsc": 201.74075,
+          "gt32_median_tsc": 166.15525000000002,
+          "launch_median_delta_tsc": -37.127750000000006,
+          "launch_delta_mad_tsc": 2.5117499999999993,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 149,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -39.3705,
+            -38.778999999999996,
+            -37.4065,
+            -34.347,
+            -39.989999999999995,
+            -33.763000000000005,
+            -31.656,
+            -36.849000000000004
+          ]
+        },
+        "encap.E5_hash_glue": {
+          "official_median_tsc": 15743.162250000001,
+          "gt32_median_tsc": 15760.784,
+          "launch_median_delta_tsc": 15.521,
+          "launch_delta_mad_tsc": 5.493999999999998,
+          "negative_launch_medians": 1,
+          "launches": 8,
+          "sample_wins": 62,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            10.832,
+            15.117,
+            15.924999999999999,
+            21.246499999999997,
+            20.7835,
+            -9.1975,
+            42.6125,
+            5.1425
+          ]
+        },
+        "keygen.K1_cbd_triple": {
+          "official_median_tsc": 116.98375,
+          "gt32_median_tsc": 116.97,
+          "launch_median_delta_tsc": -0.306,
+          "launch_delta_mad_tsc": 0.30750000000000005,
+          "negative_launch_medians": 7,
+          "launches": 8,
+          "sample_wins": 85,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -0.40249999999999997,
+            -1.467,
+            -0.1885,
+            -0.20950000000000002,
+            -0.7625000000000001,
+            -0.1475,
+            0.7085,
+            -0.8664999999999999
+          ]
+        },
+        "keygen.K2_two_forwards": {
+          "official_median_tsc": 1013.65675,
+          "gt32_median_tsc": 943.16025,
+          "launch_median_delta_tsc": -71.96000000000001,
+          "launch_delta_mad_tsc": 0.740000000000002,
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "sample_wins": 148,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -72.434,
+            -73.81,
+            -72.827,
+            -71.347,
+            -72.25450000000001,
+            -68.543,
+            -41.784,
+            -71.66550000000001
+          ]
+        },
+        "keygen.K6_hash_glue": {
+          "official_median_tsc": 6725.49775,
+          "gt32_median_tsc": 6725.26,
+          "launch_median_delta_tsc": -1.4249999999999998,
+          "launch_delta_mad_tsc": 8.2835,
+          "negative_launch_medians": 4,
+          "launches": 8,
+          "sample_wins": 82,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            -5.4155,
+            12.0885,
+            4.2805,
+            -11.1245,
+            -11.401499999999999,
+            5.4425,
+            2.5655,
+            -32.473
+          ]
+        }
+      },
+      "full": {
+        "encap": {
+          "official_median_tsc": 17494.8315,
+          "gt32_median_tsc": 17535.58775,
+          "launch_median_delta_tsc": 57.166250000000005,
+          "launch_delta_mad_tsc": 29.82524999999999,
+          "negative_launch_medians": 2,
+          "launches": 8,
+          "sample_wins": 62,
+          "samples": 160,
+          "raw_launch_delta_tsc": [
+            83.4185,
+            90.5645,
+            39.191,
+            -321.145,
+            42.1045,
+            -20.5195,
+            72.22800000000001,
+            102.08600000000001
+          ]
+        }
+      },
+      "official_only": {
+        "keygen.K3_baseinv": {
+          "official_launch_median_tsc": 1343.3075,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            1348.1129999999998,
+            1347.014,
+            1341.551,
+            1339.6574999999998,
+            1346.0065,
+            1339.9189999999999,
+            1345.0639999999999,
+            1341.4475000000002
+          ]
+        },
+        "keygen.K4_two_general_basemuls": {
+          "official_launch_median_tsc": 650.4315,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            649.7760000000001,
+            663.3415,
+            650.125,
+            652.9269999999999,
+            649.6565,
+            649.7,
+            650.738,
+            652.179
+          ]
+        },
+        "keygen.K5_three_serializations": {
+          "official_launch_median_tsc": 417.76525,
+          "launches": 8,
+          "raw_launch_median_tsc": [
+            417.635,
+            418.6065,
+            418.7155,
+            417.707,
+            417.5815,
+            417.82349999999997,
+            418.10900000000004,
+            417.62
+          ]
+        }
+      }
+    }
+  },
+  "interpretation_guard": "Encap is a complete byte-exact GT32 candidate. Keygen K3-K5 are Official-only because no GT32 BaseInv J1 implementation/full caller exists; they must not be reported as Official-vs-GT deltas."
+}

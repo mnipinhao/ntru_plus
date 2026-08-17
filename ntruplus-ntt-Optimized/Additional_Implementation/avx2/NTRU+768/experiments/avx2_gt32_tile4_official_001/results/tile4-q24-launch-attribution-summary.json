@@ -1,0 +1,88 @@
+{
+  "schema": "ntruplus768-gt32-q24-launch-attribution-summary-v1",
+  "experiment": "GT32-Q24-LAUNCH-ATTRIBUTION-001",
+  "inputs": {
+    "environment": "results/tile4-q24-launch-environment.json",
+    "environment_sha256": "683aea61ee5f81583892e2d6c4725aa264b2467752a3a1bab81d6b920b65d9ed",
+    "pmu": "results/tile4-q24-launch-pmu.json",
+    "pmu_sha256": "88ade634846551fb184f2ede8b81e1fd657896ecfec48b0f86124e8d04dac387"
+  },
+  "tsc": {
+    "launches": 96,
+    "launches_with_negative_median_delta": 96,
+    "launches_meeting_18_of_20": 54,
+    "paired_sample_wins": 1674,
+    "paired_samples": 1920,
+    "fixed_address_good_launches_by_batch": {
+      "pie_aslr_disabled": {
+        "normal": [
+          6,
+          7
+        ],
+        "reversed": [
+          1,
+          6
+        ]
+      },
+      "nonpie_fixed_address": {
+        "normal": [
+          0,
+          7
+        ],
+        "reversed": [
+          0,
+          7
+        ]
+      }
+    },
+    "smt_sibling_cpu2_active_ticks": 0
+  },
+  "region_scoped_pmu": {
+    "core_launches": 48,
+    "negative_core_cycle_deltas": 48,
+    "core_cycle_delta_per_call_range": [
+      -594.595175,
+      -59.904325
+    ],
+    "instruction_delta_per_call_range": [
+      -429.000975,
+      -428.999775
+    ],
+    "median_abs_q24_control_frequency_ratio_difference": 2.8551345699123765e-05,
+    "max_abs_q24_control_frequency_ratio_difference": 0.06954283940290895,
+    "icache_stall_delta_per_call_range": [
+      -0.431975,
+      0.173225
+    ],
+    "itlb_walk_delta_per_call_range": [
+      -0.005475,
+      0.0034
+    ],
+    "all_groups_nonmultiplexed": true,
+    "idq_good_minus_bad_signs": [
+      69.5145375,
+      -83.12895,
+      52.284975,
+      -58.6314625,
+      26.853924999999997,
+      -32.53006250000004
+    ],
+    "consistent_idq_good_bad_direction": false
+  },
+  "findings": {
+    "q24_instruction_advantage_is_deterministic": true,
+    "q24_core_cycle_advantage_is_observed_in_every_pmu_launch": true,
+    "absolute_virtual_address_is_sufficient": false,
+    "simple_icache_itlb_explanation_supported": false,
+    "consistent_dsb_mite_idq_explanation_supported": false,
+    "frequency_explains_launch_win_variance": false,
+    "smt_sibling_activity_explains_variance": false,
+    "per_launch_18_of_20_is_too_sensitive_to_runtime_jitter": true
+  },
+  "decision": "core-work-qualified-statistical-delivery-gate-must-change",
+  "next_gate": "hierarchical-launch-level paired statistics plus realistic-cold caller corroboration before encoder or fusion integration",
+  "q24_assembly_modified": false,
+  "encoder_integration": false,
+  "fusion": false,
+  "serious_100k": false
+}

@@ -1,0 +1,941 @@
+{
+  "schema": "ntruplus768-gt32-decap-cumulative-attribution-v1",
+  "experiment": "GT32-DECAP-CUMULATIVE-ATTRIBUTION-001",
+  "actual_checkpoint_order": [
+    "C1_decode",
+    "C2_first_product",
+    "C3_recovered_r",
+    "C4_middle_sotp",
+    "C5_reencrypt_verify",
+    "C6_return_cleanup"
+  ],
+  "checkpoint_semantics": {
+    "C1_decode": "decode / GT-unpack",
+    "C2_first_product": "first BM + inverse + crepmod3",
+    "C3_recovered_r": "Forward(m) + sub + general BM + recovered-r pack",
+    "C4_middle_sotp": "hash_g + SOTP decode + hash_h",
+    "C5_reencrypt_verify": "CBD + NTT + check pack + verify",
+    "C6_return_cleanup": "shared-secret select + cleanup"
+  },
+  "benchmark": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "tsc_launches_per_placement": 8,
+    "pmu_launches_per_placement": 8,
+    "cpu": 1,
+    "order": "paired AB/BA within each cumulative checkpoint",
+    "production_symbols_instrumented": false,
+    "C6_uses_actual_production_symbols": true,
+    "C1_through_C5_use_semantically_equal_prefix_replay": true,
+    "serious_100k": false
+  },
+  "placements": {
+    "normal": {
+      "tsc": {
+        "C1_decode": {
+          "semantic_phase": "decode / GT-unpack",
+          "official_tsc": {
+            "median": 284.2355,
+            "mad": 0.14175000000000182
+          },
+          "gt32_tsc": {
+            "median": 315.90175,
+            "mad": 0.9882499999999936
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 31.5435,
+            "mad": 0.9302499999999991
+          },
+          "incremental_phase_delta_tsc": 31.5435,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C2_first_product": {
+          "semantic_phase": "first BM + inverse + crepmod3",
+          "official_tsc": {
+            "median": 1135.7102499999999,
+            "mad": 2.900749999999789
+          },
+          "gt32_tsc": {
+            "median": 1201.6262499999998,
+            "mad": 8.339000000000055
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 64.85325,
+            "mad": 6.303000000000004
+          },
+          "incremental_phase_delta_tsc": 33.30975,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C3_recovered_r": {
+          "semantic_phase": "Forward(m) + sub + general BM + recovered-r pack",
+          "official_tsc": {
+            "median": 2105.13025,
+            "mad": 3.0214999999998327
+          },
+          "gt32_tsc": {
+            "median": 2146.397,
+            "mad": 33.32499999999982
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 27.50425,
+            "mad": 19.28875
+          },
+          "incremental_phase_delta_tsc": -37.349000000000004,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C4_middle_sotp": {
+          "semantic_phase": "hash_g + SOTP decode + hash_h",
+          "official_tsc": {
+            "median": 11179.65775,
+            "mad": 9.100500000000466
+          },
+          "gt32_tsc": {
+            "median": 11144.85925,
+            "mad": 19.355249999999614
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": -29.03625,
+            "mad": 19.564
+          },
+          "incremental_phase_delta_tsc": -56.540499999999994,
+          "gt32_faster_launches": 8,
+          "launches": 8
+        },
+        "C5_reencrypt_verify": {
+          "semantic_phase": "CBD + NTT + check pack + verify",
+          "official_tsc": {
+            "median": 11858.8905,
+            "mad": 6.754249999999956
+          },
+          "gt32_tsc": {
+            "median": 11872.9725,
+            "mad": 6.772249999999076
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 20.63625,
+            "mad": 6.1815
+          },
+          "incremental_phase_delta_tsc": 49.6725,
+          "gt32_faster_launches": 1,
+          "launches": 8
+        },
+        "C6_return_cleanup": {
+          "semantic_phase": "shared-secret select + cleanup",
+          "official_tsc": {
+            "median": 11983.743750000001,
+            "mad": 3.481499999999869
+          },
+          "gt32_tsc": {
+            "median": 12058.0525,
+            "mad": 3.4785000000001673
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 89.28049999999999,
+            "mad": 9.527999999999999
+          },
+          "incremental_phase_delta_tsc": 68.64424999999999,
+          "gt32_faster_launches": 2,
+          "launches": 8
+        }
+      },
+      "pmu": {
+        "C1_decode": {
+          "semantic_phase": "decode / GT-unpack",
+          "cycles": {
+            "official": {
+              "median": 454.836625,
+              "mad": 0.18462499999998272
+            },
+            "gt32": {
+              "median": 507.548,
+              "mad": 4.557874999999996
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 52.21199999999999,
+              "mad": 3.7948749999999905
+            },
+            "incremental_phase_delta": 52.21199999999999,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 284.38800000000003,
+              "mad": 0.17550000000002797
+            },
+            "gt32": {
+              "median": 317.34299999999996,
+              "mad": 1.930499999999995
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 32.64299999999997,
+              "mad": 2.3497500000000002
+            },
+            "incremental_phase_delta": 32.64299999999997,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 1643.017,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 1840.017,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 197.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": 197.0,
+            "negative_delta_launches": 0
+          }
+        },
+        "C2_first_product": {
+          "semantic_phase": "first BM + inverse + crepmod3",
+          "cycles": {
+            "official": {
+              "median": 1810.6437500000002,
+              "mad": 3.085999999999899
+            },
+            "gt32": {
+              "median": 1915.060625,
+              "mad": 4.070124999999962
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 106.63562499999995,
+              "mad": 3.365250000000003
+            },
+            "incremental_phase_delta": 54.42362499999996,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 1132.1212500000001,
+              "mad": 1.9109999999998308
+            },
+            "gt32": {
+              "median": 1197.3975,
+              "mad": 2.8470000000000937
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 66.67050000000006,
+              "mad": 2.1060000000001082
+            },
+            "incremental_phase_delta": 34.02750000000009,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 6250.0175,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 6133.0175,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -117.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -314.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C3_recovered_r": {
+          "semantic_phase": "Forward(m) + sub + general BM + recovered-r pack",
+          "cycles": {
+            "official": {
+              "median": 3357.375125,
+              "mad": 2.8236249999999927
+            },
+            "gt32": {
+              "median": 3376.31725,
+              "mad": 5.921249999999873
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 20.222500000000196,
+              "mad": 5.378999999999678
+            },
+            "incremental_phase_delta": -86.41312499999975,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 2099.1944999999996,
+              "mad": 1.7744999999997617
+            },
+            "gt32": {
+              "median": 2111.25525,
+              "mad": 3.6269999999999527
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 12.6652499999999,
+              "mad": 3.383250000000089
+            },
+            "incremental_phase_delta": -54.00525000000016,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 11291.0175,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 10404.017625,
+              "mad": 0.0001250000004802132
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -886.999875,
+              "mad": 0.00012500000002546585
+            },
+            "incremental_phase_delta": -769.999875,
+            "negative_delta_launches": 8
+          }
+        },
+        "C4_middle_sotp": {
+          "semantic_phase": "hash_g + SOTP decode + hash_h",
+          "cycles": {
+            "official": {
+              "median": 17856.101625,
+              "mad": 12.246000000001004
+            },
+            "gt32": {
+              "median": 17867.917875,
+              "mad": 16.719499999999243
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 5.640000000001237,
+              "mad": 16.16362499999832
+            },
+            "incremental_phase_delta": -14.582499999998959,
+            "negative_delta_launches": 3
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 11164.569,
+              "mad": 7.624499999999898
+            },
+            "gt32": {
+              "median": 11171.94975,
+              "mad": 10.393499999999221
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 6.707999999999629,
+              "mad": 10.188750000000255
+            },
+            "incremental_phase_delta": -5.957250000000272,
+            "negative_delta_launches": 3
+          },
+          "instructions": {
+            "official": {
+              "median": 45849.0205,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 44963.020875,
+              "mad": 0.0001250000022992026
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -886.0,
+              "mad": 0.0002500000009604264
+            },
+            "incremental_phase_delta": 0.9998749999999745,
+            "negative_delta_launches": 8
+          }
+        },
+        "C5_reencrypt_verify": {
+          "semantic_phase": "CBD + NTT + check pack + verify",
+          "cycles": {
+            "official": {
+              "median": 18936.655874999997,
+              "mad": 6.835249999998268
+            },
+            "gt32": {
+              "median": 19013.97725,
+              "mad": 27.06962499999827
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 112.11974999999984,
+              "mad": 32.082250000001295
+            },
+            "incremental_phase_delta": 106.4797499999986,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 11840.1855,
+              "mad": 4.289999999999964
+            },
+            "gt32": {
+              "median": 11894.922,
+              "mad": 20.07524999999987
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 70.0635000000002,
+              "mad": 19.99725000000035
+            },
+            "incremental_phase_delta": 63.355500000000575,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 49341.021,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 48178.021,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -1163.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -277.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C6_return_cleanup": {
+          "semantic_phase": "shared-secret select + cleanup",
+          "cycles": {
+            "official": {
+              "median": 19149.460375000002,
+              "mad": 15.889250000000175
+            },
+            "gt32": {
+              "median": 19295.244124999997,
+              "mad": 7.692249999998239
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 178.24962499999947,
+              "mad": 15.513000000001739
+            },
+            "incremental_phase_delta": 66.12987499999963,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 11973.653250000001,
+              "mad": 8.843249999998989
+            },
+            "gt32": {
+              "median": 12065.664,
+              "mad": 5.606250000000728
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 111.45225000000028,
+              "mad": 9.759749999999713
+            },
+            "incremental_phase_delta": 41.38875000000007,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 50093.021,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 48573.021,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -1520.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -357.0,
+            "negative_delta_launches": 8
+          }
+        }
+      },
+      "all_pmu_launches_nonmultiplexed": true,
+      "prior_binary_production_gap_corroboration": {
+        "strict_closure_comparison": false,
+        "reason": "the prior artifact uses a different benchmark binary and whole-caller code placement",
+        "prior_binary_production_gap_tsc": 114.35125,
+        "current_binary_C6_production_gap_tsc": 89.28049999999999,
+        "difference_tsc": -25.070750000000004,
+        "absolute_difference_fraction": 0.21924334014713442
+      }
+    },
+    "reversed": {
+      "tsc": {
+        "C1_decode": {
+          "semantic_phase": "decode / GT-unpack",
+          "official_tsc": {
+            "median": 284.303,
+            "mad": 0.2147499999999809
+          },
+          "gt32_tsc": {
+            "median": 320.606,
+            "mad": 3.966000000000008
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 35.700500000000005,
+            "mad": 2.6427499999999924
+          },
+          "incremental_phase_delta_tsc": 35.700500000000005,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C2_first_product": {
+          "semantic_phase": "first BM + inverse + crepmod3",
+          "official_tsc": {
+            "median": 1132.2845000000002,
+            "mad": 1.2759999999997262
+          },
+          "gt32_tsc": {
+            "median": 1201.90375,
+            "mad": 5.865499999999997
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 64.74125,
+            "mad": 2.476999999999993
+          },
+          "incremental_phase_delta_tsc": 29.04074999999999,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C3_recovered_r": {
+          "semantic_phase": "Forward(m) + sub + general BM + recovered-r pack",
+          "official_tsc": {
+            "median": 2102.69475,
+            "mad": 1.1490000000001146
+          },
+          "gt32_tsc": {
+            "median": 2120.15175,
+            "mad": 5.036249999999882
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 17.9975,
+            "mad": 3.906749999999999
+          },
+          "incremental_phase_delta_tsc": -46.74374999999999,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C4_middle_sotp": {
+          "semantic_phase": "hash_g + SOTP decode + hash_h",
+          "official_tsc": {
+            "median": 11182.437750000001,
+            "mad": 18.549000000001797
+          },
+          "gt32_tsc": {
+            "median": 11249.335000000001,
+            "mad": 19.04950000000099
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 66.238,
+            "mad": 6.80275
+          },
+          "incremental_phase_delta_tsc": 48.2405,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C5_reencrypt_verify": {
+          "semantic_phase": "CBD + NTT + check pack + verify",
+          "official_tsc": {
+            "median": 11891.545999999998,
+            "mad": 3.5732500000012806
+          },
+          "gt32_tsc": {
+            "median": 11949.38625,
+            "mad": 12.86700000000019
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 83.26100000000001,
+            "mad": 32.41900000000001
+          },
+          "incremental_phase_delta_tsc": 17.02300000000001,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        },
+        "C6_return_cleanup": {
+          "semantic_phase": "shared-secret select + cleanup",
+          "official_tsc": {
+            "median": 12032.752,
+            "mad": 6.711750000000393
+          },
+          "gt32_tsc": {
+            "median": 12066.882249999999,
+            "mad": 8.459749999999985
+          },
+          "cumulative_gt32_minus_official_tsc": {
+            "median": 51.09975,
+            "mad": 4.7877499999999955
+          },
+          "incremental_phase_delta_tsc": -32.16125000000001,
+          "gt32_faster_launches": 0,
+          "launches": 8
+        }
+      },
+      "pmu": {
+        "C1_decode": {
+          "semantic_phase": "decode / GT-unpack",
+          "cycles": {
+            "official": {
+              "median": 454.447125,
+              "mad": 0.12087500000001228
+            },
+            "gt32": {
+              "median": 505.15362500000003,
+              "mad": 2.193500000000057
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 49.483374999999995,
+              "mad": 1.7865000000000038
+            },
+            "incremental_phase_delta": 49.483374999999995,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 284.14425,
+              "mad": 0.06825000000000614
+            },
+            "gt32": {
+              "median": 316.095,
+              "mad": 1.61850000000004
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 30.95625000000001,
+              "mad": 1.1212499999999892
+            },
+            "incremental_phase_delta": 30.95625000000001,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 1643.017,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 1840.017,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 197.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": 197.0,
+            "negative_delta_launches": 0
+          }
+        },
+        "C2_first_product": {
+          "semantic_phase": "first BM + inverse + crepmod3",
+          "cycles": {
+            "official": {
+              "median": 1810.34725,
+              "mad": 4.082374999999956
+            },
+            "gt32": {
+              "median": 1923.980625,
+              "mad": 8.365624999999909
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 110.7147500000001,
+              "mad": 8.13487500000008
+            },
+            "incremental_phase_delta": 61.2313750000001,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 1131.9165,
+              "mad": 2.4375000000001137
+            },
+            "gt32": {
+              "median": 1202.9745,
+              "mad": 5.216250000000059
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 69.20549999999997,
+              "mad": 5.050499999999943
+            },
+            "incremental_phase_delta": 38.24924999999996,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 6250.0175,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 6133.0175,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -117.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -314.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C3_recovered_r": {
+          "semantic_phase": "Forward(m) + sub + general BM + recovered-r pack",
+          "cycles": {
+            "official": {
+              "median": 3361.675875,
+              "mad": 5.0258749999998145
+            },
+            "gt32": {
+              "median": 3449.156,
+              "mad": 56.57312499999989
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 34.403000000000134,
+              "mad": 16.678999999999974
+            },
+            "incremental_phase_delta": -76.31174999999996,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 2101.905,
+              "mad": 2.925000000000182
+            },
+            "gt32": {
+              "median": 2156.59275,
+              "mad": 35.37299999999959
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 21.518249999999966,
+              "mad": 12.060749999999985
+            },
+            "incremental_phase_delta": -47.687250000000006,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 11291.017625,
+              "mad": 0.0001250000004802132
+            },
+            "gt32": {
+              "median": 10404.0175,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -887.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -770.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C4_middle_sotp": {
+          "semantic_phase": "hash_g + SOTP decode + hash_h",
+          "cycles": {
+            "official": {
+              "median": 17855.431,
+              "mad": 11.905125000001135
+            },
+            "gt32": {
+              "median": 17917.917625000002,
+              "mad": 7.046125000000757
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 91.22074999999859,
+              "mad": 12.048000000002503
+            },
+            "incremental_phase_delta": 56.817749999998455,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 11164.13025,
+              "mad": 7.4392500000003565
+            },
+            "gt32": {
+              "median": 11203.20825,
+              "mad": 4.426499999999578
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 57.05699999999979,
+              "mad": 7.536750000000211
+            },
+            "incremental_phase_delta": 35.53874999999982,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 45849.021,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 44963.021,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -886.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": 1.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C5_reencrypt_verify": {
+          "semantic_phase": "CBD + NTT + check pack + verify",
+          "cycles": {
+            "official": {
+              "median": 18959.352375,
+              "mad": 18.540499999999156
+            },
+            "gt32": {
+              "median": 19022.550124999998,
+              "mad": 5.878374999998414
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 91.83487500000047,
+              "mad": 25.931375000000116
+            },
+            "incremental_phase_delta": 0.6141250000018772,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 11857.5795,
+              "mad": 12.938250000000153
+            },
+            "gt32": {
+              "median": 11893.859250000001,
+              "mad": 3.5977500000017244
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 54.37575000000015,
+              "mad": 17.59875000000011
+            },
+            "incremental_phase_delta": -2.681249999999636,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 49341.021,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 48178.021,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -1163.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -277.0,
+            "negative_delta_launches": 8
+          }
+        },
+        "C6_return_cleanup": {
+          "semantic_phase": "shared-secret select + cleanup",
+          "cycles": {
+            "official": {
+              "median": 19207.524875,
+              "mad": 9.764999999999418
+            },
+            "gt32": {
+              "median": 19267.89275,
+              "mad": 20.165874999998778
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 61.386749999999665,
+              "mad": 15.286749999999302
+            },
+            "incremental_phase_delta": -30.4481250000008,
+            "negative_delta_launches": 0
+          },
+          "ref-cycles": {
+            "official": {
+              "median": 12011.42475,
+              "mad": 5.29424999999992
+            },
+            "gt32": {
+              "median": 12047.24625,
+              "mad": 12.694499999999607
+            },
+            "cumulative_gt32_minus_official": {
+              "median": 38.35649999999987,
+              "mad": 9.584249999999429
+            },
+            "incremental_phase_delta": -16.019250000000284,
+            "negative_delta_launches": 0
+          },
+          "instructions": {
+            "official": {
+              "median": 50093.021,
+              "mad": 0.0
+            },
+            "gt32": {
+              "median": 48573.021,
+              "mad": 0.0
+            },
+            "cumulative_gt32_minus_official": {
+              "median": -1520.0,
+              "mad": 0.0
+            },
+            "incremental_phase_delta": -357.0,
+            "negative_delta_launches": 8
+          }
+        }
+      },
+      "all_pmu_launches_nonmultiplexed": true,
+      "prior_binary_production_gap_corroboration": {
+        "strict_closure_comparison": false,
+        "reason": "the prior artifact uses a different benchmark binary and whole-caller code placement",
+        "prior_binary_production_gap_tsc": -97.29325,
+        "current_binary_C6_production_gap_tsc": 51.09975,
+        "difference_tsc": 148.393,
+        "absolute_difference_fraction": 1.5252137224319262
+      }
+    }
+  },
+  "decision": {
+    "selection_rule": "largest actionable combined incremental core-cycle debt that is positive in both placements and retains at least 50% of its larger-placement value; phases within 10% are tied and frozen Q24 local scheduling is not reopened",
+    "stable_positive_core_cycle_phases": [
+      "C1_decode",
+      "C2_first_product"
+    ],
+    "incremental_core_cycle_deltas_by_placement": {
+      "C1_decode": {
+        "normal": 52.21199999999999,
+        "reversed": 49.483374999999995
+      },
+      "C2_first_product": {
+        "normal": 54.42362499999996,
+        "reversed": 61.2313750000001
+      },
+      "C3_recovered_r": {
+        "normal": -86.41312499999975,
+        "reversed": -76.31174999999996
+      },
+      "C4_middle_sotp": {
+        "normal": -14.582499999998959,
+        "reversed": 56.817749999998455
+      },
+      "C5_reencrypt_verify": {
+        "normal": 106.4797499999986,
+        "reversed": 0.6141250000018772
+      },
+      "C6_return_cleanup": {
+        "normal": 66.12987499999963,
+        "reversed": -30.4481250000008
+      }
+    },
+    "raw_largest_stable_phase": "C2_first_product",
+    "near_tied_stable_phases": [
+      "C2_first_product"
+    ],
+    "selected_phase": "C2_first_product",
+    "semantic_phase": "first BM + inverse + crepmod3",
+    "combined_normal_reversed_incremental_core_cycles": 115.65500000000006,
+    "selected_materialization_boundary": "T9/crepmod3 coefficient-result boundary feeding both Forward(m) and SOTP decode",
+    "selection_rationale": [
+      "C2 adds core cycles in both placements despite retiring fewer instructions",
+      "the existing B3-to-I1 local fusion is a measured hard stop",
+      "the existing T10 crep-only fusion is a measured hard stop",
+      "reopening therefore requires deleting the complete m materialization for its N5 and SOTP consumers rather than rescheduling frozen arithmetic"
+    ],
+    "next_gate": "benchmark-only T9/crep typed terminal that directly feeds the N5 frontend and a compact SOTP consumer representation",
+    "implementation_started": false
+  }
+}

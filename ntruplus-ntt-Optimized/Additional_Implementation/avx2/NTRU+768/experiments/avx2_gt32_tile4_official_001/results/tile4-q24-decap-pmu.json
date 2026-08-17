@@ -1,0 +1,562 @@
+{
+  "schema": "ntruplus768-gt32-q24-decap-pmu-v1",
+  "experiment": "GT32-Q24-DECAP-DECODE-ONLY-PMU-001",
+  "benchmark": {
+    "iterations_per_sample": 2000,
+    "samples_per_process": 20,
+    "perf_repeats": 3,
+    "cpu": 1,
+    "scope": "full-decap-single-variant-per-process",
+    "event_groups_are_separate_runs": true
+  },
+  "placements": {
+    "normal": {
+      "variants": {
+        "control": {
+          "cycles_instructions": {
+            "events": {
+              "cpu_core/cycles/u": {
+                "count": 810417186,
+                "repeat_stddev_percent": 1.12,
+                "time_running_ns": 174910046,
+                "running_percent": 100.0
+              },
+              "cpu_core/instructions/u": {
+                "count": 1997763577,
+                "repeat_stddev_percent": 0.08,
+                "time_running_ns": 174910046,
+                "running_percent": 100.0
+              }
+            }
+          },
+          "retired_uops_memory": {
+            "events": {
+              "cpu_core/uops_retired.slots/u": {
+                "count": 2007767015,
+                "repeat_stddev_percent": 0.07,
+                "time_running_ns": 170402316,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_loads/u": {
+                "count": 310848681,
+                "repeat_stddev_percent": 0.07,
+                "time_running_ns": 170402316,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_stores/u": {
+                "count": 65922702,
+                "repeat_stddev_percent": 0.07,
+                "time_running_ns": 170402316,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "cache_branches": {
+            "events": {
+              "cpu_core/l1-dcache-loads/u": {
+                "count": 311082448,
+                "repeat_stddev_percent": 0.04,
+                "time_running_ns": 167868786,
+                "running_percent": 99.0
+              },
+              "cpu_core/l1-dcache-load-misses/u": {
+                "count": 624150,
+                "repeat_stddev_percent": 30.16,
+                "time_running_ns": 167868786,
+                "running_percent": 99.0
+              },
+              "cpu_core/branches/u": {
+                "count": 40113439,
+                "repeat_stddev_percent": 0.04,
+                "time_running_ns": 167868786,
+                "running_percent": 99.0
+              },
+              "cpu_core/branch-misses/u": {
+                "count": 176957,
+                "repeat_stddev_percent": 5.5,
+                "time_running_ns": 167868786,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "topdown": {
+            "events": {
+              "cpu_core/slots/": {
+                "count": 4838917565,
+                "repeat_stddev_percent": 0.77,
+                "time_running_ns": 167042473,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-fe-bound/u": {
+                "count": 56928441,
+                "repeat_stddev_percent": 0.77,
+                "time_running_ns": 167042473,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-be-bound/u": {
+                "count": 2770810783,
+                "repeat_stddev_percent": 1.46,
+                "time_running_ns": 167042473,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-retiring/u": {
+                "count": 2011178338,
+                "repeat_stddev_percent": 0.18,
+                "time_running_ns": 167042473,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-bad-spec/u": {
+                "count": 12553005,
+                "repeat_stddev_percent": 50.0,
+                "time_running_ns": 167042473,
+                "running_percent": 99.0
+              }
+            }
+          }
+        },
+        "q24": {
+          "cycles_instructions": {
+            "events": {
+              "cpu_core/cycles/u": {
+                "count": 783703673,
+                "repeat_stddev_percent": 0.26,
+                "time_running_ns": 162707796,
+                "running_percent": 99.0
+              },
+              "cpu_core/instructions/u": {
+                "count": 1983272948,
+                "repeat_stddev_percent": 0.03,
+                "time_running_ns": 162707796,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "retired_uops_memory": {
+            "events": {
+              "cpu_core/uops_retired.slots/u": {
+                "count": 1987722669,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 163152399,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_loads/u": {
+                "count": 312357014,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 163152399,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_stores/u": {
+                "count": 66130305,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 163152399,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "cache_branches": {
+            "events": {
+              "cpu_core/l1-dcache-loads/u": {
+                "count": 312128855,
+                "repeat_stddev_percent": 0.1,
+                "time_running_ns": 166688188,
+                "running_percent": 99.0
+              },
+              "cpu_core/l1-dcache-load-misses/u": {
+                "count": 526419,
+                "repeat_stddev_percent": 31.51,
+                "time_running_ns": 166688188,
+                "running_percent": 99.0
+              },
+              "cpu_core/branches/u": {
+                "count": 40356877,
+                "repeat_stddev_percent": 0.08,
+                "time_running_ns": 166688188,
+                "running_percent": 99.0
+              },
+              "cpu_core/branch-misses/u": {
+                "count": 153083,
+                "repeat_stddev_percent": 2.79,
+                "time_running_ns": 166688188,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "topdown": {
+            "events": {
+              "cpu_core/slots/": {
+                "count": 4732154382,
+                "repeat_stddev_percent": 0.78,
+                "time_running_ns": 167105312,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-fe-bound/u": {
+                "count": 43231999,
+                "repeat_stddev_percent": 13.68,
+                "time_running_ns": 167105312,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-be-bound/u": {
+                "count": 2697272110,
+                "repeat_stddev_percent": 1.38,
+                "time_running_ns": 167105312,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-retiring/u": {
+                "count": 1979209866,
+                "repeat_stddev_percent": 0.07,
+                "time_running_ns": 167105312,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-bad-spec/u": {
+                "count": 12376257,
+                "repeat_stddev_percent": 48.83,
+                "time_running_ns": 167105312,
+                "running_percent": 99.0
+              }
+            }
+          }
+        }
+      },
+      "q24_minus_control": {
+        "cycles_instructions": {
+          "cpu_core/instructions/u": {
+            "q24_minus_control": -14490629,
+            "q24_minus_control_percent": -0.7253425363656032
+          },
+          "cpu_core/cycles/u": {
+            "q24_minus_control": -26713513,
+            "q24_minus_control_percent": -3.2962668439758382
+          }
+        },
+        "retired_uops_memory": {
+          "cpu_core/mem_inst_retired.all_loads/u": {
+            "q24_minus_control": 1508333,
+            "q24_minus_control_percent": 0.4852306257654669
+          },
+          "cpu_core/mem_inst_retired.all_stores/u": {
+            "q24_minus_control": 207603,
+            "q24_minus_control_percent": 0.3149188272046252
+          },
+          "cpu_core/uops_retired.slots/u": {
+            "q24_minus_control": -20044346,
+            "q24_minus_control_percent": -0.9983402381974086
+          }
+        },
+        "cache_branches": {
+          "cpu_core/branches/u": {
+            "q24_minus_control": 243438,
+            "q24_minus_control_percent": 0.6068739207326502
+          },
+          "cpu_core/l1-dcache-load-misses/u": {
+            "q24_minus_control": -97731,
+            "q24_minus_control_percent": -15.658255227108867
+          },
+          "cpu_core/branch-misses/u": {
+            "q24_minus_control": -23874,
+            "q24_minus_control_percent": -13.491413168170798
+          },
+          "cpu_core/l1-dcache-loads/u": {
+            "q24_minus_control": 1046407,
+            "q24_minus_control_percent": 0.33637609795329887
+          }
+        },
+        "topdown": {
+          "cpu_core/topdown-be-bound/u": {
+            "q24_minus_control": -73538673,
+            "q24_minus_control_percent": -2.654048896127744
+          },
+          "cpu_core/topdown-retiring/u": {
+            "q24_minus_control": -31968472,
+            "q24_minus_control_percent": -1.5895393956853567
+          },
+          "cpu_core/slots/": {
+            "q24_minus_control": -106763183,
+            "q24_minus_control_percent": -2.206344323206093
+          },
+          "cpu_core/topdown-bad-spec/u": {
+            "q24_minus_control": -176748,
+            "q24_minus_control_percent": -1.4080134597253804
+          },
+          "cpu_core/topdown-fe-bound/u": {
+            "q24_minus_control": -13696442,
+            "q24_minus_control_percent": -24.059049851725256
+          }
+        }
+      }
+    },
+    "reversed": {
+      "variants": {
+        "control": {
+          "cycles_instructions": {
+            "events": {
+              "cpu_core/cycles/u": {
+                "count": 800007089,
+                "repeat_stddev_percent": 0.43,
+                "time_running_ns": 166544832,
+                "running_percent": 100.0
+              },
+              "cpu_core/instructions/u": {
+                "count": 1998695388,
+                "repeat_stddev_percent": 0.1,
+                "time_running_ns": 166544832,
+                "running_percent": 100.0
+              }
+            }
+          },
+          "retired_uops_memory": {
+            "events": {
+              "cpu_core/uops_retired.slots/u": {
+                "count": 2010321041,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 165527885,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_loads/u": {
+                "count": 311242090,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 165527885,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_stores/u": {
+                "count": 66003747,
+                "repeat_stddev_percent": 0.02,
+                "time_running_ns": 165527885,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "cache_branches": {
+            "events": {
+              "cpu_core/l1-dcache-loads/u": {
+                "count": 311081311,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 167381997,
+                "running_percent": 99.0
+              },
+              "cpu_core/l1-dcache-load-misses/u": {
+                "count": 150156,
+                "repeat_stddev_percent": 9.04,
+                "time_running_ns": 167381997,
+                "running_percent": 99.0
+              },
+              "cpu_core/branches/u": {
+                "count": 40119526,
+                "repeat_stddev_percent": 0.04,
+                "time_running_ns": 167381997,
+                "running_percent": 99.0
+              },
+              "cpu_core/branch-misses/u": {
+                "count": 272836,
+                "repeat_stddev_percent": 1.5,
+                "time_running_ns": 167381997,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "topdown": {
+            "events": {
+              "cpu_core/slots/": {
+                "count": 4804915493,
+                "repeat_stddev_percent": 0.57,
+                "time_running_ns": 166637798,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-fe-bound/u": {
+                "count": 75371222,
+                "repeat_stddev_percent": 0.57,
+                "time_running_ns": 166637798,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-be-bound/u": {
+                "count": 2713485403,
+                "repeat_stddev_percent": 0.96,
+                "time_running_ns": 166637798,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-retiring/u": {
+                "count": 2016058864,
+                "repeat_stddev_percent": 0.1,
+                "time_running_ns": 166637798,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-bad-spec/u": {
+                "count": 18842804,
+                "repeat_stddev_percent": 0.57,
+                "time_running_ns": 166637798,
+                "running_percent": 99.0
+              }
+            }
+          }
+        },
+        "q24": {
+          "cycles_instructions": {
+            "events": {
+              "cpu_core/cycles/u": {
+                "count": 796047931,
+                "repeat_stddev_percent": 1.56,
+                "time_running_ns": 171160090,
+                "running_percent": 99.0
+              },
+              "cpu_core/instructions/u": {
+                "count": 1981134820,
+                "repeat_stddev_percent": 0.09,
+                "time_running_ns": 171160090,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "retired_uops_memory": {
+            "events": {
+              "cpu_core/uops_retired.slots/u": {
+                "count": 1987746924,
+                "repeat_stddev_percent": 0.03,
+                "time_running_ns": 171420574,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_loads/u": {
+                "count": 312370650,
+                "repeat_stddev_percent": 0.03,
+                "time_running_ns": 171420574,
+                "running_percent": 99.0
+              },
+              "cpu_core/mem_inst_retired.all_stores/u": {
+                "count": 66133235,
+                "repeat_stddev_percent": 0.03,
+                "time_running_ns": 171420574,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "cache_branches": {
+            "events": {
+              "cpu_core/l1-dcache-loads/u": {
+                "count": 312094087,
+                "repeat_stddev_percent": 0.06,
+                "time_running_ns": 164015095,
+                "running_percent": 99.0
+              },
+              "cpu_core/l1-dcache-load-misses/u": {
+                "count": 160297,
+                "repeat_stddev_percent": 21.77,
+                "time_running_ns": 164015095,
+                "running_percent": 99.0
+              },
+              "cpu_core/branches/u": {
+                "count": 40357810,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 164015095,
+                "running_percent": 99.0
+              },
+              "cpu_core/branch-misses/u": {
+                "count": 82640,
+                "repeat_stddev_percent": 2.38,
+                "time_running_ns": 164015095,
+                "running_percent": 99.0
+              }
+            }
+          },
+          "topdown": {
+            "events": {
+              "cpu_core/slots/": {
+                "count": 4702307605,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 163520093,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-fe-bound/u": {
+                "count": 36880843,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 163520093,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-be-bound/u": {
+                "count": 2673861186,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 163520093,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-retiring/u": {
+                "count": 1991565573,
+                "repeat_stddev_percent": 0.05,
+                "time_running_ns": 163520093,
+                "running_percent": 99.0
+              },
+              "cpu_core/topdown-bad-spec/u": {
+                "count": 0,
+                "repeat_stddev_percent": 0.0,
+                "time_running_ns": 163520093,
+                "running_percent": 99.0
+              }
+            }
+          }
+        }
+      },
+      "q24_minus_control": {
+        "cycles_instructions": {
+          "cpu_core/instructions/u": {
+            "q24_minus_control": -17560568,
+            "q24_minus_control_percent": -0.8786015170411751
+          },
+          "cpu_core/cycles/u": {
+            "q24_minus_control": -3959158,
+            "q24_minus_control_percent": -0.4948903646527562
+          }
+        },
+        "retired_uops_memory": {
+          "cpu_core/mem_inst_retired.all_loads/u": {
+            "q24_minus_control": 1128560,
+            "q24_minus_control_percent": 0.3625987731929187
+          },
+          "cpu_core/mem_inst_retired.all_stores/u": {
+            "q24_minus_control": 129488,
+            "q24_minus_control_percent": 0.19618280156125076
+          },
+          "cpu_core/uops_retired.slots/u": {
+            "q24_minus_control": -22574117,
+            "q24_minus_control_percent": -1.1229110445350008
+          }
+        },
+        "cache_branches": {
+          "cpu_core/branches/u": {
+            "q24_minus_control": 238284,
+            "q24_minus_control_percent": 0.5939352324351987
+          },
+          "cpu_core/l1-dcache-load-misses/u": {
+            "q24_minus_control": 10141,
+            "q24_minus_control_percent": 6.75364287807347
+          },
+          "cpu_core/branch-misses/u": {
+            "q24_minus_control": -190196,
+            "q24_minus_control_percent": -69.71074198419564
+          },
+          "cpu_core/l1-dcache-loads/u": {
+            "q24_minus_control": 1012776,
+            "q24_minus_control_percent": 0.3255663275766508
+          }
+        },
+        "topdown": {
+          "cpu_core/topdown-be-bound/u": {
+            "q24_minus_control": -39624217,
+            "q24_minus_control_percent": -1.4602701365628095
+          },
+          "cpu_core/topdown-retiring/u": {
+            "q24_minus_control": -24493291,
+            "q24_minus_control_percent": -1.2149095166499067
+          },
+          "cpu_core/slots/": {
+            "q24_minus_control": -102607888,
+            "q24_minus_control_percent": -2.135477474046805
+          },
+          "cpu_core/topdown-bad-spec/u": {
+            "q24_minus_control": -18842804,
+            "q24_minus_control_percent": -100.0
+          },
+          "cpu_core/topdown-fe-bound/u": {
+            "q24_minus_control": -38490379,
+            "q24_minus_control_percent": -51.067739090126466
+          }
+        }
+      }
+    }
+  }
+}

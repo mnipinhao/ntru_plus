@@ -1,0 +1,277 @@
+{
+  "schema": "ntruplus768-gt32-n32-branch-at-time-short-v1",
+  "experiment": "GT-N32-CONJ-BRANCH-AT-A-TIME-019",
+  "iterations": 10000,
+  "scope": "one complete wave: shared top split plus conjugated S1-S3",
+  "static_tradeoff_per_wave": {
+    "Montgomery_chains_delta": 0,
+    "extra_32byte_stores": 7,
+    "extra_32byte_loads": 7,
+    "extra_L1_bytes": 448,
+    "branch0_schedule": "twelve serial-source macros to three four-way stages",
+    "q": "one register-resident load for both branches"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_n32_branch_at_time",
+      "samples": [
+        {
+          "sample": 0,
+          "control_tsc": 54.1762,
+          "branch_at_time_tsc": 52.4078,
+          "delta_tsc": -1.7684
+        },
+        {
+          "sample": 1,
+          "control_tsc": 52.4668,
+          "branch_at_time_tsc": 51.0688,
+          "delta_tsc": -1.398
+        },
+        {
+          "sample": 2,
+          "control_tsc": 51.7878,
+          "branch_at_time_tsc": 49.7406,
+          "delta_tsc": -2.0472
+        },
+        {
+          "sample": 3,
+          "control_tsc": 53.163,
+          "branch_at_time_tsc": 49.5292,
+          "delta_tsc": -3.6338
+        },
+        {
+          "sample": 4,
+          "control_tsc": 51.7912,
+          "branch_at_time_tsc": 49.5196,
+          "delta_tsc": -2.2716
+        },
+        {
+          "sample": 5,
+          "control_tsc": 51.8218,
+          "branch_at_time_tsc": 49.514,
+          "delta_tsc": -2.3078
+        },
+        {
+          "sample": 6,
+          "control_tsc": 52.0876,
+          "branch_at_time_tsc": 49.5188,
+          "delta_tsc": -2.5688
+        },
+        {
+          "sample": 7,
+          "control_tsc": 51.8528,
+          "branch_at_time_tsc": 49.3732,
+          "delta_tsc": -2.4796
+        },
+        {
+          "sample": 8,
+          "control_tsc": 51.6932,
+          "branch_at_time_tsc": 49.3518,
+          "delta_tsc": -2.3414
+        },
+        {
+          "sample": 9,
+          "control_tsc": 51.7998,
+          "branch_at_time_tsc": 50.7386,
+          "delta_tsc": -1.0612
+        },
+        {
+          "sample": 10,
+          "control_tsc": 51.7902,
+          "branch_at_time_tsc": 49.4812,
+          "delta_tsc": -2.309
+        },
+        {
+          "sample": 11,
+          "control_tsc": 51.767,
+          "branch_at_time_tsc": 49.6194,
+          "delta_tsc": -2.1476
+        },
+        {
+          "sample": 12,
+          "control_tsc": 52.5574,
+          "branch_at_time_tsc": 49.6232,
+          "delta_tsc": -2.9342
+        },
+        {
+          "sample": 13,
+          "control_tsc": 51.9336,
+          "branch_at_time_tsc": 49.6024,
+          "delta_tsc": -2.3312
+        },
+        {
+          "sample": 14,
+          "control_tsc": 51.7594,
+          "branch_at_time_tsc": 49.6128,
+          "delta_tsc": -2.1466
+        },
+        {
+          "sample": 15,
+          "control_tsc": 53.6554,
+          "branch_at_time_tsc": 50.8834,
+          "delta_tsc": -2.772
+        },
+        {
+          "sample": 16,
+          "control_tsc": 51.7808,
+          "branch_at_time_tsc": 49.6148,
+          "delta_tsc": -2.166
+        },
+        {
+          "sample": 17,
+          "control_tsc": 51.9326,
+          "branch_at_time_tsc": 49.8014,
+          "delta_tsc": -2.1312
+        },
+        {
+          "sample": 18,
+          "control_tsc": 53.1426,
+          "branch_at_time_tsc": 49.3564,
+          "delta_tsc": -3.7862
+        },
+        {
+          "sample": 19,
+          "control_tsc": 52.0362,
+          "branch_at_time_tsc": 49.4256,
+          "delta_tsc": -2.6106
+        }
+      ],
+      "median_control_tsc": 51.892700000000005,
+      "median_branch_at_time_tsc": 49.607600000000005,
+      "median_delta_tsc": -2.3084,
+      "candidate_wins": 20,
+      "mad_delta_tsc": 0.21879999999999988
+    },
+    "reversed": {
+      "binary": "build/bench_n32_branch_at_time_reversed",
+      "samples": [
+        {
+          "sample": 0,
+          "control_tsc": 51.7916,
+          "branch_at_time_tsc": 49.45,
+          "delta_tsc": -2.3416
+        },
+        {
+          "sample": 1,
+          "control_tsc": 51.761,
+          "branch_at_time_tsc": 50.6156,
+          "delta_tsc": -1.1454
+        },
+        {
+          "sample": 2,
+          "control_tsc": 51.6438,
+          "branch_at_time_tsc": 59.5368,
+          "delta_tsc": 7.893
+        },
+        {
+          "sample": 3,
+          "control_tsc": 58.9502,
+          "branch_at_time_tsc": 61.2824,
+          "delta_tsc": 2.3322
+        },
+        {
+          "sample": 4,
+          "control_tsc": 62.3724,
+          "branch_at_time_tsc": 62.123,
+          "delta_tsc": -0.2494
+        },
+        {
+          "sample": 5,
+          "control_tsc": 55.694,
+          "branch_at_time_tsc": 55.618,
+          "delta_tsc": -0.076
+        },
+        {
+          "sample": 6,
+          "control_tsc": 51.8006,
+          "branch_at_time_tsc": 51.7324,
+          "delta_tsc": -0.0682
+        },
+        {
+          "sample": 7,
+          "control_tsc": 59.497,
+          "branch_at_time_tsc": 61.6058,
+          "delta_tsc": 2.1088
+        },
+        {
+          "sample": 8,
+          "control_tsc": 62.491,
+          "branch_at_time_tsc": 60.3898,
+          "delta_tsc": -2.1012
+        },
+        {
+          "sample": 9,
+          "control_tsc": 51.6792,
+          "branch_at_time_tsc": 54.1242,
+          "delta_tsc": 2.445
+        },
+        {
+          "sample": 10,
+          "control_tsc": 63.5334,
+          "branch_at_time_tsc": 68.963,
+          "delta_tsc": 5.4296
+        },
+        {
+          "sample": 11,
+          "control_tsc": 52.2876,
+          "branch_at_time_tsc": 49.3716,
+          "delta_tsc": -2.916
+        },
+        {
+          "sample": 12,
+          "control_tsc": 51.805,
+          "branch_at_time_tsc": 49.5754,
+          "delta_tsc": -2.2296
+        },
+        {
+          "sample": 13,
+          "control_tsc": 51.8056,
+          "branch_at_time_tsc": 49.5596,
+          "delta_tsc": -2.246
+        },
+        {
+          "sample": 14,
+          "control_tsc": 51.8008,
+          "branch_at_time_tsc": 50.2818,
+          "delta_tsc": -1.519
+        },
+        {
+          "sample": 15,
+          "control_tsc": 51.802,
+          "branch_at_time_tsc": 49.4706,
+          "delta_tsc": -2.3314
+        },
+        {
+          "sample": 16,
+          "control_tsc": 51.7814,
+          "branch_at_time_tsc": 49.3552,
+          "delta_tsc": -2.4262
+        },
+        {
+          "sample": 17,
+          "control_tsc": 53.5392,
+          "branch_at_time_tsc": 49.4168,
+          "delta_tsc": -4.1224
+        },
+        {
+          "sample": 18,
+          "control_tsc": 52.4544,
+          "branch_at_time_tsc": 49.4996,
+          "delta_tsc": -2.9548
+        },
+        {
+          "sample": 19,
+          "control_tsc": 51.7982,
+          "branch_at_time_tsc": 49.4652,
+          "delta_tsc": -2.333
+        }
+      ],
+      "median_control_tsc": 51.8053,
+      "median_branch_at_time_tsc": 50.4487,
+      "median_delta_tsc": -1.8100999999999998,
+      "candidate_wins": 15,
+      "mad_delta_tsc": 1.1253000000000002
+    }
+  },
+  "decision": "stop-branch-at-a-time-producer-schedule"
+}

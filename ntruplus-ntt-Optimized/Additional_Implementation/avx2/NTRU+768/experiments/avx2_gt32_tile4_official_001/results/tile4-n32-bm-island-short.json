@@ -1,0 +1,51 @@
+{
+  "schema": "ntruplus768-gt32-n32-bm-island-short-v1",
+  "experiment": "GT-N32-BM-ISLAND-004",
+  "benchmark": {
+    "iterations": 5000,
+    "samples": 20,
+    "warmups": 2,
+    "ordering": "paired-AB-BA",
+    "placements": [
+      "normal",
+      "reversed-link-order"
+    ],
+    "serious": false
+  },
+  "scope": "BM landing only; producer and inverse are not timed",
+  "correctness": "separate 1000-trial exact and alias test passed",
+  "placements": {
+    "normal": {
+      "control_standard_R1U": {
+        "median_tsc": 399.69899999999996,
+        "mad_tsc": 1.3762000000000398
+      },
+      "candidate_half_native_R1U": {
+        "median_tsc": 399.03999999999996,
+        "mad_tsc": 1.3333999999999833
+      },
+      "paired_candidate_minus_control": {
+        "median_tsc": -0.8022,
+        "mad_tsc": 2.5894
+      },
+      "candidate_wins": 13
+    },
+    "reversed": {
+      "control_standard_R1U": {
+        "median_tsc": 396.0648,
+        "mad_tsc": 1.042599999999993
+      },
+      "candidate_half_native_R1U": {
+        "median_tsc": 395.97180000000003,
+        "mad_tsc": 1.5742000000000473
+      },
+      "paired_candidate_minus_control": {
+        "median_tsc": 0.34900000000000003,
+        "mad_tsc": 1.8804
+      },
+      "candidate_wins": 9
+    }
+  },
+  "decision": "half-native-BM-landing-cycle-parity-pass",
+  "full_island_qualified": false
+}

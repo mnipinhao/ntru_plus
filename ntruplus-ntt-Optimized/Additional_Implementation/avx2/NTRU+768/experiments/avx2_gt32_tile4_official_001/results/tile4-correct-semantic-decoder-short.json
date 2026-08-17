@@ -1,0 +1,504 @@
+{
+  "scope": "correct-semantic Decodeq layout and private decap.m1 island",
+  "mapping": "serialized slot -> Official index[192] leaf -> GT(branch,k3,k32) -> Q=brv5(k32)",
+  "unit": "TSC ticks per call",
+  "mode": "short-only",
+  "iterations_per_sample": 2000,
+  "samples": 20,
+  "metadata": [
+    "META,correctness=pass,mapping=official-index-to-gt-brv5,scope=short-only,iterations=2000,samples=20,crepmod3=included"
+  ],
+  "decoder": {
+    "official": {
+      "median": 94.084,
+      "mad": 0.3340000000000032
+    },
+    "aos": {
+      "median": 478.5315,
+      "mad": 8.739499999999992
+    },
+    "soa": {
+      "median": 171.1165,
+      "mad": 1.8850000000000051
+    },
+    "aos_vs_official": {
+      "paired_delta_median": 384.6615,
+      "paired_delta_mad": 6.7444999999999595,
+      "candidate_wins": 0,
+      "samples": 20
+    },
+    "soa_vs_official": {
+      "paired_delta_median": 77.083,
+      "paired_delta_mad": 2.179000000000009,
+      "candidate_wins": 0,
+      "samples": 20
+    },
+    "soa_vs_aos": {
+      "paired_delta_median": -307.79749999999996,
+      "paired_delta_mad": 10.601499999999959,
+      "candidate_wins": 20,
+      "samples": 20
+    }
+  },
+  "decoder3_boundary": {
+    "separate_median": 513.6775,
+    "combined_median": 511.3655,
+    "paired_delta_median": -1.7120000000000002,
+    "paired_delta_mad": 3.2095000000000002,
+    "combined_wins": 13,
+    "samples": 20,
+    "note": "Three corrected-semantic SoA decodes share mask setup, error accumulation, and the AVX/SSE transition."
+  },
+  "island": {
+    "aa": {
+      "median": 2000.8245000000002,
+      "mad": 33.35799999999995
+    },
+    "sa_f": {
+      "median": 1619.087,
+      "mad": 34.2405,
+      "paired_delta_vs_aa_median": -385.79050000000007,
+      "paired_delta_vs_aa_mad": 22.162000000000035,
+      "wins_vs_aa": 20,
+      "samples": 20
+    },
+    "sa_c": {
+      "median": 1611.9335,
+      "mad": 31.785000000000082,
+      "paired_delta_vs_aa_median": -384.3855000000001,
+      "paired_delta_vs_aa_mad": 22.832999999999856,
+      "wins_vs_aa": 20,
+      "samples": 20
+    },
+    "ss": {
+      "median": 1250.557,
+      "mad": 34.60900000000004,
+      "paired_delta_vs_aa_median": -748.1935,
+      "paired_delta_vs_aa_mad": 22.03049999999996,
+      "wins_vs_aa": 20,
+      "samples": 20
+    },
+    "ss_preserve_c": {
+      "median": 1718.4544999999998,
+      "mad": 12.97099999999989,
+      "paired_delta_vs_aa_median": -255.486,
+      "paired_delta_vs_aa_mad": 26.22199999999998,
+      "wins_vs_aa": 20,
+      "samples": 20
+    }
+  },
+  "selection": {
+    "isolated_champion": "ss",
+    "real_decap_dag_champion": "sa_f",
+    "decision": "short-pass-integrate-sa_f",
+    "note": "SS must preserve c in AoS for the later c-m edge; ss_preserve_c includes that third decode."
+  },
+  "raw": {
+    "decoder": [
+      {
+        "sample": 0,
+        "official": 94.091,
+        "aos": 475.329,
+        "soa": 169.629
+      },
+      {
+        "sample": 1,
+        "official": 93.953,
+        "aos": 478.021,
+        "soa": 170.794
+      },
+      {
+        "sample": 2,
+        "official": 93.939,
+        "aos": 465.913,
+        "soa": 171.218
+      },
+      {
+        "sample": 3,
+        "official": 98.029,
+        "aos": 522.167,
+        "soa": 180.445
+      },
+      {
+        "sample": 4,
+        "official": 97.825,
+        "aos": 490.351,
+        "soa": 178.177
+      },
+      {
+        "sample": 5,
+        "official": 97.792,
+        "aos": 554.181,
+        "soa": 176.71
+      },
+      {
+        "sample": 6,
+        "official": 98.145,
+        "aos": 476.124,
+        "soa": 178.493
+      },
+      {
+        "sample": 7,
+        "official": 93.732,
+        "aos": 471.587,
+        "soa": 176.635
+      },
+      {
+        "sample": 8,
+        "official": 94.077,
+        "aos": 472.572,
+        "soa": 170.634
+      },
+      {
+        "sample": 9,
+        "official": 93.891,
+        "aos": 497.612,
+        "soa": 169.256
+      },
+      {
+        "sample": 10,
+        "official": 93.772,
+        "aos": 470.387,
+        "soa": 171.097
+      },
+      {
+        "sample": 11,
+        "official": 94.629,
+        "aos": 480.017,
+        "soa": 169.189
+      },
+      {
+        "sample": 12,
+        "official": 95.959,
+        "aos": 526.77,
+        "soa": 176.345
+      },
+      {
+        "sample": 13,
+        "official": 98.921,
+        "aos": 487.866,
+        "soa": 169.032
+      },
+      {
+        "sample": 14,
+        "official": 93.787,
+        "aos": 479.042,
+        "soa": 170.674
+      },
+      {
+        "sample": 15,
+        "official": 93.768,
+        "aos": 477.105,
+        "soa": 171.136
+      },
+      {
+        "sample": 16,
+        "official": 93.946,
+        "aos": 472.011,
+        "soa": 170.673
+      },
+      {
+        "sample": 17,
+        "official": 102.304,
+        "aos": 491.721,
+        "soa": 169.207
+      },
+      {
+        "sample": 18,
+        "official": 93.844,
+        "aos": 467.253,
+        "soa": 174.779
+      },
+      {
+        "sample": 19,
+        "official": 106.055,
+        "aos": 508.154,
+        "soa": 172.369
+      }
+    ],
+    "decoder3": [
+      {
+        "sample": 0,
+        "separate": 508.753,
+        "combined": 511.215,
+        "delta": 2.462
+      },
+      {
+        "sample": 1,
+        "separate": 509.174,
+        "combined": 506.933,
+        "delta": -2.241
+      },
+      {
+        "sample": 2,
+        "separate": 533.997,
+        "combined": 563.085,
+        "delta": 29.088
+      },
+      {
+        "sample": 3,
+        "separate": 543.372,
+        "combined": 540.306,
+        "delta": -3.066
+      },
+      {
+        "sample": 4,
+        "separate": 541.334,
+        "combined": 530.843,
+        "delta": -10.491
+      },
+      {
+        "sample": 5,
+        "separate": 532.218,
+        "combined": 531.035,
+        "delta": -1.183
+      },
+      {
+        "sample": 6,
+        "separate": 532.636,
+        "combined": 533.751,
+        "delta": 1.115
+      },
+      {
+        "sample": 7,
+        "separate": 509.5,
+        "combined": 506.736,
+        "delta": -2.764
+      },
+      {
+        "sample": 8,
+        "separate": 519.027,
+        "combined": 509.428,
+        "delta": -9.599
+      },
+      {
+        "sample": 9,
+        "separate": 511.874,
+        "combined": 506.57,
+        "delta": -5.304
+      },
+      {
+        "sample": 10,
+        "separate": 513.16,
+        "combined": 509.449,
+        "delta": -3.711
+      },
+      {
+        "sample": 11,
+        "separate": 509.089,
+        "combined": 511.45,
+        "delta": 2.361
+      },
+      {
+        "sample": 12,
+        "separate": 512.092,
+        "combined": 512.666,
+        "delta": 0.574
+      },
+      {
+        "sample": 13,
+        "separate": 509.22,
+        "combined": 508.755,
+        "delta": -0.465
+      },
+      {
+        "sample": 14,
+        "separate": 512.121,
+        "combined": 511.281,
+        "delta": -0.84
+      },
+      {
+        "sample": 15,
+        "separate": 514.195,
+        "combined": 508.415,
+        "delta": -5.78
+      },
+      {
+        "sample": 16,
+        "separate": 511.57,
+        "combined": 508.712,
+        "delta": -2.858
+      },
+      {
+        "sample": 17,
+        "separate": 566.053,
+        "combined": 614.516,
+        "delta": 48.463
+      },
+      {
+        "sample": 18,
+        "separate": 515.993,
+        "combined": 562.63,
+        "delta": 46.637
+      },
+      {
+        "sample": 19,
+        "separate": 605.224,
+        "combined": 517.369,
+        "delta": -87.855
+      }
+    ],
+    "island": [
+      {
+        "sample": 0,
+        "aa": 1994.663,
+        "sa_f": 1594.45,
+        "sa_c": 1681.103,
+        "ss": 1268.514,
+        "ss_preserve_c": 1780.094
+      },
+      {
+        "sample": 1,
+        "aa": 2018.586,
+        "sa_f": 1679.149,
+        "sa_c": 1678.737,
+        "ss": 1276.262,
+        "ss_preserve_c": 1777.007
+      },
+      {
+        "sample": 2,
+        "aa": 2036.698,
+        "sa_f": 1674.126,
+        "sa_c": 1692.308,
+        "ss": 1303.701,
+        "ss_preserve_c": 1829.433
+      },
+      {
+        "sample": 3,
+        "aa": 2079.244,
+        "sa_f": 1678.122,
+        "sa_c": 1696.979,
+        "ss": 1303.857,
+        "ss_preserve_c": 1828.21
+      },
+      {
+        "sample": 4,
+        "aa": 2087.644,
+        "sa_f": 1669.037,
+        "sa_c": 1642.517,
+        "ss": 1282.122,
+        "ss_preserve_c": 1780.286
+      },
+      {
+        "sample": 5,
+        "aa": 2035.531,
+        "sa_f": 1651.771,
+        "sa_c": 1664.546,
+        "ss": 1309.354,
+        "ss_preserve_c": 1809.786
+      },
+      {
+        "sample": 6,
+        "aa": 2109.683,
+        "sa_f": 1647.431,
+        "sa_c": 1640.182,
+        "ss": 1264.635,
+        "ss_preserve_c": 1741.483
+      },
+      {
+        "sample": 7,
+        "aa": 1958.975,
+        "sa_f": 1594.29,
+        "sa_c": 1585.592,
+        "ss": 1219.457,
+        "ss_preserve_c": 1717.763
+      },
+      {
+        "sample": 8,
+        "aa": 1964.111,
+        "sa_f": 1579.842,
+        "sa_c": 1598.643,
+        "ss": 1224.079,
+        "ss_preserve_c": 1711.941
+      },
+      {
+        "sample": 9,
+        "aa": 1973.974,
+        "sa_f": 1594.226,
+        "sa_c": 1583.857,
+        "ss": 1267.698,
+        "ss_preserve_c": 1735.698
+      },
+      {
+        "sample": 10,
+        "aa": 1972.042,
+        "sa_f": 1571.121,
+        "sa_c": 1564.267,
+        "ss": 1212.15,
+        "ss_preserve_c": 1719.146
+      },
+      {
+        "sample": 11,
+        "aa": 2001.361,
+        "sa_f": 1640.499,
+        "sa_c": 1584.785,
+        "ss": 1214.332,
+        "ss_preserve_c": 1708.139
+      },
+      {
+        "sample": 12,
+        "aa": 1940.037,
+        "sa_f": 1582.256,
+        "sa_c": 1576.343,
+        "ss": 1212.245,
+        "ss_preserve_c": 1707.254
+      },
+      {
+        "sample": 13,
+        "aa": 1976.222,
+        "sa_f": 1635.402,
+        "sa_c": 1594.013,
+        "ss": 1212.889,
+        "ss_preserve_c": 1717.749
+      },
+      {
+        "sample": 14,
+        "aa": 1968.815,
+        "sa_f": 1581.503,
+        "sa_c": 1582.309,
+        "ss": 1215.278,
+        "ss_preserve_c": 1710.739
+      },
+      {
+        "sample": 15,
+        "aa": 2009.405,
+        "sa_f": 1606.491,
+        "sa_c": 1602.743,
+        "ss": 1216.618,
+        "ss_preserve_c": 1710.741
+      },
+      {
+        "sample": 16,
+        "aa": 1979.329,
+        "sa_f": 1579.645,
+        "sa_c": 1578.947,
+        "ss": 1236.479,
+        "ss_preserve_c": 1703.713
+      },
+      {
+        "sample": 17,
+        "aa": 2202.226,
+        "sa_f": 1608.686,
+        "sa_c": 1665.49,
+        "ss": 1235.235,
+        "ss_preserve_c": 1709.206
+      },
+      {
+        "sample": 18,
+        "aa": 2130.646,
+        "sa_f": 1629.488,
+        "sa_c": 1621.124,
+        "ss": 1307.226,
+        "ss_preserve_c": 1743.394
+      },
+      {
+        "sample": 19,
+        "aa": 2000.288,
+        "sa_f": 1654.884,
+        "sa_c": 1862.18,
+        "ss": 1345.616,
+        "ss_preserve_c": 1709.082
+      }
+    ]
+  }
+}

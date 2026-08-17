@@ -1,0 +1,87 @@
+{
+  "schema": "ntruplus768-gt32-n32-wave-schedule-short-v1",
+  "experiment": "GT-N32-PHYSICAL-SCHEDULE-005",
+  "benchmark": {
+    "iterations": 5000,
+    "samples": 20,
+    "warmups": 2,
+    "ordering": "paired-AB-BA",
+    "placements": [
+      "normal",
+      "reversed-link-order"
+    ],
+    "serious": false
+  },
+  "scope": "post-twist S1-S3 wave plus all-16-component suffix-route attribution",
+  "correctness": "separate 1000-trial exact, alias and semantic-route tests passed",
+  "placements": {
+    "normal": {
+      "wave_s1s3": {
+        "control": {
+          "median_tsc": 32.441,
+          "mad_tsc": 0.13000000000000256
+        },
+        "candidate": {
+          "median_tsc": 36.2292,
+          "mad_tsc": 0.04639999999999844
+        },
+        "paired_candidate_minus_control": {
+          "median_tsc": 3.8578,
+          "mad_tsc": 0.1372
+        },
+        "candidate_wins": 0
+      },
+      "suffix_route": {
+        "control": {
+          "median_tsc": 34.833,
+          "mad_tsc": 0.39780000000000015
+        },
+        "candidate": {
+          "median_tsc": 31.421599999999998,
+          "mad_tsc": 0.05799999999999805
+        },
+        "paired_candidate_minus_control": {
+          "median_tsc": -2.9812,
+          "mad_tsc": 0.4272
+        },
+        "candidate_wins": 20
+      },
+      "three_wave_plus_route_estimate_tsc": 8.5922
+    },
+    "reversed": {
+      "wave_s1s3": {
+        "control": {
+          "median_tsc": 32.744,
+          "mad_tsc": 0.13919999999999888
+        },
+        "candidate": {
+          "median_tsc": 36.542,
+          "mad_tsc": 0.028600000000000847
+        },
+        "paired_candidate_minus_control": {
+          "median_tsc": 3.8044000000000002,
+          "mad_tsc": 0.15459999999999985
+        },
+        "candidate_wins": 0
+      },
+      "suffix_route": {
+        "control": {
+          "median_tsc": 34.5526,
+          "mad_tsc": 0.3055999999999983
+        },
+        "candidate": {
+          "median_tsc": 31.4272,
+          "mad_tsc": 0.03200000000000003
+        },
+        "paired_candidate_minus_control": {
+          "median_tsc": -2.816,
+          "mad_tsc": 0.31940000000000035
+        },
+        "candidate_wins": 20
+      },
+      "three_wave_plus_route_estimate_tsc": 8.5972
+    }
+  },
+  "decision": "R3-wave-and-route-budget-positive-stop-isolated-producer",
+  "full_island_qualified": false
+}

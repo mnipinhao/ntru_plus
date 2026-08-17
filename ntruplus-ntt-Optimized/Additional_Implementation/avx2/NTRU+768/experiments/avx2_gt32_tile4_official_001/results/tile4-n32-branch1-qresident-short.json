@@ -1,0 +1,269 @@
+{
+  "schema": "ntruplus768-gt32-n32-branch1-qresident-short-v1",
+  "experiment": "GT-N32-BRANCH1-QRESIDENT-016",
+  "iterations": 10000,
+  "comparison": "identical three-stage/four-chain DAG; twelve q correction multiplies use memory-source q or one preloaded YMM register",
+  "placements": {
+    "normal": {
+      "binary": "build/bench_n32_branch1_qresident",
+      "samples": [
+        {
+          "sample": 0,
+          "qmem_tsc": 92.3154,
+          "qreg_tsc": 49.615,
+          "qreg_minus_qmem_tsc": -42.7004
+        },
+        {
+          "sample": 1,
+          "qmem_tsc": 49.9302,
+          "qreg_tsc": 46.9864,
+          "qreg_minus_qmem_tsc": -2.9438
+        },
+        {
+          "sample": 2,
+          "qmem_tsc": 49.9362,
+          "qreg_tsc": 46.9678,
+          "qreg_minus_qmem_tsc": -2.9684
+        },
+        {
+          "sample": 3,
+          "qmem_tsc": 49.9484,
+          "qreg_tsc": 46.9716,
+          "qreg_minus_qmem_tsc": -2.9768
+        },
+        {
+          "sample": 4,
+          "qmem_tsc": 51.969,
+          "qreg_tsc": 46.9828,
+          "qreg_minus_qmem_tsc": -4.9862
+        },
+        {
+          "sample": 5,
+          "qmem_tsc": 36.8822,
+          "qreg_tsc": 39.99,
+          "qreg_minus_qmem_tsc": 3.1078
+        },
+        {
+          "sample": 6,
+          "qmem_tsc": 36.931,
+          "qreg_tsc": 34.8124,
+          "qreg_minus_qmem_tsc": -2.1186
+        },
+        {
+          "sample": 7,
+          "qmem_tsc": 39.361,
+          "qreg_tsc": 34.8228,
+          "qreg_minus_qmem_tsc": -4.5382
+        },
+        {
+          "sample": 8,
+          "qmem_tsc": 36.8246,
+          "qreg_tsc": 34.7904,
+          "qreg_minus_qmem_tsc": -2.0342
+        },
+        {
+          "sample": 9,
+          "qmem_tsc": 31.4964,
+          "qreg_tsc": 34.756,
+          "qreg_minus_qmem_tsc": 3.2596
+        },
+        {
+          "sample": 10,
+          "qmem_tsc": 23.1556,
+          "qreg_tsc": 21.842,
+          "qreg_minus_qmem_tsc": -1.3136
+        },
+        {
+          "sample": 11,
+          "qmem_tsc": 23.1622,
+          "qreg_tsc": 21.8368,
+          "qreg_minus_qmem_tsc": -1.3254
+        },
+        {
+          "sample": 12,
+          "qmem_tsc": 23.1638,
+          "qreg_tsc": 21.8394,
+          "qreg_minus_qmem_tsc": -1.3244
+        },
+        {
+          "sample": 13,
+          "qmem_tsc": 23.211,
+          "qreg_tsc": 22.7706,
+          "qreg_minus_qmem_tsc": -0.4404
+        },
+        {
+          "sample": 14,
+          "qmem_tsc": 23.2068,
+          "qreg_tsc": 21.8254,
+          "qreg_minus_qmem_tsc": -1.3814
+        },
+        {
+          "sample": 15,
+          "qmem_tsc": 23.1506,
+          "qreg_tsc": 21.808,
+          "qreg_minus_qmem_tsc": -1.3426
+        },
+        {
+          "sample": 16,
+          "qmem_tsc": 23.1612,
+          "qreg_tsc": 21.8158,
+          "qreg_minus_qmem_tsc": -1.3454
+        },
+        {
+          "sample": 17,
+          "qmem_tsc": 22.0044,
+          "qreg_tsc": 21.8228,
+          "qreg_minus_qmem_tsc": -0.1816
+        },
+        {
+          "sample": 18,
+          "qmem_tsc": 20.7314,
+          "qreg_tsc": 19.529,
+          "qreg_minus_qmem_tsc": -1.2024
+        },
+        {
+          "sample": 19,
+          "qmem_tsc": 21.8184,
+          "qreg_tsc": 19.5562,
+          "qreg_minus_qmem_tsc": -2.2622
+        }
+      ],
+      "median_qmem_tsc": 27.3537,
+      "median_qreg_tsc": 28.7633,
+      "median_qreg_minus_qmem_tsc": -1.3634,
+      "qreg_wins": 18,
+      "mad_delta_tsc": 0.9109
+    },
+    "reversed": {
+      "binary": "build/bench_n32_branch1_qresident_reversed",
+      "samples": [
+        {
+          "sample": 0,
+          "qmem_tsc": 20.8592,
+          "qreg_tsc": 19.6738,
+          "qreg_minus_qmem_tsc": -1.1854
+        },
+        {
+          "sample": 1,
+          "qmem_tsc": 20.7914,
+          "qreg_tsc": 20.4542,
+          "qreg_minus_qmem_tsc": -0.3372
+        },
+        {
+          "sample": 2,
+          "qmem_tsc": 20.8162,
+          "qreg_tsc": 19.5938,
+          "qreg_minus_qmem_tsc": -1.2224
+        },
+        {
+          "sample": 3,
+          "qmem_tsc": 20.8044,
+          "qreg_tsc": 21.263,
+          "qreg_minus_qmem_tsc": 0.4586
+        },
+        {
+          "sample": 4,
+          "qmem_tsc": 20.796,
+          "qreg_tsc": 19.6006,
+          "qreg_minus_qmem_tsc": -1.1954
+        },
+        {
+          "sample": 5,
+          "qmem_tsc": 20.786,
+          "qreg_tsc": 19.5726,
+          "qreg_minus_qmem_tsc": -1.2134
+        },
+        {
+          "sample": 6,
+          "qmem_tsc": 21.013,
+          "qreg_tsc": 19.5908,
+          "qreg_minus_qmem_tsc": -1.4222
+        },
+        {
+          "sample": 7,
+          "qmem_tsc": 20.873,
+          "qreg_tsc": 19.5762,
+          "qreg_minus_qmem_tsc": -1.2968
+        },
+        {
+          "sample": 8,
+          "qmem_tsc": 20.862,
+          "qreg_tsc": 19.6024,
+          "qreg_minus_qmem_tsc": -1.2596
+        },
+        {
+          "sample": 9,
+          "qmem_tsc": 20.824,
+          "qreg_tsc": 19.5926,
+          "qreg_minus_qmem_tsc": -1.2314
+        },
+        {
+          "sample": 10,
+          "qmem_tsc": 21.7556,
+          "qreg_tsc": 19.6074,
+          "qreg_minus_qmem_tsc": -2.1482
+        },
+        {
+          "sample": 11,
+          "qmem_tsc": 20.8786,
+          "qreg_tsc": 19.6072,
+          "qreg_minus_qmem_tsc": -1.2714
+        },
+        {
+          "sample": 12,
+          "qmem_tsc": 20.8006,
+          "qreg_tsc": 19.5776,
+          "qreg_minus_qmem_tsc": -1.223
+        },
+        {
+          "sample": 13,
+          "qmem_tsc": 20.8206,
+          "qreg_tsc": 19.5922,
+          "qreg_minus_qmem_tsc": -1.2284
+        },
+        {
+          "sample": 14,
+          "qmem_tsc": 20.77,
+          "qreg_tsc": 19.5856,
+          "qreg_minus_qmem_tsc": -1.1844
+        },
+        {
+          "sample": 15,
+          "qmem_tsc": 20.8922,
+          "qreg_tsc": 19.6066,
+          "qreg_minus_qmem_tsc": -1.2856
+        },
+        {
+          "sample": 16,
+          "qmem_tsc": 20.8196,
+          "qreg_tsc": 19.6006,
+          "qreg_minus_qmem_tsc": -1.219
+        },
+        {
+          "sample": 17,
+          "qmem_tsc": 21.1732,
+          "qreg_tsc": 19.5876,
+          "qreg_minus_qmem_tsc": -1.5856
+        },
+        {
+          "sample": 18,
+          "qmem_tsc": 20.79,
+          "qreg_tsc": 19.5772,
+          "qreg_minus_qmem_tsc": -1.2128
+        },
+        {
+          "sample": 19,
+          "qmem_tsc": 20.8748,
+          "qreg_tsc": 19.583,
+          "qreg_minus_qmem_tsc": -1.2918
+        }
+      ],
+      "median_qmem_tsc": 20.8223,
+      "median_qreg_tsc": 19.593200000000003,
+      "median_qreg_minus_qmem_tsc": -1.2257,
+      "qreg_wins": 19,
+      "mad_delta_tsc": 0.04080000000000006
+    }
+  },
+  "decision": "stop-branch1-q-register-residency"
+}

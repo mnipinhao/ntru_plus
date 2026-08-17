@@ -1,0 +1,635 @@
+{
+  "schema": "ntruplus768-gt32-global-physical-whole-short-v1",
+  "experiment": "GT32-GLOBAL-PHYSICAL-001",
+  "scope": "coefficient-input 2F+B3+inverse-core+T9 coefficient-output; whole-only",
+  "control": "frontend + production private-SoA Forward x2 + B3-to-AoS + I1 AoS + T9",
+  "candidate": "same frontend + global Forward-to-M x2 + same B3-to-M + global inverse M-to-AoS + T9",
+  "comparison": "current-gt",
+  "benchmark": {
+    "iterations": 100000,
+    "samples_per_launch": 20,
+    "launches": 4,
+    "ordering": "paired AB/BA",
+    "placements": [
+      "normal",
+      "reversed-link-order"
+    ],
+    "primary": "region-scoped core cycles when perf_event is available",
+    "secondary": "TSC",
+    "hierarchical_gate": "all launch medians negative, aggregate paired wins >=90%, placement median saving >=20 TSC"
+  },
+  "correctness": "1000-trial exact Forward/inverse/core-whole and alias pass; each benchmark launch checks exact coefficient output",
+  "placements": {
+    "normal": {
+      "binary": "build/bench_global_physical",
+      "launches": [
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -68.00918,
+              "mad": 11.248279999999994
+            },
+            "core_cycles": {
+              "median": -101.082175,
+              "mad": 14.167474999999996
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -66.33315,
+              "mad": 9.618960000000005
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1609.7918599999998,
+              "mad": 12.070910000000026
+            },
+            "core_cycles": {
+              "median": 2559.842,
+              "mad": 15.096429999999827
+            },
+            "instructions": {
+              "median": 7276.50108,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1605.8339700000001,
+              "mad": 12.122759999999857
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1542.0862499999998,
+              "mad": 5.528609999999844
+            },
+            "core_cycles": {
+              "median": 2463.1128200000003,
+              "mad": 7.370450000000119
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1540.24767,
+              "mad": 5.647589999999923
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -54.04038,
+              "mad": 12.39855
+            },
+            "core_cycles": {
+              "median": -87.31386499999999,
+              "mad": 21.869160000000008
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -54.59649,
+              "mad": 13.675739999999998
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1601.61058,
+              "mad": 12.669859999999971
+            },
+            "core_cycles": {
+              "median": 2558.900975,
+              "mad": 21.317344999999932
+            },
+            "instructions": {
+              "median": 7276.501075,
+              "mad": 4.999999873689376e-06
+            },
+            "ref_cycles": {
+              "median": 1599.96018,
+              "mad": 13.329029999999989
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1541.5834,
+              "mad": 7.188449999999989
+            },
+            "core_cycles": {
+              "median": 2462.038195,
+              "mad": 11.389355000000023
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1539.40878,
+              "mad": 7.118669999999952
+            }
+          },
+          "candidate_wins_tsc": 19,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -48.09885,
+              "mad": 21.71208
+            },
+            "core_cycles": {
+              "median": -74.87731,
+              "mad": 33.048185000000004
+            },
+            "instructions": {
+              "median": -511.00001499999996,
+              "mad": 1.0000000003174137e-05
+            },
+            "ref_cycles": {
+              "median": -46.81989,
+              "mad": 20.66259
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1592.95227,
+              "mad": 6.240090000000009
+            },
+            "core_cycles": {
+              "median": 2538.1423349999995,
+              "mad": 3.501759999999649
+            },
+            "instructions": {
+              "median": 7276.50108,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1586.97981,
+              "mad": 2.191020000000094
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1551.88463,
+              "mad": 15.517859999999928
+            },
+            "core_cycles": {
+              "median": 2479.44832,
+              "mad": 24.873190000000022
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1550.28081,
+              "mad": 15.551249999999982
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -55.573,
+              "mad": 7.103450000000002
+            },
+            "core_cycles": {
+              "median": -94.159935,
+              "mad": 13.217680000000001
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 4.9999999873762135e-06
+            },
+            "ref_cycles": {
+              "median": -58.87089,
+              "mad": 8.265660000000004
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1592.54531,
+              "mad": 5.634200000000078
+            },
+            "core_cycles": {
+              "median": 2544.429145,
+              "mad": 9.229045000000042
+            },
+            "instructions": {
+              "median": 7276.50107,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1590.90633,
+              "mad": 5.770050000000083
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1535.6291,
+              "mad": 2.6555400000000873
+            },
+            "core_cycles": {
+              "median": 2451.6248299999997,
+              "mad": 2.495659999999816
+            },
+            "instructions": {
+              "median": 6765.50105,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1532.8833,
+              "mad": 1.5572700000000168
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        }
+      ],
+      "launch_median_summary": {
+        "tsc": {
+          "median": -54.80669,
+          "mad": 3.7370750000000044
+        },
+        "core_cycles": {
+          "median": -90.73689999999999,
+          "mad": 6.884155000000014
+        },
+        "instructions": {
+          "median": -511.00002,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": -56.73369,
+          "mad": 5.86833
+        }
+      },
+      "control_launch_median_summary": {
+        "tsc": {
+          "median": 1597.2814250000001,
+          "mad": 4.532635000000141
+        },
+        "core_cycles": {
+          "median": 2551.6650600000003,
+          "mad": 7.706427500000018
+        },
+        "instructions": {
+          "median": 7276.5010775,
+          "mad": 2.499999936844688e-06
+        },
+        "ref_cycles": {
+          "median": 1595.433255,
+          "mad": 6.490184999999997
+        }
+      },
+      "candidate_launch_median_summary": {
+        "tsc": {
+          "median": 1541.834825,
+          "mad": 3.2285749999998643
+        },
+        "core_cycles": {
+          "median": 2462.5755075,
+          "mad": 5.743995000000268
+        },
+        "instructions": {
+          "median": 6765.50106,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": 1539.828225,
+          "mad": 3.682185000000004
+        }
+      },
+      "negative_launch_medians": {
+        "tsc": 4,
+        "core_cycles": 4,
+        "instructions": 4,
+        "ref_cycles": 4
+      },
+      "aggregate_candidate_wins_tsc": 79,
+      "aggregate_candidate_wins_core_cycles": 80,
+      "total_paired_samples": 80,
+      "all_launches_at_least_18_of_20_tsc_wins": true
+    },
+    "reversed": {
+      "binary": "build/bench_global_physical_reversed",
+      "launches": [
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -47.790859999999995,
+              "mad": 17.92559
+            },
+            "core_cycles": {
+              "median": -64.215755,
+              "mad": 27.81599
+            },
+            "instructions": {
+              "median": -511.00001499999996,
+              "mad": 5.000000044219632e-06
+            },
+            "ref_cycles": {
+              "median": -41.9952,
+              "mad": 17.333550000000002
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1594.70031,
+              "mad": 7.5092899999999645
+            },
+            "core_cycles": {
+              "median": 2545.40143,
+              "mad": 7.9704699999999775
+            },
+            "instructions": {
+              "median": 7276.50107,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1592.39964,
+              "mad": 6.275100000000066
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1558.6730699999998,
+              "mad": 18.71921999999995
+            },
+            "core_cycles": {
+              "median": 2487.686295,
+              "mad": 26.733009999999922
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1557.07149,
+              "mad": 16.779359999999997
+            }
+          },
+          "candidate_wins_tsc": 18,
+          "candidate_wins_core_cycles": 19
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -54.65598,
+              "mad": 9.800670000000004
+            },
+            "core_cycles": {
+              "median": -86.53036,
+              "mad": 15.576170000000005
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -54.1047,
+              "mad": 9.734789999999997
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1593.05513,
+              "mad": 5.6546800000000985
+            },
+            "core_cycles": {
+              "median": 2544.005975,
+              "mad": 8.083564999999908
+            },
+            "instructions": {
+              "median": 7276.50107,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1590.6454199999998,
+              "mad": 5.056739999999763
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1536.05827,
+              "mad": 2.6236299999999346
+            },
+            "core_cycles": {
+              "median": 2454.034975,
+              "mad": 3.5038600000000315
+            },
+            "instructions": {
+              "median": 6765.50106,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1534.39221,
+              "mad": 2.1929699999999457
+            }
+          },
+          "candidate_wins_tsc": 20,
+          "candidate_wins_core_cycles": 20
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -53.90053,
+              "mad": 8.939799999999998
+            },
+            "core_cycles": {
+              "median": -86.23524,
+              "mad": 13.732664999999997
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 9.999999974752427e-06
+            },
+            "ref_cycles": {
+              "median": -53.91945,
+              "mad": 8.80386
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1598.85077,
+              "mad": 9.691829999999982
+            },
+            "core_cycles": {
+              "median": 2554.550595,
+              "mad": 15.199585000000297
+            },
+            "instructions": {
+              "median": 7276.50108,
+              "mad": 9.999999747378752e-06
+            },
+            "ref_cycles": {
+              "median": 1597.23954,
+              "mad": 9.57567000000006
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1539.29369,
+              "mad": 1.844109999999887
+            },
+            "core_cycles": {
+              "median": 2458.322085,
+              "mad": 2.9242799999999534
+            },
+            "instructions": {
+              "median": 6765.50105,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1537.06878,
+              "mad": 1.7074199999999564
+            }
+          },
+          "candidate_wins_tsc": 19,
+          "candidate_wins_core_cycles": 19
+        },
+        {
+          "pmu": "core",
+          "metrics": {
+            "tsc": {
+              "median": -53.85847,
+              "mad": 4.074580000000001
+            },
+            "core_cycles": {
+              "median": -86.599785,
+              "mad": 7.027740000000001
+            },
+            "instructions": {
+              "median": -511.00002,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": -54.1437,
+              "mad": 4.466279999999998
+            }
+          },
+          "control_metrics": {
+            "tsc": {
+              "median": 1589.91029,
+              "mad": 2.125729999999976
+            },
+            "core_cycles": {
+              "median": 2540.059195,
+              "mad": 3.1358000000000175
+            },
+            "instructions": {
+              "median": 7276.50107,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1588.17711,
+              "mad": 1.9566300000000183
+            }
+          },
+          "candidate_metrics": {
+            "tsc": {
+              "median": 1535.54122,
+              "mad": 2.1972500000000537
+            },
+            "core_cycles": {
+              "median": 2453.162765,
+              "mad": 3.453149999999823
+            },
+            "instructions": {
+              "median": 6765.50105,
+              "mad": 0.0
+            },
+            "ref_cycles": {
+              "median": 1533.84582,
+              "mad": 2.378219999999942
+            }
+          },
+          "candidate_wins_tsc": 19,
+          "candidate_wins_core_cycles": 20
+        }
+      ],
+      "launch_median_summary": {
+        "tsc": {
+          "median": -53.8795,
+          "mad": 0.3987550000000013
+        },
+        "core_cycles": {
+          "median": -86.3828,
+          "mad": 0.18227249999999628
+        },
+        "instructions": {
+          "median": -511.00002,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": -54.012074999999996,
+          "mad": 0.11212500000000603
+        }
+      },
+      "control_launch_median_summary": {
+        "tsc": {
+          "median": 1593.87772,
+          "mad": 2.3950099999999566
+        },
+        "core_cycles": {
+          "median": 2544.7037025,
+          "mad": 2.6711175000000367
+        },
+        "instructions": {
+          "median": 7276.50107,
+          "mad": 0.0
+        },
+        "ref_cycles": {
+          "median": 1591.52253,
+          "mad": 2.111265000000003
+        }
+      },
+      "candidate_launch_median_summary": {
+        "tsc": {
+          "median": 1537.67598,
+          "mad": 1.8762349999999515
+        },
+        "core_cycles": {
+          "median": 2456.17853,
+          "mad": 2.5796600000001035
+        },
+        "instructions": {
+          "median": 6765.501055,
+          "mad": 4.999999873689376e-06
+        },
+        "ref_cycles": {
+          "median": 1535.730495,
+          "mad": 1.6114800000000287
+        }
+      },
+      "negative_launch_medians": {
+        "tsc": 4,
+        "core_cycles": 4,
+        "instructions": 4,
+        "ref_cycles": 4
+      },
+      "aggregate_candidate_wins_tsc": 76,
+      "aggregate_candidate_wins_core_cycles": 78,
+      "total_paired_samples": 80,
+      "all_launches_at_least_18_of_20_tsc_wins": true
+    }
+  },
+  "decision": "serious-qualified-private-caller-integration"
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "ntruplus768-gt32-encap-full-serious-v1",
+  "iterations_per_sample": 100000,
+  "samples_per_placement": 20,
+  "correctness": "byte-exact",
+  "placements": {
+    "normal": {
+      "binary": "build/bench_keygen_encap_attribution",
+      "official_median_tsc": 17534.199950000002,
+      "gt_median_tsc": 17884.05845,
+      "paired_delta_median_tsc": 275.20605,
+      "paired_delta_mad_tsc": 261.15957000000003,
+      "gt_wins": 4,
+      "samples": 20,
+      "deltas": [
+        23.53342,
+        236.29272,
+        -98.40072,
+        768.92238,
+        850.51386,
+        384.13098,
+        366.0077,
+        543.63098,
+        314.11938,
+        747.49264,
+        -130.35882,
+        51.85958,
+        21.31184,
+        207.37308,
+        99.36026,
+        731.12696,
+        -445.57926,
+        422.5731,
+        845.16954,
+        -110.1294
+      ]
+    },
+    "reversed": {
+      "binary": "build/bench_keygen_encap_attribution_reversed",
+      "official_median_tsc": 17482.59446,
+      "gt_median_tsc": 17630.87225,
+      "paired_delta_median_tsc": 157.30342000000002,
+      "paired_delta_mad_tsc": 87.63506000000001,
+      "gt_wins": 3,
+      "samples": 20,
+      "deltas": [
+        243.5704,
+        159.4435,
+        11.73886,
+        213.54936,
+        239.21208,
+        300.1515,
+        -393.20988,
+        185.79142,
+        68.30028,
+        191.65202,
+        -205.79322,
+        391.36002,
+        155.16334,
+        -128.71632,
+        471.08244,
+        78.68134,
+        18.8653,
+        75.152,
+        166.02712,
+        62.08076
+      ]
+    }
+  },
+  "decision": "not-promoted"
+}

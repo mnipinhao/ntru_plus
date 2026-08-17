@@ -1,0 +1,78 @@
+{
+  "experiment": "GT32-SUPERCOP-GLOBAL-INVERSE-OFFICIAL-20260812",
+  "date": "2026-08-12",
+  "host": {
+    "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+    "cpu": "Intel(R) Core(TM) Ultra 7 155H",
+    "bench_cpu": 1,
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": 4500000000
+  },
+  "method": {
+    "root": "/home/nuc/supercop-20260627",
+    "metric": "single-operation adjacent cpucycles differences",
+    "samples_per_measure_loop": 32,
+    "measure_loops_per_run": 3,
+    "interleaved_runs_per_implementation": 2,
+    "single_operation_samples_per_implementation": 192,
+    "estimator": "SUPERcop stabilized quartiles (stq_longlong); Q2 is primary",
+    "run_order": [
+      "GT32-global-inverse",
+      "Official-avx2",
+      "GT32-global-inverse",
+      "Official-avx2"
+    ],
+    "correctness": "SUPERcop try passed in every successful run",
+    "compiler_selection": {
+      "GT32-global-inverse": "gcc -march=native -mtune=native -O3 -fwrapv -fPIC -fPIE",
+      "Official-avx2": "gcc -march=native -mtune=native -O2 -fwrapv -fPIC -fPIE",
+      "note": "These are the per-implementation choices selected by the SUPERcop compile/measure flow, not a forced equal-flag comparison."
+    }
+  },
+  "implementations": {
+    "candidate": "/home/nuc/supercop-20260627/crypto_kem/ntruplus768/avx2-gt-global-inverse",
+    "official": "/home/nuc/supercop-20260627/crypto_kem/ntruplus768/avx2",
+    "export_script": "tools/export_supercop_global_inverse.sh",
+    "candidate_contract": {
+      "keypair": "progressive-P SoA BaseInv/BM plus D2 half-native Q24",
+      "enc": "typed private-SoA general B3 plus high-range Q24 pack",
+      "dec": "Q24 decode plus global M-native inverse candidate"
+    }
+  },
+  "runs": [
+    "/home/nuc/supercop-20260627/results/ntruplus768-avx2-gt-global-inverse-20260812-142208",
+    "/home/nuc/supercop-20260627/results/ntruplus768-avx2-20260812-142235",
+    "/home/nuc/supercop-20260627/results/ntruplus768-avx2-gt-global-inverse-20260812-142310",
+    "/home/nuc/supercop-20260627/results/ntruplus768-avx2-20260812-142336"
+  ],
+  "quartiles_cycles": {
+    "keypair": {
+      "GT32": {"Q1": 21489.833, "Q2": 21607.292, "Q3": 21753.146},
+      "Official": {"Q1": 21379.604, "Q2": 21528.375, "Q3": 21685.354},
+      "GT_minus_Official_Q2": 78.917,
+      "GT_percent": 0.366572,
+      "decision": "Official wins"
+    },
+    "enc": {
+      "GT32": {"Q1": 27921.167, "Q2": 28025.688, "Q3": 28408.750},
+      "Official": {"Q1": 27986.812, "Q2": 28151.708, "Q3": 28544.250},
+      "GT_minus_Official_Q2": -126.020,
+      "GT_percent": -0.447646,
+      "decision": "GT32 wins"
+    },
+    "dec": {
+      "GT32": {"Q1": 19303.562, "Q2": 19419.542, "Q3": 19523.188},
+      "Official": {"Q1": 19302.938, "Q2": 19459.229, "Q3": 19569.062},
+      "GT_minus_Official_Q2": -39.687,
+      "GT_percent": -0.203949,
+      "decision": "GT32 wins"
+    }
+  },
+  "interpretation": {
+    "formal_result": "Encapsulation and decapsulation are small GT32 wins under the requested SUPERcop method; key generation remains a small loss.",
+    "encapsulation": "The two N5 Forward calls and general B3 saving exceed the remaining decode, r-hat serialization, ciphertext serialization, and glue debts. Older phase attribution remains diagnostic only because it used a different binary and harness.",
+    "decapsulation": "The global M-native inverse removes enough first-product edge work for Q24 and recovered-r boundary savings to exceed the remaining GT-unpack and critical-path debt. The formal margin is only about 40 cycles.",
+    "keypair": "The progressive-P candidate retires less arithmetic/serialization work in earlier PMU studies but uses more loads; BaseInv-to-consumer delivery, the second multiplication, and key serialization return the Forward saving. The direct AoS J1/R1-U route is not selected because it was substantially slower in its native gate.",
+    "promotion_warning": "The margins are below 0.5%. Treat this as a formal same-host SUPERcop result, not a portable claim across CPUs, toolchains, or code placement."
+  }
+}

@@ -1,0 +1,88 @@
+schema: ntruplus768-gt32-tile4-kem-caller-contracts-v1
+public_selector: official
+candidate_symbols:
+  keypair: pending
+  encap: pending
+  decap: crypto_kem_dec_gt32_candidate
+
+decap:
+  status: byte-exact-correctness-pass-performance-pending
+  semantic_boundary:
+    wire_order: Official-index-192-leaf-order
+    official_internal_unpack: coefficient-transposed-pack-S-layout
+    tile4_order: "tile=2*k3+branch; physical-Q=bitreverse5(logical-k32)"
+    scale: R^0-to-R^0
+    decoder: correctness-first-fixed-control-explicit-lane-redeposit
+    optimized_shuffle_network: pending
+  edges:
+    - id: decap.decode_c
+      producer: ciphertext-bytes
+      consumer: decap.basemul_cf
+      layout: TILE4-AoS
+      r_exponent: 0
+      range: canonical-12-bit-or-malformed-value
+      wire_boundary: input
+      rejection: early-clear-shared-secret-on-noncanonical
+    - id: decap.decode_f
+      producer: secret-key-bytes
+      consumer: decap.basemul_cf
+      layout: TILE4-AoS
+      r_exponent: 0
+      range: canonical-12-bit
+      secret: true
+    - id: decap.basemul_cf
+      producer: gt32_tile4_basemul_c3center_late_aos_private_asm
+      consumer: decap.inverse_cf
+      layout: TILE4-AoS
+      r_exponent: -1
+      private: true
+    - id: decap.inverse_cf
+      producer: I1-plus-T9
+      consumer: crepmod3
+      layout: coefficient-order
+      r_exponent: 0
+      private: true
+    - id: decap.ntt_m
+      producer: small-input-N5
+      consumer: decap.sub_cm
+      layout: TILE4-AoS
+      r_exponent: 0
+      range: ternary-input-forward-bound
+    - id: decap.sub_cm
+      producer: pointwise-poly_sub
+      consumer: decap.basemul_r
+      layout: TILE4-AoS
+      r_exponent: 0
+    - id: decap.basemul_r
+      producer: gt32_tile4_basemul_general_b2_asm
+      consumer: decap.encode_r
+      layout: TILE4-AoS
+      r_exponent: 0
+      private: false
+    - id: decap.encode_r
+      producer: gt32_tile4_tobytes_candidate
+      consumer: hash_g-and-reencryption-compare
+      layout: specification-serialized-order
+      r_exponent: 0
+      wire_boundary: internal-byte-exact
+
+pending_operations:
+  keypair:
+    blocker: TILE4-baseinv-and-general-serialization-caller-integration
+  encap:
+    blocker: Encodeq-rhat-boundary-requires-general-byte-exact-contract
+
+verification:
+  serialized_ntt_boundary_cases: 4
+  deterministic_valid_decap_rounds: 8
+  malformed_cases_per_round: 7
+  malformed_classes:
+    - noncanonical-ciphertext
+    - noncanonical-secret-f
+    - noncanonical-secret-hinv
+    - four-ciphertext-bitflips
+  official_differential: return-code-and-shared-secret-byte-exact
+  stage_differential: message-coefficients-and-recovered-r-bytes-exact
+  existing_tile4_regression_trials: 1000
+  sanitizer: existing-C-reference-and-assembly-guard-suite-pass
+  serious_benchmark_run: false

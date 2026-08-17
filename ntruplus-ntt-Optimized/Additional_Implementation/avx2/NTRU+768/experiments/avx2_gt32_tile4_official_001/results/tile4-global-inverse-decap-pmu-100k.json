@@ -1,0 +1,45 @@
+{
+  "schema": "ntruplus768-gt32-global-inverse-decap-pmu-v1",
+  "experiment": "GT32-GLOBAL-PHYSICAL-KEM-DECAP-001",
+  "iterations_per_sample": 100000,
+  "samples_per_placement": 20,
+  "control": "production Q24 decap with B3 SoA-to-AoS plus I1",
+  "candidate": "Q24 decap with B3 SoA-to-M plus global M-to-AoS inverse",
+  "placements": {
+    "normal": {
+      "cpu_core_cycles_per_call": {
+        "control": 19708.557072,
+        "candidate": 19531.563369,
+        "delta": -176.993703
+      },
+      "reference_cycles_per_call": {
+        "control": 12396.624591,
+        "candidate": 12218.691420,
+        "delta": -177.933171
+      },
+      "instructions_per_call": {
+        "control": 48553.005148,
+        "candidate": 48292.004867,
+        "delta": -261.000281
+      }
+    },
+    "reversed": {
+      "cpu_core_cycles_per_call": {
+        "control": 19364.390885,
+        "candidate": 19314.945916,
+        "delta": -49.444970
+      },
+      "reference_cycles_per_call": {
+        "control": 12201.874854,
+        "candidate": 12237.714177,
+        "delta": 35.839323
+      },
+      "instructions_per_call": {
+        "control": 48553.005077,
+        "candidate": 48292.004866,
+        "delta": -261.000211
+      }
+    }
+  },
+  "decision": "global-inverse-edge-qualified-but-full-decap-not-official-promoted"
+}

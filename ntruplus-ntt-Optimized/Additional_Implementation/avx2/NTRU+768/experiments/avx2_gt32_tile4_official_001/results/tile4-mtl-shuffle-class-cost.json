@@ -1,0 +1,2463 @@
+{
+  "experiment": "MTL-SHUFFLE-CLASS-COST-001",
+  "methodology": {
+    "launches": 8,
+    "iterations": 100000,
+    "repeats_per_launch": 11,
+    "cpu": 1,
+    "primary": "PERF_COUNT_HW_CPU_CYCLES",
+    "secondary": "TSC"
+  },
+  "placements": {
+    "normal": {
+      "launches": [
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.985574531,
+              "tsc_per_op": 1.855435938,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.853048438
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484463281,
+              "tsc_per_op": 0.915369688,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.914440313
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984424688,
+              "tsc_per_op": 0.602706562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.601806562
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984422187,
+              "tsc_per_op": 0.602291563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.601794375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418438,
+              "tsc_per_op": 0.602268438,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.601794375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484830469,
+              "tsc_per_op": 0.289863437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.28942875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484419375,
+              "tsc_per_op": 0.289611562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289172812
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484415312,
+              "tsc_per_op": 0.289983437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289172812
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984416562,
+              "tsc_per_op": 0.60223625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.601794375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484845156,
+              "tsc_per_op": 0.289874375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289440937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.289610313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289172812
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484455937,
+              "tsc_per_op": 0.289773125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289197188
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984416875,
+              "tsc_per_op": 0.6022375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.601782188
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.4848525,
+              "tsc_per_op": 0.290779375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.28942875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.289725625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289160625
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.289885312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.289160625
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984548281,
+              "tsc_per_op": 1.868528125,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866089062
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484487031,
+              "tsc_per_op": 0.929514687,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928175625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984419062,
+              "tsc_per_op": 0.615912812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615493125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984417656,
+              "tsc_per_op": 0.615919688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.98442125,
+              "tsc_per_op": 0.6159975,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484841406,
+              "tsc_per_op": 0.303550312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.303295313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414687,
+              "tsc_per_op": 0.303295625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984459375,
+              "tsc_per_op": 0.61632,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484831562,
+              "tsc_per_op": 0.30355625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484416562,
+              "tsc_per_op": 0.3032875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.30329625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459844,
+              "tsc_per_op": 0.6163575,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.48484375,
+              "tsc_per_op": 0.30355375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484419062,
+              "tsc_per_op": 0.303279688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484493594,
+              "tsc_per_op": 0.303328437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302920313
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.9855275,
+              "tsc_per_op": 1.86881375,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866710625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484469219,
+              "tsc_per_op": 0.929709375,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928175625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984464375,
+              "tsc_per_op": 0.6180475,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.617625938
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984460156,
+              "tsc_per_op": 0.616369375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.98441875,
+              "tsc_per_op": 0.615925938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484846563,
+              "tsc_per_op": 0.303565,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484443594,
+              "tsc_per_op": 0.303495625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484415312,
+              "tsc_per_op": 0.303291875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984420312,
+              "tsc_per_op": 0.615929687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484854375,
+              "tsc_per_op": 0.303556875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484415156,
+              "tsc_per_op": 0.303501562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484415156,
+              "tsc_per_op": 0.303372812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984418906,
+              "tsc_per_op": 0.616102188,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484846563,
+              "tsc_per_op": 0.303558125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484419062,
+              "tsc_per_op": 0.303288125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.48441875,
+              "tsc_per_op": 0.303542812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984551875,
+              "tsc_per_op": 1.868355313,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484459063,
+              "tsc_per_op": 0.929033125,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984458906,
+              "tsc_per_op": 0.6163825,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984414844,
+              "tsc_per_op": 0.615934688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984419687,
+              "tsc_per_op": 0.615949375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615493125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484838906,
+              "tsc_per_op": 0.30357,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484418594,
+              "tsc_per_op": 0.303281875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303416562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984464219,
+              "tsc_per_op": 0.616381562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484835313,
+              "tsc_per_op": 0.303583437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414687,
+              "tsc_per_op": 0.303301875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414844,
+              "tsc_per_op": 0.30329875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459375,
+              "tsc_per_op": 0.616384687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484837187,
+              "tsc_per_op": 0.303539063,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.30330125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.303305312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984551406,
+              "tsc_per_op": 1.868540937,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866089062
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.48484625,
+              "tsc_per_op": 0.930058125,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928419375
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.98479875,
+              "tsc_per_op": 0.616521563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615736875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984459688,
+              "tsc_per_op": 0.616273125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418281,
+              "tsc_per_op": 0.616694375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484859688,
+              "tsc_per_op": 0.303635938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484422813,
+              "tsc_per_op": 0.303438125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.30328625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984418594,
+              "tsc_per_op": 0.615965937,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484839375,
+              "tsc_per_op": 0.303546875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.303288125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303267813,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.9844175,
+              "tsc_per_op": 0.616039688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484845625,
+              "tsc_per_op": 0.303564375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484415,
+              "tsc_per_op": 0.303289062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484414844,
+              "tsc_per_op": 0.303270625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.98456125,
+              "tsc_per_op": 1.868535625,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.48446625,
+              "tsc_per_op": 0.929581875,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984426406,
+              "tsc_per_op": 0.616076875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984465313,
+              "tsc_per_op": 0.616320938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984420469,
+              "tsc_per_op": 0.616164375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484853906,
+              "tsc_per_op": 0.303559062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484433594,
+              "tsc_per_op": 0.303382812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484426562,
+              "tsc_per_op": 0.303317187,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.985390312,
+              "tsc_per_op": 0.6165325,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.616090313
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484845937,
+              "tsc_per_op": 0.303658437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484531875,
+              "tsc_per_op": 0.303649687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484444375,
+              "tsc_per_op": 0.303505313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984418125,
+              "tsc_per_op": 0.615942813,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484851875,
+              "tsc_per_op": 0.303585625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484415469,
+              "tsc_per_op": 0.303284375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484415625,
+              "tsc_per_op": 0.303285625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984550781,
+              "tsc_per_op": 1.8685075,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866113437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484461719,
+              "tsc_per_op": 0.929005938,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928175625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.98445875,
+              "tsc_per_op": 0.616054688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984414844,
+              "tsc_per_op": 0.615910312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418594,
+              "tsc_per_op": 0.615926562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484834531,
+              "tsc_per_op": 0.30353875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484421406,
+              "tsc_per_op": 0.3036425,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303275937,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984417187,
+              "tsc_per_op": 0.615905938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484854531,
+              "tsc_per_op": 0.303615625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.485344687,
+              "tsc_per_op": 0.303531875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30346875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303281875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459375,
+              "tsc_per_op": 0.616303438,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484852969,
+              "tsc_per_op": 0.303545625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.30338125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484430781,
+              "tsc_per_op": 0.303429375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984505781,
+              "tsc_per_op": 1.86833125,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.8660525
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.48441375,
+              "tsc_per_op": 0.92894375,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928126875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984373906,
+              "tsc_per_op": 0.61586375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.61546875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984369375,
+              "tsc_per_op": 0.615986875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615456563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984371875,
+              "tsc_per_op": 0.6158675,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.61546875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484799844,
+              "tsc_per_op": 0.303507812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303103125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484369531,
+              "tsc_per_op": 0.303223438,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302822812
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484369687,
+              "tsc_per_op": 0.303240625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302835
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984378906,
+              "tsc_per_op": 0.615872813,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.61546875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484794531,
+              "tsc_per_op": 0.303506563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303103125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484369219,
+              "tsc_per_op": 0.303239688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302835
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484372969,
+              "tsc_per_op": 0.30324625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302847188
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984373281,
+              "tsc_per_op": 0.615871562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615480937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.48480625,
+              "tsc_per_op": 0.303545625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303115313
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484369687,
+              "tsc_per_op": 0.303235625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302835
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.487757969,
+              "tsc_per_op": 0.304944687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.304955625
+            }
+          ]
+        }
+      ],
+      "median": [
+        {
+          "kind": "vperm2i128",
+          "streams": 1,
+          "core_per_op": 2.9845516405000003,
+          "tsc_per_op": 1.8685178125,
+          "instructions_per_op": 1.000000781,
+          "ref_per_op": 1.866095156
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 2,
+          "core_per_op": 1.4844647655,
+          "tsc_per_op": 0.9292739059999999,
+          "instructions_per_op": 1.000000625,
+          "ref_per_op": 0.928169531
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 4,
+          "core_per_op": 0.984442578,
+          "tsc_per_op": 0.6160657814999999,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.6155175
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 8,
+          "core_per_op": 0.9844199215,
+          "tsc_per_op": 0.6159607815,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.6155175
+        },
+        {
+          "kind": "unpack16",
+          "streams": 1,
+          "core_per_op": 0.984418672,
+          "tsc_per_op": 0.6159379684999999,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615505312
+        },
+        {
+          "kind": "unpack16",
+          "streams": 2,
+          "core_per_op": 0.48484015599999997,
+          "tsc_per_op": 0.303554687,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303139687
+        },
+        {
+          "kind": "unpack16",
+          "streams": 4,
+          "core_per_op": 0.48442039049999996,
+          "tsc_per_op": 0.3033390625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.3028776565
+        },
+        {
+          "kind": "unpack16",
+          "streams": 8,
+          "core_per_op": 0.484414609,
+          "tsc_per_op": 0.3032890625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.3028776565
+        },
+        {
+          "kind": "unpack32",
+          "streams": 1,
+          "core_per_op": 0.984419453,
+          "tsc_per_op": 0.6159478119999999,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615511406
+        },
+        {
+          "kind": "unpack32",
+          "streams": 2,
+          "core_per_op": 0.4848422655,
+          "tsc_per_op": 0.3035565625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303139687
+        },
+        {
+          "kind": "unpack32",
+          "streams": 4,
+          "core_per_op": 0.484417187,
+          "tsc_per_op": 0.303295,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack32",
+          "streams": 8,
+          "core_per_op": 0.4844146875,
+          "tsc_per_op": 0.3032890625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.302871563
+        },
+        {
+          "kind": "unpack64",
+          "streams": 1,
+          "core_per_op": 0.9844185155,
+          "tsc_per_op": 0.616070938,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615511406
+        },
+        {
+          "kind": "unpack64",
+          "streams": 2,
+          "core_per_op": 0.484846094,
+          "tsc_per_op": 0.3035496875,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303145781
+        },
+        {
+          "kind": "unpack64",
+          "streams": 4,
+          "core_per_op": 0.4844183595,
+          "tsc_per_op": 0.30328625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack64",
+          "streams": 8,
+          "core_per_op": 0.48441851550000004,
+          "tsc_per_op": 0.3033168745,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        }
+      ]
+    },
+    "reversed": {
+      "launches": [
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984731719,
+              "tsc_per_op": 1.874515,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866710625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484462187,
+              "tsc_per_op": 0.932701875,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.930820312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984416719,
+              "tsc_per_op": 0.61594125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984419219,
+              "tsc_per_op": 0.616115,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984462969,
+              "tsc_per_op": 0.6163925,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484835,
+              "tsc_per_op": 0.303551562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484419062,
+              "tsc_per_op": 0.303368125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.3032875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984419219,
+              "tsc_per_op": 0.61592875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484835469,
+              "tsc_per_op": 0.303552812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.3033,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303278437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.98441875,
+              "tsc_per_op": 0.61605,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484854687,
+              "tsc_per_op": 0.303750625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484419375,
+              "tsc_per_op": 0.303334375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484418906,
+              "tsc_per_op": 0.303271875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984553125,
+              "tsc_per_op": 1.868328437,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484459219,
+              "tsc_per_op": 0.92898375,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984458906,
+              "tsc_per_op": 0.61632125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984415,
+              "tsc_per_op": 0.615921562,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984424219,
+              "tsc_per_op": 0.616069688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.4848425,
+              "tsc_per_op": 0.303554375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484597656,
+              "tsc_per_op": 0.3035025,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30298125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.303495937,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984419531,
+              "tsc_per_op": 0.616149375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484835,
+              "tsc_per_op": 0.303565313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303295313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484418906,
+              "tsc_per_op": 0.303395313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459219,
+              "tsc_per_op": 0.616340625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484828125,
+              "tsc_per_op": 0.30353125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.30327625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.303286875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984553594,
+              "tsc_per_op": 1.868284062,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484541094,
+              "tsc_per_op": 0.929658125,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928212188
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984449531,
+              "tsc_per_op": 0.616149375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984459063,
+              "tsc_per_op": 0.616449062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.98446,
+              "tsc_per_op": 0.616341563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484859062,
+              "tsc_per_op": 0.303658125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484418125,
+              "tsc_per_op": 0.303294687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484418125,
+              "tsc_per_op": 0.303285625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984462656,
+              "tsc_per_op": 0.616355312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484833594,
+              "tsc_per_op": 0.303541875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.48538125,
+              "tsc_per_op": 0.303878437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30346875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.485381094,
+              "tsc_per_op": 0.30388375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30346875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984424063,
+              "tsc_per_op": 0.615912187,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484830313,
+              "tsc_per_op": 0.303542188,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303300625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484416875,
+              "tsc_per_op": 0.303293437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984554531,
+              "tsc_per_op": 1.86855625,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484461719,
+              "tsc_per_op": 0.929813125,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928175625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984460156,
+              "tsc_per_op": 0.615995625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984423281,
+              "tsc_per_op": 0.615920937,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984419219,
+              "tsc_per_op": 0.616072188,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484832656,
+              "tsc_per_op": 0.3035375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484418906,
+              "tsc_per_op": 0.30330375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484423906,
+              "tsc_per_op": 0.30330125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984444531,
+              "tsc_per_op": 0.61626625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484847656,
+              "tsc_per_op": 0.303554375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484415469,
+              "tsc_per_op": 0.30330125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484420781,
+              "tsc_per_op": 0.30337875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984460781,
+              "tsc_per_op": 0.616297187,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484841562,
+              "tsc_per_op": 0.303548437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484425469,
+              "tsc_per_op": 0.303310313,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484419219,
+              "tsc_per_op": 0.303289688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984559375,
+              "tsc_per_op": 1.868563437,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866113437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484465,
+              "tsc_per_op": 0.929513125,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928187813
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984464531,
+              "tsc_per_op": 0.61638125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984463437,
+              "tsc_per_op": 0.616345,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418438,
+              "tsc_per_op": 0.615904688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484848906,
+              "tsc_per_op": 0.303556563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484418125,
+              "tsc_per_op": 0.303284063,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303390938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984459375,
+              "tsc_per_op": 0.616314687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484839844,
+              "tsc_per_op": 0.30372875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484418125,
+              "tsc_per_op": 0.30330125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303300937,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984462969,
+              "tsc_per_op": 0.616348438,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615554062
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484840156,
+              "tsc_per_op": 0.303558125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414687,
+              "tsc_per_op": 0.303280312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.303410625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302908125
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984554375,
+              "tsc_per_op": 1.868494375,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484459063,
+              "tsc_per_op": 0.92905875,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984418906,
+              "tsc_per_op": 0.615905625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.98445875,
+              "tsc_per_op": 0.616304063,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418438,
+              "tsc_per_op": 0.6160375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484845625,
+              "tsc_per_op": 0.30382625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484415469,
+              "tsc_per_op": 0.303411563,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484415938,
+              "tsc_per_op": 0.303408125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984420781,
+              "tsc_per_op": 0.615930938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484854219,
+              "tsc_per_op": 0.303550625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484418906,
+              "tsc_per_op": 0.303579375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484415781,
+              "tsc_per_op": 0.303503437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984419531,
+              "tsc_per_op": 0.615910625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484858594,
+              "tsc_per_op": 0.303670938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30317625
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484415625,
+              "tsc_per_op": 0.303287812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484717031,
+              "tsc_per_op": 0.303522813,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303066563
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984557188,
+              "tsc_per_op": 1.868785313,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458906,
+              "tsc_per_op": 0.928966562,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.92815125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984463594,
+              "tsc_per_op": 0.621293437,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.620685
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984416719,
+              "tsc_per_op": 0.618882812,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6172725
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984467969,
+              "tsc_per_op": 0.616374375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484840312,
+              "tsc_per_op": 0.303544062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.303267187,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484424062,
+              "tsc_per_op": 0.303474062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984418438,
+              "tsc_per_op": 0.6160375,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.4848475,
+              "tsc_per_op": 0.3035425,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.485335781,
+              "tsc_per_op": 0.303450625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303444375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484446875,
+              "tsc_per_op": 0.303475312,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984635938,
+              "tsc_per_op": 0.6162275,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615627188
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484833438,
+              "tsc_per_op": 0.303638125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.30345875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.303495625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984562344,
+              "tsc_per_op": 1.86850875,
+              "instructions_per_op": 1.000000781,
+              "ref_per_op": 1.866113437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484661094,
+              "tsc_per_op": 0.929509687,
+              "instructions_per_op": 1.000000625,
+              "ref_per_op": 0.928285313
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984417031,
+              "tsc_per_op": 0.616014687,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984467969,
+              "tsc_per_op": 0.6164,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615554062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984462969,
+              "tsc_per_op": 0.61638625,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615554062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484855781,
+              "tsc_per_op": 0.303568438,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417969,
+              "tsc_per_op": 0.30337125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484422969,
+              "tsc_per_op": 0.303308125,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302908125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984459531,
+              "tsc_per_op": 0.616302187,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484848594,
+              "tsc_per_op": 0.303542188,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.3032875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.303277813,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459844,
+              "tsc_per_op": 0.616339688,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484837344,
+              "tsc_per_op": 0.303554062,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414844,
+              "tsc_per_op": 0.303286875,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484414844,
+              "tsc_per_op": 0.303280938,
+              "instructions_per_op": 1.000000469,
+              "ref_per_op": 0.30288375
+            }
+          ]
+        }
+      ],
+      "median": [
+        {
+          "kind": "vperm2i128",
+          "streams": 1,
+          "core_per_op": 2.9845558595000004,
+          "tsc_per_op": 1.8685325,
+          "instructions_per_op": 1.000000781,
+          "ref_per_op": 1.86610125
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 2,
+          "core_per_op": 1.484461953,
+          "tsc_per_op": 0.929511406,
+          "instructions_per_op": 1.000000625,
+          "ref_per_op": 0.9281817189999999
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 4,
+          "core_per_op": 0.9844542185,
+          "tsc_per_op": 0.6160820309999999,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615523594
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 8,
+          "core_per_op": 0.9844410155000001,
+          "tsc_per_op": 0.6163245315,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615529688
+        },
+        {
+          "kind": "unpack16",
+          "streams": 1,
+          "core_per_op": 0.9844421095,
+          "tsc_per_op": 0.6162068755,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615529688
+        },
+        {
+          "kind": "unpack16",
+          "streams": 2,
+          "core_per_op": 0.4848440625,
+          "tsc_per_op": 0.30355546899999997,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303139687
+        },
+        {
+          "kind": "unpack16",
+          "streams": 4,
+          "core_per_op": 0.484418125,
+          "tsc_per_op": 0.3033359375,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack16",
+          "streams": 8,
+          "core_per_op": 0.484418203,
+          "tsc_per_op": 0.3033495315,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack32",
+          "streams": 1,
+          "core_per_op": 0.984432656,
+          "tsc_per_op": 0.6162078125,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615523594
+        },
+        {
+          "kind": "unpack32",
+          "streams": 2,
+          "core_per_op": 0.484843672,
+          "tsc_per_op": 0.3035517185,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303145781
+        },
+        {
+          "kind": "unpack32",
+          "streams": 4,
+          "core_per_op": 0.48441679699999995,
+          "tsc_per_op": 0.30330125,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.302895937
+        },
+        {
+          "kind": "unpack32",
+          "streams": 8,
+          "core_per_op": 0.4844173435,
+          "tsc_per_op": 0.3033870315,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack64",
+          "streams": 1,
+          "core_per_op": 0.9844595315,
+          "tsc_per_op": 0.6162623435000001,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.615529688
+        },
+        {
+          "kind": "unpack64",
+          "streams": 2,
+          "core_per_op": 0.48483875,
+          "tsc_per_op": 0.3035560935,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.303145781
+        },
+        {
+          "kind": "unpack64",
+          "streams": 4,
+          "core_per_op": 0.4844152345,
+          "tsc_per_op": 0.3032942185,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.3028776565
+        },
+        {
+          "kind": "unpack64",
+          "streams": 8,
+          "core_per_op": 0.4844183595,
+          "tsc_per_op": 0.3032915625,
+          "instructions_per_op": 1.000000469,
+          "ref_per_op": 0.30288375
+        }
+      ]
+    }
+  },
+  "break_even": {
+    "normal": {
+      "G_core_per_op": 0.9844199215,
+      "L_mean_core_per_op": 0.4844159373333333,
+      "L_over_G": 0.4920826232317702,
+      "standalone_condition_L_lt_half_G": true,
+      "current_routing_core_per_tile": 15.750718744,
+      "free_terminal_routing_core_per_tile": 15.626014369333333,
+      "ideal_core_saving_per_tile": 0.12470437466666695,
+      "ideal_core_saving_per_six_tile_inverse": 0.7482262480000017
+    },
+    "reversed": {
+      "G_core_per_op": 0.9844410155000001,
+      "L_mean_core_per_op": 0.48441796866666664,
+      "L_over_G": 0.49207414262461374,
+      "standalone_condition_L_lt_half_G": true,
+      "current_routing_core_per_tile": 15.751056248000001,
+      "free_terminal_routing_core_per_tile": 15.626215622666667,
+      "ideal_core_saving_per_tile": 0.12484062533333429,
+      "ideal_core_saving_per_six_tile_inverse": 0.7490437520000057
+    }
+  }
+}

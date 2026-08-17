@@ -1,0 +1,162 @@
+{
+  "schema": "ntruplus768-gt32-q24-pack-verify-v1",
+  "experiment": "GT32-Q24-PACK-VERIFY-001",
+  "control": "N5 -> lazy10788 Q24 GT-pack -> 1152-byte buffer -> verify",
+  "candidate": "N5 -> lazy10788 Q24 packet -> direct compare",
+  "method": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 16,
+    "order": "paired AB/BA",
+    "primary_unit": "launch median",
+    "candidate_materialized_bytes": 0,
+    "n5_path": "unchanged"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_q24_pack_verify",
+      "regions": {
+        "pack_verify": {
+          "paired_delta": {
+            "median": -2.1029999999999998,
+            "mad": 3.1534999999999997
+          },
+          "wins": 239,
+          "samples": 320,
+          "launch_medians": [
+            -1.2945000000000002,
+            -4.169,
+            -1.4425,
+            -17.591,
+            -13.362,
+            -4.052,
+            -1.2595,
+            -9.664,
+            -0.1225,
+            -1.9615,
+            -0.42800000000000005,
+            -3.881,
+            -3.1065,
+            -1.6155,
+            0.0565,
+            -0.1235
+          ],
+          "negative_launch_medians": 15,
+          "launches": 16,
+          "launch_median_bootstrap_95_ci": [
+            -4.052,
+            -0.9352499999999999
+          ]
+        },
+        "n5_pack_verify": {
+          "paired_delta": {
+            "median": -1.9735,
+            "mad": 3.401
+          },
+          "wins": 202,
+          "samples": 320,
+          "launch_medians": [
+            -2.9625,
+            -1.5190000000000001,
+            -1.5705,
+            2.2545,
+            -1.056,
+            -1.626,
+            -1.3215,
+            -1.264,
+            -2.542,
+            -2.8514999999999997,
+            -3.101,
+            -2.4720000000000004,
+            -2.536,
+            -2.9005,
+            -1.282,
+            -1.4955
+          ],
+          "negative_launch_medians": 15,
+          "launches": 16,
+          "launch_median_bootstrap_95_ci": [
+            -2.542,
+            -1.3215
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_q24_pack_verify_reversed",
+      "regions": {
+        "pack_verify": {
+          "paired_delta": {
+            "median": -0.002,
+            "mad": 0.3115
+          },
+          "wins": 161,
+          "samples": 320,
+          "launch_medians": [
+            0.0955,
+            -0.026500000000000003,
+            0.122,
+            -2.455,
+            -0.1015,
+            0.069,
+            -3.1535,
+            0.095,
+            -0.158,
+            0.259,
+            -0.0745,
+            -0.14,
+            0.121,
+            0.025500000000000002,
+            0.058499999999999996,
+            -0.035500000000000004
+          ],
+          "negative_launch_medians": 8,
+          "launches": 16,
+          "launch_median_bootstrap_95_ci": [
+            -0.1015,
+            0.095
+          ]
+        },
+        "n5_pack_verify": {
+          "paired_delta": {
+            "median": -1.6720000000000002,
+            "mad": 3.1294999999999997
+          },
+          "wins": 203,
+          "samples": 320,
+          "launch_medians": [
+            -1.8439999999999999,
+            -4.0985,
+            -1.4785,
+            0.563,
+            -1.2345,
+            -0.716,
+            -2.1384999999999996,
+            -2.1985,
+            -1.8225,
+            -3.34,
+            -3.1975,
+            -0.9215,
+            -0.9339999999999999,
+            -1.7685,
+            -1.981,
+            -1.4135
+          ],
+          "negative_launch_medians": 15,
+          "launches": 16,
+          "launch_median_bootstrap_95_ci": [
+            -2.1384999999999996,
+            -1.2062499999999998
+          ]
+        }
+      }
+    }
+  },
+  "continuation_gate": {
+    "minimum_n5_region_saving_tsc": 30.0,
+    "minimum_negative_launch_medians": 15,
+    "bootstrap_upper_must_be_negative": true,
+    "pass": false
+  },
+  "decision": "stop-pack-verify-below-local-gate"
+}

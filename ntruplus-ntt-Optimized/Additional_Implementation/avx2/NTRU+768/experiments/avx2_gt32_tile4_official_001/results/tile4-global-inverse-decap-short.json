@@ -1,0 +1,227 @@
+{
+  "schema": "ntruplus768-gt32-global-inverse-kem-v1",
+  "experiment": "GT32-GLOBAL-PHYSICAL-KEM-DECAP-001",
+  "control": "promoted Q24 decap with B3 SoA-to-AoS plus I1",
+  "candidate": "Q24 decap with B3 SoA-to-M plus global M-to-AoS inverse",
+  "method": {
+    "iterations_per_sample": 10000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 8,
+    "order": "paired ABC/CBA",
+    "primary_unit": "process-launch paired median"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_global_inverse_decap",
+      "deltas": {
+        "vs_current_q24": {
+          "paired_delta_tsc": {
+            "median": -87.78,
+            "mad": 163.28570000000002
+          },
+          "wins": 112,
+          "samples": 160,
+          "launch_medians": [
+            -145.79309999999998,
+            -39.8327,
+            -15.4308,
+            -385.1959,
+            -163.329,
+            -177.2225,
+            -17.255300000000002,
+            -37.1435
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -177.2225,
+            -17.255300000000002
+          ]
+        },
+        "vs_official": {
+          "paired_delta_tsc": {
+            "median": 76.36959999999999,
+            "mad": 173.8093
+          },
+          "wins": 62,
+          "samples": 160,
+          "launch_medians": [
+            -28.2083,
+            134.74099999999999,
+            191.6715,
+            -10.6144,
+            96.6914,
+            114.07310000000001,
+            67.4709,
+            53.5634
+          ],
+          "negative_launch_medians": 2,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -10.6144,
+            134.74099999999999
+          ]
+        }
+      },
+      "absolutes": {
+        "official": {
+          "launch_median_tsc": {
+            "median": 12151.0487,
+            "mad": 30.618199999999888
+          },
+          "launch_medians": [
+            12110.0019,
+            12184.4059,
+            12053.9202,
+            12167.5815,
+            12168.094099999998,
+            12123.1695,
+            12216.0657,
+            12134.5159
+          ]
+        },
+        "current_q24": {
+          "launch_median_tsc": {
+            "median": 12347.783800000001,
+            "mad": 62.01210000000083
+          },
+          "launch_medians": [
+            12283.627799999998,
+            12326.7569,
+            12324.6198,
+            12631.8117,
+            12500.2131,
+            12407.652,
+            12368.8107,
+            12248.002499999999
+          ]
+        },
+        "global_inverse": {
+          "launch_median_tsc": {
+            "median": 12261.913,
+            "mad": 62.97704999999951
+          },
+          "launch_medians": [
+            12077.45,
+            12286.091,
+            12333.7354,
+            12213.8886,
+            12332.3362,
+            12237.735,
+            12320.446199999998,
+            12194.4921
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_global_inverse_decap_reversed",
+      "deltas": {
+        "vs_current_q24": {
+          "paired_delta_tsc": {
+            "median": -27.1663,
+            "mad": 48.3652
+          },
+          "wins": 105,
+          "samples": 160,
+          "launch_medians": [
+            -16.7616,
+            -64.9776,
+            4.1523,
+            -23.8201,
+            11.1582,
+            -49.2787,
+            -46.5909,
+            -9.0579
+          ],
+          "negative_launch_medians": 6,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -49.2787,
+            4.1523
+          ]
+        },
+        "vs_official": {
+          "paired_delta_tsc": {
+            "median": -86.2384,
+            "mad": 76.49959999999999
+          },
+          "wins": 124,
+          "samples": 160,
+          "launch_medians": [
+            -139.4571,
+            -50.530699999999996,
+            -189.7338,
+            -70.6193,
+            -142.27620000000002,
+            -128.8143,
+            -66.53649999999999,
+            -12.3315
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -142.27620000000002,
+            -50.530699999999996
+          ]
+        }
+      },
+      "absolutes": {
+        "official": {
+          "launch_median_tsc": {
+            "median": 12076.98575,
+            "mad": 30.279249999999593
+          },
+          "launch_medians": [
+            12099.8439,
+            12039.2854,
+            12190.636299999998,
+            12017.140599999999,
+            12091.270400000001,
+            12066.037799999998,
+            12038.185300000001,
+            12087.9337
+          ]
+        },
+        "current_q24": {
+          "launch_median_tsc": {
+            "median": 11989.28255,
+            "mad": 45.98190000000068
+          },
+          "launch_medians": [
+            11982.6064,
+            12171.8273,
+            11937.1943,
+            11995.181199999999,
+            11937.029900000001,
+            11983.3839,
+            12029.1581,
+            12082.3889
+          ]
+        },
+        "global_inverse": {
+          "launch_median_tsc": {
+            "median": 11952.89495,
+            "mad": 19.55709999999999
+          },
+          "launch_medians": [
+            11949.7481,
+            11990.0065,
+            11926.3613,
+            11956.041799999999,
+            11944.760900000001,
+            11938.7074,
+            11977.8216,
+            12088.169699999999
+          ]
+        }
+      }
+    }
+  },
+  "continuation_gate": {
+    "both_placements_negative": true,
+    "bootstrap_upper_must_be_negative": true,
+    "pass": false
+  },
+  "decision": "keep-opt-in-no-kem-promotion"
+}

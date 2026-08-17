@@ -1,0 +1,3984 @@
+{
+  "experiment": "MTL-SHUFFLE-MIX-COST-002",
+  "includes": "MTL-SHUFFLE-CLASS-COST-001",
+  "methodology": {
+    "launches": 8,
+    "iterations": 100000,
+    "repeats_per_launch": 11,
+    "cpu": 1,
+    "primary": "PERF_COUNT_HW_CPU_CYCLES",
+    "secondary": "TSC"
+  },
+  "placements": {
+    "normal": {
+      "launches": [
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984557344,
+              "tsc_per_op": 1.870472813,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484462812,
+              "tsc_per_op": 0.929015937,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928175625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984466406,
+              "tsc_per_op": 0.616496562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615554062
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.98441875,
+              "tsc_per_op": 0.616014687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984441875,
+              "tsc_per_op": 0.6159425,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484837813,
+              "tsc_per_op": 0.30360875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484668125,
+              "tsc_per_op": 0.30361375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303042188
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484421875,
+              "tsc_per_op": 0.3033025,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984420312,
+              "tsc_per_op": 0.616365625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484874062,
+              "tsc_per_op": 0.303838438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303188438
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484423594,
+              "tsc_per_op": 0.303346563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303339375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984419062,
+              "tsc_per_op": 0.6162125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484852969,
+              "tsc_per_op": 0.303576875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.30345875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484417969,
+              "tsc_per_op": 0.30359,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99969,
+              "tsc_per_tile": 9.37866,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32697,
+              "tsc_per_tile": 7.08228,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99994,
+              "tsc_per_tile": 6.87808,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34679,
+              "tsc_per_tile": 6.46934,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.21984,
+              "tsc_per_tile": 5.13974,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49183,
+              "tsc_per_tile": 7.8107,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.3308,
+              "tsc_per_tile": 10.21106,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25492,
+              "tsc_per_tile": 10.81192,
+              "instructions_per_tile": 48.00002
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01897,
+              "tsc_per_tile": 11.26682,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984578281,
+              "tsc_per_op": 1.868944687,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484460625,
+              "tsc_per_op": 0.929559062,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984413906,
+              "tsc_per_op": 0.616002188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984465156,
+              "tsc_per_op": 0.617235,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984423594,
+              "tsc_per_op": 0.6159325,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484826406,
+              "tsc_per_op": 0.303567188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484414531,
+              "tsc_per_op": 0.30334875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.30337375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984462813,
+              "tsc_per_op": 0.616498437,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484857812,
+              "tsc_per_op": 0.30370875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.303311875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484416875,
+              "tsc_per_op": 0.303482188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984461406,
+              "tsc_per_op": 0.6166675,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484844531,
+              "tsc_per_op": 0.30358875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.303574375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484512813,
+              "tsc_per_op": 0.303457812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3029325
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00331,
+              "tsc_per_tile": 9.41714,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32961,
+              "tsc_per_tile": 7.10998,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99971,
+              "tsc_per_tile": 6.87782,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34686,
+              "tsc_per_tile": 6.46942,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22007,
+              "tsc_per_tile": 5.13972,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.48914,
+              "tsc_per_tile": 7.80976,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33101,
+              "tsc_per_tile": 10.21112,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25459,
+              "tsc_per_tile": 10.78832,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02604,
+              "tsc_per_tile": 11.27558,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984550156,
+              "tsc_per_op": 1.868437188,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86590625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.4844625,
+              "tsc_per_op": 0.928795,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.927944063
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984461094,
+              "tsc_per_op": 0.616313438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6153225
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984418438,
+              "tsc_per_op": 0.615709687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615298125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984476875,
+              "tsc_per_op": 0.617779375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6153225
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484844844,
+              "tsc_per_op": 0.303349688,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3029325
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303099063,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302664375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484422344,
+              "tsc_per_op": 0.303100313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984421875,
+              "tsc_per_op": 0.615839062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615298125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484873438,
+              "tsc_per_op": 0.30336625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.30308875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.48444125,
+              "tsc_per_op": 0.303409375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984442188,
+              "tsc_per_op": 0.6159925,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484828125,
+              "tsc_per_op": 0.30335625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3029325
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303077812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302664375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.303077812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302664375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00052,
+              "tsc_per_tile": 9.36548,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32826,
+              "tsc_per_tile": 7.0695,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99972,
+              "tsc_per_tile": 6.86452,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34729,
+              "tsc_per_tile": 6.45594,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22004,
+              "tsc_per_tile": 5.12598,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49518,
+              "tsc_per_tile": 7.79938,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33124,
+              "tsc_per_tile": 10.19806,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25693,
+              "tsc_per_tile": 10.80198,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01658,
+              "tsc_per_tile": 11.25228,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984555469,
+              "tsc_per_op": 1.868645312,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458281,
+              "tsc_per_op": 0.9290175,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984458281,
+              "tsc_per_op": 0.61634,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984418594,
+              "tsc_per_op": 0.615988125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984417969,
+              "tsc_per_op": 0.6159175,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484849062,
+              "tsc_per_op": 0.303564687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484414375,
+              "tsc_per_op": 0.303285313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303363125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984417813,
+              "tsc_per_op": 0.615931875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.4848375,
+              "tsc_per_op": 0.30359125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303315312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484417656,
+              "tsc_per_op": 0.303316875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.98445875,
+              "tsc_per_op": 0.616344375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.48483875,
+              "tsc_per_op": 0.30356,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303284687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484416719,
+              "tsc_per_op": 0.303345937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00032,
+              "tsc_per_tile": 9.37868,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32768,
+              "tsc_per_tile": 7.08286,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99993,
+              "tsc_per_tile": 6.8779,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34648,
+              "tsc_per_tile": 6.4692,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22009,
+              "tsc_per_tile": 5.1397,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.4919,
+              "tsc_per_tile": 7.81076,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33129,
+              "tsc_per_tile": 10.2114,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25241,
+              "tsc_per_tile": 10.78816,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02286,
+              "tsc_per_tile": 11.29326,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984550781,
+              "tsc_per_op": 1.86843625,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484468906,
+              "tsc_per_op": 0.9294675,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928212188
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984457969,
+              "tsc_per_op": 0.616329687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984421563,
+              "tsc_per_op": 0.61610375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984422187,
+              "tsc_per_op": 0.615927187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484835937,
+              "tsc_per_op": 0.3035475,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.30328375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.303301563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.985385,
+              "tsc_per_op": 0.6165075,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.616114687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484839531,
+              "tsc_per_op": 0.303543125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303273125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303279375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984417969,
+              "tsc_per_op": 0.615914375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.48486,
+              "tsc_per_op": 0.303540313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303265,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.30328125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99967,
+              "tsc_per_tile": 9.37808,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32734,
+              "tsc_per_tile": 7.08248,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 11.00003,
+              "tsc_per_tile": 6.87742,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34655,
+              "tsc_per_tile": 6.46878,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.21977,
+              "tsc_per_tile": 5.13912,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49379,
+              "tsc_per_tile": 7.81228,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33077,
+              "tsc_per_tile": 10.21106,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25522,
+              "tsc_per_tile": 10.7897,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02595,
+              "tsc_per_tile": 11.2899,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984634219,
+              "tsc_per_op": 1.868943438,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866125625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484460625,
+              "tsc_per_op": 0.92899,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.92815125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984417031,
+              "tsc_per_op": 0.615915937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984467031,
+              "tsc_per_op": 0.616368125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984433906,
+              "tsc_per_op": 0.616326562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484847031,
+              "tsc_per_op": 0.303572813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484447656,
+              "tsc_per_op": 0.303450625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302908125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303371875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984416406,
+              "tsc_per_op": 0.61591875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484849844,
+              "tsc_per_op": 0.303550625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417969,
+              "tsc_per_op": 0.303419375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303355625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984417813,
+              "tsc_per_op": 0.615911563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484867969,
+              "tsc_per_op": 0.30372,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414219,
+              "tsc_per_op": 0.30328,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484421563,
+              "tsc_per_op": 0.30427125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99991,
+              "tsc_per_tile": 9.3787,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32742,
+              "tsc_per_tile": 7.08234,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 11.00025,
+              "tsc_per_tile": 6.87768,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34661,
+              "tsc_per_tile": 6.46948,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22024,
+              "tsc_per_tile": 5.14008,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49286,
+              "tsc_per_tile": 7.81184,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33082,
+              "tsc_per_tile": 10.23036,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25567,
+              "tsc_per_tile": 10.78992,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02296,
+              "tsc_per_tile": 11.27096,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984588125,
+              "tsc_per_op": 1.869316562,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866125625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458281,
+              "tsc_per_op": 0.929079688,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984413906,
+              "tsc_per_op": 0.615933437,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984421719,
+              "tsc_per_op": 0.616085625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984459219,
+              "tsc_per_op": 0.616352812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484853594,
+              "tsc_per_op": 0.30358,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484414687,
+              "tsc_per_op": 0.303297812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.485335313,
+              "tsc_per_op": 0.303457812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30346875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.98441875,
+              "tsc_per_op": 0.615944375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.48483375,
+              "tsc_per_op": 0.303579375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484416406,
+              "tsc_per_op": 0.303509375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303516562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302895937
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984459219,
+              "tsc_per_op": 0.616352812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615541875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484832812,
+              "tsc_per_op": 0.303546563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303284063,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.303280625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00018,
+              "tsc_per_tile": 9.37886,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32741,
+              "tsc_per_tile": 7.08224,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99998,
+              "tsc_per_tile": 6.8777,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34695,
+              "tsc_per_tile": 6.46958,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22007,
+              "tsc_per_tile": 5.1399,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49422,
+              "tsc_per_tile": 7.81354,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.3311,
+              "tsc_per_tile": 10.24074,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25513,
+              "tsc_per_tile": 10.78974,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01826,
+              "tsc_per_tile": 11.26836,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.98455,
+              "tsc_per_op": 1.868843438,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866089062
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458906,
+              "tsc_per_op": 0.929057812,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984457656,
+              "tsc_per_op": 0.616371563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984463281,
+              "tsc_per_op": 0.616375937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984417969,
+              "tsc_per_op": 0.615920625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484875,
+              "tsc_per_op": 0.303755938,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303164062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303520625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.485370781,
+              "tsc_per_op": 0.30411125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30346875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.987839531,
+              "tsc_per_op": 0.618040937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.617638125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484850156,
+              "tsc_per_op": 0.303576562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303294063,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303286875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984467187,
+              "tsc_per_op": 0.616359375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484837187,
+              "tsc_per_op": 0.303543125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.303284063,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.303303125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.9999,
+              "tsc_per_tile": 9.3785,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32682,
+              "tsc_per_tile": 7.08218,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99993,
+              "tsc_per_tile": 6.87734,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34588,
+              "tsc_per_tile": 6.4689,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.2199,
+              "tsc_per_tile": 5.1395,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49312,
+              "tsc_per_tile": 7.812,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.3308,
+              "tsc_per_tile": 10.21106,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25358,
+              "tsc_per_tile": 10.7884,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02034,
+              "tsc_per_tile": 11.2686,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        }
+      ],
+      "median": [
+        {
+          "kind": "vperm2i128",
+          "streams": 1,
+          "core_per_op": 2.9845564065000003,
+          "tsc_per_op": 1.8688934380000002,
+          "instructions_per_op": 0.999999531,
+          "ref_per_op": 1.86610125
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 2,
+          "core_per_op": 1.484460625,
+          "tsc_per_op": 0.929037656,
+          "instructions_per_op": 0.999999375,
+          "ref_per_op": 0.928163437
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 4,
+          "core_per_op": 0.9844578125000001,
+          "tsc_per_op": 0.6163215625,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.615523594
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 8,
+          "core_per_op": 0.984421641,
+          "tsc_per_op": 0.6160946875,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.615523594
+        },
+        {
+          "kind": "unpack16",
+          "streams": 1,
+          "core_per_op": 0.98442875,
+          "tsc_per_op": 0.6159375,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6155175
+        },
+        {
+          "kind": "unpack16",
+          "streams": 2,
+          "core_per_op": 0.4848459375,
+          "tsc_per_op": 0.3035700005,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.303151875
+        },
+        {
+          "kind": "unpack16",
+          "streams": 4,
+          "core_per_op": 0.484414609,
+          "tsc_per_op": 0.303323281,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack16",
+          "streams": 8,
+          "core_per_op": 0.48442015650000003,
+          "tsc_per_op": 0.3033675,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack32",
+          "streams": 1,
+          "core_per_op": 0.9844210935,
+          "tsc_per_op": 0.616155,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6155175
+        },
+        {
+          "kind": "unpack32",
+          "streams": 2,
+          "core_per_op": 0.48485,
+          "tsc_per_op": 0.30357796849999996,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.303145781
+        },
+        {
+          "kind": "unpack32",
+          "streams": 4,
+          "core_per_op": 0.48441539050000004,
+          "tsc_per_op": 0.3033135935,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack32",
+          "streams": 8,
+          "core_per_op": 0.48441742200000004,
+          "tsc_per_op": 0.3033475,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack64",
+          "streams": 1,
+          "core_per_op": 0.984450469,
+          "tsc_per_op": 0.6162784375000001,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.615529688
+        },
+        {
+          "kind": "unpack64",
+          "streams": 2,
+          "core_per_op": 0.4848416405,
+          "tsc_per_op": 0.3035532815,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.303151875
+        },
+        {
+          "kind": "unpack64",
+          "streams": 4,
+          "core_per_op": 0.484413906,
+          "tsc_per_op": 0.303284063,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack64",
+          "streams": 8,
+          "core_per_op": 0.48441726549999997,
+          "tsc_per_op": 0.303324531,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        }
+      ],
+      "mix_median": [
+        {
+          "name": "base16",
+          "global": 16,
+          "local": 0,
+          "arithmetic": 0,
+          "core_per_tile": 15.000045,
+          "tsc_per_tile": 9.37867,
+          "instructions_per_tile": 16.00001
+        },
+        {
+          "name": "free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 0,
+          "core_per_tile": 11.327415,
+          "tsc_per_tile": 7.08231,
+          "instructions_per_tile": 24.00001
+        },
+        {
+          "name": "balanced12_8",
+          "global": 12,
+          "local": 8,
+          "arithmetic": 0,
+          "core_per_tile": 10.999935,
+          "tsc_per_tile": 6.877689999999999,
+          "instructions_per_tile": 20.00001
+        },
+        {
+          "name": "balanced10_12",
+          "global": 10,
+          "local": 12,
+          "arithmetic": 0,
+          "core_per_tile": 10.3467,
+          "tsc_per_tile": 6.46927,
+          "instructions_per_tile": 22.00001
+        },
+        {
+          "name": "balanced8_12",
+          "global": 8,
+          "local": 12,
+          "arithmetic": 0,
+          "core_per_tile": 8.220054999999999,
+          "tsc_per_tile": 5.13971,
+          "instructions_per_tile": 18.00001
+        },
+        {
+          "name": "dependency_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 0,
+          "core_per_tile": 12.492989999999999,
+          "tsc_per_tile": 7.8113,
+          "instructions_per_tile": 24.00001
+        },
+        {
+          "name": "arith_base16",
+          "global": 16,
+          "local": 0,
+          "arithmetic": 24,
+          "core_per_tile": 16.330914999999997,
+          "tsc_per_tile": 10.211089999999999,
+          "instructions_per_tile": 40.00001
+        },
+        {
+          "name": "arith_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 24,
+          "core_per_tile": 17.255025,
+          "tsc_per_tile": 10.789719999999999,
+          "instructions_per_tile": 48.00001
+        },
+        {
+          "name": "arith_dependency_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 24,
+          "core_per_tile": 18.0216,
+          "tsc_per_tile": 11.26978,
+          "instructions_per_tile": 48.00001
+        }
+      ]
+    },
+    "reversed": {
+      "launches": [
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984550625,
+              "tsc_per_op": 1.868506875,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484464063,
+              "tsc_per_op": 0.929295937,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928163437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984420312,
+              "tsc_per_op": 0.615927812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984418281,
+              "tsc_per_op": 0.6159175,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984423281,
+              "tsc_per_op": 0.616003125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484832812,
+              "tsc_per_op": 0.303559062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303297188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484432031,
+              "tsc_per_op": 0.303530625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984474375,
+              "tsc_per_op": 0.61651,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484835,
+              "tsc_per_op": 0.303726875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.48538375,
+              "tsc_per_op": 0.303973125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303480937
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303292813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984418125,
+              "tsc_per_op": 0.615916875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484844219,
+              "tsc_per_op": 0.303685938,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484415781,
+              "tsc_per_op": 0.303307812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.303295313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99971,
+              "tsc_per_tile": 9.3785,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32994,
+              "tsc_per_tile": 7.11398,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99996,
+              "tsc_per_tile": 6.8777,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.3284,
+              "tsc_per_tile": 6.46868,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.21976,
+              "tsc_per_tile": 5.1394,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49551,
+              "tsc_per_tile": 7.81294,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33332,
+              "tsc_per_tile": 10.23886,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.2523,
+              "tsc_per_tile": 10.78602,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.0162,
+              "tsc_per_tile": 11.26464,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984668437,
+              "tsc_per_op": 1.8689725,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.865955
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458125,
+              "tsc_per_op": 0.9288075,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.92795625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984457969,
+              "tsc_per_op": 0.616158125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6153225
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984462344,
+              "tsc_per_op": 0.617841562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615334687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984418594,
+              "tsc_per_op": 0.61574625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615298125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484854063,
+              "tsc_per_op": 0.303347188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302944687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303080937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302664375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.485527656,
+              "tsc_per_op": 0.304400312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303346875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.9844175,
+              "tsc_per_op": 0.61587,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615298125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484834687,
+              "tsc_per_op": 0.303411875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302920313
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484421875,
+              "tsc_per_op": 0.303237188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.303079375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302664375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984461563,
+              "tsc_per_op": 0.616444375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484832188,
+              "tsc_per_op": 0.303569375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3029325
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303164062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.30333,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00031,
+              "tsc_per_tile": 9.36524,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32695,
+              "tsc_per_tile": 7.06872,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99995,
+              "tsc_per_tile": 6.86436,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.32809,
+              "tsc_per_tile": 6.45558,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22002,
+              "tsc_per_tile": 5.12592,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49343,
+              "tsc_per_tile": 7.79824,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33121,
+              "tsc_per_tile": 10.19788,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25707,
+              "tsc_per_tile": 10.80168,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02117,
+              "tsc_per_tile": 11.25646,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984559219,
+              "tsc_per_op": 1.869563125,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86610125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458281,
+              "tsc_per_op": 0.928977812,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.92815125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984417187,
+              "tsc_per_op": 0.616039062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984460937,
+              "tsc_per_op": 0.616162187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984449687,
+              "tsc_per_op": 0.616384375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484840469,
+              "tsc_per_op": 0.3035425,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303337813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484421719,
+              "tsc_per_op": 0.303452813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984417656,
+              "tsc_per_op": 0.615970625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484842969,
+              "tsc_per_op": 0.303539687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303288438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484417656,
+              "tsc_per_op": 0.303333438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984467187,
+              "tsc_per_op": 0.616348125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484855781,
+              "tsc_per_op": 0.303559062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.485335156,
+              "tsc_per_op": 0.303455937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303456563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484417656,
+              "tsc_per_op": 0.30329375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00432,
+              "tsc_per_tile": 9.39028,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32744,
+              "tsc_per_tile": 7.08234,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99971,
+              "tsc_per_tile": 6.8776,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34666,
+              "tsc_per_tile": 6.46918,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.21976,
+              "tsc_per_tile": 5.13926,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49286,
+              "tsc_per_tile": 7.81178,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33202,
+              "tsc_per_tile": 10.2492,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25372,
+              "tsc_per_tile": 10.81296,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02296,
+              "tsc_per_tile": 11.271,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984550313,
+              "tsc_per_op": 1.870871875,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.86590625
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484466094,
+              "tsc_per_op": 0.929053438,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.927968438
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.9844175,
+              "tsc_per_op": 0.615719062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984417656,
+              "tsc_per_op": 0.61571625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984458906,
+              "tsc_per_op": 0.616131875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6153225
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484862813,
+              "tsc_per_op": 0.303625313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302969062
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484426562,
+              "tsc_per_op": 0.303743125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302700937
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484465,
+              "tsc_per_op": 0.303215313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302713125
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984421563,
+              "tsc_per_op": 0.615755,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484847656,
+              "tsc_per_op": 0.303367813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484418281,
+              "tsc_per_op": 0.303084062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484418438,
+              "tsc_per_op": 0.303090313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984446875,
+              "tsc_per_op": 0.616155937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484859375,
+              "tsc_per_op": 0.303483125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.30309,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303092812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30268875
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99968,
+              "tsc_per_tile": 9.3657,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32747,
+              "tsc_per_tile": 7.06938,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99969,
+              "tsc_per_tile": 6.8649,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.32845,
+              "tsc_per_tile": 6.45598,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.23582,
+              "tsc_per_tile": 5.16882,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49546,
+              "tsc_per_tile": 7.80106,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33125,
+              "tsc_per_tile": 10.19904,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25724,
+              "tsc_per_tile": 10.80294,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02319,
+              "tsc_per_tile": 11.27564,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984718125,
+              "tsc_per_op": 1.869115625,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866186563
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484454844,
+              "tsc_per_op": 0.929010937,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.92815125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984409531,
+              "tsc_per_op": 0.615915312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984454531,
+              "tsc_per_op": 0.616316875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984413437,
+              "tsc_per_op": 0.615977187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484830938,
+              "tsc_per_op": 0.3035625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3031275
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484409531,
+              "tsc_per_op": 0.303285313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484409531,
+              "tsc_per_op": 0.303301563,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984417813,
+              "tsc_per_op": 0.616147187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484835313,
+              "tsc_per_op": 0.30354375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484414219,
+              "tsc_per_op": 0.303290312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484413281,
+              "tsc_per_op": 0.303274062,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984418906,
+              "tsc_per_op": 0.616305312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484831875,
+              "tsc_per_op": 0.303535312,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484413437,
+              "tsc_per_op": 0.30328125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484409531,
+              "tsc_per_op": 0.303260625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.99942,
+              "tsc_per_tile": 9.37846,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32823,
+              "tsc_per_tile": 7.08332,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99968,
+              "tsc_per_tile": 6.87752,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.34603,
+              "tsc_per_tile": 6.46894,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.21945,
+              "tsc_per_tile": 5.13948,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49424,
+              "tsc_per_tile": 7.81358,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33164,
+              "tsc_per_tile": 10.23846,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25445,
+              "tsc_per_tile": 10.8123,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01854,
+              "tsc_per_tile": 11.28932,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.984580625,
+              "tsc_per_op": 1.869809062,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.865918437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484459219,
+              "tsc_per_op": 0.928919375,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.927968438
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984418281,
+              "tsc_per_op": 0.616159688,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984500938,
+              "tsc_per_op": 0.616325937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615359063
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984422812,
+              "tsc_per_op": 0.61578375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6153225
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484855156,
+              "tsc_per_op": 0.3033525,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303079687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.48441625,
+              "tsc_per_op": 0.303081875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984422031,
+              "tsc_per_op": 0.6158625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615310313
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484854687,
+              "tsc_per_op": 0.303356562,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302956875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417812,
+              "tsc_per_op": 0.303083125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30268875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303088125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302676563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.984458906,
+              "tsc_per_op": 0.61614875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615334687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484834219,
+              "tsc_per_op": 0.303329375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.3029325
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484715625,
+              "tsc_per_op": 0.303757188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302859375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.48441375,
+              "tsc_per_op": 0.3032825,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30268875
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.0002,
+              "tsc_per_tile": 9.36544,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.3274,
+              "tsc_per_tile": 7.06934,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99968,
+              "tsc_per_tile": 6.8647,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.33783,
+              "tsc_per_tile": 6.4558,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22002,
+              "tsc_per_tile": 5.1262,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49222,
+              "tsc_per_tile": 7.79734,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33354,
+              "tsc_per_tile": 10.22668,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25325,
+              "tsc_per_tile": 10.77678,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01615,
+              "tsc_per_tile": 11.2554,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.98458125,
+              "tsc_per_op": 1.868315313,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866028125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484458125,
+              "tsc_per_op": 0.928771563,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.928078125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984458437,
+              "tsc_per_op": 0.61614875,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615456563
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.984422812,
+              "tsc_per_op": 0.615862812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615432187
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984417187,
+              "tsc_per_op": 0.615709375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.61542
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484841562,
+              "tsc_per_op": 0.303383438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303066563
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484417656,
+              "tsc_per_op": 0.30322125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30278625
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484414219,
+              "tsc_per_op": 0.303092812,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30278625
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.98444125,
+              "tsc_per_op": 0.6160075,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615432187
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484841094,
+              "tsc_per_op": 0.303367188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303054375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484417188,
+              "tsc_per_op": 0.303285625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30278625
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484423906,
+              "tsc_per_op": 0.303302813,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302798438
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.98441875,
+              "tsc_per_op": 0.615975,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615432187
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484843594,
+              "tsc_per_op": 0.303337187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303054375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303089687,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302798438
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.4844175,
+              "tsc_per_op": 0.303100313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30278625
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 14.9997,
+              "tsc_per_tile": 9.36572,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32672,
+              "tsc_per_tile": 7.06932,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99996,
+              "tsc_per_tile": 6.86494,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.32773,
+              "tsc_per_tile": 6.45624,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22026,
+              "tsc_per_tile": 5.12702,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49163,
+              "tsc_per_tile": 7.79768,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33103,
+              "tsc_per_tile": 10.19822,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25352,
+              "tsc_per_tile": 10.77608,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.02329,
+              "tsc_per_tile": 11.28754,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        },
+        {
+          "cpu": 1,
+          "iterations": 100000,
+          "repeats": 11,
+          "results": [
+            {
+              "kind": "vperm2i128",
+              "streams": 1,
+              "core_per_op": 2.98457625,
+              "tsc_per_op": 1.869189688,
+              "instructions_per_op": 0.999999531,
+              "ref_per_op": 1.866113437
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 2,
+              "core_per_op": 1.484460625,
+              "tsc_per_op": 0.928992188,
+              "instructions_per_op": 0.999999375,
+              "ref_per_op": 0.92815125
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 4,
+              "core_per_op": 0.984458125,
+              "tsc_per_op": 0.616348438,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "vperm2i128",
+              "streams": 8,
+              "core_per_op": 0.9844175,
+              "tsc_per_op": 0.616014063,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.6155175
+            },
+            {
+              "kind": "unpack16",
+              "streams": 1,
+              "core_per_op": 0.984422187,
+              "tsc_per_op": 0.616127187,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615493125
+            },
+            {
+              "kind": "unpack16",
+              "streams": 2,
+              "core_per_op": 0.484850469,
+              "tsc_per_op": 0.303608437,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack16",
+              "streams": 4,
+              "core_per_op": 0.484413906,
+              "tsc_per_op": 0.303283437,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack16",
+              "streams": 8,
+              "core_per_op": 0.484417188,
+              "tsc_per_op": 0.303358125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 1,
+              "core_per_op": 0.984426094,
+              "tsc_per_op": 0.616148125,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615505312
+            },
+            {
+              "kind": "unpack32",
+              "streams": 2,
+              "core_per_op": 0.484854063,
+              "tsc_per_op": 0.303569375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303151875
+            },
+            {
+              "kind": "unpack32",
+              "streams": 4,
+              "core_per_op": 0.484421875,
+              "tsc_per_op": 0.303297188,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack32",
+              "streams": 8,
+              "core_per_op": 0.484417656,
+              "tsc_per_op": 0.303299375,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            },
+            {
+              "kind": "unpack64",
+              "streams": 1,
+              "core_per_op": 0.98444625,
+              "tsc_per_op": 0.61607625,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.615529688
+            },
+            {
+              "kind": "unpack64",
+              "streams": 2,
+              "core_per_op": 0.484831406,
+              "tsc_per_op": 0.303545937,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.303139687
+            },
+            {
+              "kind": "unpack64",
+              "streams": 4,
+              "core_per_op": 0.484414063,
+              "tsc_per_op": 0.303285313,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.30288375
+            },
+            {
+              "kind": "unpack64",
+              "streams": 8,
+              "core_per_op": 0.484417344,
+              "tsc_per_op": 0.303293437,
+              "instructions_per_op": 0.999999219,
+              "ref_per_op": 0.302871563
+            }
+          ],
+          "mix_results": [
+            {
+              "name": "base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 0,
+              "core_per_tile": 15.00254,
+              "tsc_per_tile": 9.38632,
+              "instructions_per_tile": 16.00001
+            },
+            {
+              "name": "free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 11.32773,
+              "tsc_per_tile": 7.08306,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "balanced12_8",
+              "global": 12,
+              "local": 8,
+              "arithmetic": 0,
+              "core_per_tile": 10.99995,
+              "tsc_per_tile": 6.87786,
+              "instructions_per_tile": 20.00001
+            },
+            {
+              "name": "balanced10_12",
+              "global": 10,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 10.32728,
+              "tsc_per_tile": 6.46894,
+              "instructions_per_tile": 22.00001
+            },
+            {
+              "name": "balanced8_12",
+              "global": 8,
+              "local": 12,
+              "arithmetic": 0,
+              "core_per_tile": 8.22045,
+              "tsc_per_tile": 5.13978,
+              "instructions_per_tile": 18.00001
+            },
+            {
+              "name": "dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 0,
+              "core_per_tile": 12.49353,
+              "tsc_per_tile": 7.81216,
+              "instructions_per_tile": 24.00001
+            },
+            {
+              "name": "arith_base16",
+              "global": 16,
+              "local": 0,
+              "arithmetic": 24,
+              "core_per_tile": 16.33175,
+              "tsc_per_tile": 10.23856,
+              "instructions_per_tile": 40.00001
+            },
+            {
+              "name": "arith_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 17.25423,
+              "tsc_per_tile": 10.7889,
+              "instructions_per_tile": 48.00001
+            },
+            {
+              "name": "arith_dependency_free8_16",
+              "global": 8,
+              "local": 16,
+              "arithmetic": 24,
+              "core_per_tile": 18.01909,
+              "tsc_per_tile": 11.27276,
+              "instructions_per_tile": 48.00001
+            }
+          ]
+        }
+      ],
+      "median": [
+        {
+          "kind": "vperm2i128",
+          "streams": 1,
+          "core_per_op": 2.9845784374999997,
+          "tsc_per_op": 1.8691526565,
+          "instructions_per_op": 0.999999531,
+          "ref_per_op": 1.8660646875
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 2,
+          "core_per_op": 1.48445875,
+          "tsc_per_op": 0.928985,
+          "instructions_per_op": 0.999999375,
+          "ref_per_op": 0.9281146874999999
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 4,
+          "core_per_op": 0.9844192965,
+          "tsc_per_op": 0.616093906,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6154809375
+        },
+        {
+          "kind": "vperm2i128",
+          "streams": 8,
+          "core_per_op": 0.9844386715,
+          "tsc_per_op": 0.616088125,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6154687495
+        },
+        {
+          "kind": "unpack16",
+          "streams": 1,
+          "core_per_op": 0.9844224994999999,
+          "tsc_per_op": 0.6159901560000001,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6154565624999999
+        },
+        {
+          "kind": "unpack16",
+          "streams": 2,
+          "core_per_op": 0.4848460155,
+          "tsc_per_op": 0.303550781,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.3030970315
+        },
+        {
+          "kind": "unpack16",
+          "streams": 4,
+          "core_per_op": 0.484417344,
+          "tsc_per_op": 0.303284375,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.3028289065
+        },
+        {
+          "kind": "unpack16",
+          "streams": 8,
+          "core_per_op": 0.4844194535,
+          "tsc_per_op": 0.30332984399999996,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30288375
+        },
+        {
+          "kind": "unpack32",
+          "streams": 1,
+          "core_per_op": 0.984421797,
+          "tsc_per_op": 0.6159890625,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6154687495
+        },
+        {
+          "kind": "unpack32",
+          "streams": 2,
+          "core_per_op": 0.4848420315,
+          "tsc_per_op": 0.303475781,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30309703099999996
+        },
+        {
+          "kind": "unpack32",
+          "streams": 4,
+          "core_per_op": 0.4844180465,
+          "tsc_per_op": 0.3032870315,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.3028289065
+        },
+        {
+          "kind": "unpack32",
+          "streams": 8,
+          "core_per_op": 0.48441757799999996,
+          "tsc_per_op": 0.3032834375,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.3028350005
+        },
+        {
+          "kind": "unpack64",
+          "streams": 1,
+          "core_per_op": 0.9844465625000001,
+          "tsc_per_op": 0.6161523435,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.6154687495
+        },
+        {
+          "kind": "unpack64",
+          "streams": 2,
+          "core_per_op": 0.4848389065,
+          "tsc_per_op": 0.30354062449999997,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.30309703099999996
+        },
+        {
+          "kind": "unpack64",
+          "streams": 4,
+          "core_per_op": 0.484414922,
+          "tsc_per_op": 0.3032832815,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.302865469
+        },
+        {
+          "kind": "unpack64",
+          "streams": 8,
+          "core_per_op": 0.4844157035,
+          "tsc_per_op": 0.3032879685,
+          "instructions_per_op": 0.999999219,
+          "ref_per_op": 0.3028289065
+        }
+      ],
+      "mix_median": [
+        {
+          "name": "base16",
+          "global": 16,
+          "local": 0,
+          "arithmetic": 0,
+          "core_per_tile": 14.999955,
+          "tsc_per_tile": 9.37209,
+          "instructions_per_tile": 16.00001
+        },
+        {
+          "name": "free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 0,
+          "core_per_tile": 11.327455,
+          "tsc_per_tile": 7.0758600000000005,
+          "instructions_per_tile": 24.00001
+        },
+        {
+          "name": "balanced12_8",
+          "global": 12,
+          "local": 8,
+          "arithmetic": 0,
+          "core_per_tile": 10.99983,
+          "tsc_per_tile": 6.87123,
+          "instructions_per_tile": 20.00001
+        },
+        {
+          "name": "balanced10_12",
+          "global": 10,
+          "local": 12,
+          "arithmetic": 0,
+          "core_per_tile": 10.328425,
+          "tsc_per_tile": 6.46246,
+          "instructions_per_tile": 22.00001
+        },
+        {
+          "name": "balanced8_12",
+          "global": 8,
+          "local": 12,
+          "arithmetic": 0,
+          "core_per_tile": 8.22002,
+          "tsc_per_tile": 5.13933,
+          "instructions_per_tile": 18.00001
+        },
+        {
+          "name": "dependency_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 0,
+          "core_per_tile": 12.49348,
+          "tsc_per_tile": 7.806419999999999,
+          "instructions_per_tile": 24.00001
+        },
+        {
+          "name": "arith_base16",
+          "global": 16,
+          "local": 0,
+          "arithmetic": 24,
+          "core_per_tile": 16.331695,
+          "tsc_per_tile": 10.232569999999999,
+          "instructions_per_tile": 40.00001
+        },
+        {
+          "name": "arith_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 24,
+          "core_per_tile": 17.253975,
+          "tsc_per_tile": 10.79529,
+          "instructions_per_tile": 48.00001
+        },
+        {
+          "name": "arith_dependency_free8_16",
+          "global": 8,
+          "local": 16,
+          "arithmetic": 24,
+          "core_per_tile": 18.02013,
+          "tsc_per_tile": 11.27188,
+          "instructions_per_tile": 48.00001
+        }
+      ]
+    }
+  },
+  "isolated_additive_model": {
+    "normal": {
+      "G_core_per_op": 0.984421641,
+      "L_mean_core_per_op": 0.48441828133333337,
+      "L_over_G": 0.4920841447992237,
+      "standalone_condition_L_lt_half_G": true,
+      "current_routing_core_per_tile": 15.750746256,
+      "free_terminal_routing_core_per_tile": 15.626065629333333,
+      "ideal_core_saving_per_tile": 0.12468062666666668,
+      "ideal_core_saving_per_six_tile_inverse": 0.7480837600000001
+    },
+    "reversed": {
+      "G_core_per_op": 0.9844386715,
+      "L_mean_core_per_op": 0.4844175783333333,
+      "L_over_G": 0.49207491777544754,
+      "standalone_condition_L_lt_half_G": true,
+      "current_routing_core_per_tile": 15.751018744,
+      "free_terminal_routing_core_per_tile": 15.626190625333333,
+      "ideal_core_saving_per_tile": 0.12482811866666665,
+      "ideal_core_saving_per_six_tile_inverse": 0.7489687119999999
+    }
+  },
+  "mix_analysis": {
+    "normal": {
+      "pure_base16_core": 15.000045,
+      "pure_free8_16_core": 11.327415,
+      "pure_free_saving_core": 3.67263,
+      "dependency_free8_16_core": 12.492989999999999,
+      "dependency_vs_base_delta_core": -2.507055000000001,
+      "arithmetic_base_core": 16.330914999999997,
+      "arithmetic_free_core": 17.255025,
+      "arithmetic_free_saving_core": -0.9241100000000024,
+      "arithmetic_dependency_free_core": 18.0216,
+      "arithmetic_dependency_vs_base_delta_core": 1.690685000000002
+    },
+    "reversed": {
+      "pure_base16_core": 14.999955,
+      "pure_free8_16_core": 11.327455,
+      "pure_free_saving_core": 3.6724999999999994,
+      "dependency_free8_16_core": 12.49348,
+      "dependency_vs_base_delta_core": -2.506475,
+      "arithmetic_base_core": 16.331695,
+      "arithmetic_free_core": 17.253975,
+      "arithmetic_free_saving_core": -0.9222800000000007,
+      "arithmetic_dependency_free_core": 18.02013,
+      "arithmetic_dependency_vs_base_delta_core": 1.688435000000002
+    }
+  }
+}

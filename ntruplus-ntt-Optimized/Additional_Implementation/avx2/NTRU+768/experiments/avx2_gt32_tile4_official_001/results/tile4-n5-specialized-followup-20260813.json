@@ -1,0 +1,33 @@
+{
+  "decision": {
+    "M_frontend_seam": "static-hard-stop-current-packet-major-producer",
+    "P_suffix": "qualified-for-keypair-specific-delivery-not-whole-KEM-promotion",
+    "production_selector_changed": false
+  },
+  "formal_supercop_O3": {
+    "estimator": "stabilized quartile Q2",
+    "observations_per_operation": 960,
+    "runs_per_implementation": 10,
+    "cycles": {
+      "Official_avx2": {"keypair": 21610.391666666666, "enc": 28213.204166666666, "dec": 19447.225},
+      "current_GT": {"keypair": 21651.133333333335, "enc": 28302.491666666665, "dec": 19422.183333333334},
+      "P_suffix_GT": {"keypair": 21562.5875, "enc": 28439.108333333334, "dec": 19536.729166666668}
+    },
+    "P_suffix_minus_Official": {
+      "keypair": {"cycles": -47.80416666666497, "percent": -0.22120916364695675},
+      "enc": {"cycles": 225.90416666666715, "percent": 0.8007036894220203},
+      "dec": {"cycles": 89.50416666666933, "percent": 0.46024132834720294}
+    },
+    "P_suffix_minus_current_GT": {
+      "keypair": {"cycles": -88.54583333333358, "percent": -0.4089662742827946},
+      "enc": {"cycles": 136.6166666666686, "percent": 0.482701905809831},
+      "dec": {"cycles": 114.54583333333358, "percent": 0.5897680573159054}
+    }
+  },
+  "KAT": {
+    "canonical_request_byte_exact": true,
+    "canonical_response_byte_exact": true,
+    "vectors": 100
+  },
+  "schema": "n5-specialized-pm-followup-v1"
+}

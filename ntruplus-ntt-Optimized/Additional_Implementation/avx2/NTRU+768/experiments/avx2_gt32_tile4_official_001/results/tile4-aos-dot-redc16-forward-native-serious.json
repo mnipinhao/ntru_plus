@@ -1,0 +1,203 @@
+{
+  "schema": "ntruplus768-gt32-forward-native-r1u-serious-v1",
+  "experiment": "GT32-AOS-DOT-REDC16-FORWARD-NATIVE-SERIOUS-001",
+  "scope": "2x coefficient-order Forward -> TILE4 AoS -> scale-BM -> I1 -> T9 -> crepmod3",
+  "control": "Forward-native AoS -> transpose/SoA B3 -> inverse",
+  "candidate": "Forward-native AoS -> R1-U -> inverse",
+  "benchmark": {
+    "iterations": 100000,
+    "samples": 20,
+    "warmups": 2,
+    "cpu": 1,
+    "ordering": "ABBA/BAAB",
+    "placements": [
+      "normal",
+      "reversed-link-order"
+    ],
+    "unit": "TSC ticks per full region",
+    "mode": "serious"
+  },
+  "correctness": {
+    "status": "pass",
+    "trials_per_binary": 1000,
+    "contract": "Forward AoS e=0 x e=0 -> R1-U AoS e=-1 -> inverse coefficient output -> crepmod3"
+  },
+  "thresholds": {
+    "minimum_saving_tsc_each_placement": 40,
+    "minimum_wins_each_placement": 18,
+    "MAD_must_be_below_saving": true
+  },
+  "placements": {
+    "normal": {
+      "metadata": "META,experiment=GT32-AOS-DOT-REDC16-CALLSITE-001,correctness=pass,trials=1000,iterations=100000,samples=20,ordering=ABBA-BAAB,primary=decap_state_r1u_vs_ss,secondary=forward_native_r1u_vs_b3,forward_only=1,sink=0",
+      "B3_control": {
+        "median_tsc": 1836.08896,
+        "mad_tsc": 6.854740000000106
+      },
+      "R1_U_candidate": {
+        "median_tsc": 1776.66644,
+        "mad_tsc": 2.506240000000048
+      },
+      "paired_candidate_minus_control": {
+        "median_tsc": -60.6643,
+        "mad_tsc": 7.835039999999999
+      },
+      "candidate_wins": 20,
+      "raw": {
+        "baseline": [
+          1844.37364,
+          1839.31316,
+          1833.1275,
+          1831.21914,
+          1851.6623,
+          1828.18028,
+          1851.64448,
+          1846.93686,
+          1834.95386,
+          1837.22406,
+          1828.48068,
+          1832.35924,
+          1831.54522,
+          1849.92282,
+          1829.47038,
+          1834.0865,
+          1828.99806,
+          1843.96336,
+          1840.54222,
+          1850.25676
+        ],
+        "candidate": [
+          1774.74702,
+          1776.29144,
+          1772.77498,
+          1777.2728,
+          1774.7125,
+          1788.47662,
+          1783.74424,
+          1773.13862,
+          1773.97778,
+          1780.96928,
+          1776.3186,
+          1776.87436,
+          1780.12354,
+          1782.47598,
+          1779.4235,
+          1776.45852,
+          1786.44436,
+          1774.86492,
+          1777.93428,
+          1774.34262
+        ],
+        "delta": [
+          -69.62662,
+          -63.02172,
+          -60.35252,
+          -53.94634,
+          -76.9498,
+          -39.70366,
+          -67.90024,
+          -73.79824,
+          -60.97608,
+          -56.25478,
+          -52.16208,
+          -55.48488,
+          -51.42168,
+          -67.44684,
+          -50.04688,
+          -57.62798,
+          -42.5537,
+          -69.09844,
+          -62.60794,
+          -75.91414
+        ]
+      }
+    },
+    "reversed": {
+      "metadata": "META,experiment=GT32-AOS-DOT-REDC16-CALLSITE-001,correctness=pass,trials=1000,iterations=100000,samples=20,ordering=ABBA-BAAB,primary=decap_state_r1u_vs_ss,secondary=forward_native_r1u_vs_b3,forward_only=1,sink=0",
+      "B3_control": {
+        "median_tsc": 1841.2376199999999,
+        "mad_tsc": 10.49797000000001
+      },
+      "R1_U_candidate": {
+        "median_tsc": 1779.0221999999999,
+        "mad_tsc": 2.7916300000000547
+      },
+      "paired_candidate_minus_control": {
+        "median_tsc": -58.50253,
+        "mad_tsc": 7.248090000000001
+      },
+      "candidate_wins": 20,
+      "raw": {
+        "baseline": [
+          1829.63342,
+          1850.29196,
+          1829.7225,
+          1833.78518,
+          1832.31106,
+          2104.86136,
+          1833.3134,
+          1842.43462,
+          1856.88272,
+          1845.44552,
+          1829.60274,
+          1854.77566,
+          1862.77926,
+          1842.01128,
+          1836.0597,
+          1830.19386,
+          1851.1898,
+          1840.46396,
+          1853.1061,
+          1827.9671
+        ],
+        "candidate": [
+          1777.45976,
+          1774.34714,
+          1773.26804,
+          1776.31028,
+          1775.1968,
+          1782.42872,
+          1774.87876,
+          1779.98538,
+          1775.8322,
+          1795.54486,
+          1778.4971,
+          1779.25378,
+          1783.32846,
+          1780.82992,
+          1776.7144,
+          1778.79062,
+          1780.51258,
+          1781.89354,
+          1803.65518,
+          1780.50304
+        ],
+        "delta": [
+          -52.17366,
+          -75.94482,
+          -56.45446,
+          -57.4749,
+          -57.11426,
+          -322.43264,
+          -58.43464,
+          -62.44924,
+          -81.05052,
+          -49.90066,
+          -51.10564,
+          -75.52188,
+          -79.4508,
+          -61.18136,
+          -59.3453,
+          -51.40324,
+          -70.67722,
+          -58.57042,
+          -49.45092,
+          -47.46406
+        ]
+      }
+    }
+  },
+  "decision": "pass-serious-Forward-native-R1-U-specialized-chain-qualified",
+  "generic_basemul_selector_changed": false,
+  "production_KEM_callsite_selected": false
+}

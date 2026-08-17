@@ -1,0 +1,53 @@
+{
+  "candidate": "crypto_kem_dec_gt32_candidate",
+  "status": "byte-exact-correct-semantic-SA-integrated-full-short-negative",
+  "public_selector": "official",
+  "semantic_boundary": {
+    "wire_order": "Official index[192] leaf order",
+    "official_unpack_layout": "coefficient-transposed pack.S words",
+    "tile4_layout": "tile=2*k3+branch, physical-Q=bitreverse5(logical-k32)",
+    "r_exponent": 0,
+    "decoder_c_hinv": "fixed-control AVX2 unpack plus correctness-first explicit-lane AoS redeposit",
+    "decoder_f": "fixed-control corrected-semantic direct private-SoA redeposit"
+  },
+  "verification": {
+    "serialized_ntt_boundary_cases": 4,
+    "deterministic_valid_decap_rounds": 8,
+    "malformed_cases": 56,
+    "malformed_classes": [
+      "noncanonical ciphertext",
+      "noncanonical secret f",
+      "noncanonical secret hinv",
+      "four ciphertext bitflips per round"
+    ],
+    "message_coefficients_exact": true,
+    "recovered_r_bytes_exact": true,
+    "return_code_exact": true,
+    "shared_secret_bytes_exact": true,
+    "tile4_regression_trials": 1000,
+    "asan_ubsan": "pass",
+    "release_audit": "pass"
+  },
+  "invalidated_decoder_evidence": [
+    "P1-V decoder timing",
+    "legacy direct private-SoA static network",
+    "legacy pair-AoSoA2 decoder static network"
+  ],
+  "unaffected_arithmetic_evidence": [
+    "N5 forward",
+    "TILE4 BaseMul",
+    "I1 inverse core",
+    "T9 inverse tail",
+    "synthetic private polymul callers"
+  ],
+  "serious_benchmark_run": false,
+  "short_valid_decap": {
+    "iterations_per_sample": 2000,
+    "samples": 20,
+    "official_median_tsc": 12064.1215,
+    "gt32_median_tsc": 16854.7635,
+    "paired_regression_median_tsc": 4692.2945,
+    "gt32_wins": 0
+  },
+  "next_gate": "attribute remaining full-decapsulation gap"
+}

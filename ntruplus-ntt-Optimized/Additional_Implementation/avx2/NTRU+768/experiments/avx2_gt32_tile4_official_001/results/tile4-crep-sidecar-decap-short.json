@@ -1,0 +1,72 @@
+{
+  "schema": "ntruplus768-gt32-crep-sidecar-decap-v1",
+  "experiment": "GT32-CREPMOD3-SIDECAR-TAP-001",
+  "control": "qualified Q24 lazy10788 candidate with Official SOTP",
+  "candidate": "same GT candidate with S1 crep sidecar and compact SOTP",
+  "method": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 8,
+    "order": "paired AB/BA",
+    "full_m_materialized": true,
+    "n5_path": "unchanged"
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_q24_decap",
+      "paired_delta": {
+        "median": -130.653,
+        "mad": 98.964
+      },
+      "wins": 127,
+      "samples": 160,
+      "launch_medians": [
+        35.3975,
+        -135.627,
+        -154.2665,
+        -102.70349999999999,
+        -101.2475,
+        -133.74149999999997,
+        -212.37349999999998,
+        -191.288
+      ],
+      "negative_launch_medians": 7,
+      "launches": 8,
+      "launch_median_bootstrap_95_ci": [
+        -191.288,
+        -101.2475
+      ]
+    },
+    "reversed": {
+      "binary": "build/bench_q24_decap_reversed",
+      "paired_delta": {
+        "median": -10.347000000000001,
+        "mad": 56.919
+      },
+      "wins": 93,
+      "samples": 160,
+      "launch_medians": [
+        -71.44149999999999,
+        -20.6575,
+        -17.816000000000003,
+        -9.261,
+        -5.051,
+        20.693,
+        8.7945,
+        -30.009999999999998
+      ],
+      "negative_launch_medians": 6,
+      "launches": 8,
+      "launch_median_bootstrap_95_ci": [
+        -30.009999999999998,
+        8.7945
+      ]
+    }
+  },
+  "continuation_gate": {
+    "minimum_saving_tsc": 30.0,
+    "bootstrap_upper_must_be_negative": true,
+    "pass": false
+  },
+  "decision": "sidecar-full-decap-gate-failed"
+}

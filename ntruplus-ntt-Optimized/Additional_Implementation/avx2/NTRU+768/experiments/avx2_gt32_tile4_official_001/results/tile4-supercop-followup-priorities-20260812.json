@@ -1,0 +1,108 @@
+{
+  "schema": "ntruplus768-gt32-supercop-followup-priorities-v1",
+  "date": "2026-08-12",
+  "p0_5_compiler_localization": {
+    "status": "causal-at-hot-glue-level-not-localizable-by-single-tu",
+    "global_o3_allhot_o2_q2_cycles": {
+      "keypair": 21630.458,
+      "enc": 28032.708,
+      "dec": 19293.042
+    },
+    "global_o2_allhot_o3_q2_cycles": {
+      "keypair": 21704.292,
+      "enc": 28243.583,
+      "dec": 19487.229
+    },
+    "global_o3_control_q2_cycles": {
+      "keypair": 21636.083,
+      "enc": 28511.604,
+      "dec": 19524.062
+    },
+    "single_tu_o2_under_global_o3_q2_cycles": {
+      "api": {"keypair": 21693.333, "enc": 28073.062, "dec": 19372.521},
+      "keygen": {"keypair": 21608.458, "enc": 28097.458, "dec": 19294.979},
+      "encap": {"keypair": 21611.938, "enc": 28086.208, "dec": 19387.167},
+      "decap": {"keypair": 21606.979, "enc": 28130.229, "dec": 19356.208}
+    },
+    "conclusion": [
+      "O2-for-the-complete-hot-glue-set-recovers-most-of-the-O3-loss",
+      "the-reciprocal-O2-global-plus-O3-hot-glue-build-regresses",
+      "single-TU-switches-perturb-all-three-operations-so-the-loss-is-not-owned-by-one-C-TU",
+      "compiler-code-shape-and-address-interaction-dominates-simple-source-level-localization"
+    ],
+    "artifact": "results/tile4-supercop-mixed-optimization-localization-20260812.json"
+  },
+  "p0_6_forward_inverse_cage": {
+    "status": "non-additive-broader-front-end-interaction",
+    "object_contract": {
+      "fixed_object_size_bytes": 6504,
+      "fixed_text_size_bytes": 1972,
+      "forward_offsets": [0, 32],
+      "inverse_offsets": [992, 1024]
+    },
+    "q2_cycles": {
+      "f0_i0": {"keypair": 21641.750, "enc": 28235.042, "dec": 19415.375},
+      "f32_i0": {"keypair": 21628.375, "enc": 28025.354, "dec": 19323.708},
+      "f0_i32": {"keypair": 21634.979, "enc": 28030.208, "dec": 19307.146},
+      "f32_i32": {"keypair": 21624.833, "enc": 28187.604, "dec": 19311.792}
+    },
+    "conclusion": [
+      "forward-and-inverse-offset-effects-are-not-additive",
+      "moving-the-unused-inverse-changes-encapsulation-by-about-205-cycles",
+      "simple-forward-or-inverse-alignment-is-not-a-production-layout-rule",
+      "the-causal-level-is-whole-image-front-end-mapping-or-launch-state"
+    ],
+    "artifact": "results/tile4-supercop-forward-inverse-cage-20260812.json"
+  },
+  "p1_q24_three_pack": {
+    "status": "load-source-confirmed-not-cycle-bottleneck",
+    "current_contract": "private-P-SoA-to-final-serialized-bytes",
+    "important_correction": "there-is-no-downstream-serializer-after-Q24-pack",
+    "register_resident_constant_probe": {
+      "symbol": "gt32_q24_encode_p_soa_halfscatter_rr_lazy10788_asm",
+      "production_selected": false,
+      "control_symbol_size_bytes": 4591,
+      "candidate_symbol_size_bytes": 4271,
+      "correctness_trials": 1000,
+      "normal": {
+        "core_cycle_delta": -9.856,
+        "core_cycle_bootstrap_95_ci": [-96.426, 2.506],
+        "core_cycle_wins": "13/20",
+        "load_delta": -360.113,
+        "load_wins": "20/20",
+        "tsc_delta": -35.719
+      },
+      "reversed": {
+        "core_cycle_delta": -14.654,
+        "core_cycle_bootstrap_95_ci": [-34.695, -7.389],
+        "core_cycle_wins": "17/20",
+        "load_delta": -357.199,
+        "load_wins": "20/20",
+        "tsc_delta": 2.531
+      },
+      "gate_required_core_cycle_saving": 60,
+      "decision": "hard-stop-before-production-integration"
+    },
+    "artifact": "results/tile4-keygen-q24-pack-rr-pmu.json"
+  },
+  "p2_producer_to_final": {
+    "status": "not-applicable-to-current-Q24-contract",
+    "reason": "Q24-pack-already-writes-the-final-1152-byte-wire-format"
+  },
+  "p3_interleaved_pack3": {
+    "status": "static-hard-stop",
+    "reason": [
+      "three-fully-unrolled-packs-would-create-an-approximately-13-KiB-hot-symbol",
+      "known-large-fused-symbols-have-already-lost-to-compact-reusable-bodies",
+      "register-resident-load-deletion-failed-the-cycle-gate",
+      "there-is-no-proven-cross-pack-latency-or-memory-bottleneck-to-hide"
+    ],
+    "reopen_only_if": "a-compact-shared-loop-interleaves-packs-without-tripling-code-size-and-a-PMU-gate-shows-at-least-60-core-cycles-of-headroom"
+  },
+  "overall_decision": {
+    "status": "stop-current-followup-line",
+    "production_changed": false,
+    "why": "the-only-new-executable-Q24-probe-deleted-hundreds-of-L1-hit-loads-but-did-not-produce-a-stable-caller-cycle-win",
+    "next_architectural_target": "a-true-producer-native-final-wire-path-or-a-new-compact-consumer-contract-not-another-load-count-or-placement-micro-optimization"
+  }
+}

@@ -1,0 +1,1176 @@
+{
+  "schema": "ntruplus768-gt32-q24-production-official-pmu-v1",
+  "experiment": "GT32-Q24-PRODUCTION-OFFICIAL-PMU-001",
+  "benchmark": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 8,
+    "cpu": 1,
+    "counter_scope": "paired decapsulation loops only",
+    "event_group": [
+      "cycles",
+      "ref-cycles",
+      "instructions"
+    ]
+  },
+  "placements": {
+    "normal": {
+      "launch_data": [
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 767457511,
+                "scaled": 767457511.0,
+                "time_enabled": 1684624681,
+                "time_running": 1684624681
+              },
+              "ref-cycles": {
+                "raw": 479854518,
+                "scaled": 479854518.0,
+                "time_enabled": 1684624681,
+                "time_running": 1684624681
+              },
+              "instructions": {
+                "raw": 2003201761,
+                "scaled": 2003201761.0,
+                "time_enabled": 1684624681,
+                "time_running": 1684624681
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 776499758,
+                "scaled": 776499758.0,
+                "time_enabled": 1706034812,
+                "time_running": 1706034812
+              },
+              "ref-cycles": {
+                "raw": 485507802,
+                "scaled": 485507802.0,
+                "time_enabled": 1706034812,
+                "time_running": 1706034812
+              },
+              "instructions": {
+                "raw": 1942121713,
+                "scaled": 1942121713.0,
+                "time_enabled": 1706034812,
+                "time_running": 1706034812
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19186.437775,
+              "ref-cycles": 11996.36295,
+              "instructions": 50080.044025
+            },
+            "q24": {
+              "cycles": 19412.49395,
+              "ref-cycles": 12137.69505,
+              "instructions": 48553.042825
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 226.05617500000153,
+            "instructions": -1527.001200000006,
+            "ref-cycles": 141.33209999999963
+          },
+          "paired_tsc_median": 121.7165,
+          "paired_tsc_wins": 2,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 767099862,
+                "scaled": 767099862.0,
+                "time_enabled": 1695239194,
+                "time_running": 1695239194
+              },
+              "ref-cycles": {
+                "raw": 482289054,
+                "scaled": 482289054.0,
+                "time_enabled": 1695239194,
+                "time_running": 1695239194
+              },
+              "instructions": {
+                "raw": 2003201764,
+                "scaled": 2003201764.0,
+                "time_enabled": 1695239194,
+                "time_running": 1695239194
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 772264365,
+                "scaled": 772264365.0,
+                "time_enabled": 1705854614,
+                "time_running": 1705854614
+              },
+              "ref-cycles": {
+                "raw": 485739540,
+                "scaled": 485739540.0,
+                "time_enabled": 1705854614,
+                "time_running": 1705854614
+              },
+              "instructions": {
+                "raw": 1942121710,
+                "scaled": 1942121710.0,
+                "time_enabled": 1705854614,
+                "time_running": 1705854614
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19177.49655,
+              "ref-cycles": 12057.22635,
+              "instructions": 50080.0441
+            },
+            "q24": {
+              "cycles": 19306.609125,
+              "ref-cycles": 12143.4885,
+              "instructions": 48553.04275
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 129.1125749999992,
+            "instructions": -1527.0013499999986,
+            "ref-cycles": 86.26214999999866
+          },
+          "paired_tsc_median": 77.434,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 777028898,
+                "scaled": 777028898.0,
+                "time_enabled": 1704177946,
+                "time_running": 1704177946
+              },
+              "ref-cycles": {
+                "raw": 485838756,
+                "scaled": 485838756.0,
+                "time_enabled": 1704177946,
+                "time_running": 1704177946
+              },
+              "instructions": {
+                "raw": 2003201761,
+                "scaled": 2003201761.0,
+                "time_enabled": 1704177946,
+                "time_running": 1704177946
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 786823733,
+                "scaled": 786823733.0,
+                "time_enabled": 1716278872,
+                "time_running": 1716278872
+              },
+              "ref-cycles": {
+                "raw": 491962380,
+                "scaled": 491962380.0,
+                "time_enabled": 1716278872,
+                "time_running": 1716278872
+              },
+              "instructions": {
+                "raw": 1942121717,
+                "scaled": 1942121717.0,
+                "time_enabled": 1716278872,
+                "time_running": 1716278872
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19425.72245,
+              "ref-cycles": 12145.9689,
+              "instructions": 50080.044025
+            },
+            "q24": {
+              "cycles": 19670.593325,
+              "ref-cycles": 12299.0595,
+              "instructions": 48553.042925
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 244.87087500000052,
+            "instructions": -1527.0011000000013,
+            "ref-cycles": 153.09059999999954
+          },
+          "paired_tsc_median": 192.7575,
+          "paired_tsc_wins": 4,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 779062468,
+                "scaled": 779062468.0,
+                "time_enabled": 1712475646,
+                "time_running": 1712475646
+              },
+              "ref-cycles": {
+                "raw": 487109922,
+                "scaled": 487109922.0,
+                "time_enabled": 1712475646,
+                "time_running": 1712475646
+              },
+              "instructions": {
+                "raw": 2003201764,
+                "scaled": 2003201764.0,
+                "time_enabled": 1712475646,
+                "time_running": 1712475646
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 796690661,
+                "scaled": 796690661.0,
+                "time_enabled": 1732831671,
+                "time_running": 1732831671
+              },
+              "ref-cycles": {
+                "raw": 498140994,
+                "scaled": 498140994.0,
+                "time_enabled": 1732831671,
+                "time_running": 1732831671
+              },
+              "instructions": {
+                "raw": 1942121715,
+                "scaled": 1942121715.0,
+                "time_enabled": 1732831671,
+                "time_running": 1732831671
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19476.5617,
+              "ref-cycles": 12177.74805,
+              "instructions": 50080.0441
+            },
+            "q24": {
+              "cycles": 19917.266525,
+              "ref-cycles": 12453.52485,
+              "instructions": 48553.042875
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 440.7048250000007,
+            "instructions": -1527.001225,
+            "ref-cycles": 275.77679999999964
+          },
+          "paired_tsc_median": 276.449,
+          "paired_tsc_wins": 2,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 772575074,
+                "scaled": 772575074.0,
+                "time_enabled": 1815637214,
+                "time_running": 1815637214
+              },
+              "ref-cycles": {
+                "raw": 505500528,
+                "scaled": 505500528.0,
+                "time_enabled": 1815637214,
+                "time_running": 1815637214
+              },
+              "instructions": {
+                "raw": 2003201771,
+                "scaled": 2003201771.0,
+                "time_enabled": 1815637214,
+                "time_running": 1815637214
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 777615983,
+                "scaled": 777615983.0,
+                "time_enabled": 1700549808,
+                "time_running": 1700549808
+              },
+              "ref-cycles": {
+                "raw": 486205668,
+                "scaled": 486205668.0,
+                "time_enabled": 1700549808,
+                "time_running": 1700549808
+              },
+              "instructions": {
+                "raw": 1942121714,
+                "scaled": 1942121714.0,
+                "time_enabled": 1700549808,
+                "time_running": 1700549808
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19314.37685,
+              "ref-cycles": 12637.5132,
+              "instructions": 50080.044275
+            },
+            "q24": {
+              "cycles": 19440.399575,
+              "ref-cycles": 12155.1417,
+              "instructions": 48553.04285
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 126.0227249999989,
+            "instructions": -1527.0014250000022,
+            "ref-cycles": -482.3714999999993
+          },
+          "paired_tsc_median": 85.015,
+          "paired_tsc_wins": 4,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 769865492,
+                "scaled": 769865492.0,
+                "time_enabled": 1689239543,
+                "time_running": 1689239543
+              },
+              "ref-cycles": {
+                "raw": 481360776,
+                "scaled": 481360776.0,
+                "time_enabled": 1689239543,
+                "time_running": 1689239543
+              },
+              "instructions": {
+                "raw": 2003201761,
+                "scaled": 2003201761.0,
+                "time_enabled": 1689239543,
+                "time_running": 1689239543
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 781961295,
+                "scaled": 781961295.0,
+                "time_enabled": 1703663370,
+                "time_running": 1703663370
+              },
+              "ref-cycles": {
+                "raw": 488946978,
+                "scaled": 488946978.0,
+                "time_enabled": 1703663370,
+                "time_running": 1703663370
+              },
+              "instructions": {
+                "raw": 1942121715,
+                "scaled": 1942121715.0,
+                "time_enabled": 1703663370,
+                "time_running": 1703663370
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19246.6373,
+              "ref-cycles": 12034.0194,
+              "instructions": 50080.044025
+            },
+            "q24": {
+              "cycles": 19549.032375,
+              "ref-cycles": 12223.67445,
+              "instructions": 48553.042875
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 302.39507500000036,
+            "instructions": -1527.0011500000037,
+            "ref-cycles": 189.6550500000012
+          },
+          "paired_tsc_median": 108.48949999999999,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 776737536,
+                "scaled": 776737536.0,
+                "time_enabled": 1716135831,
+                "time_running": 1716135831
+              },
+              "ref-cycles": {
+                "raw": 488776314,
+                "scaled": 488776314.0,
+                "time_enabled": 1716135831,
+                "time_running": 1716135831
+              },
+              "instructions": {
+                "raw": 2003201766,
+                "scaled": 2003201766.0,
+                "time_enabled": 1716135831,
+                "time_running": 1716135831
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 781217128,
+                "scaled": 781217128.0,
+                "time_enabled": 1729368409,
+                "time_running": 1729368409
+              },
+              "ref-cycles": {
+                "raw": 493595388,
+                "scaled": 493595388.0,
+                "time_enabled": 1729368409,
+                "time_running": 1729368409
+              },
+              "instructions": {
+                "raw": 1942121715,
+                "scaled": 1942121715.0,
+                "time_enabled": 1729368409,
+                "time_running": 1729368409
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19418.4384,
+              "ref-cycles": 12219.40785,
+              "instructions": 50080.04415
+            },
+            "q24": {
+              "cycles": 19530.4282,
+              "ref-cycles": 12339.8847,
+              "instructions": 48553.042875
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 111.98979999999938,
+            "instructions": -1527.0012750000024,
+            "ref-cycles": 120.47685000000092
+          },
+          "paired_tsc_median": 102.4975,
+          "paired_tsc_wins": 5,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 781320379,
+                "scaled": 781320379.0,
+                "time_enabled": 1714867677,
+                "time_running": 1714867677
+              },
+              "ref-cycles": {
+                "raw": 488536932,
+                "scaled": 488536932.0,
+                "time_enabled": 1714867677,
+                "time_running": 1714867677
+              },
+              "instructions": {
+                "raw": 2003201764,
+                "scaled": 2003201764.0,
+                "time_enabled": 1714867677,
+                "time_running": 1714867677
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 788079543,
+                "scaled": 788079543.0,
+                "time_enabled": 1724018430,
+                "time_running": 1724018430
+              },
+              "ref-cycles": {
+                "raw": 492802128,
+                "scaled": 492802128.0,
+                "time_enabled": 1724018430,
+                "time_running": 1724018430
+              },
+              "instructions": {
+                "raw": 1942121714,
+                "scaled": 1942121714.0,
+                "time_enabled": 1724018430,
+                "time_running": 1724018430
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19533.009475,
+              "ref-cycles": 12213.4233,
+              "instructions": 50080.0441
+            },
+            "q24": {
+              "cycles": 19701.988575,
+              "ref-cycles": 12320.0532,
+              "instructions": 48553.04285
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 168.97910000000047,
+            "instructions": -1527.0012500000012,
+            "ref-cycles": 106.6298999999999
+          },
+          "paired_tsc_median": 132.9185,
+          "paired_tsc_wins": 5,
+          "multiplexed": false
+        }
+      ],
+      "summary": {
+        "launches": 8,
+        "all_nonmultiplexed": true,
+        "median_per_call": {
+          "official": {
+            "cycles": 19366.407625,
+            "instructions": 50080.0441,
+            "ref-cycles": 12161.858475
+          },
+          "q24": {
+            "cycles": 19539.7302875,
+            "instructions": 48553.0428625,
+            "ref-cycles": 12261.366975
+          }
+        },
+        "median_q24_minus_official_per_call": {
+          "cycles": 197.517637500001,
+          "instructions": -1527.0012375000006,
+          "ref-cycles": 130.90447500000028
+        },
+        "negative_core_cycle_launches": 0,
+        "q24_minus_official_core_cycles_percent": 1.0198981727774152
+      }
+    },
+    "reversed": {
+      "launch_data": [
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 791073530,
+                "scaled": 791073530.0,
+                "time_enabled": 1734606034,
+                "time_running": 1734606034
+              },
+              "ref-cycles": {
+                "raw": 494619762,
+                "scaled": 494619762.0,
+                "time_enabled": 1734606034,
+                "time_running": 1734606034
+              },
+              "instructions": {
+                "raw": 2003201765,
+                "scaled": 2003201765.0,
+                "time_enabled": 1734606034,
+                "time_running": 1734606034
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 783544488,
+                "scaled": 783544488.0,
+                "time_enabled": 1714641061,
+                "time_running": 1714641061
+              },
+              "ref-cycles": {
+                "raw": 489911214,
+                "scaled": 489911214.0,
+                "time_enabled": 1714641061,
+                "time_running": 1714641061
+              },
+              "instructions": {
+                "raw": 1942121714,
+                "scaled": 1942121714.0,
+                "time_enabled": 1714641061,
+                "time_running": 1714641061
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19776.83825,
+              "ref-cycles": 12365.49405,
+              "instructions": 50080.044125
+            },
+            "q24": {
+              "cycles": 19588.6122,
+              "ref-cycles": 12247.78035,
+              "instructions": 48553.04285
+            }
+          },
+          "q24_minus_official": {
+            "cycles": -188.22605000000112,
+            "instructions": -1527.0012750000024,
+            "ref-cycles": -117.71369999999843
+          },
+          "paired_tsc_median": -134.452,
+          "paired_tsc_wins": 16,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 775234650,
+                "scaled": 775234650.0,
+                "time_enabled": 1704028573,
+                "time_running": 1704028573
+              },
+              "ref-cycles": {
+                "raw": 484716492,
+                "scaled": 484716492.0,
+                "time_enabled": 1704028573,
+                "time_running": 1704028573
+              },
+              "instructions": {
+                "raw": 2003201765,
+                "scaled": 2003201765.0,
+                "time_enabled": 1704028573,
+                "time_running": 1704028573
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 786893722,
+                "scaled": 786893722.0,
+                "time_enabled": 1722771374,
+                "time_running": 1722771374
+              },
+              "ref-cycles": {
+                "raw": 492006450,
+                "scaled": 492006450.0,
+                "time_enabled": 1722771374,
+                "time_running": 1722771374
+              },
+              "instructions": {
+                "raw": 1942121717,
+                "scaled": 1942121717.0,
+                "time_enabled": 1722771374,
+                "time_running": 1722771374
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19380.86625,
+              "ref-cycles": 12117.9123,
+              "instructions": 50080.044125
+            },
+            "q24": {
+              "cycles": 19672.34305,
+              "ref-cycles": 12300.16125,
+              "instructions": 48553.042925
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 291.47680000000037,
+            "instructions": -1527.0011999999988,
+            "ref-cycles": 182.24894999999924
+          },
+          "paired_tsc_median": 73.78399999999999,
+          "paired_tsc_wins": 1,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 785751580,
+                "scaled": 785751580.0,
+                "time_enabled": 1729293503,
+                "time_running": 1729293503
+              },
+              "ref-cycles": {
+                "raw": 491291892,
+                "scaled": 491291892.0,
+                "time_enabled": 1729293503,
+                "time_running": 1729293503
+              },
+              "instructions": {
+                "raw": 2003201765,
+                "scaled": 2003201765.0,
+                "time_enabled": 1729293503,
+                "time_running": 1729293503
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 801089963,
+                "scaled": 801089963.0,
+                "time_enabled": 1764051925,
+                "time_running": 1764051925
+              },
+              "ref-cycles": {
+                "raw": 500882928,
+                "scaled": 500882928.0,
+                "time_enabled": 1764051925,
+                "time_running": 1764051925
+              },
+              "instructions": {
+                "raw": 1942121719,
+                "scaled": 1942121719.0,
+                "time_enabled": 1764051925,
+                "time_running": 1764051925
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19643.7895,
+              "ref-cycles": 12282.2973,
+              "instructions": 50080.044125
+            },
+            "q24": {
+              "cycles": 20027.249075,
+              "ref-cycles": 12522.0732,
+              "instructions": 48553.042975
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 383.45957500000077,
+            "instructions": -1527.0011500000037,
+            "ref-cycles": 239.77590000000055
+          },
+          "paired_tsc_median": 249.57299999999998,
+          "paired_tsc_wins": 5,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 778328613,
+                "scaled": 778328613.0,
+                "time_enabled": 1705472075,
+                "time_running": 1705472075
+              },
+              "ref-cycles": {
+                "raw": 486650970,
+                "scaled": 486650970.0,
+                "time_enabled": 1705472075,
+                "time_running": 1705472075
+              },
+              "instructions": {
+                "raw": 2003201764,
+                "scaled": 2003201764.0,
+                "time_enabled": 1705472075,
+                "time_running": 1705472075
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 792700325,
+                "scaled": 792700325.0,
+                "time_enabled": 1728157347,
+                "time_running": 1728157347
+              },
+              "ref-cycles": {
+                "raw": 495636804,
+                "scaled": 495636804.0,
+                "time_enabled": 1728157347,
+                "time_running": 1728157347
+              },
+              "instructions": {
+                "raw": 1942121714,
+                "scaled": 1942121714.0,
+                "time_enabled": 1728157347,
+                "time_running": 1728157347
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19458.215325,
+              "ref-cycles": 12166.27425,
+              "instructions": 50080.0441
+            },
+            "q24": {
+              "cycles": 19817.508125,
+              "ref-cycles": 12390.9201,
+              "instructions": 48553.04285
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 359.29279999999926,
+            "instructions": -1527.0012500000012,
+            "ref-cycles": 224.64584999999897
+          },
+          "paired_tsc_median": 189.3235,
+          "paired_tsc_wins": 2,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 776067333,
+                "scaled": 776067333.0,
+                "time_enabled": 1735075059,
+                "time_running": 1735075059
+              },
+              "ref-cycles": {
+                "raw": 491399766,
+                "scaled": 491399766.0,
+                "time_enabled": 1735075059,
+                "time_running": 1735075059
+              },
+              "instructions": {
+                "raw": 2003201765,
+                "scaled": 2003201765.0,
+                "time_enabled": 1735075059,
+                "time_running": 1735075059
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 792164459,
+                "scaled": 792164459.0,
+                "time_enabled": 1761459527,
+                "time_running": 1761459527
+              },
+              "ref-cycles": {
+                "raw": 500288646,
+                "scaled": 500288646.0,
+                "time_enabled": 1761459527,
+                "time_running": 1761459527
+              },
+              "instructions": {
+                "raw": 1942121718,
+                "scaled": 1942121718.0,
+                "time_enabled": 1761459527,
+                "time_running": 1761459527
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19401.683325,
+              "ref-cycles": 12284.99415,
+              "instructions": 50080.044125
+            },
+            "q24": {
+              "cycles": 19804.111475,
+              "ref-cycles": 12507.21615,
+              "instructions": 48553.04295
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 402.42814999999973,
+            "instructions": -1527.0011749999976,
+            "ref-cycles": 222.22199999999975
+          },
+          "paired_tsc_median": 116.5275,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 778050161,
+                "scaled": 778050161.0,
+                "time_enabled": 1712782178,
+                "time_running": 1712782178
+              },
+              "ref-cycles": {
+                "raw": 486477498,
+                "scaled": 486477498.0,
+                "time_enabled": 1712782178,
+                "time_running": 1712782178
+              },
+              "instructions": {
+                "raw": 2003201764,
+                "scaled": 2003201764.0,
+                "time_enabled": 1712782178,
+                "time_running": 1712782178
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 787059332,
+                "scaled": 787059332.0,
+                "time_enabled": 1736137140,
+                "time_running": 1736137140
+              },
+              "ref-cycles": {
+                "raw": 492110034,
+                "scaled": 492110034.0,
+                "time_enabled": 1736137140,
+                "time_running": 1736137140
+              },
+              "instructions": {
+                "raw": 1942121713,
+                "scaled": 1942121713.0,
+                "time_enabled": 1736137140,
+                "time_running": 1736137140
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19451.254025,
+              "ref-cycles": 12161.93745,
+              "instructions": 50080.0441
+            },
+            "q24": {
+              "cycles": 19676.4833,
+              "ref-cycles": 12302.75085,
+              "instructions": 48553.042825
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 225.2292750000015,
+            "instructions": -1527.0012750000024,
+            "ref-cycles": 140.8134000000009
+          },
+          "paired_tsc_median": 95.6705,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 783388828,
+                "scaled": 783388828.0,
+                "time_enabled": 1828566263,
+                "time_running": 1828566263
+              },
+              "ref-cycles": {
+                "raw": 512075928,
+                "scaled": 512075928.0,
+                "time_enabled": 1828566263,
+                "time_running": 1828566263
+              },
+              "instructions": {
+                "raw": 2003201770,
+                "scaled": 2003201770.0,
+                "time_enabled": 1828566263,
+                "time_running": 1828566263
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 796319090,
+                "scaled": 796319090.0,
+                "time_enabled": 1723962201,
+                "time_running": 1723962201
+              },
+              "ref-cycles": {
+                "raw": 497898882,
+                "scaled": 497898882.0,
+                "time_enabled": 1723962201,
+                "time_running": 1723962201
+              },
+              "instructions": {
+                "raw": 1942121717,
+                "scaled": 1942121717.0,
+                "time_enabled": 1723962201,
+                "time_running": 1723962201
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19584.7207,
+              "ref-cycles": 12801.8982,
+              "instructions": 50080.04425
+            },
+            "q24": {
+              "cycles": 19907.97725,
+              "ref-cycles": 12447.47205,
+              "instructions": 48553.042925
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 323.25654999999824,
+            "instructions": -1527.0013249999975,
+            "ref-cycles": -354.4261499999993
+          },
+          "paired_tsc_median": 83.00649999999999,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        },
+        {
+          "command": [
+            "build/bench_q24_decap_reversed",
+            "2000",
+            "official-pair"
+          ],
+          "counts": {
+            "official": {
+              "cycles": {
+                "raw": 778429567,
+                "scaled": 778429567.0,
+                "time_enabled": 1709232315,
+                "time_running": 1709232315
+              },
+              "ref-cycles": {
+                "raw": 486732402,
+                "scaled": 486732402.0,
+                "time_enabled": 1709232315,
+                "time_running": 1709232315
+              },
+              "instructions": {
+                "raw": 2003201763,
+                "scaled": 2003201763.0,
+                "time_enabled": 1709232315,
+                "time_running": 1709232315
+              }
+            },
+            "q24": {
+              "cycles": {
+                "raw": 792561765,
+                "scaled": 792561765.0,
+                "time_enabled": 1729669700,
+                "time_running": 1729669700
+              },
+              "ref-cycles": {
+                "raw": 495575028,
+                "scaled": 495575028.0,
+                "time_enabled": 1729669700,
+                "time_running": 1729669700
+              },
+              "instructions": {
+                "raw": 1942121718,
+                "scaled": 1942121718.0,
+                "time_enabled": 1729669700,
+                "time_running": 1729669700
+              }
+            }
+          },
+          "per_call": {
+            "official": {
+              "cycles": 19460.739175,
+              "ref-cycles": 12168.31005,
+              "instructions": 50080.044075
+            },
+            "q24": {
+              "cycles": 19814.044125,
+              "ref-cycles": 12389.3757,
+              "instructions": 48553.04295
+            }
+          },
+          "q24_minus_official": {
+            "cycles": 353.30495000000155,
+            "instructions": -1527.0011249999952,
+            "ref-cycles": 221.06565000000046
+          },
+          "paired_tsc_median": 93.1755,
+          "paired_tsc_wins": 3,
+          "multiplexed": false
+        }
+      ],
+      "summary": {
+        "launches": 8,
+        "all_nonmultiplexed": true,
+        "median_per_call": {
+          "official": {
+            "cycles": 19459.47725,
+            "instructions": 50080.044125,
+            "ref-cycles": 12225.303675
+          },
+          "q24": {
+            "cycles": 19809.0778,
+            "instructions": 48553.042925,
+            "ref-cycles": 12390.1479
+          }
+        },
+        "median_q24_minus_official_per_call": {
+          "cycles": 338.2807499999999,
+          "instructions": -1527.001225,
+          "ref-cycles": 201.65729999999985
+        },
+        "negative_core_cycle_launches": 1,
+        "q24_minus_official_core_cycles_percent": 1.7383855982051106
+      }
+    }
+  }
+}

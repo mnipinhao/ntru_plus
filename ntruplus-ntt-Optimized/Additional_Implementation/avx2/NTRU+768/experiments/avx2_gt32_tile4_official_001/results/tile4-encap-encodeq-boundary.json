@@ -1,0 +1,31 @@
+{
+  "schema": "ntruplus768-encap-encodeq-boundary-v1",
+  "spec_edge": "NTT(r)->Encodeq(rhat)->G before basemul(hhat,rhat)",
+  "baseline": "N5 AoS rhat -> AoS Encodeq",
+  "candidate_control": "N5 private-SoA rhat -> SoA-to-AoS transpose -> identical AoS Encodeq",
+  "correctness_basis": "existing private-SoA-to-AoS forward differential is exact; the subsequent Encodeq and G suffix is therefore byte-identical",
+  "arithmetic_side_saving_tsc": {
+    "primary": 13.513,
+    "reversed_link_order": 16.4045
+  },
+  "soa_to_aos_control_penalty_tsc": 42.513999999999996,
+  "net_saving_after_encodeq_control_tsc": {
+    "primary": -29.000999999999998,
+    "reversed_link_order": -26.109499999999997
+  },
+  "control_wins_end_to_end": false,
+  "direct_private_soa_encodeq": {
+    "implemented": false,
+    "maximum_extra_cost_for_directional_parity_tsc": 13.513,
+    "required_properties": [
+      "Official byte-exact Encodeq output",
+      "non-destructive rhat retained for mixed BM",
+      "fixed public control flow and addresses",
+      "no intermediate AoS materialization"
+    ],
+    "existing_network_warning": "the analogous natural direct-SoA decoder network costs 1056 instructions versus its 480-instruction AoS control; this is not a proof for the reverse encoder but rejects assuming symmetry is free"
+  },
+  "decision": "stop-AoS-bridge-path; direct-private-SoA-Encodeq-unproven",
+  "serious_benchmark_run": false,
+  "production_integration": false
+}

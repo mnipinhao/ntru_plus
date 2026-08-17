@@ -1,0 +1,366 @@
+{
+  "schema": "ntruplus768-gt32-dual-terminal-benchmark-v1",
+  "experiment": "GT32-C2-DUAL-CONSUMER-TERMINAL-001",
+  "method": {
+    "iterations_per_sample": 2000,
+    "samples_per_launch": 20,
+    "launches_per_placement": 8,
+    "order": "paired AB/BA",
+    "primary_unit": "launch median",
+    "full_m_materialized": false
+  },
+  "placements": {
+    "normal": {
+      "binary": "build/bench_dual_terminal",
+      "gates": {
+        "producer": {
+          "paired_delta": {
+            "median": 172.5945,
+            "mad": 2.8134999999999906
+          },
+          "wins": 1,
+          "samples": 160,
+          "launch_medians": [
+            173.01,
+            172.7945,
+            170.3225,
+            173.12,
+            174.30849999999998,
+            172.9265,
+            169.8615,
+            172.9975
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            170.3225,
+            173.12
+          ]
+        },
+        "producer_b2": {
+          "paired_delta": {
+            "median": 69.2935,
+            "mad": 3.0374999999999943
+          },
+          "wins": 1,
+          "samples": 160,
+          "launch_medians": [
+            68.5755,
+            70.4985,
+            66.59049999999999,
+            67.2865,
+            70.9325,
+            68.0565,
+            69.799,
+            79.78800000000001
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            67.2865,
+            70.9325
+          ]
+        },
+        "producer_b4": {
+          "paired_delta": {
+            "median": 71.5015,
+            "mad": 2.814
+          },
+          "wins": 1,
+          "samples": 160,
+          "launch_medians": [
+            71.019,
+            73.166,
+            73.4345,
+            70.4245,
+            70.3325,
+            72.61500000000001,
+            71.4555,
+            70.332
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            70.3325,
+            73.166
+          ]
+        },
+        "sotp": {
+          "paired_delta": {
+            "median": -78.995,
+            "mad": 0.09700000000000131
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -78.99199999999999,
+            -79.05,
+            -78.995,
+            -78.9585,
+            -79.0805,
+            -79.03200000000001,
+            -78.96549999999999,
+            -78.959
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -79.05,
+            -78.959
+          ]
+        },
+        "dual_terminal": {
+          "paired_delta": {
+            "median": 96.84649999999999,
+            "mad": 4.736500000000007
+          },
+          "wins": 9,
+          "samples": 160,
+          "launch_medians": [
+            96.1705,
+            98.69800000000001,
+            96.9635,
+            43.8515,
+            97.511,
+            96.52600000000001,
+            96.68299999999999,
+            98.637
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            96.1705,
+            98.1045
+          ]
+        },
+        "dual_terminal_b2": {
+          "paired_delta": {
+            "median": -9.128,
+            "mad": 3.7489999999999997
+          },
+          "wins": 137,
+          "samples": 160,
+          "launch_medians": [
+            -9.6085,
+            -8.516,
+            -12.46,
+            -10.436,
+            -10.8945,
+            -11.7535,
+            -0.6074999999999999,
+            0.3365
+          ],
+          "negative_launch_medians": 7,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -11.7535,
+            -0.6074999999999999
+          ]
+        },
+        "dual_terminal_b4": {
+          "paired_delta": {
+            "median": -5.9945,
+            "mad": 3.5545
+          },
+          "wins": 129,
+          "samples": 160,
+          "launch_medians": [
+            -9.5225,
+            -3.2335000000000003,
+            -6.0805,
+            -7.4785,
+            -3.6414999999999997,
+            -5.202,
+            -3.5135000000000005,
+            -7.1265
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -7.4785,
+            -3.5135000000000005
+          ]
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_dual_terminal_reversed",
+      "gates": {
+        "producer": {
+          "paired_delta": {
+            "median": 172.24,
+            "mad": 2.022999999999996
+          },
+          "wins": 0,
+          "samples": 160,
+          "launch_medians": [
+            172.35000000000002,
+            171.93200000000002,
+            172.951,
+            172.67200000000003,
+            170.6175,
+            172.0125,
+            172.178,
+            172.426
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            171.93200000000002,
+            172.67200000000003
+          ]
+        },
+        "producer_b2": {
+          "paired_delta": {
+            "median": 69.766,
+            "mad": 3.993000000000002
+          },
+          "wins": 3,
+          "samples": 160,
+          "launch_medians": [
+            101.0315,
+            67.2525,
+            71.555,
+            67.38550000000001,
+            69.7115,
+            68.72649999999999,
+            68.1725,
+            69.5525
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            67.38550000000001,
+            71.555
+          ]
+        },
+        "producer_b4": {
+          "paired_delta": {
+            "median": 71.78,
+            "mad": 3.3125
+          },
+          "wins": 1,
+          "samples": 160,
+          "launch_medians": [
+            78.20750000000001,
+            70.838,
+            72.41499999999999,
+            71.5795,
+            71.024,
+            71.8165,
+            70.36449999999999,
+            68.862
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            70.36449999999999,
+            72.41499999999999
+          ]
+        },
+        "sotp": {
+          "paired_delta": {
+            "median": -78.98349999999999,
+            "mad": 0.09449999999999648
+          },
+          "wins": 160,
+          "samples": 160,
+          "launch_medians": [
+            -78.92,
+            -79.01150000000001,
+            -78.981,
+            -79.021,
+            -78.98949999999999,
+            -78.987,
+            -78.977,
+            -78.985
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -79.01150000000001,
+            -78.977
+          ]
+        },
+        "dual_terminal": {
+          "paired_delta": {
+            "median": 98.02250000000001,
+            "mad": 3.3925000000000054
+          },
+          "wins": 3,
+          "samples": 160,
+          "launch_medians": [
+            97.9685,
+            98.20349999999999,
+            97.67,
+            98.5385,
+            98.065,
+            98.3785,
+            97.908,
+            97.5015
+          ],
+          "negative_launch_medians": 0,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            97.67,
+            98.3785
+          ]
+        },
+        "dual_terminal_b2": {
+          "paired_delta": {
+            "median": -8.0975,
+            "mad": 3.54
+          },
+          "wins": 132,
+          "samples": 160,
+          "launch_medians": [
+            21.082500000000003,
+            -10.6195,
+            -5.543,
+            -12.342,
+            -8.44,
+            -7.474500000000001,
+            -10.1465,
+            -6.9285
+          ],
+          "negative_launch_medians": 7,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -10.6195,
+            -5.543
+          ]
+        },
+        "dual_terminal_b4": {
+          "paired_delta": {
+            "median": -6.3925,
+            "mad": 3.7950000000000004
+          },
+          "wins": 135,
+          "samples": 160,
+          "launch_medians": [
+            -0.098,
+            -7.595,
+            -5.4395,
+            -5.538500000000001,
+            -6.1355,
+            -6.936,
+            -8.9745,
+            -7.6075
+          ],
+          "negative_launch_medians": 8,
+          "launches": 8,
+          "launch_median_bootstrap_95_ci": [
+            -7.6075,
+            -5.4395
+          ]
+        }
+      }
+    }
+  },
+  "continuation_gate": {
+    "minimum_saving_tsc": 30.0,
+    "bootstrap_upper_must_be_negative": true,
+    "passing_candidates": []
+  },
+  "decision": "hard-stop-below-30-tsc-gate"
+}

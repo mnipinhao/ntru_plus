@@ -1,0 +1,84 @@
+{
+  "schema": "ntruplus768-terminal-layout-P-v1",
+  "benchmark": {
+    "iterations": 2000,
+    "samples": 20,
+    "cpu": 1,
+    "ordering": "paired-AB-BA",
+    "scope": "two-post-frontend-NTT32-cores-plus-BM-to-standard-AoS"
+  },
+  "correctness": {
+    "status": "pass",
+    "checks": [
+      "P-plane-mapping-exact",
+      "BM-output-standard-AoS-exact",
+      "64-random-small-input-cases"
+    ]
+  },
+  "static": {
+    "selected_layout": "full-SoA-P-existing-optimum",
+    "saving_vs_canonical_shuffles_per_16_quartic_block": 12,
+    "saving_vs_standard_full_soa_shuffles_per_block": 4,
+    "extra_montgomery_chains": 0,
+    "forward_cross_128_bit_repairs": 0,
+    "BM_output_vperm2i128_repairs_per_block": 4
+  },
+  "gates": {
+    "aos_vs_standard_soa": {
+      "baseline": {
+        "median_tsc": 901.313,
+        "mad_tsc": 9.627499999999998
+      },
+      "candidate": {
+        "median_tsc": 880.6345,
+        "mad_tsc": 5.383500000000026
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -18.099,
+        "mad_tsc": 5.318499999999999
+      },
+      "candidate_wins": 19,
+      "paired_saving_tsc": 18.099
+    },
+    "aos_vs_p": {
+      "baseline": {
+        "median_tsc": 865.792,
+        "mad_tsc": 5.312500000000057
+      },
+      "candidate": {
+        "median_tsc": 846.303,
+        "mad_tsc": 5.387499999999989
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -19.852,
+        "mad_tsc": 4.4624999999999995
+      },
+      "candidate_wins": 17,
+      "paired_saving_tsc": 19.852
+    },
+    "standard_soa_vs_p": {
+      "baseline": {
+        "median_tsc": 844.1015,
+        "mad_tsc": 2.6269999999999527
+      },
+      "candidate": {
+        "median_tsc": 842.2719999999999,
+        "mad_tsc": 2.9524999999999295
+      },
+      "paired_candidate_minus_baseline": {
+        "median_tsc": -2.299,
+        "mad_tsc": 3.6479999999999997
+      },
+      "candidate_wins": 13,
+      "paired_saving_tsc": 2.299
+    }
+  },
+  "thresholds": {
+    "canonical_path_min_paired_saving_tsc": 20
+  },
+  "decision": "stop-terminal-layout-below-20-tsc-gate",
+  "production_integration": false,
+  "serious_benchmark_run": false,
+  "next": "retain standard private-SoA control",
+  "current_full_soa_incremental_saving_tsc": 2.299
+}
