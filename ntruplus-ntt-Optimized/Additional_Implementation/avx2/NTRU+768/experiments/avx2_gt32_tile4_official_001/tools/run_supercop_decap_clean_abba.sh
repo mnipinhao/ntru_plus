@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+blocks=${1:-4}
+tool_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+block=1
+while [ "$block" -le "$blocks" ]; do
+	for implementation in avx2 avx2-gt-decap-fastest-clean \
+		avx2-gt-decap-fastest-clean avx2
+	do
+		"$tool_root/run_supercop_cross_flags.sh" "$implementation" O3GC 1
+	done
+	block=$((block + 1))
+done

@@ -61,6 +61,20 @@ static void core_s5x4(int16_t *out, const int16_t *in, const int16_t *unused)
 	gt32_tile4_attr_forward_all_bm_soa_s5x4_asm(out, in);
 }
 
+__attribute__((noinline))
+static void core_s45w1(int16_t *out, const int16_t *in, const int16_t *unused)
+{
+	(void)unused;
+	gt32_tile4_attr_forward_all_bm_soa_s45w1_asm(out, in);
+}
+
+__attribute__((noinline))
+static void core_s45w2(int16_t *out, const int16_t *in, const int16_t *unused)
+{
+	(void)unused;
+	gt32_tile4_attr_forward_all_bm_soa_s45w2_asm(out, in);
+}
+
 static void forward_old(int16_t *out, const int16_t *in)
 {
 	gt32_tile4_frontend_wide_raw_asm(frontend_scratch, in);
@@ -71,6 +85,18 @@ static void forward_s5x4(int16_t *out, const int16_t *in)
 {
 	gt32_tile4_frontend_wide_raw_asm(frontend_scratch, in);
 	gt32_tile4_attr_forward_all_bm_soa_s5x4_asm(out, frontend_scratch);
+}
+
+static void forward_s45w1(int16_t *out, const int16_t *in)
+{
+	gt32_tile4_frontend_wide_raw_asm(frontend_scratch, in);
+	gt32_tile4_attr_forward_all_bm_soa_s45w1_asm(out, frontend_scratch);
+}
+
+static void forward_s45w2(int16_t *out, const int16_t *in)
+{
+	gt32_tile4_frontend_wide_raw_asm(frontend_scratch, in);
+	gt32_tile4_attr_forward_all_bm_soa_s45w2_asm(out, frontend_scratch);
 }
 
 __attribute__((noinline))
@@ -89,6 +115,28 @@ static void chain_s5x4(int16_t *out, const int16_t *a, const int16_t *b)
 {
 	forward_s5x4(work_a, a);
 	forward_s5x4(work_b, b);
+	gt32_tile4_attr_basemul_c3_soa_asm(product_soa, work_a, work_b);
+	gt32_tile4_attr_transpose_one_asm(product_aos, product_soa);
+	gt32_tile4_inverse_all_pair_asm(inverse_rows, product_aos);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, inverse_rows);
+}
+
+__attribute__((noinline))
+static void chain_s45w1(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	forward_s45w1(work_a, a);
+	forward_s45w1(work_b, b);
+	gt32_tile4_attr_basemul_c3_soa_asm(product_soa, work_a, work_b);
+	gt32_tile4_attr_transpose_one_asm(product_aos, product_soa);
+	gt32_tile4_inverse_all_pair_asm(inverse_rows, product_aos);
+	gt32_tile4_inverse_tail_t9_isolated_private_asm(out, inverse_rows);
+}
+
+__attribute__((noinline))
+static void chain_s45w2(int16_t *out, const int16_t *a, const int16_t *b)
+{
+	forward_s45w2(work_a, a);
+	forward_s45w2(work_b, b);
 	gt32_tile4_attr_basemul_c3_soa_asm(product_soa, work_a, work_b);
 	gt32_tile4_attr_transpose_one_asm(product_aos, product_soa);
 	gt32_tile4_inverse_all_pair_asm(inverse_rows, product_aos);
@@ -127,16 +175,56 @@ int main(int argc, char **argv)
 		fprintf(stderr, "S5x4 forward-core differential failed\n");
 		return 1;
 	}
+	core_s45w1(out1, frontend_scratch, NULL);
+	if (memcmp(out0, out1, sizeof(out0)) != 0) {
+		fprintf(stderr, "S4/S5 W1 forward-core differential failed\n");
+		return 1;
+	}
+	core_s45w2(out1, frontend_scratch, NULL);
+	if (memcmp(out0, out1, sizeof(out0)) != 0) {
+		fprintf(stderr, "S4/S5 W2 forward-core differential failed\n");
+		return 1;
+	}
 	chain_old(out0, a, b);
 	chain_s5x4(out1, a, b);
 	if (memcmp(out0, out1, sizeof(out0)) != 0) {
 		fprintf(stderr, "S5x4 full-chain differential failed\n");
 		return 1;
 	}
+	chain_s45w1(out1, a, b);
+	if (memcmp(out0, out1, sizeof(out0)) != 0) {
+		fprintf(stderr, "S4/S5 W1 full-chain differential failed\n");
+		return 1;
+	}
+	chain_s45w2(out1, a, b);
+	if (memcmp(out0, out1, sizeof(out0)) != 0) {
+		fprintf(stderr, "S4/S5 W2 full-chain differential failed\n");
+		return 1;
+	}
 	const struct gate gates[] = {
 		{"forward_core", core_old, core_s5x4, frontend_scratch, NULL},
 		{"two_forward_bm_i1_t9", chain_old, chain_s5x4, a, b},
+		{"forward_core_w1", core_old, core_s45w1, frontend_scratch, NULL},
+		{"forward_core_w2", core_old, core_s45w2, frontend_scratch, NULL},
+		{"two_forward_bm_i1_t9_w1", chain_old, chain_s45w1, a, b},
+		{"two_forward_bm_i1_t9_w2", chain_old, chain_s45w2, a, b},
 	};
+	if (argc > 3) {
+		for (unsigned gate = 0; gate < sizeof(gates) / sizeof(gates[0]); gate++) {
+			if (strcmp(argv[2], gates[gate].name) != 0)
+				continue;
+			kernel_fn function = strcmp(argv[3], "candidate") == 0
+				? gates[gate].candidate : gates[gate].baseline;
+			(void)measure(function, out0, gates[gate].a, gates[gate].b, 1000);
+			const double ticks = measure(function, out0, gates[gate].a,
+				gates[gate].b, iterations);
+			printf("PMU,%s,%s,%u,%.6f,%llu\n", argv[2], argv[3],
+				iterations, ticks, (unsigned long long)sink);
+			return 0;
+		}
+		fprintf(stderr, "unknown PMU gate %s\n", argv[2]);
+		return 2;
+	}
 	for (unsigned gate = 0; gate < sizeof(gates) / sizeof(gates[0]); gate++) {
 		for (unsigned warm = 0; warm < 2; warm++) {
 			(void)measure(gates[gate].baseline, out0, gates[gate].a,
