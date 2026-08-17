@@ -1,0 +1,179 @@
+{
+  "experiment": "INV-S1-S2-S3-JOINT-PHYSICAL-001",
+  "status": "static-tie-hard-stop",
+  "search_window": {
+    "start": [
+      "c0",
+      "c1",
+      "q2",
+      "q1",
+      "q0",
+      "q3",
+      "q4"
+    ],
+    "start_location": "after inverse S1 and the dword transition",
+    "stages": [
+      "q1",
+      "q2"
+    ],
+    "finish": [
+      "c0",
+      "c1",
+      "q0",
+      "q1",
+      "q2",
+      "q3",
+      "q4"
+    ],
+    "finish_contract": "current post-S3 physical state"
+  },
+  "objective": [
+    "minimum cross-128-bit-half instructions",
+    "minimum total shuffle instructions",
+    "minimum critical-path layers"
+  ],
+  "state_space": {
+    "physical_states": 5040,
+    "transition_library": "the exact executable transitions from generate_gt32_global_physical_layout_gate.py",
+    "pairpacked_continuation_covered": true,
+    "explanation": "a one-way transition before a stage makes that axis cross-YMM and retains the transitioned/pair-packed state after arithmetic"
+  },
+  "current_cost_per_tile": {
+    "cross_half_instructions": 16,
+    "shuffle_instructions": 24,
+    "critical_path_layers": 11
+  },
+  "best_cost_per_tile": {
+    "cross_half_instructions": 16,
+    "shuffle_instructions": 24,
+    "critical_path_layers": 11
+  },
+  "best_operations": [
+    {
+      "operation": "layout-transition",
+      "family": "vperm2i128-low/high-half-selection",
+      "before": [
+        "c0",
+        "c1",
+        "q2",
+        "q1",
+        "q0",
+        "q3",
+        "q4"
+      ],
+      "after": [
+        "c0",
+        "c1",
+        "q2",
+        "q0",
+        "q1",
+        "q3",
+        "q4"
+      ],
+      "cost": [
+        8,
+        8,
+        1
+      ]
+    },
+    {
+      "operation": "NTT32-stage",
+      "axis": "q1",
+      "physical_position": 4,
+      "shape": "cross-YMM-butterfly",
+      "family": "MONT_CROSS4",
+      "cost": [
+        0,
+        0,
+        4
+      ]
+    },
+    {
+      "operation": "layout-transition",
+      "family": "vpunpcklqdq/vpunpckhqdq",
+      "before": [
+        "c0",
+        "c1",
+        "q2",
+        "q0",
+        "q1",
+        "q3",
+        "q4"
+      ],
+      "after": [
+        "c0",
+        "c1",
+        "q1",
+        "q0",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "cost": [
+        0,
+        8,
+        1
+      ]
+    },
+    {
+      "operation": "NTT32-stage",
+      "axis": "q2",
+      "physical_position": 4,
+      "shape": "cross-YMM-butterfly",
+      "family": "MONT_CROSS4",
+      "cost": [
+        0,
+        0,
+        4
+      ]
+    },
+    {
+      "operation": "layout-transition",
+      "family": "vpermq-qword-half-bit-permutation",
+      "before": [
+        "c0",
+        "c1",
+        "q1",
+        "q0",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "after": [
+        "c0",
+        "c1",
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "cost": [
+        8,
+        8,
+        1
+      ]
+    }
+  ],
+  "best_path_interpretation": "retain a pair-packed transition for S2, use a qword unpack before S3, then pay a qword/half VPERMQ to restore the frozen endpoint",
+  "whole_inverse": {
+    "tiles": 6,
+    "current_cross_half_instructions": 96,
+    "best_cross_half_instructions": 96,
+    "current_shuffle_instructions": 144,
+    "best_shuffle_instructions": 144,
+    "net_deleted_cross_half": 0,
+    "net_deleted_shuffle": 0
+  },
+  "decision": {
+    "assembly_emitted": false,
+    "benchmark_run": false,
+    "production_changed": false,
+    "reason": "the joint relaxed path only exchanges eight VPERM2I128-class operations for eight VPERMQ-class operations per tile; it does not lower cross-half count, shuffle count, or critical depth"
+  },
+  "reopen_only_if": [
+    "post-S3 consumer accepts the tied alternative without its final cross-half restoration",
+    "an executable transition outside the current exact library lowers the cross-half bound",
+    "the target ISA changes the relative cost of the tied true cross-half primitives"
+  ]
+}

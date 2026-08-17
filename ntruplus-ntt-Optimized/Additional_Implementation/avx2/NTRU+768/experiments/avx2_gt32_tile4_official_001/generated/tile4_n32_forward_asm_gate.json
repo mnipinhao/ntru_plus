@@ -1,0 +1,177 @@
+{
+  "schema": "ntruplus768-gt32-n32-forward-asm-gate-v1",
+  "experiment": "GT-N32-FORWARD-ASM-013",
+  "ABI": {
+    "input": "ordinary coefficient order int16, small [-3,4], e=0",
+    "output": "group-major half-native quartic AoS, e=0",
+    "low_128_k3_order": [
+      0,
+      1,
+      2
+    ],
+    "high_128_k3_order": [
+      0,
+      2,
+      1
+    ],
+    "out_equals_in": true
+  },
+  "physical_schedule": {
+    "wave_physical_vectors": [
+      [
+        0,
+        9,
+        18,
+        3,
+        12,
+        21,
+        6,
+        15
+      ],
+      [
+        8,
+        17,
+        2,
+        11,
+        20,
+        5,
+        14,
+        23
+      ],
+      [
+        16,
+        1,
+        10,
+        19,
+        4,
+        13,
+        22,
+        7
+      ]
+    ],
+    "top_twist_S1_S3": "R3 controlled one-YMM spill per wave",
+    "suffix": "two-group five-blend DFT3 then pair-packed S4/S5",
+    "full_polynomial_materializations": 1,
+    "spill_store_load_instructions": 6,
+    "Montgomery_chains": 160
+  },
+  "representative_closure": {
+    "older_inverse_proof_schedule": "row-conjugated signed-word Montgomery NTT32, residual Montgomery row scaling, then DFT3",
+    "older_proved_output_abs_bounds": [
+      [
+        5373,
+        5367,
+        5295
+      ],
+      [
+        5522,
+        5341,
+        5488
+      ]
+    ],
+    "R3_raw_conservative_output_abs_bounds_by_branch": [
+      25887,
+      25875
+    ],
+    "raw_within_older_producer_box": false,
+    "raw_BM_inverse_contract": "unproved-do-not-compose",
+    "single_final_center10_abs_bound": 3080,
+    "centered_within_older_producer_box": true,
+    "centered_BM_inverse_contract": "inherits-GT-N32-BM-INV-JOINT-RANGE-011",
+    "extra_center_instructions": 144
+  },
+  "symbols": {
+    "raw": "gt32_n32_forward_half_raw_asm",
+    "range_safe": "gt32_n32_forward_half_centered_asm",
+    "proved_conjugated_row0_center": "gt32_n32_forward_half_conjugated_asm"
+  },
+  "conjugated_proof_audit": {
+    "representative_schedule": "row-conjugated signed-word Montgomery NTT32, residual Montgomery row scaling, then DFT3",
+    "Montgomery_chains": 168,
+    "controlled_spill_store_load_instructions": 6,
+    "row_residuals": [
+      {
+        "branch": 0,
+        "row_residual_montgomery_factors": [
+          -147,
+          -248,
+          -682
+        ]
+      },
+      {
+        "branch": 1,
+        "row_residual_montgomery_factors": [
+          -147,
+          1265,
+          460
+        ]
+      }
+    ],
+    "old_output_abs_bounds": [
+      [
+        5373,
+        5367,
+        5295
+      ],
+      [
+        5522,
+        5341,
+        5488
+      ]
+    ],
+    "old_168_chain_zero_checkpoint_claim": "invalid",
+    "hidden_assumption": "the old range proof Montgomery-reduces residual row 0 even though the 168-chain cost model omits that identity chain",
+    "raw_row0_output_abs_bounds": [
+      [
+        15807,
+        15801,
+        15729
+      ],
+      [
+        16008,
+        15827,
+        15974
+      ]
+    ],
+    "raw_row0_R1U_max_abs_bound": 19097,
+    "raw_row0_zero_checkpoint_inverse_proof": "fails immediately: independent-box IDFT3 difference can reach 34319 > 32767",
+    "repair": "center10 only the 16 typed row-0 packets before DFT3",
+    "row0_center_vectors": 16,
+    "row0_center_instructions": 48,
+    "row0_center_abs_bounds": [
+      2359,
+      2359
+    ],
+    "corrected_output_abs_bounds": [
+      [
+        5977,
+        5971,
+        5899
+      ],
+      [
+        6126,
+        5945,
+        6092
+      ]
+    ],
+    "R1U_max_abs_bound": 5747,
+    "inverse": {
+      "IDFT3_internal_abs_bound": 11336,
+      "IDFT3_output_abs_bound": 9736,
+      "stage_abs_bounds": [
+        19472,
+        21306,
+        23385,
+        25532,
+        27876
+      ],
+      "all_frontiers_signed_int16_safe": true
+    }
+  },
+  "decision": "emit-raw-centered-and-proved-conjugated-forward",
+  "full_chain_must_use": "gt32_n32_forward_half_conjugated_asm",
+  "reopen_raw_composition_only_if": [
+    "a new R3-representative R1-U/inverse proof closes without a checkpoint",
+    "the BM or inverse representative contract changes"
+  ]
+}

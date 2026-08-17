@@ -6,6 +6,7 @@
 
 	.text
 #include "../generated/tile4_frombytes_aos_stores.inc"
+#include "../generated/tile4_frombytes_semantic_soa_routes.inc"
 
 	.macro TILE4_UNPACK_128 base
 	vmovdqu \base+0(%rsi), %ymm0
@@ -153,9 +154,7 @@
 	.endm
 
 	.p2align 5
-.Ltile4_frombytes_aos_body:
-	vmovdqa _low_mask(%rip), %ymm15
-	xorl %eax, %eax
+	.macro TILE4_DECODE_AOS_CHUNKS
 	TILE4_UNPACK_128 0
 	TILE4_STORE_AOS_CHUNK_0
 	TILE4_UNPACK_128 192
@@ -168,6 +167,13 @@
 	TILE4_STORE_AOS_CHUNK_4
 	TILE4_UNPACK_128 960
 	TILE4_STORE_AOS_CHUNK_5
+	.endm
+
+	.p2align 5
+.Ltile4_frombytes_aos_body:
+	vmovdqa _low_mask(%rip), %ymm15
+	xorl %eax, %eax
+	TILE4_DECODE_AOS_CHUNKS
 	ret
 
 	.p2align 5
@@ -181,6 +187,99 @@ gt32_tile4_frombytes_aos_asm:
 	vzeroupper
 	ret
 	.size gt32_tile4_frombytes_aos_asm,.-gt32_tile4_frombytes_aos_asm
+
+	.p2align 5
+.Ltile4_frombytes_semantic_soa_body:
+	vmovdqa _low_mask(%rip), %ymm15
+	xorl %eax, %eax
+	.macro TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	TILE4_UNPACK_128 0
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_0
+	TILE4_UNPACK_128 192
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_1
+	TILE4_UNPACK_128 384
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_2
+	TILE4_UNPACK_128 576
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_3
+	TILE4_UNPACK_128 768
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_4
+	TILE4_UNPACK_128 960
+	TILE4_STORE_SEMANTIC_SOA_CHUNK_5
+	.endm
+	TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	ret
+
+	.p2align 5
+	.globl gt32_tile4_frombytes_bm_soa_semantic_asm
+	.type gt32_tile4_frombytes_bm_soa_semantic_asm,@function
+gt32_tile4_frombytes_bm_soa_semantic_asm:
+	call .Ltile4_frombytes_semantic_soa_body
+	testl %eax, %eax
+	setne %al
+	movzbl %al, %eax
+	vzeroupper
+	ret
+	.size gt32_tile4_frombytes_bm_soa_semantic_asm,.-gt32_tile4_frombytes_bm_soa_semantic_asm
+
+	/*
+	 * Decapsulation-private three-input decoder.  The rejection accumulator,
+	 * low mask, and AVX domain remain live across c, f, and hinv.  Arguments:
+	 *   rdi=c out, rsi=f out, rdx=hinv out, rcx=ct, r8=sk.
+	 */
+	.p2align 5
+	.globl gt32_tile4_frombytes3_bm_soa_semantic_asm
+	.type gt32_tile4_frombytes3_bm_soa_semantic_asm,@function
+gt32_tile4_frombytes3_bm_soa_semantic_asm:
+	movq %rsi, %r9
+	movq %rdx, %r10
+	movq %r8, %r11
+	movq %rcx, %rsi
+	vmovdqa _low_mask(%rip), %ymm15
+	xorl %eax, %eax
+	TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	movq %r9, %rdi
+	movq %r11, %rsi
+	TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	movq %r10, %rdi
+	leaq 1152(%r11), %rsi
+	TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	testl %eax, %eax
+	setne %al
+	movzbl %al, %eax
+	vzeroupper
+	ret
+	.size gt32_tile4_frombytes3_bm_soa_semantic_asm,.-gt32_tile4_frombytes3_bm_soa_semantic_asm
+
+	/*
+	 * Benchmark-only mixed decapsulation decoder.  c and f are deposited in
+	 * TILE4 AoS for R1-U while hinv remains in the persistent private SoA
+	 * representation used by the later general product.  The three inputs
+	 * share one rejection accumulator, mask setup, and AVX/SSE transition.
+	 * Arguments match gt32_tile4_frombytes3_bm_soa_semantic_asm.
+	 */
+	.p2align 5
+	.globl gt32_tile4_frombytes2_aos_1soa_semantic_asm
+	.type gt32_tile4_frombytes2_aos_1soa_semantic_asm,@function
+gt32_tile4_frombytes2_aos_1soa_semantic_asm:
+	movq %rsi, %r9
+	movq %rdx, %r10
+	movq %r8, %r11
+	movq %rcx, %rsi
+	vmovdqa _low_mask(%rip), %ymm15
+	xorl %eax, %eax
+	TILE4_DECODE_AOS_CHUNKS
+	movq %r9, %rdi
+	movq %r11, %rsi
+	TILE4_DECODE_AOS_CHUNKS
+	movq %r10, %rdi
+	leaq 1152(%r11), %rsi
+	TILE4_DECODE_SEMANTIC_SOA_CHUNKS
+	testl %eax, %eax
+	setne %al
+	movzbl %al, %eax
+	vzeroupper
+	ret
+	.size gt32_tile4_frombytes2_aos_1soa_semantic_asm,.-gt32_tile4_frombytes2_aos_1soa_semantic_asm
 
 	.p2align 5
 	.globl gt32_tile4_frombytes_bm_soa_aos_control_asm

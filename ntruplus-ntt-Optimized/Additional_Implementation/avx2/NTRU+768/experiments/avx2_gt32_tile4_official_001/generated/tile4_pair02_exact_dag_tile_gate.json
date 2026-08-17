@@ -1,0 +1,167 @@
+{
+  "schema": "ntruplus768-gt32-pair02-exact-dag-tile-v1",
+  "experiment": "GT32-PAIR02-EXACT-DAG-TILE-001",
+  "scope": "generator-only primitive DAG and execution-tile gate",
+  "baseline": "qualified progressive-P full-SoA A+B+C+D2",
+  "cost_model": "(representation, bound, exponent, execution-tile)",
+  "primitive_DAGs": {
+    "P_SoA_Montgomery_product": {
+      "nodes": [
+        [
+          "lo",
+          []
+        ],
+        [
+          "hi",
+          []
+        ],
+        [
+          "qlo",
+          [
+            "lo"
+          ]
+        ],
+        [
+          "correction",
+          [
+            "qlo"
+          ]
+        ],
+        [
+          "reduced",
+          [
+            "hi",
+            "correction"
+          ]
+        ]
+      ],
+      "instructions": 5,
+      "critical_depth": 4,
+      "output": "one full 16-leaf int16 vector"
+    },
+    "Pair02_vpmaddwd_REDC16_half": {
+      "nodes": [
+        [
+          "dot",
+          []
+        ],
+        [
+          "qlo",
+          [
+            "dot"
+          ]
+        ],
+        [
+          "high",
+          [
+            "dot"
+          ]
+        ],
+        [
+          "correction",
+          [
+            "qlo"
+          ]
+        ],
+        [
+          "reduced_words",
+          [
+            "high",
+            "correction"
+          ]
+        ],
+        [
+          "compact",
+          [
+            "reduced_words"
+          ]
+        ],
+        [
+          "order",
+          [
+            "compact"
+          ]
+        ]
+      ],
+      "instructions_before_cross_half_merge": 7,
+      "critical_depth_before_cross_half_merge": 6,
+      "output": "eight compacted int16 leaves"
+    },
+    "two_term_expression_comparison": {
+      "P_SoA_instruction_floor": 11,
+      "P_SoA_critical_depth": 5,
+      "Pair02_instruction_floor": 12,
+      "Pair02_critical_depth": 7,
+      "Pair02_has_shorter_critical_path": false
+    }
+  },
+  "BaseInv_expression_graph": {
+    "initial_quadratic_expressions": 4,
+    "determinant_expressions": 1,
+    "adjugate_expressions": 4,
+    "total_two_term_expressions": 9,
+    "Pair02_minimum_extra_instructions_per_16_leaves": 9,
+    "determinant_requires_compact_int16_interface_for_batch_inverse": true,
+    "reconstruction_requires_compact_int16_outputs": true
+  },
+  "execution_tiles": {
+    "T1_single_16_leaf_block": {
+      "requested_initial_independent_half_chains": 8,
+      "register_lower_bound_for_full_parallel_wave": {
+        "persistent_EO_inputs": 4,
+        "q_and_qinv_constants": 2,
+        "lambda_companions": 2,
+        "eight_parallel_half_accumulators": 8,
+        "minimum_compact_merge_outputs": 2
+      },
+      "peak_YMM_lower_bound": 18,
+      "AVX2_registers": 16,
+      "full_parallel_wave_spill_free": false,
+      "no_spill_active_half_chain_cap": 6,
+      "P_SoA_reference_initial_full_width_chains": 6,
+      "new_spill_free_ILP_mechanism": false
+    },
+    "T2_two_block_interleaved": {
+      "requested_initial_independent_half_chains": 16,
+      "register_lower_bound_for_full_parallel_wave": {
+        "persistent_EO_inputs": 8,
+        "q_and_qinv_constants": 2,
+        "lambda_companions": 4,
+        "sixteen_parallel_half_accumulators": 16,
+        "minimum_compact_merge_outputs": 4
+      },
+      "peak_YMM_lower_bound": 34,
+      "AVX2_registers": 16,
+      "full_parallel_wave_spill_free": false,
+      "interpretation": "loading on demand can avoid a spill only by serializing the wave; it does not create more live independent chains",
+      "new_spill_free_ILP_mechanism": false
+    },
+    "T3_current_P_SoA": {
+      "execution_shape": "full-width 16 independent leaves per product",
+      "initial_independent_full_width_product_chains": 6,
+      "measured_component": "qualified intrinsic P-SoA BaseInv"
+    }
+  },
+  "economic_filter": {
+    "prior_best_case_net_instruction_delta": -24,
+    "classification_after_O2": "economically-neutral",
+    "required_endpoint_core_cycle_saving": 100,
+    "shorter_critical_path": false,
+    "spill_free_independent_chain_advantage": false,
+    "complete_chain_eliminated": false
+  },
+  "decision": "static-hard-stop-before-Pair02-assembly",
+  "reason": [
+    "Pair02 two-term primitive has a longer compacted critical path",
+    "T1 cannot expose all eight half chains without exceeding 16 YMM",
+    "T2 full interleave has a 34-YMM lower bound",
+    "no-spill scheduling caps Pair02 at six half-width chains, not an advantage over six full-width P-SoA chains",
+    "the prior 24-instruction optimistic margin is economically neutral after O2"
+  ],
+  "assembly_emitted": false,
+  "reopen_only_if": [
+    "a consumer keeps Pair02 results in dwords and removes compaction",
+    "a different ISA supplies materially more vector registers or native packed dword-to-word routing",
+    "a new factorization eliminates a complete reduction or determinant interface"
+  ]
+}

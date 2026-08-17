@@ -1,0 +1,945 @@
+/* Generated bounded probe; do not hand-edit. */
+.text
+.p2align 5
+.globl gt32_global_forward_core_asm
+.type gt32_global_forward_core_asm,@function
+gt32_global_forward_core_asm:
+	vmovdqa .Lgp_q(%rip),%ymm15
+	movl $6,%ecx
+.p2align 5
+.Lgt32_global_forward_core_asm_loop:
+	vmovdqu 0(%rsi),%ymm0
+	vmovdqu 32(%rsi),%ymm1
+	vmovdqu 64(%rsi),%ymm2
+	vmovdqu 96(%rsi),%ymm3
+	vmovdqu 128(%rsi),%ymm4
+	vmovdqu 160(%rsi),%ymm5
+	vmovdqu 192(%rsi),%ymm6
+	vmovdqu 224(%rsi),%ymm7
+	/* YMM-register-rename: ('c0', 'c1', 'q0', 'q1', 'q2', 'q3', 'q4') -> ('c0', 'c1', 'q0', 'q1', 'q3', 'q2', 'q4') */
+	/* forward S1: q4 at physical bit 6 */
+	vpsubw %ymm4,%ymm0,%ymm8
+	vpsubw %ymm6,%ymm2,%ymm9
+	vpsubw %ymm5,%ymm1,%ymm10
+	vpsubw %ymm7,%ymm3,%ymm11
+	vpaddw %ymm4,%ymm0,%ymm0
+	vpaddw %ymm6,%ymm2,%ymm2
+	vpaddw %ymm5,%ymm1,%ymm1
+	vpaddw %ymm7,%ymm3,%ymm3
+	/* forward S2: q3 at physical bit 4 */
+	vpmullw .Lgp_forward_s2_qinv+0(%rip),%ymm2,%ymm4
+	vpmullw .Lgp_forward_s2_qinv+32(%rip),%ymm3,%ymm5
+	vpmullw .Lgp_forward_s2_qinv+64(%rip),%ymm9,%ymm6
+	vpmullw .Lgp_forward_s2_qinv+96(%rip),%ymm11,%ymm7
+	vpmulhw .Lgp_forward_s2_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_s2_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s2_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw .Lgp_forward_s2_factor+96(%rip),%ymm11,%ymm11
+	vpmulhw %ymm15,%ymm4,%ymm4
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpsubw %ymm4,%ymm2,%ymm2
+	vpsubw %ymm5,%ymm3,%ymm3
+	vpsubw %ymm6,%ymm9,%ymm9
+	vpsubw %ymm7,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm0,%ymm4
+	vpsubw %ymm3,%ymm1,%ymm5
+	vpsubw %ymm9,%ymm8,%ymm6
+	vpsubw %ymm11,%ymm10,%ymm7
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm10,%ymm10
+	/* vpunpcklwd/vpunpckhwd: ('c0', 'c1', 'q0', 'q1', 'q3', 'q2', 'q4') -> ('q3', 'c0', 'c1', 'q1', 'q0', 'q2', 'q4') */
+	vpunpckhwd %ymm4,%ymm0,%ymm2
+	vpunpcklwd %ymm4,%ymm0,%ymm0
+	vpunpckhwd %ymm5,%ymm1,%ymm3
+	vpunpcklwd %ymm5,%ymm1,%ymm1
+	vpunpckhwd %ymm6,%ymm8,%ymm4
+	vpunpcklwd %ymm6,%ymm8,%ymm8
+	vpunpckhwd %ymm7,%ymm10,%ymm5
+	vpunpcklwd %ymm7,%ymm10,%ymm10
+	/* forward S3: q2 at physical bit 5 */
+	vpmullw .Lgp_forward_s3_qinv+0(%rip),%ymm1,%ymm6
+	vpmullw .Lgp_forward_s3_qinv+32(%rip),%ymm3,%ymm7
+	vpmullw .Lgp_forward_s3_qinv+64(%rip),%ymm10,%ymm9
+	vpmullw .Lgp_forward_s3_qinv+96(%rip),%ymm5,%ymm11
+	vpmulhw .Lgp_forward_s3_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_s3_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s3_factor+64(%rip),%ymm10,%ymm10
+	vpmulhw .Lgp_forward_s3_factor+96(%rip),%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm6,%ymm1,%ymm1
+	vpsubw %ymm7,%ymm3,%ymm3
+	vpsubw %ymm9,%ymm10,%ymm10
+	vpsubw %ymm11,%ymm5,%ymm5
+	vpsubw %ymm1,%ymm0,%ymm6
+	vpsubw %ymm3,%ymm2,%ymm7
+	vpsubw %ymm10,%ymm8,%ymm9
+	vpsubw %ymm5,%ymm4,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm2,%ymm2
+	vpaddw %ymm10,%ymm8,%ymm8
+	vpaddw %ymm5,%ymm4,%ymm4
+	/* vpunpcklwd/vpunpckhwd: ('q3', 'c0', 'c1', 'q1', 'q0', 'q2', 'q4') -> ('q2', 'q3', 'c0', 'q1', 'q0', 'c1', 'q4') */
+	vpunpckhwd %ymm6,%ymm0,%ymm1
+	vpunpcklwd %ymm6,%ymm0,%ymm0
+	vpunpckhwd %ymm7,%ymm2,%ymm3
+	vpunpcklwd %ymm7,%ymm2,%ymm2
+	vpunpckhwd %ymm9,%ymm8,%ymm5
+	vpunpcklwd %ymm9,%ymm8,%ymm8
+	vpunpckhwd %ymm11,%ymm4,%ymm6
+	vpunpcklwd %ymm11,%ymm4,%ymm4
+	/* forward S4: q1 at physical bit 3 */
+	vperm2i128 $0x20,%ymm2,%ymm0,%ymm7
+	vperm2i128 $0x31,%ymm2,%ymm0,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+0(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+0(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm0
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm2
+	vperm2i128 $0x20,%ymm3,%ymm1,%ymm7
+	vperm2i128 $0x31,%ymm3,%ymm1,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+32(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+32(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm1
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm3
+	vperm2i128 $0x20,%ymm4,%ymm8,%ymm7
+	vperm2i128 $0x31,%ymm4,%ymm8,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+64(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm8
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm4
+	vperm2i128 $0x20,%ymm6,%ymm5,%ymm7
+	vperm2i128 $0x31,%ymm6,%ymm5,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+96(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+96(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm5
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm6
+	/* forward S5: q0 at physical bit 4 */
+	vpmullw .Lgp_forward_s5_qinv+0(%rip),%ymm2,%ymm7
+	vpmullw .Lgp_forward_s5_qinv+32(%rip),%ymm3,%ymm9
+	vpmullw .Lgp_forward_s5_qinv+64(%rip),%ymm4,%ymm10
+	vpmullw .Lgp_forward_s5_qinv+96(%rip),%ymm6,%ymm11
+	vpmulhw .Lgp_forward_s5_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_s5_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s5_factor+64(%rip),%ymm4,%ymm4
+	vpmulhw .Lgp_forward_s5_factor+96(%rip),%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm7,%ymm2,%ymm2
+	vpsubw %ymm9,%ymm3,%ymm3
+	vpsubw %ymm10,%ymm4,%ymm4
+	vpsubw %ymm11,%ymm6,%ymm6
+	vpsubw %ymm2,%ymm0,%ymm7
+	vpsubw %ymm3,%ymm1,%ymm9
+	vpsubw %ymm4,%ymm8,%ymm10
+	vpsubw %ymm6,%ymm5,%ymm11
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm4,%ymm8,%ymm8
+	vpaddw %ymm6,%ymm5,%ymm5
+	/* vpunpcklqdq/vpunpckhqdq: ('q2', 'q3', 'c0', 'q1', 'q0', 'c1', 'q4') -> ('q2', 'q3', 'q0', 'q1', 'c0', 'c1', 'q4') */
+	vpunpckhqdq %ymm7,%ymm0,%ymm2
+	vpunpcklqdq %ymm7,%ymm0,%ymm0
+	vpunpckhqdq %ymm9,%ymm1,%ymm3
+	vpunpcklqdq %ymm9,%ymm1,%ymm1
+	vpunpckhqdq %ymm10,%ymm8,%ymm4
+	vpunpcklqdq %ymm10,%ymm8,%ymm8
+	vpunpckhqdq %ymm11,%ymm5,%ymm6
+	vpunpcklqdq %ymm11,%ymm5,%ymm5
+	vmovdqu %ymm0,0(%rdi)
+	vmovdqu %ymm2,32(%rdi)
+	vmovdqu %ymm1,64(%rdi)
+	vmovdqu %ymm3,96(%rdi)
+	vmovdqu %ymm8,128(%rdi)
+	vmovdqu %ymm4,160(%rdi)
+	vmovdqu %ymm5,192(%rdi)
+	vmovdqu %ymm6,224(%rdi)
+	addq $256,%rsi
+	addq $256,%rdi
+	decl %ecx
+	jne .Lgt32_global_forward_core_asm_loop
+	vzeroupper
+	ret
+.size gt32_global_forward_core_asm,.-gt32_global_forward_core_asm
+
+.p2align 5
+.globl gt32_global_forward_baseinv_m_safe_core_asm
+.type gt32_global_forward_baseinv_m_safe_core_asm,@function
+gt32_global_forward_baseinv_m_safe_core_asm:
+	vmovdqa .Lgp_q(%rip),%ymm15
+	movl $6,%ecx
+.p2align 5
+.Lgt32_global_forward_baseinv_m_safe_core_asm_loop:
+	vmovdqu 0(%rsi),%ymm0
+	vmovdqu 32(%rsi),%ymm1
+	vmovdqu 64(%rsi),%ymm2
+	vmovdqu 96(%rsi),%ymm3
+	vmovdqu 128(%rsi),%ymm4
+	vmovdqu 160(%rsi),%ymm5
+	vmovdqu 192(%rsi),%ymm6
+	vmovdqu 224(%rsi),%ymm7
+	/* YMM-register-rename: ('c0', 'c1', 'q0', 'q1', 'q2', 'q3', 'q4') -> ('c0', 'c1', 'q0', 'q1', 'q3', 'q2', 'q4') */
+	/* forward S1: q4 at physical bit 6 */
+	vpsubw %ymm4,%ymm0,%ymm8
+	vpsubw %ymm6,%ymm2,%ymm9
+	vpsubw %ymm5,%ymm1,%ymm10
+	vpsubw %ymm7,%ymm3,%ymm11
+	vpaddw %ymm4,%ymm0,%ymm0
+	vpaddw %ymm6,%ymm2,%ymm2
+	vpaddw %ymm5,%ymm1,%ymm1
+	vpaddw %ymm7,%ymm3,%ymm3
+	/* M/BaseInv selective-center: vectors 0 and 4 */
+	vpmulhrsw .Lgp_center10(%rip),%ymm0,%ymm4
+	vpmulhrsw .Lgp_center10(%rip),%ymm8,%ymm5
+	vpmullw %ymm15,%ymm4,%ymm4
+	vpmullw %ymm15,%ymm5,%ymm5
+	vpsubw %ymm4,%ymm0,%ymm0
+	vpsubw %ymm5,%ymm8,%ymm8
+	/* forward S2: q3 at physical bit 4 */
+	vpmullw .Lgp_forward_s2_qinv+0(%rip),%ymm2,%ymm4
+	vpmullw .Lgp_forward_s2_qinv+32(%rip),%ymm3,%ymm5
+	vpmullw .Lgp_forward_s2_qinv+64(%rip),%ymm9,%ymm6
+	vpmullw .Lgp_forward_s2_qinv+96(%rip),%ymm11,%ymm7
+	vpmulhw .Lgp_forward_s2_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_s2_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s2_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw .Lgp_forward_s2_factor+96(%rip),%ymm11,%ymm11
+	vpmulhw %ymm15,%ymm4,%ymm4
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpsubw %ymm4,%ymm2,%ymm2
+	vpsubw %ymm5,%ymm3,%ymm3
+	vpsubw %ymm6,%ymm9,%ymm9
+	vpsubw %ymm7,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm0,%ymm4
+	vpsubw %ymm3,%ymm1,%ymm5
+	vpsubw %ymm9,%ymm8,%ymm6
+	vpsubw %ymm11,%ymm10,%ymm7
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm10,%ymm10
+	/* vpunpcklwd/vpunpckhwd: ('c0', 'c1', 'q0', 'q1', 'q3', 'q2', 'q4') -> ('q3', 'c0', 'c1', 'q1', 'q0', 'q2', 'q4') */
+	vpunpckhwd %ymm4,%ymm0,%ymm2
+	vpunpcklwd %ymm4,%ymm0,%ymm0
+	vpunpckhwd %ymm5,%ymm1,%ymm3
+	vpunpcklwd %ymm5,%ymm1,%ymm1
+	vpunpckhwd %ymm6,%ymm8,%ymm4
+	vpunpcklwd %ymm6,%ymm8,%ymm8
+	vpunpckhwd %ymm7,%ymm10,%ymm5
+	vpunpcklwd %ymm7,%ymm10,%ymm10
+	/* forward S3: q2 at physical bit 5 */
+	vpmullw .Lgp_forward_s3_qinv+0(%rip),%ymm1,%ymm6
+	vpmullw .Lgp_forward_s3_qinv+32(%rip),%ymm3,%ymm7
+	vpmullw .Lgp_forward_s3_qinv+64(%rip),%ymm10,%ymm9
+	vpmullw .Lgp_forward_s3_qinv+96(%rip),%ymm5,%ymm11
+	vpmulhw .Lgp_forward_s3_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_s3_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s3_factor+64(%rip),%ymm10,%ymm10
+	vpmulhw .Lgp_forward_s3_factor+96(%rip),%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm6,%ymm1,%ymm1
+	vpsubw %ymm7,%ymm3,%ymm3
+	vpsubw %ymm9,%ymm10,%ymm10
+	vpsubw %ymm11,%ymm5,%ymm5
+	vpsubw %ymm1,%ymm0,%ymm6
+	vpsubw %ymm3,%ymm2,%ymm7
+	vpsubw %ymm10,%ymm8,%ymm9
+	vpsubw %ymm5,%ymm4,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm2,%ymm2
+	vpaddw %ymm10,%ymm8,%ymm8
+	vpaddw %ymm5,%ymm4,%ymm4
+	/* vpunpcklwd/vpunpckhwd: ('q3', 'c0', 'c1', 'q1', 'q0', 'q2', 'q4') -> ('q2', 'q3', 'c0', 'q1', 'q0', 'c1', 'q4') */
+	vpunpckhwd %ymm6,%ymm0,%ymm1
+	vpunpcklwd %ymm6,%ymm0,%ymm0
+	vpunpckhwd %ymm7,%ymm2,%ymm3
+	vpunpcklwd %ymm7,%ymm2,%ymm2
+	vpunpckhwd %ymm9,%ymm8,%ymm5
+	vpunpcklwd %ymm9,%ymm8,%ymm8
+	vpunpckhwd %ymm11,%ymm4,%ymm6
+	vpunpcklwd %ymm11,%ymm4,%ymm4
+	/* forward S4: q1 at physical bit 3 */
+	vperm2i128 $0x20,%ymm2,%ymm0,%ymm7
+	vperm2i128 $0x31,%ymm2,%ymm0,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+0(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+0(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm0
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm2
+	vperm2i128 $0x20,%ymm3,%ymm1,%ymm7
+	vperm2i128 $0x31,%ymm3,%ymm1,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+32(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+32(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm1
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm3
+	vperm2i128 $0x20,%ymm4,%ymm8,%ymm7
+	vperm2i128 $0x31,%ymm4,%ymm8,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+64(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm8
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm4
+	vperm2i128 $0x20,%ymm6,%ymm5,%ymm7
+	vperm2i128 $0x31,%ymm6,%ymm5,%ymm9
+	vpmullw .Lgp_forward_s4_qinv+96(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_forward_s4_factor+96(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm7,%ymm10
+	vpaddw %ymm9,%ymm7,%ymm7
+	vperm2i128 $0x20,%ymm10,%ymm7,%ymm5
+	vperm2i128 $0x31,%ymm10,%ymm7,%ymm6
+	/* forward S5: q0 at physical bit 4 */
+	vpmullw .Lgp_forward_s5_qinv+0(%rip),%ymm2,%ymm7
+	vpmullw .Lgp_forward_s5_qinv+32(%rip),%ymm3,%ymm9
+	vpmullw .Lgp_forward_s5_qinv+64(%rip),%ymm4,%ymm10
+	vpmullw .Lgp_forward_s5_qinv+96(%rip),%ymm6,%ymm11
+	vpmulhw .Lgp_forward_s5_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_s5_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_s5_factor+64(%rip),%ymm4,%ymm4
+	vpmulhw .Lgp_forward_s5_factor+96(%rip),%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm7,%ymm2,%ymm2
+	vpsubw %ymm9,%ymm3,%ymm3
+	vpsubw %ymm10,%ymm4,%ymm4
+	vpsubw %ymm11,%ymm6,%ymm6
+	vpsubw %ymm2,%ymm0,%ymm7
+	vpsubw %ymm3,%ymm1,%ymm9
+	vpsubw %ymm4,%ymm8,%ymm10
+	vpsubw %ymm6,%ymm5,%ymm11
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm4,%ymm8,%ymm8
+	vpaddw %ymm6,%ymm5,%ymm5
+	/* vpunpcklqdq/vpunpckhqdq: ('q2', 'q3', 'c0', 'q1', 'q0', 'c1', 'q4') -> ('q2', 'q3', 'q0', 'q1', 'c0', 'c1', 'q4') */
+	vpunpckhqdq %ymm7,%ymm0,%ymm2
+	vpunpcklqdq %ymm7,%ymm0,%ymm0
+	vpunpckhqdq %ymm9,%ymm1,%ymm3
+	vpunpcklqdq %ymm9,%ymm1,%ymm1
+	vpunpckhqdq %ymm10,%ymm8,%ymm4
+	vpunpcklqdq %ymm10,%ymm8,%ymm8
+	vpunpckhqdq %ymm11,%ymm5,%ymm6
+	vpunpcklqdq %ymm11,%ymm5,%ymm5
+	vmovdqu %ymm0,0(%rdi)
+	vmovdqu %ymm2,32(%rdi)
+	vmovdqu %ymm1,64(%rdi)
+	vmovdqu %ymm3,96(%rdi)
+	vmovdqu %ymm8,128(%rdi)
+	vmovdqu %ymm4,160(%rdi)
+	vmovdqu %ymm5,192(%rdi)
+	vmovdqu %ymm6,224(%rdi)
+	addq $256,%rsi
+	addq $256,%rdi
+	decl %ecx
+	jne .Lgt32_global_forward_baseinv_m_safe_core_asm_loop
+	vzeroupper
+	ret
+.size gt32_global_forward_baseinv_m_safe_core_asm,.-gt32_global_forward_baseinv_m_safe_core_asm
+
+.p2align 5
+.globl gt32_progressive_suffix_forward_p_safe_core_asm
+.type gt32_progressive_suffix_forward_p_safe_core_asm,@function
+gt32_progressive_suffix_forward_p_safe_core_asm:
+	vmovdqa .Lgp_q(%rip),%ymm15
+	movl $6,%ecx
+.p2align 5
+.Lgt32_progressive_suffix_forward_p_safe_core_asm_loop:
+	vmovdqu 0(%rsi),%ymm0
+	vmovdqu 32(%rsi),%ymm1
+	vmovdqu 64(%rsi),%ymm2
+	vmovdqu 96(%rsi),%ymm3
+	vmovdqu 128(%rsi),%ymm4
+	vmovdqu 160(%rsi),%ymm5
+	vmovdqu 192(%rsi),%ymm6
+	vmovdqu 224(%rsi),%ymm7
+	/* forward_suffix_p S1: q4 at physical bit 6 */
+	vpsubw %ymm4,%ymm0,%ymm8
+	vpsubw %ymm5,%ymm1,%ymm9
+	vpsubw %ymm6,%ymm2,%ymm10
+	vpsubw %ymm7,%ymm3,%ymm11
+	vpaddw %ymm4,%ymm0,%ymm0
+	vpaddw %ymm5,%ymm1,%ymm1
+	vpaddw %ymm6,%ymm2,%ymm2
+	vpaddw %ymm7,%ymm3,%ymm3
+	/* M/BaseInv selective-center: vectors 0 and 4 */
+	vpmulhrsw .Lgp_center10(%rip),%ymm0,%ymm4
+	vpmulhrsw .Lgp_center10(%rip),%ymm8,%ymm5
+	vpmullw %ymm15,%ymm4,%ymm4
+	vpmullw %ymm15,%ymm5,%ymm5
+	vpsubw %ymm4,%ymm0,%ymm0
+	vpsubw %ymm5,%ymm8,%ymm8
+	/* forward_suffix_p S2: q3 at physical bit 5 */
+	vpmullw .Lgp_forward_suffix_p_s2_qinv+0(%rip),%ymm2,%ymm4
+	vpmullw .Lgp_forward_suffix_p_s2_qinv+32(%rip),%ymm3,%ymm5
+	vpmullw .Lgp_forward_suffix_p_s2_qinv+64(%rip),%ymm10,%ymm6
+	vpmullw .Lgp_forward_suffix_p_s2_qinv+96(%rip),%ymm11,%ymm7
+	vpmulhw .Lgp_forward_suffix_p_s2_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_p_s2_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_p_s2_factor+64(%rip),%ymm10,%ymm10
+	vpmulhw .Lgp_forward_suffix_p_s2_factor+96(%rip),%ymm11,%ymm11
+	vpmulhw %ymm15,%ymm4,%ymm4
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpsubw %ymm4,%ymm2,%ymm2
+	vpsubw %ymm5,%ymm3,%ymm3
+	vpsubw %ymm6,%ymm10,%ymm10
+	vpsubw %ymm7,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm0,%ymm4
+	vpsubw %ymm3,%ymm1,%ymm5
+	vpsubw %ymm10,%ymm8,%ymm6
+	vpsubw %ymm11,%ymm9,%ymm7
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm10,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm9,%ymm9
+	/* forward_suffix_p S3: q2 at physical bit 4 */
+	vpmullw .Lgp_forward_suffix_p_s3_qinv+0(%rip),%ymm1,%ymm2
+	vpmullw .Lgp_forward_suffix_p_s3_qinv+32(%rip),%ymm5,%ymm3
+	vpmullw .Lgp_forward_suffix_p_s3_qinv+64(%rip),%ymm9,%ymm10
+	vpmullw .Lgp_forward_suffix_p_s3_qinv+96(%rip),%ymm7,%ymm11
+	vpmulhw .Lgp_forward_suffix_p_s3_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_p_s3_factor+32(%rip),%ymm5,%ymm5
+	vpmulhw .Lgp_forward_suffix_p_s3_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw .Lgp_forward_suffix_p_s3_factor+96(%rip),%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm2,%ymm2
+	vpmulhw %ymm15,%ymm3,%ymm3
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm1,%ymm1
+	vpsubw %ymm3,%ymm5,%ymm5
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm11,%ymm7,%ymm7
+	vpsubw %ymm1,%ymm0,%ymm2
+	vpsubw %ymm5,%ymm4,%ymm3
+	vpsubw %ymm9,%ymm8,%ymm10
+	vpsubw %ymm7,%ymm6,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm7,%ymm6,%ymm6
+	/* vperm2i128-low/high-half-selection: ('c0', 'c1', 'q0', 'q1', 'q2', 'q3', 'q4') -> ('c0', 'c1', 'q0', 'q2', 'q1', 'q3', 'q4') */
+	vperm2i128 $0x31,%ymm2,%ymm0,%ymm1
+	vperm2i128 $0x20,%ymm2,%ymm0,%ymm0
+	vperm2i128 $0x31,%ymm3,%ymm4,%ymm2
+	vperm2i128 $0x20,%ymm3,%ymm4,%ymm4
+	vperm2i128 $0x31,%ymm10,%ymm8,%ymm3
+	vperm2i128 $0x20,%ymm10,%ymm8,%ymm8
+	vperm2i128 $0x31,%ymm11,%ymm6,%ymm5
+	vperm2i128 $0x20,%ymm11,%ymm6,%ymm6
+	/* forward_suffix_p S4: q1 at physical bit 4 */
+	vpmullw .Lgp_forward_suffix_p_s4_qinv+0(%rip),%ymm1,%ymm7
+	vpmullw .Lgp_forward_suffix_p_s4_qinv+32(%rip),%ymm2,%ymm9
+	vpmullw .Lgp_forward_suffix_p_s4_qinv+64(%rip),%ymm3,%ymm10
+	vpmullw .Lgp_forward_suffix_p_s4_qinv+96(%rip),%ymm5,%ymm11
+	vpmulhw .Lgp_forward_suffix_p_s4_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_p_s4_factor+32(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_p_s4_factor+64(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_p_s4_factor+96(%rip),%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm7,%ymm1,%ymm1
+	vpsubw %ymm9,%ymm2,%ymm2
+	vpsubw %ymm10,%ymm3,%ymm3
+	vpsubw %ymm11,%ymm5,%ymm5
+	vpsubw %ymm1,%ymm0,%ymm7
+	vpsubw %ymm2,%ymm4,%ymm9
+	vpsubw %ymm3,%ymm8,%ymm10
+	vpsubw %ymm5,%ymm6,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm2,%ymm4,%ymm4
+	vpaddw %ymm3,%ymm8,%ymm8
+	vpaddw %ymm5,%ymm6,%ymm6
+	/* vpunpcklwd/vpunpckhwd: ('c0', 'c1', 'q0', 'q2', 'q1', 'q3', 'q4') -> ('q1', 'c0', 'c1', 'q2', 'q0', 'q3', 'q4') */
+	vpunpckhwd %ymm7,%ymm0,%ymm1
+	vpunpcklwd %ymm7,%ymm0,%ymm0
+	vpunpckhwd %ymm9,%ymm4,%ymm2
+	vpunpcklwd %ymm9,%ymm4,%ymm4
+	vpunpckhwd %ymm10,%ymm8,%ymm3
+	vpunpcklwd %ymm10,%ymm8,%ymm8
+	vpunpckhwd %ymm11,%ymm6,%ymm5
+	vpunpcklwd %ymm11,%ymm6,%ymm6
+	/* forward_suffix_p S5: q0 at physical bit 4 */
+	vpmullw .Lgp_forward_suffix_p_s5_qinv+0(%rip),%ymm1,%ymm7
+	vpmullw .Lgp_forward_suffix_p_s5_qinv+32(%rip),%ymm2,%ymm9
+	vpmullw .Lgp_forward_suffix_p_s5_qinv+64(%rip),%ymm3,%ymm10
+	vpmullw .Lgp_forward_suffix_p_s5_qinv+96(%rip),%ymm5,%ymm11
+	vpmulhw .Lgp_forward_suffix_p_s5_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_p_s5_factor+32(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_p_s5_factor+64(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_p_s5_factor+96(%rip),%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm7,%ymm1,%ymm1
+	vpsubw %ymm9,%ymm2,%ymm2
+	vpsubw %ymm10,%ymm3,%ymm3
+	vpsubw %ymm11,%ymm5,%ymm5
+	vpsubw %ymm1,%ymm0,%ymm7
+	vpsubw %ymm2,%ymm4,%ymm9
+	vpsubw %ymm3,%ymm8,%ymm10
+	vpsubw %ymm5,%ymm6,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm2,%ymm4,%ymm4
+	vpaddw %ymm3,%ymm8,%ymm8
+	vpaddw %ymm5,%ymm6,%ymm6
+	/* vpunpckldq/vpunpckhdq: ('q1', 'c0', 'c1', 'q2', 'q0', 'q3', 'q4') -> ('q1', 'q3', 'c0', 'q2', 'q0', 'c1', 'q4') */
+	vpunpckhdq %ymm4,%ymm0,%ymm1
+	vpunpckldq %ymm4,%ymm0,%ymm0
+	vpunpckhdq %ymm9,%ymm7,%ymm2
+	vpunpckldq %ymm9,%ymm7,%ymm7
+	vpunpckhdq %ymm6,%ymm8,%ymm3
+	vpunpckldq %ymm6,%ymm8,%ymm8
+	vpunpckhdq %ymm11,%ymm10,%ymm4
+	vpunpckldq %ymm11,%ymm10,%ymm10
+	/* vpunpcklqdq/vpunpckhqdq: ('q1', 'q3', 'c0', 'q2', 'q0', 'c1', 'q4') -> ('q1', 'q3', 'q0', 'q2', 'c0', 'c1', 'q4') */
+	vpunpckhqdq %ymm7,%ymm0,%ymm5
+	vpunpcklqdq %ymm7,%ymm0,%ymm0
+	vpunpckhqdq %ymm2,%ymm1,%ymm6
+	vpunpcklqdq %ymm2,%ymm1,%ymm1
+	vpunpckhqdq %ymm10,%ymm8,%ymm2
+	vpunpcklqdq %ymm10,%ymm8,%ymm8
+	vpunpckhqdq %ymm4,%ymm3,%ymm7
+	vpunpcklqdq %ymm4,%ymm3,%ymm3
+	vmovdqu %ymm0,0(%rdi)
+	vmovdqu %ymm5,32(%rdi)
+	vmovdqu %ymm1,64(%rdi)
+	vmovdqu %ymm6,96(%rdi)
+	vmovdqu %ymm8,128(%rdi)
+	vmovdqu %ymm2,160(%rdi)
+	vmovdqu %ymm3,192(%rdi)
+	vmovdqu %ymm7,224(%rdi)
+	addq $256,%rsi
+	addq $256,%rdi
+	decl %ecx
+	jne .Lgt32_progressive_suffix_forward_p_safe_core_asm_loop
+	vzeroupper
+	ret
+.size gt32_progressive_suffix_forward_p_safe_core_asm,.-gt32_progressive_suffix_forward_p_safe_core_asm
+
+.p2align 5
+.globl gt32_progressive_suffix_forward_m_core_asm
+.type gt32_progressive_suffix_forward_m_core_asm,@function
+gt32_progressive_suffix_forward_m_core_asm:
+	vmovdqa .Lgp_q(%rip),%ymm15
+	movl $6,%ecx
+.p2align 5
+.Lgt32_progressive_suffix_forward_m_core_asm_loop:
+	vmovdqu 0(%rsi),%ymm0
+	vmovdqu 32(%rsi),%ymm1
+	vmovdqu 64(%rsi),%ymm2
+	vmovdqu 96(%rsi),%ymm3
+	vmovdqu 128(%rsi),%ymm4
+	vmovdqu 160(%rsi),%ymm5
+	vmovdqu 192(%rsi),%ymm6
+	vmovdqu 224(%rsi),%ymm7
+	/* forward_suffix_m S1: q4 at physical bit 6 */
+	vpsubw %ymm4,%ymm0,%ymm8
+	vpsubw %ymm5,%ymm1,%ymm9
+	vpsubw %ymm6,%ymm2,%ymm10
+	vpsubw %ymm7,%ymm3,%ymm11
+	vpaddw %ymm4,%ymm0,%ymm0
+	vpaddw %ymm5,%ymm1,%ymm1
+	vpaddw %ymm6,%ymm2,%ymm2
+	vpaddw %ymm7,%ymm3,%ymm3
+	/* forward_suffix_m S2: q3 at physical bit 5 */
+	vpmullw .Lgp_forward_suffix_m_s2_qinv+0(%rip),%ymm2,%ymm4
+	vpmullw .Lgp_forward_suffix_m_s2_qinv+32(%rip),%ymm3,%ymm5
+	vpmullw .Lgp_forward_suffix_m_s2_qinv+64(%rip),%ymm10,%ymm6
+	vpmullw .Lgp_forward_suffix_m_s2_qinv+96(%rip),%ymm11,%ymm7
+	vpmulhw .Lgp_forward_suffix_m_s2_factor+0(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_m_s2_factor+32(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_m_s2_factor+64(%rip),%ymm10,%ymm10
+	vpmulhw .Lgp_forward_suffix_m_s2_factor+96(%rip),%ymm11,%ymm11
+	vpmulhw %ymm15,%ymm4,%ymm4
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpsubw %ymm4,%ymm2,%ymm2
+	vpsubw %ymm5,%ymm3,%ymm3
+	vpsubw %ymm6,%ymm10,%ymm10
+	vpsubw %ymm7,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm0,%ymm4
+	vpsubw %ymm3,%ymm1,%ymm5
+	vpsubw %ymm10,%ymm8,%ymm6
+	vpsubw %ymm11,%ymm9,%ymm7
+	vpaddw %ymm2,%ymm0,%ymm0
+	vpaddw %ymm3,%ymm1,%ymm1
+	vpaddw %ymm10,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm9,%ymm9
+	/* forward_suffix_m S3: q2 at physical bit 4 */
+	vpmullw .Lgp_forward_suffix_m_s3_qinv+0(%rip),%ymm1,%ymm2
+	vpmullw .Lgp_forward_suffix_m_s3_qinv+32(%rip),%ymm5,%ymm3
+	vpmullw .Lgp_forward_suffix_m_s3_qinv+64(%rip),%ymm9,%ymm10
+	vpmullw .Lgp_forward_suffix_m_s3_qinv+96(%rip),%ymm7,%ymm11
+	vpmulhw .Lgp_forward_suffix_m_s3_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_m_s3_factor+32(%rip),%ymm5,%ymm5
+	vpmulhw .Lgp_forward_suffix_m_s3_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw .Lgp_forward_suffix_m_s3_factor+96(%rip),%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm2,%ymm2
+	vpmulhw %ymm15,%ymm3,%ymm3
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm2,%ymm1,%ymm1
+	vpsubw %ymm3,%ymm5,%ymm5
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm11,%ymm7,%ymm7
+	vpsubw %ymm1,%ymm0,%ymm2
+	vpsubw %ymm5,%ymm4,%ymm3
+	vpsubw %ymm9,%ymm8,%ymm10
+	vpsubw %ymm7,%ymm6,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm7,%ymm6,%ymm6
+	/* vperm2i128-low/high-half-selection: ('c0', 'c1', 'q0', 'q1', 'q2', 'q3', 'q4') -> ('c0', 'c1', 'q0', 'q2', 'q1', 'q3', 'q4') */
+	vperm2i128 $0x31,%ymm2,%ymm0,%ymm1
+	vperm2i128 $0x20,%ymm2,%ymm0,%ymm0
+	vperm2i128 $0x31,%ymm3,%ymm4,%ymm2
+	vperm2i128 $0x20,%ymm3,%ymm4,%ymm4
+	vperm2i128 $0x31,%ymm10,%ymm8,%ymm3
+	vperm2i128 $0x20,%ymm10,%ymm8,%ymm8
+	vperm2i128 $0x31,%ymm11,%ymm6,%ymm5
+	vperm2i128 $0x20,%ymm11,%ymm6,%ymm6
+	/* forward_suffix_m S4: q1 at physical bit 4 */
+	vpmullw .Lgp_forward_suffix_m_s4_qinv+0(%rip),%ymm1,%ymm7
+	vpmullw .Lgp_forward_suffix_m_s4_qinv+32(%rip),%ymm2,%ymm9
+	vpmullw .Lgp_forward_suffix_m_s4_qinv+64(%rip),%ymm3,%ymm10
+	vpmullw .Lgp_forward_suffix_m_s4_qinv+96(%rip),%ymm5,%ymm11
+	vpmulhw .Lgp_forward_suffix_m_s4_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_m_s4_factor+32(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_m_s4_factor+64(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_m_s4_factor+96(%rip),%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm7,%ymm1,%ymm1
+	vpsubw %ymm9,%ymm2,%ymm2
+	vpsubw %ymm10,%ymm3,%ymm3
+	vpsubw %ymm11,%ymm5,%ymm5
+	vpsubw %ymm1,%ymm0,%ymm7
+	vpsubw %ymm2,%ymm4,%ymm9
+	vpsubw %ymm3,%ymm8,%ymm10
+	vpsubw %ymm5,%ymm6,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm2,%ymm4,%ymm4
+	vpaddw %ymm3,%ymm8,%ymm8
+	vpaddw %ymm5,%ymm6,%ymm6
+	/* vpunpcklwd/vpunpckhwd: ('c0', 'c1', 'q0', 'q2', 'q1', 'q3', 'q4') -> ('q3', 'c0', 'c1', 'q2', 'q1', 'q0', 'q4') */
+	vpunpckhwd %ymm4,%ymm0,%ymm1
+	vpunpcklwd %ymm4,%ymm0,%ymm0
+	vpunpckhwd %ymm9,%ymm7,%ymm2
+	vpunpcklwd %ymm9,%ymm7,%ymm7
+	vpunpckhwd %ymm6,%ymm8,%ymm3
+	vpunpcklwd %ymm6,%ymm8,%ymm8
+	vpunpckhwd %ymm11,%ymm10,%ymm4
+	vpunpcklwd %ymm11,%ymm10,%ymm10
+	/* forward_suffix_m S5: q0 at physical bit 5 */
+	vpmullw .Lgp_forward_suffix_m_s5_qinv+0(%rip),%ymm1,%ymm5
+	vpmullw .Lgp_forward_suffix_m_s5_qinv+32(%rip),%ymm2,%ymm6
+	vpmullw .Lgp_forward_suffix_m_s5_qinv+64(%rip),%ymm3,%ymm9
+	vpmullw .Lgp_forward_suffix_m_s5_qinv+96(%rip),%ymm4,%ymm11
+	vpmulhw .Lgp_forward_suffix_m_s5_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_forward_suffix_m_s5_factor+32(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_forward_suffix_m_s5_factor+64(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_forward_suffix_m_s5_factor+96(%rip),%ymm4,%ymm4
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm1,%ymm1
+	vpsubw %ymm6,%ymm2,%ymm2
+	vpsubw %ymm9,%ymm3,%ymm3
+	vpsubw %ymm11,%ymm4,%ymm4
+	vpsubw %ymm1,%ymm0,%ymm5
+	vpsubw %ymm2,%ymm7,%ymm6
+	vpsubw %ymm3,%ymm8,%ymm9
+	vpsubw %ymm4,%ymm10,%ymm11
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm2,%ymm7,%ymm7
+	vpaddw %ymm3,%ymm8,%ymm8
+	vpaddw %ymm4,%ymm10,%ymm10
+	/* vperm2i128-low/high-half-selection: ('q3', 'c0', 'c1', 'q2', 'q1', 'q0', 'q4') -> ('q3', 'c0', 'c1', 'q1', 'q2', 'q0', 'q4') */
+	vperm2i128 $0x31,%ymm7,%ymm0,%ymm1
+	vperm2i128 $0x20,%ymm7,%ymm0,%ymm0
+	vperm2i128 $0x31,%ymm6,%ymm5,%ymm2
+	vperm2i128 $0x20,%ymm6,%ymm5,%ymm5
+	vperm2i128 $0x31,%ymm10,%ymm8,%ymm3
+	vperm2i128 $0x20,%ymm10,%ymm8,%ymm8
+	vperm2i128 $0x31,%ymm11,%ymm9,%ymm4
+	vperm2i128 $0x20,%ymm11,%ymm9,%ymm9
+	/* vpunpckldq/vpunpckhdq: ('q3', 'c0', 'c1', 'q1', 'q2', 'q0', 'q4') -> ('q3', 'q0', 'c0', 'q1', 'q2', 'c1', 'q4') */
+	vpunpckhdq %ymm5,%ymm0,%ymm6
+	vpunpckldq %ymm5,%ymm0,%ymm0
+	vpunpckhdq %ymm2,%ymm1,%ymm5
+	vpunpckldq %ymm2,%ymm1,%ymm1
+	vpunpckhdq %ymm9,%ymm8,%ymm2
+	vpunpckldq %ymm9,%ymm8,%ymm8
+	vpunpckhdq %ymm4,%ymm3,%ymm7
+	vpunpckldq %ymm4,%ymm3,%ymm3
+	/* vpunpcklwd/vpunpckhwd: ('q3', 'q0', 'c0', 'q1', 'q2', 'c1', 'q4') -> ('q2', 'q3', 'q0', 'q1', 'c0', 'c1', 'q4') */
+	vpunpckhwd %ymm1,%ymm0,%ymm4
+	vpunpcklwd %ymm1,%ymm0,%ymm0
+	vpunpckhwd %ymm5,%ymm6,%ymm1
+	vpunpcklwd %ymm5,%ymm6,%ymm6
+	vpunpckhwd %ymm3,%ymm8,%ymm5
+	vpunpcklwd %ymm3,%ymm8,%ymm8
+	vpunpckhwd %ymm7,%ymm2,%ymm3
+	vpunpcklwd %ymm7,%ymm2,%ymm2
+	vmovdqu %ymm0,0(%rdi)
+	vmovdqu %ymm4,32(%rdi)
+	vmovdqu %ymm6,64(%rdi)
+	vmovdqu %ymm1,96(%rdi)
+	vmovdqu %ymm8,128(%rdi)
+	vmovdqu %ymm5,160(%rdi)
+	vmovdqu %ymm2,192(%rdi)
+	vmovdqu %ymm3,224(%rdi)
+	addq $256,%rsi
+	addq $256,%rdi
+	decl %ecx
+	jne .Lgt32_progressive_suffix_forward_m_core_asm_loop
+	vzeroupper
+	ret
+.size gt32_progressive_suffix_forward_m_core_asm,.-gt32_progressive_suffix_forward_m_core_asm
+
+.p2align 5
+.globl gt32_global_inverse_core_asm
+.type gt32_global_inverse_core_asm,@function
+gt32_global_inverse_core_asm:
+	vmovdqa .Lgp_q(%rip),%ymm15
+	movl $6,%ecx
+.p2align 5
+.Lgt32_global_inverse_core_asm_loop:
+	vmovdqu 0(%rsi),%ymm0
+	vmovdqu 32(%rsi),%ymm1
+	vmovdqu 64(%rsi),%ymm2
+	vmovdqu 96(%rsi),%ymm3
+	vmovdqu 128(%rsi),%ymm4
+	vmovdqu 160(%rsi),%ymm5
+	vmovdqu 192(%rsi),%ymm6
+	vmovdqu 224(%rsi),%ymm7
+	/* vpunpcklwd/vpunpckhwd: ('q2', 'q3', 'q0', 'q1', 'c0', 'c1', 'q4') -> ('c0', 'q2', 'q3', 'q1', 'q0', 'c1', 'q4') */
+	vpunpckhwd %ymm1,%ymm0,%ymm8
+	vpunpcklwd %ymm1,%ymm0,%ymm0
+	vpunpckhwd %ymm3,%ymm2,%ymm1
+	vpunpcklwd %ymm3,%ymm2,%ymm2
+	vpunpckhwd %ymm5,%ymm4,%ymm3
+	vpunpcklwd %ymm5,%ymm4,%ymm4
+	vpunpckhwd %ymm7,%ymm6,%ymm5
+	vpunpcklwd %ymm7,%ymm6,%ymm6
+	/* inverse S1: q0 at physical bit 4 */
+	vpsubw %ymm8,%ymm0,%ymm7
+	vpsubw %ymm1,%ymm2,%ymm9
+	vpsubw %ymm3,%ymm4,%ymm10
+	vpsubw %ymm5,%ymm6,%ymm11
+	vpaddw %ymm8,%ymm0,%ymm0
+	vpaddw %ymm1,%ymm2,%ymm2
+	vpaddw %ymm3,%ymm4,%ymm4
+	vpaddw %ymm5,%ymm6,%ymm6
+	/* vpunpckldq/vpunpckhdq: ('c0', 'q2', 'q3', 'q1', 'q0', 'c1', 'q4') -> ('c0', 'c1', 'q2', 'q1', 'q0', 'q3', 'q4') */
+	vpunpckhdq %ymm2,%ymm0,%ymm1
+	vpunpckldq %ymm2,%ymm0,%ymm0
+	vpunpckhdq %ymm9,%ymm7,%ymm2
+	vpunpckldq %ymm9,%ymm7,%ymm7
+	vpunpckhdq %ymm6,%ymm4,%ymm3
+	vpunpckldq %ymm6,%ymm4,%ymm4
+	vpunpckhdq %ymm11,%ymm10,%ymm5
+	vpunpckldq %ymm11,%ymm10,%ymm10
+	/* vpunpcklqdq/vpunpckhqdq: ('c0', 'c1', 'q2', 'q1', 'q0', 'q3', 'q4') -> ('c0', 'c1', 'q0', 'q1', 'q2', 'q3', 'q4') */
+	vpunpckhqdq %ymm7,%ymm0,%ymm6
+	vpunpcklqdq %ymm7,%ymm0,%ymm0
+	vpunpckhqdq %ymm2,%ymm1,%ymm7
+	vpunpcklqdq %ymm2,%ymm1,%ymm1
+	vpunpckhqdq %ymm10,%ymm4,%ymm2
+	vpunpcklqdq %ymm10,%ymm4,%ymm4
+	vpunpckhqdq %ymm5,%ymm3,%ymm8
+	vpunpcklqdq %ymm5,%ymm3,%ymm3
+	/* inverse S2: q1 at physical bit 3 */
+	vperm2i128 $0x20,%ymm6,%ymm0,%ymm5
+	vperm2i128 $0x31,%ymm6,%ymm0,%ymm9
+	vpmullw .Lgp_inverse_s2_qinv+0(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_inverse_s2_factor+0(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm5,%ymm10
+	vpaddw %ymm9,%ymm5,%ymm5
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm0
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm6
+	vperm2i128 $0x20,%ymm7,%ymm1,%ymm5
+	vperm2i128 $0x31,%ymm7,%ymm1,%ymm9
+	vpmullw .Lgp_inverse_s2_qinv+32(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_inverse_s2_factor+32(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm5,%ymm10
+	vpaddw %ymm9,%ymm5,%ymm5
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm1
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm7
+	vperm2i128 $0x20,%ymm2,%ymm4,%ymm5
+	vperm2i128 $0x31,%ymm2,%ymm4,%ymm9
+	vpmullw .Lgp_inverse_s2_qinv+64(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_inverse_s2_factor+64(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm5,%ymm10
+	vpaddw %ymm9,%ymm5,%ymm5
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm4
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm2
+	vperm2i128 $0x20,%ymm8,%ymm3,%ymm5
+	vperm2i128 $0x31,%ymm8,%ymm3,%ymm9
+	vpmullw .Lgp_inverse_s2_qinv+96(%rip),%ymm9,%ymm10
+	vpmulhw .Lgp_inverse_s2_factor+96(%rip),%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpsubw %ymm10,%ymm9,%ymm9
+	vpsubw %ymm9,%ymm5,%ymm10
+	vpaddw %ymm9,%ymm5,%ymm5
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm3
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm8
+	/* inverse S3: q2 at physical bit 4 */
+	vpmullw .Lgp_inverse_s3_qinv+0(%rip),%ymm6,%ymm5
+	vpmullw .Lgp_inverse_s3_qinv+32(%rip),%ymm7,%ymm9
+	vpmullw .Lgp_inverse_s3_qinv+64(%rip),%ymm2,%ymm10
+	vpmullw .Lgp_inverse_s3_qinv+96(%rip),%ymm8,%ymm11
+	vpmulhw .Lgp_inverse_s3_factor+0(%rip),%ymm6,%ymm6
+	vpmulhw .Lgp_inverse_s3_factor+32(%rip),%ymm7,%ymm7
+	vpmulhw .Lgp_inverse_s3_factor+64(%rip),%ymm2,%ymm2
+	vpmulhw .Lgp_inverse_s3_factor+96(%rip),%ymm8,%ymm8
+	vpmulhw %ymm15,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm6,%ymm6
+	vpsubw %ymm9,%ymm7,%ymm7
+	vpsubw %ymm10,%ymm2,%ymm2
+	vpsubw %ymm11,%ymm8,%ymm8
+	vpsubw %ymm6,%ymm0,%ymm5
+	vpsubw %ymm7,%ymm1,%ymm9
+	vpsubw %ymm2,%ymm4,%ymm10
+	vpsubw %ymm8,%ymm3,%ymm11
+	vpaddw %ymm6,%ymm0,%ymm0
+	vpaddw %ymm7,%ymm1,%ymm1
+	vpaddw %ymm2,%ymm4,%ymm4
+	vpaddw %ymm8,%ymm3,%ymm3
+	/* inverse S4: q3 at physical bit 5 */
+	vpmullw .Lgp_inverse_s4_qinv+0(%rip),%ymm1,%ymm2
+	vpmullw .Lgp_inverse_s4_qinv+32(%rip),%ymm9,%ymm6
+	vpmullw .Lgp_inverse_s4_qinv+64(%rip),%ymm3,%ymm7
+	vpmullw .Lgp_inverse_s4_qinv+96(%rip),%ymm11,%ymm8
+	vpmulhw .Lgp_inverse_s4_factor+0(%rip),%ymm1,%ymm1
+	vpmulhw .Lgp_inverse_s4_factor+32(%rip),%ymm9,%ymm9
+	vpmulhw .Lgp_inverse_s4_factor+64(%rip),%ymm3,%ymm3
+	vpmulhw .Lgp_inverse_s4_factor+96(%rip),%ymm11,%ymm11
+	vpmulhw %ymm15,%ymm2,%ymm2
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm8,%ymm8
+	vpsubw %ymm2,%ymm1,%ymm1
+	vpsubw %ymm6,%ymm9,%ymm9
+	vpsubw %ymm7,%ymm3,%ymm3
+	vpsubw %ymm8,%ymm11,%ymm11
+	vpsubw %ymm1,%ymm0,%ymm2
+	vpsubw %ymm9,%ymm5,%ymm6
+	vpsubw %ymm3,%ymm4,%ymm7
+	vpsubw %ymm11,%ymm10,%ymm8
+	vpaddw %ymm1,%ymm0,%ymm0
+	vpaddw %ymm9,%ymm5,%ymm5
+	vpaddw %ymm3,%ymm4,%ymm4
+	vpaddw %ymm11,%ymm10,%ymm10
+	/* inverse S5: q4 at physical bit 6 */
+	vpmullw .Lgp_inverse_s5_qinv+0(%rip),%ymm4,%ymm1
+	vpmullw .Lgp_inverse_s5_qinv+32(%rip),%ymm10,%ymm3
+	vpmullw .Lgp_inverse_s5_qinv+64(%rip),%ymm7,%ymm9
+	vpmullw .Lgp_inverse_s5_qinv+96(%rip),%ymm8,%ymm11
+	vpmulhw .Lgp_inverse_s5_factor+0(%rip),%ymm4,%ymm4
+	vpmulhw .Lgp_inverse_s5_factor+32(%rip),%ymm10,%ymm10
+	vpmulhw .Lgp_inverse_s5_factor+64(%rip),%ymm7,%ymm7
+	vpmulhw .Lgp_inverse_s5_factor+96(%rip),%ymm8,%ymm8
+	vpmulhw %ymm15,%ymm1,%ymm1
+	vpmulhw %ymm15,%ymm3,%ymm3
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmulhw %ymm15,%ymm11,%ymm11
+	vpsubw %ymm1,%ymm4,%ymm4
+	vpsubw %ymm3,%ymm10,%ymm10
+	vpsubw %ymm9,%ymm7,%ymm7
+	vpsubw %ymm11,%ymm8,%ymm8
+	vpsubw %ymm4,%ymm0,%ymm1
+	vpsubw %ymm10,%ymm5,%ymm3
+	vpsubw %ymm7,%ymm2,%ymm9
+	vpsubw %ymm8,%ymm6,%ymm11
+	vpaddw %ymm4,%ymm0,%ymm0
+	vpaddw %ymm10,%ymm5,%ymm5
+	vpaddw %ymm7,%ymm2,%ymm2
+	vpaddw %ymm8,%ymm6,%ymm6
+	vmovdqu %ymm0,0(%rdi)
+	vmovdqu %ymm5,32(%rdi)
+	vmovdqu %ymm2,64(%rdi)
+	vmovdqu %ymm6,96(%rdi)
+	vmovdqu %ymm1,128(%rdi)
+	vmovdqu %ymm3,160(%rdi)
+	vmovdqu %ymm9,192(%rdi)
+	vmovdqu %ymm11,224(%rdi)
+	addq $256,%rsi
+	addq $256,%rdi
+	decl %ecx
+	jne .Lgt32_global_inverse_core_asm_loop
+	vzeroupper
+	ret
+.size gt32_global_inverse_core_asm,.-gt32_global_inverse_core_asm
+
+.section .rodata
+.p2align 5
+.Lgp_q:
+	.rept 16
+	.short 3457
+	.endr
+.p2align 5
+.Lgp_center10:
+	.rept 16
+	.short 10
+	.endr
+#include "../generated/tile4_global_physical_constants.inc"

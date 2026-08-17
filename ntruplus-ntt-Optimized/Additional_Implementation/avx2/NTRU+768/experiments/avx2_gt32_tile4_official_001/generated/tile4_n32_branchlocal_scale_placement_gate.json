@@ -1,0 +1,3336 @@
+{
+  "schema": "ntruplus768-gt32-n32-branchlocal-scale-placement-v1",
+  "experiment": "GT32-N32-BRANCHLOCAL-160-SCALE-PLACEMENT-022",
+  "frozen": {
+    "ownership": "branch-local peak-13-YMM",
+    "factorization": "explicit twist; S1-S3; DFT3; S4-S5",
+    "Montgomery_chains": 160,
+    "output_ABI": "current half-native e=0",
+    "consumer": "current R1-U plus typed inverse"
+  },
+  "arm_relocation_identity": {
+    "H_form": "p=dl; p*(L+wH)=stored_L+Mont(stored_H,w*p/dh)",
+    "L_form": "p=dh/w; p*(L+wH)=Mont(stored_L,p/dl)+stored_H",
+    "one_existing_Montgomery_chain_in_both_forms": true
+  },
+  "scale_assignment_search": {
+    "candidate_schedules": 65536,
+    "decisions": "four H/L arm placements at each of S2,S3,S4,S5",
+    "mixed_lane_or_pair_orientation": "excluded: would require blend/repair",
+    "ordinary_e0_output_schedules": 16,
+    "nonordinary_output_schedules": 65520,
+    "rejections_by_last_nonordinary_stage": {
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 65520
+    }
+  },
+  "exact_semantic_proof": {
+    "eligible_schedules_checked": 16,
+    "basis_vectors_checked": 3072,
+    "exact_matrix_equality": true
+  },
+  "eligible_schedule_ranges": [
+    {
+      "mask_hex": "0x0008",
+      "stage_orientation_nibbles_S2_to_S5": [
+        8,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 8,
+              "max_abs_bound": 5287
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20007
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 8,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x0009",
+      "stage_orientation_nibbles_S2_to_S5": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 9,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20008
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 9,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x000a",
+      "stage_orientation_nibbles_S2_to_S5": [
+        10,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 10,
+              "max_abs_bound": 5290
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20007
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 10,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x000b",
+      "stage_orientation_nibbles_S2_to_S5": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 11,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20008
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 11,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x0018",
+      "stage_orientation_nibbles_S2_to_S5": [
+        8,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 8,
+              "max_abs_bound": 5287
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20007
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 8,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x0019",
+      "stage_orientation_nibbles_S2_to_S5": [
+        9,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 9,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20008
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 9,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x001a",
+      "stage_orientation_nibbles_S2_to_S5": [
+        10,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 10,
+              "max_abs_bound": 5290
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20007
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 10,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x001b",
+      "stage_orientation_nibbles_S2_to_S5": [
+        11,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 11,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23318
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25296
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25296,
+            20023,
+            20008
+          ],
+          "max_output_abs_bound": 25296
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 11,
+              "max_abs_bound": 5307
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23328
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25354
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25354,
+            20024,
+            20067
+          ],
+          "max_output_abs_bound": 25354
+        }
+      ],
+      "max_output_abs_bound": 25354
+    },
+    {
+      "mask_hex": "0x0000",
+      "stage_orientation_nibbles_S2_to_S5": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 0,
+              "max_abs_bound": 5285
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 0,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0001",
+      "stage_orientation_nibbles_S2_to_S5": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 1,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 1,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0002",
+      "stage_orientation_nibbles_S2_to_S5": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 2,
+              "max_abs_bound": 5290
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 2,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0003",
+      "stage_orientation_nibbles_S2_to_S5": [
+        3,
+        0,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 3,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 3,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 0,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0010",
+      "stage_orientation_nibbles_S2_to_S5": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 0,
+              "max_abs_bound": 5285
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 0,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0011",
+      "stage_orientation_nibbles_S2_to_S5": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 1,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 1,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0012",
+      "stage_orientation_nibbles_S2_to_S5": [
+        2,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 2,
+              "max_abs_bound": 5290
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 2,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    },
+    {
+      "mask_hex": "0x0013",
+      "stage_orientation_nibbles_S2_to_S5": [
+        3,
+        1,
+        0,
+        0
+      ],
+      "branch_records": [
+        {
+          "branch": 0,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3576
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 3,
+              "max_abs_bound": 5308
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7087
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23276
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25519
+            }
+          ],
+          "DFT3_max_abs_bound": 21185,
+          "output_abs_bounds_by_k3": [
+            25519,
+            20205,
+            20173
+          ],
+          "max_output_abs_bound": 25519
+        },
+        {
+          "branch": 1,
+          "stage_bounds": [
+            {
+              "stage": 1,
+              "arm": "raw",
+              "max_abs_bound": 3573
+            },
+            {
+              "stage": 2,
+              "orientation_bits": 3,
+              "max_abs_bound": 5316
+            },
+            {
+              "stage": 3,
+              "orientation_bits": 1,
+              "max_abs_bound": 7119
+            },
+            {
+              "stage": 4,
+              "orientation_bits": 0,
+              "max_abs_bound": 23286
+            },
+            {
+              "stage": 5,
+              "orientation_bits": 0,
+              "max_abs_bound": 25577
+            }
+          ],
+          "DFT3_max_abs_bound": 21221,
+          "output_abs_bounds_by_k3": [
+            25577,
+            20190,
+            20233
+          ],
+          "max_output_abs_bound": 25577
+        }
+      ],
+      "max_output_abs_bound": 25577
+    }
+  ],
+  "best_schedule": {
+    "mask_hex": "0x0008",
+    "stage_orientation_nibbles_S2_to_S5": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "branch_records": [
+      {
+        "branch": 0,
+        "stage_bounds": [
+          {
+            "stage": 1,
+            "arm": "raw",
+            "max_abs_bound": 3576
+          },
+          {
+            "stage": 2,
+            "orientation_bits": 8,
+            "max_abs_bound": 5287
+          },
+          {
+            "stage": 3,
+            "orientation_bits": 0,
+            "max_abs_bound": 7087
+          },
+          {
+            "stage": 4,
+            "orientation_bits": 0,
+            "max_abs_bound": 23318
+          },
+          {
+            "stage": 5,
+            "orientation_bits": 0,
+            "max_abs_bound": 25296
+          }
+        ],
+        "DFT3_max_abs_bound": 21185,
+        "output_abs_bounds_by_k3": [
+          25296,
+          20023,
+          20007
+        ],
+        "max_output_abs_bound": 25296
+      },
+      {
+        "branch": 1,
+        "stage_bounds": [
+          {
+            "stage": 1,
+            "arm": "raw",
+            "max_abs_bound": 3573
+          },
+          {
+            "stage": 2,
+            "orientation_bits": 8,
+            "max_abs_bound": 5307
+          },
+          {
+            "stage": 3,
+            "orientation_bits": 0,
+            "max_abs_bound": 7119
+          },
+          {
+            "stage": 4,
+            "orientation_bits": 0,
+            "max_abs_bound": 23328
+          },
+          {
+            "stage": 5,
+            "orientation_bits": 0,
+            "max_abs_bound": 25354
+          }
+        ],
+        "DFT3_max_abs_bound": 21221,
+        "output_abs_bounds_by_k3": [
+          25354,
+          20024,
+          20067
+        ],
+        "max_output_abs_bound": 25354
+      }
+    ],
+    "max_output_abs_bound": 25354
+  },
+  "scale_placement_pass": false,
+  "consumer_backup_probe": {
+    "raw_x_raw": {
+      "records": [
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 0,
+          "input_abs_bound": 24437,
+          "max_raw_accumulator_abs_bound": 2388667876,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 1,
+          "input_abs_bound": 24437,
+          "max_raw_accumulator_abs_bound": 2388667876,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 2,
+          "input_abs_bound": 24512,
+          "max_raw_accumulator_abs_bound": 2403352576,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 3,
+          "input_abs_bound": 24512,
+          "max_raw_accumulator_abs_bound": 2403352576,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 4,
+          "input_abs_bound": 24494,
+          "max_raw_accumulator_abs_bound": 2399824144,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 5,
+          "input_abs_bound": 24494,
+          "max_raw_accumulator_abs_bound": 2399824144,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 6,
+          "input_abs_bound": 24833,
+          "max_raw_accumulator_abs_bound": 2466711556,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 7,
+          "input_abs_bound": 24833,
+          "max_raw_accumulator_abs_bound": 2466711556,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 8,
+          "input_abs_bound": 24694,
+          "max_raw_accumulator_abs_bound": 2439174544,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 9,
+          "input_abs_bound": 24695,
+          "max_raw_accumulator_abs_bound": 2439372100,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 10,
+          "input_abs_bound": 24868,
+          "max_raw_accumulator_abs_bound": 2473669696,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 11,
+          "input_abs_bound": 24868,
+          "max_raw_accumulator_abs_bound": 2473669696,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 12,
+          "input_abs_bound": 24895,
+          "max_raw_accumulator_abs_bound": 2479044100,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 13,
+          "input_abs_bound": 24895,
+          "max_raw_accumulator_abs_bound": 2479044100,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 14,
+          "input_abs_bound": 25142,
+          "max_raw_accumulator_abs_bound": 2528480656,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 15,
+          "input_abs_bound": 25142,
+          "max_raw_accumulator_abs_bound": 2528480656,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 16,
+          "input_abs_bound": 24984,
+          "max_raw_accumulator_abs_bound": 2496801024,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 17,
+          "input_abs_bound": 24984,
+          "max_raw_accumulator_abs_bound": 2496801024,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 18,
+          "input_abs_bound": 24973,
+          "max_raw_accumulator_abs_bound": 2494602916,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 19,
+          "input_abs_bound": 24973,
+          "max_raw_accumulator_abs_bound": 2494602916,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 20,
+          "input_abs_bound": 25296,
+          "max_raw_accumulator_abs_bound": 2559550464,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 21,
+          "input_abs_bound": 25296,
+          "max_raw_accumulator_abs_bound": 2559550464,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 22,
+          "input_abs_bound": 25059,
+          "max_raw_accumulator_abs_bound": 2511813924,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 23,
+          "input_abs_bound": 25059,
+          "max_raw_accumulator_abs_bound": 2511813924,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 24,
+          "input_abs_bound": 24793,
+          "max_raw_accumulator_abs_bound": 2458771396,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 25,
+          "input_abs_bound": 24793,
+          "max_raw_accumulator_abs_bound": 2458771396,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 26,
+          "input_abs_bound": 24501,
+          "max_raw_accumulator_abs_bound": 2401196004,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 27,
+          "input_abs_bound": 24501,
+          "max_raw_accumulator_abs_bound": 2401196004,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 28,
+          "input_abs_bound": 24908,
+          "max_raw_accumulator_abs_bound": 2481633856,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 29,
+          "input_abs_bound": 24908,
+          "max_raw_accumulator_abs_bound": 2481633856,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 30,
+          "input_abs_bound": 25266,
+          "max_raw_accumulator_abs_bound": 2553483024,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 0,
+          "q": 31,
+          "input_abs_bound": 25266,
+          "max_raw_accumulator_abs_bound": 2553483024,
+          "signed32_safe": false
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 0,
+          "input_abs_bound": 19380,
+          "max_raw_accumulator_abs_bound": 1502337600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 1,
+          "input_abs_bound": 19380,
+          "max_raw_accumulator_abs_bound": 1502337600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 2,
+          "input_abs_bound": 19438,
+          "max_raw_accumulator_abs_bound": 1511343376,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 3,
+          "input_abs_bound": 19438,
+          "max_raw_accumulator_abs_bound": 1511343376,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 4,
+          "input_abs_bound": 19425,
+          "max_raw_accumulator_abs_bound": 1509322500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 5,
+          "input_abs_bound": 19425,
+          "max_raw_accumulator_abs_bound": 1509322500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 6,
+          "input_abs_bound": 19676,
+          "max_raw_accumulator_abs_bound": 1548579904,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 7,
+          "input_abs_bound": 19674,
+          "max_raw_accumulator_abs_bound": 1548265104,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 8,
+          "input_abs_bound": 19564,
+          "max_raw_accumulator_abs_bound": 1531000384,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 9,
+          "input_abs_bound": 19563,
+          "max_raw_accumulator_abs_bound": 1530843876,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 10,
+          "input_abs_bound": 19700,
+          "max_raw_accumulator_abs_bound": 1552360000,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 11,
+          "input_abs_bound": 19700,
+          "max_raw_accumulator_abs_bound": 1552360000,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 12,
+          "input_abs_bound": 19716,
+          "max_raw_accumulator_abs_bound": 1554882624,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 13,
+          "input_abs_bound": 19716,
+          "max_raw_accumulator_abs_bound": 1554882624,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 14,
+          "input_abs_bound": 19912,
+          "max_raw_accumulator_abs_bound": 1585950976,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 15,
+          "input_abs_bound": 19912,
+          "max_raw_accumulator_abs_bound": 1585950976,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 16,
+          "input_abs_bound": 19801,
+          "max_raw_accumulator_abs_bound": 1568318404,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 17,
+          "input_abs_bound": 19801,
+          "max_raw_accumulator_abs_bound": 1568318404,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 18,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 19,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 20,
+          "input_abs_bound": 20014,
+          "max_raw_accumulator_abs_bound": 1602240784,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 21,
+          "input_abs_bound": 20020,
+          "max_raw_accumulator_abs_bound": 1603201600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 22,
+          "input_abs_bound": 19831,
+          "max_raw_accumulator_abs_bound": 1573074244,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 23,
+          "input_abs_bound": 19831,
+          "max_raw_accumulator_abs_bound": 1573074244,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 24,
+          "input_abs_bound": 19654,
+          "max_raw_accumulator_abs_bound": 1545118864,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 25,
+          "input_abs_bound": 19654,
+          "max_raw_accumulator_abs_bound": 1545118864,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 26,
+          "input_abs_bound": 19428,
+          "max_raw_accumulator_abs_bound": 1509788736,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 27,
+          "input_abs_bound": 19429,
+          "max_raw_accumulator_abs_bound": 1509944164,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 28,
+          "input_abs_bound": 19750,
+          "max_raw_accumulator_abs_bound": 1560250000,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 29,
+          "input_abs_bound": 19745,
+          "max_raw_accumulator_abs_bound": 1559460100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 30,
+          "input_abs_bound": 20023,
+          "max_raw_accumulator_abs_bound": 1603682116,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 1,
+          "q": 31,
+          "input_abs_bound": 20023,
+          "max_raw_accumulator_abs_bound": 1603682116,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 0,
+          "input_abs_bound": 19360,
+          "max_raw_accumulator_abs_bound": 1499238400,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 1,
+          "input_abs_bound": 19360,
+          "max_raw_accumulator_abs_bound": 1499238400,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 2,
+          "input_abs_bound": 19418,
+          "max_raw_accumulator_abs_bound": 1508234896,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 3,
+          "input_abs_bound": 19418,
+          "max_raw_accumulator_abs_bound": 1508234896,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 4,
+          "input_abs_bound": 19405,
+          "max_raw_accumulator_abs_bound": 1506216100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 5,
+          "input_abs_bound": 19405,
+          "max_raw_accumulator_abs_bound": 1506216100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 6,
+          "input_abs_bound": 19656,
+          "max_raw_accumulator_abs_bound": 1545433344,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 7,
+          "input_abs_bound": 19654,
+          "max_raw_accumulator_abs_bound": 1545118864,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 8,
+          "input_abs_bound": 19544,
+          "max_raw_accumulator_abs_bound": 1527871744,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 9,
+          "input_abs_bound": 19543,
+          "max_raw_accumulator_abs_bound": 1527715396,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 10,
+          "input_abs_bound": 19680,
+          "max_raw_accumulator_abs_bound": 1549209600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 11,
+          "input_abs_bound": 19680,
+          "max_raw_accumulator_abs_bound": 1549209600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 12,
+          "input_abs_bound": 19689,
+          "max_raw_accumulator_abs_bound": 1550626884,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 13,
+          "input_abs_bound": 19689,
+          "max_raw_accumulator_abs_bound": 1550626884,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 14,
+          "input_abs_bound": 19892,
+          "max_raw_accumulator_abs_bound": 1582766656,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 15,
+          "input_abs_bound": 19892,
+          "max_raw_accumulator_abs_bound": 1582766656,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 16,
+          "input_abs_bound": 19786,
+          "max_raw_accumulator_abs_bound": 1565943184,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 17,
+          "input_abs_bound": 19786,
+          "max_raw_accumulator_abs_bound": 1565943184,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 18,
+          "input_abs_bound": 19774,
+          "max_raw_accumulator_abs_bound": 1564044304,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 19,
+          "input_abs_bound": 19774,
+          "max_raw_accumulator_abs_bound": 1564044304,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 20,
+          "input_abs_bound": 19998,
+          "max_raw_accumulator_abs_bound": 1599680016,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 21,
+          "input_abs_bound": 19998,
+          "max_raw_accumulator_abs_bound": 1599680016,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 22,
+          "input_abs_bound": 19815,
+          "max_raw_accumulator_abs_bound": 1570536900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 23,
+          "input_abs_bound": 19815,
+          "max_raw_accumulator_abs_bound": 1570536900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 24,
+          "input_abs_bound": 19638,
+          "max_raw_accumulator_abs_bound": 1542604176,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 25,
+          "input_abs_bound": 19638,
+          "max_raw_accumulator_abs_bound": 1542604176,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 26,
+          "input_abs_bound": 19412,
+          "max_raw_accumulator_abs_bound": 1507302976,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 27,
+          "input_abs_bound": 19412,
+          "max_raw_accumulator_abs_bound": 1507302976,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 28,
+          "input_abs_bound": 19729,
+          "max_raw_accumulator_abs_bound": 1556933764,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 29,
+          "input_abs_bound": 19729,
+          "max_raw_accumulator_abs_bound": 1556933764,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 30,
+          "input_abs_bound": 20007,
+          "max_raw_accumulator_abs_bound": 1601120196,
+          "signed32_safe": true
+        },
+        {
+          "branch": 0,
+          "k3": 2,
+          "q": 31,
+          "input_abs_bound": 20007,
+          "max_raw_accumulator_abs_bound": 1601120196,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 0,
+          "input_abs_bound": 24519,
+          "max_raw_accumulator_abs_bound": 2404725444,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 1,
+          "input_abs_bound": 24519,
+          "max_raw_accumulator_abs_bound": 2404725444,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 2,
+          "input_abs_bound": 24594,
+          "max_raw_accumulator_abs_bound": 2419459344,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 3,
+          "input_abs_bound": 24594,
+          "max_raw_accumulator_abs_bound": 2419459344,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 4,
+          "input_abs_bound": 24576,
+          "max_raw_accumulator_abs_bound": 2415919104,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 5,
+          "input_abs_bound": 24576,
+          "max_raw_accumulator_abs_bound": 2415919104,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 6,
+          "input_abs_bound": 24915,
+          "max_raw_accumulator_abs_bound": 2483028900,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 7,
+          "input_abs_bound": 24915,
+          "max_raw_accumulator_abs_bound": 2483028900,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 8,
+          "input_abs_bound": 24776,
+          "max_raw_accumulator_abs_bound": 2455400704,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 9,
+          "input_abs_bound": 24776,
+          "max_raw_accumulator_abs_bound": 2455400704,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 10,
+          "input_abs_bound": 24950,
+          "max_raw_accumulator_abs_bound": 2490010000,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 11,
+          "input_abs_bound": 24950,
+          "max_raw_accumulator_abs_bound": 2490010000,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 12,
+          "input_abs_bound": 24977,
+          "max_raw_accumulator_abs_bound": 2495402116,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 13,
+          "input_abs_bound": 24977,
+          "max_raw_accumulator_abs_bound": 2495402116,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 14,
+          "input_abs_bound": 25224,
+          "max_raw_accumulator_abs_bound": 2545000704,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 15,
+          "input_abs_bound": 25224,
+          "max_raw_accumulator_abs_bound": 2545000704,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 16,
+          "input_abs_bound": 25044,
+          "max_raw_accumulator_abs_bound": 2508807744,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 17,
+          "input_abs_bound": 25044,
+          "max_raw_accumulator_abs_bound": 2508807744,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 18,
+          "input_abs_bound": 25027,
+          "max_raw_accumulator_abs_bound": 2505402916,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 19,
+          "input_abs_bound": 25027,
+          "max_raw_accumulator_abs_bound": 2505402916,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 20,
+          "input_abs_bound": 25354,
+          "max_raw_accumulator_abs_bound": 2571301264,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 21,
+          "input_abs_bound": 25354,
+          "max_raw_accumulator_abs_bound": 2571301264,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 22,
+          "input_abs_bound": 25117,
+          "max_raw_accumulator_abs_bound": 2523454756,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 23,
+          "input_abs_bound": 25117,
+          "max_raw_accumulator_abs_bound": 2523454756,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 24,
+          "input_abs_bound": 24851,
+          "max_raw_accumulator_abs_bound": 2470288804,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 25,
+          "input_abs_bound": 24851,
+          "max_raw_accumulator_abs_bound": 2470288804,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 26,
+          "input_abs_bound": 24559,
+          "max_raw_accumulator_abs_bound": 2412577924,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 27,
+          "input_abs_bound": 24559,
+          "max_raw_accumulator_abs_bound": 2412577924,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 28,
+          "input_abs_bound": 24966,
+          "max_raw_accumulator_abs_bound": 2493204624,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 29,
+          "input_abs_bound": 24966,
+          "max_raw_accumulator_abs_bound": 2493204624,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 30,
+          "input_abs_bound": 25327,
+          "max_raw_accumulator_abs_bound": 2565827716,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 0,
+          "q": 31,
+          "input_abs_bound": 25327,
+          "max_raw_accumulator_abs_bound": 2565827716,
+          "signed32_safe": false
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 0,
+          "input_abs_bound": 19375,
+          "max_raw_accumulator_abs_bound": 1501562500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 1,
+          "input_abs_bound": 19375,
+          "max_raw_accumulator_abs_bound": 1501562500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 2,
+          "input_abs_bound": 19433,
+          "max_raw_accumulator_abs_bound": 1510565956,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 3,
+          "input_abs_bound": 19433,
+          "max_raw_accumulator_abs_bound": 1510565956,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 4,
+          "input_abs_bound": 19420,
+          "max_raw_accumulator_abs_bound": 1508545600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 5,
+          "input_abs_bound": 19420,
+          "max_raw_accumulator_abs_bound": 1508545600,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 6,
+          "input_abs_bound": 19671,
+          "max_raw_accumulator_abs_bound": 1547792964,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 7,
+          "input_abs_bound": 19669,
+          "max_raw_accumulator_abs_bound": 1547478244,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 8,
+          "input_abs_bound": 19559,
+          "max_raw_accumulator_abs_bound": 1530217924,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 9,
+          "input_abs_bound": 19558,
+          "max_raw_accumulator_abs_bound": 1530061456,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 10,
+          "input_abs_bound": 19695,
+          "max_raw_accumulator_abs_bound": 1551572100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 11,
+          "input_abs_bound": 19695,
+          "max_raw_accumulator_abs_bound": 1551572100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 12,
+          "input_abs_bound": 19704,
+          "max_raw_accumulator_abs_bound": 1552990464,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 13,
+          "input_abs_bound": 19704,
+          "max_raw_accumulator_abs_bound": 1552990464,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 14,
+          "input_abs_bound": 19907,
+          "max_raw_accumulator_abs_bound": 1585154596,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 15,
+          "input_abs_bound": 19907,
+          "max_raw_accumulator_abs_bound": 1585154596,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 16,
+          "input_abs_bound": 19803,
+          "max_raw_accumulator_abs_bound": 1568635236,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 17,
+          "input_abs_bound": 19803,
+          "max_raw_accumulator_abs_bound": 1568635236,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 18,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 19,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 20,
+          "input_abs_bound": 20015,
+          "max_raw_accumulator_abs_bound": 1602400900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 21,
+          "input_abs_bound": 20015,
+          "max_raw_accumulator_abs_bound": 1602400900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 22,
+          "input_abs_bound": 19832,
+          "max_raw_accumulator_abs_bound": 1573232896,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 23,
+          "input_abs_bound": 19832,
+          "max_raw_accumulator_abs_bound": 1573232896,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 24,
+          "input_abs_bound": 19655,
+          "max_raw_accumulator_abs_bound": 1545276100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 25,
+          "input_abs_bound": 19655,
+          "max_raw_accumulator_abs_bound": 1545276100,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 26,
+          "input_abs_bound": 19429,
+          "max_raw_accumulator_abs_bound": 1509944164,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 27,
+          "input_abs_bound": 19429,
+          "max_raw_accumulator_abs_bound": 1509944164,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 28,
+          "input_abs_bound": 19746,
+          "max_raw_accumulator_abs_bound": 1559618064,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 29,
+          "input_abs_bound": 19746,
+          "max_raw_accumulator_abs_bound": 1559618064,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 30,
+          "input_abs_bound": 20024,
+          "max_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 1,
+          "q": 31,
+          "input_abs_bound": 20024,
+          "max_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 0,
+          "input_abs_bound": 19415,
+          "max_raw_accumulator_abs_bound": 1507768900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 1,
+          "input_abs_bound": 19415,
+          "max_raw_accumulator_abs_bound": 1507768900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 2,
+          "input_abs_bound": 19473,
+          "max_raw_accumulator_abs_bound": 1516790916,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 3,
+          "input_abs_bound": 19473,
+          "max_raw_accumulator_abs_bound": 1516790916,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 4,
+          "input_abs_bound": 19460,
+          "max_raw_accumulator_abs_bound": 1514766400,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 5,
+          "input_abs_bound": 19460,
+          "max_raw_accumulator_abs_bound": 1514766400,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 6,
+          "input_abs_bound": 19709,
+          "max_raw_accumulator_abs_bound": 1553778724,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 7,
+          "input_abs_bound": 19711,
+          "max_raw_accumulator_abs_bound": 1554094084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 8,
+          "input_abs_bound": 19598,
+          "max_raw_accumulator_abs_bound": 1536326416,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 9,
+          "input_abs_bound": 19599,
+          "max_raw_accumulator_abs_bound": 1536483204,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 10,
+          "input_abs_bound": 19735,
+          "max_raw_accumulator_abs_bound": 1557880900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 11,
+          "input_abs_bound": 19735,
+          "max_raw_accumulator_abs_bound": 1557880900,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 12,
+          "input_abs_bound": 19744,
+          "max_raw_accumulator_abs_bound": 1559302144,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 13,
+          "input_abs_bound": 19744,
+          "max_raw_accumulator_abs_bound": 1559302144,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 14,
+          "input_abs_bound": 19947,
+          "max_raw_accumulator_abs_bound": 1591531236,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 15,
+          "input_abs_bound": 19947,
+          "max_raw_accumulator_abs_bound": 1591531236,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 16,
+          "input_abs_bound": 19849,
+          "max_raw_accumulator_abs_bound": 1575931204,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 17,
+          "input_abs_bound": 19849,
+          "max_raw_accumulator_abs_bound": 1575931204,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 18,
+          "input_abs_bound": 19833,
+          "max_raw_accumulator_abs_bound": 1573391556,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 19,
+          "input_abs_bound": 19833,
+          "max_raw_accumulator_abs_bound": 1573391556,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 20,
+          "input_abs_bound": 20058,
+          "max_raw_accumulator_abs_bound": 1609293456,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 21,
+          "input_abs_bound": 20058,
+          "max_raw_accumulator_abs_bound": 1609293456,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 22,
+          "input_abs_bound": 19875,
+          "max_raw_accumulator_abs_bound": 1580062500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 23,
+          "input_abs_bound": 19875,
+          "max_raw_accumulator_abs_bound": 1580062500,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 24,
+          "input_abs_bound": 19698,
+          "max_raw_accumulator_abs_bound": 1552044816,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 25,
+          "input_abs_bound": 19698,
+          "max_raw_accumulator_abs_bound": 1552044816,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 26,
+          "input_abs_bound": 19472,
+          "max_raw_accumulator_abs_bound": 1516635136,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 27,
+          "input_abs_bound": 19472,
+          "max_raw_accumulator_abs_bound": 1516635136,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 28,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 29,
+          "input_abs_bound": 19789,
+          "max_raw_accumulator_abs_bound": 1566418084,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 30,
+          "input_abs_bound": 20067,
+          "max_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true
+        },
+        {
+          "branch": 1,
+          "k3": 2,
+          "q": 31,
+          "input_abs_bound": 20067,
+          "max_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true
+        }
+      ],
+      "unsafe_q_count": 64
+    },
+    "selective_raw_x_centered": {
+      "repaired_operand": "A only",
+      "repaired_physical_vectors": 16,
+      "total_physical_vectors_per_operand": 48,
+      "center10_instructions": 48,
+      "packet_repairs": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        [
+          0,
+          0,
+          7
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          2
+        ],
+        [
+          1,
+          0,
+          3
+        ],
+        [
+          1,
+          0,
+          4
+        ],
+        [
+          1,
+          0,
+          5
+        ],
+        [
+          1,
+          0,
+          6
+        ],
+        [
+          1,
+          0,
+          7
+        ]
+      ],
+      "maximum_raw_accumulator_abs_bound": 1610737956,
+      "signed32_safe": true,
+      "IDFT3_internal_abs_bound": 55963,
+      "existing_inverse_proof": null
+    },
+    "six_group_exhaustive_search": {
+      "candidate_masks": 64,
+      "accumulator_pruned_masks": 48,
+      "inverse_masks_evaluated": 16,
+      "required_group_mask_hex": "0x09",
+      "group_definition": "one branch/k3 plane = eight physical YMM",
+      "passing_schedule_count": 0,
+      "minimum_passing_schedule": null,
+      "schedules": [
+        {
+          "group_mask_hex": "0x09",
+          "repaired_branch_k3_groups": 2,
+          "repaired_physical_vectors": 16,
+          "center10_instructions": 48,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55963,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x0b",
+          "repaired_branch_k3_groups": 3,
+          "repaired_physical_vectors": 24,
+          "center10_instructions": 72,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55963,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x0d",
+          "repaired_branch_k3_groups": 3,
+          "repaired_physical_vectors": 24,
+          "center10_instructions": 72,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55963,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x0f",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55963,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x19",
+          "repaired_branch_k3_groups": 3,
+          "repaired_physical_vectors": 24,
+          "center10_instructions": 72,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55815,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x1b",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34814,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x1d",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34814,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x1f",
+          "repaired_branch_k3_groups": 5,
+          "repaired_physical_vectors": 40,
+          "center10_instructions": 120,
+          "maximum_raw_accumulator_abs_bound": 1610737956,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34814,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x29",
+          "repaired_branch_k3_groups": 3,
+          "repaired_physical_vectors": 24,
+          "center10_instructions": 72,
+          "maximum_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55815,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x2b",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34716,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x2d",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34716,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x2f",
+          "repaired_branch_k3_groups": 5,
+          "repaired_physical_vectors": 40,
+          "center10_instructions": 120,
+          "maximum_raw_accumulator_abs_bound": 1603842304,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34716,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x39",
+          "repaired_branch_k3_groups": 4,
+          "repaired_physical_vectors": 32,
+          "center10_instructions": 96,
+          "maximum_raw_accumulator_abs_bound": 1603682116,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 55815,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x3b",
+          "repaired_branch_k3_groups": 5,
+          "repaired_physical_vectors": 40,
+          "center10_instructions": 120,
+          "maximum_raw_accumulator_abs_bound": 1601120196,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34667,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x3d",
+          "repaired_branch_k3_groups": 5,
+          "repaired_physical_vectors": 40,
+          "center10_instructions": 120,
+          "maximum_raw_accumulator_abs_bound": 1603682116,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 34704,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": null
+        },
+        {
+          "group_mask_hex": "0x3f",
+          "repaired_branch_k3_groups": 6,
+          "repaired_physical_vectors": 48,
+          "center10_instructions": 144,
+          "maximum_raw_accumulator_abs_bound": 312361280,
+          "signed32_safe": true,
+          "IDFT3_internal_abs_bound": 13567,
+          "inverse_safe": false,
+          "inverse_terminal_abs_bound": 34319
+        }
+      ]
+    },
+    "two_sided_full_center_control": {
+      "repaired_physical_vectors": 96,
+      "center10_instructions": 288,
+      "consumer_contract": "safe by the existing full-centered raw Forward -> R1-U -> inverse proof",
+      "credible_against_32_instruction_chain_credit": false
+    }
+  },
+  "consumer_backup_pass": false,
+  "assembly_emitted": false,
+  "decision": "scale-placement-hard-stop-before-assembly",
+  "conclusion": "Only 16 of 65536 AVX2-uniform H/L schedules return the existing e=0 output ABI.  All freedom is confined to early S2 operations; S3-S5 are forced back to high-arm CT.  The best natural output bound is 25354, still above 10788.  Thus the existing 160 chains cannot be relocated into a final reducing layer at the current pair-packed granularity.",
+  "reopen_only_if": [
+    "mixed-lane arm placement is achieved without extra blends or chains",
+    "the output ABI permits nonuniform per-leaf diagonal scales",
+    "a consumer-native selective repair passes with less than the 32-instruction chain credit"
+  ]
+}

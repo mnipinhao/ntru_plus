@@ -1,0 +1,248 @@
+{
+  "schema": "ntruplus768-gt32-n32-r1u-safe-representative-v1",
+  "experiment": "GT-N32-R1U-SAFE-REP-009",
+  "scope": "R1U-finalizer-only-no-BM-algebra-change",
+  "dangerous_arm_target_abs_bound": 13380,
+  "zero_instruction_candidates": {
+    "unsigned_vs_signed_REDC16_per_k3_idealization": [
+      {
+        "k3_modes": [
+          "U",
+          "U",
+          "U"
+        ],
+        "IDFT_row_abs_bounds": [
+          12919,
+          19387,
+          19387
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "U",
+          "U",
+          "S"
+        ],
+        "IDFT_row_abs_bounds": [
+          13099,
+          19404,
+          21089
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "U",
+          "S",
+          "U"
+        ],
+        "IDFT_row_abs_bounds": [
+          13099,
+          21089,
+          19404
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "U",
+          "S",
+          "S"
+        ],
+        "IDFT_row_abs_bounds": [
+          13099,
+          21115,
+          21115
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "S",
+          "U",
+          "U"
+        ],
+        "IDFT_row_abs_bounds": [
+          11550,
+          21115,
+          21115
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "S",
+          "U",
+          "S"
+        ],
+        "IDFT_row_abs_bounds": [
+          11550,
+          21089,
+          19403
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "S",
+          "S",
+          "U"
+        ],
+        "IDFT_row_abs_bounds": [
+          11550,
+          19403,
+          21089
+        ],
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "k3_modes": [
+          "S",
+          "S",
+          "S"
+        ],
+        "IDFT_row_abs_bounds": [
+          11370,
+          19386,
+          19386
+        ],
+        "dangerous_rows_at_most_13380": false
+      }
+    ],
+    "best_witness_bound": 19386,
+    "target_met": false
+  },
+  "constant_q_bias": {
+    "residue_preserving": true,
+    "can_reduce_interval_width": false,
+    "both_L2_sum_and_difference_required": true,
+    "decision": "a-constant-shift-moves-sum-and-difference-in-opposite-directions"
+  },
+  "low_increment_candidates": {
+    "center_complete_k3_streams": [
+      {
+        "centered_k3_rows": [
+          0
+        ],
+        "IDFT_row_abs_bounds": [
+          4897,
+          14462,
+          14462
+        ],
+        "estimated_instructions": 48,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          1
+        ],
+        "IDFT_row_abs_bounds": [
+          12739,
+          14527,
+          19322
+        ],
+        "estimated_instructions": 48,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "IDFT_row_abs_bounds": [
+          4537,
+          6013,
+          14340
+        ],
+        "estimated_instructions": 96,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          2
+        ],
+        "IDFT_row_abs_bounds": [
+          12739,
+          19322,
+          14527
+        ],
+        "estimated_instructions": 48,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "IDFT_row_abs_bounds": [
+          4537,
+          14340,
+          6013
+        ],
+        "estimated_instructions": 96,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "IDFT_row_abs_bounds": [
+          12378,
+          14462,
+          14462
+        ],
+        "estimated_instructions": 96,
+        "dangerous_rows_at_most_13380": false
+      },
+      {
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "IDFT_row_abs_bounds": [
+          3996,
+          5900,
+          5900
+        ],
+        "estimated_instructions": 144,
+        "dangerous_rows_at_most_13380": true
+      }
+    ],
+    "single_stream_best_dangerous_bound": 14462,
+    "single_stream_target_met": false,
+    "two_streams_leave_one_dangerous_row_above_target": true,
+    "three_streams_target_met": true,
+    "three_stream_instructions": 144
+  },
+  "same_DAG_limit": {
+    "R1U_c3_interval": [
+      -10560,
+      7103
+    ],
+    "R1U_c3_width": 17663,
+    "R1S_c3_interval": [
+      -8831,
+      8831
+    ],
+    "R1S_c3_width": 17662,
+    "interpretation": "signedness changes the q representative but does not perform the second quotient needed to narrow the REDC result"
+  },
+  "assembly_eligibility": {
+    "maximum_extra_instructions": 16,
+    "target_met": false
+  },
+  "assembly_emitted": false,
+  "decision": "no-assembly-no-zero-or-low-increment-safe-R1U-representative",
+  "not_claimed": [
+    "that a new partial-product schedule cannot reduce the pre-REDC accumulator bound",
+    "that a producer-realizable joint-range proof cannot be tighter"
+  ],
+  "reopen_only_if": [
+    "BM partial accumulators are range-shaped before the existing REDC at no new chain",
+    "a finalizer computes the second quotient within the existing four-instruction REDC DAG",
+    "only one physical stream needs a <=16-instruction correction under a tighter joint-range proof"
+  ]
+}

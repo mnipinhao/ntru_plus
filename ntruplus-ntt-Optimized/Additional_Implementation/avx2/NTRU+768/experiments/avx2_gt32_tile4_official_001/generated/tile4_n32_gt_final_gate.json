@@ -1,0 +1,27 @@
+{
+  "schema": "ntruplus768-gt32-n32-final-gate-v1",
+  "experiment": "GT-N32-FINAL-003",
+  "required_for_assembly": [
+    "suffix gate pass",
+    "wave producer gate pass"
+  ],
+  "suffix_gate": {
+    "artifact": "generated/tile4_n32_gt_suffix_superopt_gate.json",
+    "decision": "local-half-native-route-pass-global-assembly-gated-by-producer",
+    "five_blend_local_route": true
+  },
+  "wave_gate": {
+    "artifact": "generated/tile4_n32_gt_wave_producer_gate.json",
+    "decision": "strict-zero-spill-6144B-isolated-producer-not-qualified-prior-rank-stop-withdrawn",
+    "pass": "not established; prior rank-only failure proof withdrawn"
+  },
+  "assembly_emitted": false,
+  "family_decision": "open-narrowed-B33-half-native-BM-island-not-tested",
+  "strict_contract_decision": "exact-6144B-zero-spill-isolated-producer-not-qualified",
+  "reason": "the five-blend ABI is positive evidence; rank 16 is not a live-register theorem, and small reload/spill relaxations must be judged with BM and inverse consumers",
+  "next_gate": [
+    "pebble the actual factored top/twist/S1-S5/DFT3/BM-consume DAG",
+    "allow C0 destructive zero-spill, C1 source reload and C2 controlled spill",
+    "judge executable BM-island cycles rather than isolated traffic bytes"
+  ]
+}

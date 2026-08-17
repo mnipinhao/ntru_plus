@@ -1,0 +1,96 @@
+{
+  "schema": "gt32-correct-semantic-encodeq-layout-gate-v1",
+  "semantic_target": "GT physical word -> Official index[192] leaf/degree -> Official coefficient-transposed pack.S word",
+  "network_class": "source-YMM load + vperm2i128 half select + zeroing vpshufb + vpor; exact minimum in this fixed class",
+  "common_cost_excluded": "Official vector canonicalization and 12-bit pack after its 48 coefficient-transposed input vectors",
+  "costs": {
+    "aos": {
+      "source_loads_lower_bound": 384,
+      "vperm2i128": 384,
+      "vpshufb": 384,
+      "vpor": 336,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 1488,
+      "materialized_route_instructions": 1536,
+      "max_routes_per_target_vector": 8,
+      "max_unique_source_vectors_per_target": 8
+    },
+    "l2": {
+      "source_loads_lower_bound": 176,
+      "vperm2i128": 144,
+      "vpshufb": 168,
+      "vpor": 120,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 608,
+      "materialized_route_instructions": 656,
+      "max_routes_per_target_vector": 4,
+      "max_unique_source_vectors_per_target": 4
+    },
+    "soa": {
+      "source_loads_lower_bound": 96,
+      "vperm2i128": 96,
+      "vpshufb": 96,
+      "vpor": 48,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 336,
+      "materialized_route_instructions": 384,
+      "max_routes_per_target_vector": 2,
+      "max_unique_source_vectors_per_target": 2
+    },
+    "pair01": {
+      "source_loads_lower_bound": 192,
+      "vperm2i128": 128,
+      "vpshufb": 144,
+      "vpor": 96,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 560,
+      "materialized_route_instructions": 608,
+      "max_routes_per_target_vector": 3,
+      "max_unique_source_vectors_per_target": 4
+    },
+    "pair02": {
+      "source_loads_lower_bound": 192,
+      "vperm2i128": 128,
+      "vpshufb": 144,
+      "vpor": 96,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 560,
+      "materialized_route_instructions": 608,
+      "max_routes_per_target_vector": 3,
+      "max_unique_source_vectors_per_target": 4
+    },
+    "pair03": {
+      "source_loads_lower_bound": 192,
+      "vperm2i128": 128,
+      "vpshufb": 144,
+      "vpor": 96,
+      "official_word_stores_if_materialized": 48,
+      "route_core_instructions": 560,
+      "materialized_route_instructions": 608,
+      "max_routes_per_target_vector": 3,
+      "max_unique_source_vectors_per_target": 4
+    }
+  },
+  "soa_grouped_e1": {
+    "source_loads": 48,
+    "vperm2i128": 48,
+    "vpshufb": 96,
+    "vpor": 48,
+    "stores": 48,
+    "instructions": 288,
+    "mechanism": "Reuse each source-half pair across the two Official target vectors that differ only in vpshufb masks."
+  },
+  "soa_direct_pack_e2": {
+    "source_loads": 48,
+    "vperm2i128": 48,
+    "vpshufb": 96,
+    "vpor": 48,
+    "materialized_word_stores": 0,
+    "official_word_reloads": 0,
+    "routing_instructions": 240,
+    "mechanism": "Generate each eight-vector Official pack batch in YMM0-7, then apply the unchanged Official canonicalization and 12-bit packing DAG without a 48-vector scratch boundary."
+  },
+  "static_champion": "soa",
+  "interpretation": "This is a generator-only route-to-pack-input gate.  It does not claim that a fused implementation can retain all eight pack input vectors inside the 16-YMM AVX2 register file.",
+  "continuation_gate": "Only emit assembly if the winning route plus unavoidable pack work has a credible advantage over current scalar AoS Encodeq."
+}

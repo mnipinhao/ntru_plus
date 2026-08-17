@@ -1,0 +1,461 @@
+{
+  "schema": "ntruplus768-gt32-n32first-split-twist-gate-v1",
+  "experiment": "GT32-N32FIRST-SPLIT-TWIST-001",
+  "question": "Can NTT32-first plus row-conjugated twisting beat qualified DFT3-first N5 without changing leaf semantics?",
+  "exact_transform_proof": {
+    "crt_index": "n=(64*n3+33*n32) mod 96",
+    "naive_split_claim": "s^-((64*n3+33*n32) mod 96) = s^(-64*n3)*s^(-33*n32)",
+    "naive_split_results": [
+      {
+        "scale": 2,
+        "scale_pow_96": 723,
+        "mismatching_coordinates": 83,
+        "carry_factor_count": 6,
+        "naive_split_valid": false
+      },
+      {
+        "scale": 22,
+        "scale_pow_96": 2735,
+        "mismatching_coordinates": 83,
+        "carry_factor_count": 6,
+        "naive_split_valid": false
+      }
+    ],
+    "naive_split_valid": false,
+    "correction": "the mod-96 carry contributes powers of s^96 because branch scales have order 576; use exact row weights and CT residual ratios",
+    "exact_twisted_stage_factor": "omega32^forward_power(stage,group) * row_weight[high] / row_weight[low]",
+    "output_order": "k3-major, qualified NTT32 bit-reversed Q order",
+    "branches": [
+      {
+        "branch": 0,
+        "scale": 2,
+        "all_96_basis_vectors_equal": true
+      },
+      {
+        "branch": 1,
+        "scale": 22,
+        "all_96_basis_vectors_equal": true
+      }
+    ],
+    "exact_matrix_equality": true
+  },
+  "range_proof": {
+    "method": "exhaustive fixed-factor Montgomery bound plus triangle inequality",
+    "raw_top_split_abs_bound": 2896,
+    "branches": [
+      {
+        "branch": 0,
+        "scale": 2,
+        "rows": [
+          {
+            "n3": 0,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1789,
+                "output_abs_bound": 6475
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6475,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1840,
+                "output_abs_bound": 8315
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8315,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1929,
+                "output_abs_bound": 10244
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10244,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1945,
+                "output_abs_bound": 12189
+              }
+            ],
+            "pre_dft3_abs_bound": 12189,
+            "residual_montgomery_factor": -147
+          },
+          {
+            "n3": 1,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1789,
+                "output_abs_bound": 6475
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6475,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1840,
+                "output_abs_bound": 8315
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8315,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1929,
+                "output_abs_bound": 10244
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10244,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1973,
+                "output_abs_bound": 12217
+              }
+            ],
+            "pre_dft3_abs_bound": 12217,
+            "residual_montgomery_factor": -248
+          },
+          {
+            "n3": 2,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1789,
+                "output_abs_bound": 6475
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6475,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1840,
+                "output_abs_bound": 8315
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8315,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1929,
+                "output_abs_bound": 10244
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10244,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1945,
+                "output_abs_bound": 12189
+              }
+            ],
+            "pre_dft3_abs_bound": 12189,
+            "residual_montgomery_factor": -682
+          }
+        ],
+        "t3_montgomery_factors": [
+          -147,
+          -248,
+          -682
+        ],
+        "t3_scaled_abs_bounds": [
+          1755,
+          1773,
+          1845
+        ],
+        "dft3_omega_product_abs_bound": 1767,
+        "output_abs_bounds": [
+          5373,
+          5367,
+          5295
+        ],
+        "max_output_abs_bound": 5373,
+        "signed_int16_safe": true,
+        "within_existing_B3_10788_contract": true
+      },
+      {
+        "branch": 1,
+        "scale": 22,
+        "rows": [
+          {
+            "n3": 0,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 6527
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6527,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 8368
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8368,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1929,
+                "output_abs_bound": 10297
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10297,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1944,
+                "output_abs_bound": 12241
+              }
+            ],
+            "pre_dft3_abs_bound": 12241,
+            "residual_montgomery_factor": -147
+          },
+          {
+            "n3": 1,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 6527
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6527,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 8368
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8368,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1929,
+                "output_abs_bound": 10297
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10297,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1973,
+                "output_abs_bound": 12270
+              }
+            ],
+            "pre_dft3_abs_bound": 12270,
+            "residual_montgomery_factor": 1265
+          },
+          {
+            "n3": 2,
+            "ntt32_stages": [
+              {
+                "stage": 1,
+                "distance": 16,
+                "input_abs_bound": 2896,
+                "factor_count": 2,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1790,
+                "output_abs_bound": 4686
+              },
+              {
+                "stage": 2,
+                "distance": 8,
+                "input_abs_bound": 4686,
+                "factor_count": 4,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 6527
+              },
+              {
+                "stage": 3,
+                "distance": 4,
+                "input_abs_bound": 6527,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1841,
+                "output_abs_bound": 8368
+              },
+              {
+                "stage": 4,
+                "distance": 2,
+                "input_abs_bound": 8368,
+                "factor_count": 8,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1857,
+                "output_abs_bound": 10225
+              },
+              {
+                "stage": 5,
+                "distance": 1,
+                "input_abs_bound": 10225,
+                "factor_count": 16,
+                "identity_lane_count": 0,
+                "product_abs_bound": 1944,
+                "output_abs_bound": 12169
+              }
+            ],
+            "pre_dft3_abs_bound": 12169,
+            "residual_montgomery_factor": 460
+          }
+        ],
+        "t3_montgomery_factors": [
+          -147,
+          1265,
+          460
+        ],
+        "t3_scaled_abs_bounds": [
+          1755,
+          1957,
+          1810
+        ],
+        "dft3_omega_product_abs_bound": 1776,
+        "output_abs_bounds": [
+          5522,
+          5341,
+          5488
+        ],
+        "max_output_abs_bound": 5522,
+        "signed_int16_safe": true,
+        "within_existing_B3_10788_contract": true
+      }
+    ],
+    "all_signed_int16_safe": true,
+    "all_within_existing_B3_contract": true
+  },
+  "static_cost_gate": {
+    "qualified_N5": {
+      "full_T3xT32_twist_chains": 48,
+      "DFT3_chains": 16,
+      "NTT32_chains": 96,
+      "total_chains": 160
+    },
+    "N32_first_known_exact_schedule": {
+      "twisted_NTT32_chains": 120,
+      "T3_nonidentity_scale_chains": 32,
+      "DFT3_chains": 16,
+      "total_chains": 168
+    },
+    "delta_full_width_Montgomery_chains": 8,
+    "delta_vector_instructions_at_four_instruction_chain_floor": 32,
+    "why": [
+      "current full twist pays T3 and T32 in one Montgomery chain",
+      "exact row conjugation makes every former raw stage-1 chain nonidentity",
+      "T3 row 0 is identity, but rows 1 and 2 still need two chains per branch/group"
+    ],
+    "register_and_materialization": {
+      "vectors_per_NTT32_row": 8,
+      "rows_needed_by_DFT3": 3,
+      "simultaneous_data_YMM_for_zero_debt": 24,
+      "architectural_AVX2_YMM": 16,
+      "temporaries_not_included_in_24": true,
+      "zero_materialization_possible": false,
+      "compact_reusable_schedule": "GT/top-split rows -> store -> twisted NTT32 -> store -> T3/DFT3",
+      "extra_full_boundary_vs_N5_vectors": {
+        "stores": 48,
+        "loads": 48,
+        "bytes_each_direction": 1536
+      }
+    },
+    "optimistic_reopen_case": {
+      "requirement": "an exact two-chain residual-T3+DFT3 circuit and a schedule that does not add a row materialization",
+      "two_chain_T3_DFT3_total_candidate_chains": 152,
+      "delta_vs_N5_chains": -8,
+      "status": "not found; not used as evidence"
+    }
+  },
+  "assembly_emitted": false,
+  "decision": "static-hard-stop-before-assembly",
+  "conclusion": "The proposed simple T32/T3 split is not an identity because mod-96 CRT carries are visible to order-576 branch scales.  Exact row conjugation repairs the mathematics and is range-safe, but the known AVX2 schedule adds eight full-width Montgomery chains and requires an additional row materialization because 3x8 data YMM exceed the register file.  It does not beat N5's static gate.",
+  "reopen_only_if": [
+    "exact T3+DFT3 uses at most two full-width Montgomery chains per branch/group",
+    "producer schedule removes the extra NTT32-row materialization",
+    "target ISA provides at least 24 data vector registers plus temporaries"
+  ]
+}

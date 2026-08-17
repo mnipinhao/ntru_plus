@@ -1,0 +1,1821 @@
+{
+  "schema": "ntruplus768-gt32-n32-inverse-insertion-v1",
+  "experiment": "GT-N32-INVERSE-INSERTION-010",
+  "scope": "place-IDFT3-at-every-InvNTT32-stage-boundary",
+  "exact_algebra": {
+    "insertion_points": 6,
+    "basis_vectors_per_point": 96,
+    "exact_basis_executions": 576,
+    "all_equal_mod_q": true,
+    "inter_axis_twiddle": false
+  },
+  "frozen": {
+    "half_native_BM_output": true,
+    "R1U_independent_interval_contract": true,
+    "InvNTT32_stage_DAG": [
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "InvNTT32_twiddles_independent_of_k3_and_branch": true,
+    "new_Montgomery_chains": 0
+  },
+  "prefix_stage_summary": [
+    {
+      "coefficient": 0,
+      "length": 2,
+      "max_output_abs_bound": 12376,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 0,
+      "length": 4,
+      "max_output_abs_bound": 14057,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 0,
+      "length": 8,
+      "max_output_abs_bound": 15799,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 0,
+      "length": 16,
+      "max_output_abs_bound": 17672,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 0,
+      "length": 32,
+      "max_output_abs_bound": 19592,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 1,
+      "length": 2,
+      "max_output_abs_bound": 15290,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 1,
+      "length": 4,
+      "max_output_abs_bound": 16877,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 1,
+      "length": 8,
+      "max_output_abs_bound": 18633,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 1,
+      "length": 16,
+      "max_output_abs_bound": 20469,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 1,
+      "length": 32,
+      "max_output_abs_bound": 22406,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 2,
+      "length": 2,
+      "max_output_abs_bound": 18206,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 2,
+      "length": 4,
+      "max_output_abs_bound": 19705,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 2,
+      "length": 8,
+      "max_output_abs_bound": 21469,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 2,
+      "length": 16,
+      "max_output_abs_bound": 23269,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 2,
+      "length": 32,
+      "max_output_abs_bound": 25221,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 3,
+      "length": 2,
+      "max_output_abs_bound": 21120,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 3,
+      "length": 4,
+      "max_output_abs_bound": 22535,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 3,
+      "length": 8,
+      "max_output_abs_bound": 24312,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 3,
+      "length": 16,
+      "max_output_abs_bound": 26068,
+      "signed_int16_safe": true
+    },
+    {
+      "coefficient": 3,
+      "length": 32,
+      "max_output_abs_bound": 28053,
+      "signed_int16_safe": true
+    }
+  ],
+  "candidates": [
+    {
+      "name": "P0",
+      "stages_before_IDFT3": [],
+      "stages_after_IDFT3": [
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "prefix_max_abs_bound": 10560,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 21120,
+      "IDFT_output_max_abs_bound": 19387,
+      "IDFT_signed_int16_safe": true,
+      "suffix_max_abs_bound": 46404,
+      "suffix_signed_int16_safe": false,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "InvNTT32-length-32",
+        "coefficient": 1,
+        "row": 1,
+        "detail": {
+          "low_q": 0,
+          "high_q": 16,
+          "factor": -147,
+          "product_interval": [
+            -1794,
+            1794
+          ],
+          "output_abs_bound": 33194,
+          "signed_int16_safe": false
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 12376,
+          "IDFT_output_abs_bound": 10643,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 2,
+              "max_output_abs_bound": 16372,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 2,
+              "max_output_abs_bound": 21286,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 2,
+              "max_output_abs_bound": 21286,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 18061,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 22979,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 22979,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 19828,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 24963,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 24963,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 21781,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 26988,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 26988,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 23768,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 29120,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 29120,
+              "signed_int16_safe": true
+            }
+          ]
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 15290,
+          "IDFT_output_abs_bound": 13558,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 2,
+              "max_output_abs_bound": 19648,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 2,
+              "max_output_abs_bound": 27116,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 2,
+              "max_output_abs_bound": 27116,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 21251,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 28657,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 28657,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 22658,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 30725,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 30725,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 24573,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 32680,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 32680,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 26579,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 34872,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 34872,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 18206,
+          "IDFT_output_abs_bound": 16473,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 2,
+              "max_output_abs_bound": 22564,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 2,
+              "max_output_abs_bound": 32946,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 2,
+              "max_output_abs_bound": 32946,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 24078,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 34326,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 34326,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 25861,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 36481,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 36481,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 27734,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 38373,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 38373,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 29777,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 40628,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 40628,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 21120,
+          "IDFT_output_abs_bound": 19387,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 2,
+              "max_output_abs_bound": 25838,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 2,
+              "max_output_abs_bound": 38774,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 2,
+              "max_output_abs_bound": 38774,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 27260,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 40001,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 40001,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 29063,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 42238,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 42238,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 30899,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 44061,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 44061,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 32962,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 46404,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 46404,
+              "signed_int16_safe": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P1",
+      "stages_before_IDFT3": [
+        2
+      ],
+      "stages_after_IDFT3": [
+        4,
+        8,
+        16,
+        32
+      ],
+      "prefix_max_abs_bound": 21120,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 42240,
+      "IDFT_output_max_abs_bound": 37050,
+      "IDFT_signed_int16_safe": false,
+      "suffix_max_abs_bound": 44559,
+      "suffix_signed_int16_safe": false,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "InvNTT32-length-32",
+        "coefficient": 1,
+        "row": 1,
+        "detail": {
+          "low_q": 1,
+          "high_q": 17,
+          "factor": -1591,
+          "product_interval": [
+            -2469,
+            2469
+          ],
+          "output_abs_bound": 33023,
+          "signed_int16_safe": false
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 24752,
+          "IDFT_output_abs_bound": 19562,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 16236,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 21248,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 21248,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 17990,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 23201,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 23201,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 19918,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 25194,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 25194,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 21879,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 27274,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 27274,
+              "signed_int16_safe": true
+            }
+          ]
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 30580,
+          "IDFT_output_abs_bound": 25392,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 19424,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 26920,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 26920,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 21194,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 28964,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 28964,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 23078,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 30886,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 30886,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 25056,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 33023,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 33023,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 36412,
+          "IDFT_output_abs_bound": 31222,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 22612,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 32595,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 32595,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 24395,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 34722,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 34722,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 26246,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 36596,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 36596,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 28076,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 38803,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 38803,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 42240,
+          "IDFT_output_abs_bound": 37050,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 4,
+              "max_output_abs_bound": 25622,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 4,
+              "max_output_abs_bound": 38270,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 4,
+              "max_output_abs_bound": 38270,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 27413,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 40482,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 40482,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 29229,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 42270,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 42270,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 31269,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 44559,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 44559,
+              "signed_int16_safe": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P2",
+      "stages_before_IDFT3": [
+        2,
+        4
+      ],
+      "stages_after_IDFT3": [
+        8,
+        16,
+        32
+      ],
+      "prefix_max_abs_bound": 22535,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 45070,
+      "IDFT_output_max_abs_bound": 39980,
+      "IDFT_signed_int16_safe": false,
+      "suffix_max_abs_bound": 46383,
+      "suffix_signed_int16_safe": false,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "IDFT3",
+        "coefficient": 1,
+        "detail": {
+          "q": 0,
+          "input_intervals": [
+            [
+              -16490,
+              9591
+            ],
+            [
+              -16490,
+              9591
+            ],
+            [
+              -16490,
+              9591
+            ]
+          ],
+          "raw_sum": [
+            -32980,
+            19182
+          ],
+          "raw_difference": [
+            -26081,
+            26081
+          ],
+          "raw_r0_minus_r1": [
+            -26081,
+            26081
+          ],
+          "raw_r0_minus_r2": [
+            -26081,
+            26081
+          ],
+          "internal_abs_bound": 32980,
+          "output_intervals": [
+            [
+              -19209,
+              13031
+            ],
+            [
+              -27805,
+              27805
+            ],
+            [
+              -27805,
+              27805
+            ]
+          ],
+          "output_abs_bound": 27805
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 28114,
+          "IDFT_output_abs_bound": 22964,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 18176,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 24948,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 24948,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 20099,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 26973,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 26973,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 22059,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 29096,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 29096,
+              "signed_int16_safe": true
+            }
+          ]
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 33754,
+          "IDFT_output_abs_bound": 28642,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 21366,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 30704,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 30704,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 23256,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 32659,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 32659,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 25231,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 34857,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 34857,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 39410,
+          "IDFT_output_abs_bound": 34310,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 24568,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 36466,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 36466,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 26419,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 38358,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 38358,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 28251,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 40608,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 40608,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 45070,
+          "IDFT_output_abs_bound": 39980,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 8,
+              "max_output_abs_bound": 27586,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 8,
+              "max_output_abs_bound": 42217,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 8,
+              "max_output_abs_bound": 42217,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 29402,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 44040,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 44040,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 31445,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 46383,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 46383,
+              "signed_int16_safe": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P3",
+      "stages_before_IDFT3": [
+        2,
+        4,
+        8
+      ],
+      "stages_after_IDFT3": [
+        16,
+        32
+      ],
+      "prefix_max_abs_bound": 24312,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 48624,
+      "IDFT_output_max_abs_bound": 43883,
+      "IDFT_signed_int16_safe": false,
+      "suffix_max_abs_bound": 48142,
+      "suffix_signed_int16_safe": false,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "IDFT3",
+        "coefficient": 1,
+        "detail": {
+          "q": 0,
+          "input_intervals": [
+            [
+              -18237,
+              11354
+            ],
+            [
+              -18237,
+              11354
+            ],
+            [
+              -18237,
+              11354
+            ]
+          ],
+          "raw_sum": [
+            -36474,
+            22708
+          ],
+          "raw_difference": [
+            -29591,
+            29591
+          ],
+          "raw_r0_minus_r1": [
+            -29591,
+            29591
+          ],
+          "raw_r0_minus_r2": [
+            -29591,
+            29591
+          ],
+          "internal_abs_bound": 36474,
+          "output_intervals": [
+            [
+              -21136,
+              14974
+            ],
+            [
+              -31315,
+              31315
+            ],
+            [
+              -31315,
+              31315
+            ]
+          ],
+          "output_abs_bound": 31315
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 31598,
+          "IDFT_output_abs_bound": 26614,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 20259,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 28671,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 28671,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 22223,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 30830,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 30830,
+              "signed_int16_safe": true
+            }
+          ]
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 37266,
+          "IDFT_output_abs_bound": 32372,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 23416,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 34359,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 34359,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 25411,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 36610,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 36610,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 42938,
+          "IDFT_output_abs_bound": 38134,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 26579,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 40058,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 40058,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 28595,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 42365,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 42365,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 48624,
+          "IDFT_output_abs_bound": 43883,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 16,
+              "max_output_abs_bound": 29581,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 16,
+              "max_output_abs_bound": 45738,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 16,
+              "max_output_abs_bound": 45738,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 31605,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 48142,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 48142,
+              "signed_int16_safe": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P4",
+      "stages_before_IDFT3": [
+        2,
+        4,
+        8,
+        16
+      ],
+      "stages_after_IDFT3": [
+        32
+      ],
+      "prefix_max_abs_bound": 26068,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 52136,
+      "IDFT_output_max_abs_bound": 47419,
+      "IDFT_signed_int16_safe": false,
+      "suffix_max_abs_bound": 49862,
+      "suffix_signed_int16_safe": false,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "IDFT3",
+        "coefficient": 0,
+        "detail": {
+          "q": 0,
+          "input_intervals": [
+            [
+              -17277,
+              10409
+            ],
+            [
+              -17277,
+              10409
+            ],
+            [
+              -17277,
+              10409
+            ]
+          ],
+          "raw_sum": [
+            -34554,
+            20818
+          ],
+          "raw_difference": [
+            -27686,
+            27686
+          ],
+          "raw_r0_minus_r1": [
+            -27686,
+            27686
+          ],
+          "raw_r0_minus_r2": [
+            -27686,
+            27686
+          ],
+          "internal_abs_bound": 34554,
+          "output_intervals": [
+            [
+              -19996,
+              14029
+            ],
+            [
+              -29410,
+              29410
+            ],
+            [
+              -29410,
+              29410
+            ]
+          ],
+          "output_abs_bound": 29410
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 35344,
+          "IDFT_output_abs_bound": 30366,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 22358,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 32558,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 32558,
+              "signed_int16_safe": true
+            }
+          ]
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 40938,
+          "IDFT_output_abs_bound": 36040,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 25547,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 38330,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 38330,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 46538,
+          "IDFT_output_abs_bound": 41750,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 28725,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 44112,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 44112,
+              "signed_int16_safe": false
+            }
+          ]
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 52136,
+          "IDFT_output_abs_bound": 47419,
+          "suffix": [
+            {
+              "row": 0,
+              "length": 32,
+              "max_output_abs_bound": 31920,
+              "signed_int16_safe": true
+            },
+            {
+              "row": 1,
+              "length": 32,
+              "max_output_abs_bound": 49862,
+              "signed_int16_safe": false
+            },
+            {
+              "row": 2,
+              "length": 32,
+              "max_output_abs_bound": 49862,
+              "signed_int16_safe": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P5",
+      "stages_before_IDFT3": [
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "stages_after_IDFT3": [],
+      "prefix_max_abs_bound": 28053,
+      "prefix_signed_int16_safe": true,
+      "IDFT_internal_max_abs_bound": 56106,
+      "IDFT_output_max_abs_bound": 51543,
+      "IDFT_signed_int16_safe": false,
+      "suffix_max_abs_bound": 0,
+      "suffix_signed_int16_safe": true,
+      "all_int16_safe": false,
+      "first_failure": {
+        "frontier": "IDFT3",
+        "coefficient": 0,
+        "detail": {
+          "q": 0,
+          "input_intervals": [
+            [
+              -19024,
+              12172
+            ],
+            [
+              -19024,
+              12172
+            ],
+            [
+              -19024,
+              12172
+            ]
+          ],
+          "raw_sum": [
+            -38048,
+            24344
+          ],
+          "raw_difference": [
+            -31196,
+            31196
+          ],
+          "raw_r0_minus_r1": [
+            -31196,
+            31196
+          ],
+          "raw_r0_minus_r2": [
+            -31196,
+            31196
+          ],
+          "internal_abs_bound": 38048,
+          "output_intervals": [
+            [
+              -21923,
+              15972
+            ],
+            [
+              -32920,
+              32920
+            ],
+            [
+              -32920,
+              32920
+            ]
+          ],
+          "output_abs_bound": 32920
+        }
+      },
+      "Montgomery_chain_count_change": 0,
+      "half_native_k3_reflection_preserved_until_IDFT3": true,
+      "lane_typed_IDFT3_runtime_repair": 0,
+      "per_coefficient": [
+        {
+          "coefficient": 0,
+          "IDFT_internal_abs_bound": 39184,
+          "IDFT_output_abs_bound": 34222,
+          "suffix": []
+        },
+        {
+          "coefficient": 1,
+          "IDFT_internal_abs_bound": 44812,
+          "IDFT_output_abs_bound": 39996,
+          "suffix": []
+        },
+        {
+          "coefficient": 2,
+          "IDFT_internal_abs_bound": 50442,
+          "IDFT_output_abs_bound": 45778,
+          "suffix": []
+        },
+        {
+          "coefficient": 3,
+          "IDFT_internal_abs_bound": 56106,
+          "IDFT_output_abs_bound": 51543,
+          "suffix": []
+        }
+      ]
+    }
+  ],
+  "finding": "The current inverse Montgomery stages reduce only each high arm; the butterfly low arm continues to accumulate.  Consequently the independent interval entering IDFT3 grows monotonically as IDFT3 moves later. P1 moves the first overflow into IDFT3, while P2-P5 make that IDFT3 frontier progressively wider rather than repairing it.",
+  "late_IDFT_performance": {
+    "five_vs_six_blend_proxy_TSC": {
+      "normal": 2.9812,
+      "reversed": 2.816
+    },
+    "estimated_two_R3_Forward_debt_TSC": {
+      "normal": 17.1844,
+      "reversed": 17.1944
+    },
+    "range_contract_passed": false,
+    "performance_break_even_passed": false
+  },
+  "joint_reachable_range": {
+    "status": "not-proven",
+    "current_box_witness_may_ignore_producer_correlations": true,
+    "complete_executable_N32_Forward_available": false,
+    "random_testing_is_not_a_formal_replacement": true
+  },
+  "int16_wrap": {
+    "allowed": false,
+    "65536_mod_q": 3310,
+    "centered_65536_mod_q": -147
+  },
+  "assembly_emitted": false,
+  "decision": "no-assembly-all-six-insertion-points-fail-current-independent-range-contract",
+  "not_claimed": [
+    "that the tensor transforms do not commute",
+    "that a tighter producer-realizable joint range cannot pass",
+    "that a changed reduction policy cannot make P2/P3 viable"
+  ],
+  "reopen_only_if": [
+    "producer-realizable joint range proves every raw IDFT and butterfly frontier int16-safe",
+    "an existing inverse stage is changed so all outputs, not only the high multiplicand, receive a reducing representative",
+    "a bounded checkpoint is cheaper than the measured two-Forward debt after physical routing is included"
+  ]
+}

@@ -264,7 +264,7 @@
 	vmovdqu \c1, 1280+32*\out_group(%rdi)
 .endm
 
-.macro FINAL_CREP_STORE a0,a1,b0,b1,c0,c1,out_group
+.macro CREP_SIX a0,a1,b0,b1,c0,c1
 	/* Reference crepmod3 folding is valid for the proved raw bound 4810. */
 	vpsraw $15, \a0, %ymm6
 	vpsraw $15, \a1, %ymm7
@@ -332,6 +332,10 @@
 	vpsubw %ymm9, \b1, \b1
 	vpsubw %ymm10, \c0, \c0
 	vpsubw %ymm11, \c1, \c1
+.endm
+
+.macro FINAL_CREP_STORE a0,a1,b0,b1,c0,c1,out_group
+	CREP_SIX \a0,\a1,\b0,\b1,\c0,\c1
 	STORE_SIX \a0,\a1,\b0,\b1,\c0,\c1,\out_group
 .endm
 
@@ -552,6 +556,194 @@
 	MATRIX3_TRIPLE \a0,\a1,\b0,\b1,\c0,\c1,288*\group,\group,FINAL_CREP_STORE
 .endm
 
+/* Canonical sidecar bits for two consecutive 128-coefficient segments. */
+.macro DUAL_SIDECAR_PAIR lo,hi,segment,group
+	vpacksswb \hi, \lo, %ymm6
+	vpermq $0xd8, %ymm6, %ymm6
+	vpmovmskb %ymm6, %eax
+	movw %ax, 16*\segment+2*\group(%rdx)
+	shrl $16, %eax
+	movw %ax, 16*(\segment+1)+2*\group(%rdx)
+	vpsllw $7, %ymm6, %ymm6
+	vpmovmskb %ymm6, %eax
+	movw %ax, 96+16*\segment+2*\group(%rdx)
+	shrl $16, %eax
+	movw %ax, 96+16*(\segment+1)+2*\group(%rdx)
+.endm
+
+.macro DUAL_GT_BLEND3 x,y,z,r0,r1,r2
+	vpblendd $0x0c, \y, \x, \r0
+	vpblendd $0x30, \z, \r0, \r0
+	vpblendd $0x0c, \x, \z, \r1
+	vpblendd $0x30, \y, \r1, \r1
+	vpblendd $0x0c, \z, \y, \r2
+	vpblendd $0x30, \x, \r2, \r2
+.endm
+
+.macro DUAL_MONT_WIDE3 v0,v1,v2,offset
+	vpmullw .Ldual_frontend_wide_twist_qinv+\offset+0(%rip), \v0, %ymm12
+	vpmullw .Ldual_frontend_wide_twist_qinv+\offset+32(%rip), \v1, %ymm13
+	vpmullw .Ldual_frontend_wide_twist_qinv+\offset+64(%rip), \v2, %ymm14
+	vpmulhw .Ldual_frontend_wide_twist_factor+\offset+0(%rip), \v0, \v0
+	vpmulhw .Ldual_frontend_wide_twist_factor+\offset+32(%rip), \v1, \v1
+	vpmulhw .Ldual_frontend_wide_twist_factor+\offset+64(%rip), \v2, \v2
+	vpmulhw %ymm15, %ymm12, %ymm12
+	vpmulhw %ymm15, %ymm13, %ymm13
+	vpmulhw %ymm15, %ymm14, %ymm14
+	vpsubw %ymm12, \v0, \v0
+	vpsubw %ymm13, \v1, \v1
+	vpsubw %ymm14, \v2, \v2
+.endm
+
+.macro DUAL_DFT3_STORE x0,x1,x2,o0,o1,o2
+	vpsubw \x2, \x1, %ymm0
+	vpmullw .Ldual_frontend_omega3_qinv(%rip), %ymm0, %ymm1
+	vpmulhw .Ldual_frontend_omega3_factor(%rip), %ymm0, %ymm0
+	vpmulhw %ymm15, %ymm1, %ymm1
+	vpsubw %ymm1, %ymm0, %ymm0
+	vpaddw \x1, \x0, %ymm1
+	vpaddw \x2, %ymm1, %ymm1
+	vpsubw \x2, \x0, %ymm2
+	vpaddw %ymm0, %ymm2, %ymm2
+	vpsubw \x1, \x0, %ymm3
+	vpsubw %ymm0, %ymm3, %ymm3
+	vmovdqu %ymm1, \o0(%rdi)
+	vmovdqu %ymm2, \o1(%rdi)
+	vmovdqu %ymm3, \o2(%rdi)
+.endm
+
+/* Consume one crep-reduced T9 group as one N5 wide-frontend iteration. */
+.macro DUAL_N5_FRONTEND group,a0,a1,b0,b1,c0,c1
+	vpmullw .Ldual_frontend_zeta_top_raw(%rip), \a1, %ymm6
+	vpmullw .Ldual_frontend_zeta_top_raw(%rip), \b1, %ymm7
+	vpmullw .Ldual_frontend_zeta_top_raw(%rip), \c1, %ymm8
+	vpsubw %ymm6, \a1, \a1
+	vpsubw %ymm7, \b1, \b1
+	vpsubw %ymm8, \c1, \c1
+	vpaddw \a0, \a1, \a1
+	vpaddw \b0, \b1, \b1
+	vpaddw \c0, \c1, \c1
+	vpaddw %ymm6, \a0, \a0
+	vpaddw %ymm7, \b0, \b0
+	vpaddw %ymm8, \c0, \c0
+
+	.if ((\group) % 3) == 0
+		DUAL_GT_BLEND3 \a0,\b0,\c0,%ymm6,%ymm7,%ymm8
+		DUAL_GT_BLEND3 \a1,\b1,\c1,%ymm9,%ymm10,%ymm11
+	.elseif ((\group) % 3) == 1
+		DUAL_GT_BLEND3 \b0,\c0,\a0,%ymm6,%ymm7,%ymm8
+		DUAL_GT_BLEND3 \b1,\c1,\a1,%ymm9,%ymm10,%ymm11
+	.else
+		DUAL_GT_BLEND3 \c0,\a0,\b0,%ymm6,%ymm7,%ymm8
+		DUAL_GT_BLEND3 \c1,\a1,\b1,%ymm9,%ymm10,%ymm11
+	.endif
+	DUAL_MONT_WIDE3 %ymm6,%ymm7,%ymm8,192*\group
+	DUAL_MONT_WIDE3 %ymm9,%ymm10,%ymm11,192*\group+96
+	DUAL_DFT3_STORE %ymm6,%ymm7,%ymm8,32*\group,512+32*\group,1024+32*\group
+	DUAL_DFT3_STORE %ymm9,%ymm10,%ymm11,256+32*\group,768+32*\group,1280+32*\group
+.endm
+
+.macro FINAL_DUAL_TERMINAL a0,a1,b0,b1,c0,c1,out_group
+	/* Preserve production T9 representative semantics before crepmod3. */
+	CENTER \a0
+	CENTER \a1
+	CENTER \b0
+	CENTER \b1
+	CENTER \c0
+	CENTER \c1
+	CREP_SIX \a0,\a1,\b0,\b1,\c0,\c1
+	DUAL_SIDECAR_PAIR \a0,\b0,0,\out_group
+	DUAL_SIDECAR_PAIR \c0,\a1,2,\out_group
+	DUAL_SIDECAR_PAIR \b1,\c1,4,\out_group
+	DUAL_N5_FRONTEND \out_group,\a0,\a1,\b0,\b1,\c0,\c1
+.endm
+
+.macro TAIL_GROUP_DUAL group,a0,a1,b0,b1,c0,c1
+	LOAD_RAW_GROUP \group
+	/* The N5 consumer owns ymm12--ymm14, so reload T9 constants per batch. */
+	vmovdqa .Ltail_center10(%rip), %ymm14
+	vmovdqa .Ltail_w_qinv(%rip), %ymm12
+	vmovdqa .Ltail_w_factor(%rip), %ymm11
+	IDFT3_V2 %ymm0,%ymm1,%ymm2,%ymm6,%ymm7,%ymm8,%ymm9
+	IDFT3_V2 %ymm3,%ymm4,%ymm5,%ymm6,%ymm7,%ymm8,%ymm9
+	BLEND3_OUT %ymm0,%ymm1,%ymm2,%ymm6,%ymm7,%ymm8
+	BLEND3_OUT %ymm3,%ymm4,%ymm5,%ymm0,%ymm1,%ymm2
+	vmovdqa %ymm6, %ymm3
+	vmovdqa %ymm7, %ymm4
+	vmovdqa %ymm8, %ymm5
+	MATRIX3_TRIPLE \a0,\a1,\b0,\b1,\c0,\c1,288*\group,\group,FINAL_DUAL_TERMINAL
+.endm
+
+.macro RUN_8_DUAL
+	TAIL_GROUP_DUAL 0,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2
+	TAIL_GROUP_DUAL 1,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1
+	TAIL_GROUP_DUAL 2,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0
+	TAIL_GROUP_DUAL 3,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2
+	TAIL_GROUP_DUAL 4,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1
+	TAIL_GROUP_DUAL 5,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0
+	TAIL_GROUP_DUAL 6,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2
+	TAIL_GROUP_DUAL 7,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1
+.endm
+
+.macro FINAL_CENTER_SCRATCH_B2 a0,a1,b0,b1,c0,c1,out_group
+	CENTER \a0
+	CENTER \a1
+	CENTER \b0
+	CENTER \b1
+	CENTER \c0
+	CENTER \c1
+	vmovdqu \a0, 192*((\out_group)%2)+0(%rsp)
+	vmovdqu \a1, 192*((\out_group)%2)+32(%rsp)
+	vmovdqu \b0, 192*((\out_group)%2)+64(%rsp)
+	vmovdqu \b1, 192*((\out_group)%2)+96(%rsp)
+	vmovdqu \c0, 192*((\out_group)%2)+128(%rsp)
+	vmovdqu \c1, 192*((\out_group)%2)+160(%rsp)
+.endm
+
+.macro FINAL_CENTER_SCRATCH_B4 a0,a1,b0,b1,c0,c1,out_group
+	CENTER \a0
+	CENTER \a1
+	CENTER \b0
+	CENTER \b1
+	CENTER \c0
+	CENTER \c1
+	vmovdqu \a0, 192*((\out_group)%4)+0(%rsp)
+	vmovdqu \a1, 192*((\out_group)%4)+32(%rsp)
+	vmovdqu \b0, 192*((\out_group)%4)+64(%rsp)
+	vmovdqu \b1, 192*((\out_group)%4)+96(%rsp)
+	vmovdqu \c0, 192*((\out_group)%4)+128(%rsp)
+	vmovdqu \c1, 192*((\out_group)%4)+160(%rsp)
+.endm
+
+.macro TAIL_GROUP_BATCH group,a0,a1,b0,b1,c0,c1,final_op
+	LOAD_RAW_GROUP \group
+	vmovdqa .Ltail_center10(%rip), %ymm14
+	vmovdqa .Ltail_w_qinv(%rip), %ymm12
+	vmovdqa .Ltail_w_factor(%rip), %ymm11
+	IDFT3_V2 %ymm0,%ymm1,%ymm2,%ymm6,%ymm7,%ymm8,%ymm9
+	IDFT3_V2 %ymm3,%ymm4,%ymm5,%ymm6,%ymm7,%ymm8,%ymm9
+	BLEND3_OUT %ymm0,%ymm1,%ymm2,%ymm6,%ymm7,%ymm8
+	BLEND3_OUT %ymm3,%ymm4,%ymm5,%ymm0,%ymm1,%ymm2
+	vmovdqa %ymm6, %ymm3
+	vmovdqa %ymm7, %ymm4
+	vmovdqa %ymm8, %ymm5
+	MATRIX3_TRIPLE \a0,\a1,\b0,\b1,\c0,\c1,288*\group,\group,\final_op
+.endm
+
+.macro CONSUME_BATCH group,slot
+	vmovdqu 192*\slot+0(%rsp), %ymm0
+	vmovdqu 192*\slot+32(%rsp), %ymm1
+	vmovdqu 192*\slot+64(%rsp), %ymm2
+	vmovdqu 192*\slot+96(%rsp), %ymm3
+	vmovdqu 192*\slot+128(%rsp), %ymm4
+	vmovdqu 192*\slot+160(%rsp), %ymm5
+	CREP_SIX %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+	DUAL_SIDECAR_PAIR %ymm0,%ymm2,0,\group
+	DUAL_SIDECAR_PAIR %ymm4,%ymm1,2,\group
+	DUAL_SIDECAR_PAIR %ymm3,%ymm5,4,\group
+	DUAL_N5_FRONTEND \group,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+
 .macro RUN_8_T8
 	TAIL_GROUP_T8 0,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2
 	TAIL_GROUP_T8 1,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1
@@ -603,7 +795,71 @@
 	\macro_name 7,%ymm2,%ymm5,%ymm0,%ymm3,%ymm1,%ymm4,\extra
 .endm
 
-#ifndef TILE4_ISOLATED
+#if defined(TILE4_DUAL_ONLY)
+.p2align 5
+.globl gt32_tile4_inverse_terminal_n5_sidecar_asm
+.type gt32_tile4_inverse_terminal_n5_sidecar_asm,@function
+gt32_tile4_inverse_terminal_n5_sidecar_asm:
+	vmovdqa .Ltail_q(%rip), %ymm15
+	RUN_8_DUAL
+	vzeroupper
+	ret
+.size gt32_tile4_inverse_terminal_n5_sidecar_asm,.-gt32_tile4_inverse_terminal_n5_sidecar_asm
+
+.p2align 5
+.globl gt32_tile4_inverse_terminal_n5_sidecar_b2_asm
+.type gt32_tile4_inverse_terminal_n5_sidecar_b2_asm,@function
+gt32_tile4_inverse_terminal_n5_sidecar_b2_asm:
+	subq $384, %rsp
+	vmovdqa .Ltail_q(%rip), %ymm15
+	TAIL_GROUP_BATCH 0,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B2
+	TAIL_GROUP_BATCH 1,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B2
+	CONSUME_BATCH 0,0
+	CONSUME_BATCH 1,1
+	TAIL_GROUP_BATCH 2,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0,FINAL_CENTER_SCRATCH_B2
+	TAIL_GROUP_BATCH 3,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B2
+	CONSUME_BATCH 2,0
+	CONSUME_BATCH 3,1
+	TAIL_GROUP_BATCH 4,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B2
+	TAIL_GROUP_BATCH 5,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0,FINAL_CENTER_SCRATCH_B2
+	CONSUME_BATCH 4,0
+	CONSUME_BATCH 5,1
+	TAIL_GROUP_BATCH 6,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B2
+	TAIL_GROUP_BATCH 7,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B2
+	CONSUME_BATCH 6,0
+	CONSUME_BATCH 7,1
+	addq $384, %rsp
+	vzeroupper
+	ret
+.size gt32_tile4_inverse_terminal_n5_sidecar_b2_asm,.-gt32_tile4_inverse_terminal_n5_sidecar_b2_asm
+
+.p2align 5
+.globl gt32_tile4_inverse_terminal_n5_sidecar_b4_asm
+.type gt32_tile4_inverse_terminal_n5_sidecar_b4_asm,@function
+gt32_tile4_inverse_terminal_n5_sidecar_b4_asm:
+	subq $768, %rsp
+	vmovdqa .Ltail_q(%rip), %ymm15
+	TAIL_GROUP_BATCH 0,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 1,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 2,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 3,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B4
+	CONSUME_BATCH 0,0
+	CONSUME_BATCH 1,1
+	CONSUME_BATCH 2,2
+	CONSUME_BATCH 3,3
+	TAIL_GROUP_BATCH 4,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 5,%ymm4,%ymm1,%ymm5,%ymm2,%ymm3,%ymm0,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 6,%ymm3,%ymm0,%ymm4,%ymm1,%ymm5,%ymm2,FINAL_CENTER_SCRATCH_B4
+	TAIL_GROUP_BATCH 7,%ymm5,%ymm2,%ymm3,%ymm0,%ymm4,%ymm1,FINAL_CENTER_SCRATCH_B4
+	CONSUME_BATCH 4,0
+	CONSUME_BATCH 5,1
+	CONSUME_BATCH 6,2
+	CONSUME_BATCH 7,3
+	addq $768, %rsp
+	vzeroupper
+	ret
+.size gt32_tile4_inverse_terminal_n5_sidecar_b4_asm,.-gt32_tile4_inverse_terminal_n5_sidecar_b4_asm
+#elif !defined(TILE4_ISOLATED)
 .p2align 5
 .globl gt32_tile4_inverse_tail_asm_rminus1
 .type gt32_tile4_inverse_tail_asm_rminus1,@function
@@ -765,4 +1021,7 @@ gt32_tile4_inverse_tail_t9_isolated_private_asm:
 
 .section .rodata
 .include "generated/tile4_inverse_tail_constants.inc"
+#ifdef TILE4_DUAL_ONLY
+.include "generated/tile4_dual_terminal_constants.inc"
+#endif
 .section .note.GNU-stack,"",@progbits

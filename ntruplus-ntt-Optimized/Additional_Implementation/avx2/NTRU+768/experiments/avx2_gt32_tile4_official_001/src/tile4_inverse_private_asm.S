@@ -239,6 +239,78 @@ gt32_tile4_inverse_soa_private_parallel_asm:
 	ret
 	.size gt32_tile4_inverse_soa_private_parallel_asm,.-gt32_tile4_inverse_soa_private_parallel_asm
 
+	/*
+	 * Bounded P2 entry.  I-112 is not a zero-route native inverse on AVX2:
+	 * four half permutes per tile restore the exact M register frontier, after
+	 * which the qualified I2 arithmetic body is unchanged.  Output is M.
+	 */
+	.p2align 5
+	.globl gt32_tile4_inverse_i112_entry_asm
+	.type gt32_tile4_inverse_i112_entry_asm,@function
+gt32_tile4_inverse_i112_entry_asm:
+	vmovdqa .Li2_q(%rip), %ymm15
+	movl $6, %ecx
+	.p2align 5
+.Li112_entry_tile_loop:
+	vmovdqu   0(%rsi), %ymm0
+	vmovdqu  32(%rsi), %ymm1
+	vmovdqu  64(%rsi), %ymm2
+	vmovdqu  96(%rsi), %ymm3
+	vmovdqu 128(%rsi), %ymm4
+	vmovdqu 160(%rsi), %ymm6
+	vmovdqu 192(%rsi), %ymm5
+	vmovdqu 224(%rsi), %ymm7
+	vperm2i128 $0x20, %ymm1, %ymm0, %ymm8
+	vperm2i128 $0x31, %ymm1, %ymm0, %ymm9
+	vperm2i128 $0x20, %ymm3, %ymm2, %ymm10
+	vperm2i128 $0x31, %ymm3, %ymm2, %ymm11
+	vmovdqa %ymm8, %ymm0
+	vmovdqa %ymm9, %ymm1
+	vmovdqa %ymm4, %ymm2
+	vmovdqa %ymm5, %ymm3
+	vmovdqa %ymm10, %ymm4
+	vmovdqa %ymm11, %ymm5
+
+	I2_RAW_QWORD_PAIR ymm0,ymm1
+	I2_RAW_QWORD_PAIR ymm2,ymm3
+	I2_RAW_QWORD_PAIR ymm4,ymm5
+	I2_RAW_QWORD_PAIR ymm6,ymm7
+	I2_MONT_HALF_PAIR_PAR ymm0,ymm1
+	I2_MONT_HALF_PAIR_PAR ymm2,ymm3
+	I2_MONT_HALF_PAIR_PAR ymm4,ymm5
+	I2_MONT_HALF_PAIR_PAR ymm6,ymm7
+
+	vmovdqa .Li2_s3_low(%rip), %ymm12
+	vmovdqa .Li2_s3_high(%rip), %ymm13
+	I2_MONT_SHUFFLE_PAIR ymm0,ymm1,.Li2_s3_qinv,.Li2_s3_factor,0xaa
+	I2_MONT_SHUFFLE_PAIR ymm2,ymm3,.Li2_s3_qinv,.Li2_s3_factor,0xaa
+	I2_MONT_SHUFFLE_PAIR ymm4,ymm5,.Li2_s3_qinv,.Li2_s3_factor,0xaa
+	I2_MONT_SHUFFLE_PAIR ymm6,ymm7,.Li2_s3_qinv,.Li2_s3_factor,0xaa
+
+	vmovdqa .Li2_s4_low(%rip), %ymm12
+	vmovdqa .Li2_s4_high(%rip), %ymm13
+	I2_MONT_SHUFFLE_PAIR ymm0,ymm1,.Li2_s4_qinv,.Li2_s4_factor,0xcc
+	I2_MONT_SHUFFLE_PAIR ymm2,ymm3,.Li2_s4_qinv,.Li2_s4_factor,0xcc
+	I2_MONT_SHUFFLE_PAIR ymm4,ymm5,.Li2_s4_qinv,.Li2_s4_factor,0xcc
+	I2_MONT_SHUFFLE_PAIR ymm6,ymm7,.Li2_s4_qinv,.Li2_s4_factor,0xcc
+	I2_MONT_CROSS4
+
+	vmovdqu %ymm0,   0(%rdi)
+	vmovdqu %ymm1,  32(%rdi)
+	vmovdqu %ymm2,  64(%rdi)
+	vmovdqu %ymm3,  96(%rdi)
+	vmovdqu %ymm4, 128(%rdi)
+	vmovdqu %ymm5, 160(%rdi)
+	vmovdqu %ymm6, 192(%rdi)
+	vmovdqu %ymm7, 224(%rdi)
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Li112_entry_tile_loop
+	vzeroupper
+	ret
+	.size gt32_tile4_inverse_i112_entry_asm,.-gt32_tile4_inverse_i112_entry_asm
+
 	.section .rodata
 	.p2align 5
 .Li2_q:

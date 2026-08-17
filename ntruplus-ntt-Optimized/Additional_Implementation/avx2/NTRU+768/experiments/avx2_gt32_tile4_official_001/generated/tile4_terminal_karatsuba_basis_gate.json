@@ -1,0 +1,629 @@
+{
+  "candidate": "GT32 terminal Karatsuba-basis co-design",
+  "scope": "pre-S4/pre-S5-to-L01-K2-operands-to-inverse-entry",
+  "target_operands": [
+    {
+      "name": "a0",
+      "monomial_coordinates": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "a1",
+      "monomial_coordinates": [
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "a0+a1",
+      "monomial_coordinates": [
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "a2",
+      "monomial_coordinates": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "a3",
+      "monomial_coordinates": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "a2+a3",
+      "monomial_coordinates": [
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "a0+a2",
+      "monomial_coordinates": [
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "a1+a3",
+      "monomial_coordinates": [
+        0,
+        1,
+        0,
+        1
+      ]
+    }
+  ],
+  "compact_basis_search": {
+    "candidate_source": "all rank-four bases over sign-normalized {-1,0,1} rows",
+    "candidate_rows": 40,
+    "rank_four_bases": 72780,
+    "bases_with_integral_unit-coefficient_K2_synthesis": 979,
+    "instruction_lower_bound_model": "optimistically count one vpshufb per source term and one add/sub between terms; mixed-sign lane repair, register moves, loads, and stores are deliberately excluded",
+    "selected": {
+      "basis_row_indices": [
+        0,
+        2,
+        8,
+        26
+      ],
+      "basis": [
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "basis_names": [
+        "a3",
+        "a2",
+        "a1",
+        "a0"
+      ],
+      "basis_is_monomial_up_to_lane_order": true,
+      "terminal_formation_instruction_lower_bound_per_vector": 0,
+      "BM_chain0_synthesis_instruction_lower_bound": 3,
+      "BM_chain1_synthesis_instruction_lower_bound": 3,
+      "BM_operand_synthesis_instruction_lower_bound_per_operand_group": 6,
+      "formation_plus_BM_synthesis_instruction_lower_bound": 6,
+      "operand_coordinates_in_basis": [
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    "selected_is_existing_monomial_basis": true,
+    "next_best": {
+      "basis_row_indices": [
+        0,
+        3,
+        9,
+        25
+      ],
+      "basis": [
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          -1
+        ]
+      ],
+      "basis_names": [
+        "a3",
+        "a2+a3",
+        "a1+a3",
+        "a0-a3"
+      ],
+      "basis_is_monomial_up_to_lane_order": false,
+      "terminal_formation_instruction_lower_bound_per_vector": 3,
+      "BM_chain0_synthesis_instruction_lower_bound": 3,
+      "BM_chain1_synthesis_instruction_lower_bound": 3,
+      "BM_operand_synthesis_instruction_lower_bound_per_operand_group": 6,
+      "formation_plus_BM_synthesis_instruction_lower_bound": 9,
+      "operand_coordinates_in_basis": [
+        [
+          1,
+          0,
+          0,
+          1
+        ],
+        [
+          -1,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          -1,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    "no_compact_basis_reduces_formation_plus_operand_synthesis": true
+  },
+  "forward_operator_proof": {
+    "S4_S5_shape": "M_Q tensor I_degree4",
+    "butterflies_act_on": "Q/component axis",
+    "Karatsuba_linear_forms_act_on": "quartic-degree axis",
+    "cross_degree_K2_forms_created_by_existing_butterflies": 0,
+    "twiddle_scalar_within_every_quartic_qword": true,
+    "basis_change_commutes_with_S4_S5": true,
+    "stage4_output_abs_bound": 8855,
+    "stage5_montgomery_product_abs_bound": 1933,
+    "stage5_output_abs_bound": 10788,
+    "operation_order": "low plus-or-minus Mont(high,twiddle)",
+    "existing_reducer_precedes_terminal_add_sub": true,
+    "existing_reducer_can_center_terminal_basis": false,
+    "one_reducer_two_outputs_argument": "Each radix-2 butterfly has two independent outputs but its single Montgomery chain reduces only the high arm before low+/-product.  A compact degree-basis change commutes with this graph and cannot move that reducer after both final adds.",
+    "lambda_scaled_basis_absorbed_by_twiddle_table": false,
+    "lambda_scaled_reason": "Changing the S4/S5 high-arm factor can scale only the Montgomery product arm.  The low arm bypasses that factor, so it cannot scale a complete terminal leaf without an additional multiply.",
+    "reason": "Changing degree basis commutes through the lane-wise twiddle, but every final leaf is formed by an add/sub after that Montgomery reduction.  Moving the basis upstream therefore scales the 10788 interval; it does not yield the required 2179 centered BM input."
+  },
+  "basis_range_summary": {
+    "records_evaluated": 979,
+    "int16_safe_records": 655,
+    "maximum_row_l1_weight_histogram": {
+      "1": 1,
+      "2": 140,
+      "3": 514,
+      "4": 324
+    },
+    "selected": {
+      "basis_row_indices": [
+        0,
+        2,
+        8,
+        26
+      ],
+      "row_l1_weights": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "terminal_abs_bounds": [
+        10788,
+        10788,
+        10788,
+        10788
+      ],
+      "all_terminal_lanes_int16_safe": true,
+      "centered_by_existing_stage5_montgomery": false
+    },
+    "best_nonmonomial": {
+      "basis_row_indices": [
+        0,
+        3,
+        9,
+        25
+      ],
+      "row_l1_weights": [
+        1,
+        2,
+        2,
+        2
+      ],
+      "terminal_abs_bounds": [
+        10788,
+        21576,
+        21576,
+        21576
+      ],
+      "all_terminal_lanes_int16_safe": true,
+      "centered_by_existing_stage5_montgomery": false
+    },
+    "bound_rule": "row L1 weight times the proven 10788 S5 bound",
+    "all_records_centered_by_existing_stage5_montgomery": false
+  },
+  "expanded_basis_control": {
+    "required_K2_forms_per_quartic": 8,
+    "terminal_dimension": 4,
+    "representation_expansion": 2,
+    "vectors_per_tile_current": 8,
+    "vectors_per_tile_expanded": 16,
+    "S4_S5_vector_Montgomery_work_multiplier": 2,
+    "allowed": false,
+    "carry_redundant_forms_through_S4_S5": "doubles fully occupied vector state and transform work",
+    "form_redundant_operands_after_S5": "retains the existing six-instruction qword synthesis and does not absorb the input checkpoint",
+    "reason": "Materializing all eight redundant forms doubles terminal vectors and the S4/S5 lane work instead of fusing formation."
+  },
+  "inverse_entry": {
+    "inverse_stage0_1_shape": "M_inverse_Q tensor I_degree4",
+    "compact_basis_commutes_without_immediate_permutation": true,
+    "minimum_immediate_permutation": 0,
+    "current_monomial_basis_already_has_minimum": 0,
+    "product_sources": [
+      "P.z0",
+      "P.z2",
+      "P.sum",
+      "Q.z0",
+      "Q.z2",
+      "Q.sum",
+      "S.z0",
+      "S.z2",
+      "S.sum",
+      "lambda*w0",
+      "lambda*Q.z1",
+      "lambda*Q.z2"
+    ],
+    "compact_output_basis_search": {
+      "candidate_bases_with_unit_product_source_coefficients": 289,
+      "candidate_filter_also_requires_integral_unit_repair": true,
+      "metric": "optimistic scalar-form sparsity lower bound; qword routing, mixed-sign repair, and register moves excluded",
+      "monomial_output": {
+        "basis_row_indices": [
+          0,
+          2,
+          8,
+          26
+        ],
+        "basis": [
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "basis_names": [
+          "c3",
+          "c2",
+          "c1",
+          "c0"
+        ],
+        "basis_is_monomial_up_to_lane_order": true,
+        "product_source_supports": [
+          9,
+          5,
+          4,
+          2
+        ],
+        "scalar_add_sub_total_lower_bound": 16,
+        "scalar_add_sub_dependency_lower_bound": 8,
+        "eventual_monomial_repair_instruction_lower_bound": 0,
+        "product_source_coordinates": [
+          [
+            1,
+            1,
+            -1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            -1,
+            1,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            -1,
+            -1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "best_nonmonomial_output": {
+        "basis_row_indices": [
+          2,
+          8,
+          9,
+          26
+        ],
+        "basis": [
+          [
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "basis_names": [
+          "c2",
+          "c1",
+          "c1+c3",
+          "c0"
+        ],
+        "basis_is_monomial_up_to_lane_order": false,
+        "product_source_supports": [
+          5,
+          4,
+          7,
+          2
+        ],
+        "scalar_add_sub_total_lower_bound": 14,
+        "scalar_add_sub_dependency_lower_bound": 6,
+        "eventual_monomial_repair_instruction_lower_bound": 3,
+        "product_source_coordinates": [
+          [
+            -1,
+            1,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            -1,
+            -1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "dependency_lower_bound_reduction": 2,
+      "total_add_sub_lower_bound_reduction": 2,
+      "compression_to_four_dimensions_still_required": true,
+      "why_not_keep_all_product_sources": "Inverse stages on twelve product streams would triple the four-dimensional inverse vector work."
+    },
+    "nonstandard_basis_debt": "deferred inverse basis repair at coefficient/T9 boundary",
+    "recombination_eliminated": false
+  },
+  "continuation_accounting": {
+    "current_per_operand_group_terminal_formation": 0,
+    "current_per_operand_group_K2_operand_synthesis": 6,
+    "best_searched_per_operand_group_total": 6,
+    "operand_synthesis_saving": 0,
+    "independent_input_checkpoint_absorbed": false,
+    "BM_output_recombination_eliminated": false,
+    "output_sparsity_proxy_reduction": 2,
+    "output_basis_eventual_repair_instruction_lower_bound": 3,
+    "has_required_upstream_acceleration_mechanism": false,
+    "twenty_TSC_equivalent_margin_reachable": false,
+    "why_no_TSC_model_is_emitted": "The only output improvement is an optimistic sparsity proxy that excludes routing and introduces a later basis repair.  Input formation and checkpoint work are unchanged, so no proved dynamic work reduction can be translated to a 20-TSC continuation margin."
+  },
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "decision": "stop-compact-terminal-basis-no-new-mechanism",
+  "reopen_condition": "A producer must emit redundant K2 forms without doubling S4/S5 work, or a terminal operation after the last add/sub must provide the required range reduction."
+}

@@ -1,0 +1,1476 @@
+{
+  "schema": "ntruplus768-gt32-forward-identity-lazy-gate-v1",
+  "experiment": "GT32-FWD-IDENTITY-LAZY-001",
+  "method": "per-vector exhaustive fixed-factor Montgomery/center10 bound plus butterfly triangle inequality",
+  "identity_factor": -147,
+  "current_BM_input_abs_bound": 10788,
+  "whole_vector_identity_chains_per_tile": {
+    "S2": 2,
+    "S3": 1
+  },
+  "candidates": {
+    "F0_control": {
+      "policy": {},
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            5188,
+            5188,
+            5188,
+            5188,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 5199,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1732,
+              "output_abs_bound": 5188
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1732,
+              "output_abs_bound": 5188
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            6928,
+            6928,
+            6943,
+            6943,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 7011,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5188,
+                5188
+              ],
+              "product_abs_bound": 1740,
+              "output_abs_bound": 6928
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5188,
+                5188
+              ],
+              "product_abs_bound": 1755,
+              "output_abs_bound": 6943
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            8668,
+            8690,
+            8681,
+            8780,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 8855,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            10438,
+            10552,
+            10558,
+            10659,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 10788,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        10438,
+        10552,
+        10558,
+        10659,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 10788,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": true,
+      "assembly_eligible": true
+    },
+    "F1_S2_raw": {
+      "policy": {
+        "2": "raw"
+      },
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            6912,
+            6912,
+            6912,
+            6912,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 6912,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            8652,
+            8652,
+            8674,
+            8674,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 8674,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "montgomery",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 1740,
+              "output_abs_bound": 8652
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 1762,
+              "output_abs_bound": 8674
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            10399,
+            10422,
+            10416,
+            10536,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 10536,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            12181,
+            12307,
+            12330,
+            12447,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 12447,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        12181,
+        12307,
+        12330,
+        12447,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 12447,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": false,
+      "assembly_eligible": false
+    },
+    "F2_S2_S3_raw": {
+      "policy": {
+        "2": "raw",
+        "3": "raw"
+      },
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            6912,
+            6912,
+            6912,
+            6912,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 6912,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            13824,
+            13824,
+            8674,
+            8674,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 13824,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 6912,
+              "output_abs_bound": 13824
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 1762,
+              "output_abs_bound": 8674
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            15579,
+            15625,
+            10416,
+            10536,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 15625,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            17388,
+            17608,
+            12330,
+            12447,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 17608,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        17388,
+        17608,
+        12330,
+        12447,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 17608,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": false,
+      "assembly_eligible": false
+    },
+    "F3_S2_center10": {
+      "policy": {
+        "2": "center10"
+      },
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            5274,
+            5274,
+            5274,
+            5274,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 5274,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1818,
+              "output_abs_bound": 5274
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1818,
+              "output_abs_bound": 5274
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            7014,
+            7014,
+            7029,
+            7029,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 7029,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5274,
+                5274
+              ],
+              "product_abs_bound": 1740,
+              "output_abs_bound": 7014
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5274,
+                5274
+              ],
+              "product_abs_bound": 1755,
+              "output_abs_bound": 7029
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            8754,
+            8776,
+            8767,
+            8866,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 8866,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            10529,
+            10638,
+            10644,
+            10745,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 10788,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        10529,
+        10638,
+        10644,
+        10745,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 10788,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": true,
+      "assembly_eligible": true
+    },
+    "F4_S2_S3_center10": {
+      "policy": {
+        "2": "center10",
+        "3": "center10"
+      },
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            5274,
+            5274,
+            5274,
+            5274,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 5274,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1818,
+              "output_abs_bound": 5274
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1818,
+              "output_abs_bound": 5274
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            7272,
+            7272,
+            7029,
+            7029,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 7272,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                5274,
+                5274
+              ],
+              "product_abs_bound": 1998,
+              "output_abs_bound": 7272
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5274,
+                5274
+              ],
+              "product_abs_bound": 1755,
+              "output_abs_bound": 7029
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            9012,
+            9040,
+            8767,
+            8866,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 9040,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            10787,
+            10902,
+            10644,
+            10745,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 10902,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        10787,
+        10902,
+        10644,
+        10745,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 10902,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": false,
+      "assembly_eligible": false
+    },
+    "F5_S2_raw_S3_center10": {
+      "policy": {
+        "2": "raw",
+        "3": "center10"
+      },
+      "stages": [
+        {
+          "stage": 1,
+          "vector_bounds": [
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456,
+            3456
+          ],
+          "max_abs_bound": 3456,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 4,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 5,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 6,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            },
+            {
+              "low_vector": 3,
+              "high_vector": 7,
+              "whole_vector_identity": true,
+              "reducer": "raw-top",
+              "input_bounds": [
+                1728,
+                1728
+              ],
+              "product_abs_bound": 1728,
+              "output_abs_bound": 3456
+            }
+          ]
+        },
+        {
+          "stage": 2,
+          "vector_bounds": [
+            6912,
+            6912,
+            6912,
+            6912,
+            5199,
+            5199,
+            5199,
+            5199
+          ],
+          "max_abs_bound": 6912,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 2,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 1,
+              "high_vector": 3,
+              "whole_vector_identity": true,
+              "reducer": "raw-identity",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 3456,
+              "output_abs_bound": 6912
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 6,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            },
+            {
+              "low_vector": 5,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                3456,
+                3456
+              ],
+              "product_abs_bound": 1743,
+              "output_abs_bound": 5199
+            }
+          ]
+        },
+        {
+          "stage": 3,
+          "vector_bounds": [
+            8910,
+            8910,
+            8674,
+            8674,
+            6934,
+            6934,
+            7011,
+            7011
+          ],
+          "max_abs_bound": 8910,
+          "butterflies": [
+            {
+              "low_vector": 0,
+              "high_vector": 1,
+              "whole_vector_identity": true,
+              "reducer": "center10-identity",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 1998,
+              "output_abs_bound": 8910
+            },
+            {
+              "low_vector": 2,
+              "high_vector": 3,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                6912,
+                6912
+              ],
+              "product_abs_bound": 1762,
+              "output_abs_bound": 8674
+            },
+            {
+              "low_vector": 4,
+              "high_vector": 5,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1735,
+              "output_abs_bound": 6934
+            },
+            {
+              "low_vector": 6,
+              "high_vector": 7,
+              "whole_vector_identity": false,
+              "reducer": "montgomery",
+              "input_bounds": [
+                5199,
+                5199
+              ],
+              "product_abs_bound": 1812,
+              "output_abs_bound": 7011
+            }
+          ]
+        },
+        {
+          "stage": 4,
+          "vector_bounds": [
+            10657,
+            10685,
+            10416,
+            10536,
+            8707,
+            8774,
+            8783,
+            8855
+          ],
+          "max_abs_bound": 10685,
+          "reducer": "existing-pair-packed-montgomery"
+        },
+        {
+          "stage": 5,
+          "vector_bounds": [
+            12439,
+            12570,
+            12330,
+            12447,
+            10496,
+            10611,
+            10623,
+            10788
+          ],
+          "max_abs_bound": 12570,
+          "reducer": "existing-pair-packed-montgomery"
+        }
+      ],
+      "final_vector_bounds": [
+        12439,
+        12570,
+        12330,
+        12447,
+        10496,
+        10611,
+        10623,
+        10788
+      ],
+      "final_max_abs_bound": 12570,
+      "all_int16_safe": true,
+      "preserves_current_BM_input_bound": false,
+      "assembly_eligible": false
+    }
+  },
+  "selected_for_assembly": "F3_S2_center10",
+  "raw_decision": "hard-stop-exceeds-current-BM-input-contract",
+  "scale_exponent_preserved": true,
+  "layout_changed": false
+}

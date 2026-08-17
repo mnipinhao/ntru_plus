@@ -1,0 +1,22 @@
+/* Flat-directory instantiation used by the SUPERcop export. */
+#include <stdint.h>
+
+#include "gt_basemul_soa.h"
+
+#define gt_native_lambda gt_old_native_lambda
+#define gt_native_lambda_qinv gt_old_native_lambda_qinv
+#include "gt_basemul_soa_tables.inc"
+#undef gt_native_lambda
+#undef gt_native_lambda_qinv
+
+#include "tile4_baseinv_p_tables.inc"
+
+#define gt_baseinv_center_l8_test_avx2 gt32_p_baseinv_center_l8_test_avx2
+#define gt_baseinv_native_centered_avx2 gt32_p_baseinv_direct_avx2
+#define gt_baseinv_native_center_on_load_avx2 gt32_p_baseinv_center_on_load_avx2
+#define gt_baseinv_native_quadratic_centered_avx2 gt32_p_baseinv_quad_centered_avx2
+#define gt_baseinv_native_quadratic_center_on_load_avx2 gt32_p_baseinv_quad_center_on_load_avx2
+#define gt_baseinv_native_quadratic_abi_avx2 gt32_p_baseinv_quad_abi_avx2
+#define gt_baseinv_native_centered_asm_avx2 gt32_p_baseinv_direct_asm_avx2
+#define gt_baseinv_native_center_on_load_asm_avx2 gt32_p_baseinv_center_on_load_asm_avx2
+#include "gt_baseinv_native.c"

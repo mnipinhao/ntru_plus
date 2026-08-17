@@ -1,0 +1,40 @@
+{
+  "schema": "ntruplus768-gt32-fwd-radix4-45-static-v1",
+  "experiment": "GT32-FWD-RADIX4-45-ASM-001",
+  "mode": "static-before-assembly",
+  "scope": "one TILE4 NTT32 tile, existing stages 4 and 5",
+  "frozen": [
+    "forward input/output ABI",
+    "Montgomery exponent",
+    "range policy",
+    "stage-3 output and terminal leaf order"
+  ],
+  "current": {
+    "stage4_pair_calls": 4,
+    "stage5_pair_calls": 4,
+    "full_width_montgomery_chains": 8,
+    "local_pair_extract_or_reconstruct_shuffles": 16
+  },
+  "radix4_analysis": {
+    "independent_stage4_fixed_arms": 4,
+    "independent_stage5_fixed_arms": 4,
+    "minimum_full_width_montgomery_chains_under_frozen_ABI": 8,
+    "shared_nontrivial_factor_relation": false,
+    "identity_lanes": "present only as partial qwords inside otherwise nonidentity vectors",
+    "identity_specialization_requires": [
+      "cross-pair qword compaction",
+      "nonidentity Montgomery chain",
+      "qword redeposit"
+    ],
+    "shuffle_reduction_proven": false,
+    "range_checkpoint_removed": false
+  },
+  "assembly_eligible": false,
+  "decision": "static-stop-no-new-arithmetic-DAG",
+  "reason": "the exact radix-4 expansion retains all eight independent fixed-factor chains and does not remove a complete extract/reconstruct network; the only partial identity specialization is the inverse R4B mechanism already rejected by cycle measurement",
+  "reopen_only_with": [
+    "six-or-fewer-full-width-Montgomery-chains",
+    "a-proven-complete-local-shuffle-network-removal",
+    "a-new-terminal-consumer-that-accepts-unreconstructed-radix4-packets"
+  ]
+}

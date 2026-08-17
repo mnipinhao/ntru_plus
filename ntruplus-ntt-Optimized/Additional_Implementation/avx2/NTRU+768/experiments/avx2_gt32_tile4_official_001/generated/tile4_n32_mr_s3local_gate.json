@@ -1,0 +1,353 @@
+{
+  "schema": "ntruplus768-gt32-n32-mr-s3local-v1",
+  "experiment": "GT32-N32-MR-S3LOCAL-001",
+  "matrix_proof": {
+    "integer_coordinate": "n=r+3*m, r in [0,2], m in [0,31]",
+    "twist_identity": "s^-n = s^-r * (s^-3)^m (no mod-96 carry)",
+    "row_modulus": "z^32-s^-96",
+    "rho": [
+      3025,
+      3145
+    ],
+    "stage_factor": "rho^distance * cyclic_twiddle",
+    "radix3_alpha": "s^-1 * omega96^logical_k32",
+    "output_frequency": "logical_k32 + 32*k3 mod 96",
+    "branches": [
+      {
+        "branch": 0,
+        "scale": 2,
+        "all_96_basis_vectors_equal": true
+      },
+      {
+        "branch": 1,
+        "scale": 22,
+        "all_96_basis_vectors_equal": true
+      }
+    ],
+    "exact_leaf_matrix_equality": true
+  },
+  "range_proof": {
+    "method": "exhaustive fixed-factor Montgomery bound plus triangle inequality",
+    "raw_top_split_abs_bound": 2896,
+    "branches": [
+      {
+        "branch": 0,
+        "scale": 2,
+        "stages": [
+          {
+            "stage": 1,
+            "distance_m": 16,
+            "distance_n": 48,
+            "input_abs_bound": 2896,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1790,
+            "output_abs_bound": 4686
+          },
+          {
+            "stage": 2,
+            "distance_m": 8,
+            "distance_n": 24,
+            "input_abs_bound": 4686,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1841,
+            "output_abs_bound": 6527
+          },
+          {
+            "stage": 3,
+            "distance_m": 4,
+            "distance_n": 12,
+            "input_abs_bound": 6527,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1815,
+            "output_abs_bound": 8342
+          },
+          {
+            "stage": 4,
+            "distance_m": 2,
+            "distance_n": 6,
+            "input_abs_bound": 8342,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1929,
+            "output_abs_bound": 10271
+          },
+          {
+            "stage": 5,
+            "distance_m": 1,
+            "distance_n": 3,
+            "input_abs_bound": 10271,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1944,
+            "output_abs_bound": 12215
+          }
+        ],
+        "pre_radix3_abs_bound": 12215,
+        "alpha_C1_abs_bound": 2029,
+        "alpha2_C2_abs_bound": 2027,
+        "omega_difference_abs_bound": 1776,
+        "output_abs_bounds": [
+          16271,
+          16018,
+          16020
+        ],
+        "max_output_abs_bound": 16271,
+        "signed_int16_safe": true,
+        "within_current_B3_10788_contract": false
+      },
+      {
+        "branch": 1,
+        "scale": 22,
+        "stages": [
+          {
+            "stage": 1,
+            "distance_m": 16,
+            "distance_n": 48,
+            "input_abs_bound": 2896,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1787,
+            "output_abs_bound": 4683
+          },
+          {
+            "stage": 2,
+            "distance_m": 8,
+            "distance_n": 24,
+            "input_abs_bound": 4683,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1778,
+            "output_abs_bound": 6461
+          },
+          {
+            "stage": 3,
+            "distance_m": 4,
+            "distance_n": 12,
+            "input_abs_bound": 6461,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1836,
+            "output_abs_bound": 8297
+          },
+          {
+            "stage": 4,
+            "distance_m": 2,
+            "distance_n": 6,
+            "input_abs_bound": 8297,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1852,
+            "output_abs_bound": 10149
+          },
+          {
+            "stage": 5,
+            "distance_m": 1,
+            "distance_n": 3,
+            "input_abs_bound": 10149,
+            "identity_factor_count": 0,
+            "product_abs_bound": 1944,
+            "output_abs_bound": 12093
+          }
+        ],
+        "pre_radix3_abs_bound": 12093,
+        "alpha_C1_abs_bound": 2028,
+        "alpha2_C2_abs_bound": 2026,
+        "omega_difference_abs_bound": 1776,
+        "output_abs_bounds": [
+          16147,
+          15895,
+          15897
+        ],
+        "max_output_abs_bound": 16147,
+        "signed_int16_safe": true,
+        "within_current_B3_10788_contract": false
+      }
+    ],
+    "all_signed_int16_safe": true,
+    "all_within_current_B3_contract": false
+  },
+  "Montgomery_chain_accounting": {
+    "qualified_N5": {
+      "twist": 48,
+      "DFT3": 16,
+      "NTT32": 96,
+      "total": 160
+    },
+    "N32_MR": {
+      "binomial_NTT32": 120,
+      "twiddled_radix3": 48,
+      "total": 168
+    },
+    "delta": 8,
+    "instruction_floor_delta": 32
+  },
+  "S3_to_S4_row_route": {
+    "input_qwords": [
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        8,
+        9,
+        10,
+        11
+      ]
+    ],
+    "row_major_targets": [
+      [
+        0,
+        3,
+        6,
+        9
+      ],
+      [
+        1,
+        4,
+        7,
+        10
+      ],
+      [
+        2,
+        5,
+        8,
+        11
+      ]
+    ],
+    "concrete_route": [
+      {
+        "target": [
+          0,
+          3,
+          6,
+          9
+        ],
+        "selectors": {
+          "A": [
+            0,
+            3,
+            0,
+            0
+          ],
+          "B": "raw",
+          "C": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "source_by_lane": [
+          "A",
+          "A",
+          "B",
+          "C"
+        ],
+        "permq": 2,
+        "blends": 2
+      },
+      {
+        "target": [
+          1,
+          4,
+          7,
+          10
+        ],
+        "selectors": {
+          "A": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "B": [
+            0,
+            0,
+            3,
+            0
+          ],
+          "C": [
+            0,
+            0,
+            0,
+            2
+          ]
+        },
+        "source_by_lane": [
+          "A",
+          "B",
+          "B",
+          "C"
+        ],
+        "permq": 3,
+        "blends": 2
+      },
+      {
+        "target": [
+          2,
+          5,
+          8,
+          11
+        ],
+        "selectors": {
+          "A": [
+            2,
+            0,
+            0,
+            0
+          ],
+          "B": "raw",
+          "C": [
+            0,
+            0,
+            0,
+            3
+          ]
+        },
+        "source_by_lane": [
+          "A",
+          "B",
+          "C",
+          "C"
+        ],
+        "permq": 2,
+        "blends": 2
+      }
+    ],
+    "instructions_per_12Q_block": 13,
+    "blocks_full_forward": 16,
+    "route_instructions_full_forward": 208,
+    "current_GT_BLEND3_instructions_full_forward": 96,
+    "delta_vs_deleted_GT_BLEND3": 112,
+    "note": "This is a verified constructive upper bound, not a global lower bound.  A joint S4/S5/radix3 network must beat it substantially."
+  },
+  "stage123_physical_slabs": {
+    "distance_n": [
+      48,
+      24,
+      12
+    ],
+    "whole_YMM_edges": true,
+    "slab_vectors": [
+      "j+12*t for t=0..7; each vector holds four qwords"
+    ],
+    "same_cross_register_graph_as_current": true
+  },
+  "assembly_emitted": false,
+  "decision": "baseline-static-hard-stop-joint-suffix-remains-generator-only",
+  "reasons": [
+    "known arithmetic floor adds eight full-width Montgomery chains",
+    "constructive 12-Q row route costs 208 shuffles versus 96 deleted GT blends",
+    "conservative terminal bound 16271 exceeds current B3 input contract 10788",
+    "three-row S4/S5 packing must cross blocks to keep Montgomery lanes full"
+  ],
+  "family_status": "mixed-radix algebra is valid and genuinely new, but S3LOCAL baseline is not assembly-eligible; only a joint S4/S5/radix3/BM-entry search that removes the row route and absorbs range repair may continue",
+  "reopen_assembly_only_if": [
+    "joint suffix uses fewer than 96 routing shuffles over the full Forward",
+    "BM/inverse typed ABI accepts the proved terminal range without a full checkpoint",
+    "producer+BM+IDFT3 static saving exceeds the eight-chain arithmetic debt",
+    "peak YMM <=16 with no spills"
+  ]
+}

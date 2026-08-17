@@ -1,0 +1,1121 @@
+{
+  "candidate": "GT32 S4/S5 terminal CT-GS-twisted range schedule",
+  "scope": "exact pre-S4 to canonical post-S5 transform",
+  "search": {
+    "local_forms": [
+      "CT: low+/-factor*high",
+      "GS: sum, factor*difference"
+    ],
+    "input_branch_swap": true,
+    "output_branch_swap": true,
+    "factor_domain": "all 3456 nonzero F_q elements",
+    "local_variants_per_butterfly": 8,
+    "structural_assignments_per_Q_group": 4096,
+    "Q_groups": 8,
+    "exact_factorizations": 544,
+    "int16_safe_factorizations": 544,
+    "target_equality": "exact matrix equality; no boundary scaling"
+  },
+  "pre_S4": {
+    "lane_abs_bounds": [
+      6928,
+      6928,
+      6928,
+      6928,
+      6928,
+      6928,
+      6928,
+      6928,
+      6943,
+      6943,
+      6943,
+      6943,
+      6943,
+      6943,
+      6943,
+      6943,
+      6934,
+      6934,
+      6934,
+      6934,
+      6934,
+      6934,
+      6934,
+      6934,
+      7011,
+      7011,
+      7011,
+      7011,
+      7011,
+      7011,
+      7011,
+      7011
+    ],
+    "max_abs_bound": 7011,
+    "stages": [
+      {
+        "stage": 1,
+        "max_output_abs_bound": 3456
+      },
+      {
+        "stage": 2,
+        "max_output_abs_bound": 5199
+      },
+      {
+        "stage": 3,
+        "max_output_abs_bound": 7011
+      }
+    ]
+  },
+  "groups": [
+    {
+      "physical_Q": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact_factorizations": 320,
+      "int16_safe_factorizations": 320,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false
+          }
+        ],
+        "factor_field_exponents": [
+          0,
+          864,
+          0,
+          0
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 0,
+            "factor_montgomery": -147,
+            "pre_multiply_abs_bound": 6928,
+            "product_abs_bound": 1740,
+            "output_abs_bounds": [
+              8668,
+              8668
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 864,
+            "factor_montgomery": 366,
+            "pre_multiply_abs_bound": 13856,
+            "product_abs_bound": 1801,
+            "output_abs_bounds": [
+              13856,
+              1801
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 0,
+            "factor_montgomery": -147,
+            "pre_multiply_abs_bound": 22524,
+            "product_abs_bound": 1778,
+            "output_abs_bounds": [
+              22524,
+              1778
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "GS",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 0,
+            "factor_montgomery": -147,
+            "pre_multiply_abs_bound": 10469,
+            "product_abs_bound": 1747,
+            "output_abs_bounds": [
+              10469,
+              1747
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          22524,
+          1778,
+          10469,
+          1747
+        ],
+        "terminal_reduced_flags": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "terminal_lanes_requiring_checkpoint": 2,
+        "terminal_lanes_not_requiring_checkpoint": 2,
+        "max_terminal_abs_bound": 22524,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          864,
+          864,
+          432,
+          1296
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 864,
+            "factor_montgomery": 366,
+            "pre_multiply_abs_bound": 6928,
+            "product_abs_bound": 1762,
+            "output_abs_bounds": [
+              8690,
+              8690
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 864,
+            "factor_montgomery": 366,
+            "pre_multiply_abs_bound": 6928,
+            "product_abs_bound": 1762,
+            "output_abs_bounds": [
+              8690,
+              8690
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 432,
+            "factor_montgomery": -109,
+            "pre_multiply_abs_bound": 8690,
+            "product_abs_bound": 1742,
+            "output_abs_bounds": [
+              10432,
+              10432
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1296,
+            "factor_montgomery": 1118,
+            "pre_multiply_abs_bound": 8690,
+            "product_abs_bound": 1862,
+            "output_abs_bounds": [
+              10552,
+              10552
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10432,
+          10432,
+          10552,
+          10552
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10552,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          432,
+          432,
+          1080,
+          216
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 432,
+            "factor_montgomery": -109,
+            "pre_multiply_abs_bound": 6943,
+            "product_abs_bound": 1738,
+            "output_abs_bounds": [
+              8681,
+              8681
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 432,
+            "factor_montgomery": -109,
+            "pre_multiply_abs_bound": 6943,
+            "product_abs_bound": 1738,
+            "output_abs_bounds": [
+              8681,
+              8681
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 1080,
+            "factor_montgomery": -794,
+            "pre_multiply_abs_bound": 8681,
+            "product_abs_bound": 1818,
+            "output_abs_bounds": [
+              10499,
+              10499
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 216,
+            "factor_montgomery": 1339,
+            "pre_multiply_abs_bound": 8681,
+            "product_abs_bound": 1877,
+            "output_abs_bounds": [
+              10558,
+              10558
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10499,
+          10499,
+          10558,
+          10558
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10558,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          1296,
+          432,
+          1080,
+          216
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1296,
+            "factor_montgomery": 1118,
+            "pre_multiply_abs_bound": 6943,
+            "product_abs_bound": 1837,
+            "output_abs_bounds": [
+              8780,
+              8780
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": false,
+            "factor_field_exponent": 432,
+            "factor_montgomery": -109,
+            "pre_multiply_abs_bound": 6943,
+            "product_abs_bound": 1738,
+            "output_abs_bounds": [
+              8681,
+              8681
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1080,
+            "factor_montgomery": -794,
+            "pre_multiply_abs_bound": 8681,
+            "product_abs_bound": 1818,
+            "output_abs_bounds": [
+              10598,
+              10598
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 216,
+            "factor_montgomery": 1339,
+            "pre_multiply_abs_bound": 8681,
+            "product_abs_bound": 1877,
+            "output_abs_bounds": [
+              10657,
+              10657
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10598,
+          10598,
+          10657,
+          10657
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10657,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          1080,
+          1080,
+          540,
+          1404
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 1080,
+            "factor_montgomery": -794,
+            "pre_multiply_abs_bound": 6934,
+            "product_abs_bound": 1773,
+            "output_abs_bounds": [
+              8707,
+              8707
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 1080,
+            "factor_montgomery": -794,
+            "pre_multiply_abs_bound": 6934,
+            "product_abs_bound": 1773,
+            "output_abs_bounds": [
+              8707,
+              8707
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 540,
+            "factor_montgomery": -484,
+            "pre_multiply_abs_bound": 8707,
+            "product_abs_bound": 1789,
+            "output_abs_bounds": [
+              10496,
+              10496
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1404,
+            "factor_montgomery": 429,
+            "pre_multiply_abs_bound": 8707,
+            "product_abs_bound": 1783,
+            "output_abs_bounds": [
+              10490,
+              10490
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10496,
+          10496,
+          10490,
+          10490
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10496,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          216,
+          216,
+          972,
+          108
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 216,
+            "factor_montgomery": 1339,
+            "pre_multiply_abs_bound": 6934,
+            "product_abs_bound": 1840,
+            "output_abs_bounds": [
+              8774,
+              8774
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 216,
+            "factor_montgomery": 1339,
+            "pre_multiply_abs_bound": 6934,
+            "product_abs_bound": 1840,
+            "output_abs_bounds": [
+              8774,
+              8774
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 972,
+            "factor_montgomery": 864,
+            "pre_multiply_abs_bound": 8774,
+            "product_abs_bound": 1837,
+            "output_abs_bounds": [
+              10611,
+              10611
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 108,
+            "factor_montgomery": -177,
+            "pre_multiply_abs_bound": 8774,
+            "product_abs_bound": 1751,
+            "output_abs_bounds": [
+              10525,
+              10525
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10611,
+          10611,
+          10525,
+          10525
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10611,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          1512,
+          216,
+          1404,
+          540
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1512,
+            "factor_montgomery": 446,
+            "pre_multiply_abs_bound": 7011,
+            "product_abs_bound": 1772,
+            "output_abs_bounds": [
+              8783,
+              8783
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": false,
+            "factor_field_exponent": 216,
+            "factor_montgomery": 1339,
+            "pre_multiply_abs_bound": 7011,
+            "product_abs_bound": 1840,
+            "output_abs_bounds": [
+              8851,
+              8851
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 1404,
+            "factor_montgomery": 429,
+            "pre_multiply_abs_bound": 8851,
+            "product_abs_bound": 1783,
+            "output_abs_bounds": [
+              10566,
+              10566
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 540,
+            "factor_montgomery": -484,
+            "pre_multiply_abs_bound": 8851,
+            "product_abs_bound": 1789,
+            "output_abs_bounds": [
+              10572,
+              10572
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10566,
+          10566,
+          10572,
+          10572
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10572,
+        "montgomery_chains": 4
+      }
+    },
+    {
+      "physical_Q": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "exact_factorizations": 32,
+      "int16_safe_factorizations": 32,
+      "selected": {
+        "variants": [
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false
+          },
+          {
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          },
+          {
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true
+          }
+        ],
+        "factor_field_exponents": [
+          648,
+          1080,
+          972,
+          108
+        ],
+        "stage4": [
+          {
+            "pair": [
+              0,
+              2
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": false,
+            "factor_field_exponent": 648,
+            "factor_montgomery": 1181,
+            "pre_multiply_abs_bound": 7011,
+            "product_abs_bound": 1844,
+            "output_abs_bounds": [
+              8855,
+              8855
+            ]
+          },
+          {
+            "pair": [
+              1,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": true,
+            "output_swap": true,
+            "factor_field_exponent": 1080,
+            "factor_montgomery": -794,
+            "pre_multiply_abs_bound": 7011,
+            "product_abs_bound": 1775,
+            "output_abs_bounds": [
+              8786,
+              8786
+            ]
+          }
+        ],
+        "stage5": [
+          {
+            "pair": [
+              0,
+              1
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 972,
+            "factor_montgomery": 864,
+            "pre_multiply_abs_bound": 8786,
+            "product_abs_bound": 1837,
+            "output_abs_bounds": [
+              10692,
+              10692
+            ]
+          },
+          {
+            "pair": [
+              2,
+              3
+            ],
+            "kind": "CT",
+            "input_swap": false,
+            "output_swap": true,
+            "factor_field_exponent": 108,
+            "factor_montgomery": -177,
+            "pre_multiply_abs_bound": 8786,
+            "product_abs_bound": 1751,
+            "output_abs_bounds": [
+              10606,
+              10606
+            ]
+          }
+        ],
+        "terminal_abs_bounds": [
+          10692,
+          10692,
+          10606,
+          10606
+        ],
+        "terminal_reduced_flags": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "terminal_lanes_requiring_checkpoint": 4,
+        "terminal_lanes_not_requiring_checkpoint": 0,
+        "max_terminal_abs_bound": 10692,
+        "montgomery_chains": 4
+      }
+    }
+  ],
+  "aggregate": {
+    "terminal_leaves": 32,
+    "BM_safe_bound": 2179,
+    "leaves_not_requiring_explicit_checkpoint": 2,
+    "leaves_requiring_explicit_checkpoint": 30,
+    "checkpoint_fraction": 0.9375,
+    "physical_TILE4_vectors_requiring_checkpoint": 8,
+    "physical_TILE4_vectors": 8,
+    "whole_vector_checkpoint_sequences_removed": 0,
+    "groups_with_any_GS": [
+      [
+        0,
+        1,
+        2,
+        3
+      ]
+    ],
+    "S4_S5_Montgomery_chains_current": 32,
+    "S4_S5_Montgomery_chains_selected": 32
+  },
+  "interpretation": "Exact one-chain butterflies permit GS placement only in the identity-twiddle Q=0..3 group.  Two of 32 leaves become BM-safe, but every physical TILE4 vector still contains at least one unreduced leaf, so the fixed-layout checkpoint instruction count does not decrease.",
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "decision": "stop-terminal-range-schedule-zero-vector-checkpoint-saving",
+  "reopen_condition": "permit a changed boundary scale/layout with a proved BM+inverse consumer saving, or find a post-add reducer shared across leaves"
+}

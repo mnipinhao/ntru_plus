@@ -29,6 +29,22 @@ gt32_tile4_attr_empty_asm:
 	vpunpckhqdq %\s3, %\s1, %\t3
 	.endm
 
+	/* Exact 4x4 transpose alternative: W then two VSHUFPS layers. */
+	.macro ATTR_TRANSPOSE_SHUFPS s0,s1,s2,s3,t0,t1,t2,t3
+	vpunpcklwd %\s1, %\s0, %\t0
+	vpunpckhwd %\s1, %\s0, %\t1
+	vpunpcklwd %\s3, %\s2, %\t2
+	vpunpckhwd %\s3, %\s2, %\t3
+	vshufps $0x11, %\t2, %\t0, %\s0
+	vshufps $0xbb, %\t2, %\t0, %\s1
+	vshufps $0x11, %\t3, %\t1, %\s2
+	vshufps $0xbb, %\t3, %\t1, %\s3
+	vshufps $0xdd, %\s2, %\s0, %\t0
+	vshufps $0x88, %\s2, %\s0, %\t1
+	vshufps $0xdd, %\s3, %\s1, %\t2
+	vshufps $0x88, %\s3, %\s1, %\t3
+	.endm
+
 	.macro ATTR_ONE_TRANSPOSE src,dst
 	vmovdqu   0(\src), %ymm0
 	vmovdqu  32(\src), %ymm1
@@ -57,6 +73,31 @@ gt32_tile4_attr_transpose_one_asm:
 	vzeroupper
 	ret
 	.size gt32_tile4_attr_transpose_one_asm,.-gt32_tile4_attr_transpose_one_asm
+
+	/* Same ABI/count/depth as transpose_one; benchmark-only port-shape probe. */
+	.p2align 5
+	.globl gt32_tile4_attr_transpose_one_shufps_asm
+	.type gt32_tile4_attr_transpose_one_shufps_asm,@function
+gt32_tile4_attr_transpose_one_shufps_asm:
+	movl $12, %eax
+	.p2align 5
+.Lattr_t1_shufps:
+	vmovdqu   0(%rsi), %ymm0
+	vmovdqu  32(%rsi), %ymm1
+	vmovdqu  64(%rsi), %ymm2
+	vmovdqu  96(%rsi), %ymm3
+	ATTR_TRANSPOSE_SHUFPS ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+	vmovdqu %ymm4,   0(%rdi)
+	vmovdqu %ymm5,  32(%rdi)
+	vmovdqu %ymm6,  64(%rdi)
+	vmovdqu %ymm7,  96(%rdi)
+	addq $128, %rsi
+	addq $128, %rdi
+	decl %eax
+	jne .Lattr_t1_shufps
+	vzeroupper
+	ret
+	.size gt32_tile4_attr_transpose_one_shufps_asm,.-gt32_tile4_attr_transpose_one_shufps_asm
 
 	/* Two independent input materializations in one leaf. */
 	.p2align 5

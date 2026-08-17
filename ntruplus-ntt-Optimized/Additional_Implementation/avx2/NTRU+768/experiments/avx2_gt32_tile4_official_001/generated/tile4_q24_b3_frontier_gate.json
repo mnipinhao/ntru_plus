@@ -1,0 +1,1198 @@
+{
+  "schema": "ntruplus768-gt32-q24-b3-frontier-v1",
+  "experiment": "GT32-Q24-DECODE2-B3-FRONTIER-001",
+  "scope": "Q24 Decode(c,f) -> first scale-B3 only; hinv unchanged",
+  "proof": {
+    "q24_packets_per_frontier": 4,
+    "quartics_per_b3_block": 16,
+    "wire_groups": 12,
+    "b3_blocks": 12,
+    "wire_group_to_b3_block": [
+      0,
+      1,
+      9,
+      8,
+      4,
+      5,
+      11,
+      10,
+      6,
+      7,
+      3,
+      2
+    ],
+    "block_mapping_bijective": true,
+    "quartic_products_independent_across_blocks": true,
+    "lambda_selected_by_b3_block": true,
+    "scale": "e0-times-e0-to-e-minus1",
+    "range_contract": "unchanged-canonical-Q24-input-to-B3"
+  },
+  "register_plan": {
+    "ymm0": "q",
+    "ymm1_to_ymm4": "decoded-c coefficient planes / B3 A",
+    "ymm5_to_ymm8": "packet decode / A*qinv temporaries",
+    "ymm9_to_ymm12": "decoded-f coefficient planes / B3 B",
+    "ymm13_to_ymm15": "low12/decode temporaries then B3 temporaries",
+    "peak_ymm": 16,
+    "spill_required": false,
+    "persistent_vector_validity_state": false,
+    "failure_state": "public fixed-scan GPR accumulator"
+  },
+  "memory_accounting": {
+    "decode2_private_soa_stores_removed": 96,
+    "b3_input_reloads_removed": 96,
+    "materialization_vector_memory_ops_removed": 192,
+    "materialization_bytes_removed": 6144,
+    "additional_low12_vector_loads": 10,
+    "additional_qm1_memory_operands": 22,
+    "net_memory_operands_removed_lower_bound": 160
+  },
+  "instruction_accounting": {
+    "materialization_instructions_removed": 192,
+    "streaming_validity_instruction_debt": 36,
+    "low12_reload_instruction_debt": 10,
+    "dynamic_instruction_saving_lower_bound": 146,
+    "B3_arithmetic_sequence_changed": false,
+    "Q24_packet_math_changed": false
+  },
+  "groups": [
+    {
+      "wire_group": 0,
+      "b3_block": 0,
+      "output_byte_offset": 0,
+      "lambda_byte_offset": 0,
+      "packet_register_bijection": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "decode_records": [
+        {
+          "packet": 0,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 0,
+          "high": 12,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 1,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 36,
+          "high": 24,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 2,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 60,
+          "high": 48,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 3,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 84,
+          "high": 72,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 0,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 0,
+          "high": 12,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 1,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 36,
+          "high": 24,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 2,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 60,
+          "high": 48,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 3,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 84,
+          "high": 72,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        }
+      ]
+    },
+    {
+      "wire_group": 1,
+      "b3_block": 1,
+      "output_byte_offset": 128,
+      "lambda_byte_offset": 32,
+      "packet_register_bijection": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "decode_records": [
+        {
+          "packet": 4,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 96,
+          "high": 108,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 5,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 132,
+          "high": 120,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 6,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 156,
+          "high": 144,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 7,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 180,
+          "high": 168,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 4,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 96,
+          "high": 108,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 5,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 132,
+          "high": 120,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 6,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 156,
+          "high": 144,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 7,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 180,
+          "high": 168,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        }
+      ]
+    },
+    {
+      "wire_group": 2,
+      "b3_block": 9,
+      "output_byte_offset": 1152,
+      "lambda_byte_offset": 288,
+      "packet_register_bijection": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "decode_records": [
+        {
+          "packet": 8,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 192,
+          "high": 204,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 9,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 216,
+          "high": 228,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 10,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 240,
+          "high": 252,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 11,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 264,
+          "high": 276,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 8,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 192,
+          "high": 204,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 9,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 216,
+          "high": 228,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 10,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 240,
+          "high": 252,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 11,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 264,
+          "high": 276,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        }
+      ]
+    },
+    {
+      "wire_group": 3,
+      "b3_block": 8,
+      "output_byte_offset": 1024,
+      "lambda_byte_offset": 256,
+      "packet_register_bijection": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "decode_records": [
+        {
+          "packet": 12,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 288,
+          "high": 300,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 13,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 312,
+          "high": 324,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 14,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 336,
+          "high": 348,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 15,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 372,
+          "high": 360,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 12,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 288,
+          "high": 300,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 13,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 312,
+          "high": 324,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 14,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 336,
+          "high": 348,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 15,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 372,
+          "high": 360,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        }
+      ]
+    },
+    {
+      "wire_group": 4,
+      "b3_block": 4,
+      "output_byte_offset": 512,
+      "lambda_byte_offset": 128,
+      "packet_register_bijection": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "decode_records": [
+        {
+          "packet": 16,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 396,
+          "high": 384,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 17,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 408,
+          "high": 420,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 18,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 444,
+          "high": 432,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 19,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 456,
+          "high": 468,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 16,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 396,
+          "high": 384,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 17,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 408,
+          "high": 420,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 18,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 444,
+          "high": 432,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 19,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 456,
+          "high": 468,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        }
+      ]
+    },
+    {
+      "wire_group": 5,
+      "b3_block": 5,
+      "output_byte_offset": 640,
+      "lambda_byte_offset": 160,
+      "packet_register_bijection": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "decode_records": [
+        {
+          "packet": 20,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 492,
+          "high": 480,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 21,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 504,
+          "high": 516,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 22,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 540,
+          "high": 528,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 23,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 552,
+          "high": 564,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 20,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 492,
+          "high": 480,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 21,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 504,
+          "high": 516,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 22,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 540,
+          "high": 528,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 23,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 552,
+          "high": 564,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        }
+      ]
+    },
+    {
+      "wire_group": 6,
+      "b3_block": 11,
+      "output_byte_offset": 1408,
+      "lambda_byte_offset": 352,
+      "packet_register_bijection": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "decode_records": [
+        {
+          "packet": 24,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 588,
+          "high": 576,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 25,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 612,
+          "high": 600,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 26,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 636,
+          "high": 624,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 27,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 648,
+          "high": 660,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 24,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 588,
+          "high": 576,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 25,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 612,
+          "high": 600,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 26,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 636,
+          "high": 624,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 27,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 648,
+          "high": 660,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        }
+      ]
+    },
+    {
+      "wire_group": 7,
+      "b3_block": 10,
+      "output_byte_offset": 1280,
+      "lambda_byte_offset": 320,
+      "packet_register_bijection": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "decode_records": [
+        {
+          "packet": 28,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 684,
+          "high": 672,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 29,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 696,
+          "high": 708,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 30,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 732,
+          "high": 720,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 31,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 744,
+          "high": 756,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 28,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 684,
+          "high": 672,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 29,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 696,
+          "high": 708,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 30,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 732,
+          "high": 720,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 31,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 744,
+          "high": 756,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        }
+      ]
+    },
+    {
+      "wire_group": 8,
+      "b3_block": 6,
+      "output_byte_offset": 768,
+      "lambda_byte_offset": 192,
+      "packet_register_bijection": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "decode_records": [
+        {
+          "packet": 32,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 768,
+          "high": 780,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 33,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 804,
+          "high": 792,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 34,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 828,
+          "high": 816,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 35,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 852,
+          "high": 840,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 32,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 768,
+          "high": 780,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 33,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 804,
+          "high": 792,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 34,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 828,
+          "high": 816,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 35,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 852,
+          "high": 840,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        }
+      ]
+    },
+    {
+      "wire_group": 9,
+      "b3_block": 7,
+      "output_byte_offset": 896,
+      "lambda_byte_offset": 224,
+      "packet_register_bijection": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "decode_records": [
+        {
+          "packet": 36,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 864,
+          "high": 876,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 37,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 900,
+          "high": 888,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 38,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 924,
+          "high": 912,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 39,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 948,
+          "high": 936,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 36,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 864,
+          "high": 876,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_1032"
+        },
+        {
+          "packet": 37,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 900,
+          "high": 888,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 38,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 924,
+          "high": 912,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        },
+        {
+          "packet": 39,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 948,
+          "high": 936,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_3201"
+        }
+      ]
+    },
+    {
+      "wire_group": 10,
+      "b3_block": 3,
+      "output_byte_offset": 384,
+      "lambda_byte_offset": 96,
+      "packet_register_bijection": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "decode_records": [
+        {
+          "packet": 40,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 960,
+          "high": 972,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 41,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 984,
+          "high": 996,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 42,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 1008,
+          "high": 1020,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 43,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 1032,
+          "high": 1044,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 40,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 960,
+          "high": 972,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 41,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 984,
+          "high": 996,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 42,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 1008,
+          "high": 1020,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 43,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 1032,
+          "high": 1044,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        }
+      ]
+    },
+    {
+      "wire_group": 11,
+      "b3_block": 2,
+      "output_byte_offset": 256,
+      "lambda_byte_offset": 64,
+      "packet_register_bijection": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "decode_records": [
+        {
+          "packet": 44,
+          "destination_register": 7,
+          "base": "rsi",
+          "low": 1056,
+          "high": 1068,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 45,
+          "destination_register": 8,
+          "base": "rsi",
+          "low": 1080,
+          "high": 1092,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 46,
+          "destination_register": 6,
+          "base": "rsi",
+          "low": 1104,
+          "high": 1116,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 47,
+          "destination_register": 5,
+          "base": "rsi",
+          "low": 1140,
+          "high": 1128,
+          "safe_low": true,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        },
+        {
+          "packet": 44,
+          "destination_register": 7,
+          "base": "rdx",
+          "low": 1056,
+          "high": 1068,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 45,
+          "destination_register": 8,
+          "base": "rdx",
+          "low": 1080,
+          "high": 1092,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 46,
+          "destination_register": 6,
+          "base": "rdx",
+          "low": 1104,
+          "high": 1116,
+          "safe_low": false,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_0123"
+        },
+        {
+          "packet": 47,
+          "destination_register": 5,
+          "base": "rdx",
+          "low": 1140,
+          "high": 1128,
+          "safe_low": true,
+          "safe_high": false,
+          "mask": ".Lq24_decode_mask_2310"
+        }
+      ]
+    }
+  ],
+  "assembly_eligible": true,
+  "decision": "emit-benchmark-only-streaming-probe",
+  "continuation_gate": {
+    "minimum_saving_tsc": 30,
+    "minimum_negative_launch_fraction": 0.9,
+    "bootstrap_95ci_upper_below_zero": true,
+    "full_first_product_word_exact": true,
+    "no_spill": true
+  },
+  "hard_stop_if_probe_fails": "stop-decap-micro-optimization-and-shift-to-keygen-encap"
+}

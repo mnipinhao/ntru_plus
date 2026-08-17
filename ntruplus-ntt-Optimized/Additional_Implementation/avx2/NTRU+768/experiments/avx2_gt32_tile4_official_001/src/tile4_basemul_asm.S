@@ -377,8 +377,132 @@
 	vmovdqu %ymm8,  96(%rdi)
 	.endm
 
+	/*
+	 * General e=0 output for the asymmetric SoA/AoS path.  Transpose the
+	 * four raw e=-1 planes first, then issue the four independent Mont(R^2)
+	 * chains by operation class.  This pays the scale debt without a
+	 * standalone conversion pass.
+	 */
+	.macro TILE4_OUTPUT_AOS_LATE_RSQ
+	vmovdqu   0(%rdi), %ymm1
+	vmovdqu  32(%rdi), %ymm2
+	vmovdqu  64(%rdi), %ymm3
+	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm15,ymm5,ymm6,ymm7,ymm8
+
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm5, %ymm1
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm6, %ymm2
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm7, %ymm3
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm8, %ymm4
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm5, %ymm5
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm6, %ymm6
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm7, %ymm7
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm8, %ymm8
+	vpmulhw %ymm0, %ymm1, %ymm1
+	vpmulhw %ymm0, %ymm2, %ymm2
+	vpmulhw %ymm0, %ymm3, %ymm3
+	vpmulhw %ymm0, %ymm4, %ymm4
+	vpsubw %ymm1, %ymm5, %ymm5
+	vpsubw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm3, %ymm7, %ymm7
+	vpsubw %ymm4, %ymm8, %ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
+	/*
+	 * General e=0 output without returning to TILE4 AoS.  c0..c2 already
+	 * reside in the destination coefficient planes and c3 is live in ymm15;
+	 * pay the R^2 scale debt in that native layout and store four SoA planes.
+	 */
+	.macro TILE4_OUTPUT_SOA_LATE_RSQ
+	vmovdqu   0(%rdi), %ymm5
+	vmovdqu  32(%rdi), %ymm6
+	vmovdqu  64(%rdi), %ymm7
+	vmovdqa %ymm15, %ymm8
+
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm5, %ymm1
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm6, %ymm2
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm7, %ymm3
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm8, %ymm4
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm5, %ymm5
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm6, %ymm6
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm7, %ymm7
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm8, %ymm8
+	vpmulhw %ymm0, %ymm1, %ymm1
+	vpmulhw %ymm0, %ymm2, %ymm2
+	vpmulhw %ymm0, %ymm3, %ymm3
+	vpmulhw %ymm0, %ymm4, %ymm4
+	vpsubw %ymm1, %ymm5, %ymm5
+	vpsubw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm3, %ymm7, %ymm7
+	vpsubw %ymm4, %ymm8, %ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
+	/*
+	 * Encap edge probe: finish the general e=0 conversion and consume the
+	 * already-SoA message before the sole materializing store.  r10 points at
+	 * the four message planes for the current 16-quartic block.
+	 */
+	.macro TILE4_OUTPUT_SOA_LATE_RSQ_ADD_M
+	vmovdqu   0(%rdi), %ymm5
+	vmovdqu  32(%rdi), %ymm6
+	vmovdqu  64(%rdi), %ymm7
+	vmovdqa %ymm15, %ymm8
+
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm5, %ymm1
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm6, %ymm2
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm7, %ymm3
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm8, %ymm4
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm5, %ymm5
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm6, %ymm6
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm7, %ymm7
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm8, %ymm8
+	vpmulhw %ymm0, %ymm1, %ymm1
+	vpmulhw %ymm0, %ymm2, %ymm2
+	vpmulhw %ymm0, %ymm3, %ymm3
+	vpmulhw %ymm0, %ymm4, %ymm4
+	vpsubw %ymm1, %ymm5, %ymm5
+	vpsubw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm3, %ymm7, %ymm7
+	vpsubw %ymm4, %ymm8, %ymm8
+	vpaddw   0(%r10), %ymm5, %ymm5
+	vpaddw  32(%r10), %ymm6, %ymm6
+	vpaddw  64(%r10), %ymm7, %ymm7
+	vpaddw  96(%r10), %ymm8, %ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
+	/* e=1 x e=0 already produces e=0; only materialize the AoS result. */
+	.macro TILE4_OUTPUT_AOS_LATE_RAW
+	vmovdqu   0(%rdi), %ymm1
+	vmovdqu  32(%rdi), %ymm2
+	vmovdqu  64(%rdi), %ymm3
+	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm15,ymm5,ymm6,ymm7,ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
 	/* Private consumer island keeps the four coefficient planes as stored. */
 	.macro TILE4_OUTPUT_SOA_PRIVATE
+	.endm
+
+	/* P2/I-112 producer: keep c0..c2 in M planes and center/store c3. */
+	.macro TILE4_OUTPUT_SOA_LATE_C3CENTER
+	vpmulhrsw .Ltile4_bm_center10(%rip), %ymm15, %ymm14
+	vpmullw %ymm0, %ymm14, %ymm14
+	vpsubw %ymm14, %ymm15, %ymm15
+	vmovdqu %ymm15, 96(%rdi)
 	.endm
 
 	.macro TILE4_INPUT_A_AOS
@@ -396,8 +520,77 @@
 	vmovdqu  96(%rsi), %ymm4
 	.endm
 
+	.macro TILE4_INPUT_B_AOS
+	vmovdqu   0(%rdx), %ymm1
+	vmovdqu  32(%rdx), %ymm2
+	vmovdqu  64(%rdx), %ymm3
+	vmovdqu  96(%rdx), %ymm4
+	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm4,ymm9,ymm10,ymm11,ymm12
+	.endm
+
+	.macro TILE4_INPUT_B_SOA
+	vmovdqu   0(%rdx), %ymm9
+	vmovdqu  32(%rdx), %ymm10
+	vmovdqu  64(%rdx), %ymm11
+	vmovdqu  96(%rdx), %ymm12
+	.endm
+
+	/* Resume the D+Q suffix from the Forward L1 materialization. */
+	.macro TILE4_INPUT_A_L1
+	vmovdqu   0(%rsi), %ymm1
+	vmovdqu  32(%rsi), %ymm2
+	vmovdqu  64(%rsi), %ymm3
+	vmovdqu  96(%rsi), %ymm4
+	vpunpckldq %ymm3, %ymm1, %ymm5
+	vpunpckhdq %ymm3, %ymm1, %ymm6
+	vpunpckldq %ymm4, %ymm2, %ymm7
+	vpunpckhdq %ymm4, %ymm2, %ymm8
+	vpunpcklqdq %ymm7, %ymm5, %ymm1
+	vpunpckhqdq %ymm7, %ymm5, %ymm2
+	vpunpcklqdq %ymm8, %ymm6, %ymm3
+	vpunpckhqdq %ymm8, %ymm6, %ymm4
+	.endm
+
+	.macro TILE4_INPUT_B_L1
+	vmovdqu   0(%rdx), %ymm9
+	vmovdqu  32(%rdx), %ymm10
+	vmovdqu  64(%rdx), %ymm11
+	vmovdqu  96(%rdx), %ymm12
+	vpunpckldq %ymm11, %ymm9, %ymm1
+	vpunpckhdq %ymm11, %ymm9, %ymm2
+	vpunpckldq %ymm12, %ymm10, %ymm3
+	vpunpckhdq %ymm12, %ymm10, %ymm4
+	vpunpcklqdq %ymm3, %ymm1, %ymm9
+	vpunpckhqdq %ymm3, %ymm1, %ymm10
+	vpunpcklqdq %ymm4, %ymm2, %ymm11
+	vpunpckhqdq %ymm4, %ymm2, %ymm12
+	.endm
+
+	/* Resume only the Q suffix from the Forward L2 materialization. */
+	.macro TILE4_INPUT_A_L2
+	vmovdqu   0(%rsi), %ymm5
+	vmovdqu  32(%rsi), %ymm6
+	vmovdqu  64(%rsi), %ymm7
+	vmovdqu  96(%rsi), %ymm8
+	vpunpcklqdq %ymm7, %ymm5, %ymm1
+	vpunpckhqdq %ymm7, %ymm5, %ymm2
+	vpunpcklqdq %ymm8, %ymm6, %ymm3
+	vpunpckhqdq %ymm8, %ymm6, %ymm4
+	.endm
+
+	.macro TILE4_INPUT_B_L2
+	vmovdqu   0(%rdx), %ymm1
+	vmovdqu  32(%rdx), %ymm2
+	vmovdqu  64(%rdx), %ymm3
+	vmovdqu  96(%rdx), %ymm4
+	vpunpcklqdq %ymm3, %ymm1, %ymm9
+	vpunpckhqdq %ymm3, %ymm1, %ymm10
+	vpunpcklqdq %ymm4, %ymm2, %ymm11
+	vpunpckhqdq %ymm4, %ymm2, %ymm12
+	.endm
+
 	/* B3 ablation: raw planes c0..c2 spill; c3 remains register-resident. */
-	.macro TILE4_BASEMUL_B3_FUNCTION name,output,inputa
+	.macro TILE4_BASEMUL_B3_FUNCTION name,output,inputa,inputb
 	.p2align 5
 	.globl \name
 	.type \name,@function
@@ -409,11 +602,7 @@
 
 	.p2align 5
 .Ltile4_bm_b3_loop\@:
-	vmovdqu   0(%rdx), %ymm1
-	vmovdqu  32(%rdx), %ymm2
-	vmovdqu  64(%rdx), %ymm3
-	vmovdqu  96(%rdx), %ymm4
-	TILE4_TRANSPOSE ymm1,ymm2,ymm3,ymm4,ymm9,ymm10,ymm11,ymm12
+	\inputb
 
 	\inputa
 
@@ -460,6 +649,70 @@
 	ret
 	.size \name,.-\name
 	.endm
+
+	/*
+	 * Benchmark-only bounded fusion.  The B3 arithmetic body is deliberately
+	 * identical to the qualified SoA/SoA general kernel; only its finalizer
+	 * consumes m (fourth SysV argument) before the final stores.
+	 */
+	.p2align 5
+	.globl gt32_tile4_basemul_general_soa_soa_add_m_asm
+	.type gt32_tile4_basemul_general_soa_soa_add_m_asm,@function
+gt32_tile4_basemul_general_soa_soa_add_m_asm:
+	leaq .Ltile4_bm_lambda(%rip), %r8
+	leaq .Ltile4_bm_lambda_qinv(%rip), %r9
+	vmovdqa .Ltile4_bm_q(%rip), %ymm0
+	movq %rcx, %r10
+	movl $12, %ecx
+
+	.p2align 5
+.Ltile4_bm_b3_add_m_loop:
+	TILE4_INPUT_B_SOA
+	TILE4_INPUT_A_SOA
+
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm1, %ymm5
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm2, %ymm6
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm3, %ymm7
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm4, %ymm8
+
+	TILE4_MONT_FIRST ymm2,ymm6,ymm12
+	TILE4_MONT_ADD   ymm3,ymm7,ymm11
+	TILE4_MONT_ADD   ymm4,ymm8,ymm10
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm9
+	vmovdqu %ymm15, 0(%rdi)
+
+	TILE4_MONT_FIRST ymm3,ymm7,ymm12
+	TILE4_MONT_ADD   ymm4,ymm8,ymm11
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm10
+	TILE4_MONT_ADD   ymm2,ymm6,ymm9
+	vmovdqu %ymm15, 32(%rdi)
+
+	TILE4_MONT_FIRST ymm4,ymm8,ymm12
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm11
+	TILE4_MONT_ADD   ymm2,ymm6,ymm10
+	TILE4_MONT_ADD   ymm3,ymm7,ymm9
+	vmovdqu %ymm15, 64(%rdi)
+
+	TILE4_MONT_FIRST ymm1,ymm5,ymm12
+	TILE4_MONT_ADD   ymm2,ymm6,ymm11
+	TILE4_MONT_ADD   ymm3,ymm7,ymm10
+	TILE4_MONT_ADD   ymm4,ymm8,ymm9
+	TILE4_OUTPUT_SOA_LATE_RSQ_ADD_M
+
+	addq $128, %rsi
+	addq $128, %rdx
+	addq $128, %rdi
+	addq $128, %r10
+	addq $32, %r8
+	addq $32, %r9
+	decl %ecx
+	jne .Ltile4_bm_b3_add_m_loop
+	vzeroupper
+	ret
+	.size gt32_tile4_basemul_general_soa_soa_add_m_asm,.-gt32_tile4_basemul_general_soa_soa_add_m_asm
 
 	.macro TILE4_BASEMUL_FUNCTION name,finalizer0,finalizer1,finalizer2,finalizer3,output
 	.p2align 5
@@ -561,13 +814,37 @@
 		TILE4_MONT_RSQ,TILE4_MONT_RSQ, \
 		TILE4_MONT_RSQ,TILE4_MONT_RSQ,TILE4_OUTPUT_AOS
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_b3_late_asm, \
-		TILE4_OUTPUT_AOS_LATE_CENTER,TILE4_INPUT_A_AOS
+		TILE4_OUTPUT_AOS_LATE_CENTER,TILE4_INPUT_A_AOS,TILE4_INPUT_B_AOS
 	.section .text.gt32_tile4_basemul_c3center_late_aos_private_asm,"ax",@progbits
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_c3center_late_aos_private_asm, \
-		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_AOS
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_AOS,TILE4_INPUT_B_AOS
 	.text
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm, \
-		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_SOA
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_SOA,TILE4_INPUT_B_AOS
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_scale_soa_soa_to_aos_private_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_scale_soa_soa_to_m_private_asm, \
+		TILE4_OUTPUT_SOA_LATE_C3CENTER,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_general_soa_aos_to_aos_asm, \
+		TILE4_OUTPUT_AOS_LATE_RSQ,TILE4_INPUT_A_SOA,TILE4_INPUT_B_AOS
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_general_soa_soa_to_aos_asm, \
+		TILE4_OUTPUT_AOS_LATE_RSQ,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_general_soa_soa_to_soa_asm, \
+		TILE4_OUTPUT_SOA_LATE_RSQ,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_e1_soa_aos_to_aos_asm, \
+		TILE4_OUTPUT_AOS_LATE_RAW,TILE4_INPUT_A_SOA,TILE4_INPUT_B_AOS
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l1_aos_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_L1,TILE4_INPUT_B_AOS
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l1_l1_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_L1,TILE4_INPUT_B_L1
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l2_aos_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_L2,TILE4_INPUT_B_AOS
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l2_l2_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_L2,TILE4_INPUT_B_L2
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_soa_l2_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_SOA,TILE4_INPUT_B_L2
+	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l2_soa_asm, \
+		TILE4_OUTPUT_AOS_LATE_C3CENTER,TILE4_INPUT_A_L2,TILE4_INPUT_B_SOA
 	TILE4_BASEMUL_B4B_FUNCTION gt32_tile4_basemul_b4b_partial_asm
 	TILE4_BASEMUL_K2_FUNCTION gt32_tile4_basemul_k2_asm
 

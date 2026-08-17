@@ -1,0 +1,160 @@
+{
+  "schema": "ntruplus768-gt32-scale-consumer-fusion-v1",
+  "experiment": "GT32-SCALE-CONSUMER-FUSION-001",
+  "source_artifacts": {
+    "generated/tile4_n5_scale_edge_survey.json": "f27e29aae9eb29552de1329a56fe097feade07101543f0c5365a3b206a655441",
+    "generated/tile4_e1_producer_gate.json": "9065c5a1fbb8c9f8c0b2b0fdad615ef5e00810708bf5f6c6f9adbd3d701028b2",
+    "generated/tile4_q24_lazy10788_gate.json": "a266a59835607a3f5c974b84f40cd176432cb43f159b6c31449e37fb6465e958",
+    "generated/tile4_q24_encap_highrange_gate.json": "3996c5d118b968bc2f7d989fa79ca39f46812b628628492cfa17c586c5433dea"
+  },
+  "question": "can the unavoidable scale conversion replace Q24 lazy reduction rather than execute as conversion plus reduction",
+  "current_q24_lazy_reducer": {
+    "per_vector_instructions": 3,
+    "vectors": 48,
+    "total_instructions": 144,
+    "shape": [
+      "vpmulhrsw v=9",
+      "vpmullw q",
+      "vpsubw"
+    ]
+  },
+  "direct_scaled_q24": {
+    "r_forward_e1_to_rhat_wire": {
+      "input_e": 1,
+      "output_e": 0,
+      "Montgomery_factor": 1,
+      "input_abs_bound": 18374,
+      "Montgomery_output_range": [
+        -1728,
+        1728
+      ],
+      "single_sign_correction_sufficient": true,
+      "per_vector_conversion_and_reduction_instructions": 4,
+      "instruction_shape": [
+        "vpmullw qinv",
+        "vpsraw 15",
+        "vpmulhw q",
+        "vpsubw"
+      ]
+    },
+    "ciphertext_e_minus1_to_wire": {
+      "input_e": -1,
+      "output_e": 0,
+      "Montgomery_factor": 867,
+      "input_abs_bound": 32630,
+      "Montgomery_output_range": [
+        -2148,
+        2148
+      ],
+      "single_sign_correction_sufficient": true,
+      "per_vector_conversion_and_reduction_instructions": 4,
+      "instruction_shape": [
+        "vpmullw factor_qinv",
+        "vpmulhw factor",
+        "vpmulhw q",
+        "vpsubw"
+      ]
+    },
+    "vectors": 48,
+    "total_instructions": 192,
+    "delta_vs_existing_lazy_reducer": 48,
+    "standalone_lazy_reducer_after_conversion": false,
+    "algebraic_overlap": "Montgomery conversion already returns a reduced representative; Q24 retains only sign correction and packing"
+  },
+  "encap_candidates": {
+    "r_e1": {
+      "scale_assignment": {
+        "r_forward_e": 1,
+        "m_forward_e": 0
+      },
+      "forward_bound": 18374,
+      "wire_edge": "rhat e1 -> direct scaled Q24 e0",
+      "removed_BM_R2_finalizer_instructions": 192
+    },
+    "m_e_minus1": {
+      "scale_assignment": {
+        "r_forward_e": 0,
+        "m_forward_e": -1
+      },
+      "forward_proof": {
+        "scaled_coefficient_set": [
+          -682,
+          0,
+          682
+        ],
+        "raw_top_abs_bound": 493768,
+        "raw_top_int16_safe": false,
+        "required_top": "Montgomery -722R",
+        "top_split_abs_bound": 2874,
+        "frontend_abs_bound": 5397,
+        "ntt32_stages": [
+          {
+            "stage": 1,
+            "input_abs_bound": 5397,
+            "product_abs_bound": 5397,
+            "output_abs_bound": 10794
+          },
+          {
+            "stage": 2,
+            "input_abs_bound": 10794,
+            "product_abs_bound": 1782,
+            "output_abs_bound": 12576
+          },
+          {
+            "stage": 3,
+            "input_abs_bound": 12576,
+            "product_abs_bound": 1935,
+            "output_abs_bound": 14511
+          },
+          {
+            "stage": 4,
+            "input_abs_bound": 14511,
+            "product_abs_bound": 1988,
+            "output_abs_bound": 16499
+          },
+          {
+            "stage": 5,
+            "input_abs_bound": 16499,
+            "product_abs_bound": 2111,
+            "output_abs_bound": 18610
+          }
+        ],
+        "forward_output_abs_bound": 18610
+      },
+      "post_add_e_minus1_abs_bounds": [
+        24114,
+        27527,
+        30941,
+        32630
+      ],
+      "signed_i16_safe": true,
+      "wire_edge": "ciphertext e-1 -> direct scaled Q24 e0",
+      "removed_BM_R2_finalizer_instructions": 192
+    }
+  },
+  "whole_edge_static_accounting_per_encap_candidate": {
+    "producer_scale_pass": 48,
+    "Montgomery_top_vs_raw": 72,
+    "removed_BM_R2_finalizer": -192,
+    "scaled_Q24_vs_existing_lazy_Q24": 48,
+    "concrete_net_delta": -24,
+    "net_delta_if_scaled_ternary_producer_is_free": -72
+  },
+  "decision": "bounded-static-stop-before-assembly",
+  "reason": [
+    "the conversion and Q24 reduction do fuse algebraically",
+    "but scaled Q24 still needs all 48 Montgomery conversion chains",
+    "it is one instruction per vector more expensive than the current lazy reducer",
+    "after producer scaling and mandatory Montgomery top split the concrete whole-edge gain is only 24 instructions",
+    "this is below the one-instruction-per-vector continuation floor and does not justify another production codec/Forward/BM ABI"
+  ],
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "reopen_only_if": [
+    "CBD or SOTP emits {-147,0,147} or {-682,0,682} without a 48-vector scale pass",
+    "the scaled Forward top split avoids its 72-instruction Montgomery premium",
+    "a direct scaled-Q24 circuit uses at most three instructions per vector",
+    "a wire consumer disappears so the saved BM finalizer is not repaid at Q24",
+    "the target ISA supplies a shorter packed fixed-factor reduction"
+  ]
+}

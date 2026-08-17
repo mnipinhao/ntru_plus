@@ -1,0 +1,2317 @@
+{
+  "schema": "ntruplus768-gt32-global-physical-layout-v1",
+  "experiment": "GT32-GLOBAL-PHYSICAL-LAYOUT-001",
+  "question": "Can per-stage physical coordinates trade a slightly different Forward schedule for a cheaper zero-repair 2F+B+I island?",
+  "search_space": {
+    "semantic_axes": [
+      "c0",
+      "c1",
+      "q0",
+      "q1",
+      "q2",
+      "q3",
+      "q4"
+    ],
+    "physical_axes": [
+      "lane-bit0",
+      "lane-bit1",
+      "lane-bit2",
+      "128b-half",
+      "YMM-bit0",
+      "YMM-bit1",
+      "YMM-bit2"
+    ],
+    "physical_states_per_layer": 5040,
+    "layers_jointly_searched": [
+      "frontend-landing",
+      "F-S1",
+      "F-S2",
+      "F-S3",
+      "F-S4",
+      "F-S5",
+      "BM-entry",
+      "I-S1",
+      "I-S2",
+      "I-S3",
+      "I-S4",
+      "I-S5",
+      "T9-entry"
+    ],
+    "not_a_single_global_permutation": true,
+    "allowed_transition_families": [
+      "YMM-register-rename",
+      "vperm2i128-low/high-half-selection",
+      "vpermq-qword-half-bit-permutation",
+      "vpshufb+vpermq-cross-half-lane-bit-permutation",
+      "vpshufb-lane-bit-permutation",
+      "vpunpckldq/vpunpckhdq",
+      "vpunpcklqdq/vpunpckhqdq",
+      "vpunpcklwd/vpunpckhwd"
+    ],
+    "scalar_profiles": {
+      "balanced": [
+        8,
+        10,
+        5,
+        12
+      ],
+      "latency": [
+        5,
+        18,
+        4,
+        12
+      ],
+      "shuffle_port": [
+        5,
+        8,
+        14,
+        12
+      ]
+    },
+    "profile_robust_same_exact_circuit": false,
+    "profile_robust_same_multi_metric_cost": true
+  },
+  "frozen": {
+    "top_twist_DFT3_mathematics": true,
+    "NTT32_stages": 5,
+    "quartic_basis": "monomial",
+    "range_representative": "current-N5/B3/I1-qualified"
+  },
+  "range_and_scale_proof": {
+    "reason_no_new_proof_debt": "every physical transition is a bijective lane permutation; arithmetic stage order, factors, Montgomery exponent and representatives are unchanged",
+    "forward_stage_abs_bounds": [
+      3456,
+      5199,
+      7011,
+      8855,
+      10788
+    ],
+    "forward_output_abs_bound": 10788,
+    "BM_input_scale_exponent": 0,
+    "BM_output_layout": [
+      "q2",
+      "q3",
+      "q0",
+      "q1",
+      "c0",
+      "c1",
+      "q4"
+    ],
+    "BM_output_scale_exponent": -1,
+    "BM_output_abs_bound": 2359,
+    "inverse_stage_abs_bounds": [
+      4718,
+      6467,
+      8304,
+      10181,
+      12150
+    ],
+    "all_signed_int16_safe": true,
+    "new_checkpoint_instructions": 0
+  },
+  "AVX2_transition_circuit_proof": {
+    "primitive_circuits_checked": 12,
+    "symbolic_words_per_circuit": 128,
+    "all_exact": true,
+    "records": [
+      {
+        "family": "vpunpcklwd/vpunpckhwd",
+        "register_bit": 4,
+        "unit_word_log2": 0,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpckldq/vpunpckhdq",
+        "register_bit": 4,
+        "unit_word_log2": 1,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpcklqdq/vpunpckhqdq",
+        "register_bit": 4,
+        "unit_word_log2": 2,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vperm2i128-low/high-half-selection",
+        "register_bit": 4,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpcklwd/vpunpckhwd",
+        "register_bit": 5,
+        "unit_word_log2": 0,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpckldq/vpunpckhdq",
+        "register_bit": 5,
+        "unit_word_log2": 1,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpcklqdq/vpunpckhqdq",
+        "register_bit": 5,
+        "unit_word_log2": 2,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vperm2i128-low/high-half-selection",
+        "register_bit": 5,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpcklwd/vpunpckhwd",
+        "register_bit": 6,
+        "unit_word_log2": 0,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpckldq/vpunpckhdq",
+        "register_bit": 6,
+        "unit_word_log2": 1,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vpunpcklqdq/vpunpckhqdq",
+        "register_bit": 6,
+        "unit_word_log2": 2,
+        "all_128_words_match": true
+      },
+      {
+        "family": "vperm2i128-low/high-half-selection",
+        "register_bit": 6,
+        "all_128_words_match": true
+      }
+    ]
+  },
+  "control": {
+    "description": "current N5 AoS + B3 input/output transposes + current I1 AoS",
+    "forward": {
+      "layout": [
+        "c0",
+        "c1",
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "cost_per_tile": {
+        "uops": 136,
+        "critical_path_layers": 21,
+        "shuffle_port_uops": 32,
+        "memory_uops": 0
+      },
+      "operations": [
+        {
+          "stage": 1,
+          "logical_axis": "q4",
+          "physical_axis": 6,
+          "shape": "cross-YMM-butterfly"
+        },
+        {
+          "stage": 2,
+          "logical_axis": "q3",
+          "physical_axis": 5,
+          "shape": "cross-YMM-butterfly"
+        },
+        {
+          "stage": 3,
+          "logical_axis": "q2",
+          "physical_axis": 4,
+          "shape": "cross-YMM-butterfly"
+        },
+        {
+          "stage": 4,
+          "logical_axis": "q1",
+          "physical_axis": 3,
+          "shape": "pair-packed-lane-local-butterfly"
+        },
+        {
+          "stage": 5,
+          "logical_axis": "q0",
+          "physical_axis": 2,
+          "shape": "pair-packed-lane-local-butterfly"
+        }
+      ]
+    },
+    "inverse": {
+      "layout": [
+        "c0",
+        "c1",
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
+      "cost_per_tile": {
+        "uops": 136,
+        "critical_path_layers": 21,
+        "shuffle_port_uops": 32,
+        "memory_uops": 0
+      },
+      "operations": [
+        {
+          "stage": 1,
+          "logical_axis": "q0",
+          "physical_axis": 2,
+          "shape": "pair-packed-lane-local-butterfly"
+        },
+        {
+          "stage": 2,
+          "logical_axis": "q1",
+          "physical_axis": 3,
+          "shape": "pair-packed-lane-local-butterfly"
+        },
+        {
+          "stage": 3,
+          "logical_axis": "q2",
+          "physical_axis": 4,
+          "shape": "cross-YMM-butterfly"
+        },
+        {
+          "stage": 4,
+          "logical_axis": "q3",
+          "physical_axis": 5,
+          "shape": "cross-YMM-butterfly"
+        },
+        {
+          "stage": 5,
+          "logical_axis": "q4",
+          "physical_axis": 6,
+          "shape": "cross-YMM-butterfly"
+        }
+      ]
+    },
+    "two_forward_plus_BM_boundaries_plus_inverse_cost_per_tile": {
+      "uops": 480,
+      "critical_path_layers": 69,
+      "shuffle_port_uops": 168,
+      "memory_uops": 0
+    }
+  },
+  "candidates_by_cost_profile": {
+    "balanced": {
+      "forward": {
+        "profile": "balanced",
+        "start_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "finish_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1572,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "layout-transition",
+            "instruction_family": "YMM-register-rename",
+            "instructions_per_tile": 0,
+            "peak_YMM": 8,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              4,
+              5
+            ],
+            "exact_mapping": "register-selector-bit-swap",
+            "cost": {
+              "uops": 0,
+              "critical_path_layers": 0,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q3",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q1",
+            "physical_axis": 3,
+            "montgomery": true,
+            "layout": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "pair-packed-lane-local-butterfly",
+            "shuffle_instructions_per_tile": 16,
+            "instruction_family": "vperm2i128-half-local-pair",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 40,
+              "critical_path_layers": 6,
+              "shuffle_port_uops": 16,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q0",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklqdq/vpunpckhqdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 2,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "BM_entry": {
+        "layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "kernel": "current-private-SoA-B3",
+        "input_repair_instructions": 0,
+        "output_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "new_Montgomery_chains": 0
+      },
+      "inverse": {
+        "profile": "balanced",
+        "start_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "finish_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1572,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q0",
+            "physical_axis": 4,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpckldq/vpunpckhdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 1,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklqdq/vpunpckhqdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 2,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q1",
+            "physical_axis": 3,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "pair-packed-lane-local-butterfly",
+            "shuffle_instructions_per_tile": 16,
+            "instruction_family": "vperm2i128-half-local-pair",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 40,
+              "critical_path_layers": 6,
+              "shuffle_port_uops": 16,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q3",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "two_forward_plus_inverse_layout_cost_per_tile": {
+        "uops": 432,
+        "critical_path_layers": 66,
+        "shuffle_port_uops": 120,
+        "memory_uops": 0
+      },
+      "peak_YMM": 15,
+      "spill_required": false,
+      "semantic_proof": {
+        "forward_matrix_sha256": "2e0d0496cf73538e1177104bd8957c55c7a705a4b0929979f797b191ee7aa82b",
+        "inverse_matrix_sha256": "419448302fb5760d80c572b712e4918e384f6574b995bbfaf016eaa0af5a186d",
+        "forward_basis_vectors_checked": 128,
+        "inverse_basis_vectors_checked": 128,
+        "degree_planes_checked": 4,
+        "layout_bijections_checked": 6,
+        "layout_mapping_sha256": {
+          "c0|c1|q0|q1|q2|q3|q4": "4497d32c822ad4ae57132a3462f6a0630d5d4a7863915c4ee08634841c4fee9f",
+          "c0|c1|q0|q1|q3|q2|q4": "1f9aa1df6790c08a753e1e9401d487ec9c46a87263e8392754286d033895b52d",
+          "c0|q2|q3|q1|q0|c1|q4": "f25827bc1df75c65e447498d75bb3709bcdb36f4aa14425c2b33d186d57ea765",
+          "q2|q3|c0|q1|q0|c1|q4": "f562fcdcf3e8818756d9bc94604adcc271110777598c25d6df8f31ce3bcdbcb8",
+          "q2|q3|q0|q1|c0|c1|q4": "54d56bb6adc189f1ba9c093005ddbd1591d338984ac1a855432710361c4b833e",
+          "q3|c0|c1|q1|q0|q2|q4": "81edc97f33137d145319d410bd1f0ef6be743a78780b360056a9bd371ce7fe4c"
+        },
+        "twiddle_rule": "logical edge label; regenerated in physical execution order",
+        "exact_matrix_and_CRT_leaf_equality": true
+      }
+    },
+    "latency": {
+      "forward": {
+        "profile": "latency",
+        "start_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "finish_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1276,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "layout-transition",
+            "instruction_family": "YMM-register-rename",
+            "instructions_per_tile": 0,
+            "peak_YMM": 8,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              4,
+              5
+            ],
+            "exact_mapping": "register-selector-bit-swap",
+            "cost": {
+              "uops": 0,
+              "critical_path_layers": 0,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q3",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q3",
+              "q2",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q1",
+            "physical_axis": 3,
+            "montgomery": true,
+            "layout": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "pair-packed-lane-local-butterfly",
+            "shuffle_instructions_per_tile": 16,
+            "instruction_family": "vperm2i128-half-local-pair",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 40,
+              "critical_path_layers": 6,
+              "shuffle_port_uops": 16,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q0",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklqdq/vpunpckhqdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "c0",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 2,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "BM_entry": {
+        "layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "kernel": "current-private-SoA-B3",
+        "input_repair_instructions": 0,
+        "output_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "new_Montgomery_chains": 0
+      },
+      "inverse": {
+        "profile": "latency",
+        "start_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "finish_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1276,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q0",
+            "physical_axis": 4,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpckldq/vpunpckhdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 1,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklqdq/vpunpckhqdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 2,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q1",
+            "physical_axis": 3,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "pair-packed-lane-local-butterfly",
+            "shuffle_instructions_per_tile": 16,
+            "instruction_family": "vperm2i128-half-local-pair",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 40,
+              "critical_path_layers": 6,
+              "shuffle_port_uops": 16,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q3",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "two_forward_plus_inverse_layout_cost_per_tile": {
+        "uops": 432,
+        "critical_path_layers": 66,
+        "shuffle_port_uops": 120,
+        "memory_uops": 0
+      },
+      "peak_YMM": 15,
+      "spill_required": false,
+      "semantic_proof": {
+        "forward_matrix_sha256": "2e0d0496cf73538e1177104bd8957c55c7a705a4b0929979f797b191ee7aa82b",
+        "inverse_matrix_sha256": "419448302fb5760d80c572b712e4918e384f6574b995bbfaf016eaa0af5a186d",
+        "forward_basis_vectors_checked": 128,
+        "inverse_basis_vectors_checked": 128,
+        "degree_planes_checked": 4,
+        "layout_bijections_checked": 6,
+        "layout_mapping_sha256": {
+          "c0|c1|q0|q1|q2|q3|q4": "4497d32c822ad4ae57132a3462f6a0630d5d4a7863915c4ee08634841c4fee9f",
+          "c0|c1|q0|q1|q3|q2|q4": "1f9aa1df6790c08a753e1e9401d487ec9c46a87263e8392754286d033895b52d",
+          "c0|q2|q3|q1|q0|c1|q4": "f25827bc1df75c65e447498d75bb3709bcdb36f4aa14425c2b33d186d57ea765",
+          "q2|q3|c0|q1|q0|c1|q4": "f562fcdcf3e8818756d9bc94604adcc271110777598c25d6df8f31ce3bcdbcb8",
+          "q2|q3|q0|q1|c0|c1|q4": "54d56bb6adc189f1ba9c093005ddbd1591d338984ac1a855432710361c4b833e",
+          "q3|c0|c1|q1|q0|q2|q4": "81edc97f33137d145319d410bd1f0ef6be743a78780b360056a9bd371ce7fe4c"
+        },
+        "twiddle_rule": "logical edge label; regenerated in physical execution order",
+        "exact_matrix_and_CRT_leaf_equality": true
+      }
+    },
+    "shuffle_port": {
+      "forward": {
+        "profile": "shuffle_port",
+        "start_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "finish_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1456,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q3",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q2",
+              "q1",
+              "q3",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              3,
+              4
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q1",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q0",
+              "q2",
+              "q1",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q0",
+              "q2",
+              "q1",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q0",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "q3",
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "c0",
+              "c1",
+              "q2",
+              "q1",
+              "q0",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q2",
+              "q0",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              3,
+              4
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpckldq/vpunpckhdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "c0",
+              "c1",
+              "q1",
+              "q2",
+              "q0",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "q0",
+              "c0",
+              "q1",
+              "q2",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 1,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "q0",
+              "c0",
+              "q1",
+              "q2",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "BM_entry": {
+        "layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "kernel": "current-private-SoA-B3",
+        "input_repair_instructions": 0,
+        "output_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "new_Montgomery_chains": 0
+      },
+      "inverse": {
+        "profile": "shuffle_port",
+        "start_layout": [
+          "q2",
+          "q3",
+          "q0",
+          "q1",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "finish_layout": [
+          "c0",
+          "c1",
+          "q0",
+          "q1",
+          "q2",
+          "q3",
+          "q4"
+        ],
+        "cost_per_tile": {
+          "uops": 144,
+          "critical_path_layers": 22,
+          "shuffle_port_uops": 40,
+          "memory_uops": 0
+        },
+        "weighted_score": 1456,
+        "peak_YMM": 13,
+        "spill_required": false,
+        "operations": [
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 1,
+            "logical_axis": "q0",
+            "physical_axis": 4,
+            "montgomery": false,
+            "layout": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "RAW_CROSS4",
+            "peak_YMM": 9,
+            "spill": false,
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "q2",
+              "q3",
+              "q1",
+              "q0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              3,
+              4
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 2,
+            "logical_axis": "q1",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c1",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpckldq/vpunpckhdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q2",
+              "q0",
+              "q1",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 5,
+            "unit_word_log2": 1,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpunpcklqdq/vpunpckhqdq",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q2",
+              "q0",
+              "q1",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "source_YMM_selector_bit": 4,
+            "unit_word_log2": 2,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 3,
+            "logical_axis": "q2",
+            "physical_axis": 4,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 4,
+            "logical_axis": "q3",
+            "physical_axis": 5,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "NTT32-stage",
+            "stage": 5,
+            "logical_axis": "q4",
+            "physical_axis": 6,
+            "montgomery": true,
+            "layout": [
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "shape": "cross-YMM-butterfly",
+            "shuffle_instructions_per_tile": 0,
+            "instruction_family": "MONT_CROSS4",
+            "peak_YMM": 13,
+            "spill": false,
+            "cost": {
+              "uops": 24,
+              "critical_path_layers": 4,
+              "shuffle_port_uops": 0,
+              "memory_uops": 0
+            }
+          },
+          {
+            "operation": "layout-transition",
+            "instruction_family": "vpermq-qword-half-bit-permutation",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "c0",
+              "c1",
+              "q1",
+              "q0",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "after": [
+              "c0",
+              "c1",
+              "q0",
+              "q1",
+              "q2",
+              "q3",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              2,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap",
+            "cost": {
+              "uops": 8,
+              "critical_path_layers": 1,
+              "shuffle_port_uops": 8,
+              "memory_uops": 0
+            }
+          }
+        ]
+      },
+      "two_forward_plus_inverse_layout_cost_per_tile": {
+        "uops": 432,
+        "critical_path_layers": 66,
+        "shuffle_port_uops": 120,
+        "memory_uops": 0
+      },
+      "peak_YMM": 15,
+      "spill_required": false,
+      "semantic_proof": {
+        "forward_matrix_sha256": "2e0d0496cf73538e1177104bd8957c55c7a705a4b0929979f797b191ee7aa82b",
+        "inverse_matrix_sha256": "419448302fb5760d80c572b712e4918e384f6574b995bbfaf016eaa0af5a186d",
+        "forward_basis_vectors_checked": 128,
+        "inverse_basis_vectors_checked": 128,
+        "degree_planes_checked": 4,
+        "layout_bijections_checked": 7,
+        "layout_mapping_sha256": {
+          "c0|c1|q0|q1|q2|q3|q4": "4497d32c822ad4ae57132a3462f6a0630d5d4a7863915c4ee08634841c4fee9f",
+          "c0|c1|q0|q2|q1|q3|q4": "9d03f03f46af0add18ab312148c751b7c32e3c346f378af6b68f9dc9ef443ad9",
+          "c0|c1|q1|q0|q2|q3|q4": "2a89d8ead8338147ccd676f788a6e3fb0811da54ab2b261faf0d9e81c1877c76",
+          "c0|q2|q3|q0|q1|c1|q4": "4b4be65065244ddb5225d4baa3f849a7ec7da5dbfe729bf4e5cf58c149b4918a",
+          "c0|q2|q3|q1|q0|c1|q4": "f25827bc1df75c65e447498d75bb3709bcdb36f4aa14425c2b33d186d57ea765",
+          "q2|q3|q0|q1|c0|c1|q4": "54d56bb6adc189f1ba9c093005ddbd1591d338984ac1a855432710361c4b833e",
+          "q3|c0|c1|q2|q1|q0|q4": "9c4bde4df8a3a09a18d1e20aa346f1476d5ed9dec1ea1702f7a76ea9610df145"
+        },
+        "twiddle_rule": "logical edge label; regenerated in physical execution order",
+        "exact_matrix_and_CRT_leaf_equality": true
+      }
+    }
+  },
+  "selected": "balanced",
+  "selected_static_delta_per_tile": {
+    "uops": -48,
+    "critical_path_layers": -3,
+    "shuffle_port_uops": -48,
+    "memory_uops": 0
+  },
+  "selected_static_delta_per_2F_B_I_six_tiles": {
+    "uops": -288,
+    "critical_path_layers": -18,
+    "shuffle_port_uops": -288,
+    "memory_uops": 0
+  },
+  "hard_gates": {
+    "Montgomery_chains_at_most_160": true,
+    "no_new_full_vector_checkpoint": true,
+    "peak_YMM_at_most_15": true,
+    "no_spill": true,
+    "BM_repair_zero": true,
+    "inverse_executable_schedule_emitted": true,
+    "exact_matrix_CRT_leaf_equality": true,
+    "static_multi_metric_improvement": true
+  },
+  "assembly_eligible": true,
+  "decision": "emit-bounded-assembly-probe",
+  "caveat": "Static uops/critical-path/port counts are architecture filters, not cycle evidence; promotion still requires a whole-only multi-launch PMU benchmark.",
+  "next_if_eligible": [
+    "emit only the selected per-stage route macros and regenerated twiddle streams",
+    "benchmark 2F+B+I whole-only in one binary",
+    "require normal/reversed core-cycle win and at least 20 TSC caller saving"
+  ],
+  "reopen_if_stopped": [
+    "an executable AVX2 transition circuit outside the adjacent-bit transpose library lowers the Pareto cost",
+    "a BM-native layout other than current private SoA has a zero-repair executable inverse schedule",
+    "the representative/range contract changes without a new checkpoint"
+  ]
+}

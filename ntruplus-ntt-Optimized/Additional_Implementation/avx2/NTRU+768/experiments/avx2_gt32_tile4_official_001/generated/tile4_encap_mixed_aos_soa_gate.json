@@ -1,0 +1,62 @@
+{
+  "schema": "ntruplus768-gt32-encap-mixed-aos-soa-static-v1",
+  "experiment": "GT32-ENCAP-MIXED-AOS-SOA-BM-001",
+  "scope": "Decodeq(h)->private-SoA; Forward(r,m)->TILE4-AoS; mixed general BM SoA x AoS -> AoS; add AoS; canonical Encodeq",
+  "frozen": [
+    "correct Official-index to GT semantic mapping",
+    "two spec-visible Encodeq boundaries: rhat and chat",
+    "current quartic monomial basis and Montgomery contracts",
+    "no global materialization pass in an eligible candidate"
+  ],
+  "provenance": {
+    "h": "canonical bytes -> corrected-semantic private SoA e=0",
+    "r": "CBD -> GT32 Forward TILE4 AoS e=0",
+    "m": "SOTP -> GT32 Forward TILE4 AoS e=0"
+  },
+  "mandatory_wire_edges": [
+    "Forward(rhat) -> Encodeq(rhat) -> G before BaseMul",
+    "BMgeneral(hhat,rhat) + mhat -> Encodeq(chat)"
+  ],
+  "encode_route_costs_excluding_common_pack_arithmetic": {
+    "TILE4_AoS_materialized_route_per_polynomial": 1536,
+    "private_SoA_grouped_materialized_route_per_polynomial": 288,
+    "private_SoA_direct_pack_route_per_polynomial": 240,
+    "AoS_minus_grouped_SoA_per_polynomial": 1248,
+    "AoS_minus_direct_SoA_per_polynomial": 1296,
+    "network_class": "source-YMM load + vperm2i128 half select + zeroing vpshufb + vpor; exact minimum in this fixed class"
+  },
+  "optimistic_accounting": {
+    "quartic_blocks": 12,
+    "instructions_per_complete_transpose_layer_per_block": 12,
+    "instructions_per_complete_transpose_layer_per_polynomial": 144,
+    "credited_removed_layers": 3,
+    "credited_removed_transition_instructions": 432,
+    "AoS_wire_debt_vs_grouped_SoA_for_two_Encodeq": 2496,
+    "AoS_wire_debt_vs_direct_SoA_for_two_Encodeq": 2592,
+    "optimistic_candidate_regression_vs_grouped_SoA": 2064,
+    "note": "The three-layer credit deliberately over-favors the candidate; the existing mixed B3 still transposes its AoS operand internally and cannot claim all of this credit."
+  },
+  "existing_mixed_symbol": {
+    "symbol": "gt32_tile4_basemul_general_soa_aos_to_aos_asm",
+    "mathematics_and_scale_match": true,
+    "direct_AoS_dot_product": false,
+    "AoS_operand_transposed_inside_B3": true,
+    "eligible_as_new_acceleration_mechanism": false
+  },
+  "static_gates": {
+    "no_global_SoA_to_AoS_or_AoS_to_pack_pass": false,
+    "alignment_at_most_four_extra_shuffles_per_block": false,
+    "no_spill": "not_reached",
+    "end_to_end_positive_after_two_Encodeq": false
+  },
+  "decision": "static-hard-stop-before-assembly-AoS-wire-boundary-debt",
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "production_integration": false,
+  "reopen_only_with": [
+    "Forward-r dual-use packet that is simultaneously BM-AoS and pack-native without duplication",
+    "mixed general BM output directly in private-SoA or Official-pack-input P",
+    "new AoS direct Encodeq network saving at least 1032 route instructions per encoded polynomial"
+  ],
+  "next_viable_typed_shape": "Decodeq(h)->M; Forward(r)->typed dual-use M/P packet; BMgeneral(M,A/P)->P; add Forward(m)->P; unchanged pack"
+}

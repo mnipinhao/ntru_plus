@@ -1,0 +1,17 @@
+/* Flat-directory compiler-C P-J1 BaseInv control for SUPERcop fixed A/B. */
+#include <stdint.h>
+
+#include "gt_basemul_soa.h"
+
+#define GT_RINV 1
+#define GT_RINV_QINV 12929
+
+#define gt_baseinv_center_l8_test_avx2 gt32_p_j1_c_center_l8_test_avx2
+#define gt_baseinv_native_centered_avx2 gt32_p_j1_c_baseinv_direct_avx2
+#define gt_baseinv_native_center_on_load_avx2 gt32_p_j1_c_center_on_load_avx2
+#define gt_baseinv_native_quadratic_centered_avx2 gt32_p_j1_c_quad_centered_avx2
+#define gt_baseinv_native_quadratic_center_on_load_avx2 gt32_p_j1_c_quad_center_on_load_avx2
+#define gt_baseinv_native_quadratic_abi_avx2 gt32_p_j1_c_quad_abi_avx2
+#define gt_baseinv_native_centered_asm_avx2 gt32_p_j1_c_direct_asm_avx2
+#define gt_baseinv_native_center_on_load_asm_avx2 gt32_p_j1_c_center_on_load_asm_avx2
+#include "gt_baseinv_native.c"

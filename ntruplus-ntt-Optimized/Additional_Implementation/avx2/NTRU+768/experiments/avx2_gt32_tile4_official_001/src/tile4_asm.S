@@ -32,6 +32,36 @@
 	vmovdqa %ymm11, \h3
 .endm
 
+/* S2 h0/h1 are whole-vector Montgomery identity factors. */
+.macro FWD_S2_CENTER_ID2 l0,h0,l1,h1,l2,h2,l3,h3,qinv,factor
+	vpmulhrsw .Ltile4_fwd_center10(%rip), \h0, %ymm8
+	vpmulhrsw .Ltile4_fwd_center10(%rip), \h1, %ymm9
+	vpmullw %ymm15, %ymm8, %ymm8
+	vpmullw %ymm15, %ymm9, %ymm9
+	vpsubw %ymm8, \h0, \h0
+	vpsubw %ymm9, \h1, \h1
+	vpmullw \qinv+64(%rip), \h2, %ymm10
+	vpmullw \qinv+96(%rip), \h3, %ymm11
+	vpmulhw \factor+64(%rip), \h2, \h2
+	vpmulhw \factor+96(%rip), \h3, \h3
+	vpmulhw %ymm15, %ymm10, %ymm10
+	vpmulhw %ymm15, %ymm11, %ymm11
+	vpsubw %ymm10, \h2, \h2
+	vpsubw %ymm11, \h3, \h3
+	vpsubw \h0, \l0, %ymm8
+	vpsubw \h1, \l1, %ymm9
+	vpsubw \h2, \l2, %ymm10
+	vpsubw \h3, \l3, %ymm11
+	vpaddw \h0, \l0, \l0
+	vpaddw \h1, \l1, \l1
+	vpaddw \h2, \l2, \l2
+	vpaddw \h3, \l3, \l3
+	vmovdqa %ymm8, \h0
+	vmovdqa %ymm9, \h1
+	vmovdqa %ymm10, \h2
+	vmovdqa %ymm11, \h3
+.endm
+
 .macro RAW_CROSS4 l0,h0,l1,h1,l2,h2,l3,h3
 	vpsubw \h0, \l0, %ymm8
 	vpsubw \h1, \l1, %ymm9
@@ -356,6 +386,22 @@
 	STORE_TILE
 .endm
 
+.macro FORWARD_BODY_PAIR_ID_CENTER
+	LOAD_TILE
+	RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
+	FWD_S2_CENTER_ID2 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_fwd_s2_qinv, .Ltile4_fwd_s2_factor
+	MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_fwd_s3_qinv, .Ltile4_fwd_s3_factor
+	MONT_LOCAL_HALF_PAIR %ymm0,%ymm1, .Ltile4_fwd_s4_pair_qinv,.Ltile4_fwd_s4_pair_factor, 0
+	MONT_LOCAL_HALF_PAIR %ymm2,%ymm3, .Ltile4_fwd_s4_pair_qinv,.Ltile4_fwd_s4_pair_factor, 32
+	MONT_LOCAL_HALF_PAIR %ymm4,%ymm5, .Ltile4_fwd_s4_pair_qinv,.Ltile4_fwd_s4_pair_factor, 64
+	MONT_LOCAL_HALF_PAIR %ymm6,%ymm7, .Ltile4_fwd_s4_pair_qinv,.Ltile4_fwd_s4_pair_factor, 96
+	MONT_LOCAL_QWORD_PAIR %ymm0,%ymm1, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 0
+	MONT_LOCAL_QWORD_PAIR %ymm2,%ymm3, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 32
+	MONT_LOCAL_QWORD_PAIR %ymm4,%ymm5, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 64
+	MONT_LOCAL_QWORD_PAIR %ymm6,%ymm7, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 96
+	STORE_TILE
+.endm
+
 .macro FORWARD_BODY_PAIR_SPLITLOAD
 	LOAD_TILE_SPLIT
 	RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
@@ -538,6 +584,25 @@ gt32_tile4_forward_all_pair_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_forward_all_pair_asm,.-gt32_tile4_forward_all_pair_asm
+
+	.section .text.gt32_tile4_forward_all_pair_id_center_asm,"ax",@progbits
+.p2align 5
+.globl gt32_tile4_forward_all_pair_id_center_asm
+.type gt32_tile4_forward_all_pair_id_center_asm,@function
+gt32_tile4_forward_all_pair_id_center_asm:
+	vmovdqa .Ltile4_q(%rip), %ymm15
+	movl $6, %ecx
+.p2align 5
+.Ltile4_forward_all_pair_id_center_loop:
+	FORWARD_BODY_PAIR_ID_CENTER
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Ltile4_forward_all_pair_id_center_loop
+	vzeroupper
+	ret
+.size gt32_tile4_forward_all_pair_id_center_asm,.-gt32_tile4_forward_all_pair_id_center_asm
+	.text
 
 .p2align 5
 .globl gt32_tile4_inverse_all_asm
@@ -744,6 +809,48 @@ gt32_tile4_inverse_all_pair_selective_asm:
 	addq $32, %rdi
 .endm
 
+.macro FRONTEND_WIDE_E1_ITER_BODY disp,x0,y0,z0,x1,y1,z1
+	vmovdqu 0+\disp(%rsi), %ymm0
+	vmovdqu 256+\disp(%rsi), %ymm1
+	vmovdqu 512+\disp(%rsi), %ymm2
+	vmovdqu 768+\disp(%rsi), %ymm3
+	vmovdqu 1024+\disp(%rsi), %ymm4
+	vmovdqu 1280+\disp(%rsi), %ymm5
+
+	/* e=1 input needs a scale-preserving Montgomery top split. */
+	vpmullw .Ltile4_frontend_zeta_top_qinv(%rip), %ymm3, %ymm9
+	vpmullw .Ltile4_frontend_zeta_top_qinv(%rip), %ymm4, %ymm10
+	vpmullw .Ltile4_frontend_zeta_top_qinv(%rip), %ymm5, %ymm11
+	vpmulhw .Ltile4_frontend_zeta_top_factor(%rip), %ymm3, %ymm6
+	vpmulhw .Ltile4_frontend_zeta_top_factor(%rip), %ymm4, %ymm7
+	vpmulhw .Ltile4_frontend_zeta_top_factor(%rip), %ymm5, %ymm8
+	vpmulhw %ymm15, %ymm9, %ymm9
+	vpmulhw %ymm15, %ymm10, %ymm10
+	vpmulhw %ymm15, %ymm11, %ymm11
+	vpsubw %ymm9, %ymm6, %ymm6
+	vpsubw %ymm10, %ymm7, %ymm7
+	vpsubw %ymm11, %ymm8, %ymm8
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpsubw %ymm7, %ymm4, %ymm4
+	vpsubw %ymm8, %ymm5, %ymm5
+	vpaddw %ymm0, %ymm3, %ymm3
+	vpaddw %ymm1, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm5, %ymm5
+	vpaddw %ymm6, %ymm0, %ymm0
+	vpaddw %ymm7, %ymm1, %ymm1
+	vpaddw %ymm8, %ymm2, %ymm2
+
+	GT_BLEND3 \x0,\y0,\z0,%ymm6,%ymm7,%ymm8
+	GT_BLEND3 \x1,\y1,\z1,%ymm9,%ymm10,%ymm11
+	MONT_WIDE3 %ymm6,%ymm7,%ymm8,0
+	MONT_WIDE3 %ymm9,%ymm10,%ymm11,96
+	DFT3_WIDE_STORE %ymm6,%ymm7,%ymm8,0,512,1024
+	DFT3_WIDE_STORE %ymm9,%ymm10,%ymm11,256,768,1280
+	addq $192, %rdx
+	addq $192, %rcx
+	addq $32, %rdi
+.endm
+
 .macro FRONTEND_WIDE_ITER_0 disp
 	FRONTEND_WIDE_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
 .endm
@@ -856,6 +963,31 @@ gt32_tile4_frontend_wide_raw_asm:
 	ret
 .size gt32_tile4_frontend_wide_raw_asm,.-gt32_tile4_frontend_wide_raw_asm
 
+/* Benchmark-only private frontend: coefficient input and output carry e=1. */
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_E1_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_E1_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_E1_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+.p2align 5
+.globl gt32_tile4_frontend_wide_e1_asm
+.type gt32_tile4_frontend_wide_e1_asm,@function
+gt32_tile4_frontend_wide_e1_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	vzeroupper
+	ret
+.size gt32_tile4_frontend_wide_e1_asm,.-gt32_tile4_frontend_wide_e1_asm
+
 	.section .text.gt32_tile4_forward_promotion_asm,"ax",@progbits
 .p2align 5
 .globl gt32_tile4_forward_full_wide_raw_pair_align32_asm
@@ -906,6 +1038,36 @@ gt32_tile4_forward_full_wide_raw_pair_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_forward_full_wide_raw_pair_asm,.-gt32_tile4_forward_full_wide_raw_pair_asm
+	.text
+
+	.section .text.gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm,"ax",@progbits
+.p2align 6
+.globl gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm
+.type gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm,@function
+gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm:
+	movq %rsp, %r10
+	movq %rdi, %r11
+	andq $-64, %rsp
+	subq $1536, %rsp
+	movq %rsp, %rdi
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	movq %rsp, %rsi
+	movq %r11, %rdi
+	movl $6, %ecx
+.p2align 5
+.Ltile4_forward_full_wide_raw_pair_id_center_loop:
+	FORWARD_BODY_PAIR_ID_CENTER
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Ltile4_forward_full_wide_raw_pair_id_center_loop
+	movq %r10, %rsp
+	vzeroupper
+	ret
+.size gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm,.-gt32_tile4_forward_full_wide_raw_pair_id_center_align64_asm
 	.text
 
 /*
@@ -962,6 +1124,11 @@ gt32_tile4_forward_full_fixed_pair_asm:
 .section .rodata
 .p2align 5
 .Ltile4_i1_center10:
+	.rept 16
+	.short 10
+	.endr
+.p2align 5
+.Ltile4_fwd_center10:
 	.rept 16
 	.short 10
 	.endr

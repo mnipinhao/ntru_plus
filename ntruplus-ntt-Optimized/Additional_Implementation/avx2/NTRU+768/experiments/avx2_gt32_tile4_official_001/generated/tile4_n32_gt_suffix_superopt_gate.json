@@ -1,0 +1,206 @@
+{
+  "schema": "ntruplus768-gt32-n32-suffix-superopt-v1",
+  "experiment": "GT-N32-SUFFIX-SUPEROPT-003A",
+  "frozen": {
+    "coordinate_B": 33,
+    "S1_S3": "unchanged",
+    "Montgomery_chain_cap": 160
+  },
+  "component": {
+    "natural_vectors": [
+      [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      [
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ]
+    ],
+    "YMM": 3,
+    "halves": 6
+  },
+  "three_vperm2i128_hypothesis": {
+    "search_space": "any source half may occupy any of six output half slots",
+    "legal_routes": 0,
+    "decision": "impossible",
+    "reason": "the two qwords in each natural half require different r-input permutations"
+  },
+  "five_blend_half_typed_route": {
+    "shuffle_like_instructions": 5,
+    "instructions": [
+      {
+        "dst": "t0a",
+        "a": "x",
+        "b": "y",
+        "vpblendd_imm": 12
+      },
+      {
+        "dst": "t0",
+        "a": "t0a",
+        "b": "z",
+        "vpblendd_imm": 48
+      },
+      {
+        "dst": "t1a",
+        "a": "x",
+        "b": "y",
+        "vpblendd_imm": 192
+      },
+      {
+        "dst": "t1",
+        "a": "t1a",
+        "b": "z",
+        "vpblendd_imm": 3
+      },
+      {
+        "dst": "t2",
+        "a": "y",
+        "b": "z",
+        "vpblendd_imm": 204
+      }
+    ],
+    "low_half_r_input_order": [
+      0,
+      1,
+      2
+    ],
+    "high_half_r_input_order": [
+      0,
+      2,
+      1
+    ],
+    "high_half_output_label_action": "swap k3=1 and k3=2",
+    "extra_Montgomery_scale": false,
+    "three_basis_vectors_exact": true,
+    "route_peak_data_YMM": 6,
+    "DFT3_peak_YMM_including_q_and_temporaries": 8
+  },
+  "range": {
+    "DFT3_after_S3": {
+      "order": "S1-S3-D3-S4-S5",
+      "DFT3_after_stage": 3,
+      "branches": [
+        {
+          "pre_DFT3": 7153,
+          "DFT3_outputs": [
+            21459,
+            16221,
+            16221
+          ],
+          "final_abs_bound": 25887,
+          "safe": true
+        },
+        {
+          "pre_DFT3": 7149,
+          "DFT3_outputs": [
+            21447,
+            16213,
+            16213
+          ],
+          "final_abs_bound": 25875,
+          "safe": true
+        }
+      ],
+      "all_int16_safe": true
+    },
+    "DFT3_after_S4": {
+      "order": "S1-S4-D3-S5-S5",
+      "DFT3_after_stage": 4,
+      "branches": [
+        {
+          "pre_DFT3": 9000,
+          "DFT3_outputs": [
+            27000,
+            19967,
+            19967
+          ],
+          "final_abs_bound": 29380,
+          "safe": true
+        },
+        {
+          "pre_DFT3": 8996,
+          "DFT3_outputs": [
+            26988,
+            19959,
+            19959
+          ],
+          "final_abs_bound": 29368,
+          "safe": true
+        }
+      ],
+      "all_int16_safe": true
+    },
+    "all_actual_lanes_int16_safe": true,
+    "reason": "the route only permutes lanes and preserves JOINT-002 bounds"
+  },
+  "routing_threshold": {
+    "requested": "strictly fewer than six shuffle-like instructions per component",
+    "DFT3_preparation": 5,
+    "preparation_pass": true,
+    "full_S4_S5_DFT3_packet_superoptimization": "not needed for ASM decision because Gate B independently fails"
+  },
+  "register_gate": {
+    "peak_YMM": 8,
+    "limit": 16,
+    "spill": false,
+    "pass": true
+  },
+  "semantic_debt": {
+    "residual_scale": "none",
+    "physical_label": "high 128-bit half swaps k3=1/2",
+    "absorbable_by": [
+      "S4/S5 table relabel",
+      "BM lambda order",
+      "inverse IDFT3 labels"
+    ]
+  },
+  "assembly_emitted": false,
+  "decision": "local-half-native-route-pass-global-assembly-gated-by-producer"
+}

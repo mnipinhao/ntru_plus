@@ -3592,5 +3592,35 @@
     ],
     "all_int16_add_sub_safe": true,
     "legal_consumer": "I1 AoS inverse then T9 only"
+  },
+  "c3_deferred_center_gate": {
+    "raw_c3_abs_bound": 14020,
+    "raw_length2_abs_bound": 28040,
+    "raw_length2_int16_safe": true,
+    "first_reducing_stage": "inverse length-4",
+    "reduction_applies_to": "high arm only",
+    "permanent_low_arm_example": "physical Q=0",
+    "center_absorbable_by_mandatory_montgomery_for_all_lanes": false,
+    "fully_raw_first_unsafe_length": 16,
+    "required_selective_checkpoint": "after length-8",
+    "required_selective_q": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "decision": "cannot-fold-complete-c3-center-into-required-inverse-multiply"
   }
 }

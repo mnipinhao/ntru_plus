@@ -1,0 +1,67 @@
+{
+  "schema": "ntruplus768-gt32-keygen-baseinv-bm-edge-v1",
+  "experiment": "GT32-KEYGEN-BASEINV-BM-EDGE-P1-001",
+  "scope": "BaseInv terminal plus native BaseMul entry only",
+  "frozen": [
+    "Forward progressive-P producer",
+    "BaseInv adjugate and determinant arithmetic",
+    "batch inversion",
+    "native quartic BaseMul arithmetic",
+    "Montgomery exponent and output representation"
+  ],
+  "control": "pre-sign adjugate -> determinant scale -> full inverse store -> native BM reload",
+  "candidate": "pre-sign adjugate -> determinant scale in ymm9..ymm12 -> immediate native BM consume",
+  "static_delta_per_edge": {
+    "final_inverse_ymm_stores_removed": 48,
+    "basemul_inverse_ymm_loads_removed": 48,
+    "full_inverse_materialization_removed": true
+  },
+  "implementation": {
+    "peak_ymm": 16,
+    "stack_spill": false,
+    "candidate_symbol_bytes": 763,
+    "control_finish_symbol_bytes": 218,
+    "reuses_existing_native_bm": true
+  },
+  "correctness": {
+    "random_trials": 1000,
+    "split_inverse_vs_direct": "pass",
+    "fused_edge_vs_materialized_edge": "pass",
+    "noninvertible_zero_semantics": "pass"
+  },
+  "benchmark": {
+    "iterations": 10000,
+    "paired_repeats": 20,
+    "primary_metric": "cpu_core/cycles",
+    "two_edge_normal": {
+      "core_cycle_delta": -56.820,
+      "core_cycle_bootstrap_95_ci": [-86.961, -48.004],
+      "core_cycle_wins": "19/20",
+      "instruction_delta": -367.650,
+      "load_delta": -115.819,
+      "store_delta": -112.949,
+      "tsc_delta": -25.859
+    },
+    "two_edge_reversed": {
+      "core_cycle_delta": -28.712,
+      "core_cycle_bootstrap_95_ci": [-47.896, -0.458],
+      "core_cycle_wins": "14/20",
+      "instruction_delta": -348.386,
+      "load_delta": -112.109,
+      "store_delta": -112.385,
+      "tsc_delta": -32.324
+    }
+  },
+  "continuation_gate": {
+    "required_core_cycle_saving_each_placement": 50,
+    "required_stability": "both placements stable",
+    "result": "stop-before-whole-keygen"
+  },
+  "decision": "locally-effective-but-below-architecture-promotion-floor",
+  "reopen_only_if": [
+    "BaseInv prepare materialization also disappears",
+    "batch inversion can consume and return leaf packets without the pre-sign buffer",
+    "the edge is combined with another whole-layer deletion worth at least 100 caller cycles",
+    "target ISA or microarchitecture changes"
+  ]
+}

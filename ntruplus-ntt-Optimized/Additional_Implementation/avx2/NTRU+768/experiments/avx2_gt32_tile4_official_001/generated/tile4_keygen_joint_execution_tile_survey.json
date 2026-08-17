@@ -1,0 +1,277 @@
+{
+  "schema": "ntruplus768-keygen-joint-execution-tile-survey-v1",
+  "experiment": "KEYGEN-JOINT-ABI-EXECUTION-TILE-SURVEY-001",
+  "status": "static-hard-stop-no-assembly",
+  "kernels_remain_independent": true,
+  "sources_audited": [
+    "asm/baseinv.s",
+    "asm/basemul.s",
+    "asm/pack.s",
+    "experiments/gt_ntt/gt_basemul_layout_asm.S",
+    "src/tile4_q24_codec_asm.S",
+    "build/bench_keygen_production"
+  ],
+  "central_correction": {
+    "claim": "Official BaseInv and BaseMul use a T32 arithmetic tile",
+    "verdict": false,
+    "actual": "their outer loop consumes 256 bytes, but the two T16 arithmetic batches are sequential and separated by full stores",
+    "true_T32_reference": "Official Q24; current P-SP1 already implements next-block T32 load overlap"
+  },
+  "cost_vector": [
+    "vector-multiply",
+    "shuffle",
+    "load",
+    "store",
+    "critical-tail",
+    "peak-live-YMM"
+  ],
+  "references": {
+    "BaseInv": {
+      "BI0_current_P": {
+        "semantic_tile": "T16",
+        "compiled_resources": {
+          "address": 53344,
+          "size_bytes": 686,
+          "static_instructions": 144,
+          "vector_multiply_instructions": 67,
+          "shuffle_instructions": 0,
+          "stack_referencing_instructions": 15,
+          "YMM_registers_referenced": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "YMM_register_count": 16
+        },
+        "observation": "all 16 YMM referenced and vector stack temporaries present"
+      },
+      "BI1_Official_exact": {
+        "outer_IO_tile": "T32/256-byte loop",
+        "arithmetic_tile": "two sequential T16 batches",
+        "simultaneous_AB_interleave": false,
+        "evidence": "batch-A output and determinant are stored before batch-B input loads",
+        "YMM_peak": 16
+      },
+      "BI2_Official_derived_P": {
+        "status": "measured-hard-stop-reference",
+        "twoF_twoBI_core_cycle_regression": {
+          "normal": 43.56,
+          "reversed": 51.67
+        },
+        "through_twoBM_core_cycle_regression": {
+          "normal": 44.45,
+          "reversed": 63.07
+        }
+      }
+    },
+    "BaseMul": {
+      "BM0_current_P": {
+        "semantic_tile": "T16",
+        "compiled_resources": {
+          "address": 54080,
+          "size_bytes": 655,
+          "static_instructions": 134,
+          "vector_multiply_instructions": 73,
+          "shuffle_instructions": 0,
+          "stack_referencing_instructions": 0,
+          "YMM_registers_referenced": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "YMM_register_count": 16
+        },
+        "all_eight_inputs_resident": true,
+        "YMM_peak": 16
+      },
+      "BM1_Official": {
+        "outer_IO_tile": "T32/256-byte loop",
+        "arithmetic_tile": "two sequential T16 batches",
+        "simultaneous_AB_interleave": false,
+        "materialized_R2_pass": true
+      },
+      "BM2_B3_typed": {
+        "status": "existing-arithmetic-parity-reference",
+        "new_formula_search": false
+      }
+    },
+    "Q24": {
+      "Q0_current_P_SP1": {
+        "semantic_tile": "T16 current plus T16 next-block preload",
+        "effective_load_overlap": "T32",
+        "compiled_resources": {
+          "address": 68960,
+          "size_bytes": 4364,
+          "static_instructions": 751,
+          "vector_multiply_instructions": 144,
+          "shuffle_instructions": 253,
+          "stack_referencing_instructions": 0,
+          "YMM_registers_referenced": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            13,
+            14,
+            15
+          ],
+          "YMM_register_count": 15
+        },
+        "preload_registers": [
+          "ymm8",
+          "ymm9",
+          "ymm10",
+          "ymm11"
+        ],
+        "YMM_peak": 15
+      },
+      "Q1_Official": {
+        "execution_tile": "T32/eight input YMM to six output YMM",
+        "all_eight_inputs_loaded_before_reduction": true
+      }
+    }
+  },
+  "families": [
+    {
+      "id": "F0-current-P-T16",
+      "role": "control",
+      "Forward": "current progressive-P",
+      "BaseInv": "BI0 current-P T16",
+      "BaseMul": "BM0 current-P T16",
+      "Q24": "Q0 SP1 already overlaps the next T16 block",
+      "eligible": true
+    },
+    {
+      "id": "F1-current-P-T32",
+      "role": "same-semantic-order execution-tiling candidate",
+      "BaseInv": "genuine A/B interleave exceeds 16 YMM; sequential pair is only loop unroll",
+      "BaseMul": "genuine A/B interleave exceeds 16 YMM; sequential pair is only loop unroll",
+      "Q24": "already implemented by SP1 next-block preload",
+      "vector_arithmetic_delta": 0,
+      "vector_critical_tail_delta": 0,
+      "scalar_loop_control_instruction_ceiling": -132,
+      "resource_relevant_vector_instruction_delta": 0,
+      "candidate_peak_YMM_lower_bound": 17,
+      "spill_free_peak_at_most_15": false,
+      "eligible": false
+    },
+    {
+      "id": "F2-Official-inspired-paired-Q",
+      "role": "metadata-compatible pair grouping",
+      "BaseInv": "Official already pairs equal metadata but clobbers/reloads constants between sequential T16 batches",
+      "BaseMul": "Official already pairs equal metadata but completes/stores A before loading B",
+      "Q24": "no better complete schedule than the already active SP1 T32 overlap is established",
+      "global_transpose": false,
+      "vector_arithmetic_delta": 0,
+      "vector_critical_tail_delta": 0,
+      "eligible": false
+    },
+    {
+      "id": "F3-best-P-prime-T32",
+      "role": "top-four prior P-prime placements plus T32",
+      "P_prime_winners": [
+        [
+          "q1",
+          "q2",
+          "q0",
+          "q4",
+          "q3"
+        ],
+        [
+          "q1",
+          "q3",
+          "q0",
+          "q4",
+          "q2"
+        ],
+        [
+          "q2",
+          "q1",
+          "q0",
+          "q4",
+          "q3"
+        ],
+        [
+          "q3",
+          "q1",
+          "q0",
+          "q4",
+          "q2"
+        ]
+      ],
+      "P_prime_three_Q24_shuffle_delta": -30,
+      "T32_new_vector_work_removed": 0,
+      "T32_vector_critical_tail_delta": 0,
+      "scalar_loop_control_instruction_ceiling": -132,
+      "resource_relevant_vector_instruction_delta": -30,
+      "complete_reduction_or_materialization_removed": false,
+      "candidate_peak_YMM_lower_bound": 17,
+      "spill_free_peak_at_most_15": false,
+      "eligible": false
+    }
+  ],
+  "hard_constraints": {
+    "no_kernel_fusion": true,
+    "no_global_transpose": true,
+    "peak_YMM_at_most": 15,
+    "no_spill": true,
+    "no_new_Montgomery_chain_without_consumer_chain_deletion": true,
+    "exact_range_and_scale_proof": true
+  },
+  "promotion_filter": {
+    "one_complete_reduction_or_materialization_removed": false,
+    "at_least_100_resource_relevant_instructions_removed": false,
+    "at_least_50_local_core_cycle_headroom_modeled": false,
+    "reason": "the apparent 132-instruction T32 saving is scalar loop control with zero vector critical-tail reduction; the only vector-work saving remains the prior 30 Q24 shuffles"
+  },
+  "decision": [
+    "do-not-emit-T32-BaseInv-or-BaseMul-ASM",
+    "do-not-repeat-P-prime-layout-search",
+    "retain-current-P-T16-arithmetic-and-SP1-Q24",
+    "treat-Official-T32-BaseInv-and-BM-as-outer-loop-unroll-not-common-execution-ABI"
+  ],
+  "reopen_only_if": [
+    "a T32 schedule proves peak at most 15 YMM with no spill or reload/recomputation debt",
+    "two-batch scheduling deletes vector arithmetic or shortens a measured vector critical tail",
+    "a new representation removes a complete reduction or materialized pass",
+    "target ISA supplies additional vector registers"
+  ],
+  "twisting": {
+    "status": "deferred",
+    "condition": "only after an execution family passes; net Montgomery chain count must be nonpositive"
+  }
+}

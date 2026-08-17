@@ -149,6 +149,19 @@ gt_basemul_native_asm_avx2:
 	GT_BASEMUL_BODY .Lgt_basemul_batch, GT_MONT_RSQ, GT_MONT_RSQ
 	.size gt_basemul_native_asm_avx2,.-gt_basemul_native_asm_avx2
 
+/*
+ * Typed Keygen edge: P-F0 e=0 times P-J1 e=1 naturally produces e=0.
+ * The raw quartic accumulators are therefore stored without Mont(R^2).
+ */
+	.p2align 5
+	.globl gt_basemul_native_f0_j1_e0_asm_avx2
+	.type gt_basemul_native_f0_j1_e0_asm_avx2,@function
+gt_basemul_native_f0_j1_e0_asm_avx2:
+	leaq gt_native_lambda(%rip), %r8
+	leaq gt_native_lambda_qinv(%rip), %r9
+	GT_BASEMUL_BODY .Lgt_basemul_f0_j1_batch, GT_KEEP_RMINUS1, GT_KEEP_RMINUS1
+	.size gt_basemul_native_f0_j1_e0_asm_avx2,.-gt_basemul_native_f0_j1_e0_asm_avx2
+
 	.p2align 5
 	.globl gt_basemul_soa_rminus1_asm_avx2
 	.type gt_basemul_soa_rminus1_asm_avx2,@function

@@ -1,0 +1,1277 @@
+{
+  "schema": "ntruplus768-gt32-q24-codec-v1",
+  "experiment": "GT32-Q24-CODEC-001",
+  "wire_packet_bytes": 24,
+  "coefficients_per_packet": 16,
+  "packets": 48,
+  "packet_to_single_TILE4_vector": true,
+  "quartic_degree_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "qword_pattern_counts": {
+    "0123": 14,
+    "1032": 11,
+    "2310": 11,
+    "3201": 12
+  },
+  "safe_tail": {
+    "last_packet_offset": 1128,
+    "unsafe_half_offset": 1140,
+    "decode_uses_8_plus_4_byte_load": true,
+    "encode_uses_8_plus_4_byte_store": true,
+    "no_overread_or_overwrite": true
+  },
+  "packets_detail": [
+    {
+      "packet": 0,
+      "destination_vector": 3,
+      "destination_byte_offset": 96,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 0,
+      "high_load_offset": 12,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 1,
+      "destination_vector": 2,
+      "destination_byte_offset": 64,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 36,
+      "high_load_offset": 24,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 2,
+      "destination_vector": 0,
+      "destination_byte_offset": 0,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 60,
+      "high_load_offset": 48,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 3,
+      "destination_vector": 1,
+      "destination_byte_offset": 32,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 84,
+      "high_load_offset": 72,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 4,
+      "destination_vector": 7,
+      "destination_byte_offset": 224,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 96,
+      "high_load_offset": 108,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 5,
+      "destination_vector": 6,
+      "destination_byte_offset": 192,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 132,
+      "high_load_offset": 120,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 6,
+      "destination_vector": 4,
+      "destination_byte_offset": 128,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 156,
+      "high_load_offset": 144,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 7,
+      "destination_vector": 5,
+      "destination_byte_offset": 160,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 180,
+      "high_load_offset": 168,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 8,
+      "destination_vector": 36,
+      "destination_byte_offset": 1152,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 192,
+      "high_load_offset": 204,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 9,
+      "destination_vector": 37,
+      "destination_byte_offset": 1184,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 216,
+      "high_load_offset": 228,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 10,
+      "destination_vector": 38,
+      "destination_byte_offset": 1216,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 240,
+      "high_load_offset": 252,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 11,
+      "destination_vector": 39,
+      "destination_byte_offset": 1248,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 264,
+      "high_load_offset": 276,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 12,
+      "destination_vector": 34,
+      "destination_byte_offset": 1088,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 288,
+      "high_load_offset": 300,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 13,
+      "destination_vector": 35,
+      "destination_byte_offset": 1120,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 312,
+      "high_load_offset": 324,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 14,
+      "destination_vector": 33,
+      "destination_byte_offset": 1056,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 336,
+      "high_load_offset": 348,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 15,
+      "destination_vector": 32,
+      "destination_byte_offset": 1024,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 372,
+      "high_load_offset": 360,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 16,
+      "destination_vector": 17,
+      "destination_byte_offset": 544,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 396,
+      "high_load_offset": 384,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 17,
+      "destination_vector": 16,
+      "destination_byte_offset": 512,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 408,
+      "high_load_offset": 420,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 18,
+      "destination_vector": 19,
+      "destination_byte_offset": 608,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 444,
+      "high_load_offset": 432,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 19,
+      "destination_vector": 18,
+      "destination_byte_offset": 576,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 456,
+      "high_load_offset": 468,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 20,
+      "destination_vector": 21,
+      "destination_byte_offset": 672,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 492,
+      "high_load_offset": 480,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 21,
+      "destination_vector": 20,
+      "destination_byte_offset": 640,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 504,
+      "high_load_offset": 516,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 22,
+      "destination_vector": 23,
+      "destination_byte_offset": 736,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 540,
+      "high_load_offset": 528,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 23,
+      "destination_vector": 22,
+      "destination_byte_offset": 704,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 552,
+      "high_load_offset": 564,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 24,
+      "destination_vector": 46,
+      "destination_byte_offset": 1472,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 588,
+      "high_load_offset": 576,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 25,
+      "destination_vector": 47,
+      "destination_byte_offset": 1504,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 612,
+      "high_load_offset": 600,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 26,
+      "destination_vector": 45,
+      "destination_byte_offset": 1440,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 636,
+      "high_load_offset": 624,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 27,
+      "destination_vector": 44,
+      "destination_byte_offset": 1408,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 648,
+      "high_load_offset": 660,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 28,
+      "destination_vector": 41,
+      "destination_byte_offset": 1312,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 684,
+      "high_load_offset": 672,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 29,
+      "destination_vector": 40,
+      "destination_byte_offset": 1280,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 696,
+      "high_load_offset": 708,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 30,
+      "destination_vector": 43,
+      "destination_byte_offset": 1376,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 732,
+      "high_load_offset": 720,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    },
+    {
+      "packet": 31,
+      "destination_vector": 42,
+      "destination_byte_offset": 1344,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 744,
+      "high_load_offset": 756,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 32,
+      "destination_vector": 27,
+      "destination_byte_offset": 864,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 768,
+      "high_load_offset": 780,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 33,
+      "destination_vector": 26,
+      "destination_byte_offset": 832,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 804,
+      "high_load_offset": 792,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 34,
+      "destination_vector": 24,
+      "destination_byte_offset": 768,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 828,
+      "high_load_offset": 816,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 35,
+      "destination_vector": 25,
+      "destination_byte_offset": 800,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 852,
+      "high_load_offset": 840,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 36,
+      "destination_vector": 31,
+      "destination_byte_offset": 992,
+      "source_to_destination_qword": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "output_source_qwords": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "half_swap": false,
+      "low_qword_swap": true,
+      "high_qword_swap": true,
+      "low_load_offset": 864,
+      "high_load_offset": 876,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_1032",
+      "encode_vpermq_imm": 177
+    },
+    {
+      "packet": 37,
+      "destination_vector": 30,
+      "destination_byte_offset": 960,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 900,
+      "high_load_offset": 888,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 38,
+      "destination_vector": 28,
+      "destination_byte_offset": 896,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 924,
+      "high_load_offset": 912,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 39,
+      "destination_vector": 29,
+      "destination_byte_offset": 928,
+      "source_to_destination_qword": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "output_source_qwords": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "half_swap": true,
+      "low_qword_swap": false,
+      "high_qword_swap": true,
+      "low_load_offset": 948,
+      "high_load_offset": 936,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_3201",
+      "encode_vpermq_imm": 75
+    },
+    {
+      "packet": 40,
+      "destination_vector": 12,
+      "destination_byte_offset": 384,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 960,
+      "high_load_offset": 972,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 41,
+      "destination_vector": 13,
+      "destination_byte_offset": 416,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 984,
+      "high_load_offset": 996,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 42,
+      "destination_vector": 14,
+      "destination_byte_offset": 448,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 1008,
+      "high_load_offset": 1020,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 43,
+      "destination_vector": 15,
+      "destination_byte_offset": 480,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 1032,
+      "high_load_offset": 1044,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 44,
+      "destination_vector": 10,
+      "destination_byte_offset": 320,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 1056,
+      "high_load_offset": 1068,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 45,
+      "destination_vector": 11,
+      "destination_byte_offset": 352,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 1080,
+      "high_load_offset": 1092,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 46,
+      "destination_vector": 9,
+      "destination_byte_offset": 288,
+      "source_to_destination_qword": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "output_source_qwords": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "half_swap": false,
+      "low_qword_swap": false,
+      "high_qword_swap": false,
+      "low_load_offset": 1104,
+      "high_load_offset": 1116,
+      "low_load_safe12": false,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_0123",
+      "encode_vpermq_imm": 228
+    },
+    {
+      "packet": 47,
+      "destination_vector": 8,
+      "destination_byte_offset": 256,
+      "source_to_destination_qword": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "output_source_qwords": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "half_swap": true,
+      "low_qword_swap": true,
+      "high_qword_swap": false,
+      "low_load_offset": 1140,
+      "high_load_offset": 1128,
+      "low_load_safe12": true,
+      "high_load_safe12": false,
+      "mask_label": ".Lq24_decode_mask_2310",
+      "encode_vpermq_imm": 30
+    }
+  ]
+}

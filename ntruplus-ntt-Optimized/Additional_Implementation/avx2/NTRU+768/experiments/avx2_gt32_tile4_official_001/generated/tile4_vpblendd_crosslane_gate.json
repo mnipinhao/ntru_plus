@@ -1,0 +1,86 @@
+{
+  "experiment": "GT32-VPBLENDD-CROSSLANE-001",
+  "status": "static-hard-stop",
+  "selected_production_boundary": {
+    "producer": "private-M-SoA plus global-inverse S1/local transitions",
+    "operation": "gt32_global_inverse_core_asm inverse S2",
+    "consumer": "unchanged global-inverse S3 and AoS-T9 suffix",
+    "source": "src/tile4_global_physical_asm.S",
+    "reason": "Q24-to-SoA and B3-entry transposes contain no cross-128-bit permutation; inverse S2 is the first selected Clean boundary with a material VPERM2I128 route"
+  },
+  "frozen": [
+    "inverse mathematical butterflies and twiddles",
+    "private-M input ABI",
+    "post-S2 physical state consumed by S3",
+    "range and Montgomery exponent",
+    "six-tile loop and spill-free contract"
+  ],
+  "candidate_instruction": {
+    "name": "VPBLENDD",
+    "semantics": "destination dword i selects source-A or source-B dword i",
+    "invariant": "source and destination 128-bit-half index are equal",
+    "can_cross_128_bit_half": false
+  },
+  "exact_pair_proof": {
+    "input": {
+      "a": [
+        "a.h0",
+        "a.h1"
+      ],
+      "b": [
+        "b.h0",
+        "b.h1"
+      ]
+    },
+    "pair_packed_operands": {
+      "low": [
+        "a.h0",
+        "b.h0"
+      ],
+      "high": [
+        "a.h1",
+        "b.h1"
+      ]
+    },
+    "cross_half_values_needed_for_extraction": 2,
+    "minimum_extraction_vperm2i128": 2,
+    "frozen_output": {
+      "a_out": [
+        "sum.h0",
+        "diff.h0"
+      ],
+      "b_out": [
+        "sum.h1",
+        "diff.h1"
+      ]
+    },
+    "cross_half_values_needed_for_reconstruction": 2,
+    "minimum_reconstruction_vperm2i128": 2,
+    "minimum_total_crosslane_instructions_per_pair": 4,
+    "current_total_crosslane_instructions_per_pair": 4
+  },
+  "whole_kernel_accounting": {
+    "pairs_per_tile": 4,
+    "tiles": 6,
+    "current_vperm2i128_per_tile": 16,
+    "proved_lower_bound_per_tile_with_unchanged_consumer": 16,
+    "current_vperm2i128_per_inverse": 96,
+    "proved_lower_bound_per_inverse": 96,
+    "deletable_by_slot_aligned_vpblendd": 0
+  },
+  "excluded_escape": {
+    "two_extract_only_pair_packed_output": "changes the S3 consumer physical ABI and is therefore outside this production-boundary gate; it belongs to the already-run global physical-layout search",
+    "vpermq_or_vinserti128": "still performs cross-half routing and does not satisfy the requested VPBLENDD deletion mechanism"
+  },
+  "decision": {
+    "assembly_emitted": false,
+    "benchmark_run": false,
+    "production_changed": false,
+    "reason": "slot-aligned VPBLENDD preserves the 128-bit-half coordinate; the frozen S2 boundary already meets the exact four-crosslane-instruction lower bound per pair"
+  },
+  "reopen_only_if": [
+    "S3 accepts the pair-packed S2 output without restoring its current ABI",
+    "the producer emits q1 on a dword-local axis without an equivalent cross-half route",
+    "a target ISA provides a cheaper true cross-half two-output primitive"
+  ]
+}

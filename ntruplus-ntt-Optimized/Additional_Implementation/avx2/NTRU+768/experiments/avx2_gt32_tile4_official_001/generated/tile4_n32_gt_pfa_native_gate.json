@@ -1,0 +1,375 @@
+{
+  "schema": "ntruplus768-gt32-n32-gt-pfa-native-v1",
+  "experiment": "GT-N32-PFA-NATIVE-001",
+  "coordinate": {
+    "input": "n=64*r+3*q mod 96",
+    "output": "k=32*k3+33*k32 mod 96",
+    "cross_terms_mod96_zero": true
+  },
+  "exact_matrix_proof": [
+    {
+      "branch": 0,
+      "scale": 2,
+      "all_96_basis_vectors_equal": true
+    },
+    {
+      "branch": 1,
+      "scale": 22,
+      "all_96_basis_vectors_equal": true
+    }
+  ],
+  "exact_leaf_matrix_equality": true,
+  "Montgomery_chains": {
+    "qualified_N5": 160,
+    "pure_GT_N32_first_nominal": 160,
+    "delta": 0
+  },
+  "range_proof": {
+    "branches": [
+      {
+        "branch": 0,
+        "post_twist_abs_bound": 1799,
+        "stages": [
+          {
+            "stage": 1,
+            "input_abs_bound": 1799,
+            "product_abs_bound": 1799,
+            "output_abs_bound": 3598
+          },
+          {
+            "stage": 2,
+            "input_abs_bound": 3598,
+            "product_abs_bound": 1743,
+            "output_abs_bound": 5341
+          },
+          {
+            "stage": 3,
+            "input_abs_bound": 5341,
+            "product_abs_bound": 1812,
+            "output_abs_bound": 7153
+          },
+          {
+            "stage": 4,
+            "input_abs_bound": 7153,
+            "product_abs_bound": 1847,
+            "output_abs_bound": 9000
+          },
+          {
+            "stage": 5,
+            "input_abs_bound": 9000,
+            "product_abs_bound": 1933,
+            "output_abs_bound": 10933
+          }
+        ],
+        "pre_DFT3_abs_bound": 10933,
+        "DFT3_output_abs_bounds": [
+          32799,
+          23881,
+          23881
+        ],
+        "signed_int16_safe": false
+      },
+      {
+        "branch": 1,
+        "post_twist_abs_bound": 1797,
+        "stages": [
+          {
+            "stage": 1,
+            "input_abs_bound": 1797,
+            "product_abs_bound": 1797,
+            "output_abs_bound": 3594
+          },
+          {
+            "stage": 2,
+            "input_abs_bound": 3594,
+            "product_abs_bound": 1743,
+            "output_abs_bound": 5337
+          },
+          {
+            "stage": 3,
+            "input_abs_bound": 5337,
+            "product_abs_bound": 1812,
+            "output_abs_bound": 7149
+          },
+          {
+            "stage": 4,
+            "input_abs_bound": 7149,
+            "product_abs_bound": 1847,
+            "output_abs_bound": 8996
+          },
+          {
+            "stage": 5,
+            "input_abs_bound": 8996,
+            "product_abs_bound": 1933,
+            "output_abs_bound": 10929
+          }
+        ],
+        "pre_DFT3_abs_bound": 10929,
+        "DFT3_output_abs_bounds": [
+          32787,
+          23873,
+          23873
+        ],
+        "signed_int16_safe": false
+      }
+    ],
+    "same_reducer_policy_int16_safe": false
+  },
+  "physical_topology": {
+    "stage_edges": [
+      {
+        "stage": 1,
+        "distance_q": 16,
+        "same_qword_lane": 48,
+        "different_qword_lane": 0,
+        "same_YMM": 0,
+        "pairs": 48
+      },
+      {
+        "stage": 2,
+        "distance_q": 8,
+        "same_qword_lane": 48,
+        "different_qword_lane": 0,
+        "same_YMM": 0,
+        "pairs": 48
+      },
+      {
+        "stage": 3,
+        "distance_q": 4,
+        "same_qword_lane": 48,
+        "different_qword_lane": 0,
+        "same_YMM": 0,
+        "pairs": 48
+      },
+      {
+        "stage": 4,
+        "distance_q": 2,
+        "same_qword_lane": 0,
+        "different_qword_lane": 48,
+        "same_YMM": 0,
+        "pairs": 48
+      },
+      {
+        "stage": 5,
+        "distance_q": 1,
+        "same_qword_lane": 0,
+        "different_qword_lane": 48,
+        "same_YMM": 24,
+        "pairs": 48
+      }
+    ],
+    "suffix_components": [
+      {
+        "k32_group": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "natural_Q": [
+          0,
+          3,
+          6,
+          9,
+          64,
+          67,
+          70,
+          73,
+          32,
+          35,
+          38,
+          41
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "natural_Q": [
+          12,
+          15,
+          18,
+          21,
+          76,
+          79,
+          82,
+          85,
+          44,
+          47,
+          50,
+          53
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "natural_Q": [
+          24,
+          27,
+          30,
+          33,
+          88,
+          91,
+          94,
+          1,
+          56,
+          59,
+          62,
+          65
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          12,
+          13,
+          14,
+          15
+        ],
+        "natural_Q": [
+          36,
+          39,
+          42,
+          45,
+          4,
+          7,
+          10,
+          13,
+          68,
+          71,
+          74,
+          77
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          16,
+          17,
+          18,
+          19
+        ],
+        "natural_Q": [
+          48,
+          51,
+          54,
+          57,
+          16,
+          19,
+          22,
+          25,
+          80,
+          83,
+          86,
+          89
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          20,
+          21,
+          22,
+          23
+        ],
+        "natural_Q": [
+          60,
+          63,
+          66,
+          69,
+          28,
+          31,
+          34,
+          37,
+          92,
+          95,
+          2,
+          5
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          24,
+          25,
+          26,
+          27
+        ],
+        "natural_Q": [
+          72,
+          75,
+          78,
+          81,
+          40,
+          43,
+          46,
+          49,
+          8,
+          11,
+          14,
+          17
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      },
+      {
+        "k32_group": [
+          28,
+          29,
+          30,
+          31
+        ],
+        "natural_Q": [
+          84,
+          87,
+          90,
+          93,
+          52,
+          55,
+          58,
+          61,
+          20,
+          23,
+          26,
+          29
+        ],
+        "distinct_YMM": 9,
+        "distinct_128bit_halves": 12
+      }
+    ],
+    "interpretation": "S1-S3 are whole-YMM edges, but every logical 12-node S4/S5/DFT3 component is fragmented over 9 YMM and 12 distinct halves"
+  },
+  "memory_phases": {
+    "correctness_baseline": 3,
+    "qualified_N5": 2,
+    "two_phase_candidate_requires": "top-split/twist fused with three S1-S3 slabs; noalias or branch spill/reload"
+  },
+  "assembly_emitted": false,
+  "decision": "static-hard-stop-for-unchanged-reducer-and-canonical-suffix; joint-range-topology-search-only",
+  "reasons": [
+    "DFT3-last Y0 bound exceeds signed int16 (32799/32787)",
+    "each suffix component touches 9 YMM and 12 halves, not three resident row vectors",
+    "three-pass baseline adds one full polynomial pass"
+  ],
+  "family_status": "pure-GT algebra and 160-chain target pass; implementation remains generator-only",
+  "reopen_assembly_only_if": [
+    "new exact lazy range schedule keeps every DFT3-last output below 32768 without a full checkpoint",
+    "joint S4/S5/DFT3/BM layout avoids canonical suffix materialization",
+    "two memory phases and peak YMM<=16 are demonstrated"
+  ]
+}

@@ -1,5 +1,60 @@
 # NTRU+768 AVX2 Good–Thomas 重設計：完整 Scope
 
+## 2026-08-07 polynomial optimization scope override
+
+目前的 optimization boundary 是完整 polynomial subsystem，而不是單一
+NTT kernel。以下定義優先於本文較早期把某一個 GT/TILE4 physical layout
+寫成固定 ABI 的敘述；那些 layout 現在都只是 candidate。
+
+核心 scope：
+
+```text
+Forward NTT
+BaseMul / BaseMulScale
+inverse NTT
+BaseInv（keygen polynomial algebra）
+modular reductions
+NTT-domain add/sub
+internal polynomial layouts
+Decodeq / Encodeq 中 custom layout adapter
+```
+
+暫時固定：
+
+```text
+SHAKE / hash_f / hash_g / hash_h
+randombytes
+KEM control flow
+shared-secret selection
+verify
+generic protocol semantics
+```
+
+CBD/SOTP 的演算法不重寫；第二階段才考慮讓它們直接 deposit 到 custom
+layout。公開 bytes、canonicality rejection、failure behavior、constant-time
+與 range/scale contract仍必須逐項對上 Official。
+
+新的最佳化單位是 caller-weighted polynomial-domain ABI：
+
+```text
+D = canonical bytes -> private NTT layout
+F = coefficient order -> private NTT layout
+B = private BaseMul / BaseMulScale / BaseInv
+I = private layout -> coefficient order
+E = private NTT layout -> canonical bytes
+```
+
+```text
+decap  = 3D + 2F + Bscale + I + Bgeneral + 2E
+encap  =  D + 2F + Bgeneral + 2E
+keygen = 2F + 2Binv + 2Bgeneral + 3E
+```
+
+`GT32-POLY-LAYOUT-ABI-001` 第一層只搜尋 quartic leaf 到
+tile/vector/qlane 的 placement；quartic degree planes、B3 arithmetic、
+Montgomery policy與 current NTT32 DAG維持不變。第二層才允許 hybrid
+SoA/qword、degree lane order、scale domain或 CBD/SOTP direct deposit。
+
 這一版先把你的六項決定鎖定，整個專案不再研究 full-input NTT，也不再做 direct NTT32 baseline。目標是針對 NTRU+768 的實際使用路徑，聯合設計：
 
 [

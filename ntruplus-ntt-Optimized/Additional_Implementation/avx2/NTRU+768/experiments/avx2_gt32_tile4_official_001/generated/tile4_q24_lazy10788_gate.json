@@ -1,0 +1,46 @@
+{
+  "schema": "ntruplus768-gt32-q24-lazy10788-contract-v1",
+  "experiment": "GT32-Q24-LAZY10788-GTPACK-001",
+  "contract": {
+    "input_layout": "private BM SoA",
+    "input_scale_exponent": 0,
+    "input_inclusive_range": [
+      -10788,
+      10788
+    ],
+    "output": "Official canonical 1152-byte serialization",
+    "alias": "input and output disjoint",
+    "input_is_nondestructive": true
+  },
+  "reducer": {
+    "formula": "t=(x*9+16384)>>15; y=x-t*3457",
+    "avx2": [
+      "vpmulhrsw v=9",
+      "vpmullw q=3457",
+      "vpsubw"
+    ],
+    "quotient_range": [
+      -3,
+      3
+    ],
+    "centered_output_range": [
+      -2188,
+      2188
+    ],
+    "canonical_output_range": [
+      0,
+      3456
+    ],
+    "single_sign_correction_sufficient": true,
+    "signed_int16_safe": true,
+    "mod_q_congruence": true
+  },
+  "exhaustive_values_checked": 21577,
+  "assembly_shape": {
+    "q24_packets": 48,
+    "extra_vector_instructions_per_packet": 3,
+    "standalone_canonical_materialization": false,
+    "centered_gtpack_symbol_modified": false
+  },
+  "decision": "range-and-scale-proof-pass"
+}

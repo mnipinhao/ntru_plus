@@ -1,0 +1,225 @@
+{
+  "candidate": "GT32-terminal-transpose-cut-co-design",
+  "scope": "S4/S5-terminal-to-B3-input-only",
+  "frozen": {
+    "basis": "quartic-monomial",
+    "arithmetic": "current-B3-schoolbook-Montgomery",
+    "montgomery_chains": "unchanged",
+    "range_checkpoint": "none-added",
+    "c3_policy": "current-private-c3-center",
+    "output": "standard-TILE4-AoS-e-minus-1",
+    "inverse": "current-I1-plus-T9"
+  },
+  "layouts": {
+    "L0": {
+      "description": "canonical-TILE4-AoS",
+      "producer_shuffle_uops": 16,
+      "b3_input_shuffle_uops": 12,
+      "producer_cut_layers": [],
+      "b3_resume_layers": [
+        "W",
+        "D",
+        "Q"
+      ],
+      "coefficient_labels_per_vector": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "producer_plus_b3_input_shuffle_uops": 28,
+      "shuffle_saving_vs_L0_operand_path": 0,
+      "shuffle_saving_vs_L3_operand_path": -4,
+      "cross_128_shuffle_uops": 8,
+      "layout_multiply_uops": 0,
+      "materialization_load_uops": 4,
+      "materialization_store_uops": 4,
+      "peak_ymm": 16,
+      "spill_required": false,
+      "combined_transpose_dependency_layers": 3
+    },
+    "L1": {
+      "description": "post-S5-word-blocked-AoSoA",
+      "producer_shuffle_uops": 16,
+      "b3_input_shuffle_uops": 8,
+      "producer_cut_layers": [
+        "P"
+      ],
+      "b3_resume_layers": [
+        "D",
+        "Q"
+      ],
+      "coefficient_labels_per_vector": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "producer_plus_b3_input_shuffle_uops": 24,
+      "shuffle_saving_vs_L0_operand_path": 4,
+      "shuffle_saving_vs_L3_operand_path": 0,
+      "cross_128_shuffle_uops": 8,
+      "layout_multiply_uops": 0,
+      "materialization_load_uops": 4,
+      "materialization_store_uops": 4,
+      "peak_ymm": 16,
+      "spill_required": false,
+      "combined_transpose_dependency_layers": 3
+    },
+    "L2": {
+      "description": "post-S5-dword-blocked-AoSoA",
+      "producer_shuffle_uops": 20,
+      "b3_input_shuffle_uops": 4,
+      "producer_cut_layers": [
+        "P",
+        "D"
+      ],
+      "b3_resume_layers": [
+        "Q"
+      ],
+      "coefficient_labels_per_vector": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "producer_plus_b3_input_shuffle_uops": 24,
+      "shuffle_saving_vs_L0_operand_path": 4,
+      "shuffle_saving_vs_L3_operand_path": 0,
+      "cross_128_shuffle_uops": 8,
+      "layout_multiply_uops": 0,
+      "materialization_load_uops": 4,
+      "materialization_store_uops": 4,
+      "peak_ymm": 16,
+      "spill_required": false,
+      "combined_transpose_dependency_layers": 3
+    },
+    "L3": {
+      "description": "private-full-SoA",
+      "producer_shuffle_uops": 24,
+      "b3_input_shuffle_uops": 0,
+      "producer_cut_layers": [
+        "P",
+        "D",
+        "Q"
+      ],
+      "b3_resume_layers": [],
+      "coefficient_labels_per_vector": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "producer_plus_b3_input_shuffle_uops": 24,
+      "shuffle_saving_vs_L0_operand_path": 4,
+      "shuffle_saving_vs_L3_operand_path": 0,
+      "cross_128_shuffle_uops": 8,
+      "layout_multiply_uops": 0,
+      "materialization_load_uops": 4,
+      "materialization_store_uops": 4,
+      "peak_ymm": 16,
+      "spill_required": false,
+      "combined_transpose_dependency_layers": 3
+    }
+  },
+  "symbolic_search": {
+    "layouts": [
+      "L0",
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "register_permutations": 24,
+    "half_order_choices": 16,
+    "coefficient_label_permutations": 24,
+    "variants_per_layout": 9216,
+    "total_variants": 36864,
+    "coefficient_cardinality_sets": {
+      "L0": [
+        [
+          4,
+          4,
+          4,
+          4
+        ]
+      ],
+      "L1": [
+        [
+          4,
+          4,
+          4,
+          4
+        ]
+      ],
+      "L2": [
+        [
+          2,
+          2,
+          2,
+          2
+        ]
+      ],
+      "L3": [
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    "direct_current_B3_plane_ABI_variants": {
+      "L0": 0,
+      "L1": 0,
+      "L2": 0,
+      "L3": 9216
+    },
+    "proof": "register permutations, 128-bit half swaps, and coefficient relabeling preserve per-vector coefficient cardinality; therefore L1 requires D+Q and L2 requires Q"
+  },
+  "caller_layout_shuffle_uops_per_16_quartic_block": {
+    "L1": {
+      "AA": 68,
+      "LA": 64,
+      "LL": 60
+    },
+    "L2": {
+      "AA": 68,
+      "LA": 64,
+      "LL": 60
+    },
+    "L3": {
+      "AA": 68,
+      "LA": 64,
+      "LL": 60
+    }
+  },
+  "asymmetric_orientation_shuffle_uops_per_16_quartic_block": {
+    "SA": 64,
+    "SoA_x_L2": 60,
+    "L2_x_SoA": 60
+  },
+  "hard_gate": {
+    "no_extra_montgomery_chain": true,
+    "no_extra_range_checkpoint": true,
+    "no_extra_c3_policy": true,
+    "no_cross_half_permutation_debt": true,
+    "peak_ymm_not_above_current": true,
+    "saves_complete_four_shuffle_layer_vs_AA_per_specialized_operand": true,
+    "new_static_saving_vs_existing_private_L3_operand_path": false
+  },
+  "assembly_emitted": true,
+  "assembly_scope": [
+    "benchmark-only-L1-forward-and-L1xAoS/L1xL1-B3",
+    "benchmark-only-L2-forward-and-L2xAoS/L2xL2-B3",
+    "benchmark-only-SoAxL2-and-L2xSoA-B3-orientations"
+  ],
+  "benchmark_gate": {
+    "iterations_per_sample": 2000,
+    "samples": 20,
+    "first_scope": "Forward-terminal-plus-B3",
+    "second_scope_if_first_passes": "2F-plus-B3-plus-I1-plus-T9",
+    "continue_if_new_margin_tsc_at_least": 20
+  },
+  "decision": "emit-benchmark-only-L1-L2-transpose-cuts",
+  "caveat": "L1 and L2 remove a full B3 input layer versus AoS, but exact producer-plus-consumer accounting ties the existing L3 path; only measured dependency placement can distinguish them"
+}

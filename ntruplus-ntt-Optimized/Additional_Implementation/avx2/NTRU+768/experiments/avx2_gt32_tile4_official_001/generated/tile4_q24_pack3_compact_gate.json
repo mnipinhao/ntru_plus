@@ -1,0 +1,77 @@
+{
+  "schema": "ntruplus768-gt32-q24-pack3-compact-v1",
+  "experiment": "GT32-KEYGEN-Q24-PACK3-P2-001",
+  "control": "three calls to reusable TF1 serializer",
+  "candidate": "twelve shared TF1 group bodies, each called for h/f/hinv",
+  "streams": 3,
+  "groups": 12,
+  "serializer_arithmetic_changed": false,
+  "wire_mapping_changed": false,
+  "range_or_scale_changed": false,
+  "tripled_unrolled_body": false,
+  "expected_code_footprint": "approximately one TF1 body plus dispatch",
+  "dynamic_control_overhead": {
+    "callee_saved_push_pop": 8,
+    "pointer_preservation_moves": 6,
+    "per_group_stream_moves": 72,
+    "per_group_calls_and_returns": 72,
+    "terminal_jump": 1
+  },
+  "dynamic_control_overhead_total": 159,
+  "instructions_eliminated": {
+    "duplicate_constant_loads": 4,
+    "intermediate_vzeroupper": 2
+  },
+  "acceleration_mechanism": "cross-stream latency overlap only",
+  "assembly_eligible": true,
+  "implementation": {
+    "candidate_symbol_bytes": 4723,
+    "tf1_symbol_bytes": 4276,
+    "tripled_body_avoided": true
+  },
+  "correctness": {
+    "random_trials": 1000,
+    "byte_exact_three_stream_output": "pass"
+  },
+  "benchmark": {
+    "iterations": 10000,
+    "paired_repeats": 20,
+    "normal": {
+      "core_cycle_delta": 52.33,
+      "core_cycle_bootstrap_95_ci": [
+        40.447,
+        70.346
+      ],
+      "candidate_wins": "1/20",
+      "instruction_delta": 165.915,
+      "load_delta": 37.348,
+      "store_delta": 43.192,
+      "tsc_delta": 35.18
+    },
+    "reversed": {
+      "core_cycle_delta": 62.058,
+      "core_cycle_bootstrap_95_ci": [
+        38.832,
+        80.64
+      ],
+      "candidate_wins": "4/20",
+      "instruction_delta": 177.688,
+      "load_delta": 38.46,
+      "store_delta": 44.03,
+      "tsc_delta": 37.04
+    }
+  },
+  "continuation_gate": "at least 60 core cycles saving in both placements",
+  "gate_result": "hard-stop",
+  "decision": [
+    "compact shared code footprint does not create useful cross-stream overlap",
+    "group call-return and pointer dispatch retire more work than three reusable TF1 calls",
+    "do not run whole Keygen or SUPERcop",
+    "retain TF1 as the local three-polynomial serializer control"
+  ],
+  "reopen_only_if": [
+    "one packet kernel consumes all three streams without per-group calls or tripled code",
+    "a downstream consumer removes another complete materialized boundary",
+    "target ISA or microarchitecture changes"
+  ]
+}

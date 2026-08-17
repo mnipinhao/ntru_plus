@@ -1,0 +1,217 @@
+{
+  "schema": "ntruplus768-gt32-n32-raw160-mixedlane-arm-v1",
+  "experiment": "GT32-N32-RAW160-MIXEDLANE-ARM-GATE-023",
+  "frozen": {
+    "ownership": "branch-local peak-13-YMM",
+    "factorization": "explicit twist; S1-S3; DFT3; S4-S5",
+    "Montgomery_chains": 160,
+    "output_ABI": "current half-native uniform e=0",
+    "consumer": "current R1-U plus typed inverse"
+  },
+  "admitted_change": "one pair-packed slot may select H/L per qword",
+  "avx2_route_cost_model": {
+    "mechanism": "two vpblendd form mixed reducing/nonreducing arms; output plus/minus placement is unchanged",
+    "applications_per_slot": "two branches times three row/k3 streams",
+    "instructions_per_mixed_slot_lower_bound": 12,
+    "budget_instructions": 20,
+    "maximum_mixed_slots_under_budget": 1,
+    "factor_constants": "regenerated in lane order; no runtime routing"
+  },
+  "search": {
+    "method": "exhaustive over all uniform slots plus at most one of 14 nonuniform four-qword masks",
+    "ordinary_e0_schedules": 1184,
+    "uniform_controls": 16,
+    "mixed_schedules_by_stage": {
+      "2": 448,
+      "3": 448,
+      "4": 256,
+      "5": 16
+    },
+    "all_schedules_exact_scale_checked": true
+  },
+  "best_schedule": {
+    "patterns_S2_to_S5": [
+      [
+        "0x0",
+        "0x0",
+        "0x4",
+        "0xf"
+      ],
+      [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ],
+      [
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    ],
+    "mixed_slots": [
+      {
+        "stage": 2,
+        "slot": 2,
+        "lane_L_mask_hex": "0x4"
+      }
+    ],
+    "route_instruction_lower_bound": 12,
+    "branch_records": [
+      {
+        "branch": 0,
+        "stage_bounds": [
+          {
+            "stage": 1,
+            "arm": "raw",
+            "max_abs_bound": 3576
+          },
+          {
+            "stage": 2,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x4",
+              "0xf"
+            ],
+            "max_abs_bound": 5287
+          },
+          {
+            "stage": 3,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 7083
+          },
+          {
+            "stage": 4,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 23318
+          },
+          {
+            "stage": 5,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 25161
+          }
+        ],
+        "DFT3_max_abs_bound": 21181,
+        "output_abs_bounds_by_k3": [
+          25161,
+          19912,
+          19894
+        ],
+        "max_output_abs_bound": 25161
+      },
+      {
+        "branch": 1,
+        "stage_bounds": [
+          {
+            "stage": 1,
+            "arm": "raw",
+            "max_abs_bound": 3573
+          },
+          {
+            "stage": 2,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x4",
+              "0xf"
+            ],
+            "max_abs_bound": 5295
+          },
+          {
+            "stage": 3,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 7104
+          },
+          {
+            "stage": 4,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 23328
+          },
+          {
+            "stage": 5,
+            "patterns_hex": [
+              "0x0",
+              "0x0",
+              "0x0",
+              "0x0"
+            ],
+            "max_abs_bound": 25224
+          }
+        ],
+        "DFT3_max_abs_bound": 21219,
+        "output_abs_bounds_by_k3": [
+          25224,
+          19911,
+          19954
+        ],
+        "max_output_abs_bound": 25224
+      }
+    ],
+    "max_output_abs_bound": 25224
+  },
+  "best_schedule_exact_semantic_proof": {
+    "basis_vectors_checked": 192,
+    "exact_matrix_equality": true,
+    "ordinary_e0_output": true
+  },
+  "best_natural_output_abs_bound": 25224,
+  "existing_B3_input_abs_bound": 10788,
+  "natural_B3_contract_pass": false,
+  "direct_R1U_inverse_probe": {
+    "maximum_raw_accumulator_abs_bound": 2545000704,
+    "signed32_safe": false,
+    "inverse_safe": false,
+    "inverse_IDFT3_internal_abs_bound": null,
+    "inverse_terminal_abs_bound": null
+  },
+  "direct_consumer_pass": false,
+  "register_gate": {
+    "existing_peak_YMM": 13,
+    "one_additional_blend_temporary": 1,
+    "conservative_peak_YMM": 14,
+    "fits_AVX2_16_YMM": true,
+    "spill_required": false
+  },
+  "assembly_eligible": false,
+  "assembly_emitted": false,
+  "decision": "mixed-lane-static-hard-stop-before-assembly",
+  "conclusion": "The <=20-instruction budget permits one mixed slot.  Exhaustive uniform-e0 search finds 1184 schedules, but the best representative bound is 25224 versus the frozen 10788 B3 limit.  Its direct R1-U/inverse closure is unsafe.",
+  "reopen_only_if": [
+    "the uniform e0 output ABI is replaced by a proven nonuniform per-leaf typed-scale ABI",
+    "a joint consumer repair costs less than the saved 32 instructions and closes the exact inverse range",
+    "a wider-register ISA changes the routing/reduction cost model"
+  ]
+}

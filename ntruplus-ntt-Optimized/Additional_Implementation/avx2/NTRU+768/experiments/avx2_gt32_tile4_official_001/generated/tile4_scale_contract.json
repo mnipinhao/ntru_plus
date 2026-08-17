@@ -1,6 +1,59 @@
 {
   "notation": "stored value represents x*R^e mod q",
   "montgomery_rule": "Mont(x*R^ea,y*R^eb)=xy*R^(ea+eb-1)",
+  "basemul_family": [
+    {
+      "name": "basemul-scale-aos-aos",
+      "inputs": [
+        "AoS e=0",
+        "AoS e=0"
+      ],
+      "output": "AoS e=-1",
+      "consumer": "inverse-scale",
+      "selected_symbol": "gt32_tile4_basemul_c3center_late_aos_private_asm"
+    },
+    {
+      "name": "basemul-general-aos-aos",
+      "inputs": [
+        "AoS e=0",
+        "AoS e=0"
+      ],
+      "output": "AoS e=0",
+      "consumer": "add/sub/Encodeq",
+      "selected_symbol": "gt32_tile4_basemul_general_b2_asm"
+    },
+    {
+      "name": "mixed-basemul-scale-soa-aos",
+      "inputs": [
+        "private SoA e=0",
+        "AoS e=0"
+      ],
+      "output": "AoS e=-1",
+      "consumer": "inverse-scale",
+      "candidate_symbol": "gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm"
+    },
+    {
+      "name": "mixed-basemul-general-soa-aos",
+      "inputs": [
+        "private SoA e=0",
+        "AoS e=0"
+      ],
+      "output": "AoS e=0",
+      "consumer": "add/sub/Encodeq",
+      "candidate_symbol": "gt32_tile4_basemul_general_soa_aos_to_aos_asm"
+    },
+    {
+      "name": "keygen-basemul-general-F0-J1-P0",
+      "inputs": [
+        "Forward TILE4 AoS F0 e=0",
+        "typed BaseInv TILE4 AoS J1 e=1"
+      ],
+      "output": "Official pack-input P0 e=0",
+      "consumer": "unchanged Official pack.S",
+      "scale_equation": "0+1-1=0",
+      "status": "generator-phase-A-pass; P0 route pending"
+    }
+  ],
   "boundaries": [
     {
       "operation": "forward-input",
@@ -17,6 +70,23 @@
       "r_exponent": 0
     },
     {
+      "operation": "forward-bm-soa-private-output",
+      "layout": "tile4-private-coefficient-planes",
+      "r_exponent": 0,
+      "legal_consumers": [
+        "basemul-scale-soa-aos-private",
+        "basemul-general-soa-aos"
+      ],
+      "forbidden_consumers": [
+        "add",
+        "sub",
+        "inverse-tile4",
+        "tobytes",
+        "serialization"
+      ],
+      "scope": "single-use forward operand only"
+    },
+    {
       "operation": "basemul-input-a",
       "layout": "tile4-physical-Q",
       "r_exponent": 0
@@ -25,6 +95,50 @@
       "operation": "basemul-input-b",
       "layout": "tile4-physical-Q",
       "r_exponent": 0
+    },
+    {
+      "operation": "keygen-baseinv-F0-input",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 0,
+      "range": [
+        -10788,
+        10788
+      ],
+      "legal_consumers": [
+        "typed-baseinv-J1"
+      ],
+      "scope": "keygen-only generator candidate"
+    },
+    {
+      "operation": "keygen-baseinv-J1-output",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 1,
+      "range": [
+        -1728,
+        1728
+      ],
+      "scale_mechanism": "field-inverse final factor R^-1 -> ordinary 1",
+      "legal_consumers": [
+        "keygen-basemul-F0-J1-P0"
+      ],
+      "forbidden_consumers": [
+        "inverse-tile4",
+        "add",
+        "sub",
+        "tobytes",
+        "serialization"
+      ],
+      "alias": "r-distinct or r-equals-a",
+      "scope": "keygen-only generator candidate"
+    },
+    {
+      "operation": "keygen-pack-P0-output",
+      "layout": "Official pack.S 48-vector input",
+      "r_exponent": 0,
+      "legal_consumers": [
+        "Official-pack.S"
+      ],
+      "scope": "keygen-only route synthesis pending"
     },
     {
       "operation": "frombytes-bm-soa-private-output",
@@ -55,6 +169,19 @@
         "sub",
         "tobytes"
       ]
+    },
+    {
+      "operation": "basemul-general-soa-aos-output",
+      "layout": "tile4-physical-Q",
+      "r_exponent": 0,
+      "scale_repair": "four parallel Mont(R^2) output chains",
+      "legal_consumers": [
+        "add",
+        "sub",
+        "tobytes"
+      ],
+      "alias": "three-distinct-buffers",
+      "scope": "benchmark-only encap.c asymmetric path"
     },
     {
       "operation": "basemul-scale-output",
@@ -199,6 +326,10 @@
     {
       "misuse": "artificial basemul input exceeds N5 proof range",
       "prevention": "candidate is caller-scoped and has no public API"
+    },
+    {
+      "misuse": "J1 BaseInv output enters an e=0 consumer",
+      "prevention": "typed keygen-only F0xJ1->P0 edge; no generic selector"
     }
   ]
 }

@@ -1,0 +1,590 @@
+{
+  "candidate": "pair/native-S5 quartic-BM arithmetic co-design",
+  "scope": "Forward-terminal-to-BM-to-inverse-stage0/1-boundary",
+  "layouts": [
+    {
+      "layout": "L01",
+      "coefficient_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "first_pair_is_quadratic_subring": false,
+      "escaping_basis_products": [
+        [
+          1,
+          1,
+          2
+        ]
+      ],
+      "quadratic_tower_eligible": false,
+      "split_quartic_karatsuba_eligible": true
+    },
+    {
+      "layout": "L02",
+      "coefficient_pairs": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "first_pair_is_quadratic_subring": true,
+      "escaping_basis_products": [],
+      "quadratic_tower_eligible": true,
+      "split_quartic_karatsuba_eligible": false
+    },
+    {
+      "layout": "L03",
+      "coefficient_pairs": [
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "first_pair_is_quadratic_subring": false,
+      "escaping_basis_products": [
+        [
+          3,
+          3,
+          2
+        ]
+      ],
+      "quadratic_tower_eligible": false,
+      "split_quartic_karatsuba_eligible": false
+    },
+    {
+      "layout": "LS5",
+      "physical_shape": "four canonical quartics per YMM",
+      "coefficient_plane_materialization": false,
+      "uses_internal_L02_quadratic_tower": true
+    }
+  ],
+  "exact_L02_nested_karatsuba": {
+    "basis": "E=(a0,a2), O=(a1,a3), y=x^2, y^2=lambda",
+    "variable_scalar_products": [
+      {
+        "name": "T0.z0",
+        "a": [
+          0
+        ],
+        "b": [
+          0
+        ]
+      },
+      {
+        "name": "T0.z1",
+        "a": [
+          2
+        ],
+        "b": [
+          2
+        ]
+      },
+      {
+        "name": "T0.z2",
+        "a": [
+          0,
+          2
+        ],
+        "b": [
+          0,
+          2
+        ]
+      },
+      {
+        "name": "T1.z0",
+        "a": [
+          1
+        ],
+        "b": [
+          1
+        ]
+      },
+      {
+        "name": "T1.z1",
+        "a": [
+          3
+        ],
+        "b": [
+          3
+        ]
+      },
+      {
+        "name": "T1.z2",
+        "a": [
+          1,
+          3
+        ],
+        "b": [
+          1,
+          3
+        ]
+      },
+      {
+        "name": "T2.z0",
+        "a": [
+          0,
+          1
+        ],
+        "b": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "T2.z1",
+        "a": [
+          2,
+          3
+        ],
+        "b": [
+          2,
+          3
+        ]
+      },
+      {
+        "name": "T2.z2",
+        "a": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "b": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "variable_scalar_product_count": 9,
+    "lambda_forms": [
+      "T0.z1",
+      "T1.z1",
+      "T2.z1",
+      "T1.high"
+    ],
+    "expanded_outputs": [
+      [
+        {
+          "a": 0,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 2,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 1,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 2,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 2,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 3,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 2,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        }
+      ]
+    ],
+    "equals_schoolbook_mod_x4_minus_lambda": true
+  },
+  "exact_L01_split_karatsuba": {
+    "basis": "P=(a0,a1), Q=(a2,a3), A=P+x^2*Q",
+    "equals_schoolbook_mod_x4_minus_lambda": true,
+    "expanded_outputs": [
+      [
+        {
+          "a": 0,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 2,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 1,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 2,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 2,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 3,
+          "lambda_power": 1,
+          "coefficient": 1
+        }
+      ],
+      [
+        {
+          "a": 0,
+          "b": 3,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 1,
+          "b": 2,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 2,
+          "b": 1,
+          "lambda_power": 0,
+          "coefficient": 1
+        },
+        {
+          "a": 3,
+          "b": 0,
+          "lambda_power": 0,
+          "coefficient": 1
+        }
+      ]
+    ]
+  },
+  "range_proof": {
+    "forward_input_abs_bound": 10788,
+    "center10_input_abs_bound": 2179,
+    "input_checkpoint": "center both native qword operands once before pair sums",
+    "pair_sum_abs_bound": 4358,
+    "pair_sum_int16_safe": true,
+    "center10_pair_sum_abs_bound": 1818,
+    "T2_total_sum_abs_bound": 8716,
+    "direct_product_mont_abs_bound": 1802,
+    "pair_product_mont_abs_bound": 2019,
+    "T2_total_product_mont_abs_bound": 2889,
+    "quadratic_output_pre_checkpoint_abs_bound": 6927,
+    "mandatory_checkpoint": "center T0/T1/T2 pairs before outer recombination",
+    "centered_quadratic_abs_bound": 1998,
+    "final_coefficient_abs_bounds": [
+      3775,
+      5994,
+      3996,
+      5994
+    ],
+    "all_int16_safe": true,
+    "L01": {
+      "linear_product_abs_bound": 5623,
+      "r0_r2_abs_bound": 5623,
+      "r1_abs_bound": 18173,
+      "lambda_output_abs_bounds": [
+        1918,
+        1873,
+        1772
+      ],
+      "final_coefficient_abs_bounds": [
+        3720,
+        7496,
+        9197,
+        18173
+      ],
+      "mandatory_output_checkpoint": "center the complete native qword before inverse length-2",
+      "centered_final_coefficient_abs_bounds": [
+        1818,
+        1998,
+        2179,
+        2719
+      ],
+      "inverse_length2_abs_bound": 5438,
+      "inverse_length4_abs_bound": 7193,
+      "inverse_stage0_1_int16_safe": true
+    }
+  },
+  "reduction_chains": {
+    "flat_four_plane_schoolbook": {
+      "variable_product_vector_chains_per_16_quartics": 16,
+      "lambda_fixed_factor_vector_chains_per_16_quartics": 3,
+      "total": 19
+    },
+    "LS5_native_L01": {
+      "variable_plus_lambda_vector_chains": 12,
+      "total": 12,
+      "saving_vs_flat": 7,
+      "saving_vs_plane_K2": 0,
+      "advantage_vs_plane_K2": "same arithmetic chains without coefficient-plane materialization"
+    },
+    "LS5_nested_L02": {
+      "variable_product_vector_chains": {
+        "two_dense_chains_per_four_quartics": 8,
+        "one_pooled_T2_z2_chain_for_sixteen_quartics": 1,
+        "total": 9
+      },
+      "packed_lambda_fixed_factor_vector_chains": 4,
+      "total": 13,
+      "saving_vs_flat": 6
+    },
+    "counting_rule": "one full-width Montgomery chain may carry independent lane products/factors; four quartics are packed per YMM"
+  },
+  "exact_lane_packing": {
+    "selected_L01_per_four_quartic_group": {
+      "chain_0_qword_slots": [
+        "P.z0",
+        "P.z2",
+        "P.sum",
+        "Q.z0"
+      ],
+      "chain_1_qword_slots": [
+        "Q.z2",
+        "Q.sum",
+        "S.z0",
+        "S.z2"
+      ],
+      "chain_2_qword_slots": [
+        "S.sum",
+        "lambda*(Q.z0+R.z2)",
+        "lambda*Q.z1",
+        "lambda*Q.z2"
+      ],
+      "groups": 4,
+      "chains": 12,
+      "all_chains_have_16_live_lanes": true,
+      "cross_group_pack": false
+    },
+    "per_four_quartic_group": {
+      "chain_0_qword_slots": [
+        "T0.z0",
+        "T0.z1",
+        "T0.z2",
+        "T1.z0"
+      ],
+      "chain_1_qword_slots": [
+        "T1.z1",
+        "T1.z2",
+        "T2.z0",
+        "T2.z1"
+      ],
+      "unpooled_slot": "T2.z2",
+      "groups": 4,
+      "all_dense_chains_have_16_live_lanes": true
+    },
+    "pooled_chain": {
+      "qword_slots": [
+        "group0.T2.z2",
+        "group1.T2.z2",
+        "group2.T2.z2",
+        "group3.T2.z2"
+      ],
+      "all_16_lanes_live": true,
+      "requires_cross_group_pack": true
+    },
+    "lambda_chain_per_group": {
+      "qword_slots": [
+        "T0.z1",
+        "T1.z1",
+        "T2.z1",
+        "T1.high"
+      ],
+      "all_16_lanes_live": true,
+      "chains_for_four_groups": 4
+    }
+  },
+  "representation_cost": {
+    "forward_terminal": "canonical stage-5 qword stores; no plane pass",
+    "BM_input": "native qword loads; qword-local operand construction",
+    "BM_output": "canonical AoS e=-1",
+    "inverse_stage0_1_extra_permutation": 0,
+    "coefficient_plane_materialization": 0,
+    "pooled_T2_z2_requires": "collect one centered total sum per quartic across four YMM"
+  },
+  "mandatory_native_L01_instruction_floor_per_16_quartics": {
+    "input_and_output_center10_vector_sequences": 12,
+    "center10_instructions_each": 3,
+    "center10_instructions": 36,
+    "dense_operand_pack_pshufb": 32,
+    "dense_operand_pack_add": 16,
+    "generic_montgomery_chains": 12,
+    "instructions_per_generic_chain": 5,
+    "montgomery_instructions": 60,
+    "algebraic_add_sub_lower_bound": 48,
+    "chain2_and_output_lane_routing_lower_bound": 24,
+    "known_compute_instruction_floor_excluding_load_store_loop": 216,
+    "comparison_note": "This is a lower bound: it excludes loads/stores, loop, and any register moves.  It must beat the measured/disassembled B3 block before assembly is eligible."
+  },
+  "static_eligibility": {
+    "current_B3_disassembled_loop_instructions_per_16_quartics": 156,
+    "native_L01_known_compute_floor_excluding_load_store_loop": 216,
+    "native_floor_minus_complete_B3_loop": 60,
+    "native_floor_ratio_to_complete_B3_loop": 1.3846153846153846,
+    "eligible_for_one_block_assembly": false,
+    "reason": "Even before native loads, stores, loop control, and register moves, the proof-required center checkpoints, dense qword operand construction, 12 Montgomery chains, and algebraic adds exceed the complete current B3 loop by 60 static instructions."
+  },
+  "register_plan": {
+    "stream_one_four_quartic_group_at_a_time": true,
+    "persistent_pooled_A_B_total_vectors": 2,
+    "data_and_product_vectors": 6,
+    "q_and_mask_vectors": 2,
+    "reducer_and_pack_temporaries": 4,
+    "peak_live_ymm": 14,
+    "spill_required": false
+  },
+  "acceleration_mechanisms": {
+    "fewer_Montgomery_vector_chains": true,
+    "Montgomery_vector_chain_saving_per_16_quartics": 7,
+    "eliminates_coefficient_plane_materialization": true,
+    "inverse_stage0_1_accepts_output_without_permutation": true
+  },
+  "assembly_gate": {
+    "candidate": "LS5-native split-L01 one-block",
+    "block_quartics": 16,
+    "benchmark_only": true,
+    "continue_if_saving_tsc_at_least": 20,
+    "compare_scope": "one-block BM plus inverse stage0/1",
+    "status": "rejected-before-assembly"
+  },
+  "assembly_emitted": false,
+  "decision": "stop-pair-native-static-floor-exceeds-B3"
+}

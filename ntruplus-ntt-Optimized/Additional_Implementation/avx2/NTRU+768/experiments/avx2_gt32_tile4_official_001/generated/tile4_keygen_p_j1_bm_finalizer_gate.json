@@ -1,0 +1,57 @@
+{
+  "experiment": "KEYGEN-P-J1-BM-FINALIZER-ELISION-001",
+  "status": "assembly-correctness-gate-eligible",
+  "typed_contract": {
+    "Forward": {
+      "layout": "P-SoA",
+      "e": 0,
+      "abs_bound": 9586
+    },
+    "BaseInv": {
+      "layout": "P-SoA",
+      "e": 1,
+      "abs_bound": 1910,
+      "mechanism": "field inverse final factor R^-1 -> 1"
+    },
+    "BaseMul": {
+      "equation": "0+1-1=0",
+      "output_e": 0,
+      "R2_finalizer": false
+    },
+    "consumer": "unchanged P-SP1 Q24 full-signed-int16 reducer"
+  },
+  "range_proof": {
+    "variable_product_abs_bound": 2009,
+    "raw_output_abs_bounds_c0_c1_c2_c3": [
+      3897,
+      5853,
+      7809,
+      8036
+    ],
+    "max_abs_bound": 8036,
+    "signed_int16_safe": true,
+    "Q24_full_signed_int16_exact": true
+  },
+  "static_elision": {
+    "R2_finalizer_chains_per_BM": 48,
+    "keygen_BM_calls": 2,
+    "R2_finalizer_chains_removed_per_keygen": 96,
+    "instructions_per_fixed_Montgomery_chain": 4,
+    "vector_instructions_removed_per_keygen": 384,
+    "vector_multiply_instructions_removed_per_keygen": 288,
+    "BaseInv_instruction_delta": 0,
+    "critical_output_tail_removed": true
+  },
+  "implementation": {
+    "BaseInv_symbol": "gt32_p_j1_baseinv_direct_avx2",
+    "BaseMul_symbol": "gt_basemul_native_f0_j1_e0_asm_avx2",
+    "assembly_emitted": true,
+    "Q24_modified": false
+  },
+  "next": [
+    "word/mod-q differential current e0 BaseInv versus P-J1",
+    "current BM+R2 versus F0xJ1 no-finalizer modulo-q differential",
+    "P-SP1 Q24 byte differential",
+    "only then benchmark BaseInv+BM+Q24 and full Keygen"
+  ]
+}

@@ -1,0 +1,524 @@
+{
+  "schema": "ntruplus768-gt32-m-baseinv-unification-exec-v1",
+  "experiment": "GT32-M-BASEINV-UNIFICATION-EXEC-001",
+  "correctness": {
+    "random_trials": 1000,
+    "accepted_invertible_pairs": 1000,
+    "Forward_semantic_differential": "pass",
+    "BaseInv_status_and_value_differential": "pass",
+    "BaseMul_and_Q24_byte_differential": "pass",
+    "M_BaseInv_alias": "pass",
+    "noninvertible_zero_failure_semantics": "pass"
+  },
+  "static_executable_audit": {
+    "M_safe_forward_instructions_through_ret": 174,
+    "M_forward_control_instructions_through_ret": 168,
+    "selective_center_static_instructions_per_tile": 6,
+    "M_Q24_instructions_through_ret_per_polynomial": 773,
+    "P_SP1_Q24_instructions_through_ret_per_polynomial": 738,
+    "M_minus_P_SP1_instructions_per_polynomial": 35,
+    "three_polynomial_delta": 105,
+    "correction_to_generator_accounting": "the prior 48-shuffle P debt described an older P route; the current SP1 half-scatter control has already absorbed that routing and is 35 instructions smaller than M L0"
+  },
+  "placements": {
+    "normal": {
+      "m1": {
+        "core_cycles": {
+          "paired_delta_median": 13.849750000000029,
+          "bootstrap_95_ci": [
+            -6.678449999999998,
+            41.912499999999966
+          ],
+          "candidate_wins": 6,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 27.44740000000013,
+          "bootstrap_95_ci": [
+            -21.0320999999999,
+            101.17760000000021
+          ],
+          "candidate_wins": 6,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 10.26520000000005,
+          "bootstrap_95_ci": [
+            -2.516899999999964,
+            29.73574999999994
+          ],
+          "candidate_wins": 6,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -0.9232999999999976,
+          "bootstrap_95_ci": [
+            -3.770300000000006,
+            3.302900000000001
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": 15.498099999999965,
+          "bootstrap_95_ci": [
+            9.497399999999999,
+            50.47369999999995
+          ],
+          "candidate_wins": 5,
+          "pairs": 20
+        }
+      },
+      "m2": {
+        "core_cycles": {
+          "paired_delta_median": 0.19204999999988104,
+          "bootstrap_95_ci": [
+            -1.955600000000004,
+            5.609400000000051
+          ],
+          "candidate_wins": 9,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 0.0227999999997337,
+          "bootstrap_95_ci": [
+            -3.4447500000001128,
+            7.312799999999697
+          ],
+          "candidate_wins": 9,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": -0.0005000000000165983,
+          "bootstrap_95_ci": [
+            -0.30535000000000423,
+            0.6479500000000087
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -0.00010000000000331966,
+          "bootstrap_95_ci": [
+            -0.24484999999998536,
+            0.5214000000000283
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": -0.4641000000000304,
+          "bootstrap_95_ci": [
+            -2.81269999999995,
+            1.342899999999986
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        }
+      },
+      "m3": {
+        "core_cycles": {
+          "paired_delta_median": -64.55299999999988,
+          "bootstrap_95_ci": [
+            -90.63905000000022,
+            -40.628749999999854
+          ],
+          "candidate_wins": 16,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": -15.540149999999812,
+          "bootstrap_95_ci": [
+            -46.568750000000364,
+            14.063750000000255
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 75.23579999999981,
+          "bootstrap_95_ci": [
+            69.79759999999987,
+            80.48265000000015
+          ],
+          "candidate_wins": 1,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": 76.17775,
+          "bootstrap_95_ci": [
+            74.4572,
+            77.87620000000004
+          ],
+          "candidate_wins": 0,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": -39.663299999999936,
+          "bootstrap_95_ci": [
+            -46.94439999999986,
+            -35.66210000000001
+          ],
+          "candidate_wins": 19,
+          "pairs": 20
+        }
+      },
+      "mpack": {
+        "core_cycles": {
+          "paired_delta_median": 59.05265000000003,
+          "bootstrap_95_ci": [
+            52.05865000000006,
+            66.86515000000003
+          ],
+          "candidate_wins": 1,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 94.79939999999988,
+          "bootstrap_95_ci": [
+            74.39789999999994,
+            105.45194999999967
+          ],
+          "candidate_wins": 3,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": -51.11824999999999,
+          "bootstrap_95_ci": [
+            -54.821199999999976,
+            -46.73719999999997
+          ],
+          "candidate_wins": 19,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -3.397899999999993,
+          "bootstrap_95_ci": [
+            -6.117949999999979,
+            -1.0968000000000018
+          ],
+          "candidate_wins": 15,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": 33.99209999999999,
+          "bootstrap_95_ci": [
+            3.0544999999999902,
+            64.6508
+          ],
+          "candidate_wins": 6,
+          "pairs": 20
+        }
+      },
+      "m4": {
+        "core_cycles": {
+          "paired_delta_median": -7.29424999999992,
+          "bootstrap_95_ci": [
+            -21.527050000000145,
+            15.098900000000413
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 79.28125,
+          "bootstrap_95_ci": [
+            62.43499999999949,
+            104.66784999999982
+          ],
+          "candidate_wins": 3,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 31.4049500000001,
+          "bootstrap_95_ci": [
+            28.327149999999847,
+            36.04284999999982
+          ],
+          "candidate_wins": 2,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": 74.80930000000001,
+          "bootstrap_95_ci": [
+            73.60324999999995,
+            76.65870000000001
+          ],
+          "candidate_wins": 0,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": -5.919299999999794,
+          "bootstrap_95_ci": [
+            -12.096100000000206,
+            -1.9150999999999385
+          ],
+          "candidate_wins": 15,
+          "pairs": 20
+        }
+      }
+    },
+    "reversed": {
+      "m1": {
+        "core_cycles": {
+          "paired_delta_median": 13.207450000000051,
+          "bootstrap_95_ci": [
+            -3.5160999999999945,
+            32.31080000000003
+          ],
+          "candidate_wins": 7,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 27.590649999999755,
+          "bootstrap_95_ci": [
+            -19.785999999999945,
+            79.49079999999981
+          ],
+          "candidate_wins": 8,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 10.091599999999943,
+          "bootstrap_95_ci": [
+            -2.2350499999999442,
+            23.789749999999998
+          ],
+          "candidate_wins": 7,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -0.8151499999999956,
+          "bootstrap_95_ci": [
+            -3.608400000000003,
+            2.240249999999996
+          ],
+          "candidate_wins": 12,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": 11.070899999999995,
+          "bootstrap_95_ci": [
+            -110.38669999999996,
+            119.82409999999996
+          ],
+          "candidate_wins": 7,
+          "pairs": 20
+        }
+      },
+      "m2": {
+        "core_cycles": {
+          "paired_delta_median": -1.583599999999933,
+          "bootstrap_95_ci": [
+            -8.668949999999995,
+            1.5092500000000655
+          ],
+          "candidate_wins": 12,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": -4.75545000000011,
+          "bootstrap_95_ci": [
+            -20.803800000000138,
+            0.5880499999993845
+          ],
+          "candidate_wins": 14,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": -0.4216000000000122,
+          "bootstrap_95_ci": [
+            -1.8435500000000218,
+            0.0529499999999814
+          ],
+          "candidate_wins": 14,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -0.33850000000001046,
+          "bootstrap_95_ci": [
+            -1.4817499999999768,
+            0.0428500000000156
+          ],
+          "candidate_wins": 14,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": -1.063600000000065,
+          "bootstrap_95_ci": [
+            -5.8034999999999854,
+            1.0691999999999098
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        }
+      },
+      "m3": {
+        "core_cycles": {
+          "paired_delta_median": -68.58080000000018,
+          "bootstrap_95_ci": [
+            -128.49955000000045,
+            -52.25199999999995
+          ],
+          "candidate_wins": 16,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": -30.22319999999945,
+          "bootstrap_95_ci": [
+            -69.54519999999957,
+            -17.24250000000029
+          ],
+          "candidate_wins": 17,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 72.67865000000006,
+          "bootstrap_95_ci": [
+            65.52634999999998,
+            75.05695000000003
+          ],
+          "candidate_wins": 3,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": 75.37985000000003,
+          "bootstrap_95_ci": [
+            72.94259999999997,
+            76.20244999999994
+          ],
+          "candidate_wins": 0,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": -46.45869999999991,
+          "bootstrap_95_ci": [
+            -57.29240000000027,
+            -35.771400000000085
+          ],
+          "candidate_wins": 17,
+          "pairs": 20
+        }
+      },
+      "mpack": {
+        "core_cycles": {
+          "paired_delta_median": 57.209450000000004,
+          "bootstrap_95_ci": [
+            37.31999999999999,
+            75.23954999999995
+          ],
+          "candidate_wins": 2,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 112.61115000000018,
+          "bootstrap_95_ci": [
+            60.128549999999905,
+            168.34320000000002
+          ],
+          "candidate_wins": 3,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": -49.793650000000014,
+          "bootstrap_95_ci": [
+            -60.350300000000004,
+            -35.60559999999998
+          ],
+          "candidate_wins": 20,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": -1.7924999999999898,
+          "bootstrap_95_ci": [
+            -8.466800000000006,
+            5.853000000000009
+          ],
+          "candidate_wins": 11,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": 34.542100000000005,
+          "bootstrap_95_ci": [
+            -26.969600000000014,
+            50.29420000000002
+          ],
+          "candidate_wins": 7,
+          "pairs": 20
+        }
+      },
+      "m4": {
+        "core_cycles": {
+          "paired_delta_median": 1.8433500000001004,
+          "bootstrap_95_ci": [
+            -10.295050000000174,
+            19.549900000000434
+          ],
+          "candidate_wins": 9,
+          "pairs": 20
+        },
+        "instructions": {
+          "paired_delta_median": 67.89074999999957,
+          "bootstrap_95_ci": [
+            41.01580000000013,
+            95.13584999999966
+          ],
+          "candidate_wins": 2,
+          "pairs": 20
+        },
+        "loads": {
+          "paired_delta_median": 29.37765000000013,
+          "bootstrap_95_ci": [
+            24.475400000000036,
+            34.31670000000008
+          ],
+          "candidate_wins": 2,
+          "pairs": 20
+        },
+        "stores": {
+          "paired_delta_median": 74.19599999999997,
+          "bootstrap_95_ci": [
+            72.27555000000001,
+            76.02770000000004
+          ],
+          "candidate_wins": 0,
+          "pairs": 20
+        },
+        "TSC": {
+          "paired_delta_median": 8.121599999999717,
+          "bootstrap_95_ci": [
+            -4.871399999999767,
+            56.468799999999874
+          ],
+          "candidate_wins": 8,
+          "pairs": 20
+        }
+      }
+    }
+  },
+  "gate_results": {
+    "M1_selective_center_entry_fee": "pass-bounded-cost",
+    "M2_M_native_BaseInv": "pass-parity",
+    "M3_arithmetic_island": "pass-both-placements",
+    "M_pack_vs_P_SP1": "fail-M-is-slower",
+    "M4_complete_K3_K5": "fail-no-stable-two-placement-win"
+  },
+  "decision": "stop-before-KEM-integration-retain-P-for-Keygen",
+  "reason": "M arithmetic wins, but the current P SP1 serializer is about 57-59 core cycles faster for three polynomials and consumes the entire arithmetic gain; M4 is parity/placement-sensitive",
+  "production_changes": false,
+  "full_KEM_same_binary_gate_run": false,
+  "why_full_KEM_was_not_run": "M4 failed its prerequisite, so linking the candidate into all three KEM operations would test placement without an intrinsic Keygen margin",
+  "reopen_only_if": [
+    "an M Q24 encoder removes at least the 35-instruction-per-polynomial SP1 gap with a compact reusable body",
+    "the P-specific serializer and tables can be removed from the final image and the complete M4 region then wins both placements",
+    "another M-native consumer deletes a complete materialized boundary beyond this gate",
+    "target ISA or microarchitecture changes"
+  ],
+  "artifacts": {
+    "PMU": "results/tile4-m-baseinv-unification-pmu.json",
+    "benchmark": "bench/bench_m_baseinv_unification.c",
+    "M_BaseInv": "src/tile4_baseinv_m_soa.c",
+    "M_prepare": "src/tile4_baseinv_m_prepare_asm.S",
+    "M_safe_Forward_generator": "tools/generate_gt32_global_physical_asm.py"
+  }
+}

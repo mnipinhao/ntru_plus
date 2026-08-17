@@ -1,0 +1,6371 @@
+{
+  "schema": "ntruplus768-gt32-dual-terminal-v1",
+  "experiment": "GT32-C2-DUAL-CONSUMER-TERMINAL-001",
+  "contract": {
+    "input": "I1 TILE4 AoS, r_exponent=-1",
+    "outputs": [
+      "N5 wide-frontend output, e=0",
+      "canonical SOTP neg[96] and nz[96] bitplanes"
+    ],
+    "forbidden_output": "coefficient-order ternary m[768]",
+    "alias": "all three regions disjoint"
+  },
+  "proof": {
+    "coefficient_mapping_bijective": true,
+    "sidecar_mapping_bijective": true,
+    "t9_group_is_n5_frontend_iteration": true,
+    "t9_raw_abs_bound": 4810,
+    "t9_centered_abs_bound": 1818,
+    "representative_policy": "production T9 CENTER is retained in registers before crepmod3",
+    "direct_raw_crepmod3_rejected_by_differential": true,
+    "output_scale_exponent": 0
+  },
+  "assembly_plan": {
+    "groups": 8,
+    "input_vectors_per_group": 6,
+    "n5_frontend_input_loads_removed": 48,
+    "persistent_full_m_vector_stores_removed": 48,
+    "sidecar_bytes": 192,
+    "peak_ymm": 16,
+    "spill_required": false,
+    "secret_dependent_control_or_address": false,
+    "variants": {
+      "direct": {
+        "rotating_scratch_bytes": 0,
+        "temporary_vector_stores": 0,
+        "temporary_vector_loads": 0
+      },
+      "B2": {
+        "rotating_scratch_bytes": 384,
+        "temporary_vector_stores": 48,
+        "temporary_vector_loads": 48
+      },
+      "B4": {
+        "rotating_scratch_bytes": 768,
+        "temporary_vector_stores": 48,
+        "temporary_vector_loads": 48
+      }
+    }
+  },
+  "n5_routes": [
+    {
+      "group": 0,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        0,
+        256,
+        512,
+        768,
+        1024,
+        1280
+      ],
+      "n5_frontend_iteration": 0,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 1,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        32,
+        288,
+        544,
+        800,
+        1056,
+        1312
+      ],
+      "n5_frontend_iteration": 1,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 2,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        64,
+        320,
+        576,
+        832,
+        1088,
+        1344
+      ],
+      "n5_frontend_iteration": 2,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 3,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        96,
+        352,
+        608,
+        864,
+        1120,
+        1376
+      ],
+      "n5_frontend_iteration": 3,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 4,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        128,
+        384,
+        640,
+        896,
+        1152,
+        1408
+      ],
+      "n5_frontend_iteration": 4,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 5,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        160,
+        416,
+        672,
+        928,
+        1184,
+        1440
+      ],
+      "n5_frontend_iteration": 5,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 6,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        192,
+        448,
+        704,
+        960,
+        1216,
+        1472
+      ],
+      "n5_frontend_iteration": 6,
+      "n5_input_loads_eliminated": 6
+    },
+    {
+      "group": 7,
+      "t9_vectors": [
+        "a0",
+        "b0",
+        "c0",
+        "a1",
+        "b1",
+        "c1"
+      ],
+      "coefficient_byte_offsets": [
+        224,
+        480,
+        736,
+        992,
+        1248,
+        1504
+      ],
+      "n5_frontend_iteration": 7,
+      "n5_input_loads_eliminated": 6
+    }
+  ],
+  "sidecar_routes": [
+    {
+      "coefficient": 0,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 0,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 1,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 0,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 2,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 0,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 3,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 0,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 4,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 0,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 5,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 0,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 6,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 0,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 7,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 0,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 8,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 1,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 9,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 1,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 10,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 1,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 11,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 1,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 12,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 1,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 13,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 1,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 14,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 1,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 15,
+      "t9_segment": 0,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 1,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 128,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 16,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 129,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 16,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 130,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 16,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 131,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 16,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 132,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 16,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 133,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 16,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 134,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 16,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 135,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 16,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 136,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 17,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 137,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 17,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 138,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 17,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 139,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 17,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 140,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 17,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 141,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 17,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 142,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 17,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 143,
+      "t9_segment": 1,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 17,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 256,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 32,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 257,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 32,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 258,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 32,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 259,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 32,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 260,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 32,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 261,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 32,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 262,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 32,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 263,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 32,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 264,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 33,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 265,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 33,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 266,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 33,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 267,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 33,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 268,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 33,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 269,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 33,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 270,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 33,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 271,
+      "t9_segment": 2,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 33,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 384,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 48,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 385,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 48,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 386,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 48,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 387,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 48,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 388,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 48,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 389,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 48,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 390,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 48,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 391,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 48,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 392,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 49,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 393,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 49,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 394,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 49,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 395,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 49,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 396,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 49,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 397,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 49,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 398,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 49,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 399,
+      "t9_segment": 3,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 49,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 512,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 64,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 513,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 64,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 514,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 64,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 515,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 64,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 516,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 64,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 517,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 64,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 518,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 64,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 519,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 64,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 520,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 65,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 521,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 65,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 522,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 65,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 523,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 65,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 524,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 65,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 525,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 65,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 526,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 65,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 527,
+      "t9_segment": 4,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 65,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 640,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 0,
+      "sidecar_byte": 80,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 641,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 1,
+      "sidecar_byte": 80,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 642,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 2,
+      "sidecar_byte": 80,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 643,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 3,
+      "sidecar_byte": 80,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 644,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 4,
+      "sidecar_byte": 80,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 645,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 5,
+      "sidecar_byte": 80,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 646,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 6,
+      "sidecar_byte": 80,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 647,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 7,
+      "sidecar_byte": 80,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 648,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 8,
+      "sidecar_byte": 81,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 649,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 9,
+      "sidecar_byte": 81,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 650,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 10,
+      "sidecar_byte": 81,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 651,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 11,
+      "sidecar_byte": 81,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 652,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 12,
+      "sidecar_byte": 81,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 653,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 13,
+      "sidecar_byte": 81,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 654,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 14,
+      "sidecar_byte": 81,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 655,
+      "t9_segment": 5,
+      "t9_group": 0,
+      "t9_lane": 15,
+      "sidecar_byte": 81,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 16,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 2,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 17,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 2,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 18,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 2,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 19,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 2,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 20,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 2,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 21,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 2,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 22,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 2,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 23,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 2,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 24,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 3,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 25,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 3,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 26,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 3,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 27,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 3,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 28,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 3,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 29,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 3,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 30,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 3,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 31,
+      "t9_segment": 0,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 3,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 144,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 18,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 145,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 18,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 146,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 18,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 147,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 18,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 148,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 18,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 149,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 18,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 150,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 18,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 151,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 18,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 152,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 19,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 153,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 19,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 154,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 19,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 155,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 19,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 156,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 19,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 157,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 19,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 158,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 19,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 159,
+      "t9_segment": 1,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 19,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 272,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 34,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 273,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 34,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 274,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 34,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 275,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 34,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 276,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 34,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 277,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 34,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 278,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 34,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 279,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 34,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 280,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 35,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 281,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 35,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 282,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 35,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 283,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 35,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 284,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 35,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 285,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 35,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 286,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 35,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 287,
+      "t9_segment": 2,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 35,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 400,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 50,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 401,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 50,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 402,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 50,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 403,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 50,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 404,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 50,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 405,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 50,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 406,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 50,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 407,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 50,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 408,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 51,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 409,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 51,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 410,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 51,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 411,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 51,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 412,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 51,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 413,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 51,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 414,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 51,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 415,
+      "t9_segment": 3,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 51,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 528,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 66,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 529,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 66,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 530,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 66,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 531,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 66,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 532,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 66,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 533,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 66,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 534,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 66,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 535,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 66,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 536,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 67,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 537,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 67,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 538,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 67,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 539,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 67,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 540,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 67,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 541,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 67,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 542,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 67,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 543,
+      "t9_segment": 4,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 67,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 656,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 0,
+      "sidecar_byte": 82,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 657,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 1,
+      "sidecar_byte": 82,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 658,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 2,
+      "sidecar_byte": 82,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 659,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 3,
+      "sidecar_byte": 82,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 660,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 4,
+      "sidecar_byte": 82,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 661,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 5,
+      "sidecar_byte": 82,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 662,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 6,
+      "sidecar_byte": 82,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 663,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 7,
+      "sidecar_byte": 82,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 664,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 8,
+      "sidecar_byte": 83,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 665,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 9,
+      "sidecar_byte": 83,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 666,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 10,
+      "sidecar_byte": 83,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 667,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 11,
+      "sidecar_byte": 83,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 668,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 12,
+      "sidecar_byte": 83,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 669,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 13,
+      "sidecar_byte": 83,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 670,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 14,
+      "sidecar_byte": 83,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 671,
+      "t9_segment": 5,
+      "t9_group": 1,
+      "t9_lane": 15,
+      "sidecar_byte": 83,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 32,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 4,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 33,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 4,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 34,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 4,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 35,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 4,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 36,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 4,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 37,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 4,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 38,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 4,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 39,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 4,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 40,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 5,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 41,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 5,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 42,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 5,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 43,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 5,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 44,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 5,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 45,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 5,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 46,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 5,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 47,
+      "t9_segment": 0,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 5,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 160,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 20,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 161,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 20,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 162,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 20,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 163,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 20,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 164,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 20,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 165,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 20,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 166,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 20,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 167,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 20,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 168,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 21,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 169,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 21,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 170,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 21,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 171,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 21,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 172,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 21,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 173,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 21,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 174,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 21,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 175,
+      "t9_segment": 1,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 21,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 288,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 36,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 289,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 36,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 290,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 36,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 291,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 36,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 292,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 36,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 293,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 36,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 294,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 36,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 295,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 36,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 296,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 37,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 297,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 37,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 298,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 37,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 299,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 37,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 300,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 37,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 301,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 37,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 302,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 37,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 303,
+      "t9_segment": 2,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 37,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 416,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 52,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 417,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 52,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 418,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 52,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 419,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 52,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 420,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 52,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 421,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 52,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 422,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 52,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 423,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 52,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 424,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 53,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 425,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 53,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 426,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 53,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 427,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 53,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 428,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 53,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 429,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 53,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 430,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 53,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 431,
+      "t9_segment": 3,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 53,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 544,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 68,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 545,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 68,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 546,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 68,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 547,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 68,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 548,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 68,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 549,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 68,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 550,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 68,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 551,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 68,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 552,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 69,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 553,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 69,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 554,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 69,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 555,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 69,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 556,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 69,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 557,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 69,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 558,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 69,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 559,
+      "t9_segment": 4,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 69,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 672,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 0,
+      "sidecar_byte": 84,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 673,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 1,
+      "sidecar_byte": 84,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 674,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 2,
+      "sidecar_byte": 84,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 675,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 3,
+      "sidecar_byte": 84,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 676,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 4,
+      "sidecar_byte": 84,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 677,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 5,
+      "sidecar_byte": 84,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 678,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 6,
+      "sidecar_byte": 84,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 679,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 7,
+      "sidecar_byte": 84,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 680,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 8,
+      "sidecar_byte": 85,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 681,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 9,
+      "sidecar_byte": 85,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 682,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 10,
+      "sidecar_byte": 85,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 683,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 11,
+      "sidecar_byte": 85,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 684,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 12,
+      "sidecar_byte": 85,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 685,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 13,
+      "sidecar_byte": 85,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 686,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 14,
+      "sidecar_byte": 85,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 687,
+      "t9_segment": 5,
+      "t9_group": 2,
+      "t9_lane": 15,
+      "sidecar_byte": 85,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 48,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 6,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 49,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 6,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 50,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 6,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 51,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 6,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 52,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 6,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 53,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 6,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 54,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 6,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 55,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 6,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 56,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 7,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 57,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 7,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 58,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 7,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 59,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 7,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 60,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 7,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 61,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 7,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 62,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 7,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 63,
+      "t9_segment": 0,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 7,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 176,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 22,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 177,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 22,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 178,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 22,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 179,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 22,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 180,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 22,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 181,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 22,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 182,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 22,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 183,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 22,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 184,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 23,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 185,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 23,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 186,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 23,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 187,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 23,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 188,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 23,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 189,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 23,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 190,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 23,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 191,
+      "t9_segment": 1,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 23,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 304,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 38,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 305,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 38,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 306,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 38,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 307,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 38,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 308,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 38,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 309,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 38,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 310,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 38,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 311,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 38,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 312,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 39,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 313,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 39,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 314,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 39,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 315,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 39,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 316,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 39,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 317,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 39,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 318,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 39,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 319,
+      "t9_segment": 2,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 39,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 432,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 54,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 433,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 54,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 434,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 54,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 435,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 54,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 436,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 54,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 437,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 54,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 438,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 54,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 439,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 54,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 440,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 55,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 441,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 55,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 442,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 55,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 443,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 55,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 444,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 55,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 445,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 55,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 446,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 55,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 447,
+      "t9_segment": 3,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 55,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 560,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 70,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 561,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 70,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 562,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 70,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 563,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 70,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 564,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 70,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 565,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 70,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 566,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 70,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 567,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 70,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 568,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 71,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 569,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 71,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 570,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 71,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 571,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 71,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 572,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 71,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 573,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 71,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 574,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 71,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 575,
+      "t9_segment": 4,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 71,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 688,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 0,
+      "sidecar_byte": 86,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 689,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 1,
+      "sidecar_byte": 86,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 690,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 2,
+      "sidecar_byte": 86,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 691,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 3,
+      "sidecar_byte": 86,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 692,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 4,
+      "sidecar_byte": 86,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 693,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 5,
+      "sidecar_byte": 86,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 694,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 6,
+      "sidecar_byte": 86,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 695,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 7,
+      "sidecar_byte": 86,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 696,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 8,
+      "sidecar_byte": 87,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 697,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 9,
+      "sidecar_byte": 87,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 698,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 10,
+      "sidecar_byte": 87,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 699,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 11,
+      "sidecar_byte": 87,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 700,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 12,
+      "sidecar_byte": 87,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 701,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 13,
+      "sidecar_byte": 87,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 702,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 14,
+      "sidecar_byte": 87,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 703,
+      "t9_segment": 5,
+      "t9_group": 3,
+      "t9_lane": 15,
+      "sidecar_byte": 87,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 64,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 8,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 65,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 8,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 66,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 8,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 67,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 8,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 68,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 8,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 69,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 8,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 70,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 8,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 71,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 8,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 72,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 9,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 73,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 9,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 74,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 9,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 75,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 9,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 76,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 9,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 77,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 9,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 78,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 9,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 79,
+      "t9_segment": 0,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 9,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 192,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 24,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 193,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 24,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 194,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 24,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 195,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 24,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 196,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 24,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 197,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 24,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 198,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 24,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 199,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 24,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 200,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 25,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 201,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 25,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 202,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 25,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 203,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 25,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 204,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 25,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 205,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 25,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 206,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 25,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 207,
+      "t9_segment": 1,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 25,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 320,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 40,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 321,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 40,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 322,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 40,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 323,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 40,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 324,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 40,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 325,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 40,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 326,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 40,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 327,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 40,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 328,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 41,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 329,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 41,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 330,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 41,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 331,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 41,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 332,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 41,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 333,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 41,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 334,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 41,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 335,
+      "t9_segment": 2,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 41,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 448,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 56,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 449,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 56,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 450,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 56,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 451,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 56,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 452,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 56,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 453,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 56,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 454,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 56,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 455,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 56,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 456,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 57,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 457,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 57,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 458,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 57,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 459,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 57,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 460,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 57,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 461,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 57,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 462,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 57,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 463,
+      "t9_segment": 3,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 57,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 576,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 72,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 577,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 72,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 578,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 72,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 579,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 72,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 580,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 72,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 581,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 72,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 582,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 72,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 583,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 72,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 584,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 73,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 585,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 73,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 586,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 73,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 587,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 73,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 588,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 73,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 589,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 73,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 590,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 73,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 591,
+      "t9_segment": 4,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 73,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 704,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 0,
+      "sidecar_byte": 88,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 705,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 1,
+      "sidecar_byte": 88,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 706,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 2,
+      "sidecar_byte": 88,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 707,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 3,
+      "sidecar_byte": 88,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 708,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 4,
+      "sidecar_byte": 88,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 709,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 5,
+      "sidecar_byte": 88,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 710,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 6,
+      "sidecar_byte": 88,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 711,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 7,
+      "sidecar_byte": 88,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 712,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 8,
+      "sidecar_byte": 89,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 713,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 9,
+      "sidecar_byte": 89,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 714,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 10,
+      "sidecar_byte": 89,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 715,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 11,
+      "sidecar_byte": 89,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 716,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 12,
+      "sidecar_byte": 89,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 717,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 13,
+      "sidecar_byte": 89,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 718,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 14,
+      "sidecar_byte": 89,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 719,
+      "t9_segment": 5,
+      "t9_group": 4,
+      "t9_lane": 15,
+      "sidecar_byte": 89,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 80,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 10,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 81,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 10,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 82,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 10,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 83,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 10,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 84,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 10,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 85,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 10,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 86,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 10,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 87,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 10,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 88,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 11,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 89,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 11,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 90,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 11,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 91,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 11,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 92,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 11,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 93,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 11,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 94,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 11,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 95,
+      "t9_segment": 0,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 11,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 208,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 26,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 209,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 26,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 210,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 26,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 211,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 26,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 212,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 26,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 213,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 26,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 214,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 26,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 215,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 26,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 216,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 27,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 217,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 27,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 218,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 27,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 219,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 27,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 220,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 27,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 221,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 27,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 222,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 27,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 223,
+      "t9_segment": 1,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 27,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 336,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 42,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 337,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 42,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 338,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 42,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 339,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 42,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 340,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 42,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 341,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 42,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 342,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 42,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 343,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 42,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 344,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 43,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 345,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 43,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 346,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 43,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 347,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 43,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 348,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 43,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 349,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 43,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 350,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 43,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 351,
+      "t9_segment": 2,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 43,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 464,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 58,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 465,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 58,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 466,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 58,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 467,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 58,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 468,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 58,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 469,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 58,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 470,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 58,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 471,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 58,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 472,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 59,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 473,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 59,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 474,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 59,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 475,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 59,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 476,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 59,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 477,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 59,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 478,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 59,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 479,
+      "t9_segment": 3,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 59,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 592,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 74,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 593,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 74,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 594,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 74,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 595,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 74,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 596,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 74,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 597,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 74,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 598,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 74,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 599,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 74,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 600,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 75,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 601,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 75,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 602,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 75,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 603,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 75,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 604,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 75,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 605,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 75,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 606,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 75,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 607,
+      "t9_segment": 4,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 75,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 720,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 0,
+      "sidecar_byte": 90,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 721,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 1,
+      "sidecar_byte": 90,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 722,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 2,
+      "sidecar_byte": 90,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 723,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 3,
+      "sidecar_byte": 90,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 724,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 4,
+      "sidecar_byte": 90,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 725,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 5,
+      "sidecar_byte": 90,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 726,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 6,
+      "sidecar_byte": 90,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 727,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 7,
+      "sidecar_byte": 90,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 728,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 8,
+      "sidecar_byte": 91,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 729,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 9,
+      "sidecar_byte": 91,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 730,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 10,
+      "sidecar_byte": 91,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 731,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 11,
+      "sidecar_byte": 91,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 732,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 12,
+      "sidecar_byte": 91,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 733,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 13,
+      "sidecar_byte": 91,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 734,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 14,
+      "sidecar_byte": 91,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 735,
+      "t9_segment": 5,
+      "t9_group": 5,
+      "t9_lane": 15,
+      "sidecar_byte": 91,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 96,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 12,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 97,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 12,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 98,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 12,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 99,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 12,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 100,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 12,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 101,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 12,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 102,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 12,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 103,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 12,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 104,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 13,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 105,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 13,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 106,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 13,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 107,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 13,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 108,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 13,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 109,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 13,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 110,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 13,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 111,
+      "t9_segment": 0,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 13,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 224,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 28,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 225,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 28,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 226,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 28,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 227,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 28,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 228,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 28,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 229,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 28,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 230,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 28,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 231,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 28,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 232,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 29,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 233,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 29,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 234,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 29,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 235,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 29,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 236,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 29,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 237,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 29,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 238,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 29,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 239,
+      "t9_segment": 1,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 29,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 352,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 44,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 353,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 44,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 354,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 44,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 355,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 44,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 356,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 44,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 357,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 44,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 358,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 44,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 359,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 44,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 360,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 45,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 361,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 45,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 362,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 45,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 363,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 45,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 364,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 45,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 365,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 45,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 366,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 45,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 367,
+      "t9_segment": 2,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 45,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 480,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 60,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 481,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 60,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 482,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 60,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 483,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 60,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 484,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 60,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 485,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 60,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 486,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 60,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 487,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 60,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 488,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 61,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 489,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 61,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 490,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 61,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 491,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 61,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 492,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 61,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 493,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 61,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 494,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 61,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 495,
+      "t9_segment": 3,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 61,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 608,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 76,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 609,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 76,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 610,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 76,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 611,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 76,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 612,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 76,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 613,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 76,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 614,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 76,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 615,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 76,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 616,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 77,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 617,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 77,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 618,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 77,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 619,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 77,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 620,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 77,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 621,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 77,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 622,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 77,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 623,
+      "t9_segment": 4,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 77,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 736,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 0,
+      "sidecar_byte": 92,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 737,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 1,
+      "sidecar_byte": 92,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 738,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 2,
+      "sidecar_byte": 92,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 739,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 3,
+      "sidecar_byte": 92,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 740,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 4,
+      "sidecar_byte": 92,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 741,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 5,
+      "sidecar_byte": 92,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 742,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 6,
+      "sidecar_byte": 92,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 743,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 7,
+      "sidecar_byte": 92,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 744,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 8,
+      "sidecar_byte": 93,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 745,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 9,
+      "sidecar_byte": 93,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 746,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 10,
+      "sidecar_byte": 93,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 747,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 11,
+      "sidecar_byte": 93,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 748,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 12,
+      "sidecar_byte": 93,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 749,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 13,
+      "sidecar_byte": 93,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 750,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 14,
+      "sidecar_byte": 93,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 751,
+      "t9_segment": 5,
+      "t9_group": 6,
+      "t9_lane": 15,
+      "sidecar_byte": 93,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 112,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 14,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 113,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 14,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 114,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 14,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 115,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 14,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 116,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 14,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 117,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 14,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 118,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 14,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 119,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 14,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 120,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 15,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 121,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 15,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 122,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 15,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 123,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 15,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 124,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 15,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 125,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 15,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 126,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 15,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 127,
+      "t9_segment": 0,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 15,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 240,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 30,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 241,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 30,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 242,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 30,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 243,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 30,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 244,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 30,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 245,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 30,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 246,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 30,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 247,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 30,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 248,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 31,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 249,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 31,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 250,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 31,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 251,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 31,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 252,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 31,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 253,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 31,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 254,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 31,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 255,
+      "t9_segment": 1,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 31,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 368,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 46,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 369,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 46,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 370,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 46,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 371,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 46,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 372,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 46,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 373,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 46,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 374,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 46,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 375,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 46,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 376,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 47,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 377,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 47,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 378,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 47,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 379,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 47,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 380,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 47,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 381,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 47,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 382,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 47,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 383,
+      "t9_segment": 2,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 47,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 496,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 62,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 497,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 62,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 498,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 62,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 499,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 62,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 500,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 62,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 501,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 62,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 502,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 62,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 503,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 62,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 504,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 63,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 505,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 63,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 506,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 63,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 507,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 63,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 508,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 63,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 509,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 63,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 510,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 63,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 511,
+      "t9_segment": 3,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 63,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 624,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 78,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 625,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 78,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 626,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 78,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 627,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 78,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 628,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 78,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 629,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 78,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 630,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 78,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 631,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 78,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 632,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 79,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 633,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 79,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 634,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 79,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 635,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 79,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 636,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 79,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 637,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 79,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 638,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 79,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 639,
+      "t9_segment": 4,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 79,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 752,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 0,
+      "sidecar_byte": 94,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 753,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 1,
+      "sidecar_byte": 94,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 754,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 2,
+      "sidecar_byte": 94,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 755,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 3,
+      "sidecar_byte": 94,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 756,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 4,
+      "sidecar_byte": 94,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 757,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 5,
+      "sidecar_byte": 94,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 758,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 6,
+      "sidecar_byte": 94,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 759,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 7,
+      "sidecar_byte": 94,
+      "sidecar_bit": 7
+    },
+    {
+      "coefficient": 760,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 8,
+      "sidecar_byte": 95,
+      "sidecar_bit": 0
+    },
+    {
+      "coefficient": 761,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 9,
+      "sidecar_byte": 95,
+      "sidecar_bit": 1
+    },
+    {
+      "coefficient": 762,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 10,
+      "sidecar_byte": 95,
+      "sidecar_bit": 2
+    },
+    {
+      "coefficient": 763,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 11,
+      "sidecar_byte": 95,
+      "sidecar_bit": 3
+    },
+    {
+      "coefficient": 764,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 12,
+      "sidecar_byte": 95,
+      "sidecar_bit": 4
+    },
+    {
+      "coefficient": 765,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 13,
+      "sidecar_byte": 95,
+      "sidecar_bit": 5
+    },
+    {
+      "coefficient": 766,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 14,
+      "sidecar_byte": 95,
+      "sidecar_bit": 6
+    },
+    {
+      "coefficient": 767,
+      "t9_segment": 5,
+      "t9_group": 7,
+      "t9_lane": 15,
+      "sidecar_byte": 95,
+      "sidecar_bit": 7
+    }
+  ],
+  "sources": {
+    "tile4_constants_sha256": "d77d7b46205f69bdb958a8f9a5978e1c22388f7e2af2305f05f893d78cecc60b",
+    "inverse_tail_range_sha256": "00d16cd3b2252f5f5bda1278e3360017e7341c7da0e07df955d8642002b1a949"
+  },
+  "decision": "assembly-eligible-benchmark-only"
+}

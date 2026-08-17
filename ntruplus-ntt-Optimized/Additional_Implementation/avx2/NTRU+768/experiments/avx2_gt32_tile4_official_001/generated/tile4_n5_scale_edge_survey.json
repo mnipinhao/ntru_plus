@@ -1,0 +1,2175 @@
+{
+  "schema": "ntruplus768-gt32-n5-scale-edge-survey-v1",
+  "experiment": "N5-FORWARD-SCALE-EDGE-SURVEY-001",
+  "source_scale_contract": {
+    "path": "generated/tile4_scale_contract.json",
+    "sha256": "2e5ebe4bf0b277ea38c301ab252796ad08f1f77a77d4b6ec475df4f4d86ff4c6",
+    "checked_boundaries": [
+      "forward-input:e0",
+      "forward-output:e0",
+      "basemul-general-output:e0",
+      "basemul-scale-output:e-1",
+      "keygen-baseinv-J1-output:e1"
+    ]
+  },
+  "state_model": [
+    "mathematical value",
+    "Montgomery R exponent",
+    "leaf order / physical layout",
+    "representative range"
+  ],
+  "frozen_for_this_gate": [
+    "mathematical residues",
+    "M/P physical ABIs",
+    "current lazy range contracts",
+    "wire bytes and canonicality",
+    "N5 twist/NTT arithmetic"
+  ],
+  "primitive_scale_rules": {
+    "notation": "stored x*R^e",
+    "Forward": "F(e)=e; current N5 has no terminal e-to-0 pass",
+    "Montgomery_BM": "eout=ea+eb-1",
+    "add_sub": "both operands must have the same exponent",
+    "BaseInv_BM_ready": "input e=k -> inverse e=1-k",
+    "Q24_wire": "input must reach e=0",
+    "full_polynomial_conversion": {
+      "vectors": 48,
+      "Montgomery_chains": 48,
+      "instruction_floor": 192
+    }
+  },
+  "critical_correction_to_prior_hypothesis": {
+    "Forward_e0_is_not_created_by_terminal_normalization": true,
+    "explanation": "all twist and NTT twiddle tables are e=1 and therefore preserve the input exponent; raw top split also preserves it",
+    "consequence": "a nonzero Forward exponent requires producer/decode scale formation and cannot delete a nonexistent Forward finalizer"
+  },
+  "callsites": {
+    "encap": {
+      "equations": [
+        "h:e0 x r:e_ r -> native BM:e_r-1",
+        "BM result must match m for add",
+        "rhat and ciphertext must each reach wire e0"
+      ],
+      "assignments": [
+        {
+          "r_forward_e": -3,
+          "m_forward_e": -3,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": -2,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": -1,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": 0,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": 1,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": 2,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -3,
+          "m_forward_e": 3,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": -3,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": -2,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": -1,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": 0,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": 1,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": 2,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -2,
+          "m_forward_e": 3,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": -3,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": -2,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": -1,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": 0,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": 1,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": 2,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": -1,
+          "m_forward_e": 3,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": -3,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": -2,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": -1,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 1,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 2,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 3,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": -3,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": -2,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": -1,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": 0,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": 1,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": 2,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": 3,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": -3,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": -2,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": -1,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": 0,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": 1,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": 2,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 2,
+          "m_forward_e": 3,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": -3,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": -2,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": -1,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": 0,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": 1,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": 2,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "r_forward_e": 3,
+          "m_forward_e": 3,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        }
+      ],
+      "minimum_full_conversion_passes": 1,
+      "all_minimum_assignments": [
+        {
+          "r_forward_e": 0,
+          "m_forward_e": -1,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 1
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        },
+        {
+          "r_forward_e": 1,
+          "m_forward_e": 0,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 0,
+            "rhat_to_wire_e0": 1,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        }
+      ],
+      "preferred_after_producer_cost": [
+        {
+          "r_forward_e": 0,
+          "m_forward_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "BM_output_to_add_scale": 1,
+            "rhat_to_wire_e0": 0,
+            "ciphertext_to_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        }
+      ],
+      "current_assignment": {
+        "r_forward_e": 0,
+        "m_forward_e": 0
+      },
+      "finding": "e_r=1 removes the BM finalizer but adds the same 48-chain normalization at rhat serialization; e_m=-1 moves it to ciphertext serialization",
+      "legacy_e1_gate_status": "arithmetic-only optimistic gate omitted mandatory rhat serialization and is not a full-encap continuation"
+    },
+    "decap_first_product": {
+      "current": "decoded c:e0 x decoded f:e0 -> BM:e-1 -> inverse-scale",
+      "finding": "the inverse already consumes native e=-1 and performs the single required final normalization at coefficient output",
+      "removable_full_conversion_passes": 0
+    },
+    "decap_second_product": {
+      "equations": [
+        "decoded c and Forward(m) must match for subtraction",
+        "sub result x decoded hinv -> e_c+e_hinv-1",
+        "recovered-r wire requires e0"
+      ],
+      "assignments": [
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -7,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -6,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": -1,
+          "native_BM_e": -5,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": 1,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": 2,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -3,
+          "decoded_hinv_e": 3,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -6,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -5,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": -1,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": 1,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": 2,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -2,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -5,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": -1,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": 1,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": 2,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": -1,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": -1,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 1,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 2,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": -1,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": 0,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": 1,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": 2,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": -2,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": -1,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": 0,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": 1,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": 2,
+          "native_BM_e": 3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 2,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": -3,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": -2,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": -1,
+          "native_BM_e": 1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": 0,
+          "native_BM_e": 2,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": 1,
+          "native_BM_e": 3,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": 2,
+          "native_BM_e": 4,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 3,
+          "decoded_hinv_e": 3,
+          "native_BM_e": 5,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        }
+      ],
+      "minimum_full_conversion_passes": 1,
+      "all_minimum_assignments": [
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 1,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 1,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "decoded_c_and_forward_m_sub_e": 1,
+          "decoded_hinv_e": 0,
+          "native_BM_e": 0,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 1,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 1
+        }
+      ],
+      "preferred_after_producer_cost": [
+        {
+          "decoded_c_and_forward_m_sub_e": 0,
+          "decoded_hinv_e": 0,
+          "native_BM_e": -1,
+          "conversion_passes": {
+            "decoded_c_e0_to_sub_scale": 0,
+            "decoded_hinv_e0_to_BM_scale": 0,
+            "BM_output_to_recovered_r_wire_e0": 1
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 0
+        }
+      ],
+      "current_assignment": {
+        "decoded_c_and_forward_m_sub_e": 0,
+        "decoded_hinv_e": 0
+      },
+      "finding": "scaling c or hinv replaces the current BM output finalizer with an equally large decoder conversion"
+    },
+    "decap_r_check": {
+      "current": "Forward(check-r):e0 -> Q24 wire:e0",
+      "minimum_full_conversion_passes": 0,
+      "finding": "any nonzero exponent adds a serialization conversion"
+    },
+    "keygen": {
+      "equations": [
+        "BaseInv(F_k) BM-ready output exponent is 1-k",
+        "g_k * finv_(1-kf) -> e=kg-kf",
+        "f_k * ginv_(1-kg) -> e=kf-kg",
+        "fhat, h and hinv are serialized at e0"
+      ],
+      "assignments": [
+        {
+          "f_forward_e": -3,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": 2,
+          "hinv_native_BM_e": -2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 3,
+          "hinv_native_BM_e": -3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": 4,
+          "hinv_native_BM_e": -4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 5,
+          "hinv_native_BM_e": -5,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -3,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": 4,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 6,
+          "hinv_native_BM_e": -6,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 2,
+          "hinv_native_BM_e": -2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": 3,
+          "hinv_native_BM_e": -3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 4,
+          "hinv_native_BM_e": -4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -2,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": 3,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 5,
+          "hinv_native_BM_e": -5,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -2,
+          "hinv_native_BM_e": 2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": 2,
+          "hinv_native_BM_e": -2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 3,
+          "hinv_native_BM_e": -3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": -1,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": 2,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 4,
+          "hinv_native_BM_e": -4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -3,
+          "hinv_native_BM_e": 3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": -2,
+          "hinv_native_BM_e": 2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 0,
+          "nonzero_scale_producers": 0
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 2,
+          "hinv_native_BM_e": -2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 3,
+          "hinv_native_BM_e": -3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 2,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -4,
+          "hinv_native_BM_e": 4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": -3,
+          "hinv_native_BM_e": 3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": -2,
+          "hinv_native_BM_e": 2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 1,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": 0,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 2,
+          "hinv_native_BM_e": -2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -5,
+          "hinv_native_BM_e": 5,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": -4,
+          "hinv_native_BM_e": 4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": -3,
+          "hinv_native_BM_e": 3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": -2,
+          "hinv_native_BM_e": 2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 2,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": -1,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 1,
+          "hinv_native_BM_e": -1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": -3,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": 4,
+          "h_native_BM_e": -6,
+          "hinv_native_BM_e": 6,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": -2,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": 3,
+          "h_native_BM_e": -5,
+          "hinv_native_BM_e": 5,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": -1,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": 2,
+          "h_native_BM_e": -4,
+          "hinv_native_BM_e": 4,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": -3,
+          "hinv_native_BM_e": 3,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 1
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": 1,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": 0,
+          "h_native_BM_e": -2,
+          "hinv_native_BM_e": 2,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": 2,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": -1,
+          "h_native_BM_e": -1,
+          "hinv_native_BM_e": 1,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 1,
+            "hinv_to_secret_key_wire_e0": 1
+          },
+          "total_full_conversion_passes": 3,
+          "nonzero_scale_producers": 2
+        },
+        {
+          "f_forward_e": 3,
+          "g_forward_e": 3,
+          "finv_BM_ready_e": -2,
+          "ginv_BM_ready_e": -2,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 1,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 1,
+          "nonzero_scale_producers": 2
+        }
+      ],
+      "minimum_full_conversion_passes": 0,
+      "all_minimum_assignments": [
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 0,
+          "nonzero_scale_producers": 0
+        }
+      ],
+      "preferred_after_producer_cost": [
+        {
+          "f_forward_e": 0,
+          "g_forward_e": 0,
+          "finv_BM_ready_e": 1,
+          "ginv_BM_ready_e": 1,
+          "h_native_BM_e": 0,
+          "hinv_native_BM_e": 0,
+          "conversion_passes": {
+            "fhat_to_secret_key_wire_e0": 0,
+            "h_to_public_key_wire_e0": 0,
+            "hinv_to_secret_key_wire_e0": 0
+          },
+          "total_full_conversion_passes": 0,
+          "nonzero_scale_producers": 0
+        }
+      ],
+      "current_assignment": {
+        "f_forward_e": 0,
+        "g_forward_e": 0
+      },
+      "finding": "a common nonzero scale cancels in both quotients but still adds a full normalization for serialized fhat; the current J1/P-J1 edge already exploits free inverse scale"
+    }
+  },
+  "static_decision": {
+    "assembly_eligible_candidates": [],
+    "reason": "every alternate exponent assignment either retains the same minimum number of 48-chain conversions and adds producer work, or increases the number of conversions",
+    "full_Montgomery_finalizer_deleted_without_replacement": false
+  },
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "decision": "static-hard-stop-no-callsite-removes-a-scale-conversion-pass",
+  "component_status": {
+    "scale_BM_to_inverse_e_minus_1": "already exploited",
+    "BaseInv_J1_to_general_BM_e0": "already exploited by P-J1",
+    "encap_r_e1_arithmetic_only": "superseded by dual-consumer wire equation",
+    "Forward_scale_ABI": "keep e0 for current KEM callsites"
+  },
+  "reopen_only_if": [
+    "Q24 performs nonzero-e normalization without an additional multiply chain",
+    "CBD or SOTP directly emits scaled N5 inputs and a wire consumer disappears",
+    "one Forward operand loses its serialization consumer",
+    "a new consumer accepts the natural scaled result and deletes a complete conversion pass",
+    "target ISA or multiplication primitive changes"
+  ]
+}

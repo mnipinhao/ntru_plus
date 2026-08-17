@@ -1,0 +1,84 @@
+{
+  "schema": "ntruplus768-gt32-baseinv-official-compat-v1",
+  "experiment": "GT32-BASEINV-OFFICIAL-REUSE-O1-O2-001",
+  "O1_mapping": {
+    "P_and_Official_are_bijections": true,
+    "geometry": "12 blocks x 4 degree planes x 16 leaves",
+    "degree_plane_grouping_exact": true,
+    "leaf_mapping_independent_of_degree": true,
+    "semantic_leaves": 192,
+    "P_blocks_each_mix_exactly_two_Official_blocks": true,
+    "Official_blocks_by_P_block": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        7
+      ]
+    ],
+    "direct_call_Official_poly_baseinv_1": false,
+    "direct_call_failure_reason": "each P block mixes leaves from two Official blocks; changing only the outer block address cannot reproduce the Official ABI",
+    "global_data_conversion_required_for_P_native_clone": false,
+    "absorption": [
+      "reorder lambda and lambda-qinv metadata by P block/lane",
+      "keep four degree-plane loads and stores unchanged",
+      "batch inversion is leaf-order independent"
+    ]
+  },
+  "typed_contract": {
+    "input_scale_exponent": 0,
+    "P_forward_abs_bound": 9586,
+    "BaseInv_direct_product_limit": 10643,
+    "range_compatible": true
+  },
+  "implementation_audit": {
+    "current_P_BaseInv": "C/intrinsic core in tile4_baseinv_p_soa.c",
+    "current_A_B_C_benchmark_previously_enabled_GT_HAVE_AVX2_ASM": false,
+    "available_reuse_probe": "gt_baseinv_native_prepare_asm.S, an Official quartic schedule generalized to one P-native lambda vector per block",
+    "O1_decision": "compatibility-pass-P-native-clone-direct-symbol-fail"
+  },
+  "O2_result_artifact": "results/tile4-keygen-baseinv-official-reuse-pmu.json",
+  "O2_decision": "measured-hard-stop-existing-Official-derived-P-native-ASM"
+}

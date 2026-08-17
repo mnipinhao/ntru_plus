@@ -1,0 +1,145 @@
+{
+  "schema": "ntruplus768-gt32-n32-branchlocal-raw160-gate-v1",
+  "experiment": "GT32-N32-BRANCHLOCAL-RAW160-019",
+  "question": "Can branch-local ownership make the exact 160-chain raw NTT32-first Forward directly composable with the frozen half-native BM/inverse ABI?",
+  "frozen": [
+    "B=33 Good coordinate and current three physical waves",
+    "half-native [0,1,2]/[0,2,1] output ABI",
+    "R1-U BaseMul and typed native inverse",
+    "current DFT3/S4/S5 suffix mathematics"
+  ],
+  "exact_transform_proof": {
+    "candidate_order": "explicit-twist -> S1-S3 -> DFT3 -> S4-S5",
+    "reference_order": "explicit-twist -> DFT3 -> S1-S5",
+    "reason_axes_commute": "DFT3 acts on n3/k3 while every NTT32 stage acts on n32/q",
+    "scale": "ordinary e=0 in and e=0 out",
+    "logical_output_order": "k3-major qualified NTT32 Q order",
+    "physical_output_ABI": "unchanged current group-major half-native [0,1,2]/[0,2,1] redeposit",
+    "quartic_leaf_mapping": "unchanged current B=33 Good coordinate",
+    "branches": [
+      {
+        "branch": 0,
+        "scale": 2,
+        "all_96_basis_vectors_equal": true,
+        "first_mismatching_basis": null
+      },
+      {
+        "branch": 1,
+        "scale": 22,
+        "all_96_basis_vectors_equal": true,
+        "first_mismatching_basis": null
+      }
+    ],
+    "exact_matrix_equality": true
+  },
+  "Montgomery_chain_accounting": {
+    "candidate": {
+      "explicit_twist": 48,
+      "raw_S1": 0,
+      "S2_S5": 96,
+      "DFT3_omega": 16,
+      "total": 160
+    },
+    "comparison": {
+      "row_conjugated_forward": 168,
+      "candidate_raw160": 160,
+      "saved_chains": 8,
+      "saved_vector_instructions_at_four_instruction_chain": 32
+    }
+  },
+  "register_and_materialization": {
+    "ownership": "one active eight-YMM branch; inactive sibling in scratch",
+    "phases": [
+      {
+        "phase": "shared top split",
+        "active_data_YMM": 8,
+        "temporaries_and_constants_YMM": 2,
+        "peak_YMM": 10
+      },
+      {
+        "phase": "four-way explicit twist or S2/S3",
+        "active_data_YMM": 8,
+        "temporaries_and_constants_YMM": 5,
+        "peak_YMM": 13
+      },
+      {
+        "phase": "DFT3/S4/S5 current suffix",
+        "active_data_YMM": 6,
+        "temporaries_and_constants_YMM": 6,
+        "peak_YMM": 12
+      }
+    ],
+    "peak_YMM": 13,
+    "fits_AVX2_16_YMM": true,
+    "spill_required": false,
+    "scratch": {
+      "bytes": 1536,
+      "reuses_current_forward_scratch": true,
+      "new_full_polynomial_materialization": false
+    },
+    "static_delta_vs_current_branch_at_time_168": {
+      "removed_Montgomery_instructions": 32,
+      "removed_row0_center_instructions_if_zero_checkpoint_closed": 48,
+      "extra_branch_materialization_memory_instructions": 42,
+      "optimistic_net_instructions": -38
+    }
+  },
+  "range_and_consumer_contract": {
+    "method": "exhaustive fixed-factor Montgomery product bounds plus interval add/sub; cross-checked against the emitted R3 raw Forward gate",
+    "pre_DFT3_abs_bounds": [
+      7153,
+      7149
+    ],
+    "DFT3_output_abs_bounds": [
+      [
+        21459,
+        16221,
+        16221
+      ],
+      [
+        21447,
+        16213,
+        16213
+      ]
+    ],
+    "final_raw_abs_bounds_by_branch": [
+      25887,
+      25875
+    ],
+    "signed_int16_safe": true,
+    "existing_B3_input_abs_bound": 10788,
+    "within_existing_B3_input_contract": false,
+    "R1U_and_existing_inverse_safe": false,
+    "failure_frontier": "Forward output -> existing B3/R1-U input ABI",
+    "reason": "raw representative reaches 25887, above the frozen B3/R1-U producer limit 10788",
+    "known_repairs": {
+      "full_output_center10": {
+        "vectors": 48,
+        "instructions": 144,
+        "result_abs_bound": 3080
+      },
+      "row0_only_center": {
+        "applies_to": "168-chain row-conjugated representative, not raw160",
+        "vectors": 16,
+        "instructions": 48
+      }
+    },
+    "no_row0_or_global_checkpoint": false
+  },
+  "assembly_eligibility_checks": {
+    "exactly_160_chains": true,
+    "exact_transform_scale_leaf_mapping": true,
+    "no_row0_or_global_checkpoint": false,
+    "peak_YMM_at_most_16": true,
+    "reuses_current_1536B_scratch": true,
+    "existing_R1U_and_inverse_range_safe": false
+  },
+  "assembly_emitted": false,
+  "decision": "static-hard-stop-before-assembly",
+  "conclusion": "Branch-local ownership solves the 17th-register problem and the exact factorization has 160 chains, but it recreates the already-emitted raw R3 representative.  That representative is int16-safe yet reaches 25887, so it cannot directly enter the frozen 10788-bound B3/R1-U/inverse chain.  The required checkpoint removes the proposed zero-checkpoint mechanism; no new assembly is justified.",
+  "reopen_only_if": [
+    "a producer-correlated proof closes raw160 -> R1-U -> inverse without a checkpoint",
+    "a changed BM/inverse representative contract safely accepts the raw160 envelope",
+    "a selective repair for raw160 costs less than the eight-chain/32-instruction saving"
+  ]
+}

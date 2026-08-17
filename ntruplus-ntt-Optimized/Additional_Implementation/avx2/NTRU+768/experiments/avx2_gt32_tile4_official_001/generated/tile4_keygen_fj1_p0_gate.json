@@ -1,0 +1,218 @@
+{
+  "schema": "ntruplus768-gt32-keygen-fj1-p0-phase-a-v1",
+  "experiment": "GT32-KEYGEN-FJ1-P0-001",
+  "phase": "A-BaseInv-output-scale-contract",
+  "typed_edges": {
+    "F0": {
+      "producer": "GT32 N5 Forward",
+      "layout": "TILE4 AoS physical-Q",
+      "r_exponent": 0,
+      "max_abs_bound": 10788
+    },
+    "J1": {
+      "producer": "typed BaseInv(F0)",
+      "layout": "TILE4 AoS physical-Q",
+      "r_exponent": 1,
+      "range": [
+        -1728,
+        1728
+      ],
+      "legal_consumer": "R1-U F0 x J1 general product only"
+    },
+    "P0": {
+      "consumer": "unchanged Official pack.S input",
+      "layout": "48 coefficient-transposed YMM packets",
+      "r_exponent": 0,
+      "status": "route-synthesis-pending-phase-B"
+    }
+  },
+  "scale_ledger": [
+    {
+      "value": "BaseInv input F0",
+      "r_exponent": 0
+    },
+    {
+      "value": "quartic inverse numerator",
+      "r_exponent": -2
+    },
+    {
+      "value": "quartic determinant",
+      "r_exponent": -3
+    },
+    {
+      "value": "standard inverse determinant",
+      "r_exponent": 3
+    },
+    {
+      "value": "J1 inverse determinant",
+      "r_exponent": 4
+    },
+    {
+      "value": "standard BaseInv output",
+      "r_exponent": 0
+    },
+    {
+      "value": "typed BaseInv J1 output",
+      "r_exponent": 1
+    },
+    {
+      "value": "R1-U(F0,J1) output",
+      "r_exponent": 0,
+      "equation": "0+1-1=0"
+    }
+  ],
+  "zero_cost_scale_shift": {
+    "existing_addition_chain_final_operation": "Mont(field_inverse_prefinal, R^-1)",
+    "J1_final_operation": "Mont(field_inverse_prefinal, ordinary 1)",
+    "instruction_count_change": 0,
+    "standalone_scaling_pass": false,
+    "qinv_factor_change": "R^-1*qinv -> 1*qinv",
+    "batch_backward_recovery_preserves_extra_R": true
+  },
+  "semantic_proof": {
+    "leaves": 192,
+    "inputs_per_leaf": 81,
+    "quartics_checked": 15552,
+    "invertible_checked": 15360,
+    "noninvertible_checked": 192
+  },
+  "field_and_batch_scale_proof": {
+    "field_inputs_exhaustive": 3456,
+    "random_batch_vectors": 64,
+    "lanes_per_batch_vector": 12,
+    "targeted_zero_positions": [
+      0,
+      5,
+      11
+    ],
+    "standard_final_factor": {
+      "value_mod_q": 2775,
+      "centered": -682,
+      "semantic": "R^-1"
+    },
+    "J1_final_factor": {
+      "value_mod_q": 1,
+      "centered": 1,
+      "semantic": "ordinary 1"
+    }
+  },
+  "range_and_accumulator_proof": {
+    "method": "conservative signed-high-word Montgomery bounds; values are proof ceilings, not observed maxima",
+    "F0_input_abs_bound": 10788,
+    "baseinv": {
+      "Mont_F0_x_F0_abs_bound": 3505,
+      "t0_inner_abs_bound": 10515,
+      "t0_abs_bound": 5512,
+      "t1_abs_bound": 12337,
+      "t2_abs_bound": 2055,
+      "determinant_abs_bound": 4309,
+      "numerator_coefficient_abs_bounds": [
+        4705,
+        4705,
+        6397,
+        6397
+      ],
+      "max_addsub_abs_bound": 12337,
+      "batch_prefix_abs_bounds": [
+        4309,
+        2013,
+        1862,
+        1852,
+        1851,
+        1851,
+        1851,
+        1851,
+        1851,
+        1851,
+        1851,
+        1851
+      ],
+      "J1_field_inverse_abs_bound": 1730,
+      "recovered_determinant_inverse_abs_bounds": [
+        1851,
+        1851,
+        1786,
+        1782,
+        1782,
+        1782,
+        1782,
+        1782,
+        1782,
+        1782,
+        1782,
+        1778
+      ],
+      "final_recovery_precenter_abs_bound": 1910,
+      "signed_int16_safe": true,
+      "final_centered_J1_abs_bound": 1728
+    },
+    "R1U_F0_x_J1": {
+      "lambda_times_J1_abs_bound": 1775,
+      "largest_dot_operand_abs_bound": 1775,
+      "vpmaddwd_pair_sum_abs_bound": 38297400,
+      "four_term_accumulator_abs_bound": 76594800,
+      "signed_int32_safe": true
+    }
+  },
+  "failure_alias_retry_contract": {
+    "failure_detection": "unchanged determinant-prefix zero mask before inversion",
+    "failure_output": "global zero mask remains byte-exact",
+    "secret_dependent_address_or_loop_added": false,
+    "required_alias_cases": [
+      "r-distinct",
+      "r-equals-a"
+    ],
+    "partial_overlap": "unsupported",
+    "keygen_retry_semantics": "unchanged nonzero return; caller retry distribution frozen"
+  },
+  "P0_mapping_proof": {
+    "serialized_records": 768,
+    "official_pack_words_bijective": true,
+    "semantic_mapping": "Official leaf/degree -> GT(branch,k3,logical-k32) -> physical Q=bitreverse5(logical-k32)",
+    "physical_route": "not synthesized in Phase A"
+  },
+  "phase_B_P0_route_precheck": null,
+  "phase_B_P0_route_synthesis": {
+    "artifact": "generated/tile4_keygen_fj1_p0_routes.inc",
+    "S0": {
+      "records": 48,
+      "unique_mask_pairs": 4
+    },
+    "S1": {
+      "records": 12,
+      "unique_mask_pairs": 5
+    },
+    "word_route_simulation": "pass-both-families"
+  },
+  "phase_A_gates": {
+    "exact_quartic_inverse_all_192_leaves": true,
+    "J1_equals_standard_inverse_times_R": true,
+    "no_extra_full_pass": true,
+    "noninvertible_and_zero_output_semantics_preserved": true,
+    "int16_addsub_safe_under_N5_F0_bound": true,
+    "R1U_vpmaddwd_int32_safe": true,
+    "assembly_ready": true
+  },
+  "decision": "phase-B-route-pass-emit-bounded-S0-S1-asm-probe",
+  "assembly_emitted": true,
+  "assembly_scope": "benchmark-only bounded S0/S1 probe",
+  "benchmark_run": false,
+  "production_integration": false,
+  "next": [
+    "synthesize TILE4 AoS BaseInv physical schedule with J1 final factor",
+    "synthesize R1-U c0/c1/c2/c3 intermediates directly into P0 fragments",
+    "compare BaseInv+general-BM+pack producer-consumer region, not isolated BM",
+    "separately gate Forward(f) dual F0/P0 output"
+  ],
+  "hard_stop_if": [
+    "J1 requires a standalone scaling or centering pass",
+    "FJ product materializes TILE4 AoS before a complete AoS-to-P route",
+    "P0 epilogue needs spills or a reusable symbol above 1.5 KiB",
+    "either F0xJ1 edge cannot retain at least 20 TSC local saving"
+  ],
+  "reopen_only_with_if_stopped": [
+    "BaseInv final reconstruction directly emits pack-native fragments",
+    "Forward(f) fork shares terminal arithmetic across F0 and P0",
+    "wider SIMD/register domain"
+  ]
+}

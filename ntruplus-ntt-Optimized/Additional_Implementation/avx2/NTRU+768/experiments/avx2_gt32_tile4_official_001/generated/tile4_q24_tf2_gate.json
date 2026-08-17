@@ -1,0 +1,429 @@
+{
+  "schema": "ntruplus768-gt32-q24-tf2-exact-routing-v1",
+  "experiment": "GT32-Q24-TF2-001",
+  "input": "progressive-P coefficient-plane SoA, e=0, abs<=10788",
+  "output": "Official canonical 1152-byte serialization",
+  "frozen": [
+    "Q24-reduction-and-canonicalization",
+    "vpmaddwd-12-bit-packing",
+    "half-scatter-stores",
+    "TF1-SP1-range-scale-and-wire-contract"
+  ],
+  "search": {
+    "symbolic_basis_words": 64,
+    "groups": 12,
+    "independent_unpack_orientation_bits": 12,
+    "transpose_networks_per_group": 4096,
+    "post_mask_schedules_per_network": 256,
+    "half_store_assignment": "arbitrary-bijective",
+    "exact_word_lane_equality": true
+  },
+  "groups": [
+    {
+      "group": 0,
+      "P_block": 0,
+      "control_masks": [
+        "00",
+        "11",
+        "01",
+        "11"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "01",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 1,
+      "P_block": 1,
+      "control_masks": [
+        "00",
+        "11",
+        "01",
+        "11"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "01",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 2,
+      "P_block": 9,
+      "control_masks": [
+        "00",
+        "00",
+        "00",
+        "00"
+      ],
+      "minimum_residual_repairs": 0,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "00",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 1
+    },
+    {
+      "group": 3,
+      "P_block": 8,
+      "control_masks": [
+        "10",
+        "00",
+        "00",
+        "00"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "best_post_masks": [
+        "10",
+        "00",
+        "00",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 4,
+      "P_block": 4,
+      "control_masks": [
+        "11",
+        "10",
+        "11",
+        "10"
+      ],
+      "minimum_residual_repairs": 2,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "10",
+        "00",
+        "10"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 4
+    },
+    {
+      "group": 5,
+      "P_block": 5,
+      "control_masks": [
+        "11",
+        "10",
+        "11",
+        "10"
+      ],
+      "minimum_residual_repairs": 2,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "10",
+        "00",
+        "10"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 4
+    },
+    {
+      "group": 6,
+      "P_block": 11,
+      "control_masks": [
+        "11",
+        "10",
+        "11",
+        "00"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "10",
+        "00",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 7,
+      "P_block": 10,
+      "control_masks": [
+        "11",
+        "10",
+        "11",
+        "10"
+      ],
+      "minimum_residual_repairs": 2,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "10",
+        "00",
+        "10"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 4
+    },
+    {
+      "group": 8,
+      "P_block": 6,
+      "control_masks": [
+        "00",
+        "11",
+        "01",
+        "11"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "01",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 9,
+      "P_block": 7,
+      "control_masks": [
+        "00",
+        "11",
+        "01",
+        "11"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "01",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    },
+    {
+      "group": 10,
+      "P_block": 3,
+      "control_masks": [
+        "00",
+        "00",
+        "00",
+        "00"
+      ],
+      "minimum_residual_repairs": 0,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "best_post_masks": [
+        "00",
+        "00",
+        "00",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 1
+    },
+    {
+      "group": 11,
+      "P_block": 2,
+      "control_masks": [
+        "10",
+        "00",
+        "00",
+        "00"
+      ],
+      "minimum_residual_repairs": 1,
+      "best_unpack_orientation_bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "best_post_masks": [
+        "10",
+        "00",
+        "00",
+        "00"
+      ],
+      "free_half_store_assignment": true,
+      "exact_minimum_cost_schedules": 2
+    }
+  ],
+  "control_residual_repairs": 13,
+  "minimum_residual_repairs": 13,
+  "instruction_saving": 0,
+  "decision": "static-hard-stop-no-assembly",
+  "reopen_only_if": [
+    "a-new-AVX2-primitive-repairs-multiple-asymmetric-vectors-per-uop",
+    "the-half-scatter-store-contract-changes",
+    "a-producer-emits-a-different-P-plane-packetization",
+    "the-target-ISA-gains-cross-lane-word-permutation"
+  ]
+}

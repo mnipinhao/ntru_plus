@@ -1,0 +1,963 @@
+{
+  "schema": "ntruplus768-gt32-n32-stage-native-tile-v2",
+  "experiment": "GT-N32-STAGE-NATIVE-TILE-006",
+  "scope": "generator-only exact physical packet gate",
+  "frozen": {
+    "PFA_coordinate_B": 33,
+    "Montgomery_chains": 160,
+    "range_safe_DFT3_insertions": [
+      "after-S3",
+      "after-S4"
+    ],
+    "terminal_ABI": {
+      "low_half_k3": [
+        0,
+        1,
+        2
+      ],
+      "high_half_k3": [
+        0,
+        2,
+        1
+      ]
+    }
+  },
+  "logical_DAG": {
+    "NTT8_pair_indices": {
+      "1": [
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ]
+      ],
+      "2": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      "3": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "components_per_Forward": 24,
+    "producer_DFT3_graph_per_qword_lane": {
+      "nodes": [
+        {
+          "node": 0,
+          "n3": 0,
+          "branch": 0
+        },
+        {
+          "node": 1,
+          "n3": 0,
+          "branch": 1
+        },
+        {
+          "node": 2,
+          "n3": 1,
+          "branch": 0
+        },
+        {
+          "node": 3,
+          "n3": 1,
+          "branch": 1
+        },
+        {
+          "node": 4,
+          "n3": 2,
+          "branch": 0
+        },
+        {
+          "node": 5,
+          "n3": 2,
+          "branch": 1
+        }
+      ],
+      "producer_edges": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "DFT3_hyperedges": [
+        [
+          0,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          5
+        ]
+      ],
+      "connected_closure_components": 6,
+      "zero_cut_tile_requires_components": 6
+    }
+  },
+  "physical_packet_proofs": {
+    "cohort4": {
+      "data_YMM": 8,
+      "components": 4,
+      "logical_registers": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            2
+          ]
+        ],
+        [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        [
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        [
+          [
+            0,
+            5
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            5
+          ]
+        ],
+        [
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        [
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            3,
+            7
+          ]
+        ]
+      ],
+      "butterfly_register_pairs_checked": 12,
+      "S1_S2_S3_interstage_route_instructions": 0,
+      "twiddle_rule": "four independently generated lane factors per high register"
+    },
+    "component_local": {
+      "exact_basis_vectors_checked": 32,
+      "exact_mod_q": true,
+      "S1_packets": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        [
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ]
+        ]
+      ],
+      "S1_to_S2": {
+        "instructions_per_component": 2,
+        "operations": [
+          "vperm2i128-low-halves",
+          "vperm2i128-high-halves"
+        ],
+        "output_packets": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ]
+          ],
+          [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              7
+            ]
+          ]
+        ]
+      },
+      "S2_to_S3": {
+        "instructions_per_component": 2,
+        "operations": [
+          "vpunpcklqdq",
+          "vpunpckhqdq"
+        ],
+        "output_packets": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              6
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              7
+            ]
+          ]
+        ]
+      },
+      "physical_route_instructions_per_component": 4
+    }
+  },
+  "regenerated_twiddle_manifest": [
+    {
+      "stage": 1,
+      "qword_lane": 0,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 4,
+          "low_q": 0,
+          "high_q": 16,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 5,
+          "low_q": 4,
+          "high_q": 20,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 6,
+          "low_q": 8,
+          "high_q": 24,
+          "power": 0
+        },
+        {
+          "low_k": 3,
+          "high_k": 7,
+          "low_q": 12,
+          "high_q": 28,
+          "power": 0
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "qword_lane": 1,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 4,
+          "low_q": 1,
+          "high_q": 17,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 5,
+          "low_q": 5,
+          "high_q": 21,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 6,
+          "low_q": 9,
+          "high_q": 25,
+          "power": 0
+        },
+        {
+          "low_k": 3,
+          "high_k": 7,
+          "low_q": 13,
+          "high_q": 29,
+          "power": 0
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "qword_lane": 2,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 4,
+          "low_q": 2,
+          "high_q": 18,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 5,
+          "low_q": 6,
+          "high_q": 22,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 6,
+          "low_q": 10,
+          "high_q": 26,
+          "power": 0
+        },
+        {
+          "low_k": 3,
+          "high_k": 7,
+          "low_q": 14,
+          "high_q": 30,
+          "power": 0
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "qword_lane": 3,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 4,
+          "low_q": 3,
+          "high_q": 19,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 5,
+          "low_q": 7,
+          "high_q": 23,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 6,
+          "low_q": 11,
+          "high_q": 27,
+          "power": 0
+        },
+        {
+          "low_k": 3,
+          "high_k": 7,
+          "low_q": 15,
+          "high_q": 31,
+          "power": 0
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "qword_lane": 0,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 2,
+          "low_q": 0,
+          "high_q": 8,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 3,
+          "low_q": 4,
+          "high_q": 12,
+          "power": 0
+        },
+        {
+          "low_k": 4,
+          "high_k": 6,
+          "low_q": 16,
+          "high_q": 24,
+          "power": 8
+        },
+        {
+          "low_k": 5,
+          "high_k": 7,
+          "low_q": 20,
+          "high_q": 28,
+          "power": 8
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "qword_lane": 1,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 2,
+          "low_q": 1,
+          "high_q": 9,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 3,
+          "low_q": 5,
+          "high_q": 13,
+          "power": 0
+        },
+        {
+          "low_k": 4,
+          "high_k": 6,
+          "low_q": 17,
+          "high_q": 25,
+          "power": 8
+        },
+        {
+          "low_k": 5,
+          "high_k": 7,
+          "low_q": 21,
+          "high_q": 29,
+          "power": 8
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "qword_lane": 2,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 2,
+          "low_q": 2,
+          "high_q": 10,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 3,
+          "low_q": 6,
+          "high_q": 14,
+          "power": 0
+        },
+        {
+          "low_k": 4,
+          "high_k": 6,
+          "low_q": 18,
+          "high_q": 26,
+          "power": 8
+        },
+        {
+          "low_k": 5,
+          "high_k": 7,
+          "low_q": 22,
+          "high_q": 30,
+          "power": 8
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "qword_lane": 3,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 2,
+          "low_q": 3,
+          "high_q": 11,
+          "power": 0
+        },
+        {
+          "low_k": 1,
+          "high_k": 3,
+          "low_q": 7,
+          "high_q": 15,
+          "power": 0
+        },
+        {
+          "low_k": 4,
+          "high_k": 6,
+          "low_q": 19,
+          "high_q": 27,
+          "power": 8
+        },
+        {
+          "low_k": 5,
+          "high_k": 7,
+          "low_q": 23,
+          "high_q": 31,
+          "power": 8
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "qword_lane": 0,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 1,
+          "low_q": 0,
+          "high_q": 4,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 3,
+          "low_q": 8,
+          "high_q": 12,
+          "power": 8
+        },
+        {
+          "low_k": 4,
+          "high_k": 5,
+          "low_q": 16,
+          "high_q": 20,
+          "power": 4
+        },
+        {
+          "low_k": 6,
+          "high_k": 7,
+          "low_q": 24,
+          "high_q": 28,
+          "power": 12
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "qword_lane": 1,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 1,
+          "low_q": 1,
+          "high_q": 5,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 3,
+          "low_q": 9,
+          "high_q": 13,
+          "power": 8
+        },
+        {
+          "low_k": 4,
+          "high_k": 5,
+          "low_q": 17,
+          "high_q": 21,
+          "power": 4
+        },
+        {
+          "low_k": 6,
+          "high_k": 7,
+          "low_q": 25,
+          "high_q": 29,
+          "power": 12
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "qword_lane": 2,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 1,
+          "low_q": 2,
+          "high_q": 6,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 3,
+          "low_q": 10,
+          "high_q": 14,
+          "power": 8
+        },
+        {
+          "low_k": 4,
+          "high_k": 5,
+          "low_q": 18,
+          "high_q": 22,
+          "power": 4
+        },
+        {
+          "low_k": 6,
+          "high_k": 7,
+          "low_q": 26,
+          "high_q": 30,
+          "power": 12
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "qword_lane": 3,
+      "physical_pair_lanes": [
+        {
+          "low_k": 0,
+          "high_k": 1,
+          "low_q": 3,
+          "high_q": 7,
+          "power": 0
+        },
+        {
+          "low_k": 2,
+          "high_k": 3,
+          "low_q": 11,
+          "high_q": 15,
+          "power": 8
+        },
+        {
+          "low_k": 4,
+          "high_k": 5,
+          "low_q": 19,
+          "high_q": 23,
+          "power": 4
+        },
+        {
+          "low_k": 6,
+          "high_k": 7,
+          "low_q": 27,
+          "high_q": 31,
+          "power": 12
+        }
+      ]
+    }
+  ],
+  "semantic_actions_not_charged": [
+    "register rename",
+    "logical q label",
+    "bit reversal",
+    "k3 reflection",
+    "branch label",
+    "table-carried scale"
+  ],
+  "physical_actions_charged": [
+    "vperm2i128",
+    "vpunpckqdq",
+    "source replay/repacketization",
+    "materialized cut",
+    "spill/reload"
+  ],
+  "measured_R3_reference": {
+    "artifact": "results/tile4-n32-wave-schedule-short.json",
+    "three_wave_plus_five_blend_net_TSC_per_Forward": {
+      "normal": 8.5922,
+      "reversed": 8.5972
+    }
+  },
+  "candidates": [
+    {
+      "name": "T0-8YMM-cohort4",
+      "data_YMM": 8,
+      "working_YMM": 8,
+      "peak_YMM_with_one_Montgomery_temp": 9,
+      "physical_layout": "cohort-4 fixed qword lanes",
+      "S1_S3_route_instructions_per_Forward": 0,
+      "tiles_per_Forward": 6,
+      "producer_DFT3_closure": false,
+      "closure_reason": "capacity 4 is smaller than the connected 6-component producer/DFT3 graph",
+      "best_no-materialization_source_shapes": [
+        {
+          "shape": "one branch x four qword lanes",
+          "cost": "the second branch replays the source wave",
+          "minimum_extra_wide_loads_per_Forward": 48,
+          "additional_fixed-factor_recomputation": true
+        },
+        {
+          "shape": "two branches x two qword lanes",
+          "cost": "two half-width passes over every source wave",
+          "minimum_extra_128bit_loads_per_Forward": 48,
+          "additional_half-width_top/twist_work": true,
+          "half-packet_insertions_per_Forward": 48
+        }
+      ],
+      "comparison_to_R3": {
+        "R3_spill_store_load_instructions_per_Forward": 6,
+        "T0_minimum_extra_source_load_instructions": 48,
+        "minimum_instruction_delta_before_recomputation": 42,
+        "measured_R3_net_tax_TSC_per_Forward": {
+          "normal": 8.5922,
+          "reversed": 8.5972
+        }
+      },
+      "assembly_eligible": false,
+      "decision": "static-filter-fail-source-replay-dominates-measured-R3-remedy"
+    },
+    {
+      "name": "T1-10YMM-component-local5",
+      "data_YMM": 10,
+      "working_YMM": 6,
+      "peak_YMM_with_one_Montgomery_temp": 11,
+      "physical_layout": "five component-local two-YMM packets",
+      "S1_S3_route_instructions_per_component": 4,
+      "S1_S3_route_instructions_per_Forward": 96,
+      "producer_DFT3_closure": false,
+      "closure_reason": "capacity 5 is still smaller than the connected 6-component graph",
+      "advantage_over_T0": "one fewer partial tile is possible, but no arithmetic chain or full boundary disappears",
+      "assembly_eligible": false,
+      "decision": "static-filter-fail-adds-96-routes-without-closing-producer-DFT3-boundary"
+    },
+    {
+      "name": "T2-12YMM-component-local6",
+      "data_YMM": 12,
+      "working_YMM": 4,
+      "peak_YMM_with_one_Montgomery_temp": 13,
+      "physical_layout": "six component-local two-YMM packets",
+      "S1_S3_route_instructions_per_component": 4,
+      "S1_S3_route_instructions_per_Forward": 96,
+      "tiles_per_Forward": 4,
+      "producer_DFT3_closure": true,
+      "DFT3_after_S3_extra_route": 0,
+      "source_packetization_without_new_materialization": {
+        "reason": "a closed tile fixes one qword lane across all three n3 rows and both branches",
+        "wide_source_vectors": 48,
+        "qword_lane_tiles": 4,
+        "minimum_source_loads_when_each_closed_tile_is_executed_separately": 192,
+        "extra_source_loads_over_one-wide-load-pass": 144
+      },
+      "route_credit": {
+        "current_half-native_DFT3_blends_per_component": 5,
+        "DFT3_components_per_Forward": 16,
+        "maximum_deleted_suffix_blends": 80,
+        "net_instructions_before_output_redeposit": 160,
+        "formula": "96 interstage routes + 144 extra source loads - 80 deleted suffix blends"
+      },
+      "assembly_eligible": false,
+      "decision": "static-filter-fail-zero-cut-closure-costs-more-than-entire-suffix-credit"
+    }
+  ],
+  "assembly_emitted": false,
+  "decision": "no-assembly-current-8-10-12-stage-native-packetizations-fail-static-filter",
+  "interpretation": "Twiddle regeneration is exact, but it does not make physical qword movement free. Eight YMM keep S1-S3 route-free only by cutting the six-component producer/DFT3 closure and replaying source work. Ten YMM add component-local routes without closing that graph. Twelve YMM close it, but the 96 interstage routes plus qword-lane source replay exceed the complete 80-blend suffix credit.",
+  "R_series_status": "closed-fixed-layout-local-register-remedies",
+  "T_series_status": "current-8-10-12-packet-families-static-filtered-no-ASM",
+  "not_claimed": [
+    "a global lower bound over every possible AVX2 circuit",
+    "that NTT32-first mathematics is invalid",
+    "that a new factorization or standalone ABI cannot reopen the family"
+  ],
+  "reopen_only_if": [
+    "a stage-native packet deletes a full producer or S1-S3 arithmetic wave",
+    "a general standalone Forward ABI reuses narrow source packets without replay",
+    "a new factorization reduces the six-component closure frontier",
+    "a wider register/SIMD ISA changes the packet capacity"
+  ]
+}

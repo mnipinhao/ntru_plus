@@ -106,6 +106,20 @@ static const uint8_t wide_pack_shuffle[32] __attribute__((aligned(32))) = {
 	0,1,4,5,8,9,12,13,2,3,6,7,10,11,14,15,
 };
 
+/* Compact the valid even int16 words of two REDC16 vectors directly into
+ * the final AoS word order.  0x80 selects zero in VPSHUFB. */
+static const uint8_t wide_redc16_c01_shuffle[32]
+	__attribute__((aligned(32))) = {
+	0,1,8,9, 0x80,0x80,0x80,0x80, 4,5,12,13, 0x80,0x80,0x80,0x80,
+	0,1,8,9, 0x80,0x80,0x80,0x80, 4,5,12,13, 0x80,0x80,0x80,0x80,
+};
+
+static const uint8_t wide_redc16_c23_shuffle[32]
+	__attribute__((aligned(32))) = {
+	0x80,0x80,0x80,0x80, 0,1,8,9, 0x80,0x80,0x80,0x80, 4,5,12,13,
+	0x80,0x80,0x80,0x80, 0,1,8,9, 0x80,0x80,0x80,0x80, 4,5,12,13,
+};
+
 static inline __m256i montgomery_vector(__m256i a, __m256i b)
 {
 	const __m256i q = _mm256_set1_epi16(GT32_TILE4_Q);
@@ -133,6 +147,24 @@ static inline __m256i montgomery32_vector(__m256i value)
 	correction = _mm256_and_si256(correction, low_mask);
 	correction = _mm256_mullo_epi32(correction, q);
 	return _mm256_srai_epi32(_mm256_sub_epi32(value, correction), 16);
+}
+
+static inline __m256i montgomery32_redc16_u_vector(__m256i value)
+{
+	const __m256i qinv = _mm256_set1_epi16(GT_QINV);
+	const __m256i q = _mm256_set1_epi16(GT32_TILE4_Q);
+	const __m256i m = _mm256_mullo_epi16(value, qinv);
+	const __m256i mq_high = _mm256_mulhi_epu16(m, q);
+	return _mm256_sub_epi16(_mm256_srai_epi32(value, 16), mq_high);
+}
+
+static inline __m256i montgomery32_redc16_s_vector(__m256i value)
+{
+	const __m256i qinv = _mm256_set1_epi16(GT_QINV);
+	const __m256i q = _mm256_set1_epi16(GT32_TILE4_Q);
+	const __m256i m = _mm256_mullo_epi16(value, qinv);
+	const __m256i mq_high = _mm256_mulhi_epi16(m, q);
+	return _mm256_sub_epi16(_mm256_srai_epi32(value, 16), mq_high);
 }
 
 void gt32_tile4_basemul_wide_a1_intrinsic(
@@ -181,6 +213,77 @@ void gt32_tile4_basemul_wide_a1_intrinsic(
 			_mm256_storeu_si256((__m256i *)(void *)(out + word), packed);
 		}
 	}
+}
+
+static inline __attribute__((always_inline)) void basemul_wide_redc16_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS], int signed_m)
+{
+	for (unsigned tile = 0; tile < GT32_TILE4_TILES; tile++) {
+		for (unsigned vector = 0; vector < 8U; vector++) {
+			const unsigned word = 128U * tile + 16U * vector;
+			const __m256i av = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(a + word));
+			const __m256i bv = _mm256_loadu_si256(
+				(const __m256i *)(const void *)(b + word));
+			const __m256i lambda = _mm256_load_si256(
+				(const __m256i *)(const void *)
+				gt32_tile4_lambda_mont[tile][vector]);
+			const __m256i lambda_b = montgomery_vector(bv, lambda);
+			const __m256i mixed = _mm256_blend_epi16(bv, lambda_b, 0xee);
+			const __m256i d0 = _mm256_shuffle_epi8(mixed,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[0]));
+			const __m256i d1 = _mm256_shuffle_epi8(
+				_mm256_blend_epi16(bv, mixed, 0xcc),
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[1]));
+			const __m256i d2 = _mm256_shuffle_epi8(
+				_mm256_blend_epi16(bv, mixed, 0x88),
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[2]));
+			const __m256i d3 = _mm256_shuffle_epi8(bv,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_d_shuffle[3]));
+			const __m256i p0 = _mm256_madd_epi16(av, d0);
+			const __m256i p1 = _mm256_madd_epi16(av, d1);
+			const __m256i p2 = _mm256_madd_epi16(av, d2);
+			const __m256i p3 = _mm256_madd_epi16(av, d3);
+			const __m256i x01 = _mm256_hadd_epi32(p0, p1);
+			const __m256i x23 = _mm256_hadd_epi32(p2, p3);
+			const __m256i c01 = signed_m
+				? montgomery32_redc16_s_vector(x01)
+				: montgomery32_redc16_u_vector(x01);
+			const __m256i c23 = signed_m
+				? montgomery32_redc16_s_vector(x23)
+				: montgomery32_redc16_u_vector(x23);
+			const __m256i packed01 = _mm256_shuffle_epi8(c01,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_redc16_c01_shuffle));
+			const __m256i packed23 = _mm256_shuffle_epi8(c23,
+				_mm256_load_si256((const __m256i *)(const void *)
+				wide_redc16_c23_shuffle));
+			_mm256_storeu_si256((__m256i *)(void *)(out + word),
+				_mm256_or_si256(packed01, packed23));
+		}
+	}
+}
+
+void gt32_tile4_basemul_wide_r1u_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS])
+{
+	basemul_wide_redc16_intrinsic(out, a, b, 0);
+}
+
+void gt32_tile4_basemul_wide_r1s_intrinsic(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS])
+{
+	basemul_wide_redc16_intrinsic(out, a, b, 1);
 }
 
 static inline void transpose4x16(__m256i value[4])

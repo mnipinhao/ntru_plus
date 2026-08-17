@@ -13,6 +13,7 @@
 void ntt_gt_rowbitrevlayout(int16_t r[GT32_TILE4_POLY_WORDS],
 	const int16_t a[GT32_TILE4_POLY_WORDS]);
 int poly_frombytes(int16_t *r, const uint8_t *a);
+void poly_tobytes(uint8_t *r, const int16_t *a);
 
 static uint64_t rng_state = UINT64_C(0x6a09e667f3bcc909);
 
@@ -86,6 +87,23 @@ static void private_soa_to_tile4(int16_t *out, const int16_t *in)
 			for (unsigned c = 0; c < 4; c++)
 				out[64U * group + 4U * q + c] =
 					in[64U * group + 16U * c + position[q]];
+		}
+	}
+}
+
+static void tile4_to_private_soa(int16_t *out, const int16_t *in)
+{
+	static const uint8_t q_order[16] = {
+		0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15
+	};
+	uint8_t position[16];
+	for (unsigned lane = 0; lane < 16; lane++)
+		position[q_order[lane]] = (uint8_t)lane;
+	for (unsigned group = 0; group < 12; group++) {
+		for (unsigned q = 0; q < 16; q++) {
+			for (unsigned c = 0; c < 4; c++)
+				out[64U * group + 16U * c + position[q]] =
+					in[64U * group + 4U * q + c];
 		}
 	}
 }
@@ -228,14 +246,38 @@ int main(void)
 	int16_t full_got[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t serial_got[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_soa[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
+	int16_t semantic_soa[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t general_ref[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_inverse[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t private_inverse_asm[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	int16_t official_decoded[GT32_TILE4_POLY_WORDS] __attribute__((aligned(32)));
 	uint8_t packed[GT32_TILE4_SERIALIZED_BYTES];
+	uint8_t packed_roundtrip[GT32_TILE4_SERIALIZED_BYTES];
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
 		fill_case(input, GT32_TILE4_POLY_WORDS, trial);
+		/* Callsite-private e=1 producer/forward and no-repair BM contract. */
+		for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++) {
+			alias[i] = (int16_t)((int)((i + trial) % 3U) - 1);
+			general_ref[i] = (int16_t)(-147 * alias[i]);
+		}
+		gt32_tile4_frontend_wide_raw_asm(frontend_ref, alias);
+		gt32_tile4_frontend_wide_e1_asm(frontend_got, general_ref);
+		for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++) {
+			const int16_t expected = centered(-147 * (int32_t)frontend_ref[i]);
+			if (centered(frontend_got[i]) != expected)
+				fail_at("frontend-wide-e1", trial, i, expected,
+					centered(frontend_got[i]));
+		}
+		gt32_tile4_forward_all_pair_asm(full_ref, frontend_ref);
+		tile4_to_private_soa(private_soa, full_ref);
+		for (unsigned i = 0; i < GT32_TILE4_POLY_WORDS; i++)
+			private_soa[i] = centered(-147 * (int32_t)private_soa[i]);
+		gt32_tile4_basemul_general_b2_asm(ref, full_ref, full_ref);
+		gt32_tile4_basemul_e1_soa_aos_to_aos_asm(got, private_soa,
+			full_ref);
+		compare_mod_q("basemul-e1-soa-aos-general", trial, ref, got,
+			GT32_TILE4_POLY_WORDS);
 		if (trial < 100U) {
 			pack_tile4_aos(packed, input);
 			if (poly_frombytes(official_decoded, packed) != 0
@@ -245,6 +287,8 @@ int main(void)
 				|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
 					packed) != 0
 				|| gt32_tile4_frombytes_aos_asm(full_got, packed) != 0
+				|| gt32_tile4_frombytes_bm_soa_semantic_asm(semantic_soa,
+					packed) != 0
 				|| gt32_tile4_frombytes_bm_soa_aos_control_asm(full_ref,
 					packed) != 0) {
 				fprintf(stderr, "canonical TILE4 frombytes rejected trial=%u\n", trial);
@@ -266,6 +310,9 @@ int main(void)
 				if (private_soa[soa] != expected)
 					fail_at("frombytes-bm-soa", trial, soa, expected,
 						private_soa[soa]);
+				if (semantic_soa[soa] != expected)
+					fail_at("frombytes-bm-soa-semantic-asm", trial, soa,
+						expected, semantic_soa[soa]);
 				if (general_ref[soa] != expected)
 					fail_at("frombytes-bm-soa-bridge", trial, soa, expected,
 						general_ref[soa]);
@@ -278,9 +325,35 @@ int main(void)
 			}
 			gt32_tile4_basemul_c3center_late_aos_private_asm(ref, alias, alias);
 			gt32_tile4_basemul_scale_soa_aos_to_aos_private_asm(got,
-				private_soa, alias);
+				semantic_soa, alias);
 			compare_exact("frombytes-mixed-basemul", trial, ref, got,
 				GT32_TILE4_POLY_WORDS);
+			gt32_tile4_basemul_scale_soa_soa_to_aos_private_asm(got,
+				semantic_soa, semantic_soa);
+			compare_exact("frombytes-soa-soa-basemul", trial, ref, got,
+				GT32_TILE4_POLY_WORDS);
+			gt32_tile4_basemul_general_b2_asm(ref, alias, alias);
+			gt32_tile4_basemul_general_soa_aos_to_aos_asm(got,
+				private_soa, alias);
+			compare_exact("frombytes-mixed-general-basemul", trial, ref, got,
+				GT32_TILE4_POLY_WORDS);
+			gt32_tile4_basemul_general_soa_soa_to_aos_asm(got,
+				semantic_soa, semantic_soa);
+			compare_exact("frombytes-soa-soa-general-basemul", trial, ref, got,
+				GT32_TILE4_POLY_WORDS);
+			tile4_to_private_soa(general_ref, ref);
+			gt32_tile4_basemul_general_soa_soa_to_soa_asm(private_soa,
+				semantic_soa, semantic_soa);
+			compare_exact("frombytes-soa-soa-general-basemul-soa", trial,
+				general_ref, private_soa, GT32_TILE4_POLY_WORDS);
+			gt32_tile4_soa_to_official_words_asm(official_decoded,
+				semantic_soa);
+			poly_tobytes(packed_roundtrip, official_decoded);
+			if (memcmp(packed, packed_roundtrip, sizeof packed) != 0) {
+				fprintf(stderr,
+					"correct-semantic SoA Encodeq mismatch trial=%u\n", trial);
+				return 1;
+			}
 			if (trial == 0U) {
 				packed[0] = 0x81U;
 				packed[1] = (uint8_t)((packed[1] & 0xf0U) | 0x0dU);
@@ -291,6 +364,8 @@ int main(void)
 					|| gt32_tile4_frombytes_bm_soa_official_bridge(general_ref,
 						packed) != 1
 					|| gt32_tile4_frombytes_aos_asm(full_got, packed) != 1
+					|| gt32_tile4_frombytes_bm_soa_semantic_asm(semantic_soa,
+						packed) != 1
 					|| gt32_tile4_frombytes_bm_soa_aos_control_asm(full_ref,
 						packed) != 1) {
 					fprintf(stderr, "noncanonical TILE4 frombytes accepted\n");

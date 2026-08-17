@@ -1,0 +1,48 @@
+{
+  "schema": "ntruplus768-gt32-n32-suffix-reschedule-v1",
+  "experiment": "GT-N32-SUFFIX-RESCHEDULE-015",
+  "route_problem": {
+    "S4_sums": [
+      "S0l",
+      "S0h",
+      "S1l",
+      "S1h"
+    ],
+    "S4_differences": [
+      "D0l",
+      "D0h",
+      "D1l",
+      "D1h"
+    ],
+    "S5_low_operands": [
+      "S0l",
+      "S1l",
+      "D0l",
+      "D1l"
+    ],
+    "S5_high_operands": [
+      "S0h",
+      "S1h",
+      "D0h",
+      "D1h"
+    ]
+  },
+  "instruction_superset": [
+    "arbitrary-vpermq",
+    "arbitrary-vperm2i128-half-selection",
+    "lane-local-vpunpcklqdq-vpunpckhqdq",
+    "qword-granular-blend-superset-of-vpblendd"
+  ],
+  "search": {
+    "one_instruction_intermediates": 78,
+    "intermediates_checked_for_three_instruction_program": 78,
+    "two_instruction_pair_exists": false,
+    "three_instruction_pair_exists": false
+  },
+  "known_four_instruction_route": [
+    "two-vperm2i128-S4-reconstructs",
+    "vpunpcklqdq-S5-low",
+    "vpunpckhqdq-S5-high"
+  ],
+  "decision": "composed-route-static-stop-four-instruction-lower-bound-within-tested-AVX2-superset; emit-three-way-schedule-only"
+}

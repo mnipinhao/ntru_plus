@@ -1,0 +1,195 @@
+{
+  "candidate": "GT32 high-range BaseMul admissibility search",
+  "contract_correction": {
+    "production_B3_input": "N5 TILE4 AoS e=0",
+    "production_B3_input_abs_bound": 10788,
+    "production_B3_has_input_checkpoint": false,
+    "bound_2179_applies_to": "native L01/K2 pair-and-total operand formation only"
+  },
+  "signed_Montgomery_interval": {
+    "formula": "hi(x)-hi(signed16(lo(x*qinv))*q), enumerated exactly for every low-word residue and every x in the enclosing interval",
+    "symmetric_10788_product": {
+      "input_product_interval": [
+        -116380944,
+        116380944
+      ],
+      "output_interval": [
+        -3504,
+        3504
+      ],
+      "output_abs_bound": 3504
+    },
+    "previous_conservative_bound": 3505,
+    "exact_interval_abs_bound": 3504
+  },
+  "current_schoolbook_B3": {
+    "input_abs_bounds": [
+      10788,
+      10788
+    ],
+    "raw_coefficient_abs_bounds": [
+      5503,
+      8915,
+      12328,
+      14016
+    ],
+    "all_raw_accumulators_int16_safe": true,
+    "existing_finalizer": "center c3 only for the private I1 consumer",
+    "status": "already-high-range-production-champion"
+  },
+  "L01_K2": {
+    "lambda_range_model": "safe enclosing interval using every signed factor with absolute value at most 1728",
+    "maximum_proved_output_safe_input_product_under_interval_model": 31340543,
+    "maximum_proved_symmetric_bound_with_all_i16_formation": 5598,
+    "maximum_proved_partner_bound_when_other_is_10788": 2905,
+    "maximum_proved_high_bound_when_other_is_2179": 14382,
+    "symmetric_10788x10788": {
+      "input_abs_bounds": [
+        10788,
+        10788
+      ],
+      "pair_sum_abs_bounds": [
+        21576,
+        21576
+      ],
+      "total_sum_abs_bounds": [
+        43152,
+        43152
+      ],
+      "pair_sum_int16_safe": true,
+      "total_sum_int16_safe": false,
+      "direct_product_abs_bound": 3504,
+      "pair_product_abs_bound": 8831,
+      "total_product_abs_bound": 30141,
+      "linear_recombination_abs_bound": 15839,
+      "lambda_output_abs_bounds": [
+        2238,
+        2146,
+        1820
+      ],
+      "output_abs_bounds": [
+        5742,
+        17985,
+        21163,
+        79481
+      ],
+      "output_int16_safe": false,
+      "all_i16_K2_safe": false,
+      "selective_i32_K2_safe_after_narrow": false,
+      "required_wide_nodes": [
+        "S.sum operand formation and Montgomery product",
+        "c3/r1 recombination and final modular reduction"
+      ]
+    },
+    "asymmetric_10788x2179": {
+      "input_abs_bounds": [
+        10788,
+        2179
+      ],
+      "pair_sum_abs_bounds": [
+        21576,
+        4358
+      ],
+      "total_sum_abs_bounds": [
+        43152,
+        8716
+      ],
+      "pair_sum_int16_safe": true,
+      "total_sum_int16_safe": false,
+      "direct_product_abs_bound": 2087,
+      "pair_product_abs_bound": 3163,
+      "total_product_abs_bound": 7467,
+      "linear_recombination_abs_bound": 7337,
+      "lambda_output_abs_bounds": [
+        1976,
+        1921,
+        1783
+      ],
+      "output_abs_bounds": [
+        4063,
+        9258,
+        11207,
+        28467
+      ],
+      "output_int16_safe": true,
+      "all_i16_K2_safe": false,
+      "selective_i32_K2_safe_after_narrow": true,
+      "required_wide_nodes": [
+        "S.sum operand formation and Montgomery product"
+      ]
+    },
+    "symmetric_pure_i16_limit": {
+      "input_abs_bounds": [
+        5598,
+        5598
+      ],
+      "pair_sum_abs_bounds": [
+        11196,
+        11196
+      ],
+      "total_sum_abs_bounds": [
+        22392,
+        22392
+      ],
+      "pair_sum_int16_safe": true,
+      "total_sum_int16_safe": true,
+      "direct_product_abs_bound": 2206,
+      "pair_product_abs_bound": 3641,
+      "total_product_abs_bound": 9379,
+      "linear_recombination_abs_bound": 8053,
+      "lambda_output_abs_bounds": [
+        1999,
+        1940,
+        1786
+      ],
+      "output_abs_bounds": [
+        4205,
+        9993,
+        12045,
+        32767
+      ],
+      "output_int16_safe": true,
+      "all_i16_K2_safe": true,
+      "selective_i32_K2_safe_after_narrow": true,
+      "required_wide_nodes": []
+    },
+    "interpretation": "10788x2179 has safe pair products and final outputs, but the high operand's four-term sum is 43152 and therefore requires a selective i32 S.sum path.  10788x10788 additionally makes c3/r1 exceed int16."
+  },
+  "alternative_DAGs": {
+    "lambda_per_wrapped_term": {
+      "current_lambda_chains": 3,
+      "candidate_lambda_chains": 6,
+      "input_or_layout_work_removed": 0,
+      "decision": "reject-more-chains-no-boundary-saving"
+    },
+    "pairwise_reduction": {
+      "requires_extra_reducer_chains": true,
+      "current_schoolbook_arithmetic_is_at_Official_parity": true,
+      "decision": "reject-unless-consumer-boundary-is-also-removed"
+    },
+    "selective_i32": {
+      "asymmetric_required_wide_nodes": [
+        "S.sum operand formation and Montgomery product"
+      ],
+      "symmetric_required_wide_nodes": [
+        "S.sum operand formation and Montgomery product",
+        "c3/r1 recombination and final modular reduction"
+      ],
+      "minimum_i32_Montgomery_chain_overhead": 7,
+      "minimum_i32_final_reducer_and_pack": 7,
+      "excluded_from_floor": "widening, horizontal sums, qword routing, register moves, loads/stores, and loop control"
+    }
+  },
+  "static_gate_per_16_quartics": {
+    "current_native_L01_compute_floor_excluding_load_store_loop": 216,
+    "current_complete_B3_loop": 156,
+    "asymmetric_remove_half_input_checkpoint_then_add_one_wide_chain": 211,
+    "symmetric_remove_input_checkpoint_then_add_wide_chain_and_c3_reducer": 206,
+    "asymmetric_floor_minus_complete_B3": 55,
+    "symmetric_floor_minus_complete_B3": 50
+  },
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "decision": "stop-high-range-K2-static-floor-still-exceeds-B3",
+  "reopen_condition": "a selective-wide operation must also remove a complete operand-construction or output-routing network, not only checkpoints"
+}

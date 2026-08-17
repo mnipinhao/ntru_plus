@@ -1,0 +1,137 @@
+{
+  "schema": "ntruplus768-gt32-n32-inverse-asm-v1",
+  "experiment": "GT-N32-INVERSE-ASM-012",
+  "range_source": "generated/tile4_n32_bm_inv_joint_range_gate.json",
+  "typed_ABI": {
+    "input": {
+      "layout": "group-major half-native quartic AoS",
+      "vector_index": "((branch*8+group)*3+slot)",
+      "slot_rows_qword_0_1": [
+        0,
+        1,
+        2
+      ],
+      "slot_rows_qword_2_3": [
+        0,
+        2,
+        1
+      ],
+      "scale_exponent": -1,
+      "representative": "current R1-U unsigned REDC16"
+    },
+    "output": {
+      "layout": "component-major reflected inverse rows",
+      "vector_index": "((branch*3+slot)*8+group)",
+      "slot_rows_qword_0_1": [
+        0,
+        1,
+        2
+      ],
+      "slot_rows_qword_2_3": [
+        0,
+        2,
+        1
+      ],
+      "scale_exponent": -1,
+      "next": "untwist/top-reconstruction"
+    },
+    "overlap": "input/output must be disjoint; suffix helper supports in-place"
+  },
+  "topology_proof": {
+    "basis_vectors_checked": 96,
+    "exact_mod_q": true,
+    "physical_row_action": {
+      "qword_0_1": [
+        0,
+        1,
+        2
+      ],
+      "qword_2_3": [
+        0,
+        2,
+        1
+      ]
+    },
+    "only_crossed_stage": 4,
+    "signed_word_IDFT_difference_oddness_values_checked": 20987,
+    "exact_representative_reflection": true
+  },
+  "generator_to_ASM_correspondence": [
+    {
+      "generator": "IDFT3 raw sum/difference and centered sum",
+      "ASM": "N32_IDFT3_V2_DUAL",
+      "reassociated": false
+    },
+    {
+      "generator": "InvNTT32 length 2 raw butterfly",
+      "ASM": "N32_RAW_LOCAL_QWORD_PAIR",
+      "new_reduction": false
+    },
+    {
+      "generator": "InvNTT32 length 4",
+      "ASM": [
+        "N32_MONT_LOCAL_HALF_PAIR slot0 group-pair",
+        "N32_MONT_LOCAL_HALF_REFLECTED slot1/slot2"
+      ],
+      "row_reflection_repaired": false
+    },
+    {
+      "generator": "InvNTT32 lengths 8/16/32",
+      "ASM": "N32_MONT_CROSS4 with qualified inverse tables",
+      "row_reflection_repaired": false
+    }
+  ],
+  "range_frontiers": {
+    "R1U": 5318,
+    "IDFT3_internal": 10493,
+    "IDFT3_output": 8880,
+    "InvNTT32": [
+      {
+        "length": 2,
+        "max_output_abs_bound": 17760,
+        "signed_int16_safe": true
+      },
+      {
+        "length": 4,
+        "max_output_abs_bound": 19581,
+        "signed_int16_safe": true
+      },
+      {
+        "length": 8,
+        "max_output_abs_bound": 21637,
+        "signed_int16_safe": true
+      },
+      {
+        "length": 16,
+        "max_output_abs_bound": 23752,
+        "signed_int16_safe": true
+      },
+      {
+        "length": 32,
+        "max_output_abs_bound": 26043,
+        "signed_int16_safe": true
+      }
+    ]
+  },
+  "arithmetic": {
+    "IDFT3_Montgomery_chains": 16,
+    "inverse_Montgomery_chains_by_length": {
+      "2": 0,
+      "4": 24,
+      "8": 24,
+      "16": 24,
+      "32": 24
+    },
+    "new_Montgomery_chains": 0,
+    "standalone_center_or_checkpoint": 0,
+    "IDFT3_center_is_part_of_the_frozen_IDFT3_V2_schedule": true,
+    "spill": false,
+    "peak_YMM": 16
+  },
+  "artifacts": {
+    "constants": "generated/tile4_n32_inverse_constants.inc",
+    "test_ranges": "generated/tile4_n32_inverse_test_ranges.h"
+  },
+  "assembly_eligible": true,
+  "architecture_decision_deferred_until": "executable-2F-plus-B-plus-I"
+}

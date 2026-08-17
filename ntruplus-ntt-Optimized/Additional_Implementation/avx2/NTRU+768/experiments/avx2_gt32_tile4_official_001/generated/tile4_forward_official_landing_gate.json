@@ -1,0 +1,3586 @@
+{
+  "schema": "ntruplus768-gt32-forward-official-landing-v1",
+  "experiment": "GT32-POLYMUL-FWD-OFFICIAL-LANDING-001",
+  "scope": "N5-stage5-packed-to-Official-NTT-output-layout",
+  "correctness_model": {
+    "semantic_words": 768,
+    "bijection": true,
+    "private_intermediate_materialized": false
+  },
+  "static_cost": {
+    "direct_vperm2i128": 256,
+    "direct_vpshufb": 256,
+    "direct_vpor": 208,
+    "direct_stores": 48,
+    "direct_route_instruction_total": 720,
+    "selected_private_terminal_shuffle_total": 144,
+    "extra_route_instructions_vs_private_terminal": 576,
+    "max_routes_per_target": 6,
+    "note": "Each Official vector mixes five or six packed source-half routes"
+  },
+  "gate": {
+    "max_extra_core_cycles_per_forward": 15.0,
+    "max_extra_static_instructions_per_forward": 48,
+    "assembly_eligible": false,
+    "decision": "static-hard-stop-before-asm",
+    "reason": "five/six-route targets require a large OR/permute network"
+  },
+  "tile_routes": {
+    "0": [
+      {
+        "destination_vector": 0,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 0
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 1
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 2
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 3
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 4
+          }
+        ]
+      },
+      {
+        "destination_vector": 1,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 5
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 6
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 7
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 8
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 9
+          }
+        ]
+      },
+      {
+        "destination_vector": 2,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 10
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 11
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 12
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 13
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 14
+          }
+        ]
+      },
+      {
+        "destination_vector": 3,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 15
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 16
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 17
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 18
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 19
+          }
+        ]
+      },
+      {
+        "destination_vector": 4,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 20
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 21
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 22
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 23
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 24
+          }
+        ]
+      },
+      {
+        "destination_vector": 5,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 25
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 26
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 27
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 28
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 29
+          }
+        ]
+      },
+      {
+        "destination_vector": 6,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 30
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 31
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 32
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 33
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 34
+          }
+        ]
+      },
+      {
+        "destination_vector": 7,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 35
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 36
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 37
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 38
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 39
+          }
+        ]
+      }
+    ],
+    "1": [
+      {
+        "destination_vector": 40,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 40
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 41
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 42
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 43
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 44
+          }
+        ]
+      },
+      {
+        "destination_vector": 41,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 45
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 46
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 47
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 48
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 49
+          }
+        ]
+      },
+      {
+        "destination_vector": 42,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 50
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 51
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 52
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 53
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 54
+          }
+        ]
+      },
+      {
+        "destination_vector": 43,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 55
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 56
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 57
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 58
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 59
+          }
+        ]
+      },
+      {
+        "destination_vector": 44,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 60
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 61
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 62
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 63
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 64
+          }
+        ]
+      },
+      {
+        "destination_vector": 45,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 65
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 66
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 67
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 68
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 69
+          }
+        ]
+      },
+      {
+        "destination_vector": 46,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 70
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 71
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 72
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 73
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 74
+          }
+        ]
+      },
+      {
+        "destination_vector": 47,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 75
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 76
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 77
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 78
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 79
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "destination_vector": 16,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 80
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 81
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 82
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 83
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 84
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 85
+          }
+        ]
+      },
+      {
+        "destination_vector": 17,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 86
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 87
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 88
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 89
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 90
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 91
+          }
+        ]
+      },
+      {
+        "destination_vector": 18,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 92
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 93
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 94
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 95
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 96
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 97
+          }
+        ]
+      },
+      {
+        "destination_vector": 19,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 98
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 99
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 100
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 101
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 102
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 103
+          }
+        ]
+      },
+      {
+        "destination_vector": 20,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 104
+          },
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 105
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 106
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 107
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 108
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 109
+          }
+        ]
+      },
+      {
+        "destination_vector": 21,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 110
+          },
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 111
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 112
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 113
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 114
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 115
+          }
+        ]
+      },
+      {
+        "destination_vector": 22,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 116
+          },
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 117
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 118
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 119
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 120
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 121
+          }
+        ]
+      },
+      {
+        "destination_vector": 23,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 122
+          },
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 123
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 124
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 125
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 126
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 127
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "destination_vector": 32,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 128
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 129
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 130
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 131
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 132
+          }
+        ]
+      },
+      {
+        "destination_vector": 33,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 133
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 134
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 135
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 136
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 137
+          }
+        ]
+      },
+      {
+        "destination_vector": 34,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 138
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 139
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 140
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 141
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 142
+          }
+        ]
+      },
+      {
+        "destination_vector": 35,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              0
+            ],
+            "high_source": [
+              5,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 143
+          },
+          {
+            "low_source": [
+              1,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 144
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              7,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 145
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              4,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 146
+          },
+          {
+            "low_source": [
+              3,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 147
+          }
+        ]
+      },
+      {
+        "destination_vector": 36,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 148
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 149
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 150
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 151
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 152
+          }
+        ]
+      },
+      {
+        "destination_vector": 37,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 153
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 154
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 155
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 156
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 157
+          }
+        ]
+      },
+      {
+        "destination_vector": 38,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 158
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 159
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 160
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 161
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 162
+          }
+        ]
+      },
+      {
+        "destination_vector": 39,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": [
+              0,
+              1
+            ],
+            "high_source": [
+              6,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 163
+          },
+          {
+            "low_source": [
+              1,
+              0
+            ],
+            "high_source": [
+              4,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 164
+          },
+          {
+            "low_source": [
+              2,
+              0
+            ],
+            "high_source": [
+              6,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 165
+          },
+          {
+            "low_source": [
+              2,
+              1
+            ],
+            "high_source": [
+              7,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 166
+          },
+          {
+            "low_source": [
+              3,
+              0
+            ],
+            "high_source": [
+              5,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 167
+          }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "destination_vector": 8,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 168
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 169
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 170
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 171
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 172
+          }
+        ]
+      },
+      {
+        "destination_vector": 9,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 173
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 174
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 175
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 176
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 177
+          }
+        ]
+      },
+      {
+        "destination_vector": 10,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 178
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 179
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 180
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 181
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 182
+          }
+        ]
+      },
+      {
+        "destination_vector": 11,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 183
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 184
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 185
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 186
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 187
+          }
+        ]
+      },
+      {
+        "destination_vector": 12,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 188
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 189
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 190
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 191
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 192
+          }
+        ]
+      },
+      {
+        "destination_vector": 13,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 193
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 194
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 195
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 196
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 197
+          }
+        ]
+      },
+      {
+        "destination_vector": 14,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 198
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 199
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 200
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 201
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 202
+          }
+        ]
+      },
+      {
+        "destination_vector": 15,
+        "route_count": 5,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 203
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 204
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 205
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 206
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 207
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "destination_vector": 24,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 208
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 209
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 210
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 211
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 212
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 213
+          }
+        ]
+      },
+      {
+        "destination_vector": 25,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 214
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 215
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 216
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 217
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 218
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 219
+          }
+        ]
+      },
+      {
+        "destination_vector": 26,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 220
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 221
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 222
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 223
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 224
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 225
+          }
+        ]
+      },
+      {
+        "destination_vector": 27,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              3,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 226
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 227
+          },
+          {
+            "low_source": [
+              5,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 228
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 229
+          },
+          {
+            "low_source": [
+              6,
+              1
+            ],
+            "high_source": [
+              1,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 230
+          },
+          {
+            "low_source": [
+              7,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 231
+          }
+        ]
+      },
+      {
+        "destination_vector": 28,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 232
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 233
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 234
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 235
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 236
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 237
+          }
+        ]
+      },
+      {
+        "destination_vector": 29,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 238
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 239
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 240
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 241
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 242
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 243
+          }
+        ]
+      },
+      {
+        "destination_vector": 30,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 244
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 245
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 246
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 247
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 248
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 249
+          }
+        ]
+      },
+      {
+        "destination_vector": 31,
+        "route_count": 6,
+        "routes": [
+          {
+            "low_source": null,
+            "high_source": [
+              2,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 32,
+            "mask_id": 250
+          },
+          {
+            "low_source": [
+              4,
+              0
+            ],
+            "high_source": [
+              0,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 251
+          },
+          {
+            "low_source": [
+              4,
+              1
+            ],
+            "high_source": [
+              2,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 252
+          },
+          {
+            "low_source": [
+              5,
+              1
+            ],
+            "high_source": [
+              3,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 49,
+            "mask_id": 253
+          },
+          {
+            "low_source": [
+              6,
+              0
+            ],
+            "high_source": [
+              1,
+              1
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 48,
+            "mask_id": 254
+          },
+          {
+            "low_source": [
+              7,
+              1
+            ],
+            "high_source": [
+              0,
+              0
+            ],
+            "natural_carrier": false,
+            "vperm2i128_immediate": 33,
+            "mask_id": 255
+          }
+        ]
+      }
+    ]
+  }
+}

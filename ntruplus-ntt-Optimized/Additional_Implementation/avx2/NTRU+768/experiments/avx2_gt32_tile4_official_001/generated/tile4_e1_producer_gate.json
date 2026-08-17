@@ -1,0 +1,94 @@
+{
+  "candidate": "encap-r-private-SoA-e1-producer",
+  "provenance": {
+    "producer": "poly_cbd1",
+    "coefficient_set": [
+      -1,
+      0,
+      1
+    ],
+    "other_e0_consumer_before_ntt": false,
+    "scaled_coefficient_set": [
+      -147,
+      0,
+      147
+    ],
+    "centered_R": -147
+  },
+  "scale_chain": [
+    "CBD r:e=1",
+    "forward SoA:e=1",
+    "decoded h:e=0",
+    "Montgomery BM output:e=0",
+    "add m:e=0"
+  ],
+  "frontend": {
+    "raw_top_abs_bound": 106428,
+    "raw_top_int16_safe": false,
+    "required_top": "Montgomery -722R factor",
+    "top_product_abs_bound": 1033,
+    "top_split_abs_bound": 1327,
+    "twist_abs_bound": 1756,
+    "omega3_product_abs_bound": 1767,
+    "output_abs_bound": 5279
+  },
+  "ntt32_stages": [
+    {
+      "stage": 1,
+      "input_abs_bound": 5279,
+      "product_abs_bound": 5279,
+      "output_abs_bound": 10558
+    },
+    {
+      "stage": 2,
+      "input_abs_bound": 10558,
+      "product_abs_bound": 1782,
+      "output_abs_bound": 12340
+    },
+    {
+      "stage": 3,
+      "input_abs_bound": 12340,
+      "product_abs_bound": 1935,
+      "output_abs_bound": 14275
+    },
+    {
+      "stage": 4,
+      "input_abs_bound": 14275,
+      "product_abs_bound": 1988,
+      "output_abs_bound": 16263
+    },
+    {
+      "stage": 5,
+      "input_abs_bound": 16263,
+      "product_abs_bound": 2111,
+      "output_abs_bound": 18374
+    }
+  ],
+  "forward_output_abs_bound": 18374,
+  "mixed_bm": {
+    "h_input_abs_bound": 3456,
+    "variable_product_abs_bound": 2698,
+    "coefficient_abs_bounds": [
+      4630,
+      7260,
+      9890,
+      10792
+    ],
+    "output_r_exponent": 0,
+    "R2_finalizer_required": false
+  },
+  "post_add_m_abs_bounds": [
+    15418,
+    18048,
+    20678,
+    21580
+  ],
+  "all_int16_safe": true,
+  "static_instruction_accounting": {
+    "removed_BM_R2_finalizer": 192,
+    "extra_Montgomery_top_vs_raw": 72,
+    "minimum_fused_CBD_scaling": 48,
+    "optimistic_net_delta": -72
+  },
+  "decision": "eligible-for-benchmark-only-assembly-gate"
+}

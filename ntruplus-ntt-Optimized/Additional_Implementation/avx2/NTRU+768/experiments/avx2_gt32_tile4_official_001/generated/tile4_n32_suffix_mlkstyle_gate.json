@@ -1,0 +1,60 @@
+{
+  "schema": "ntruplus768-gt32-n32-suffix-mlkstyle-gate-v1",
+  "experiment": "GT-N32-SUFFIX-MLKSTYLE-018",
+  "scope": "post-route S4 + S5 + batched center + dual typed DFT3",
+  "frozen": {
+    "Montgomery_chains": "unchanged",
+    "row0_center_count": "unchanged",
+    "external_half_native_ABI": "unchanged",
+    "S4_to_S5_route_floor": "four instructions per pair from SUFFIX-RESCHEDULE-015"
+  },
+  "distributed_update_identity": {
+    "sum": "L + (H-C) == (L+H)-C",
+    "difference": "L - (H-C) == (L-H)+C"
+  },
+  "range": [
+    {
+      "stage": 4,
+      "input_abs_bound": 8315,
+      "factor_domain": [
+        -1728,
+        1728
+      ],
+      "high_product_abs_bound": 220,
+      "correction_abs_bound": 1729,
+      "distributed_L_plus_or_minus_high_abs_bound": 8535,
+      "distributed_final_conservative_abs_bound": 10264,
+      "existing_stage_output_abs_bound": 10244,
+      "all_distributed_intermediates_signed_int16_safe": true
+    },
+    {
+      "stage": 5,
+      "input_abs_bound": 10244,
+      "factor_domain": [
+        -1728,
+        1728
+      ],
+      "high_product_abs_bound": 271,
+      "correction_abs_bound": 1729,
+      "distributed_L_plus_or_minus_high_abs_bound": 10515,
+      "distributed_final_conservative_abs_bound": 12244,
+      "existing_stage_output_abs_bound": 12189,
+      "all_distributed_intermediates_signed_int16_safe": true
+    }
+  ],
+  "register_liveness": {
+    "data_input_output_YMM": 6,
+    "three_chains_times_L_H_C_YMM": 9,
+    "q_YMM": 1,
+    "peak_YMM": 16,
+    "spill_required": false
+  },
+  "static_delta_vs_existing_three_way": {
+    "extra_update_instructions_per_stage_iteration": 3,
+    "stage_iterations_per_complete_suffix": 8,
+    "S4_and_S5_extra_dynamic_instructions": 48,
+    "routing_instructions_removed": 0,
+    "reason_to_benchmark_despite_count": "correction multiply latency can overlap L+H/L-H"
+  },
+  "decision": "range-liveness-pass-emit-bounded-asm-probe"
+}

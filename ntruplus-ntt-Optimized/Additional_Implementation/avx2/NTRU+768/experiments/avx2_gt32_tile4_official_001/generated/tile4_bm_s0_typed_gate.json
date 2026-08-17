@@ -1,0 +1,81 @@
+{
+  "schema": "ntruplus768-gt32-bm-s0-typed-gate-v1",
+  "experiment": "GT32-BM-S0-TYPED-003",
+  "candidate": "R1-U raw i32 accumulators -> inverse S0 -> I-112-like packet",
+  "frozen": [
+    "N5 arithmetic and TILE4 leaf semantics",
+    "R1-U vpmaddwd quartic formulas",
+    "inverse stages after S0",
+    "Montgomery exponent e=-1 at the typed boundary"
+  ],
+  "exact_range_proof": {
+    "raw_leaf_abs_bound": 465523776,
+    "U_plus_or_minus_V_abs_bound": 931047552,
+    "REDC_numerator_abs_bound": 1157602047,
+    "REDC_output_abs_bound": 17664,
+    "int32_safe_through_S0": true,
+    "int16_safe_after_REDC": true
+  },
+  "next_twiddle_limit": {
+    "weighted_raw_abs_bound": 660112714368,
+    "int32_safe": false,
+    "therefore_terminal_must_be_after": "inverse S0 and before nontrivial S1 twiddle"
+  },
+  "reduction_accounting": {
+    "baseline_chains_per_four_leaves": {
+      "leaf_final_redc": 4,
+      "stage1_twiddle_montgomery": 2,
+      "total_excluding_common_lambda_preprocessing": 6
+    },
+    "safe_folded_chains_per_four_leaves": {
+      "weighted_leaf_final_redc": 4,
+      "dynamic_B_pre_twiddle_montgomery": 2,
+      "total_excluding_common_lambda_preprocessing": 6
+    },
+    "chain_saving": 0,
+    "conclusion": "fusion moves REDC/twiddle work but deletes no chain"
+  },
+  "typed_packet_update": {
+    "old_static_assumption": "I-112 inverse consumer needs zero route instructions",
+    "executable_result": "false for the qualified inverse topology; exact entry restores the M frontier with four vperm2i128 per tile (24 total)",
+    "normal_delta_tsc": 164.092,
+    "reversed_delta_tsc": 168.228,
+    "packet_does_not_remove_inverse_entry_debt": true
+  },
+  "allocation": {
+    "one_pass": {
+      "post_stage1_i32_accumulators": 8,
+      "live_A_and_B": 2,
+      "lambda_or_weighted_B": 2,
+      "vpmaddwd_and_hadd_temporaries": 2,
+      "redc_temporaries": 2,
+      "minimum_live_ymm": 16,
+      "constant_or_shuffle_mask_slots_remaining": 0,
+      "spill_free_with_constants": false
+    },
+    "split_control": {
+      "strategy": "process-c01-and-c23-separately",
+      "spill_free_possible": true,
+      "cost": "reload-and-rebuild-A1-D-vectors-for-the-second-half",
+      "eliminates_standalone_pack": true,
+      "reduces_finalization_chains": false
+    },
+    "typed_terminal_changes_peak": false,
+    "reason": "packet formation happens only after the wide arithmetic; it does not create the q/constant slot missing during the 16-YMM frontier"
+  },
+  "assembly_eligible": false,
+  "assembly_emitted": false,
+  "decision": "static-hard-stop-current-DAG",
+  "failed_requirements": [
+    "no Montgomery/reduction-chain saving",
+    "one-pass wide frontier consumes all 16 YMM before constants",
+    "spill-free split rebuilds the A1/D operand vectors",
+    "measured I-112 packet still pays a 24-permute inverse entry"
+  ],
+  "reopen_only_if": [
+    "a pair-streaming schedule proves <=15 live YMM including q/constants",
+    "one dynamic pre-twiddle serves more than one required reduction",
+    "a typed packet is consumed without restoring the M frontier",
+    "a wider SIMD/register domain is targeted"
+  ]
+}

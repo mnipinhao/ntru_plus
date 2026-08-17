@@ -1,0 +1,72 @@
+{
+  "schema": "ntruplus768-gt32-q24-encap-highrange-v1",
+  "experiment": "GT32-Q24-ENCAP-HIGHRANGE-GTPACK-001",
+  "contract": {
+    "input_layout": "private BM SoA",
+    "input_scale_exponent": 0,
+    "input_inclusive_range": [
+      -12699,
+      12699
+    ],
+    "output": "Official canonical 1152-byte serialization",
+    "alias": "input and output disjoint",
+    "input_is_nondestructive": true
+  },
+  "range_chain": {
+    "forward_input_abs_bound": 10788,
+    "variable_montgomery_product_abs_bound": 3505,
+    "raw_B3_e_minus1_coefficient_abs_bounds": [
+      5504,
+      8917,
+      12331,
+      14020
+    ],
+    "R2_finalizer_factor": 867,
+    "B3_general_e0_coefficient_abs_bounds": [
+      1792,
+      1838,
+      1888,
+      1911
+    ],
+    "m_forward_e0_abs_bound": 10788,
+    "post_add_coefficient_abs_bounds": [
+      12580,
+      12626,
+      12676,
+      12699
+    ],
+    "post_add_max_abs_bound": 12699,
+    "signed_int16_safe": true
+  },
+  "reducer": {
+    "formula": "t=(x*9+16384)>>15; y=x-t*3457",
+    "quotient_range": [
+      -3,
+      3
+    ],
+    "centered_output_range": [
+      -2328,
+      2328
+    ],
+    "canonical_output_range": [
+      0,
+      3456
+    ],
+    "single_sign_correction_sufficient": true,
+    "full_signed_int16_centered_output_range": [
+      -3291,
+      3291
+    ]
+  },
+  "candidates": {
+    "H1": "typed fixed tail-call to qualified packet-first reducer body",
+    "H2": "reduce four source planes before transpose/routing"
+  },
+  "H2_static": {
+    "source_groups": 12,
+    "source_vectors_reduced": 48,
+    "packet_vectors_reduced_by_H1": 48,
+    "reduction_instruction_count_difference": 0
+  },
+  "decision": "H1-H2-assembly-and-consumer-region-gate-eligible"
+}

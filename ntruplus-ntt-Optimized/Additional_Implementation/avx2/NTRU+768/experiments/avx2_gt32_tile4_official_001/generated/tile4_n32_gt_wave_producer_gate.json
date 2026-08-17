@@ -1,0 +1,68 @@
+{
+  "schema": "ntruplus768-gt32-n32-wave-producer-v1",
+  "experiment": "GT-N32-WAVE-PRODUCER-003B",
+  "requested_contract": {
+    "input_reads": 1,
+    "S3_output_writes": 1,
+    "peak_YMM_at_most": 16,
+    "spill": 0,
+    "full_forward_L1_bytes_at_most": 6144
+  },
+  "dependence_proof": {
+    "source_vectors_per_connected_component": 16,
+    "final_S3_vectors_per_connected_component": 16,
+    "top_split_invertible": true,
+    "S1_S3_invertible": true,
+    "each_final_vector_depends_on_all_source_vectors": true,
+    "nonzero_source_coefficients_per_final_vector": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "exact_matrix_rank_mod_q": 16,
+    "first_final_store_before_last_source_load": false,
+    "live_information_rank_at_cut": 16
+  },
+  "register_observation_not_lower_bound": {
+    "data_YMM": 16,
+    "current_macro_Montgomery_temporary_YMM": 1,
+    "q_or_factor_registers_counted": 0,
+    "artificial_S3_cut_macro_peak_estimate": 17,
+    "available_AVX2_YMM": 16,
+    "is_factored_DAG_lower_bound": false,
+    "reason": "rank and final support do not imply simultaneous liveness; destructive overwrite, consumer retirement, memory operands and recomputation remain legal"
+  },
+  "traffic": {
+    "qualified_N5_bytes": 6144,
+    "requested_N32_bytes": 6144,
+    "zero_spill_possible": "not proved either way",
+    "components_full_forward": 3,
+    "C2_optimistic_one_controlled_spill_reload_per_component_bytes": 192,
+    "C2_optimistic_total_bytes": 6336,
+    "C1_optimistic_one_source_YMM_reload_per_component_extra_bytes": 96,
+    "C1_optimistic_total_bytes": 6240,
+    "C1_C2_complete_schedule_proved": false,
+    "qualification": "byte figures are lower-bound relaxations, not allocated instruction schedules",
+    "known_branch_at_a_time_schedule_bytes": 7680
+  },
+  "assembly_emitted": false,
+  "decision": "strict-zero-spill-6144B-isolated-producer-not-qualified-prior-rank-stop-withdrawn",
+  "next_gate": [
+    "pebble the actual factored top/twist/S1-S5/DFT3/BM-consume DAG",
+    "allow C0 destructive zero-spill, C1 source reload and C2 controlled spill",
+    "judge executable BM-island cycles rather than isolated traffic bytes"
+  ]
+}

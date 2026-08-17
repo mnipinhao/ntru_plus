@@ -6,10 +6,18 @@
 #include "gt_baseinv_native.h"
 #include "gt_basemul_soa.h"
 
+#ifndef GT_QINV
 #define GT_QINV 12929
+#endif
+#ifndef GT_RINV
 #define GT_RINV (-682)
+#endif
+#ifndef GT_RINV_QINV
 #define GT_RINV_QINV 29782
+#endif
+#ifndef GT_CENTER10
 #define GT_CENTER10 10
+#endif
 
 static inline __m256i montgomery_mul(__m256i a, __m256i b)
 {
@@ -111,6 +119,10 @@ static inline __m256i field_inverse(__m256i r)
  * algorithm-visible invertibility failure boundary used by production
  * poly_baseinv().
  */
+#ifdef GT_BATCH_INVERSE_EXTERNAL
+extern int GT_BATCH_INVERSE_EXTERNAL(__m256i determinant[12]);
+#define batch_inverse GT_BATCH_INVERSE_EXTERNAL
+#else
 static int batch_inverse(__m256i determinant[12])
 {
 	const __m256i qinv = _mm256_set1_epi16(GT_QINV);
@@ -150,6 +162,7 @@ static int batch_inverse(__m256i determinant[12])
 	determinant[0] = inverse;
 	return 0;
 }
+#endif
 
 static int baseinv_finish(int16_t out[GT_NTT_N],
 	__m256i determinant[GT_SOA_BATCHES])

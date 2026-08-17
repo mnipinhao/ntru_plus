@@ -1,0 +1,74 @@
+{
+  "experiment": "INV-S2-S3-PAIRPACKED-001",
+  "status": "static-hard-stop",
+  "production_symbol": "gt32_global_inverse_core_asm",
+  "source": "src/tile4_global_physical_asm.S",
+  "scope": {
+    "input": "existing S2 arithmetic output S/D in pair-packed registers",
+    "variable": [
+      "S2 output ABI",
+      "S3 register assignment",
+      "S3 twiddle-vector physical ordering"
+    ],
+    "frozen": [
+      "S2 arithmetic and input formation",
+      "S3 mathematical butterfly",
+      "post-S3 physical/semantic state",
+      "range and Montgomery exponent"
+    ]
+  },
+  "symbolic_state": {
+    "pairpacked_S": [
+      "S.h0",
+      "S.h1"
+    ],
+    "pairpacked_D": [
+      "D.h0",
+      "D.h1"
+    ],
+    "S3_low_arm": [
+      "S.h0",
+      "D.h0"
+    ],
+    "S3_high_arm": [
+      "S.h1",
+      "D.h1"
+    ]
+  },
+  "proof": {
+    "current_two_output_reconstruction_is_S3_operand_formation": true,
+    "low_arm_cross_half_values": 1,
+    "high_arm_cross_half_values": 1,
+    "minimum_cross_half_outputs": 2,
+    "current_vperm2i128": 2,
+    "twiddle_relabel_can_change_pairing_topology": false,
+    "reason": "S3 requires L=[S.low,D.low] and H=[S.high,D.high].  Each is a distinct YMM output with one half moved.  The current 0x20 and 0x31 VPERM2I128 instructions already form precisely L and H."
+  },
+  "accounting": {
+    "pairs_per_tile": 4,
+    "tiles": 6,
+    "current_crosshalf_between_S2_and_S3_per_tile": 8,
+    "pairpacked_candidate_crosshalf_needed_by_S3_per_tile": 8,
+    "current_crosshalf_per_inverse": 48,
+    "candidate_crosshalf_per_inverse": 48,
+    "net_deleted_vperm2i128": 0
+  },
+  "candidate_interpretation": {
+    "claimed_S2_output_reconstruction_deleted_per_inverse": 48,
+    "S3_operand_formation_reintroduced_per_inverse": 48,
+    "net": 0,
+    "note": "Performing S3 directly on S and D would make logical q2 a half-local butterfly.  It still needs the same two cross-half outputs; reordered twiddles cannot exchange data values."
+  },
+  "decision": {
+    "assembly_emitted": false,
+    "benchmark_run": false,
+    "production_changed": false,
+    "reason": "the proposed deletion only moves the same two arm-forming permutes into S3"
+  },
+  "next_bounded_question": "search jointly from the post-S1/dword-transition state through S2 and S3, because only a producer layout that already supplies both S3 arms can lower this boundary",
+  "reopen_only_if": [
+    "post-S1 producer supplies both S3 arms without the same cross-half movement",
+    "post-S3 consumer accepts a different physical state and total joint cost drops",
+    "a dual-output cross-half ISA primitive becomes available"
+  ]
+}

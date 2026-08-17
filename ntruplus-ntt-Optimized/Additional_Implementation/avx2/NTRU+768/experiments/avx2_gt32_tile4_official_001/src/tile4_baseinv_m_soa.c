@@ -1,0 +1,21 @@
+/* Benchmark-only M-lane instantiation of the mature reusable SoA BaseInv. */
+#include <stdint.h>
+
+#include "../../gt_ntt/gt_basemul_soa.h"
+#include "../generated/tile4_baseinv_m_tables.inc"
+
+#define gt_native_lambda gt_m_baseinv_lambda
+#define gt_native_lambda_qinv gt_m_baseinv_lambda_qinv
+
+#define gt_baseinv_center_l8_test_avx2 gt32_m_baseinv_center_l8_test_avx2
+#define gt_baseinv_native_centered_avx2 gt32_m_baseinv_direct_avx2
+#define gt_baseinv_native_center_on_load_avx2 gt32_m_baseinv_center_on_load_avx2
+#define gt_baseinv_native_quadratic_centered_avx2 gt32_m_baseinv_quad_centered_avx2
+#define gt_baseinv_native_quadratic_center_on_load_avx2 gt32_m_baseinv_quad_center_on_load_avx2
+#define gt_baseinv_native_quadratic_abi_avx2 gt32_m_baseinv_quad_abi_avx2
+#define gt_baseinv_native_centered_asm_avx2 gt32_m_baseinv_direct_asm_avx2
+#define gt_baseinv_native_center_on_load_asm_avx2 gt32_m_baseinv_center_on_load_asm_avx2
+#define gt_baseinv_native_prepare_centered_asm gt32_m_baseinv_prepare_centered_asm
+#define gt_baseinv_native_prepare_center_on_load_asm gt32_m_baseinv_prepare_center_on_load_asm
+
+#include "../../gt_ntt/gt_baseinv_native.c"

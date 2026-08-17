@@ -1,0 +1,470 @@
+{
+  "schema": "ntruplus768-gt32-transpose-redeposit-001-v1",
+  "experiment": "GT32-TRANSPOSE-REDEPOSIT-001",
+  "frozen": [
+    "current-semantic-leaf-placement",
+    "current-private-SoA-B3-representation",
+    "current-Montgomery-scale-and-range-contract",
+    "current-NTT32-arithmetic-DAG"
+  ],
+  "phase_A_chunk_purity": {
+    "scope": "one-16-quartic-terminal-block",
+    "destination": "four-32-byte-private-SoA-degree-planes",
+    "cuts": [
+      {
+        "cut": "normal-TILE4-AoS",
+        "shuffles_already_paid_per_block": 0,
+        "chunks": [
+          {
+            "bytes": 32,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": false
+          },
+          {
+            "bytes": 16,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 8,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 4,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 2,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 64,
+            "producer_extract_uop_floor": 60,
+            "matching_consumer_loads": 64,
+            "consumer_rebuild_uop_floor": 60,
+            "smaller_store_to_32byte_reload_risk": true
+          }
+        ],
+        "largest_address_only_store_bytes": 2,
+        "largest_destination_pure_store_bytes": 2
+      },
+      {
+        "cut": "stage5-pair-packed",
+        "shuffles_already_paid_per_block": 0,
+        "chunks": [
+          {
+            "bytes": 32,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": false
+          },
+          {
+            "bytes": 16,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 8,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 4,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 2,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 64,
+            "producer_extract_uop_floor": 60,
+            "matching_consumer_loads": 64,
+            "consumer_rebuild_uop_floor": 60,
+            "smaller_store_to_32byte_reload_risk": true
+          }
+        ],
+        "largest_address_only_store_bytes": 2,
+        "largest_destination_pure_store_bytes": 2
+      },
+      {
+        "cut": "L1-pshufb",
+        "shuffles_already_paid_per_block": 4,
+        "chunks": [
+          {
+            "bytes": 32,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": false
+          },
+          {
+            "bytes": 16,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 8,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 4,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 32,
+            "producer_extract_uop_floor": 28,
+            "matching_consumer_loads": 32,
+            "consumer_rebuild_uop_floor": 28,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 2,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 64,
+            "producer_extract_uop_floor": 60,
+            "matching_consumer_loads": 64,
+            "consumer_rebuild_uop_floor": 60,
+            "smaller_store_to_32byte_reload_risk": true
+          }
+        ],
+        "largest_address_only_store_bytes": 4,
+        "largest_destination_pure_store_bytes": 4
+      },
+      {
+        "cut": "L2-dword-unpack",
+        "shuffles_already_paid_per_block": 8,
+        "chunks": [
+          {
+            "bytes": 32,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": false
+          },
+          {
+            "bytes": 16,
+            "all_chunks_destination_pure": false,
+            "all_chunks_address_only": false,
+            "stores_per_16_quartic_block": null,
+            "producer_extract_uop_floor": null,
+            "matching_consumer_loads": null,
+            "consumer_rebuild_uop_floor": null,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 8,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 16,
+            "producer_extract_uop_floor": 12,
+            "matching_consumer_loads": 16,
+            "consumer_rebuild_uop_floor": 12,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 4,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 32,
+            "producer_extract_uop_floor": 28,
+            "matching_consumer_loads": 32,
+            "consumer_rebuild_uop_floor": 28,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 2,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 64,
+            "producer_extract_uop_floor": 60,
+            "matching_consumer_loads": 64,
+            "consumer_rebuild_uop_floor": 60,
+            "smaller_store_to_32byte_reload_risk": true
+          }
+        ],
+        "largest_address_only_store_bytes": 8,
+        "largest_destination_pure_store_bytes": 8
+      },
+      {
+        "cut": "L3-private-SoA",
+        "shuffles_already_paid_per_block": 12,
+        "chunks": [
+          {
+            "bytes": 32,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 4,
+            "producer_extract_uop_floor": 0,
+            "matching_consumer_loads": 4,
+            "consumer_rebuild_uop_floor": 0,
+            "smaller_store_to_32byte_reload_risk": false
+          },
+          {
+            "bytes": 16,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 8,
+            "producer_extract_uop_floor": 4,
+            "matching_consumer_loads": 8,
+            "consumer_rebuild_uop_floor": 4,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 8,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 16,
+            "producer_extract_uop_floor": 12,
+            "matching_consumer_loads": 16,
+            "consumer_rebuild_uop_floor": 12,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 4,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 32,
+            "producer_extract_uop_floor": 28,
+            "matching_consumer_loads": 32,
+            "consumer_rebuild_uop_floor": 28,
+            "smaller_store_to_32byte_reload_risk": true
+          },
+          {
+            "bytes": 2,
+            "all_chunks_destination_pure": true,
+            "all_chunks_address_only": true,
+            "stores_per_16_quartic_block": 64,
+            "producer_extract_uop_floor": 60,
+            "matching_consumer_loads": 64,
+            "consumer_rebuild_uop_floor": 60,
+            "smaller_store_to_32byte_reload_risk": true
+          }
+        ],
+        "largest_address_only_store_bytes": 32,
+        "largest_destination_pure_store_bytes": 32
+      }
+    ],
+    "conclusion": "Only L3 is a 32-byte address-only producer.  L2 exposes 8-byte address-only chunks, which requires 16 stores plus consumer rebuild work and fails the small-store gate."
+  },
+  "phase_B_exact_network_search": {
+    "grammar": [
+      "one-persistent-vpshufb-mask",
+      "vpunpck*",
+      "vshufps",
+      "vperm2i128",
+      "vpblendw/vpblendd",
+      "whole-vector-store-relabel"
+    ],
+    "T0_current": {
+      "network": "4-vpshufb+4-vpunpckdq+4-vpunpckqdq",
+      "instructions": 12,
+      "dependency_depth": 3,
+      "exact": true
+    },
+    "normal_AoS_control": {
+      "network": "4-vpunpckw+4-vpunpckdq+4-vpunpckqdq",
+      "instructions": 12,
+      "dependency_depth": 3,
+      "exact": true
+    },
+    "T1_selected": {
+      "network": "4-vpshufb+4-vshufps+4-vshufps",
+      "instructions": 12,
+      "dependency_depth": 3,
+      "first_layer_immediates": [
+        "0x11",
+        "0xbb",
+        "0x11",
+        "0xbb"
+      ],
+      "second_layer_immediates": [
+        "0xdd",
+        "0x88",
+        "0xdd",
+        "0x88"
+      ],
+      "exact": true,
+      "peak_ymm": 14,
+      "spill_required": false,
+      "extra_montgomery_chains": 0,
+      "reason_to_benchmark": "Same instruction count and depth as T0 but a distinct shuffle-port and dependency shape."
+    },
+    "T1_normal_AoS": {
+      "network": "4-vpunpckw+4-vshufps+4-vshufps",
+      "instructions": 12,
+      "dependency_depth": 3,
+      "first_layer_immediates": [
+        "0x11",
+        "0xbb",
+        "0x11",
+        "0xbb"
+      ],
+      "second_layer_immediates": [
+        "0xdd",
+        "0x88",
+        "0xdd",
+        "0x88"
+      ],
+      "exact": true,
+      "peak_ymm": 8,
+      "spill_required": false
+    },
+    "exhaustive_fixed-first-layer-plus-two-vshufps-layer_search": {
+      "stage5-packed": {
+        "found": true,
+        "pairing": [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "first_layer": [
+          17,
+          187,
+          17,
+          187
+        ],
+        "second_layer": [
+          221,
+          136,
+          221,
+          136
+        ],
+        "representatives_examined_before_solution": 327680
+      },
+      "normal-aos-after-vpunpckw": {
+        "found": true,
+        "pairing": [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "first_layer": [
+          17,
+          187,
+          17,
+          187
+        ],
+        "second_layer": [
+          221,
+          136,
+          221,
+          136
+        ],
+        "representatives_examined_before_solution": 327680
+      },
+      "scope_caveat": "The result is exact only after the fixed first layer (VPSHUFB for packed, VPUNPCKW for AoS) in this four-vector perfect-pair two-layer VSHUFPS grammar, not every AVX2 DAG."
+    }
+  },
+  "phase_C_assembly_candidates": {
+    "T0": "current-baseline",
+    "T1": "emitted-benchmark-only",
+    "T2": "static-hard-stop-no-eligible-16-byte-pure-store-cut",
+    "qword_scatter": "static-hard-stop-16-stores-per-block-exceeds-8",
+    "eligible_small_store_candidates": []
+  },
+  "phase_D_partial_pipeline": {
+    "B3_live_registers": {
+      "A_planes": 4,
+      "A_qinv_planes": 4,
+      "B_planes": 4,
+      "accumulator": 1,
+      "temporaries": 2,
+      "q_constant": 1,
+      "total": 16
+    },
+    "minimum_next-block_terminal_registers": 2,
+    "proved_peak_ymm": 18,
+    "spill_or_scratch_required": true,
+    "T3": "static-hard-stop-zero-spill-gate-failed",
+    "not_repeated": "old-streaming-B"
+  },
+  "assembly_emitted": [
+    "gt32_tile4_attr_forward_all_bm_soa_shufps_asm",
+    "gt32_tile4_attr_transpose_one_shufps_asm"
+  ],
+  "benchmark_gate": {
+    "short_iterations": 2000,
+    "samples": 20,
+    "ordering": "paired-AB-BA",
+    "one_forward_plus_BM_min_saving_tsc": 10,
+    "two_forward_plus_BM_min_saving_tsc": 15,
+    "minimum_wins": 18,
+    "serious_benchmark": false,
+    "reversed_placement_only_if_preliminary_gate_passes": true
+  },
+  "production_integration": false,
+  "decision_before_benchmark": "benchmark-T1-only",
+  "reopen_conditions": [
+    "a-16-byte-pure-cut-with-at-most-eight-stores-and-lower-total-uops",
+    "a-B3-schedule-freeing-at-least-two-YMM-without-recomputation",
+    "a-new-terminal-consumer-DAG-not-equivalent-to-old-streaming-B"
+  ]
+}

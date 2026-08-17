@@ -1,0 +1,1400 @@
+{
+  "schema": "ntruplus768-gt32-n5-frontend-linear-circuit-v1",
+  "experiment": "N5-FRONTEND-LINEAR-CIRCUIT-001",
+  "scope": {
+    "frozen": [
+      "six logical inputs and outputs",
+      "packet-major ABI",
+      "DFT3 scratch boundary",
+      "M NTT32 S1-S5 core",
+      "Good routing and physical layout"
+    ],
+    "searched": [
+      "fixed-constant placement",
+      "common signed subexpressions",
+      "twist/DFT3 factorization",
+      "multiply dependency depth"
+    ]
+  },
+  "source_audit": {
+    "GT_BLEND3_calls_per_packet": 2,
+    "MONT_WIDE3_calls_per_packet": 2,
+    "DFT3_WIDE_STORE_calls_per_packet": 2,
+    "raw_top_multiplies_per_packet": 3,
+    "frontend_YMM_peak": 16
+  },
+  "field": {
+    "q": 3457,
+    "omega3_ordinary": -723,
+    "omega3_order": 3,
+    "identity": "1+omega+omega^2=0"
+  },
+  "exact_target_matrices": [
+    {
+      "branch": 0,
+      "Q": 0,
+      "twist_ordinary": [
+        1,
+        -257,
+        -1571
+      ],
+      "matrix_row_major": [
+        1,
+        -257,
+        -1571,
+        1,
+        -867,
+        -366,
+        1,
+        1124,
+        -1520
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 1,
+      "twist_ordinary": [
+        943,
+        -1728,
+        1600
+      ],
+      "matrix_row_major": [
+        943,
+        -1728,
+        1600,
+        943,
+        1367,
+        562,
+        943,
+        361,
+        1295
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 2,
+      "twist_ordinary": [
+        800,
+        -1257,
+        -864
+      ],
+      "matrix_row_major": [
+        800,
+        -1257,
+        -864,
+        800,
+        -380,
+        -1548,
+        800,
+        1637,
+        -1045
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 3,
+      "twist_ordinary": [
+        -432,
+        400,
+        1100
+      ],
+      "matrix_row_major": [
+        -432,
+        400,
+        1100,
+        -432,
+        1188,
+        -910,
+        -432,
+        -1588,
+        -190
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 4,
+      "twist_ordinary": [
+        550,
+        -216,
+        200
+      ],
+      "matrix_row_major": [
+        550,
+        -216,
+        200,
+        550,
+        603,
+        -794,
+        550,
+        -387,
+        594
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 5,
+      "twist_ordinary": [
+        100,
+        275,
+        -108
+      ],
+      "matrix_row_major": [
+        100,
+        275,
+        -108,
+        100,
+        1681,
+        1535,
+        100,
+        1501,
+        -1427
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 6,
+      "twist_ordinary": [
+        -54,
+        50,
+        -1591
+      ],
+      "matrix_row_major": [
+        -54,
+        50,
+        -1591,
+        -54,
+        -1580,
+        -978,
+        -54,
+        1530,
+        -888
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 7,
+      "twist_ordinary": [
+        933,
+        -27,
+        25
+      ],
+      "matrix_row_major": [
+        933,
+        -27,
+        25,
+        933,
+        -1221,
+        765,
+        933,
+        1248,
+        -790
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 8,
+      "twist_ordinary": [
+        -1716,
+        -1262,
+        1715
+      ],
+      "matrix_row_major": [
+        -1716,
+        -1262,
+        1715,
+        -1716,
+        -222,
+        624,
+        -1716,
+        1484,
+        1118
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 9,
+      "twist_ordinary": [
+        -871,
+        -858,
+        -631
+      ],
+      "matrix_row_major": [
+        -871,
+        -858,
+        -631,
+        -871,
+        1531,
+        742,
+        -871,
+        -673,
+        -111
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 10,
+      "twist_ordinary": [
+        1413,
+        1293,
+        -429
+      ],
+      "matrix_row_major": [
+        1413,
+        1293,
+        -429,
+        1413,
+        -1449,
+        1392,
+        1413,
+        156,
+        -963
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 11,
+      "twist_ordinary": [
+        1514,
+        -1022,
+        -1082
+      ],
+      "matrix_row_major": [
+        1514,
+        -1022,
+        -1082,
+        1514,
+        -892,
+        78,
+        1514,
+        -1543,
+        1004
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 12,
+      "twist_ordinary": [
+        -541,
+        757,
+        -511
+      ],
+      "matrix_row_major": [
+        -541,
+        757,
+        -511,
+        -541,
+        -1105,
+        957,
+        -541,
+        348,
+        -446
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 13,
+      "twist_ordinary": [
+        1473,
+        1458,
+        -1350
+      ],
+      "matrix_row_major": [
+        1473,
+        1458,
+        -1350,
+        1473,
+        251,
+        174,
+        1473,
+        -1709,
+        1176
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 14,
+      "twist_ordinary": [
+        -675,
+        -992,
+        729
+      ],
+      "matrix_row_major": [
+        -675,
+        -992,
+        729,
+        -675,
+        1617,
+        874,
+        -675,
+        -625,
+        -1603
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 15,
+      "twist_ordinary": [
+        -1364,
+        1391,
+        -496
+      ],
+      "matrix_row_major": [
+        -1364,
+        1391,
+        -496,
+        -1364,
+        294,
+        1416,
+        -1364,
+        -1685,
+        -920
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 16,
+      "twist_ordinary": [
+        -248,
+        -682,
+        -1033
+      ],
+      "matrix_row_major": [
+        -248,
+        -682,
+        -1033,
+        -248,
+        -1265,
+        886,
+        -248,
+        -1510,
+        147
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 17,
+      "twist_ordinary": [
+        1212,
+        -124,
+        -341
+      ],
+      "matrix_row_major": [
+        1212,
+        -124,
+        -341,
+        1212,
+        -230,
+        -755,
+        1212,
+        354,
+        1096
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 18,
+      "twist_ordinary": [
+        1558,
+        606,
+        -62
+      ],
+      "matrix_row_major": [
+        1558,
+        606,
+        -62,
+        1558,
+        901,
+        177,
+        1558,
+        -1507,
+        -115
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 19,
+      "twist_ordinary": [
+        -31,
+        779,
+        303
+      ],
+      "matrix_row_major": [
+        -31,
+        779,
+        303,
+        -31,
+        274,
+        975,
+        -31,
+        -1053,
+        -1278
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 20,
+      "twist_ordinary": [
+        -1577,
+        1713,
+        -1339
+      ],
+      "matrix_row_major": [
+        -1577,
+        1713,
+        -1339,
+        -1577,
+        -893,
+        1202,
+        -1577,
+        -820,
+        137
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 21,
+      "twist_ordinary": [
+        1059,
+        940,
+        -872
+      ],
+      "matrix_row_major": [
+        1059,
+        940,
+        -872,
+        1059,
+        1409,
+        -410,
+        1059,
+        1108,
+        1282
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 22,
+      "twist_ordinary": [
+        -436,
+        -1199,
+        470
+      ],
+      "matrix_row_major": [
+        -436,
+        -1199,
+        470,
+        -436,
+        -830,
+        554,
+        -436,
+        -1428,
+        -1024
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 23,
+      "twist_ordinary": [
+        235,
+        -218,
+        1129
+      ],
+      "matrix_row_major": [
+        235,
+        -218,
+        1129,
+        235,
+        -1408,
+        -714,
+        235,
+        1626,
+        -415
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 24,
+      "twist_ordinary": [
+        -1164,
+        -1611,
+        -109
+      ],
+      "matrix_row_major": [
+        -1164,
+        -1611,
+        -109,
+        -1164,
+        -256,
+        813,
+        -1164,
+        -1590,
+        -704
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 25,
+      "twist_ordinary": [
+        1674,
+        -582,
+        923
+      ],
+      "matrix_row_major": [
+        1674,
+        -582,
+        923,
+        1674,
+        -968,
+        -795,
+        1674,
+        1550,
+        -128
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 26,
+      "twist_ordinary": [
+        -1267,
+        837,
+        -291
+      ],
+      "matrix_row_major": [
+        -1267,
+        837,
+        -291,
+        -1267,
+        -176,
+        775,
+        -1267,
+        -661,
+        -484
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 27,
+      "twist_ordinary": [
+        1583,
+        1095,
+        -1310
+      ],
+      "matrix_row_major": [
+        1583,
+        1095,
+        -1310,
+        1583,
+        -32,
+        1398,
+        1583,
+        -1063,
+        -88
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 28,
+      "twist_ordinary": [
+        -655,
+        -937,
+        -1181
+      ],
+      "matrix_row_major": [
+        -655,
+        -937,
+        -1181,
+        -655,
+        -121,
+        1197,
+        -655,
+        1058,
+        -16
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 29,
+      "twist_ordinary": [
+        1138,
+        1401,
+        1260
+      ],
+      "matrix_row_major": [
+        1138,
+        1401,
+        1260,
+        1138,
+        -22,
+        529,
+        1138,
+        -1379,
+        1668
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 30,
+      "twist_ordinary": [
+        630,
+        569,
+        -1028
+      ],
+      "matrix_row_major": [
+        630,
+        569,
+        -1028,
+        630,
+        -4,
+        1039,
+        630,
+        -565,
+        -11
+      ]
+    },
+    {
+      "branch": 0,
+      "Q": 31,
+      "twist_ordinary": [
+        -514,
+        315,
+        -1444
+      ],
+      "matrix_row_major": [
+        -514,
+        315,
+        -1444,
+        -514,
+        417,
+        1446,
+        -514,
+        -732,
+        -2
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 0,
+      "twist_ordinary": [
+        1,
+        1520,
+        867
+      ],
+      "matrix_row_major": [
+        1,
+        1520,
+        867,
+        1,
+        366,
+        257,
+        1,
+        1571,
+        -1124
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 1,
+      "twist_ordinary": [
+        -432,
+        1100,
+        -1188
+      ],
+      "matrix_row_major": [
+        -432,
+        1100,
+        -1188,
+        -432,
+        -190,
+        -400,
+        -432,
+        -910,
+        1588
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 2,
+      "twist_ordinary": [
+        -54,
+        -1591,
+        50
+      ],
+      "matrix_row_major": [
+        -54,
+        -1591,
+        50,
+        -54,
+        -888,
+        1530,
+        -54,
+        -978,
+        -1580
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 3,
+      "twist_ordinary": [
+        -312,
+        -631,
+        -858
+      ],
+      "matrix_row_major": [
+        -312,
+        -631,
+        -858,
+        -312,
+        -111,
+        -673,
+        -312,
+        742,
+        1531
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 4,
+      "twist_ordinary": [
+        -39,
+        -957,
+        757
+      ],
+      "matrix_row_major": [
+        -39,
+        -957,
+        757,
+        -39,
+        511,
+        348,
+        -39,
+        446,
+        -1105
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 5,
+      "twist_ordinary": [
+        -437,
+        -1416,
+        1685
+      ],
+      "matrix_row_major": [
+        -437,
+        -1416,
+        1685,
+        -437,
+        496,
+        -294,
+        -437,
+        920,
+        -1391
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 6,
+      "twist_ordinary": [
+        548,
+        -177,
+        1507
+      ],
+      "matrix_row_major": [
+        548,
+        -177,
+        1507,
+        548,
+        62,
+        -901,
+        548,
+        115,
+        -606
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 7,
+      "twist_ordinary": [
+        -1660,
+        1282,
+        -1108
+      ],
+      "matrix_row_major": [
+        -1660,
+        1282,
+        -1108,
+        -1660,
+        -410,
+        -1409,
+        -1660,
+        -872,
+        -940
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 8,
+      "twist_ordinary": [
+        1521,
+        -704,
+        -256
+      ],
+      "matrix_row_major": [
+        1521,
+        -704,
+        -256,
+        1521,
+        813,
+        -1611,
+        1521,
+        -109,
+        -1590
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 9,
+      "twist_ordinary": [
+        -1583,
+        -88,
+        -32
+      ],
+      "matrix_row_major": [
+        -1583,
+        -88,
+        -32,
+        -1583,
+        1398,
+        1095,
+        -1583,
+        -1310,
+        -1063
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 10,
+      "twist_ordinary": [
+        -630,
+        1028,
+        -4
+      ],
+      "matrix_row_major": [
+        -630,
+        1028,
+        -4,
+        -630,
+        11,
+        569,
+        -630,
+        -1039,
+        -565
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 11,
+      "twist_ordinary": [
+        -943,
+        -1600,
+        361
+      ],
+      "matrix_row_major": [
+        -943,
+        -1600,
+        361,
+        -943,
+        -1295,
+        1367,
+        -943,
+        -562,
+        -1728
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 12,
+      "twist_ordinary": [
+        -455,
+        -200,
+        -387
+      ],
+      "matrix_row_major": [
+        -455,
+        -200,
+        -387,
+        -455,
+        -594,
+        603,
+        -455,
+        794,
+        -216
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 13,
+      "twist_ordinary": [
+        -489,
+        765,
+        1248
+      ],
+      "matrix_row_major": [
+        -489,
+        765,
+        1248,
+        -489,
+        25,
+        -1221,
+        -489,
+        -790,
+        -27
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 14,
+      "twist_ordinary": [
+        371,
+        1392,
+        1449
+      ],
+      "matrix_row_major": [
+        371,
+        1392,
+        1449,
+        371,
+        -429,
+        -1293,
+        371,
+        -963,
+        -156
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 15,
+      "twist_ordinary": [
+        223,
+        174,
+        -251
+      ],
+      "matrix_row_major": [
+        223,
+        174,
+        -251,
+        223,
+        -1350,
+        -1458,
+        223,
+        1176,
+        1709
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 16,
+      "twist_ordinary": [
+        460,
+        -147,
+        1265
+      ],
+      "matrix_row_major": [
+        460,
+        -147,
+        1265,
+        460,
+        -886,
+        682,
+        460,
+        1033,
+        1510
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 17,
+      "twist_ordinary": [
+        -1671,
+        1278,
+        779
+      ],
+      "matrix_row_major": [
+        -1671,
+        1278,
+        779,
+        -1671,
+        -975,
+        -1053,
+        -1671,
+        -303,
+        274
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 18,
+      "twist_ordinary": [
+        -436,
+        1024,
+        -1199
+      ],
+      "matrix_row_major": [
+        -436,
+        1024,
+        -1199,
+        -436,
+        -554,
+        -1428,
+        -436,
+        -470,
+        -830
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 19,
+      "twist_ordinary": [
+        1674,
+        923,
+        -582
+      ],
+      "matrix_row_major": [
+        1674,
+        923,
+        -582,
+        1674,
+        -128,
+        1550,
+        1674,
+        -795,
+        -968
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 20,
+      "twist_ordinary": [
+        -655,
+        -1181,
+        -1058
+      ],
+      "matrix_row_major": [
+        -655,
+        -1181,
+        -1058,
+        -655,
+        -16,
+        121,
+        -655,
+        1197,
+        937
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 21,
+      "twist_ordinary": [
+        1209,
+        -1444,
+        732
+      ],
+      "matrix_row_major": [
+        1209,
+        -1444,
+        732,
+        1209,
+        -2,
+        -417,
+        1209,
+        1446,
+        -315
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 22,
+      "twist_ordinary": [
+        -281,
+        -1045,
+        -1637
+      ],
+      "matrix_row_major": [
+        -281,
+        -1045,
+        -1637,
+        -281,
+        -1548,
+        380,
+        -281,
+        -864,
+        1257
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 23,
+      "twist_ordinary": [
+        397,
+        -1427,
+        1681
+      ],
+      "matrix_row_major": [
+        397,
+        -1427,
+        1681,
+        397,
+        1535,
+        275,
+        397,
+        -108,
+        1501
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 24,
+      "twist_ordinary": [
+        -395,
+        1118,
+        -222
+      ],
+      "matrix_row_major": [
+        -395,
+        1118,
+        -222,
+        -395,
+        624,
+        -1262,
+        -395,
+        1715,
+        1484
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 25,
+      "twist_ordinary": [
+        1247,
+        1082,
+        -892
+      ],
+      "matrix_row_major": [
+        1247,
+        1082,
+        -892,
+        1247,
+        -1004,
+        -1022,
+        1247,
+        -78,
+        -1543
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 26,
+      "twist_ordinary": [
+        588,
+        -729,
+        992
+      ],
+      "matrix_row_major": [
+        588,
+        -729,
+        992,
+        588,
+        1603,
+        625,
+        588,
+        -874,
+        -1617
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 27,
+      "twist_ordinary": [
+        -1212,
+        341,
+        124
+      ],
+      "matrix_row_major": [
+        -1212,
+        341,
+        124,
+        -1212,
+        -1096,
+        -354,
+        -1212,
+        755,
+        230
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 28,
+      "twist_ordinary": [
+        1577,
+        1202,
+        -1713
+      ],
+      "matrix_row_major": [
+        1577,
+        1202,
+        -1713,
+        1577,
+        -1339,
+        820,
+        1577,
+        137,
+        893
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 29,
+      "twist_ordinary": [
+        -235,
+        -714,
+        1626
+      ],
+      "matrix_row_major": [
+        -235,
+        -714,
+        1626,
+        -235,
+        1129,
+        -1408,
+        -235,
+        -415,
+        -218
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 30,
+      "twist_ordinary": [
+        1331,
+        775,
+        -661
+      ],
+      "matrix_row_major": [
+        1331,
+        775,
+        -661,
+        1331,
+        -291,
+        -176,
+        1331,
+        -484,
+        837
+      ]
+    },
+    {
+      "branch": 1,
+      "Q": 31,
+      "twist_ordinary": [
+        -1130,
+        -1668,
+        -1379
+      ],
+      "matrix_row_major": [
+        -1130,
+        -1668,
+        -1379,
+        -1130,
+        -529,
+        -22,
+        -1130,
+        -1260,
+        1401
+      ]
+    }
+  ],
+  "current_circuit": {
+    "Montgomery_chains_per_branch": 4,
+    "Montgomery_chains_per_packet": 8,
+    "Montgomery_chains_per_Forward": 64,
+    "raw_top_multiplies_per_packet": 3,
+    "add_sub_per_branch_after_twist": 7,
+    "true_multiply_depth": 2,
+    "dependency": "twist -> (P-Q) -> omega3 Montgomery"
+  },
+  "one_layer_exact_search": {
+    "model": "M_Q=C+sum c_i(Q)*(signed-output-fanout outer signed-input-form)",
+    "free_signed_matrices_enumerated": 19683,
+    "unique_signed_rank_one_directions": 169,
+    "target_family_dimension": 3,
+    "affine_family_rank_histogram": {
+      "3": 3,
+      "4": 19680
+    },
+    "rank4_exact_span_solutions": 0,
+    "rank3_to_rank4_superspace_solutions": 0,
+    "circuits_with_at_most_four_multipliers": 0,
+    "minimum_multipliers": 5,
+    "constructive_five_multiplier_circuit": {
+      "Montgomery_chains_per_branch": 5,
+      "Montgomery_chains_per_packet": 10,
+      "Montgomery_chains_per_Forward": 80,
+      "delta_chains_per_Forward": 16,
+      "four_instruction_Montgomery_floor_delta": 64,
+      "add_sub_per_branch": 8,
+      "true_multiply_depth": 1,
+      "construction": [
+        "A=Mont(t0*x0)",
+        "P=Mont(t1*x1)",
+        "PW=Mont(omega*t1*x1)",
+        "Q=Mont(t2*x2)",
+        "QW=Mont(omega*t2*x2)",
+        "omega^2*P=-P-PW",
+        "omega^2*Q=-Q-QW"
+      ]
+    },
+    "exact_all_branch_Q_matrix_check": "pass"
+  },
+  "representative_range": {
+    "small_input_contract": [
+      -3,
+      4
+    ],
+    "top_split_value_ranges": {
+      "branch0": [
+        -2891,
+        2170
+      ],
+      "branch1": [
+        -2172,
+        2896
+      ]
+    },
+    "current_max_abs_intermediate": 3505,
+    "current_max_abs_output": 5232,
+    "depth1_five_chain_max_abs_intermediate": 3402,
+    "depth1_five_chain_max_abs_output": 6776,
+    "all_signed_i16_safe": true
+  },
+  "gate": {
+    "continue_if": [
+      "fewer than eight Montgomery chains per packet",
+      "or eight chains with shorter true multiply depth"
+    ],
+    "result": "fail",
+    "reason": "the current depth-two circuit uses eight chains per packet; every exact one-layer signed-wiring circuit needs at least ten, so table-folding omega into the twist increases work"
+  },
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "decision": "static-hard-stop-current-four-chain-per-branch-factorization-wins-bounded-search",
+  "architecture_conclusion": {
+    "DFT3_scratch": "necessary scheduling resource, not active debt",
+    "seam_reopen_frontend_working_YMM_max": 10,
+    "frontend_arithmetic": "freeze after this bounded linear-circuit gate"
+  },
+  "reopen_only_if": [
+    "a scaled-output consumer absorbs a changed DFT3 ABI and deletes a complete chain",
+    "a fixed-multiply primitive forms two required multiples for less than two chains",
+    "a changed decomposition creates whole-vector identity or signed-related twist constants",
+    "frontend waiting workset falls to at most ten YMM",
+    "target ISA or microarchitecture changes"
+  ]
+}

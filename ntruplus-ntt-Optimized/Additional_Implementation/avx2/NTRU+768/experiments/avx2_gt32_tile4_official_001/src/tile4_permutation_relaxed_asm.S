@@ -130,6 +130,63 @@ gt32_tile4_attr_forward_all_bm_soa_p_asm:
 	ret
 	.size gt32_tile4_attr_forward_all_bm_soa_p_asm,.-gt32_tile4_attr_forward_all_bm_soa_p_asm
 
+	/*
+	 * GT32-FWD-LANDING-BASEINV-001.
+	 *
+	 * The wide-raw frontend invalidates the older 1728-uniform core-entry
+	 * model.  Exact small-input enumeration plus stage propagation proves
+	 * that centering post-S1 vectors 0 and 4 is sufficient for the direct
+	 * packed-BaseInv product limit 10643.  Keep the P terminal, scale and
+	 * tables unchanged; this is a typed BaseInv-landing probe only.
+	 */
+	.macro P_CENTER_BASEINV_L3
+	vpmulhrsw .Lp_center10(%rip), %ymm0, %ymm8
+	vpmulhrsw .Lp_center10(%rip), %ymm4, %ymm9
+	vpmullw %ymm15, %ymm8, %ymm8
+	vpmullw %ymm15, %ymm9, %ymm9
+	vpsubw %ymm8, %ymm0, %ymm0
+	vpsubw %ymm9, %ymm4, %ymm4
+	.endm
+
+	.p2align 5
+	.globl gt32_tile4_attr_forward_all_baseinv_p_l3_asm
+	.type gt32_tile4_attr_forward_all_baseinv_p_l3_asm,@function
+gt32_tile4_attr_forward_all_baseinv_p_l3_asm:
+	vmovdqa .Lp_q(%rip), %ymm15
+	vmovdqa .Lp_plane_pshufb(%rip), %ymm14
+	movl $6, %ecx
+	.p2align 5
+.Lp_forward_baseinv_l3_loop:
+	vmovdqu   0(%rsi), %ymm0
+	vmovdqu  32(%rsi), %ymm1
+	vmovdqu  64(%rsi), %ymm2
+	vmovdqu  96(%rsi), %ymm3
+	vmovdqu 128(%rsi), %ymm4
+	vmovdqu 160(%rsi), %ymm5
+	vmovdqu 192(%rsi), %ymm6
+	vmovdqu 224(%rsi), %ymm7
+	P_RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
+	P_CENTER_BASEINV_L3
+	P_MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_fwd_s2_qinv,.Ltile4_fwd_s2_factor
+	P_MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_fwd_s3_qinv,.Ltile4_fwd_s3_factor
+	P_MONT_HALF_PACKED %ymm0,%ymm1,0
+	P_MONT_HALF_PACKED %ymm2,%ymm3,32
+	P_MONT_HALF_PACKED %ymm4,%ymm5,64
+	P_MONT_HALF_PACKED %ymm6,%ymm7,96
+	P_MONT_QWORD_PACKED %ymm0,%ymm1,0
+	P_MONT_QWORD_PACKED %ymm2,%ymm3,32
+	P_PACKED_TO_PLANES %ymm0,%ymm1,%ymm2,%ymm3,0
+	P_MONT_QWORD_PACKED %ymm4,%ymm5,64
+	P_MONT_QWORD_PACKED %ymm6,%ymm7,96
+	P_PACKED_TO_PLANES %ymm4,%ymm5,%ymm6,%ymm7,128
+	addq $256, %rsi
+	addq $256, %rdi
+	decl %ecx
+	jne .Lp_forward_baseinv_l3_loop
+	vzeroupper
+	ret
+	.size gt32_tile4_attr_forward_all_baseinv_p_l3_asm,.-gt32_tile4_attr_forward_all_baseinv_p_l3_asm
+
 	/* Materialized P->standard repair oracle: 48 vperm2i128 instructions. */
 	.macro P_REPAIR_STREAM base,pair
 	vmovdqu \base+64*\pair(%rsi), %ymm0
@@ -165,6 +222,11 @@ gt32_tile4_attr_repair_p_rows_asm:
 .Lp_plane_pshufb:
 	.byte 0,1,8,9,2,3,10,11,4,5,12,13,6,7,14,15
 	.byte 0,1,8,9,2,3,10,11,4,5,12,13,6,7,14,15
+	.p2align 5
+.Lp_center10:
+	.rept 16
+	.short 10
+	.endr
 
 #include "../generated/tile4_constants.inc"
 

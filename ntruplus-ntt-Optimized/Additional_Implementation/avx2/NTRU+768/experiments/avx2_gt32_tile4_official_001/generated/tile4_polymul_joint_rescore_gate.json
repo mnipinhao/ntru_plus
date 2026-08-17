@@ -1,0 +1,117 @@
+{
+  "schema": "ntruplus768-gt32-polymul-joint-rescore-v1",
+  "experiment": "GT32-POLYMUL-JOINT-I112-001",
+  "scope": "polynomial-only-2F-plus-B-plus-I",
+  "frozen": [
+    "Keccak-SHAKE-and-KEM-control-flow",
+    "N5-arithmetic-DAG",
+    "B3-arithmetic-DAG",
+    "I1-arithmetic-DAG"
+  ],
+  "source_search": "GT32-POLY-ABI-002-003 Phase C exhaustive packet search",
+  "old_full_KEM_stop_is_not_applicable": true,
+  "selected_candidate": {
+    "id": "I-112-pair-01-orders-21430-21430-21430-21430",
+    "purpose": "I",
+    "family": "degree-partition-1+1+2",
+    "degree_partition": [
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "plane_bit_sources_low_to_high": [
+      [
+        2,
+        1,
+        4,
+        3,
+        0
+      ],
+      [
+        2,
+        1,
+        4,
+        3,
+        0
+      ],
+      [
+        2,
+        1,
+        4,
+        3,
+        0
+      ],
+      [
+        2,
+        1,
+        4,
+        3,
+        0
+      ]
+    ],
+    "formation": {
+      "vperm2i128": 24,
+      "vpshufb": 0,
+      "vpor": 0,
+      "instructions": 24,
+      "maximum_routes_per_vector": 1,
+      "maximum_source_vectors_per_target": 2,
+      "direct_packet_formation": true
+    },
+    "consumer": {
+      "native_conjugated_inverse": true,
+      "instructions": 0
+    },
+    "transition_instructions": 24,
+    "saving_vs_current_transition": 120,
+    "removes_complete_materialized_transition": true,
+    "extra_montgomery_chains": 0,
+    "extra_reduction_checkpoints": 0,
+    "peak_ymm": 15,
+    "spill_required": false,
+    "reusable_symbol_code_size_estimate_bytes": 120
+  },
+  "transition_accounting": {
+    "current_transition_instructions": 144,
+    "candidate_transition_instructions": 24,
+    "static_instruction_saving": 120,
+    "saving_percent": 83.33333333333333
+  },
+  "fresh_polymul_baseline": {
+    "normal": {
+      "official_core_cycles": 2723.195042,
+      "gt32_core_cycles": 2788.784581,
+      "gt32_minus_official_core_cycles": 65.58953900000006,
+      "minus_5_percent_target_core_cycles": 2587.0352898999995,
+      "additional_saving_needed_for_minus_5_percent": 201.7492911000004
+    },
+    "reversed": {
+      "official_core_cycles": 2731.157737,
+      "gt32_core_cycles": 2765.6776,
+      "gt32_minus_official_core_cycles": 34.51986299999999,
+      "minus_5_percent_target_core_cycles": 2594.59985015,
+      "additional_saving_needed_for_minus_5_percent": 171.07774985000015
+    }
+  },
+  "gate": {
+    "assembly_eligible": true,
+    "decision": "continue-with-bounded-BM-output-plus-inverse-entry-ASM",
+    "first_benchmark_region": "BMscale-MxM-to-I-plus-native-I-inverse",
+    "primary_metric": "region-scoped-core-cycles",
+    "continuation_requirements": {
+      "local_saving_core_cycles": 20,
+      "normal_and_reversed_positive": true,
+      "no_spills": true,
+      "no_new_materialization": true,
+      "correctness_trials": 1000
+    },
+    "warning": "The 120-instruction saving is a static filter, not cycle evidence.  It is relative to the current private-M BM-to-I transition, not the R1-U benchmark path."
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "experiment": "PREPARED-FIXED-B3-001",
+  "fixed_matrix": {
+    "blocks": 12,
+    "output_rows_per_block": 4,
+    "ymm_packets_per_row": 4,
+    "bytes_per_fixed_operand": 6144,
+    "row_formula": [
+      [
+        "a0",
+        "lambda*a3",
+        "lambda*a2",
+        "lambda*a1"
+      ],
+      [
+        "a1",
+        "a0",
+        "lambda*a3",
+        "lambda*a2"
+      ],
+      [
+        "a2",
+        "a1",
+        "a0",
+        "lambda*a3"
+      ],
+      [
+        "a3",
+        "a2",
+        "a1",
+        "a0"
+      ]
+    ]
+  },
+  "range": {
+    "fixed_centered_bound": 1728,
+    "dynamic_bounds": {
+      "encap_r": 10788,
+      "decap_c_minus_mhat": 12699,
+      "decap_ciphertext_c": 3456
+    },
+    "exact_int32_dot_bounds": {
+      "encap_r": 74566656,
+      "decap_c_minus_mhat": 87775488,
+      "decap_ciphertext_c": 23887872
+    },
+    "conservative_REDC16_representative_bounds": {
+      "encap_r": 4594,
+      "decap_c_minus_mhat": 4796,
+      "decap_ciphertext_c": 3821
+    },
+    "encap_post_add_bound": 15382,
+    "int32_safe": true,
+    "signed_int16_safe_through_H1": true
+  },
+  "scale_contracts": {
+    "fixed_e0_dynamic_e0_REDC16": "output_e_minus1",
+    "fixed_e1_dynamic_e0_REDC16": "output_e0"
+  },
+  "static_instruction_filter": {
+    "existing_SoA_dot_REDC16": 178,
+    "prepared_arithmetic_body_estimate": 146,
+    "prepared_fixed_estimate": 153,
+    "removed": {
+      "fixed_plane_loads": 4,
+      "runtime_lambda_chains": 12,
+      "fixed_pair_unpacks": 16
+    },
+    "controls": {
+      "scale_B3_e_minus1": 127,
+      "general_B3_e0": 154
+    },
+    "delta_vs_scale": 26,
+    "delta_vs_general": -1
+  },
+  "decision": {
+    "fixed_f_scale_edge": "static-stop-as-primary; retain attribution control",
+    "fixed_h_hinv_general_edge": "emit-bounded-assembly-probe",
+    "reason": [
+      "scale edge retains the old SoA dword-compaction debt and is 26 static instructions larger",
+      "general edge uses e=1 prepared rows and deletes the complete runtime R2 finalizer",
+      "emitted general probe is one static instruction smaller than the current general B3 symbol",
+      "the noncentered REDC16 representative is repaid by the already-qualified full-int16 H1 Q24 reducer"
+    ]
+  },
+  "reopen_fixed_f_only_if": [
+    "general fixed probe demonstrates unexpectedly cheap dword compaction",
+    "caller supplies packed dword pairs",
+    "a reducer removes even-word compaction"
+  ]
+}
