@@ -189,6 +189,11 @@ static void inverse_ntt16_layers(int16_t values[768])
     }
 }
 
+void round4c_inverse_ntt16_layers_reference(int16_t values[768])
+{
+    inverse_ntt16_layers(values);
+}
+
 static void inverse_ntt16_normalize(int16_t values[768])
 {
     for (size_t vector = 0; vector < 48; ++vector) {
@@ -321,4 +326,38 @@ void round4c_inverse_full_i1(int16_t out[768], const int16_t quadratic[768])
 {
     round4c_inverse_stage1_i1(full_inverse_rows, quadratic);
     inverse_full_finish(out);
+}
+
+void round4c_inverse_full_i0_ntt16_asm(int16_t out[768],
+                                       const int16_t quadratic[768])
+{
+    round4c_inverse_stage1_i0(full_inverse_rows, quadratic);
+    round4c_inverse_ntt16_layers_asm(full_inverse_rows);
+    inverse_dft3_postweight(full_inverse_rows);
+    inverse_branch_merge_store(out, full_inverse_rows);
+}
+
+void round4c_inverse_full_i0_finish_asm(int16_t out[768],
+                                        const int16_t quadratic[768])
+{
+    round4c_inverse_stage1_i0(full_inverse_rows, quadratic);
+    round4c_inverse_finish_asm(out, full_inverse_rows);
+}
+
+void round4c_inverse_full_wide_hybrid(int16_t out[768],
+                                      const int16_t quadratic[768])
+{
+    round4c_inverse_stage1_wide_asm(full_inverse_rows, quadratic);
+    round4c_inverse_ntt16_layers_asm(full_inverse_rows);
+    inverse_dft3_postweight(full_inverse_rows);
+    inverse_branch_merge_store(out, full_inverse_rows);
+}
+
+void round4c_qbm_inverse_full_fused(int16_t out[768], const int16_t a[768],
+                                    const int16_t b[768])
+{
+    round4c_qbm_inverse_stage1_fused_asm(full_inverse_rows, a, b);
+    round4c_inverse_ntt16_layers_asm(full_inverse_rows);
+    inverse_dft3_postweight(full_inverse_rows);
+    inverse_branch_merge_store(out, full_inverse_rows);
 }

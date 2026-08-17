@@ -125,10 +125,14 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     int16_t old_vertical[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_i0[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_i1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_stage1_asm[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_ntt0[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_ntt1[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_full[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_full_i1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_full_asm[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_full_all_asm[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t inverse_finish_rows[ROUND4C_WORDS] __attribute__((aligned(32)));
     int16_t inverse_full_want[ROUND4C_WORDS] __attribute__((aligned(32)));
 
     round4c_split_intrinsic(qa, quartic_a);
@@ -146,6 +150,11 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     round4c_inverse_stage1_i1(inverse_i1, product0);
     if (memcmp(inverse_i0, inverse_i1, sizeof(inverse_i0)) != 0) {
         fprintf(stderr, "inverse I0/I1 stage-1 differential failed\n");
+        return 1;
+    }
+    round4c_inverse_stage1_asm(inverse_stage1_asm, product0);
+    if (memcmp(inverse_i0, inverse_stage1_asm, sizeof(inverse_i0)) != 0) {
+        fprintf(stderr, "inverse stage-1 asm differential failed\n");
         return 1;
     }
     for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
@@ -186,6 +195,37 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     round4c_inverse_full_i1(inverse_full_i1, product0);
     if (memcmp(inverse_full, inverse_full_i1, sizeof(inverse_full)) != 0) {
         fprintf(stderr, "full inverse I0/I1 differential failed\n");
+        return 1;
+    }
+    round4c_inverse_full_i0_ntt16_asm(inverse_full_asm, product0);
+    if (memcmp(inverse_full, inverse_full_asm, sizeof(inverse_full)) != 0) {
+        fprintf(stderr, "full inverse NTT16 asm differential failed\n");
+        return 1;
+    }
+    memcpy(inverse_finish_rows, inverse_i0, sizeof(inverse_finish_rows));
+    round4c_inverse_finish_asm(inverse_full_all_asm, inverse_finish_rows);
+    if (memcmp(inverse_full, inverse_full_all_asm,
+               sizeof(inverse_full)) != 0) {
+        for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+            if (inverse_full[i] != inverse_full_all_asm[i]) {
+                fprintf(stderr,
+                        "inverse finish asm mismatch i=%zu got=%d want=%d\n",
+                        i, inverse_full_all_asm[i], inverse_full[i]);
+                break;
+            }
+        }
+        return 1;
+    }
+    round4c_inverse_full_asm(inverse_full_all_asm, product0);
+    if (memcmp(inverse_full, inverse_full_all_asm,
+               sizeof(inverse_full)) != 0) {
+        fprintf(stderr, "full inverse asm differential failed\n");
+        return 1;
+    }
+    round4c_inverse_full_i0_finish_asm(inverse_full_all_asm, product0);
+    if (memcmp(inverse_full, inverse_full_all_asm,
+               sizeof(inverse_full)) != 0) {
+        fprintf(stderr, "full inverse asm-tail differential failed\n");
         return 1;
     }
     scalar_full_inverse(inverse_full_want, inverse_ntt0);
@@ -265,6 +305,10 @@ static int check_case(const int16_t quartic_a[ROUND4C_WORDS],
     round4c_inverse_full_i0(product4, product4);
     if (memcmp(product4, inverse_full, sizeof(product4)) != 0)
         return 1;
+    memcpy(product4, product0, sizeof(product4));
+    round4c_inverse_full_asm(product4, product4);
+    if (memcmp(product4, inverse_full, sizeof(product4)) != 0)
+        return 1;
     return 0;
 }
 
@@ -292,6 +336,129 @@ int main(void)
         if (check_case(a, b) != 0)
             return 1;
     }
-    puts("intrinsic split/QBM/merge/full-inverse/alias differential: pass");
+    /* N4 removes the terminal forward checkpoint.  Prove that QBM itself can
+     * absorb the resulting +/-16257 representatives: reduce an equivalent
+     * canonical input pair and require an identical centered product, then
+     * carry both through the unchanged inverse. */
+    int16_t wide_product[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t canonical_product[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t wide_inverse[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t canonical_inverse[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t fused_stage1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t canonical_stage1[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t qbm4_product[ROUND4C_WORDS] __attribute__((aligned(32)));
+    int16_t plain_wide_product[ROUND4C_WORDS] __attribute__((aligned(32)));
+    for (size_t test = 0; test < 256; ++test) {
+        int16_t canonical_a[ROUND4C_WORDS] __attribute__((aligned(32)));
+        int16_t canonical_b[ROUND4C_WORDS] __attribute__((aligned(32)));
+        for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+            a[i] = (int16_t)((int)(random32() % 32515) - 16257);
+            b[i] = (int16_t)((int)(random32() % 32515) - 16257);
+            canonical_a[i] = (int16_t)centered(a[i]);
+            canonical_b[i] = (int16_t)centered(b[i]);
+        }
+        round4c_qbm_wide_centered_intrinsic(wide_product, a, b);
+        round4c_qbm_wide_centered_intrinsic(canonical_product,
+                                             canonical_a, canonical_b);
+        round4c_qbm_vector_intrinsic(plain_wide_product, a, b);
+        round4c_qbm_wide4_asm(qbm4_product, a, b);
+        if (memcmp(plain_wide_product, qbm4_product,
+                   sizeof(plain_wide_product)) != 0) {
+            fprintf(stderr, "four-way QBM asm mismatch test=%zu\n", test);
+            return 1;
+        }
+        round4c_qbm_wide4_centered_asm(qbm4_product, a, b);
+        if (memcmp(wide_product, qbm4_product, sizeof(wide_product)) != 0) {
+            fprintf(stderr, "four-way centered QBM asm mismatch test=%zu\n", test);
+            return 1;
+        }
+        if (memcmp(wide_product, canonical_product,
+                   sizeof(wide_product)) != 0) {
+            fprintf(stderr, "wide-QBM representative mismatch test=%zu\n", test);
+            return 1;
+        }
+        for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+            if (wide_product[i] < -CENTER || wide_product[i] > CENTER) {
+                fprintf(stderr, "wide-QBM range mismatch test=%zu i=%zu value=%d\n",
+                        test, i, wide_product[i]);
+                return 1;
+            }
+        }
+        round4c_inverse_full_i0(wide_inverse, wide_product);
+        round4c_inverse_full_i0(canonical_inverse, canonical_product);
+        if (memcmp(wide_inverse, canonical_inverse,
+                   sizeof(wide_inverse)) != 0) {
+            fprintf(stderr, "wide-QBM inverse mismatch test=%zu\n", test);
+            return 1;
+        }
+        round4c_inverse_stage1_wide_asm(fused_stage1, plain_wide_product);
+        round4c_inverse_stage1_i0(canonical_stage1, canonical_product);
+        if (memcmp(fused_stage1, canonical_stage1,
+                   sizeof(fused_stage1)) != 0) {
+            fprintf(stderr, "wide R^-1 stage1 asm mismatch test=%zu\n", test);
+            return 1;
+        }
+        round4c_inverse_full_wide_asm(wide_inverse, plain_wide_product);
+        if (memcmp(wide_inverse, canonical_inverse,
+                   sizeof(wide_inverse)) != 0) {
+            fprintf(stderr, "wide R^-1 full inverse asm mismatch test=%zu\n",
+                    test);
+            return 1;
+        }
+        round4c_inverse_full_wide_hybrid(wide_inverse, plain_wide_product);
+        if (memcmp(wide_inverse, canonical_inverse,
+                   sizeof(wide_inverse)) != 0) {
+            fprintf(stderr, "wide R^-1 inverse hybrid mismatch test=%zu\n",
+                    test);
+            return 1;
+        }
+        round4c_qbm_inverse_full_fused(wide_inverse, a, b);
+        if (memcmp(wide_inverse, canonical_inverse,
+                   sizeof(wide_inverse)) != 0) {
+            fprintf(stderr, "fused QBM/full inverse mismatch test=%zu\n", test);
+            return 1;
+        }
+        round4c_qbm_inverse_stage1_fused_asm(fused_stage1, a, b);
+        round4c_inverse_stage1_i0(canonical_stage1, canonical_product);
+        if (memcmp(fused_stage1, canonical_stage1,
+                   sizeof(fused_stage1)) != 0) {
+            for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+                if (fused_stage1[i] != canonical_stage1[i]) {
+                    fprintf(stderr,
+                            "fused QBM/stage1 mismatch test=%zu i=%zu got=%d want=%d\n",
+                            test, i, fused_stage1[i], canonical_stage1[i]);
+                    break;
+                }
+            }
+            return 1;
+        }
+        if (test == 0) {
+            memcpy(wide_inverse, a, sizeof(wide_inverse));
+            round4c_qbm_inverse_stage1_fused(wide_inverse, wide_inverse, b);
+            if (memcmp(wide_inverse, fused_stage1, sizeof(wide_inverse)) != 0)
+                return 1;
+            memcpy(wide_inverse, b, sizeof(wide_inverse));
+            round4c_qbm_inverse_stage1_fused(wide_inverse, a, wide_inverse);
+            if (memcmp(wide_inverse, fused_stage1, sizeof(wide_inverse)) != 0)
+                return 1;
+        }
+        memcpy(wide_inverse, fused_stage1, sizeof(wide_inverse));
+        memcpy(canonical_inverse, fused_stage1, sizeof(canonical_inverse));
+        round4c_inverse_ntt16_layers_asm(wide_inverse);
+        round4c_inverse_ntt16_layers_reference(canonical_inverse);
+        if (memcmp(wide_inverse, canonical_inverse,
+                   sizeof(wide_inverse)) != 0) {
+            for (size_t i = 0; i < ROUND4C_WORDS; ++i) {
+                if (wide_inverse[i] != canonical_inverse[i]) {
+                    fprintf(stderr,
+                            "inverse NTT16 asm mismatch test=%zu i=%zu got=%d want=%d\n",
+                            test, i, wide_inverse[i], canonical_inverse[i]);
+                    break;
+                }
+            }
+            return 1;
+        }
+    }
+    puts("intrinsic split/QBM/merge/full-inverse/alias/wide-QBM differential: pass");
     return 0;
 }

@@ -1,0 +1,45 @@
+{
+  "benchmark_class": "directional-short-run-not-formal",
+  "iterations": 2000,
+  "contract": {
+    "qbm_output_scale": "R^-1",
+    "montgomery32_reducers": "retained for int32-to-int16 narrowing",
+    "separate_qbm_canonicalization_pass": false,
+    "range_repair": "after quadratic merge",
+    "inverse_length2_corrections_per_output": 1,
+    "final_scale": "absorbed by generated inverse postweight/top-CRT constants"
+  },
+  "correctness": {
+    "wide_consumer_cases": 256,
+    "stage1_exact": "pass",
+    "full_inverse_hybrid_exact": "pass",
+    "full_inverse_asm_exact": "pass"
+  },
+  "cycles": {
+    "previous_centered_hybrid_tsc": 1434.7240,
+    "rminus1_lazy_hybrid_tsc": 1383.5210,
+    "rminus1_lazy_all_asm_tsc": 1373.0020,
+    "official_tsc": 736.1590,
+    "frozen_gt32_tsc": 1200.2030
+  },
+  "delta_percent": {
+    "lazy_hybrid_vs_centered_hybrid": -3.5688,
+    "lazy_all_asm_vs_centered_hybrid": -4.3020,
+    "lazy_all_asm_vs_official": 87.4288,
+    "lazy_all_asm_vs_frozen_gt32": 14.3975
+  },
+  "stage1_low_risk_optimizations": {
+    "shuffle_masks_preloaded": true,
+    "center10_vector_preloaded": true,
+    "fixed_count_loop": 24,
+    "full_path_internal_stage1_omits_vzeroupper": true
+  },
+  "dft3_2x_software_pipeline": {
+    "correctness": "pass",
+    "spill": false,
+    "candidate_tsc": 1385.5150,
+    "control_tsc_before_unroll": 1373.0020,
+    "decision": "rejected and reverted"
+  },
+  "decision": "select as the best benchmark-only GT16 consumer; formal benchmark still required"
+}

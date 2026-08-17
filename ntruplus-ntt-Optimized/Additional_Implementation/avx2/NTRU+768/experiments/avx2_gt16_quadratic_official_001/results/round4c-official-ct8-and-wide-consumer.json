@@ -1,0 +1,33 @@
+{
+  "benchmark_class": "directional-short-run-not-formal",
+  "iterations": 2000,
+  "ct8_schedule": {
+    "contract": "selected-N5 length-2/4/8 plus center10, exact representative",
+    "correctness_cases": 389,
+    "baseline_tsc": 32.7090,
+    "official_style_scheduled_tsc": 32.5290,
+    "delta_percent": -0.5503,
+    "baseline_dynamic_instructions": 129,
+    "scheduled_dynamic_instructions": 120,
+    "decision": "effective but too small to integrate without a formal benchmark"
+  },
+  "n4_wide_consumer": {
+    "forward_terminal_bound": 16257,
+    "qbm_c1_vpmaddwd_bound": 528580098,
+    "qbm_signed_int32_safe": true,
+    "qbm_reducer_interval": [-9793, 9793],
+    "qbm_packssdw_safe": true,
+    "unchanged_inverse_stage1_raw_interval": [-39172, 39172],
+    "unchanged_inverse_int16_safe": false,
+    "repair": "center10 plus one exact conditional correction on QBM output",
+    "repaired_qbm_correctness_cases": 256,
+    "repaired_qbm_and_existing_inverse": "exact against canonical representatives",
+    "plain_wide_qbm_tsc": 236.7170,
+    "centered_wide_qbm_tsc": 397.4870,
+    "consumer_repair_cost_tsc": 160.7700,
+    "historical_n4_tsc_preliminary": 433.079,
+    "historical_n5_tsc_formal": 474.053,
+    "historical_n4_vs_n5_delta_tsc_not_same_run": 40.974,
+    "decision": "rewrite is possible, but this direct repair moves reduction into QBM and costs more than the removed forward checkpoint"
+  }
+}

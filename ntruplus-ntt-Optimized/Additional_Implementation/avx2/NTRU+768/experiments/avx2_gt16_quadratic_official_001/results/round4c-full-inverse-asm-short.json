@@ -1,0 +1,32 @@
+{
+  "benchmark_class": "directional-short-run-not-formal",
+  "iterations": 2000,
+  "entry": "round4c_inverse_full_asm",
+  "coverage": [
+    "quadratic merge and inverse length-2",
+    "inverse NTT16 length-4/8/16",
+    "inverse DFT3 and generated postweight",
+    "special R2 and top CRT merge",
+    "coefficient-order stores"
+  ],
+  "correctness": {
+    "canonical_cases": 1006,
+    "wide_consumer_cases": 256,
+    "stage1_exact": "pass",
+    "finish_exact": "pass",
+    "full_exact": "pass",
+    "in_place_alias": "pass",
+    "asan_ubsan": "pass"
+  },
+  "last_attribution_run": {
+    "stage1_c_tsc": 268.5600,
+    "stage1_asm_tsc": 268.7270,
+    "stage1_delta_percent": 0.0622,
+    "c_tail_pipeline_tsc": 1101.8440,
+    "asm_tail_pipeline_tsc": 1118.8870,
+    "asm_tail_delta_percent": 1.5468
+  },
+  "full_inverse_delta_percent_observed": [0.6839, 5.9632],
+  "note": "Short runs changed with code placement; no formal cycle claim is made.",
+  "decision": "retain full assembly as benchmark-only correctness control; keep the previous hybrid selected"
+}

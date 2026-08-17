@@ -1,0 +1,51 @@
+{
+  "benchmark_class": "directional-short-run-not-formal",
+  "iterations": 2000,
+  "samples": 9,
+  "contract": "N4 wide quadratic inputs in [-16257,16257]",
+  "correctness": {
+    "wide_random_cases": 256,
+    "qbm4_exact": "pass",
+    "fused_qbm_merge_stage1_exact": "pass",
+    "inverse_ntt16_asm_exact": "pass",
+    "full_inverse_exact": "pass",
+    "alias_wrapper_a_b": "pass"
+  },
+  "qbm4": {
+    "intrinsic_tsc": 226.1160,
+    "asm_tsc": 220.6740,
+    "delta_percent": -2.4067
+  },
+  "qbm4_centered": {
+    "intrinsic_tsc": 365.5730,
+    "asm_tsc": 330.6940,
+    "delta_percent": -9.5409
+  },
+  "direct_register_fusion": {
+    "stage1_baseline_tsc": 636.9620,
+    "stage1_asm_tsc": 704.0860,
+    "stage1_delta_percent": 10.5381,
+    "full_baseline_tsc": 1492.9270,
+    "full_fused_tsc": 1534.3740,
+    "full_delta_percent": 2.7762,
+    "decision": "reject: reduced memory traffic does not offset lost four-way QBM ILP"
+  },
+  "hybrid": {
+    "pipeline": "four-way centered QBM asm -> fused merge/stage1 C -> inverse NTT16 asm -> inverse tail",
+    "baseline_tsc": 1492.3640,
+    "candidate_tsc": 1438.8950,
+    "delta_percent": -3.5828,
+    "decision": "retain as the best Round 4C consumer candidate; formal benchmark still required"
+  },
+  "same_binary_native_consumer_comparison": {
+    "boundary": "native transformed inputs -> basemul_scale/QBM -> complete scaled inverse -> coefficient order",
+    "iterations": 2000,
+    "official_tsc": 733.5700,
+    "frozen_gt32_tsc": 1195.5450,
+    "gt16_hybrid_tsc": 1435.5430,
+    "gt16_vs_official_percent": 95.6927,
+    "gt16_vs_frozen_gt32_percent": 20.0763,
+    "classification": "directional short run; no formal benchmark claim"
+  },
+  "inverse_layout_limit": "one k3 row is 16 YMM; current ABI therefore requires one length-16 store/reload boundary on AVX2"
+}

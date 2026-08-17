@@ -167,6 +167,16 @@ def constant_header(factors: dict[str, Any]) -> str:
     lines.extend(array("round4c_inv48_postweight_mont", postweight_rows))
     lines.append("")
     lines.extend(array("round4c_inv48_postweight_qinv", postweight_qinv_rows))
+    natural_byte_offsets = [
+        8 * ((16 * i3 + 33 * i16) % 48)
+        for i3 in range(3) for i16 in range(16)
+    ]
+    lines.append("static const uint16_t round4c_inverse_natural_byte_offsets[48] "
+                 "__attribute__((aligned(32))) = {")
+    for offset in range(0, 48, 16):
+        lines.append("    " + ", ".join(
+            str(value) for value in natural_byte_offsets[offset:offset + 16]) + ",")
+    lines.append("};")
     lines.append("")
 
     def scalar_array(name: str, values: list[int]) -> None:
@@ -826,15 +836,92 @@ def range_metadata() -> dict[str, Any]:
 
     minimum, maximum = mont32_interval(c1_bound)
     forward_ranges = forward_ct_ranges()
-    n5_bound = max(abs(value) for value in
-                   forward_ranges["MLKEM_lazy_candidates"]
-                   ["N5_N4_plus_terminal_center10"]
-                   ["quadratic_split_conservative_interval"])
-    n5_weighted_bound = ((n5_bound * CENTER + R - 1) // R
-                         + (Q + 1) // 2)
-    n5_c0_bound = 2 * n5_bound * n5_weighted_bound
-    n5_c1_bound = 2 * n5_bound * n5_bound
-    n5_reducer_interval = mont32_interval(max(n5_c0_bound, n5_c1_bound))
+    def wide_qbm_range(candidate: str) -> dict[str, Any]:
+        bound = max(abs(value) for value in
+                    forward_ranges["MLKEM_lazy_candidates"][candidate]
+                    ["quadratic_split_conservative_interval"])
+        weighted_bound = ((bound * CENTER + R - 1) // R
+                          + (Q + 1) // 2)
+        c0 = 2 * bound * weighted_bound
+        c1 = 2 * bound * bound
+        reducer_interval = mont32_interval(max(c0, c1))
+
+        # The existing inverse first merges each quadratic +/- pair.  Its
+        # unweighted sum is the worst arm; the other arm is Montgomery
+        # reduced after subtraction.  This is intentionally conservative but
+        # records the exact point where the current int16 inverse ABI fails.
+        qlo, qhi = reducer_interval
+        merge_sum = (2 * qlo, 2 * qhi)
+        merge_difference = (qlo - qhi, qhi - qlo)
+        merge_factors = {
+            pow(factor["sqrt_alpha"], -1, Q)
+            for factor in factorization()["factors"]
+        }
+        merge_high = [mont16_interval(merge_difference, factor)
+                      for factor in merge_factors]
+        merge_interval = (
+            min(merge_sum[0], *(value[0] for value in merge_high)),
+            max(merge_sum[1], *(value[1] for value in merge_high)),
+        )
+        stage1_raw = (merge_interval[0] - merge_interval[1],
+                      merge_interval[1] - merge_interval[0])
+
+        def center10_interval(interval: tuple[int, int]) -> tuple[int, int]:
+            image = [x - (((10 * x + (1 << 14)) >> 15) * Q)
+                     for x in range(interval[0], interval[1] + 1)]
+            return min(image), max(image)
+
+        reducer_center10 = center10_interval(reducer_interval)
+        merge_center10 = center10_interval(merge_interval)
+        merge_centered_values = []
+        for value in range(merge_interval[0], merge_interval[1] + 1):
+            reduced = value - (((10 * value + (1 << 14)) >> 15) * Q)
+            if reduced > CENTER:
+                reduced -= Q
+            if reduced < -CENTER:
+                reduced += Q
+            merge_centered_values.append(reduced)
+        merge_centered = (min(merge_centered_values),
+                          max(merge_centered_values))
+        delayed_stage1_raw = (
+            merge_centered[0] - merge_centered[1],
+            merge_centered[1] - merge_centered[0],
+        )
+        assert -32768 <= merge_interval[0] <= merge_interval[1] <= 32767
+        assert merge_centered == (-CENTER, CENTER)
+        assert delayed_stage1_raw == (-2 * CENTER, 2 * CENTER)
+        return {
+            "input_bound": bound,
+            "weighted_operand_bound": weighted_bound,
+            "c0_vpmaddwd_bound": c0,
+            "c1_vpmaddwd_bound": c1,
+            "signed_int32_safe": max(c0, c1) < 2**31,
+            "reducer_exact_output_interval": list(reducer_interval),
+            "packssdw_safe": (-32768 <= reducer_interval[0]
+                               <= reducer_interval[1] <= 32767),
+            "reducer_plus_center10_interval": list(reducer_center10),
+            "existing_inverse_merge_interval": list(merge_interval),
+            "existing_inverse_stage1_raw_interval": list(stage1_raw),
+            "existing_inverse_stage1_int16_safe": (
+                -32768 <= stage1_raw[0] <= stage1_raw[1] <= 32767),
+            "delayed_rminus1_contract": {
+                "qbm_output_scale": "R^-1",
+                "merge_before_repair_interval": list(merge_interval),
+                "merge_int16_safe": True,
+                "merge_center10_interval": list(merge_center10),
+                "merge_exact_centered_interval": list(merge_centered),
+                "stage1_after_delayed_repair_interval": list(delayed_stage1_raw),
+                "stage1_one_correction_sufficient": True,
+                "separate_qbm_canonicalization_pass": False,
+            },
+            "required_consumer_change": (
+                "none" if -32768 <= stage1_raw[0]
+                and stage1_raw[1] <= 32767 else
+                "center QBM output/merge before stage1 or widen stage1 to int32"),
+        }
+
+    n5_qbm_range = wide_qbm_range("N5_N4_plus_terminal_center10")
+    n4_qbm_range = wide_qbm_range("N4_lazy_to_L8_center10")
     assert -32768 not in range(-split_bound, split_bound + 1)
     return {
         "canonical_input_bound": CENTER,
@@ -846,16 +933,8 @@ def range_metadata() -> dict[str, Any]:
         "negative_32768_excluded": True,
         "inverse_ct_lazy": inverse_ct_ranges(),
         "forward_ct_lazy": forward_ranges,
-        "mlkem_n5_qbm_range": {
-            "input_bound": n5_bound,
-            "weighted_operand_bound": n5_weighted_bound,
-            "c0_vpmaddwd_bound": n5_c0_bound,
-            "c1_vpmaddwd_bound": n5_c1_bound,
-            "signed_int32_safe": max(n5_c0_bound, n5_c1_bound) < 2**31,
-            "reducer_exact_output_interval": list(n5_reducer_interval),
-            "packssdw_safe": (-32768 <= n5_reducer_interval[0]
-                               <= n5_reducer_interval[1] <= 32767),
-        },
+        "mlkem_n5_qbm_range": n5_qbm_range,
+        "mlkem_n4_wide_qbm_range": n4_qbm_range,
         "five_instruction_montgomery32": {
             "qinv": QINV,
             "sequence": ["vpmullw-qinv", "vpand-lowword", "vpmaddwd-q",
@@ -1108,10 +1187,23 @@ def artifacts() -> dict[Path, Any]:
             str((VERTICAL / "generated/vertical-forward-schedule.json").relative_to(REPO)): sha256(VERTICAL / "generated/vertical-forward-schedule.json"),
             str(BENCHMARK_FILE.relative_to(REPO)): sha256(BENCHMARK_FILE),
             str((HERE / "src/qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.c"),
+            str((HERE / "src/qbm_intrinsic.h").relative_to(REPO)): sha256(HERE / "src/qbm_intrinsic.h"),
+            str((HERE / "src/qbm_inverse_fused_asm.S").relative_to(REPO)): sha256(HERE / "src/qbm_inverse_fused_asm.S"),
+            str((HERE / "src/qbm_inverse_fused.c").relative_to(REPO)): sha256(HERE / "src/qbm_inverse_fused.c"),
+            str((HERE / "src/qbm_asm_constants.c").relative_to(REPO)): sha256(HERE / "src/qbm_asm_constants.c"),
+            str((HERE / "src/inverse_ntt16_asm.S").relative_to(REPO)): sha256(HERE / "src/inverse_ntt16_asm.S"),
+            str((HERE / "src/inverse_full_asm.S").relative_to(REPO)): sha256(HERE / "src/inverse_full_asm.S"),
+            str((HERE / "tests/test_qbm_intrinsic.c").relative_to(REPO)): sha256(HERE / "tests/test_qbm_intrinsic.c"),
             str((HERE / "src/inverse_stage1_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/inverse_stage1_intrinsic.c"),
             str((HERE / "src/forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/forward_intrinsic.c"),
             str((HERE / "src/forward_ntt16_asm.S").relative_to(REPO)): sha256(HERE / "src/forward_ntt16_asm.S"),
             str((HERE / "tests/test_forward_intrinsic.c").relative_to(REPO)): sha256(HERE / "tests/test_forward_intrinsic.c"),
+            str((HERE / "src/lane_ntt16_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/lane_ntt16_intrinsic.c"),
+            str((HERE / "tests/test_lane_ntt16.c").relative_to(REPO)): sha256(HERE / "tests/test_lane_ntt16.c"),
+            str((HERE / "tests/test_ct8_schedule.c").relative_to(REPO)): sha256(HERE / "tests/test_ct8_schedule.c"),
+            str((HERE / "bench/bench_ct8_schedule.c").relative_to(REPO)): sha256(HERE / "bench/bench_ct8_schedule.c"),
+            str((HERE / "bench/bench_wide_qbm.c").relative_to(REPO)): sha256(HERE / "bench/bench_wide_qbm.c"),
+            str((HERE / "bench/bench_fused_consumer.c").relative_to(REPO)): sha256(HERE / "bench/bench_fused_consumer.c"),
             str((HERE / "src/transpose_intrinsic.c").relative_to(REPO)): sha256(HERE / "src/transpose_intrinsic.c"),
             str((HERE.parent / "gt_ntt/gt_basemul_layout_asm.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_basemul_layout_asm.S"),
             str((HERE.parent / "gt_ntt/gt_ntt_frontend_stage12_soa.S").relative_to(REPO)): sha256(HERE.parent / "gt_ntt/gt_ntt_frontend_stage12_soa.S"),

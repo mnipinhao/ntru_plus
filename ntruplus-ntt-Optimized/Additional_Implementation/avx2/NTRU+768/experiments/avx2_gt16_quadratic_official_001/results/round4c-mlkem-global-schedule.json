@@ -1,0 +1,56 @@
+{
+  "candidate": "round4c_forward_f1_mlkem_sched_asm",
+  "contract": "N5-lazy-through-length8-center10-and-terminal-center10",
+  "changes": [
+    "peel-public-identity-length16-column",
+    "hoist-forward16-twiddle-base-addresses",
+    "interleave-three-independent-Montgomery-chains",
+    "rename-length16-sums-into-DFT3-inputs",
+    "remove-three-register-copies-per-tail-column"
+  ],
+  "rejected": {
+    "frontend_four_way": "485.9789 TSC preliminary; longer live ranges and repeated index work regressed",
+    "frontend_two_way": "481.0710 TSC preliminary with repeated index work; 469.1853 after index hoisting still regressed against the tail-only short-run candidate"
+  },
+  "measurement": {
+    "cpu": 1,
+    "iterations_per_sample": 1000000,
+    "samples": 20,
+    "warmups": 2,
+    "orders": ["forward", "reverse"],
+    "runs": [
+      {
+        "forward": {"frozen_gt32": 461.2526, "original_full_asm": 474.0383, "scheduled": 468.4267},
+        "reverse": {"frozen_gt32": 460.3267, "original_full_asm": 474.6658, "scheduled": 469.0355}
+      },
+      {
+        "forward": {"frozen_gt32": 460.3654, "original_full_asm": 473.4149, "scheduled": 470.6038},
+        "reverse": {"frozen_gt32": 460.7740, "original_full_asm": 476.3422, "scheduled": 471.7106}
+      }
+    ],
+    "mean_of_four_order_medians": {
+      "frozen_gt32": 460.679675,
+      "original_full_asm": 474.615300,
+      "scheduled": 469.944150
+    },
+    "saving_vs_original_tsc": 4.671150,
+    "saving_vs_original_percent": 0.984190,
+    "regression_vs_frozen_tsc": 9.264475,
+    "regression_vs_frozen_percent": 2.011492
+  },
+  "audit": {
+    "correctness_cases": 77,
+    "candidate_count": 7,
+    "alias": "pass",
+    "lazy_qbm_inverse_differential": "pass",
+    "asan_ubsan": "pass",
+    "linked_bytes": 2235,
+    "calls": 0,
+    "stack_access": 0,
+    "vector_spill": false,
+    "avx512": false,
+    "vzeroupper": true
+  },
+  "measurement_note": "Old and scheduled symbols share one benchmark-only static scratch address. A discarded separate-scratch run exposed a large order-dependent 4 KiB alias artifact.",
+  "decision": "retain-benchmark-only-not-selected-below-one-percent-gate"
+}

@@ -58,6 +58,13 @@
       "vector_stack_references": 0,
       "vzeroupper": true
     },
+    "f1_mlkem_sched_asm": {
+      "calls": [],
+      "linked_bytes": 2235,
+      "stack_data_references": 0,
+      "vector_stack_references": 0,
+      "vzeroupper": true
+    },
     "frontend": {
       "calls": [],
       "linked_bytes": 412,
@@ -87,13 +94,30 @@
       "vzeroupper": true
     }
   },
-  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper. The handwritten CT16 and complete F1 producer are leaves with fixed public loops and addresses, no stack access or vector spill, and explicit vzeroupper. The complete producer preserves the benchmark-only static-scratch alias contract.",
+  "interpretation": "vector-at-a-time is spill-free; GCC spills two data values in the 4-vector helper and heavily spills the 8-vector helper. The selected inverse I0 keeps standalone merge and remains faster than I1. The complete benchmark-only inverse assembly has fixed public loops and addresses; its full entry calls the independently tested stage1 and finish boundaries and saves only public pointers. The CT layers keep only public loop-state stack references; generated packed beta constants remove full-inverse vector stack spills. The best F1 forward has no vector spill; its remaining stack references are public loop state in the generic CT16 helper. The handwritten CT16 and complete F1 producer are leaves with fixed public loops and addresses, no stack access or vector spill, and explicit vzeroupper. The complete producer preserves the benchmark-only static-scratch alias contract.",
   "inverse": {
+    "finish_asm": {
+      "calls": [
+        "round4c_inverse_ntt16_layers_asm"
+      ],
+      "linked_bytes": 614,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    },
     "frozen_gt32_fused": {
       "calls": [],
       "linked_bytes": 1968,
       "stack_data_references": 0,
       "vzeroupper": true
+    },
+    "full_asm": {
+      "calls": [
+        "round4c_inverse_stage1_asm+0x5",
+        "round4c_inverse_finish_asm"
+      ],
+      "linked_bytes": 53,
+      "stack_data_references": 0,
+      "vzeroupper": false
     },
     "full_i0": {
       "calls": [
@@ -115,10 +139,31 @@
       "stack_data_references": 0,
       "vzeroupper": false
     },
+    "full_wide_asm": {
+      "calls": [
+        "round4c_inverse_stage1_wide_asm+0x5",
+        "round4c_inverse_finish_asm"
+      ],
+      "linked_bytes": 53,
+      "stack_data_references": 0,
+      "vzeroupper": false
+    },
     "ntt16_layers": {
       "calls": [],
       "linked_bytes": 1394,
       "stack_data_references": 12,
+      "vzeroupper": true
+    },
+    "ntt16_layers_asm": {
+      "calls": [],
+      "linked_bytes": 780,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    },
+    "stage1_asm": {
+      "calls": [],
+      "linked_bytes": 345,
+      "stack_data_references": 0,
       "vzeroupper": true
     },
     "stage1_i0": {
@@ -132,6 +177,12 @@
     "stage1_i1": {
       "calls": [],
       "linked_bytes": 490,
+      "stack_data_references": 0,
+      "vzeroupper": true
+    },
+    "stage1_wide_asm": {
+      "calls": [],
+      "linked_bytes": 381,
       "stack_data_references": 0,
       "vzeroupper": true
     }

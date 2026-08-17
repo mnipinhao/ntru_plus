@@ -2370,15 +2370,99 @@
       ]
     ]
   },
+  "mlkem_n4_wide_qbm_range": {
+    "c0_vpmaddwd_bound": 70165212,
+    "c1_vpmaddwd_bound": 528580098,
+    "delayed_rminus1_contract": {
+      "merge_before_repair_interval": [
+        -19586,
+        19586
+      ],
+      "merge_center10_interval": [
+        -2719,
+        2719
+      ],
+      "merge_exact_centered_interval": [
+        -1728,
+        1728
+      ],
+      "merge_int16_safe": true,
+      "qbm_output_scale": "R^-1",
+      "separate_qbm_canonicalization_pass": false,
+      "stage1_after_delayed_repair_interval": [
+        -3456,
+        3456
+      ],
+      "stage1_one_correction_sufficient": true
+    },
+    "existing_inverse_merge_interval": [
+      -19586,
+      19586
+    ],
+    "existing_inverse_stage1_int16_safe": false,
+    "existing_inverse_stage1_raw_interval": [
+      -39172,
+      39172
+    ],
+    "input_bound": 16257,
+    "packssdw_safe": true,
+    "reducer_exact_output_interval": [
+      -9793,
+      9793
+    ],
+    "reducer_plus_center10_interval": [
+      -2179,
+      2178
+    ],
+    "required_consumer_change": "center QBM output/merge before stage1 or widen stage1 to int32",
+    "signed_int32_safe": true,
+    "weighted_operand_bound": 2158
+  },
   "mlkem_n5_qbm_range": {
     "c0_vpmaddwd_bound": 15237954,
     "c1_vpmaddwd_bound": 34328898,
+    "delayed_rminus1_contract": {
+      "merge_before_repair_interval": [
+        -4504,
+        4504
+      ],
+      "merge_center10_interval": [
+        -1818,
+        1818
+      ],
+      "merge_exact_centered_interval": [
+        -1728,
+        1728
+      ],
+      "merge_int16_safe": true,
+      "qbm_output_scale": "R^-1",
+      "separate_qbm_canonicalization_pass": false,
+      "stage1_after_delayed_repair_interval": [
+        -3456,
+        3456
+      ],
+      "stage1_one_correction_sufficient": true
+    },
+    "existing_inverse_merge_interval": [
+      -4504,
+      4504
+    ],
+    "existing_inverse_stage1_int16_safe": true,
+    "existing_inverse_stage1_raw_interval": [
+      -9008,
+      9008
+    ],
     "input_bound": 4143,
     "packssdw_safe": true,
     "reducer_exact_output_interval": [
       -2252,
       2252
     ],
+    "reducer_plus_center10_interval": [
+      -1818,
+      1818
+    ],
+    "required_consumer_change": "none",
     "signed_int32_safe": true,
     "weighted_operand_bound": 1839
   },

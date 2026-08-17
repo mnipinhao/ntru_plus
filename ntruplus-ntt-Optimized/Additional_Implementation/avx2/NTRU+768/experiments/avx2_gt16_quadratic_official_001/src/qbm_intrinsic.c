@@ -53,6 +53,19 @@ static inline __m256i pack_pairs(__m256i c0, __m256i c1)
     return _mm256_shuffle_epi8(_mm256_packs_epi32(c0, c1), mask);
 }
 
+static inline __m256i center10_then_once(__m256i x)
+{
+    const __m256i q = _mm256_set1_epi16(Q);
+    const __m256i center = _mm256_set1_epi16(1728);
+    const __m256i negative_center = _mm256_set1_epi16(-1728);
+    const __m256i quotient = _mm256_mulhrs_epi16(x, _mm256_set1_epi16(10));
+    x = _mm256_sub_epi16(x, _mm256_mullo_epi16(quotient, q));
+    __m256i mask = _mm256_cmpgt_epi16(x, center);
+    x = _mm256_sub_epi16(x, _mm256_and_si256(mask, q));
+    mask = _mm256_cmpgt_epi16(negative_center, x);
+    return _mm256_add_epi16(x, _mm256_and_si256(mask, q));
+}
+
 static inline __m256i qbm_one(__m256i a, __m256i b, size_t vector)
 {
     const __m256i swap = _mm256_load_si256((const __m256i *)swap_pair_bytes);
@@ -119,6 +132,20 @@ void round4c_qbm_interleaved4_intrinsic(int16_t out[ROUND4C_WORDS],
                                         const int16_t b[ROUND4C_WORDS])
 {
     qbm_interleaved(out, a, b, 4);
+}
+
+void round4c_qbm_wide_centered_intrinsic(int16_t out[ROUND4C_WORDS],
+                                         const int16_t a[ROUND4C_WORDS],
+                                         const int16_t b[ROUND4C_WORDS])
+{
+    for (size_t vector = 0; vector < 48; ++vector) {
+        const __m256i av = _mm256_loadu_si256(
+            (const __m256i *)(a + 16 * vector));
+        const __m256i bv = _mm256_loadu_si256(
+            (const __m256i *)(b + 16 * vector));
+        _mm256_storeu_si256((__m256i *)(out + 16 * vector),
+                            center10_then_once(qbm_one(av, bv, vector)));
+    }
 }
 
 void round4c_qbm_interleaved8_intrinsic(int16_t out[ROUND4C_WORDS],

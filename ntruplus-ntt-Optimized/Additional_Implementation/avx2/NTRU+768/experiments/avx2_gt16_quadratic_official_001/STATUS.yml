@@ -49,7 +49,7 @@ forward_prototype:
   selected: F1-NTT16-first-full-asm
   preweight_fusion: four-linear-products-plus-one-identity-Montgomery-reduction
   correctness_cases: 77
-  candidate_count: 6
+  candidate_count: 7
   scalar_component_congruence: pass
   lazy_qbm_canonical_differential: pass
   lazy_qbm_inverse_differential: pass
@@ -92,6 +92,125 @@ forward_prototype:
     ct16_asm_stack_access: false
     ct16_asm_linked_bytes: 1632
     note: fixed public loops, generated execution-order constants, vzeroupper
+  mlkem_global_schedule_probe:
+    symbol: round4c_forward_f1_mlkem_sched_asm
+    scope: length16-tail-only
+    identity_column_peeled: true
+    twiddle_bases_hoisted: true
+    montgomery_chains_interleaved: 3
+    dft3_register_renamed: true
+    frontend_two_way: rejected
+    frontend_four_way: rejected
+    stable_two_run_frozen_gt32_tsc: 460.679675
+    stable_two_run_original_full_asm_tsc: 474.615300
+    stable_two_run_scheduled_tsc: 469.944150
+    saving_vs_original_tsc: 4.671150
+    saving_vs_original_percent: 0.984190
+    regression_vs_frozen_tsc: 9.264475
+    regression_vs_frozen_percent: 2.011492
+    linked_bytes: 2235
+    vector_spill: false
+    stack_access: false
+    decision: retain-benchmark-only-not-selected-below-one-percent-gate
+  lane_i16_layout_probe:
+    scope: experiment-A-pure-NTT16
+    layout: one-YMM-equals-one-branch-degree-plane-over-i16
+    correctness_cases: 273
+    x1_x3_exact: pass
+    cross_register_modq_differential: pass
+    benchmark_class: directional-short-run-not-formal
+    iterations: 2000
+    logical_transforms: 48
+    cross_register_tsc: 249.361
+    lane_i16_x1_tsc: 796.040
+    lane_i16_x3_tsc: 693.803
+    x3_speedup_vs_x1_percent: 12.8438
+    x3_regression_vs_cross_percent: 178.230
+    x3_static_vector_stack_references: 7
+    conclusion: shuffle-and-lost-plane-batching-cost-dominates
+    next_gate: stop-before-tile-layout-conversion-or-frontend-redesign
+  official_ct8_schedule_probe:
+    benchmark_class: directional-short-run-not-formal
+    correctness_cases: 389
+    baseline_dynamic_instructions: 129
+    scheduled_dynamic_instructions: 120
+    baseline_tsc: 32.7090
+    scheduled_tsc: 32.5290
+    improvement_percent: 0.5503
+    decision: retain-isolated-below-full-producer-integration-gate
+  n4_wide_consumer_probe:
+    benchmark_class: directional-short-run-not-formal
+    qbm_input_bound: 16257
+    qbm_c1_vpmaddwd_bound: 528580098
+    qbm_reducer_output: [-9793, 9793]
+    qbm_int32_and_pack_safe: true
+    unchanged_inverse_stage1_raw: [-39172, 39172]
+    unchanged_inverse_int16_safe: false
+    centered_qbm_inverse_differential_cases: 256
+    centered_qbm_inverse_differential: pass
+    plain_wide_qbm_tsc: 236.7170
+    centered_wide_qbm_tsc: 397.4870
+    repair_cost_tsc: 160.7700
+    historical_n4_vs_n5_delta_tsc_not_same_run: 40.974
+    decision: rewrite-proven-possible-but-direct-repair-regresses
+  qbm_inverse_asm_probe:
+    benchmark_class: directional-short-run-not-formal
+    iterations: 2000
+    correctness_cases: 256
+    qbm4_exact: pass
+    fused_stage1_exact: pass
+    inverse_ntt16_asm_exact: pass
+    full_inverse_exact: pass
+    qbm4_delta_percent: -2.4067
+    qbm4_centered_delta_percent: -9.5409
+    direct_fused_full_delta_percent: 2.7762
+    hybrid_full_delta_percent: -3.5828
+    direct_fusion_decision: reject-lost-qbm-ilp
+    selected_research_candidate: four-way-centered-qbm-asm-plus-inverse-ntt16-asm
+    formal_benchmark_required: true
+  full_inverse_asm_probe:
+    scope: benchmark-only
+    entry: round4c_inverse_full_asm
+    stages: quadratic-merge-length2-plus-ntt16-plus-dft3-postweight-plus-final-crt-store
+    stage1_asm_exact: pass
+    finish_asm_exact: pass
+    full_asm_exact: pass
+    in_place_alias: pass
+    wide_consumer_cases: 256
+    canonical_cases: 1006
+    asan_ubsan: pass
+    benchmark_class: directional-short-run-not-formal
+    iterations: 2000
+    stage1_c_tsc: 268.560
+    stage1_asm_tsc: 268.727
+    asm_tail_regression_percent: 1.5468
+    observed_full_asm_regression_percent_range: [0.6839, 5.9632]
+    placement_sensitive: true
+    decision: retain-as-correctness-control-do-not-select-over-hybrid
+  rminus1_lazy_consumer_probe:
+    scope: benchmark-only
+    qbm_output_scale: R^-1
+    montgomery32_reducers_retained: true
+    separate_qbm_canonicalization_pass: false
+    range_repair: after-quadratic-merge-before-length2
+    length2_corrections_per_output: 1
+    wide_consumer_cases: 256
+    full_inverse_exact: pass
+    benchmark_class: directional-short-run-not-formal
+    iterations: 2000
+    centered_hybrid_tsc: 1434.724
+    rminus1_lazy_hybrid_tsc: 1383.521
+    hybrid_improvement_percent: 3.5688
+    rminus1_lazy_all_asm_tsc: 1373.002
+    improvement_vs_centered_hybrid_percent: 4.3020
+    regression_vs_frozen_gt32_percent: 14.3975
+    regression_vs_official_percent: 87.4288
+    stage1_masks_preloaded: true
+    stage1_fixed_count_loop: true
+    full_path_stage1_vzeroupper_removed: true
+    dft3_2x_unroll: rejected-and-reverted
+    selected_research_candidate: rminus1-lazy-qbm-plus-delayed-merge-repair-plus-full-inverse-asm
+    formal_benchmark_required: true
 known_dynamic_boundary:
   terminal_saving_tsc: 48.84
   inverse_regression_tsc: 214.364
@@ -132,4 +251,5 @@ blockers:
   - legacy local 2F+B+I accounting still regresses by 181.486 TSC before serialization/baseinv
   - direct Official serialization consumers
   - 384-norm baseinv and keygen estimate
+  - the new R^-1 lazy consumer improves GT16 but remains about 14.40% behind frozen GT32 on the short native BM+inverse boundary
 environment_warning: local Intel powersave result is not comparable to frozen Ryzen data

@@ -1,0 +1,43 @@
+{
+  "scope": "experiment-A-pure-NTT16",
+  "benchmark_class": "directional-short-run-not-formal",
+  "layout": {
+    "lane": "i16",
+    "register": "fixed-branch-degree-plane",
+    "logical_transforms": 48
+  },
+  "implementation": {
+    "length2": "identity shuffle/add/sub/blend without Montgomery",
+    "length4_8_16": "partner shuffle plus masked low/high and vector Montgomery",
+    "range_checkpoint": "center10 after length8",
+    "x3": "three transform rows interleaved"
+  },
+  "correctness": {
+    "cases": 273,
+    "cross_register_modq_differential": "pass",
+    "x1_x3_exact": "pass",
+    "asan_ubsan": "pass"
+  },
+  "short_run": {
+    "cpu": 1,
+    "iterations": 2000,
+    "samples": 9,
+    "cross_register_tsc": 249.361,
+    "lane_i16_x1_tsc": 796.040,
+    "lane_i16_x3_tsc": 693.803,
+    "lane_i16_x1_per_transform": 16.5842,
+    "lane_i16_x3_per_transform": 14.4542,
+    "x3_speedup_vs_x1_percent": 12.8438,
+    "x3_regression_vs_cross_percent": 178.230
+  },
+  "disassembly": {
+    "x3_batch_static_vector_stack_references": 7,
+    "interpretation": "Spill removal cannot plausibly close the 444.442-tick gap; lane permutations and loss of 16-plane batching dominate."
+  },
+  "decision": "stop-after-experiment-A",
+  "not_implemented": [
+    "register-resident-3x16-plus-DFT3",
+    "layout-A-to-layout-B-conversion",
+    "direct-layout-B-frontend-generator"
+  ]
+}

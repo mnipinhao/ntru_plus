@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum { SAMPLES = 20, KERNELS = 7, DEFAULT_ITERATIONS = 20000 };
+enum { SAMPLES = 20, KERNELS = 8, DEFAULT_ITERATIONS = 20000 };
 
 typedef void (*forward_kernel)(int16_t *, const int16_t *);
 
@@ -132,11 +132,12 @@ int main(int argc, char **argv)
         round4c_forward_f1_fused,
         round4c_forward_f1_hybrid_asm,
         round4c_forward_f1_full_asm,
+        round4c_forward_f1_mlkem_sched_asm,
     };
     static const char *const names[KERNELS] = {
         "frozen_gt32", "f0_materialized", "f0_fused",
         "f1_materialized", "f1_fused",
-        "f1_hybrid_asm", "f1_full_asm",
+        "f1_hybrid_asm", "f1_full_asm", "f1_mlkem_sched_asm",
     };
     int16_t input[768] __attribute__((aligned(32)));
     int16_t output[768] __attribute__((aligned(32)));

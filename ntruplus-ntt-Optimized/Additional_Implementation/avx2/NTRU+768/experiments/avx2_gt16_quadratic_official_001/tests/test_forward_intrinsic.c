@@ -85,19 +85,21 @@ static int congruent(const int16_t got[768], const int16_t want[768],
 static int check_case(const int16_t input[768], size_t case_index,
                       int *maximum)
 {
-    static const forward_kernel kernels[6] = {
+    static const forward_kernel kernels[7] = {
         round4c_forward_f0_materialized,
         round4c_forward_f0_fused,
         round4c_forward_f1_materialized,
         round4c_forward_f1_fused,
         round4c_forward_f1_hybrid_asm,
         round4c_forward_f1_full_asm,
+        round4c_forward_f1_mlkem_sched_asm,
     };
-    static const char *const labels[6] = {
+    static const char *const labels[7] = {
         "F0-M", "F0-F", "F1-M", "F1-F", "F1-HYBRID", "F1-ASM",
+        "F1-MLKEM-SCHED",
     };
     int16_t want[768] __attribute__((aligned(32)));
-    int16_t outputs[6][768] __attribute__((aligned(32)));
+    int16_t outputs[7][768] __attribute__((aligned(32)));
     int16_t alias[768] __attribute__((aligned(32)));
     int16_t canonical[768] __attribute__((aligned(32)));
     int16_t product[768] __attribute__((aligned(32)));
@@ -105,7 +107,7 @@ static int check_case(const int16_t input[768], size_t case_index,
     int16_t inverse[768] __attribute__((aligned(32)));
     int16_t inverse_reference[768] __attribute__((aligned(32)));
     scalar_forward_quadratic(want, input);
-    for (size_t candidate = 0; candidate < 6; ++candidate) {
+    for (size_t candidate = 0; candidate < 7; ++candidate) {
         kernels[candidate](outputs[candidate], input);
         if (congruent(outputs[candidate], want, labels[candidate], maximum)) {
             fprintf(stderr, "case=%zu\n", case_index);
@@ -130,7 +132,12 @@ static int check_case(const int16_t input[768], size_t case_index,
         int value = modq(outputs[5][i]);
         canonical[i] = (int16_t)(value > CENTER ? value - Q : value);
     }
-    round4c_qbm_vector_intrinsic(product, outputs[5], outputs[5]);
+    if (memcmp(outputs[5], outputs[6], sizeof(outputs[5])) != 0) {
+        fprintf(stderr, "full/scheduled asm representative mismatch case=%zu\n",
+                case_index);
+        return 1;
+    }
+    round4c_qbm_vector_intrinsic(product, outputs[6], outputs[6]);
     round4c_qbm_vector_intrinsic(product_reference, canonical, canonical);
     if (congruent(product, product_reference, "F1-ASM/QBM",
                   maximum)) {
@@ -224,7 +231,7 @@ int main(void)
         if (check_case(input, cases++, &maximum))
             return 1;
     }
-    printf("forward intrinsic cases=%zu candidates=6 alias=pass max_abs=%d failures=0\n",
+    printf("forward intrinsic cases=%zu candidates=7 alias=pass max_abs=%d failures=0\n",
            cases, maximum);
     return 0;
 }
