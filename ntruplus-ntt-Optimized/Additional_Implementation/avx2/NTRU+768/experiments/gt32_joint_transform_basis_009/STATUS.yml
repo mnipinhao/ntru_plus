@@ -1,0 +1,91 @@
+experiment: GT32-JOINT-TRANSFORM-BASIS-009
+status: completed_static_hard_stop_first_hybrid
+production_modified: false
+assembly_emitted: false
+
+decision_unit:
+  - top_split
+  - Forward_L
+  - BaseMul_L
+  - Inverse_L
+  - top_join
+
+coverage_registry:
+  imported:
+    - global_physical_R2_trajectory
+    - NTT32_first_and_R3_narrow_gates
+    - persistent_full_plane_radix2
+    - persistent_full_plane_radix4
+    - L02_13_chain_tower
+    - L01_12_chain_split_K2
+    - compact_Karatsuba_input_and_output_basis_search
+    - Pair02_vpmaddwd_REDC16
+    - mixed_D01xM_TMVP
+  do_not_repeat_covered_nodes: true
+
+selected_Hybrid:
+  layout_low_to_high: [c0, q1, q3, q4, c1, q0, q2]
+  natural_basis: "P=(a0,a1), Q=(a2,a3)"
+  eligible_forward_paths: 250
+  exact_basis_vectors: 128
+  forward_post_S1_cost:
+    instructions: 144
+    shuffle_uops: 48
+    loads: 32
+    peak_YMM: 13
+    dependency_depth: 22
+  progressive_control:
+    instructions: 136
+    shuffle_uops: 40
+    loads: 32
+    peak_YMM: 15
+    dependency_depth: 21
+
+BaseMul_Hybrid:
+  variable_chains: 9
+  lambda_chains: 3
+  total_chains: 12
+  operand_formation_instructions: 10
+  operand_formation_shuffle_uops: 6
+  selective_center10_sequences: 8
+  selective_center10_instructions: 24
+  peak_YMM: 14
+  spills: false
+  inverse_full_N32_int16_safe: true
+
+current_Clean_B3:
+  symbol: ntruplus768_basemul_scale_m_avx2
+  complete_loop_instructions_per_16_quartics: 114
+  vector_multiply_uops_per_16_quartics: 63
+
+optimistic_whole_island:
+  Hybrid_compute_only_floor_per_block: 105
+  free_credit_given_to:
+    - routing
+    - loads_and_stores
+    - loop_control
+    - register_moves
+    - eventual_basis_repair
+  maximum_BM_credit_across_12_blocks: 108
+  two_Forward_plus_inverse_transform_debt: 144
+  minimum_instruction_delta: 36
+  Hybrid_vector_multiply_uops_per_block: 61
+
+decision:
+  promote: false
+  emit_bounded_ASM: false
+  closed_scope:
+    - one_plane_bit_Hybrid
+    - L01_12_chain_BaseMul
+    - compact_unit_coefficient_input_output_bases
+    - selected_exact_post_S1_radix2_trajectory
+  reason:
+    - whole_2F_B_I_lower_bound_loses_even_with_free_delivery
+    - logical_chain_saving_collapses_to_two_vector_multiply_uops_per_block
+    - Hybrid_critical_tail_is_not_shorter
+
+reopen_only_if:
+  - Forward_emits_range_safe_Karatsuba_operands_without_eight_centers
+  - a_basis_deletes_BM_recombination_and_final_coefficient_repair_together
+  - top_R3_schedule_deletes_complete_six_branch_materialization
+  - leaf_decomposition_changes
