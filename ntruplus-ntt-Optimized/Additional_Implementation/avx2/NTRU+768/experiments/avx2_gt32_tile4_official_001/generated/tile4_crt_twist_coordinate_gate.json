@@ -1,0 +1,814 @@
+{
+  "experiment": "GT32-CRT-TWIST-COORDINATE-001",
+  "status": "structured-positive-no-current-N5-chain-win",
+  "current_table": {
+    "definition": "T[branch,row,k] = branch_scale^(-(64*row+33*k mod 96))*R",
+    "row_ratios": {
+      "0": {
+        "row1_over_row0": {
+          "unique": [
+            867,
+            3200
+          ],
+          "first_12": [
+            867,
+            867,
+            867,
+            3200,
+            867,
+            867,
+            3200,
+            867,
+            867,
+            3200,
+            867,
+            867
+          ],
+          "by_k_mod_3": {
+            "0": [
+              867,
+              3200
+            ],
+            "1": [
+              867
+            ],
+            "2": [
+              867
+            ]
+          }
+        },
+        "row2_over_row0": {
+          "unique": [
+            1520,
+            1886
+          ],
+          "first_12": [
+            1520,
+            1886,
+            1520,
+            1886,
+            1886,
+            1520,
+            1886,
+            1886,
+            1520,
+            1886,
+            1886,
+            1520
+          ],
+          "by_k_mod_3": {
+            "0": [
+              1520,
+              1886
+            ],
+            "1": [
+              1886
+            ],
+            "2": [
+              1520
+            ]
+          }
+        }
+      },
+      "1": {
+        "row1_over_row0": {
+          "unique": [
+            1520,
+            1886
+          ],
+          "first_12": [
+            1886,
+            1886,
+            1886,
+            1520,
+            1886,
+            1886,
+            1520,
+            1886,
+            1886,
+            1520,
+            1886,
+            1886
+          ],
+          "by_k_mod_3": {
+            "0": [
+              1520,
+              1886
+            ],
+            "1": [
+              1886
+            ],
+            "2": [
+              1886
+            ]
+          }
+        },
+        "row2_over_row0": {
+          "unique": [
+            867,
+            3200
+          ],
+          "first_12": [
+            3200,
+            867,
+            3200,
+            867,
+            867,
+            3200,
+            867,
+            867,
+            3200,
+            867,
+            867,
+            3200
+          ],
+          "by_k_mod_3": {
+            "0": [
+              867,
+              3200
+            ],
+            "1": [
+              867
+            ],
+            "2": [
+              3200
+            ]
+          }
+        }
+      }
+    },
+    "wide_Montgomery_vector_chains_per_forward": 48,
+    "GT_BLEND3_vpblendd_per_forward": 96
+  },
+  "search_family": {
+    "k3_prime": "a*k3 + b*(k32 mod 3) mod 3",
+    "k32_prime": "c*k32 + d*k3 mod 32",
+    "a": [
+      1,
+      2
+    ],
+    "b": [
+      0,
+      1,
+      2
+    ],
+    "c": "all 16 odd residues modulo 32",
+    "d": "0..31",
+    "raw_parameter_tuples": 3072,
+    "bijective_coordinate_maps": 1088,
+    "quotiented_symmetries": [
+      "row translation/permutation phase",
+      "k32 translation",
+      "branch swap"
+    ]
+  },
+  "summary": {
+    "multiplicatively_separable": 0,
+    "DFT3_absorbable": 0,
+    "improves_any_vector_to_single_constant": 0,
+    "improves_any_vector_to_two_constants": 0,
+    "topology_preserving_candidates": 2,
+    "ratio_complexity_histogram": {
+      "6": 32,
+      "8": 1056
+    }
+  },
+  "specific_hypotheses": {
+    "k3_plus_k32_mod3": {
+      "parameters": {
+        "a": 1,
+        "b": 1,
+        "c": 1,
+        "d": 0
+      },
+      "ratio_cardinality": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "ratio_complexity_sum": 8,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 0,
+      "NTT32_cross_row_edges": 240,
+      "NTT32_nonradix2_edges": 0
+    },
+    "k3_minus_k32_mod3": {
+      "parameters": {
+        "a": 1,
+        "b": 2,
+        "c": 1,
+        "d": 0
+      },
+      "ratio_cardinality": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "ratio_complexity_sum": 8,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 0,
+      "NTT32_cross_row_edges": 240,
+      "NTT32_nonradix2_edges": 0
+    }
+  },
+  "carry_aware_separation": {
+    "status": "exactly-separable-by-carry-aware-row-rotation",
+    "row_rotations_by_k": [
+      0,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2
+    ],
+    "rotation_definition": "new_row[i,k] = old_row[(i+rotation[k]) mod 3,k]",
+    "branches": [
+      {
+        "A_row_ratios": [
+          1,
+          867,
+          1520
+        ],
+        "B_values": [
+          3310,
+          230,
+          115,
+          1786,
+          893,
+          2175,
+          2816,
+          1408,
+          704,
+          352,
+          176,
+          88,
+          44,
+          22,
+          11,
+          1734,
+          867,
+          2162,
+          1081,
+          2269,
+          2863,
+          3160,
+          1580,
+          790,
+          395,
+          1926,
+          963,
+          2210,
+          1105,
+          2281,
+          2869,
+          3163
+        ],
+        "B_common_linear_step": 1729,
+        "B_common_step_count": 30,
+        "B_step_exception_edges": [
+          0
+        ],
+        "B_wrap_step": 1729,
+        "expected_inverse_branch_scale": 1729
+      },
+      {
+        "A_row_ratios": [
+          1,
+          1886,
+          3200
+        ],
+        "B_values": [
+          3310,
+          3426,
+          470,
+          1907,
+          2758,
+          2011,
+          3077,
+          297,
+          1742,
+          1022,
+          675,
+          2702,
+          2637,
+          277,
+          484,
+          22,
+          1,
+          1100,
+          50,
+          3145,
+          2500,
+          1685,
+          548,
+          1282,
+          3201,
+          1874,
+          1028,
+          361,
+          3002,
+          765,
+          1449,
+          223
+        ],
+        "B_common_linear_step": 1100,
+        "B_common_step_count": 30,
+        "B_step_exception_edges": [
+          0
+        ],
+        "B_wrap_step": 1100,
+        "expected_inverse_branch_scale": 1100
+      }
+    ],
+    "chain_accounting_per_forward": {
+      "current_wide_twist": 48,
+      "current_DFT3": 16,
+      "current_total": 64,
+      "separated_A_plus_DFT3": 48,
+      "option_B_at_DFT3_output": 48,
+      "option_output_scaling_total": 96,
+      "option_output_scaling_delta": 32,
+      "option_B_absorbed_into_NTT32_new_S1_vector_chains": 24,
+      "option_B_absorbed_into_NTT32_new_S1_scalar_butterflies": 96,
+      "option_NTT32_absorption_total": 72,
+      "option_NTT32_absorption_delta": 8
+    },
+    "reason_B_is_not_free": "B[k] is geometric with branch_scale^-1 on 30/31 linear edges, but has a CRT seam and is not a 32nd-root leaf permutation; pushing it into current N5 makes the identity S1 nonidentity"
+  },
+  "topology_preserving_candidates": [
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 1,
+        "d": 0
+      },
+      "ratio_cardinality": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "ratio_complexity_sum": 8,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 0,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 0
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 1,
+        "d": 0
+      },
+      "ratio_cardinality": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "ratio_complexity_sum": 8,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 0,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 0
+    }
+  ],
+  "best_ratio_complexity_candidates": [
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 1,
+        "d": 2
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 52
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 1,
+        "d": 2
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 52
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 17,
+        "d": 2
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 100
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 17,
+        "d": 2
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 100
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 15,
+        "d": 30
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 102
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 31,
+        "d": 30
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 102
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 15,
+        "d": 30
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 102
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 31,
+        "d": 30
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 102
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 7,
+        "d": 14
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 138
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 23,
+        "d": 14
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 138
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 7,
+        "d": 14
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 138
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 23,
+        "d": 14
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 138
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 9,
+        "d": 18
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 144
+    },
+    {
+      "parameters": {
+        "a": 1,
+        "b": 0,
+        "c": 25,
+        "d": 18
+      },
+      "ratio_cardinality": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 144
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 9,
+        "d": 18
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 144
+    },
+    {
+      "parameters": {
+        "a": 2,
+        "b": 0,
+        "c": 25,
+        "d": 18
+      },
+      "ratio_cardinality": [
+        2,
+        1,
+        2,
+        1
+      ],
+      "ratio_complexity_sum": 6,
+      "multiplicatively_separable": false,
+      "DFT3_shift_or_column_permutation_absorbable": false,
+      "full_YMM_single_constant_vectors": 0,
+      "full_YMM_at_most_two_constant_vectors": 0,
+      "full_YMM_identity_vectors": 0,
+      "DFT3_cross_k_debt": 64,
+      "NTT32_cross_row_edges": 0,
+      "NTT32_nonradix2_edges": 144
+    }
+  ],
+  "finding": {
+    "current_twist_is_structured": true,
+    "structure": "three cyclic row-ratio triplets caused by the modulo-96 CRT representative seam; individual row ratios each use two values",
+    "coordinate_family_makes_twist_separable": false,
+    "coordinate_family_makes_twist_DFT3_absorbable": false,
+    "coordinate_family_reduces_vector_constant_cardinality": false,
+    "plus_minus_shear_moves_coupling_to_NTT32": "both proposed shears retain two-valued ratios and create 240 cross-row NTT32 edges",
+    "best_ratio_reduction_trade": "ratio complexity 8 -> 6 is possible only with 64 DFT3 cross-k debt and nontrivial NTT32 geometry debt",
+    "carry_aware_rotation_makes_twist_separable": true,
+    "carry_aware_rotation_accelerates_current_N5": false
+  },
+  "decision": {
+    "assembly_emitted": false,
+    "benchmark_run": false,
+    "production_changed": false,
+    "reason": "the proposed affine shears only relocate coupling into NTT32 routing.  The exact carry-aware rotation does factor T=A*B, but A-scaled DFT3 plus either B output scaling or a newly nonidentity NTT32 S1 costs more chains than the current 64-chain wide-twist-plus-DFT3 region"
+  },
+  "reopen_only_if": [
+    "a non-affine exact coordinate family yields DFT3-absorbable ratios and executable NTT32 edges",
+    "a joint DFT3-plus-NTT32 matrix factorization deletes at least one full Montgomery chain",
+    "a wider ISA makes the introduced cross-row topology cheaper than current wide twist"
+  ]
+}

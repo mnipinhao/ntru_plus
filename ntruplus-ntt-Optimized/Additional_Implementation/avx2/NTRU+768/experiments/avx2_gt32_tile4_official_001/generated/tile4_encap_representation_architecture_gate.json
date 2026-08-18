@@ -1,0 +1,1044 @@
+{
+  "schema": "ntruplus768-gt32-encap-representation-architecture-v1",
+  "experiment": "GT32-ENCAP-REPRESENTATION-ARCH-001",
+  "scope": "generator-only bounded final-ciphertext P island",
+  "frozen": {
+    "h": "W-to-M Q24 decode",
+    "r": "current M Forward and B3 input",
+    "B3_arithmetic": "current general B3",
+    "quartic_basis": "monomial",
+    "Montgomery_exponent": 0,
+    "Q24_reduction_and_packet_math": "unchanged",
+    "protocol_bytes": "Official byte-exact"
+  },
+  "control": {
+    "path": "Forward_m-to-M + B3(M,M)-to-M + add_M + Q24_M",
+    "Forward_m_uops": 864,
+    "B3_output_transition_instructions": 0,
+    "Q24_qword_route_instructions": 48,
+    "common_work_excluded": [
+      "B3 arithmetic and R-squared finalizer",
+      "48 vpaddw message additions",
+      "12 four-plane Q24 transposes",
+      "Q24 canonical reduction and 12-bit packing"
+    ]
+  },
+  "search_space": {
+    "q_axis_permutations": 120,
+    "compact_Q24_candidates": 18,
+    "rejected_noncompact": 102
+  },
+  "semantic_proof": {
+    "all_candidate_mappings_bijective": true,
+    "B3_leaf_values_unchanged": true,
+    "add_lane_alignment_exact": true,
+    "Q24_serialized_mapping_exact": true,
+    "range_and_scale_unchanged": true
+  },
+  "best_same_representation_code_shape": {
+    "q_axes": [
+      "q2",
+      "q3",
+      "q0",
+      "q1",
+      "q4"
+    ],
+    "physical_layout": [
+      "q2",
+      "q3",
+      "q0",
+      "q1",
+      "c0",
+      "c1",
+      "q4"
+    ],
+    "is_M": true,
+    "Forward_m_instruction_delta": 0,
+    "B3_MxM_to_P_transition": {
+      "instructions_per_tile": 0,
+      "instructions_per_polynomial": 0,
+      "operations": []
+    },
+    "Q24_route": {
+      "compact": true,
+      "half_patterns": {
+        "00": 14,
+        "01": 12,
+        "10": 11,
+        "11": 11
+      },
+      "identity_masks": 14,
+      "symmetric_masks_absorbed_by_transpose": 11,
+      "runtime_residual_vpshufb": 23,
+      "cross_128_repairs": 0,
+      "global_materialization": false
+    },
+    "Q24_instruction_delta": -25,
+    "add_P_plus_P_direct": true,
+    "total_representation_instruction_delta": -25,
+    "complete_transition_removed": false,
+    "extra_montgomery_chains": 0,
+    "extra_reduction_checkpoints": 0,
+    "spill_required": false
+  },
+  "best_distinct_P": {
+    "q_axes": [
+      "q2",
+      "q1",
+      "q0",
+      "q3",
+      "q4"
+    ],
+    "physical_layout": [
+      "q2",
+      "q1",
+      "q0",
+      "q3",
+      "c0",
+      "c1",
+      "q4"
+    ],
+    "is_M": false,
+    "Forward_m_instruction_delta": -48,
+    "B3_MxM_to_P_transition": {
+      "instructions_per_tile": 16,
+      "instructions_per_polynomial": 96,
+      "operations": [
+        {
+          "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+          "instructions_per_tile": 16,
+          "peak_YMM": 9,
+          "spill": false,
+          "before": [
+            "q2",
+            "q3",
+            "q0",
+            "q1",
+            "c0",
+            "c1",
+            "q4"
+          ],
+          "after": [
+            "q2",
+            "q1",
+            "q0",
+            "q3",
+            "c0",
+            "c1",
+            "q4"
+          ],
+          "physical_bit_positions": [
+            1,
+            3
+          ],
+          "exact_mapping": "unary-lane-bit-swap"
+        }
+      ]
+    },
+    "Q24_route": {
+      "compact": true,
+      "half_patterns": {
+        "00": 22,
+        "01": 4,
+        "10": 3,
+        "11": 19
+      },
+      "identity_masks": 22,
+      "symmetric_masks_absorbed_by_transpose": 19,
+      "runtime_residual_vpshufb": 7,
+      "cross_128_repairs": 0,
+      "global_materialization": false
+    },
+    "Q24_instruction_delta": -41,
+    "add_P_plus_P_direct": true,
+    "total_representation_instruction_delta": 7,
+    "complete_transition_removed": false,
+    "extra_montgomery_chains": 0,
+    "extra_reduction_checkpoints": 0,
+    "spill_required": false
+  },
+  "current_Keygen_P": {
+    "q_axes": [
+      "q1",
+      "q3",
+      "q0",
+      "q2",
+      "q4"
+    ],
+    "physical_layout": [
+      "q1",
+      "q3",
+      "q0",
+      "q2",
+      "c0",
+      "c1",
+      "q4"
+    ],
+    "is_M": false,
+    "Forward_m_instruction_delta": -48,
+    "B3_MxM_to_P_transition": {
+      "instructions_per_tile": 16,
+      "instructions_per_polynomial": 96,
+      "operations": [
+        {
+          "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+          "instructions_per_tile": 16,
+          "peak_YMM": 9,
+          "spill": false,
+          "before": [
+            "q2",
+            "q3",
+            "q0",
+            "q1",
+            "c0",
+            "c1",
+            "q4"
+          ],
+          "after": [
+            "q1",
+            "q3",
+            "q0",
+            "q2",
+            "c0",
+            "c1",
+            "q4"
+          ],
+          "physical_bit_positions": [
+            0,
+            3
+          ],
+          "exact_mapping": "unary-lane-bit-swap"
+        }
+      ]
+    },
+    "Q24_route": {
+      "compact": true,
+      "half_patterns": {
+        "00": 19,
+        "01": 4,
+        "10": 9,
+        "11": 16
+      },
+      "identity_masks": 19,
+      "symmetric_masks_absorbed_by_transpose": 16,
+      "runtime_residual_vpshufb": 13,
+      "cross_128_repairs": 0,
+      "global_materialization": false
+    },
+    "Q24_instruction_delta": -35,
+    "add_P_plus_P_direct": true,
+    "total_representation_instruction_delta": 13,
+    "complete_transition_removed": false,
+    "extra_montgomery_chains": 0,
+    "extra_reduction_checkpoints": 0,
+    "spill_required": false
+  },
+  "top_distinct_candidates": [
+    {
+      "q_axes": [
+        "q2",
+        "q1",
+        "q0",
+        "q3",
+        "q4"
+      ],
+      "physical_layout": [
+        "q2",
+        "q1",
+        "q0",
+        "q3",
+        "c0",
+        "c1",
+        "q4"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 16,
+        "instructions_per_polynomial": 96,
+        "operations": [
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              1,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 22,
+          "01": 4,
+          "10": 3,
+          "11": 19
+        },
+        "identity_masks": 22,
+        "symmetric_masks_absorbed_by_transpose": 19,
+        "runtime_residual_vpshufb": 7,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -41,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 7,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q1",
+        "q3",
+        "q0",
+        "q2",
+        "q4"
+      ],
+      "physical_layout": [
+        "q1",
+        "q3",
+        "q0",
+        "q2",
+        "c0",
+        "c1",
+        "q4"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 16,
+        "instructions_per_polynomial": 96,
+        "operations": [
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q1",
+              "q3",
+              "q0",
+              "q2",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 19,
+          "01": 4,
+          "10": 9,
+          "11": 16
+        },
+        "identity_masks": 19,
+        "symmetric_masks_absorbed_by_transpose": 16,
+        "runtime_residual_vpshufb": 13,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -35,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 13,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q3",
+        "q2",
+        "q0",
+        "q1",
+        "q4"
+      ],
+      "physical_layout": [
+        "q3",
+        "q2",
+        "q0",
+        "q1",
+        "c0",
+        "c1",
+        "q4"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": 0,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 8,
+        "instructions_per_polynomial": 48,
+        "operations": [
+          {
+            "instruction_family": "vpshufb-lane-bit-permutation",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "q2",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              1
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 14,
+          "01": 12,
+          "10": 11,
+          "11": 11
+        },
+        "identity_masks": 14,
+        "symmetric_masks_absorbed_by_transpose": 11,
+        "runtime_residual_vpshufb": 23,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -25,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 23,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q1",
+        "q2",
+        "q0",
+        "q4",
+        "q3"
+      ],
+      "physical_layout": [
+        "q1",
+        "q2",
+        "q0",
+        "q4",
+        "c0",
+        "c1",
+        "q3"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 24,
+        "instructions_per_polynomial": 144,
+        "operations": [
+          {
+            "instruction_family": "vpshufb-lane-bit-permutation",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q0",
+              "q3",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              1,
+              2
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          },
+          {
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q0",
+              "q3",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q0",
+              "q3",
+              "q4",
+              "c0",
+              "c1",
+              "q1"
+            ],
+            "physical_bit_positions": [
+              3,
+              6
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap"
+          },
+          {
+            "instruction_family": "vpunpcklwd/vpunpckhwd",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q0",
+              "q3",
+              "q4",
+              "c0",
+              "c1",
+              "q1"
+            ],
+            "after": [
+              "q1",
+              "q2",
+              "q0",
+              "q4",
+              "c0",
+              "c1",
+              "q3"
+            ],
+            "source_YMM_selector_bit": 6,
+            "unit_word_log2": 0,
+            "exact_mapping": "AVX2-unpack-low/high-bit-cycle"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 24,
+          "01": 0,
+          "10": 3,
+          "11": 21
+        },
+        "identity_masks": 24,
+        "symmetric_masks_absorbed_by_transpose": 21,
+        "runtime_residual_vpshufb": 3,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -45,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 51,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q1",
+        "q3",
+        "q0",
+        "q4",
+        "q2"
+      ],
+      "physical_layout": [
+        "q1",
+        "q3",
+        "q0",
+        "q4",
+        "c0",
+        "c1",
+        "q2"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 24,
+        "instructions_per_polynomial": 144,
+        "operations": [
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q1",
+              "q3",
+              "q0",
+              "q2",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          },
+          {
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q1",
+              "q3",
+              "q0",
+              "q2",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q1",
+              "q3",
+              "q0",
+              "q4",
+              "c0",
+              "c1",
+              "q2"
+            ],
+            "physical_bit_positions": [
+              3,
+              6
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 24,
+          "01": 0,
+          "10": 3,
+          "11": 21
+        },
+        "identity_masks": 24,
+        "symmetric_masks_absorbed_by_transpose": 21,
+        "runtime_residual_vpshufb": 3,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -45,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 51,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q2",
+        "q1",
+        "q0",
+        "q4",
+        "q3"
+      ],
+      "physical_layout": [
+        "q2",
+        "q1",
+        "q0",
+        "q4",
+        "c0",
+        "c1",
+        "q3"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 24,
+        "instructions_per_polynomial": 144,
+        "operations": [
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              1,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          },
+          {
+            "instruction_family": "vperm2i128-low/high-half-selection",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q1",
+              "q0",
+              "q3",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q2",
+              "q1",
+              "q0",
+              "q4",
+              "c0",
+              "c1",
+              "q3"
+            ],
+            "physical_bit_positions": [
+              3,
+              6
+            ],
+            "exact_mapping": "128-bit-half/YMM-selector-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 24,
+          "01": 0,
+          "10": 3,
+          "11": 21
+        },
+        "identity_masks": 24,
+        "symmetric_masks_absorbed_by_transpose": 21,
+        "runtime_residual_vpshufb": 3,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -45,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 51,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q1",
+        "q2",
+        "q0",
+        "q3",
+        "q4"
+      ],
+      "physical_layout": [
+        "q1",
+        "q2",
+        "q0",
+        "q3",
+        "c0",
+        "c1",
+        "q4"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 24,
+        "instructions_per_polynomial": 144,
+        "operations": [
+          {
+            "instruction_family": "vpshufb-lane-bit-permutation",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "q2",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              1
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          },
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "q2",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q1",
+              "q2",
+              "q0",
+              "q3",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 22,
+          "01": 4,
+          "10": 3,
+          "11": 19
+        },
+        "identity_masks": 22,
+        "symmetric_masks_absorbed_by_transpose": 19,
+        "runtime_residual_vpshufb": 7,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -41,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 55,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    },
+    {
+      "q_axes": [
+        "q3",
+        "q1",
+        "q0",
+        "q2",
+        "q4"
+      ],
+      "physical_layout": [
+        "q3",
+        "q1",
+        "q0",
+        "q2",
+        "c0",
+        "c1",
+        "q4"
+      ],
+      "is_M": false,
+      "Forward_m_instruction_delta": -48,
+      "B3_MxM_to_P_transition": {
+        "instructions_per_tile": 24,
+        "instructions_per_polynomial": 144,
+        "operations": [
+          {
+            "instruction_family": "vpshufb-lane-bit-permutation",
+            "instructions_per_tile": 8,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q2",
+              "q3",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "q2",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              0,
+              1
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          },
+          {
+            "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+            "instructions_per_tile": 16,
+            "peak_YMM": 9,
+            "spill": false,
+            "before": [
+              "q3",
+              "q2",
+              "q0",
+              "q1",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "after": [
+              "q3",
+              "q1",
+              "q0",
+              "q2",
+              "c0",
+              "c1",
+              "q4"
+            ],
+            "physical_bit_positions": [
+              1,
+              3
+            ],
+            "exact_mapping": "unary-lane-bit-swap"
+          }
+        ]
+      },
+      "Q24_route": {
+        "compact": true,
+        "half_patterns": {
+          "00": 19,
+          "01": 4,
+          "10": 9,
+          "11": 16
+        },
+        "identity_masks": 19,
+        "symmetric_masks_absorbed_by_transpose": 16,
+        "runtime_residual_vpshufb": 13,
+        "cross_128_repairs": 0,
+        "global_materialization": false
+      },
+      "Q24_instruction_delta": -35,
+      "add_P_plus_P_direct": true,
+      "total_representation_instruction_delta": 61,
+      "complete_transition_removed": false,
+      "extra_montgomery_chains": 0,
+      "extra_reduction_checkpoints": 0,
+      "spill_required": false
+    }
+  ],
+  "decision": "static-hard-stop-final-P-no-assembly",
+  "reason": [
+    "No distinct P beats the current M final island even in the static uop model.",
+    "The best distinct P saves 48 Forward instructions and 41 Q24 route instructions but pays 96 instructions for B3 M-to-P output routing, for a net +7.",
+    "Current Keygen P is net +13 instructions on this Encap edge.",
+    "No complete materialized transition, multiply chain, reduction checkpoint, or store/load boundary disappears.",
+    "The only negative result is P=M with TF1-style Q24 tail orientation (-25 instructions per pack); that is a local Q24 code-shape probe, not the requested representation architecture."
+  ],
+  "assembly_emitted": false,
+  "r_D_MP_phase": "not-opened-final-P-prerequisite-failed",
+  "deferred_local_probe": {
+    "name": "M-Q24-TF1",
+    "ceiling_for_two_encap_packs_instructions": -50,
+    "status": "deferred-below-50-to-80-core-cycle-architecture-gate",
+    "reopen_if": [
+      "the same compact body serves both range contracts without duplicating code",
+      "measured local saving is at least 20 core cycles per pack in both placements",
+      "another consumer removes a complete boundary"
+    ]
+  },
+  "reopen_only_if": [
+    "B3 output forms a pack-native P without an M-to-P lane transition",
+    "Forward_m P also deletes a downstream Q24 transpose layer",
+    "a dual-use r layout removes a complete route on both B3 and Q24 edges",
+    "target ISA provides a materially cheaper cross-half permutation network"
+  ]
+}

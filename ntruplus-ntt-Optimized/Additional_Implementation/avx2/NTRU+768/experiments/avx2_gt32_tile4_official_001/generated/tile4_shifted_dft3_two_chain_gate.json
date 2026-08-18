@@ -1,0 +1,118 @@
+{
+  "experiment": "GT32-SHIFTED-DFT3-TWO-CHAIN-001",
+  "status": "two-chain-small-coefficient-hard-stop",
+  "transform": "DFT3 * diag(1,a,a^2)",
+  "rho": 2734,
+  "branch_a_constants": [
+    867,
+    1886
+  ],
+  "branch_constants_are_inverses": true,
+  "circuit_model": {
+    "m0": "C0*(alpha dot x)",
+    "m1": "C1*(b dot x + beta*m0)",
+    "outputs": "Gamma*x + u*m0 + v*m1",
+    "C0_C1": "arbitrary nonzero F_q constants",
+    "G1_cheap_coefficients": [
+      0,
+      1,
+      -1
+    ],
+    "G2_cheap_coefficients": [
+      0,
+      1,
+      -1,
+      2,
+      -2
+    ],
+    "second_chain_may_depend_on_first": true
+  },
+  "branches": [
+    {
+      "branch": 0,
+      "a": 867,
+      "a_squared": 1520,
+      "matrix": [
+        [
+          1,
+          867,
+          1520
+        ],
+        [
+          1,
+          2333,
+          1571
+        ],
+        [
+          1,
+          257,
+          366
+        ]
+      ],
+      "G1_coefficients_0_pm1": {
+        "found": false,
+        "unique_first_chain_results_checked": 44928,
+        "projective_first_input_lines": 13
+      },
+      "G2_coefficients_0_pm1_pm2": {
+        "found": false,
+        "small_Gamma_matrices_checked": 1953125,
+        "singular_rank2_residuals": 19454,
+        "rank_at_most_one_residuals": 0,
+        "small_projective_input_lines": 49,
+        "small_output_planes": 349,
+        "ordered_small_plane_bases": 15024,
+        "basis_factorizations_checked": 953040
+      }
+    },
+    {
+      "branch": 1,
+      "a": 1886,
+      "a_squared": 3200,
+      "matrix": [
+        [
+          1,
+          1886,
+          3200
+        ],
+        [
+          1,
+          1937,
+          1124
+        ],
+        [
+          1,
+          3091,
+          2590
+        ]
+      ],
+      "G1_coefficients_0_pm1": {
+        "found": false,
+        "unique_first_chain_results_checked": 44928,
+        "projective_first_input_lines": 13
+      },
+      "G2_coefficients_0_pm1_pm2": {
+        "found": false,
+        "small_Gamma_matrices_checked": 1953125,
+        "singular_rank2_residuals": 19327,
+        "rank_at_most_one_residuals": 0,
+        "small_projective_input_lines": 49,
+        "small_output_planes": 349,
+        "ordered_small_plane_bases": 15024,
+        "basis_factorizations_checked": 953040
+      }
+    }
+  ],
+  "decision": {
+    "assembly_emitted": false,
+    "benchmark_run": false,
+    "stage_gauge_status": "arithmetic-route-paused",
+    "reason": "neither branch has a two-chain circuit in the exhaustive 0,+/-1 or 0,+/-1,+/-2 linear circuit models; the known three-chain A-scale-plus-DFT3 schedule remains"
+  },
+  "scope_limit": "this is not an unrestricted multiplicative-complexity theorem; it is exhaustive for the stated AVX2-relevant small-coefficient sequential two-chain model",
+  "reopen_only_if": [
+    "a symbolic identity outside the small-coefficient circuit model is supplied",
+    "the raw-stage ratio folds into an independently required producer multiply",
+    "a different representation changes the shifted-DFT3 matrix"
+  ]
+}
