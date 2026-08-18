@@ -1,0 +1,67 @@
+experiment: GT32-PLANE-N16-RADIX4-ROUTE-ELIM-008
+status: completed_static_hard_stop
+production_modified: false
+assembly_emitted: false
+
+scope:
+  searched:
+    - exact_fused_radix2x2_physical_formation
+    - true_radix4_DIT_matrix_factorization
+    - pure_local_radix4_DIF_closure
+    - segmentations_R2x4_R4R2R2_R2R2R4_R4R4
+    - exact_terminal_coefficient_plane_repair
+    - exhaustive_S2_S3_whole_register_center_sets
+  excluded:
+    - consumer_selected_hybrid_terminal
+    - carried_twist_or_scale_ABI
+    - changes_to_GT_Clean
+
+correctness:
+  exact_R2_R2x2_basis_vectors: 128
+  true_DIT_exact_matrix: passed_all_blocks
+  pure_DIF_closed_blocks:
+    S2_S3: 4/8
+    S4_S5: 1/8
+  int16_safe: true
+  terminal_bound: 10719
+  existing_BM_input_bound: 10788
+  peak_YMM: 13
+  spills: false
+
+best_costs:
+  R2_R2_R2_R2: {instructions: 144, shuffles: 48, loads: 32, depth: 22}
+  R2_R2_R2x2: {instructions: 152, shuffles: 56, loads: 32, depth: 24}
+  R2_R2x2_R2: {instructions: 153, shuffles: 56, loads: 33, depth: 24}
+  R2x2_R2_R2: {instructions: 153, shuffles: 56, loads: 33, depth: 24}
+  R2x2_R2x2: {instructions: 168, shuffles: 72, loads: 32, depth: 26}
+
+true_radix4:
+  S2_S3:
+    optimistic_nonidentity_Montgomery_chains: 5
+    mandatory_center10_sequences: 6
+    arithmetic_instructions: 54
+    radix2x2_control_instructions: 48
+  S4_S5:
+    minimum_full_vector_Montgomery_chains: 8
+    arithmetic_instruction_lower_bound: 48
+    radix2x2_control_instructions: 48
+
+decision:
+  promote: false
+  hard_stop_scope: persistent_full_plane_radix4_route_elimination
+  reason:
+    - joint_formation_saving_is_repaid_by_terminal_plane_repair
+    - S2_S3_radix4_chain_saving_is_more_than_repaid_by_range_repairs
+    - S4_S5_radix4_does_not_reduce_full_vector_chains
+    - pure_DIF_is_not_locally_closed_for_all_blocks
+
+reopen_only_if:
+  - a_consumer_selects_a_hybrid_terminal_and_deletes_the_plane_repair
+  - a_new_range_or_scale_contract_removes_the_six_S2_S3_repairs
+  - an_AVX2_primitive_compacts_qword_radix4_products_without_a_route
+  - a_broader_twist_ABI_accepts_the_nonclosed_DIF_domain
+
+next:
+  - keep_007_progressive_as_the_executable_champion
+  - do_not_write_008_ASM
+  - if_continuing_use_consumer_selected_hybrid_plus_radix4_not_full_plane
