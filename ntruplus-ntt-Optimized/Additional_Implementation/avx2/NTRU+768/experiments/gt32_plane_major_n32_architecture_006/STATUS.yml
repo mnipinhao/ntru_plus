@@ -1,0 +1,39 @@
+experiment: GT32-PLANE-MAJOR-N32-ARCHITECTURE-006
+scope: coverage_corrected_global_physical_basis_gate
+production_modified: false
+status: continue_to_exact_lane_stage_synthesis
+prior_coverage:
+  reverse_inverse_progressive_forward: already_serious_qualified
+  all_5040_bit_permutation_states_between_radix2_stages: covered
+  current_private_soa_b3_zero_repair: covered
+old_model_exclusions:
+  - persistent_full_plane_stockham
+  - fused_stage_transition_cost
+  - twiddle_load_and_register_reuse
+  - hybrid_native_basemul
+  - plane_major_radix4
+basis:
+  current_like:
+    cross_ymm_stages: 3
+    lane_local_stages: 2
+  hybrid_one_plane_bit:
+    cross_ymm_stages: 2
+    lane_local_stages: 3
+  full_plane_major:
+    cross_ymm_stages: 1
+    lane_local_stages: 4
+    native_b3_plane_loads: true
+twiddle_oracle:
+  current_equivalent_vector_operands_per_tile: 32
+  unique_plane_major_vector_loads_per_tile: 16
+  potential_reduction_per_tile: 16
+decision: continue_to_GT32_PLANE_N16_STOCKHAM_STAGES_007
+next_requirements:
+  - exact_128_basis_matrix_equality
+  - peak_ymm_at_most_16_including_constants
+  - no_spill
+  - no_new_montgomery_chain_or_checkpoint
+  - no_canonical_repair_between_lane_stages
+deferred:
+  - q24_wire_economics
+  - production_gt_clean_changes

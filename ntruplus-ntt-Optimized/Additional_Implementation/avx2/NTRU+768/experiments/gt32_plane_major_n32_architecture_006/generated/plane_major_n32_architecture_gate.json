@@ -1,0 +1,725 @@
+{
+  "schema": "ntruplus768-gt32-plane-major-n32-architecture-006-v1",
+  "experiment": "GT32-PLANE-MAJOR-N32-ARCHITECTURE-006",
+  "production_modified": false,
+  "question": "Can a basis chosen before S1 lower Forward+BaseMul+Inverse cost through lane-local Stockham, hybrid-native arithmetic, or radix-4?",
+  "sources": {
+    "ntt": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt.s",
+      "sha256": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722"
+    },
+    "invntt": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/invntt.s",
+      "sha256": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa"
+    },
+    "basemul": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/basemul.s",
+      "sha256": "5dcf8b359c061ad9c469ed650f05ff5570d737fb13dc474e1fd333cfd388e654"
+    },
+    "old_global_generator": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/generate_gt32_global_physical_layout_gate.py",
+      "sha256": "7f12e6952d92563d8d06dee5354abdc1ca415e85f00942d95d5b48f51586c5f6"
+    },
+    "old_global_result": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_global_physical_layout_gate.json",
+      "sha256": "6e36bf5d111c5e78f83a29fad0ace47a3d7b19ed9449712bd55ecd2db3ca6ff6"
+    },
+    "old_global_serious": {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/tile4-global-physical-whole-serious.json",
+      "sha256": "9402213035ce49dc34a07e2a9c79a7cfd2632d9392e3b383d9f18d2503118621"
+    }
+  },
+  "coordinate_model": {
+    "semantic_axes": [
+      "p0",
+      "p1",
+      "k0",
+      "k1",
+      "k2",
+      "k3",
+      "k4"
+    ],
+    "physical_positions": [
+      "lane_bit0",
+      "lane_bit1",
+      "lane_bit2",
+      "lane_bit3",
+      "ymm_bit0",
+      "ymm_bit1",
+      "ymm_bit2"
+    ],
+    "words_per_tile": 128,
+    "YMM_per_tile": 8,
+    "basis_bijections_exact": true,
+    "basis": {
+      "current_like": {
+        "layout_low_to_high": [
+          "p0",
+          "p1",
+          "k0",
+          "k1",
+          "k2",
+          "k3",
+          "k4"
+        ],
+        "lane_axes": [
+          "p0",
+          "p1",
+          "k0",
+          "k1"
+        ],
+        "YMM_selector_axes": [
+          "k2",
+          "k3",
+          "k4"
+        ],
+        "exact_128_word_bijection_sha256": "4497d32c822ad4ae57132a3462f6a0630d5d4a7863915c4ee08634841c4fee9f",
+        "forward_stage_placement": [
+          {
+            "stage": 1,
+            "logical_axis": "k4",
+            "physical_position": "ymm_bit2",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 2,
+            "logical_axis": "k3",
+            "physical_position": "ymm_bit1",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 3,
+            "logical_axis": "k2",
+            "physical_position": "ymm_bit0",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 4,
+            "logical_axis": "k1",
+            "physical_position": "lane_bit3",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 5,
+            "logical_axis": "k0",
+            "physical_position": "lane_bit2",
+            "shape": "lane_local"
+          }
+        ],
+        "cross_YMM_stages": 3,
+        "lane_local_stages": 2,
+        "quartic_plane_location": {
+          "p0": "lane_bit0",
+          "p1": "lane_bit1"
+        },
+        "plane_major_B3_loads_are_native": false
+      },
+      "hybrid_one_plane_bit": {
+        "layout_low_to_high": [
+          "p0",
+          "k0",
+          "k1",
+          "k2",
+          "p1",
+          "k3",
+          "k4"
+        ],
+        "lane_axes": [
+          "p0",
+          "k0",
+          "k1",
+          "k2"
+        ],
+        "YMM_selector_axes": [
+          "p1",
+          "k3",
+          "k4"
+        ],
+        "exact_128_word_bijection_sha256": "decf50f9f7e6660c0da593938952b0ad229afe023fce65e73ab44a06fc5eae0f",
+        "forward_stage_placement": [
+          {
+            "stage": 1,
+            "logical_axis": "k4",
+            "physical_position": "ymm_bit2",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 2,
+            "logical_axis": "k3",
+            "physical_position": "ymm_bit1",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 3,
+            "logical_axis": "k2",
+            "physical_position": "lane_bit3",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 4,
+            "logical_axis": "k1",
+            "physical_position": "lane_bit2",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 5,
+            "logical_axis": "k0",
+            "physical_position": "lane_bit1",
+            "shape": "lane_local"
+          }
+        ],
+        "cross_YMM_stages": 2,
+        "lane_local_stages": 3,
+        "quartic_plane_location": {
+          "p0": "lane_bit0",
+          "p1": "ymm_bit0"
+        },
+        "plane_major_B3_loads_are_native": false
+      },
+      "full_plane_major": {
+        "layout_low_to_high": [
+          "k0",
+          "k1",
+          "k2",
+          "k3",
+          "k4",
+          "p0",
+          "p1"
+        ],
+        "lane_axes": [
+          "k0",
+          "k1",
+          "k2",
+          "k3"
+        ],
+        "YMM_selector_axes": [
+          "k4",
+          "p0",
+          "p1"
+        ],
+        "exact_128_word_bijection_sha256": "3b58bba3ed3e4e53b656ebc4429eaad4ab0e2b895026d82f8e28b0624334299d",
+        "forward_stage_placement": [
+          {
+            "stage": 1,
+            "logical_axis": "k4",
+            "physical_position": "ymm_bit0",
+            "shape": "cross_YMM"
+          },
+          {
+            "stage": 2,
+            "logical_axis": "k3",
+            "physical_position": "lane_bit3",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 3,
+            "logical_axis": "k2",
+            "physical_position": "lane_bit2",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 4,
+            "logical_axis": "k1",
+            "physical_position": "lane_bit1",
+            "shape": "lane_local"
+          },
+          {
+            "stage": 5,
+            "logical_axis": "k0",
+            "physical_position": "lane_bit0",
+            "shape": "lane_local"
+          }
+        ],
+        "cross_YMM_stages": 1,
+        "lane_local_stages": 4,
+        "quartic_plane_location": {
+          "p0": "ymm_bit1",
+          "p1": "ymm_bit2"
+        },
+        "plane_major_B3_loads_are_native": true
+      }
+    }
+  },
+  "twiddle_oracle": {
+    "source": "invntt.s dormant gp_forward_s2..s5 tables",
+    "stages": {
+      "S2": {
+        "qinv": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19,
+              -19
+            ],
+            [
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422,
+              13422
+            ]
+          ]
+        },
+        "factor": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147,
+              -147
+            ],
+            [
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366,
+              366
+            ]
+          ]
+        }
+      },
+      "S3": {
+        "qinv": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422,
+              -19,
+              13422
+            ],
+            [
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834,
+              -32531,
+              28834
+            ]
+          ]
+        },
+        "factor": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366,
+              -147,
+              366
+            ],
+            [
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118,
+              109,
+              -1118
+            ]
+          ]
+        }
+      },
+      "S4": {
+        "qinv": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -19,
+              13422,
+              -32531,
+              28834,
+              -19,
+              13422,
+              -32531,
+              28834,
+              -19,
+              13422,
+              -32531,
+              28834,
+              -19,
+              13422,
+              -32531,
+              28834
+            ],
+            [
+              23526,
+              -10427,
+              834,
+              -739,
+              23526,
+              -10427,
+              834,
+              -739,
+              23526,
+              -10427,
+              834,
+              -739,
+              23526,
+              -10427,
+              834,
+              -739
+            ]
+          ]
+        },
+        "factor": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -147,
+              366,
+              109,
+              -1118,
+              -147,
+              366,
+              109,
+              -1118,
+              -147,
+              366,
+              109,
+              -1118,
+              -147,
+              366,
+              109,
+              -1118
+            ],
+            [
+              -794,
+              -1339,
+              -446,
+              1181,
+              -794,
+              -1339,
+              -446,
+              1181,
+              -794,
+              -1339,
+              -446,
+              1181,
+              -794,
+              -1339,
+              -446,
+              1181
+            ]
+          ]
+        }
+      },
+      "S5": {
+        "qinv": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -19,
+              -32531,
+              23526,
+              834,
+              -19,
+              -32531,
+              23526,
+              834,
+              13422,
+              28834,
+              -10427,
+              -739,
+              13422,
+              28834,
+              -10427,
+              -739
+            ],
+            [
+              31716,
+              29536,
+              27754,
+              -19242,
+              31716,
+              29536,
+              27754,
+              -19242,
+              24019,
+              -5327,
+              11147,
+              -8265,
+              24019,
+              -5327,
+              11147,
+              -8265
+            ]
+          ]
+        },
+        "factor": {
+          "vectors_in_table": 4,
+          "unique_vectors": 2,
+          "duplicate_map": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "unique_values": [
+            [
+              -147,
+              109,
+              -794,
+              -446,
+              -147,
+              109,
+              -794,
+              -446,
+              366,
+              -1118,
+              -1339,
+              1181,
+              366,
+              -1118,
+              -1339,
+              1181
+            ],
+            [
+              484,
+              864,
+              874,
+              -554,
+              484,
+              864,
+              874,
+              -554,
+              -429,
+              177,
+              11,
+              1591,
+              -429,
+              177,
+              11,
+              1591
+            ]
+          ]
+        }
+      }
+    },
+    "current_memory_operand_equivalent_vectors_per_tile": 32,
+    "plane_major_register_reuse_vector_loads_per_tile": 16,
+    "potential_vector_load_reduction_per_tile": 16,
+    "claim_scope": "constant delivery only; not yet a cycle or full-stage proof"
+  },
+  "prior_coverage_audit": {
+    "already_covered": {
+      "all_5040_bit_permutation_states_between_radix2_stages": true,
+      "reverse_inverse_progressive_forward": true,
+      "zero_repair_current_private_SoA_B3": true,
+      "explicit_progressive_inverse": true,
+      "exact_matrix_proof_and_executable_assembly": true,
+      "100k_serious_private_polymul": {
+        "normal": {
+          "TSC_delta": -54.80669,
+          "core_cycle_delta": -90.73689999999999,
+          "instruction_delta": -511.00002
+        },
+        "reversed": {
+          "TSC_delta": -53.8795,
+          "core_cycle_delta": -86.3828,
+          "instruction_delta": -511.00002
+        }
+      }
+    },
+    "not_covered_by_old_cost_model": {
+      "persistent_full_plane_in_YMM_Stockham": true,
+      "fused_stage_transition_instead_of_fixed_16_shuffle_lane_stage": true,
+      "twiddle_constant_load_uops_and_register_reuse": true,
+      "hybrid_native_BaseMul_arithmetic": true,
+      "radix4_N32_equals_2x4x4": true
+    },
+    "important_correction": "reverse-Inverse progressive Forward is not new: it was generated, implemented, and serious-qualified as a private polynomial primitive"
+  },
+  "transform_island_budget": {
+    "current_packed_plane_routing_per_tile": {
+      "forward_terminal": 24,
+      "inverse_ingress": 24,
+      "total": 48
+    },
+    "six_tile_total_per_polymul": 288,
+    "interpretation": "available architecture budget, not an assumed saving; the old progressive implementation already captured part of it"
+  },
+  "open_families": {
+    "F0_reverse_inverse_progressive": {
+      "status": "already_serious_qualified_do_not_duplicate"
+    },
+    "F1_full_plane_stockham": {
+      "status": "active_next",
+      "required_proof": "exact executable q3..q0 lane-partner circuits whose output layout is the next stage input, including twiddle registers"
+    },
+    "F2_hybrid_native": {
+      "status": "active_after_shared_lane_stage_library",
+      "required_proof": "hybrid-native quartic BM and inverse without conversion to M"
+    },
+    "F3_plane_major_radix4": {
+      "status": "active_after_radix2_lane_oracle",
+      "required_proof": "exact N32=2x4x4 matrix and fewer shuffle/dependency layers"
+    }
+  },
+  "next_executable_gate": {
+    "name": "GT32-PLANE-N16-STOCKHAM-STAGES-007",
+    "scope": "one plane-major tile, q4 cross-YMM plus q3..q0 lane stages",
+    "compare": [
+      "persistent plane-major radix-2 Stockham",
+      "old progressive selected circuit",
+      "current pair-packed local-stage control"
+    ],
+    "must_measure": [
+      "retired instructions",
+      "estimated and PMU core cycles",
+      "shuffle uops",
+      "constant loads",
+      "peak YMM",
+      "critical depth"
+    ],
+    "hard_requirements": [
+      "exact 128-basis matrix equality",
+      "no spill",
+      "peak YMM <= 16 including q/twiddle/temp",
+      "no new Montgomery chain or checkpoint",
+      "no canonical-layout repair between lane stages"
+    ]
+  },
+  "decision": "continue_to_exact_lane_stage_synthesis_not_whole_ASM",
+  "Q24_policy": "deferred_until_transform_domain_architecture_is_executable"
+}
