@@ -1,0 +1,132 @@
+{
+  "aggregate": {
+    "folded": {
+      "max_core_cycles": 72.65307,
+      "max_launch_tsc_median": 43.41552,
+      "median_core_cycles": 70.2549,
+      "median_delivery": {
+        "dsb_uops": 169.980865,
+        "idq_not_delivered": 4.058925,
+        "mite_uops": 0.03364
+      },
+      "median_execution": {
+        "port_5_11_uops": 50.447975
+      },
+      "median_instructions": 169.00039,
+      "median_loads": 42.00011,
+      "median_of_launch_tsc_medians": 43.318345,
+      "median_stores": 9.00007,
+      "min_core_cycles": 70.03544,
+      "min_launch_tsc_median": 43.29828
+    },
+    "pair": {
+      "max_core_cycles": 79.41258,
+      "max_launch_tsc_median": 48.717349999999996,
+      "median_core_cycles": 78.37811500000001,
+      "median_delivery": {
+        "dsb_uops": 185.9718,
+        "idq_not_delivered": 0.03999,
+        "mite_uops": 0.043155
+      },
+      "median_execution": {
+        "port_5_11_uops": 51.042305
+      },
+      "median_instructions": 185.000385,
+      "median_loads": 42.000105000000005,
+      "median_of_launch_tsc_medians": 48.660415,
+      "median_stores": 9.00007,
+      "min_core_cycles": 78.12053,
+      "min_launch_tsc_median": 48.63684
+    },
+    "progressive": {
+      "max_core_cycles": 67.5605,
+      "max_launch_tsc_median": 41.30649,
+      "median_core_cycles": 66.69721999999999,
+      "median_delivery": {
+        "dsb_uops": 161.975815,
+        "idq_not_delivered": 0.022109999999999998,
+        "mite_uops": 0.032615000000000005
+      },
+      "median_execution": {
+        "port_5_11_uops": 46.423695
+      },
+      "median_instructions": 161.000385,
+      "median_loads": 42.000105000000005,
+      "median_of_launch_tsc_medians": 41.254304999999995,
+      "median_stores": 9.00007,
+      "min_core_cycles": 66.09367,
+      "min_launch_tsc_median": 41.20101
+    },
+    "reuse_one": {
+      "max_core_cycles": 70.96725,
+      "max_launch_tsc_median": 43.6104,
+      "median_core_cycles": 70.428815,
+      "median_delivery": {
+        "dsb_uops": 173.9563,
+        "idq_not_delivered": 0.03427,
+        "mite_uops": 0.055535
+      },
+      "median_execution": {
+        "port_5_11_uops": 50.25414
+      },
+      "median_instructions": 173.000385,
+      "median_loads": 30.000104999999998,
+      "median_of_launch_tsc_medians": 43.52702000000001,
+      "median_stores": 9.00007,
+      "min_core_cycles": 70.31703,
+      "min_launch_tsc_median": 43.49103
+    },
+    "reuse_pair": {
+      "max_core_cycles": 70.29033,
+      "max_launch_tsc_median": 43.04318000000001,
+      "median_core_cycles": 69.70246,
+      "median_delivery": {
+        "dsb_uops": 177.980615,
+        "idq_not_delivered": 2.03489,
+        "mite_uops": 0.028895
+      },
+      "median_execution": {
+        "port_5_11_uops": 50.42782
+      },
+      "median_instructions": 177.00039,
+      "median_loads": 18.00011,
+      "median_of_launch_tsc_medians": 42.998545,
+      "median_stores": 9.00007,
+      "min_core_cycles": 69.43804,
+      "min_launch_tsc_median": 42.976929999999996
+    }
+  },
+  "decision": "do_not_promote_persistent_plane_radix2_schedule",
+  "experiment": "GT32-PLANE-N16-STOCKHAM-STAGES-007",
+  "hard_stop_scope": "structured affine radix-2 persistent plane-major N16 schedules in this stage library",
+  "interpretation": "the new fused edge is real and reuse-pair is the best plane policy, but the old progressive schedule remains the executable N16 champion",
+  "not_closed": [
+    "hybrid terminal selected by a downstream consumer",
+    "radix-4 N16 schema (008)",
+    "a new AVX2 primitive that removes the S2/S3 lane route"
+  ],
+  "questions": {
+    "Q1_minimum_persistent_permutation_cost": {
+      "answer": "48 shuffle instructions per 8-YMM tile",
+      "mechanism": "8-shuffle unpack-butterfly edges remove reconstruction but S2/S3 each still require an 8-shuffle lane route",
+      "pair_packed_control": 56,
+      "progressive_control": 40
+    },
+    "Q2_twiddle_reuse": {
+      "answer": "physically valid but only a small cycle win",
+      "core_cycle_delta": -0.5524400000000043,
+      "folded_loads": 42.00011,
+      "instruction_delta": 8.0,
+      "load_delta": -24.0,
+      "reuse_pair_loads": 18.00011
+    },
+    "Q3_plane_major_beats_controls": {
+      "TSC_delta_vs_progressive": 1.744240000000005,
+      "answer": false,
+      "best_plane_policy": "reuse_pair",
+      "core_cycle_delta_vs_progressive": 3.005240000000015,
+      "launches": 8,
+      "progressive_wins_by_launch": 8
+    }
+  }
+}

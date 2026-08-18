@@ -1,0 +1,56 @@
+experiment: GT32-PLANE-N16-STOCKHAM-STAGES-007
+status: completed_not_promoted
+production_modified: false
+
+scope:
+  searched:
+    - post_S1_N16_radix2_layouts_between_S2_S5
+    - affine_bit_structured_lane_layouts
+    - sum_difference_branch_placement
+    - folded_reuse_one_reuse_pair_twiddle_policies
+    - exact_register_coloring_including_masks
+  excluded:
+    - Q24_terminal_cost
+    - arbitrary_16_factorial_lane_permutations
+    - radix4_execution
+
+correctness:
+  exact_basis_vectors: 128
+  random_trials: 1000
+  alias_out_equals_in: passed
+  terminal_bound: 10788
+  int16_safe: true
+  spills: false
+
+answers:
+  Q1_minimum_persistent_permutation:
+    shuffle_instructions_per_8YMM_tile: 48
+    progressive_control: 40
+    pair_packed_control: 56
+  Q2_twiddle_reuse:
+    folded_to_reuse_pair_retired_load_delta: -24
+    retired_instruction_delta: 8
+    core_cycle_delta: -0.55244
+  Q3_executable_winner:
+    winner: progressive_control
+    best_persistent_plane_policy: reuse_pair
+    persistent_minus_progressive_core_cycles: 3.00524
+    persistent_minus_progressive_TSC: 1.74424
+    progressive_launch_wins: 8/8
+
+decision:
+  promote: false
+  hard_stop_scope: structured_affine_radix2_persistent_plane_N16
+  reason:
+    - twiddle_load_reuse_is_real_but_too_small
+    - remaining_S2_S3_lane_routes_keep_shuffle_cost_above_progressive
+    - exact_progressive_control_wins_core_cycles_TSC_and_all_launches
+
+reopen_only_if:
+  - downstream_consumer_selects_a_hybrid_terminal_and_removes_more_work
+  - radix4_changes_the_stage_graph
+  - a_new_AVX2_primitive_removes_a_complete_S2_or_S3_lane_route
+
+next:
+  - reserve_radix4_schema_for_008
+  - do_not_modify_GT_Clean_from_007
