@@ -51,6 +51,25 @@ static int16_t edge_c[WORDS] __attribute__((aligned(64)));
 static uint8_t edge_bytes[NTRUPLUS_POLYBYTES] __attribute__((aligned(64)));
 static volatile uint64_t sink;
 
+/* Shared-stage waterfall state.  This deliberately removes compiler-created
+ * differences between duplicated "shared" source blocks: prework and middle
+ * glue are one physical symbol for both predecessors. */
+static uint8_t wf_msg[HASH_H_INBYTES] __attribute__((aligned(64)));
+static uint8_t wf_buf[HASH_H_OUTBYTES] __attribute__((aligned(64)));
+static uint8_t wf_rhat[NTRUPLUS_POLYBYTES] __attribute__((aligned(64)));
+static uint8_t wf_ss[NTRUPLUS_SSBYTES] __attribute__((aligned(64)));
+static poly wf_coeff_r __attribute__((aligned(64)));
+static poly wf_coeff_m __attribute__((aligned(64)));
+static poly wf_off_h __attribute__((aligned(64)));
+static poly wf_off_r __attribute__((aligned(64)));
+static poly wf_off_m __attribute__((aligned(64)));
+static poly wf_off_c __attribute__((aligned(64)));
+static int16_t wf_gt_h[WORDS] __attribute__((aligned(64)));
+static int16_t wf_gt_r[WORDS] __attribute__((aligned(64)));
+static int16_t wf_gt_m[WORDS] __attribute__((aligned(64)));
+static int16_t wf_gt_c[WORDS] __attribute__((aligned(64)));
+static int16_t wf_gt_work[WORDS] __attribute__((aligned(64)));
+
 static const char *const stage_names[STAGES + 1] = {
 	"", "L01_decode_h", "L02_copy_coins", "L03_hash_f",
 	"L04_hash_h", "L05_cbd_r", "L06_forward_r",
@@ -127,6 +146,27 @@ static int open_pmu(pmu_group_t *group)
 		configs[1] = 0x8203;     /* ld_blocks.store_forward */
 		configs[2] = 0x0403;     /* ld_blocks.address_alias */
 		configs[3] = 0x08a2;     /* resource_stalls.sb */
+	} else if (mode != NULL && strcmp(mode, "frontend") == 0) {
+		types[1] = core_type;
+		types[2] = core_type;
+		types[3] = core_type;
+		configs[1] = 0x0879;     /* idq.dsb_uops */
+		configs[2] = 0x0479;     /* idq.mite_uops */
+		configs[3] = 0x019c;     /* idq_uops_not_delivered.core */
+	} else if (mode != NULL && strcmp(mode, "frontend_ms") == 0) {
+		types[1] = core_type;
+		types[2] = core_type;
+		types[3] = core_type;
+		configs[1] = 0x0879;     /* idq.dsb_uops */
+		configs[2] = 0x0479;     /* idq.mite_uops */
+		configs[3] = 0x2079;     /* idq.ms_uops */
+	} else if (mode != NULL && strcmp(mode, "branch") == 0) {
+		types[1] = PERF_TYPE_HARDWARE;
+		types[2] = PERF_TYPE_HARDWARE;
+		types[3] = PERF_TYPE_HARDWARE;
+		configs[1] = PERF_COUNT_HW_BRANCH_INSTRUCTIONS;
+		configs[2] = PERF_COUNT_HW_BRANCH_MISSES;
+		configs[3] = PERF_COUNT_HW_REF_CPU_CYCLES;
 	} else {
 		types[1] = PERF_TYPE_HARDWARE;
 		types[2] = core_type;
@@ -218,7 +258,8 @@ static void snap_coeff(snapshot_t *snapshot, const int16_t *input)
 	snap_bytes(snapshot, input, sizeof(int16_t) * WORDS);
 }
 
-static int official_prefix(unsigned stop, snapshot_t *snapshot)
+__attribute__((always_inline)) static inline int official_prefix(
+	unsigned stop, snapshot_t *snapshot)
 {
 	uint8_t msg[HASH_H_INBYTES];
 	uint8_t buf[HASH_H_OUTBYTES];
@@ -360,7 +401,8 @@ static int official_prefix(unsigned stop, snapshot_t *snapshot)
 	return 0;
 }
 
-static int gt_prefix_variant(unsigned stop, snapshot_t *snapshot, unsigned flags)
+__attribute__((always_inline)) static inline int gt_prefix_variant(
+	unsigned stop, snapshot_t *snapshot, unsigned flags)
 {
 	uint8_t msg[HASH_H_INBYTES];
 	uint8_t buf[HASH_H_OUTBYTES];
@@ -517,10 +559,329 @@ static int gt_prefix_variant(unsigned stop, snapshot_t *snapshot, unsigned flags
 	return 0;
 }
 
-static int gt_prefix(unsigned stop, snapshot_t *snapshot)
+__attribute__((always_inline)) static inline int gt_prefix(
+	unsigned stop, snapshot_t *snapshot)
 {
 	return gt_prefix_variant(stop, snapshot, 0);
 }
+
+/* Constant-cut wrappers let GCC remove all later stages and runtime stop
+ * branches.  The generic 18-stage prefix remains the differential oracle. */
+#define WATERFALL_WRAPPER(name, implementation, cut) \
+	static int name(unsigned ignored, snapshot_t *snapshot) \
+	{ \
+		(void)ignored; \
+		return implementation(cut, snapshot); \
+	}
+WATERFALL_WRAPPER(wf_off_D0, official_prefix, 1U)
+WATERFALL_WRAPPER(wf_off_E0, official_prefix, 5U)
+WATERFALL_WRAPPER(wf_off_E1, official_prefix, 7U)
+WATERFALL_WRAPPER(wf_off_E2, official_prefix, 9U)
+WATERFALL_WRAPPER(wf_off_E3, official_prefix, 13U)
+WATERFALL_WRAPPER(wf_off_E4, official_prefix, 18U)
+WATERFALL_WRAPPER(wf_gt_D0, gt_prefix, 1U)
+WATERFALL_WRAPPER(wf_gt_E0, gt_prefix, 5U)
+WATERFALL_WRAPPER(wf_gt_E1, gt_prefix, 7U)
+WATERFALL_WRAPPER(wf_gt_E2, gt_prefix, 9U)
+WATERFALL_WRAPPER(wf_gt_E3, gt_prefix, 13U)
+WATERFALL_WRAPPER(wf_gt_E4, gt_prefix, 18U)
+#undef WATERFALL_WRAPPER
+
+static const char *const waterfall_names[6] = {
+	"D0_decode", "E0_prework", "E1_prefix", "E2_middle", "E3_poly", "E4_full"
+};
+static prefix_fn const waterfall_official[6] = {
+	wf_off_D0, wf_off_E0, wf_off_E1, wf_off_E2, wf_off_E3, wf_off_E4
+};
+static prefix_fn const waterfall_gt[6] = {
+	wf_gt_D0, wf_gt_E0, wf_gt_E1, wf_gt_E2, wf_gt_E3, wf_gt_E4
+};
+
+/*
+ * Causal outside-island waterfall.  Unlike the constant-cut wrappers above,
+ * the shared work here is one physical function, not two compiler-generated
+ * copies of the same source.  This makes architectural work deltas exact.
+ * Latency is tested separately by transition_tsc(), because subtracting two
+ * independently measured cumulative prefixes is not an additive timing model.
+ */
+#define WF_SHARED __attribute__((noinline, noclone))
+
+WF_SHARED static int wf2_decode_official(void)
+{
+	return poly_frombytes(&wf_off_h, pk);
+}
+
+WF_SHARED static int wf2_decode_gt(void)
+{
+	return gt32_q24_decode_soa_asm(wf_gt_h, pk);
+}
+
+WF_SHARED static void wf2_shared_prework(void)
+{
+	memcpy(wf_msg, coins, NTRUPLUS_N / 8);
+	hash_f(wf_msg + NTRUPLUS_N / 8, pk);
+	hash_h(wf_buf, wf_msg);
+	poly_cbd1(&wf_coeff_r, wf_buf + NTRUPLUS_SYMBYTES);
+}
+
+WF_SHARED static void wf2_rpath_official(void)
+{
+	wf_off_r = wf_coeff_r;
+	poly_ntt(&wf_off_r);
+	poly_tobytes(wf_rhat, &wf_off_r);
+}
+
+WF_SHARED static void wf2_rpath_gt(void)
+{
+	forward_gt(wf_gt_r, wf_gt_work, wf_coeff_r.coeffs);
+	gt32_q24_encode_soa_lazy10788_asm(wf_rhat, wf_gt_r);
+}
+
+WF_SHARED static void wf2_shared_middle(void)
+{
+	hash_g(wf_rhat, wf_rhat);
+	poly_sotp_encode(&wf_coeff_m, wf_msg, wf_rhat);
+}
+
+WF_SHARED static void wf2_final_official(void)
+{
+	wf_off_m = wf_coeff_m;
+	poly_ntt(&wf_off_m);
+	poly_basemul(&wf_off_c, &wf_off_h, &wf_off_r);
+	poly_add(&wf_off_c, &wf_off_c, &wf_off_m);
+	poly_tobytes(wf_rhat, &wf_off_c);
+}
+
+WF_SHARED static void wf2_final_gt(void)
+{
+	forward_gt(wf_gt_m, wf_gt_work, wf_coeff_m.coeffs);
+	gt32_tile4_basemul_general_soa_soa_to_soa_asm(
+		wf_gt_c, wf_gt_h, wf_gt_r);
+	poly_add((poly *)(void *)wf_gt_c, (const poly *)(const void *)wf_gt_c,
+		(const poly *)(const void *)wf_gt_m);
+	gt32_q24_encode_soa_encap_hr_h1_asm(wf_rhat, wf_gt_c);
+}
+
+WF_SHARED static void wf2_shared_tail(void)
+{
+	memcpy(wf_ss, wf_buf, sizeof wf_ss);
+	secure_clear(wf_msg, sizeof wf_msg);
+	secure_clear(wf_buf, sizeof wf_buf);
+}
+
+WF_SHARED static void wf2_clear_official(void)
+{
+	secure_clear(&wf_off_r, sizeof wf_off_r);
+	secure_clear(&wf_off_m, sizeof wf_off_m);
+}
+
+WF_SHARED static void wf2_clear_gt(void)
+{
+	secure_clear(wf_gt_r, sizeof wf_gt_r);
+	secure_clear(wf_gt_m, sizeof wf_gt_m);
+}
+
+__attribute__((always_inline)) static inline int wf2_run(
+	unsigned cut, int use_gt, snapshot_t *snapshot)
+{
+	if ((use_gt ? wf2_decode_gt() : wf2_decode_official()) != 0)
+		return 1;
+	if (cut == 0U) {
+		if (snapshot != NULL) {
+			if (use_gt)
+				gt32_q24_encode_soa_asm(snapshot->primary, wf_gt_h);
+			else
+				poly_tobytes(snapshot->primary, &wf_off_h);
+		}
+		sink += use_gt ? (uint16_t)wf_gt_h[0]
+			: (uint16_t)wf_off_h.coeffs[0];
+		return 0;
+	}
+
+	wf2_shared_prework();
+	if (cut == 1U) {
+		snap_coeff(snapshot, wf_coeff_r.coeffs);
+		sink += (uint16_t)wf_coeff_r.coeffs[0];
+		return 0;
+	}
+
+	if (use_gt)
+		wf2_rpath_gt();
+	else
+		wf2_rpath_official();
+	if (cut == 2U) {
+		snap_bytes(snapshot, wf_rhat, sizeof wf_rhat);
+		sink += wf_rhat[0];
+		return 0;
+	}
+
+	wf2_shared_middle();
+	if (cut == 3U) {
+		snap_coeff(snapshot, wf_coeff_m.coeffs);
+		sink += (uint16_t)wf_coeff_m.coeffs[0];
+		return 0;
+	}
+
+	if (use_gt)
+		wf2_final_gt();
+	else
+		wf2_final_official();
+	if (cut == 4U) {
+		snap_bytes(snapshot, wf_rhat, sizeof wf_rhat);
+		sink += wf_rhat[0];
+		return 0;
+	}
+
+	wf2_shared_tail();
+	if (use_gt)
+		wf2_clear_gt();
+	else
+		wf2_clear_official();
+	if (snapshot != NULL) {
+		memcpy(snapshot->primary, wf_rhat, sizeof wf_rhat);
+		memcpy(snapshot->ss, wf_ss, sizeof wf_ss);
+	}
+	sink += wf_ss[0];
+	return 0;
+}
+
+#define WATERFALL2_WRAPPER(name, use_gt, cut) \
+	static int name(unsigned ignored, snapshot_t *snapshot) \
+	{ \
+		(void)ignored; \
+		return wf2_run(cut, use_gt, snapshot); \
+	}
+WATERFALL2_WRAPPER(wf2_off_D0, 0, 0U)
+WATERFALL2_WRAPPER(wf2_off_E0, 0, 1U)
+WATERFALL2_WRAPPER(wf2_off_E1, 0, 2U)
+WATERFALL2_WRAPPER(wf2_off_E2, 0, 3U)
+WATERFALL2_WRAPPER(wf2_off_E3, 0, 4U)
+WATERFALL2_WRAPPER(wf2_off_E4, 0, 5U)
+WATERFALL2_WRAPPER(wf2_gt_D0, 1, 0U)
+WATERFALL2_WRAPPER(wf2_gt_E0, 1, 1U)
+WATERFALL2_WRAPPER(wf2_gt_E1, 1, 2U)
+WATERFALL2_WRAPPER(wf2_gt_E2, 1, 3U)
+WATERFALL2_WRAPPER(wf2_gt_E3, 1, 4U)
+WATERFALL2_WRAPPER(wf2_gt_E4, 1, 5U)
+#undef WATERFALL2_WRAPPER
+
+static prefix_fn const waterfall2_official[6] = {
+	wf2_off_D0, wf2_off_E0, wf2_off_E1, wf2_off_E2, wf2_off_E3, wf2_off_E4
+};
+static prefix_fn const waterfall2_gt[6] = {
+	wf2_gt_D0, wf2_gt_E0, wf2_gt_E1, wf2_gt_E2, wf2_gt_E3, wf2_gt_E4
+};
+
+static int check_waterfall2(void)
+{
+	for (unsigned cut = 0; cut < 6U; cut++) {
+		snapshot_t official;
+		snapshot_t gt;
+		memset(&official, 0, sizeof official);
+		memset(&gt, 0, sizeof gt);
+		if (waterfall2_official[cut](0, &official) != 0 ||
+			waterfall2_gt[cut](0, &gt) != 0 ||
+			memcmp(&official, &gt, sizeof official) != 0) {
+			fprintf(stderr, "waterfall2 mismatch at %s\n",
+				waterfall_names[cut]);
+			return 0;
+		}
+	}
+	return 1;
+}
+
+typedef void (*wf2_void_fn)(void);
+
+WF_SHARED static void wf2_setup_prework_official(void)
+{
+	(void)wf2_decode_official();
+}
+
+WF_SHARED static void wf2_setup_prework_gt(void)
+{
+	(void)wf2_decode_gt();
+}
+
+WF_SHARED static void wf2_setup_middle_official(void)
+{
+	(void)wf2_decode_official();
+	wf2_shared_prework();
+	wf2_rpath_official();
+}
+
+WF_SHARED static void wf2_setup_middle_gt(void)
+{
+	(void)wf2_decode_gt();
+	wf2_shared_prework();
+	wf2_rpath_gt();
+}
+
+WF_SHARED static void wf2_setup_tail_official(void)
+{
+	wf2_setup_middle_official();
+	wf2_shared_middle();
+	wf2_final_official();
+}
+
+WF_SHARED static void wf2_setup_tail_gt(void)
+{
+	wf2_setup_middle_gt();
+	wf2_shared_middle();
+	wf2_final_gt();
+}
+
+static int compare_double(const void *left, const void *right)
+{
+	const double a = *(const double *)left;
+	const double b = *(const double *)right;
+	return (a > b) - (a < b);
+}
+
+static int transition_tsc(const char *stage, int use_gt, unsigned iterations)
+{
+	wf2_void_fn setup;
+	wf2_void_fn consumer;
+	double samples[101];
+	const unsigned batches = 101U;
+	const unsigned per_batch = iterations / batches != 0U
+		? iterations / batches : 1U;
+
+	if (strcmp(stage, "shared_prework") == 0) {
+		setup = use_gt ? wf2_setup_prework_gt : wf2_setup_prework_official;
+		consumer = wf2_shared_prework;
+	} else if (strcmp(stage, "middle_glue") == 0) {
+		setup = use_gt ? wf2_setup_middle_gt : wf2_setup_middle_official;
+		consumer = wf2_shared_middle;
+	} else if (strcmp(stage, "shared_tail") == 0) {
+		setup = use_gt ? wf2_setup_tail_gt : wf2_setup_tail_official;
+		consumer = wf2_shared_tail;
+	} else {
+		fprintf(stderr, "unknown transition: %s\n", stage);
+		return 2;
+	}
+
+	for (unsigned i = 0; i < 100U; i++) {
+		setup();
+		consumer();
+	}
+	for (unsigned batch = 0; batch < batches; batch++) {
+		uint64_t total = 0;
+		for (unsigned i = 0; i < per_batch; i++) {
+			uint64_t begin;
+			setup();
+			begin = start_tsc();
+			consumer();
+			total += stop_tsc() - begin;
+		}
+		samples[batch] = (double)total / per_batch;
+	}
+	qsort(samples, batches, sizeof samples[0], compare_double);
+	printf("TRANSITION,%s,%s,%.9f,%u,%u\n", stage,
+		use_gt ? "gt" : "official", samples[batches / 2U],
+		batches, per_batch);
+	return 0;
+}
+#undef WF_SHARED
 
 static int gt_fused_prefix(unsigned stop, snapshot_t *snapshot)
 {
@@ -744,6 +1105,11 @@ int main(int argc, char **argv)
 		coins[i] = (uint8_t)(11U + 37U * i);
 	if (!check_prefixes())
 		return 1;
+	if (!check_waterfall2())
+		return 1;
+	if (argc > 4 && strcmp(argv[1], "--transition-tsc") == 0)
+		return transition_tsc(argv[2], strcmp(argv[3], "gt") == 0,
+			iterations);
 	if (argc > 4 && strcmp(argv[1], "--paired-pmu") == 0) {
 		prefix_fn control;
 		prefix_fn fused;
@@ -777,6 +1143,28 @@ int main(int argc, char **argv)
 		if (self_pmu(fused, stop, iterations, argv[2], "gt-fused") != 0)
 			return 1;
 		return self_pmu(control, stop, iterations, argv[2], "gt");
+	}
+	if (argc > 4 && strcmp(argv[1], "--self-pmu-waterfall") == 0) {
+		for (unsigned cut = 0; cut < 6; cut++) {
+			if (strcmp(argv[2], waterfall_names[cut]) == 0) {
+				prefix_fn fn = strcmp(argv[3], "gt") == 0
+					? waterfall_gt[cut] : waterfall_official[cut];
+				return self_pmu(fn, 0, iterations, argv[2], argv[3]);
+			}
+		}
+		fprintf(stderr, "unknown waterfall cut: %s\n", argv[2]);
+		return 2;
+	}
+	if (argc > 4 && strcmp(argv[1], "--self-pmu-waterfall2") == 0) {
+		for (unsigned cut = 0; cut < 6; cut++) {
+			if (strcmp(argv[2], waterfall_names[cut]) == 0) {
+				prefix_fn fn = strcmp(argv[3], "gt") == 0
+					? waterfall2_gt[cut] : waterfall2_official[cut];
+				return self_pmu(fn, 0, iterations, argv[2], argv[3]);
+			}
+		}
+		fprintf(stderr, "unknown waterfall2 cut: %s\n", argv[2]);
+		return 2;
 	}
 
 	if (argc > 1 && (strcmp(argv[1], "--perf") == 0

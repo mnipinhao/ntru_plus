@@ -1,0 +1,60 @@
+{
+  "schema": "ntruplus768-gt32-encap-poly-island-load-closure-v1",
+  "experiment": "POLY-ISLAND-LOAD-CLOSURE-001",
+  "source": "results/tile4-encap-poly-island.json",
+  "comparison": "Clean GT minus Official in the same ELF",
+  "regions": {
+    "R1_decode": {
+      "instructions": 70,
+      "loads": 105,
+      "stores": 1,
+      "normal_tsc": 20.5055,
+      "reversed_tsc": 20.558
+    },
+    "R2_r_path": {
+      "instructions": -445,
+      "loads": 224,
+      "stores": -82,
+      "normal_tsc": -43.6445,
+      "reversed_tsc": -44.772
+    },
+    "R3_final_path": {
+      "instructions": -615,
+      "loads": 329,
+      "stores": -94,
+      "normal_tsc": -37.1675,
+      "reversed_tsc": -43.4345
+    },
+    "R4_observed_island": {
+      "instructions": -1003,
+      "loads": 654,
+      "stores": -179,
+      "normal_tsc": -57.27,
+      "reversed_tsc": -64.041
+    }
+  },
+  "closure": {
+    "sum_R1_R2_R3": {
+      "instructions": -990,
+      "loads": 658,
+      "stores": -175,
+      "normal_tsc": -60.3065,
+      "reversed_tsc": -67.6485
+    },
+    "R4_minus_sum": {
+      "instructions": -13,
+      "loads": -4,
+      "stores": -4,
+      "normal_tsc": 3.0365,
+      "reversed_tsc": 3.6075
+    },
+    "load_residual_fraction_of_R4": -0.006116
+  },
+  "semantic_interpretation": {
+    "R1": "wire/API GT-unpack and semantic routing; the only island region with positive latency debt",
+    "R2": "Forward plus Q24 path; more retired loads but materially faster",
+    "R3": "Forward, B3, add, and Q24 path; more retired loads but materially faster",
+    "actionability": "Do not optimize the aggregate +654 load count. Its dynamic origin closes to the three polynomial regions and 553 of the 658 summed extra loads belong to faster R2/R3 paths. Only R1 is a proven local performance debt."
+  },
+  "decision": "pass-load-origin-closure; aggregate-load-reduction-is-not-a-valid-objective"
+}

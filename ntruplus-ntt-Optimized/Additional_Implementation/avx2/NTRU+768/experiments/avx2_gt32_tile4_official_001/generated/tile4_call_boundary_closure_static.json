@@ -1,0 +1,61 @@
+{
+  "schema": "ntruplus768-gt32-call-boundary-closure-v1",
+  "scope": "successful-path parent functions plus cold failure sites; static call-site ceiling, not recursive dynamic call count",
+  "operations": {
+    "encap": {
+      "Official": {
+        "static_direct_call_sites": 19,
+        "ret_sites": 1,
+        "calls": [
+          "4913 <poly_frombytes>",
+          "5ab0 <hash_f>",
+          "5ba0 <hash_h>",
+          "6ca0 <poly_cbd1>",
+          "3f80 <poly_ntt>",
+          "4680 <poly_tobytes>",
+          "5b20 <hash_g>",
+          "6efd <poly_sotp_encode>",
+          "3f80 <poly_ntt>",
+          "62e0 <poly_basemul>",
+          "5c40 <poly_add>",
+          "4680 <poly_tobytes>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "2100 <memset@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "20c0 <__stack_chk_fail@plt>"
+        ]
+      },
+      "Gc": {
+        "static_direct_call_sites": 21,
+        "ret_sites": 1,
+        "calls": [
+          "4ce0 <gt32_q24_decode_soa_asm>",
+          "91e0 <hash_f>",
+          "92d0 <hash_h>",
+          "9580 <poly_cbd1>",
+          "8280 <gt32_tile4_frontend_wide_raw_asm>",
+          "ac80 <gt32_tile4_attr_forward_all_bm_soa_asm>",
+          "5ce0 <gt32_q24_encode_soa_lazy10788_asm>",
+          "9250 <hash_g>",
+          "97dd <poly_sotp_encode>",
+          "8280 <gt32_tile4_frontend_wide_raw_asm>",
+          "ac80 <gt32_tile4_attr_forward_all_bm_soa_asm>",
+          "cc80 <gt32_tile4_basemul_general_soa_soa_to_soa_asm>",
+          "9380 <poly_add>",
+          "8200 <gt32_q24_encode_soa_encap_hr_h1_asm>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "2100 <memset@plt>",
+          "21c0 <__explicit_bzero_chk@plt>",
+          "20c0 <__stack_chk_fail@plt>"
+        ]
+      }
+    }
+  },
+  "decision": "close-no-20-to-30-transition-excess"
+}

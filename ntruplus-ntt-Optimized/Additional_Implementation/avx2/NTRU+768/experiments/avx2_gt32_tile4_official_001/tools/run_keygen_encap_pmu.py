@@ -23,6 +23,8 @@ PAIRED = [
     "encap.E4c_bridge_control",
     "encap.E4c_hr_h1_vs_bridge",
     "encap.E4c_hr_h2_vs_bridge",
+    "encap.E4c_q24_sum_m",
+    "encap.E_full_q24_sum_m",
     "encap.E5_hash_glue",
     "encap.full",
     "keygen.K1_cbd_triple",

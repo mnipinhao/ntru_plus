@@ -1,0 +1,61 @@
+{
+  "schema": "ntruplus768-gt32-encap-outside-island-gate-v1",
+  "experiment": "SAME-ELF-ENCAP-OUTSIDE-ISLAND-RESIDUAL-001",
+  "artifacts": {
+    "cumulative_waterfall": "results/tile4-encap-outside-island-waterfall.json",
+    "direct_shared_consumer": "results/tile4-encap-shared-transition-tsc.json",
+    "load_closure": "generated/tile4_encap_poly_island_load_closure_gate.json"
+  },
+  "method": {
+    "same_elf": true,
+    "aslr": "disabled-with-setarch-R",
+    "cpu_affinity": 1,
+    "placements": ["normal", "reversed"],
+    "pairing": "ABBA/BAAB",
+    "shared_symbols": "noinline/noclone; one physical prework, middle-glue, and common-tail symbol is called by both implementations",
+    "direct_transition_measurement": "TSC brackets only the identical shared consumer after its Official or GT predecessor"
+  },
+  "static_dynamic_work_closure": {
+    "normal_full_waterfall": {
+      "instructions": -1009,
+      "loads": 654,
+      "stores": -179
+    },
+    "reversed_full_waterfall": {
+      "instructions": -1009,
+      "loads": 654,
+      "stores": -179
+    },
+    "shared_stage_increment_deltas": {
+      "shared_prework": {"instructions": 0, "loads": 0, "stores": 0},
+      "middle_glue": {"instructions": 0, "loads": 0, "stores": 0},
+      "shared_tail": {"instructions": 0, "loads": 0, "stores": 0}
+    }
+  },
+  "direct_identical_consumer_delta_tsc": {
+    "normal": {
+      "shared_prework": {"median": 4.01, "gt_favorable_pairs": "0/8"},
+      "middle_glue": {"median": 2.86, "gt_favorable_pairs": "4/8"},
+      "shared_tail": {"median": -0.06, "gt_favorable_pairs": "6/8"}
+    },
+    "reversed": {
+      "shared_prework": {"median": -0.445, "gt_favorable_pairs": "4/8"},
+      "middle_glue": {"median": -8.44, "gt_favorable_pairs": "6/8"},
+      "shared_tail": {"median": 1.28, "gt_favorable_pairs": "2/8"}
+    }
+  },
+  "cumulative_waterfall_warning": {
+    "normal_full_delta_tsc": 290.9248,
+    "reversed_full_delta_tsc": 228.9704,
+    "interpretation": "The cumulative prefix harness preserves exact architectural work counts but its latency increments are not additive component costs. Adjacent prefix subtraction moves the active frontend footprint and varies strongly with placement/event group. It must not be used to assign the full residual to hash/SOTP or clear glue."
+  },
+  "decision": {
+    "load_origin_closure": "pass",
+    "intrinsic_shared_prework_debt": "not-demonstrated",
+    "intrinsic_middle_glue_debt": "rejected-as-large-residual-source",
+    "intrinsic_shared_tail_debt": "rejected-as-large-residual-source",
+    "remaining_cause_class": "whole-prefix/whole-image executable delivery and code-geometry interaction",
+    "arithmetic_reopen": false,
+    "next": "PRODUCTION-HOT-CODE-CLOSURE-001; prune unreachable variants and measure a fixed production-shaped ELF before any new polynomial micro-optimization"
+  }
+}

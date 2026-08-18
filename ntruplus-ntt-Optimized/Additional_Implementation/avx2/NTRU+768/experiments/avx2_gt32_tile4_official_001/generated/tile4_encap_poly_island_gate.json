@@ -1,0 +1,82 @@
+{
+  "schema": "ntruplus768-gt32-encap-polynomial-island-gate-v2",
+  "experiment": "SAME-ELF-OFFICIAL-CLEAN-POLY-ISLAND-001",
+  "date": "2026-08-17",
+  "regions": {
+    "R1_decode": "pk bytes -> h NTT representation",
+    "R2_rpath": "r coefficients -> Forward -> Q24 -> r bytes",
+    "R3_final": "prepared h/r + m coefficients -> Forward(m) -> BM -> add -> Q24",
+    "R4_island": "R1 + R2 + R3 complete polynomial island"
+  },
+  "excluded": ["hashes", "CBD/SOTP production", "KEM copy/clear glue"],
+  "correctness": {
+    "real_producer_trials": 100,
+    "R1_to_R4_semantics": "exact",
+    "rhat_bytes": "exact",
+    "ciphertext_polynomial_bytes": "exact"
+  },
+  "method": {
+    "same_elf": true,
+    "aslr": "disabled-with-setarch-R",
+    "cpu_affinity": 1,
+    "placements": ["normal", "reversed"],
+    "launches_per_placement": 8,
+    "tsc_samples_per_region_placement": 160,
+    "pmu_samples_per_region_placement": 64,
+    "pmu_groups": ["basic", "memory", "delivery", "misses"],
+    "pairing": "ABBA/BAAB for all three variant pairs"
+  },
+  "normal": {
+    "Clean_minus_Official": {
+      "R1": {"tsc": 20.505, "core_cycles": 33.523, "instructions": 70, "loads": 105, "stores": 1},
+      "R2": {"tsc": -43.645, "core_cycles": -71.223, "instructions": -445, "loads": 224, "stores": -82},
+      "R3": {"tsc": -37.168, "core_cycles": -63.842, "instructions": -615, "loads": 329, "stores": -94},
+      "R4": {"tsc": -57.270, "core_cycles": -78.825, "instructions": -1003, "loads": 654, "stores": -179},
+      "composition_residual": {"tsc": 3.037, "core_cycles": 22.718, "instructions": -13}
+    },
+    "F14_TF1_minus_Official": {
+      "R1": {"tsc": 22.811, "core_cycles": 37.132, "instructions": 70, "loads": 105, "stores": 1},
+      "R2": {"tsc": -48.963, "core_cycles": -81.931, "instructions": -471, "loads": 224, "stores": -82},
+      "R3": {"tsc": -44.807, "core_cycles": -84.396, "instructions": -642, "loads": 329, "stores": -94},
+      "R4": {"tsc": -70.321, "core_cycles": -108.805, "instructions": -1054, "loads": 654, "stores": -179},
+      "composition_residual": {"tsc": 0.639, "core_cycles": 20.389, "instructions": -11}
+    },
+    "F14_TF1_minus_Clean_R4": {"tsc": -13.846, "core_cycles": -25.323, "instructions": -51}
+  },
+  "reversed": {
+    "Clean_minus_Official": {
+      "R1": {"tsc": 20.558, "core_cycles": 33.825, "instructions": 70, "loads": 105, "stores": 1},
+      "R2": {"tsc": -44.772, "core_cycles": -71.657, "instructions": -445, "loads": 224, "stores": -82},
+      "R3": {"tsc": -43.435, "core_cycles": -76.058, "instructions": -615, "loads": 329, "stores": -94},
+      "R4": {"tsc": -64.041, "core_cycles": -107.599, "instructions": -1003, "loads": 654, "stores": -179},
+      "composition_residual": {"tsc": 3.608, "core_cycles": 6.291, "instructions": -13}
+    },
+    "F14_TF1_minus_Official": {
+      "R1": {"tsc": 22.782, "core_cycles": 37.571, "instructions": 70, "loads": 105, "stores": 1},
+      "R2": {"tsc": -52.185, "core_cycles": -86.997, "instructions": -471, "loads": 224, "stores": -82},
+      "R3": {"tsc": -54.058, "core_cycles": -94.153, "instructions": -642, "loads": 329, "stores": -94},
+      "R4": {"tsc": -79.507, "core_cycles": -143.588, "instructions": -1054, "loads": 654, "stores": -179},
+      "composition_residual": {"tsc": 3.955, "core_cycles": -0.009, "instructions": -11}
+    },
+    "F14_TF1_minus_Clean_R4": {"tsc": -19.369, "core_cycles": -32.856, "instructions": -51}
+  },
+  "interpretation": {
+    "R1": "GT decode is a stable local debt",
+    "R2_R3": "GT transform/arithmetic/serializer paths are stable winners",
+    "R4": "the complete polynomial island wins in both link orders",
+    "loads": "GT retires 654 more loads in R4 despite 1003-1054 fewer total instructions",
+    "composition": "retired-instruction closure is exact within 11-13 instructions; core-cycle residual is placement-sensitive",
+    "F14_TF1": "local champions retain only 13.8-19.4 TSC over Clean in this island, below the prior 23-28 TSC local expectation"
+  },
+  "decision": {
+    "polynomial_island_winner": true,
+    "reopen_NTT_or_B3_arithmetic": false,
+    "production_promote_F14_TF1": false,
+    "next": "attribute the extra retired loads and whole-caller integration outside the polynomial island"
+  },
+  "artifacts": {
+    "benchmark": "bench/bench_encap_poly_island.c",
+    "runner": "tools/run_encap_poly_island.py",
+    "results": "results/tile4-encap-poly-island.json"
+  }
+}

@@ -210,6 +210,21 @@ static void enc_e4c_serialize_c_hr_h2(void)
 	sink += out_bytes[0];
 }
 
+static void enc_e4c_sum_pack_control(void)
+{
+	poly_add((poly *)(void *)gt_work0,
+		(const poly *)(const void *)gt_product,
+		(const poly *)(const void *)gt_m);
+	gt32_q24_encode_soa_encap_hr_h1_asm(out_bytes, gt_work0);
+	sink += out_bytes[0];
+}
+
+static void enc_e4c_sum_pack_candidate(void)
+{
+	gt32_q24_encode_soa_encap_hr_sum_asm(out_bytes, gt_product, gt_m);
+	sink += out_bytes[0];
+}
+
 static void enc_e5_common(void)
 {
 	hash_f(enc_msg + NTRUPLUS_N / 8, pk);
@@ -217,6 +232,26 @@ static void enc_e5_common(void)
 	hash_g(enc_buf, r_bytes);
 	sink += enc_buf[0];
 }
+
+static void enc_full_gt_control(void)
+{
+	sink += (unsigned)crypto_kem_enc_derand_gt32_candidate(
+		out_bytes, out_ss, pk, coins);
+}
+
+static void enc_full_gt_q24_sum(void)
+{
+	sink += (unsigned)crypto_kem_enc_derand_gt32_q24_sum_candidate(
+		out_bytes, out_ss, pk, coins);
+}
+
+#ifdef GT32_ENCAP_F14_WRAPPER
+static void enc_full_gt_f14(void)
+{
+	sink += (unsigned)crypto_kem_enc_derand_gt32_f14_candidate(
+		out_bytes, out_ss, pk, coins);
+}
+#endif
 
 static void kg_k1_official(void)
 {
@@ -396,6 +431,12 @@ int main(int argc, char **argv)
 			enc_e4c_serialize_c_hr_h1},
 		{"E4c_hr_h2_vs_bridge", enc_e4c_serialize_c_bridge_control,
 			enc_e4c_serialize_c_hr_h2},
+		{"E4c_q24_sum_m", enc_e4c_sum_pack_control,
+			enc_e4c_sum_pack_candidate},
+		{"E_full_q24_sum_m", enc_full_gt_control, enc_full_gt_q24_sum},
+#ifdef GT32_ENCAP_F14_WRAPPER
+		{"E_full_f14", enc_full_gt_control, enc_full_gt_f14},
+#endif
 		{"E5_hash_glue", enc_e5_common, enc_e5_common},
 	};
 	const pair_t keygen[] = {
@@ -421,7 +462,18 @@ int main(int argc, char **argv)
 	if (official_enc_derand(r_bytes, enc_buf, pk, coins) != 0
 		|| crypto_kem_enc_derand_gt32_candidate(out_bytes, out_ss, pk, coins)
 			!= 0 || memcmp(r_bytes, out_bytes, NTRUPLUS_CIPHERTEXTBYTES) != 0
-		|| memcmp(enc_buf, out_ss, NTRUPLUS_SSBYTES) != 0) {
+		|| memcmp(enc_buf, out_ss, NTRUPLUS_SSBYTES) != 0
+		|| crypto_kem_enc_derand_gt32_q24_sum_candidate(out_bytes, out_ss,
+			pk, coins) != 0
+		|| memcmp(r_bytes, out_bytes, NTRUPLUS_CIPHERTEXTBYTES) != 0
+		|| memcmp(enc_buf, out_ss, NTRUPLUS_SSBYTES) != 0
+#ifdef GT32_ENCAP_F14_WRAPPER
+		|| crypto_kem_enc_derand_gt32_f14_candidate(out_bytes, out_ss,
+			pk, coins) != 0
+		|| memcmp(r_bytes, out_bytes, NTRUPLUS_CIPHERTEXTBYTES) != 0
+		|| memcmp(enc_buf, out_ss, NTRUPLUS_SSBYTES) != 0
+#endif
+		) {
 		fprintf(stderr, "full encap differential failed\n");
 		return 1;
 	}

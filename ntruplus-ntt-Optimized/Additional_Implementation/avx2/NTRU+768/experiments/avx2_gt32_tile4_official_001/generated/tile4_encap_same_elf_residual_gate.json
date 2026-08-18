@@ -1,0 +1,105 @@
+{
+  "schema": "ntruplus768-gt32-encap-same-elf-residual-gate-v1",
+  "experiment": "SAME-ELF-ENCAP-RESIDUAL-ATTRIBUTION-001",
+  "date": "2026-08-17",
+  "variants": {
+    "C00": "current Clean GT",
+    "C10": "F14 only",
+    "C01": "TF1 only",
+    "C11": "F14 plus TF1"
+  },
+  "static": {
+    "encap_wrapper_bytes_each": 611,
+    "frontend_control_and_f14_bytes_each": 3917,
+    "q24_control_and_tf1_bytes_each": 5120,
+    "C11_minus_C00_retired_instructions_per_encap": -51,
+    "C11_minus_C00_retired_branches_per_encap": -1
+  },
+  "correctness": {
+    "valid_differential_trials": 100,
+    "malformed_public_key_slots_sampled": true,
+    "ciphertext_and_shared_secret": "byte-exact",
+    "make_check_1000_trials": "pass"
+  },
+  "aslr_disabled_factorial_tsc": {
+    "normal": {
+      "delta_F": 14.426,
+      "delta_Q": 17.305,
+      "delta_FQ": 22.367,
+      "factorial_interaction_from_reported_cell_medians": -9.364,
+      "paired_interaction_median": -17.745
+    },
+    "reversed": {
+      "delta_F": 75.961,
+      "delta_Q": -14.973,
+      "delta_FQ": -7.098,
+      "factorial_interaction_from_reported_cell_medians": -68.086,
+      "paired_interaction_median": -33.580
+    },
+    "interaction_estimators": "I=C11-C10-C01+C00 is distinct from median(per-sample paired interaction)",
+    "interpretation": "the approximately -25 TSC injected local signal is below the full-caller TSC resolution floor"
+  },
+  "sequence_and_predecessor": {
+    "patterns": [
+      "AAAAAAAA",
+      "BBBBBBBB",
+      "ABABABAB",
+      "AAAABBBB",
+      "BBBBAAAA"
+    ],
+    "stable_cross_implementation_penalty": false,
+    "stable_block_transition_penalty": false,
+    "interpretation": "no single predecessor-state model explains the launch and placement variance"
+  },
+  "paired_region_scoped_pmu_aslr_disabled": {
+    "iterations_per_pair": 20000,
+    "pairs_per_placement": 64,
+    "normal": {
+      "core_cycle_delta_median": -58.418,
+      "negative_pairs": 50,
+      "bootstrap_95pct_median_ci": [-110.959, -17.358],
+      "instruction_delta": -51.000,
+      "branch_delta": -1.000,
+      "branch_miss_delta": 0.119,
+      "dsb_uops_delta": 76.571,
+      "mite_uops_delta": -456.283,
+      "dsb_to_mite_penalty_cycle_delta": -20.557,
+      "itlb_read_miss_delta": 0.000,
+      "l1i_read_miss_delta": -0.001
+    },
+    "reversed": {
+      "core_cycle_delta_median": -21.772,
+      "negative_pairs": 34,
+      "bootstrap_95pct_median_ci": [-100.879, 39.805],
+      "instruction_delta": -51.000,
+      "branch_delta": -1.000,
+      "branch_miss_delta": 0.753,
+      "dsb_uops_delta": -1344.623,
+      "mite_uops_delta": 83.527,
+      "dsb_to_mite_penalty_cycle_delta": 7.657,
+      "itlb_read_miss_delta": 0.000,
+      "l1i_read_miss_delta": -0.011
+    }
+  },
+  "decision": {
+    "known_local_signal_visible_in_paired_core_cycles": true,
+    "known_local_signal_stable_in_full_caller_tsc": false,
+    "single_predecessor_pollution_model_supported": false,
+    "l1i_or_itlb_miss_explanation_supported": false,
+    "relative_code_geometry_delivery_sensitivity_supported": true,
+    "production_promoted": false,
+    "keep": [
+      "F14 default-off local Forward champion",
+      "TF1 default-off local Q24 champion"
+    ],
+    "next": "Official-versus-Clean residual work must use same-process paired region-scoped PMU for sub-100-cycle claims"
+  },
+  "artifacts": {
+    "tsc_aslr_on": "results/tile4-encap-same-elf-residual.json",
+    "tsc_aslr_off": "results/tile4-encap-same-elf-residual-aslr-off.json",
+    "pmu_aslr_off": "results/tile4-encap-same-elf-residual-pmu-aslr-off.json",
+    "benchmark": "bench/bench_encap_same_elf_residual.c",
+    "tsc_runner": "tools/run_encap_same_elf_residual.py",
+    "pmu_runner": "tools/run_encap_same_elf_pmu.py"
+  }
+}
