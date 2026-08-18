@@ -1,0 +1,897 @@
+{
+  "experiment": "GT32-TWIDDLE-MAJOR-SIMD-001",
+  "status": "generator_only_static_stop",
+  "production_modified": false,
+  "source": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt.s",
+  "source_sha256": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722",
+  "layout": {
+    "input": "R_i[4*j+k]",
+    "output": "T_k[4*i+j] = R_i[4*j+k]",
+    "instances_per_batch": 4,
+    "dft3_roles": 3
+  },
+  "proof": {
+    "lane_product_checks": 1536,
+    "qinv_and_factor_exact": true,
+    "inverse_mapping_exact": true,
+    "montgomery_chain_count_unchanged": true
+  },
+  "tables": {
+    "qinv": {
+      "original_vectors": 48,
+      "compact_vectors": 12,
+      "manifest": [
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "values": [
+            -19,
+            -17877,
+            -15166,
+            8190,
+            -19,
+            8190,
+            1024,
+            5915,
+            -10427,
+            -1896,
+            1024,
+            -17687,
+            739,
+            8284,
+            -10389,
+            31469
+          ]
+        },
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            1,
+            4,
+            7,
+            10
+          ],
+          "values": [
+            4872,
+            32759,
+            23830,
+            -7583,
+            -28815,
+            -20853,
+            30161,
+            11962,
+            4095,
+            -5213,
+            -948,
+            512,
+            18142,
+            26844,
+            3355,
+            -24303
+          ]
+        },
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            2,
+            5,
+            8,
+            11
+          ],
+          "values": [
+            29782,
+            -30332,
+            16379,
+            -20853,
+            -16436,
+            22521,
+            -948,
+            16266,
+            -3791,
+            2047,
+            30161,
+            -474,
+            -14351,
+            -31943,
+            -28569,
+            21005
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            12,
+            15,
+            18,
+            21
+          ],
+          "values": [
+            32531,
+            16512,
+            -26787,
+            -28702,
+            -28834,
+            30010,
+            11943,
+            17877,
+            10256,
+            -27924,
+            12796,
+            25858,
+            8626,
+            9270,
+            -7033,
+            -4228
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            13,
+            16,
+            19,
+            22
+          ],
+          "values": [
+            23924,
+            16266,
+            -24512,
+            19375,
+            13346,
+            1668,
+            -19488,
+            30332,
+            -14351,
+            -27640,
+            18806,
+            -26370,
+            3791,
+            -14502,
+            -26389,
+            -3299
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            14,
+            17,
+            20,
+            23
+          ],
+          "values": [
+            -32512,
+            11962,
+            8133,
+            20512,
+            4853,
+            607,
+            76,
+            -6844,
+            9687,
+            25593,
+            -13820,
+            9403,
+            7337,
+            -23659,
+            -27469,
+            4758
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            24,
+            27,
+            30,
+            33
+          ],
+          "values": [
+            4701,
+            -22976,
+            -29536,
+            588,
+            -8720,
+            31678,
+            8265,
+            -31735,
+            29896,
+            -20076,
+            8265,
+            -4455,
+            12417,
+            -22920,
+            5327,
+            -7526
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            25,
+            28,
+            31,
+            34
+          ],
+          "values": [
+            12929,
+            2351,
+            -11488,
+            -14768,
+            2787,
+            -24228,
+            -19412,
+            -17498,
+            -32474,
+            -17820,
+            22730,
+            4133,
+            22389,
+            27375,
+            19811,
+            27052
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            26,
+            29,
+            32,
+            35
+          ],
+          "values": [
+            19583,
+            6464,
+            1175,
+            -5744,
+            -23981,
+            -14768,
+            22730,
+            11033,
+            25384,
+            16531,
+            -8910,
+            -21403,
+            20057,
+            -13877,
+            31033,
+            -31868
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            36,
+            39,
+            42,
+            45
+          ],
+          "values": [
+            22067,
+            -31735,
+            24019,
+            -30010,
+            7488,
+            -23640,
+            -11147,
+            22976,
+            12417,
+            -21574,
+            -11943,
+            9744,
+            -29896,
+            4455,
+            -25232,
+            21422
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            37,
+            40,
+            43,
+            46
+          ],
+          "values": [
+            30540,
+            11033,
+            -15867,
+            -20758,
+            -21194,
+            -20512,
+            13820,
+            -6464,
+            17763,
+            -26559,
+            -10787,
+            -5972,
+            -22787,
+            13536,
+            -14692,
+            31621
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            38,
+            41,
+            44,
+            47
+          ],
+          "values": [
+            2066,
+            -17498,
+            5517,
+            24834,
+            4209,
+            16910,
+            -18806,
+            -2351,
+            22389,
+            -23886,
+            19488,
+            27375,
+            32474,
+            -30825,
+            12531,
+            26142
+          ]
+        }
+      ]
+    },
+    "factor": {
+      "original_vectors": 48,
+      "compact_vectors": 12,
+      "manifest": [
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "values": [
+            -147,
+            -341,
+            -62,
+            1278,
+            -147,
+            1278,
+            1024,
+            923,
+            -1339,
+            -872,
+            1024,
+            1129,
+            -1181,
+            -1444,
+            -1045,
+            -1427
+          ]
+        },
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            1,
+            4,
+            7,
+            10
+          ],
+          "values": [
+            -248,
+            1655,
+            1558,
+            -31,
+            1265,
+            779,
+            -1199,
+            -582,
+            639,
+            1059,
+            -436,
+            512,
+            -1058,
+            732,
+            -1637,
+            1681
+          ]
+        },
+        {
+          "batch_instances": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            2,
+            5,
+            8,
+            11
+          ],
+          "values": [
+            -682,
+            -124,
+            -901,
+            779,
+            460,
+            -1671,
+            -436,
+            1674,
+            1713,
+            -1409,
+            -1199,
+            -218,
+            -655,
+            1209,
+            -281,
+            397
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            12,
+            15,
+            18,
+            21
+          ],
+          "values": [
+            -109,
+            128,
+            -291,
+            -1310,
+            1118,
+            1082,
+            -729,
+            341,
+            16,
+            1260,
+            -1028,
+            2,
+            1202,
+            -714,
+            775,
+            -1668
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            13,
+            16,
+            19,
+            22
+          ],
+          "values": [
+            -1164,
+            1674,
+            64,
+            1583,
+            -222,
+            -892,
+            992,
+            124,
+            -655,
+            8,
+            630,
+            -514,
+            -1713,
+            1626,
+            -661,
+            -1379
+          ]
+        },
+        {
+          "batch_instances": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            14,
+            17,
+            20,
+            23
+          ],
+          "values": [
+            256,
+            -582,
+            837,
+            32,
+            -395,
+            1247,
+            588,
+            -1212,
+            -937,
+            1401,
+            4,
+            315,
+            1577,
+            -235,
+            1331,
+            -1130
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            24,
+            27,
+            30,
+            33
+          ],
+          "values": [
+            -1571,
+            1600,
+            -864,
+            1100,
+            1520,
+            190,
+            -1591,
+            -631,
+            200,
+            -108,
+            -1591,
+            25,
+            -511,
+            -1416,
+            -177,
+            410
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            25,
+            28,
+            31,
+            34
+          ],
+          "values": [
+            1,
+            943,
+            800,
+            -432,
+            867,
+            -1188,
+            1580,
+            -858,
+            550,
+            100,
+            -54,
+            933,
+            757,
+            1391,
+            1507,
+            -1108
+          ]
+        },
+        {
+          "batch_instances": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            26,
+            29,
+            32,
+            35
+          ],
+          "values": [
+            -257,
+            -1728,
+            -1257,
+            400,
+            723,
+            -432,
+            -54,
+            -871,
+            -216,
+            275,
+            50,
+            -27,
+            -39,
+            -437,
+            -1351,
+            -1660
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 0,
+          "source_vector_indices": [
+            36,
+            39,
+            42,
+            45
+          ],
+          "values": [
+            1715,
+            -631,
+            -429,
+            -1082,
+            -704,
+            -88,
+            -11,
+            -1600,
+            -511,
+            -1350,
+            729,
+            -496,
+            -200,
+            -25,
+            1392,
+            174
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 1,
+          "source_vector_indices": [
+            37,
+            40,
+            43,
+            46
+          ],
+          "values": [
+            -1716,
+            -871,
+            1413,
+            1514,
+            1590,
+            -32,
+            -4,
+            1728,
+            -541,
+            1473,
+            -675,
+            -1364,
+            -387,
+            1248,
+            156,
+            -251
+          ]
+        },
+        {
+          "batch_instances": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "role": 2,
+          "source_vector_indices": [
+            38,
+            41,
+            44,
+            47
+          ],
+          "values": [
+            -1262,
+            -858,
+            1293,
+            -1022,
+            1521,
+            -242,
+            -630,
+            -943,
+            757,
+            1458,
+            -992,
+            1391,
+            -550,
+            -489,
+            371,
+            -1250
+          ]
+        }
+      ]
+    }
+  },
+  "cost": {
+    "per_frontend": {
+      "independent_dft3_instances": 16,
+      "current_active_table_bytes": 3072,
+      "compact_active_table_bytes": 768,
+      "table_byte_saving": 2304,
+      "current_qinv_factor_memory_operands": 96,
+      "compact_qinv_factor_explicit_loads": 24,
+      "constant_load_reduction": 72,
+      "montgomery_vector_multiply_count_change": 0
+    },
+    "constructive_transpose_network": {
+      "instructions_per_four_register_role": 16,
+      "stages": [
+        {
+          "instruction": "vpshufb",
+          "count": 4
+        },
+        {
+          "instruction": "vpermd",
+          "count": 4,
+          "requires_live_index_vector": true
+        },
+        {
+          "instruction": "vpunpcklqdq/vpunpckhqdq",
+          "count": 4
+        },
+        {
+          "instruction": "vperm2i128",
+          "count": 4
+        }
+      ]
+    },
+    "scenarios": {
+      "current_producer_and_current_consumer": {
+        "input_transpose_instructions": 192,
+        "output_repair_instructions": 192,
+        "explicit_constant_load_instructions": 24,
+        "net_extra_instructions": 408,
+        "eligible_for_asm": false,
+        "reason": "table-load saving is dominated by two full transpose boundaries"
+      },
+      "current_producer_persistent_twiddle_major_consumer": {
+        "input_transpose_instructions": 192,
+        "output_repair_instructions": 0,
+        "explicit_constant_load_instructions": 24,
+        "net_extra_instructions": 216,
+        "eligible_for_asm": false,
+        "reason": "producer still pays twelve explicit four-register transpose networks"
+      },
+      "producer_and_consumer_native": {
+        "input_transpose_instructions": 0,
+        "output_repair_instructions": 0,
+        "explicit_constant_load_instructions": 24,
+        "net_extra_instructions": 24,
+        "memory_operand_reduction": 72,
+        "eligible_for_asm": false,
+        "reason": "requires a producer liveness proof before assembly",
+        "reopen_condition": [
+          "frontend directly produces four-instance same-role packets",
+          "peak live YMM <= 15 with no spills or role materialization",
+          "NTT32 and terminal consumers retain the layout without a global repair",
+          "caller-weighted model predicts at least 20 core-cycle saving"
+        ]
+      }
+    }
+  },
+  "decision": {
+    "current_abi": "hard_stop_before_assembly",
+    "persistent_layout": "hard_stop_with_current_producer",
+    "producer_native": "reopen_after_register_liveness_and_full-consumer proof"
+  }
+}

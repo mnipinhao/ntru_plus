@@ -1,0 +1,17 @@
+experiment: GT32-TWIDDLE-MAJOR-SIMD-001
+scope: isolated_generator_only
+production_modified: false
+status: static_stop_current_abi
+qualified:
+  - four_instance_same_role_factor_compaction
+  - exact_qinv_and_factor_lane_mapping
+  - 3072_to_768_byte_active_table_reduction
+hard_stop:
+  - post_hoc_current_layout_transpose
+  - current_abi_output_repair
+reopen_only_if:
+  - frontend_producer_directly_emits_same_role_packets
+  - peak_live_ymm_is_at_most_15
+  - no_spill_or_role_materialization
+  - ntt32_and_terminal_consumers_need_no_global_repair
+  - caller_weighted_saving_is_at_least_20_core_cycles

@@ -1,0 +1,34 @@
+experiment: GT32-TM-Q24-ECONOMICS-003
+scope: isolated_generator_only
+production_modified: false
+status: bounded_relaxed_q24_static_stop
+inherits:
+  - gt32_persistent_twiddle_major_002_n32_b3_qualified
+economics:
+  forward_credit_two_calls: 216
+  adapter_decode_increment: 240
+  adapter_encode_increment: 240
+  adapter_encap_net: 264
+  uniform_direct_max_searched_per_tile: 48
+  uniform_direct_next_cost_per_tile: 56
+  uniform_direct_encap_net_lower_bound: 168
+search_freedoms:
+  - arbitrary_public_packet_execution_order
+  - all_24_qword_permutations_treated_as_free
+  - independent_decode_and_encode_design
+  - all_48_terminal_orders_by_exact_symmetry_orbit
+hard_stop:
+  - current_q24_plus_exact_m_mtm_adapter
+  - uniform_eight_register_direct_packet_network
+  - pure_split_128_store_or_load
+not_concluded:
+  - persistent_tm_failed
+  - no_nonuniform_packet_network_exists
+  - no_non_q24_caller_can_amortize_tm
+assembly_emitted: false
+reopen_only_if:
+  - nonuniform_direct_q24_route_has_D_plus_E_below_216
+  - new_packet_atom_absorbs_mtm_group_bit
+  - caller_amortizes_more_than_two_forward_credits
+  - target_isa_changes_cross_lane_routing_cost
+

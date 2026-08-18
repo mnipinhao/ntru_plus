@@ -1,0 +1,34 @@
+experiment: GT32-PERSISTENT-TWIDDLE-MAJOR-002
+scope: isolated_generator_only
+production_modified: false
+status: n32_b3_qualified_q24_zero_debt_stop
+qualified:
+  - s4_native_minus_48_instructions_per_forward
+  - l4n_to_lh16_exact_24_unpack_network
+  - peak_9_ymm_transition
+  - compact_degree_independent_s5_qinv_and_factor
+  - four_montgomery_chains_per_tile_unchanged
+  - mtm_b3_table_relabel_with_zero_runtime_repair
+  - mtm_poly_add_without_change
+conditional:
+  - inverse_exact_reverse_24_network_requires_progressive_schedule
+hard_stop:
+  - q24_four_packet_route_crosses_mtm_group_bit
+  - q24_no_24_instruction_eight_packet_closure
+not_concluded:
+  - persistent_tm_architecture_failed
+  - amortized_q24_debt_exceeds_forward_credit
+search_coverage:
+  terminal_leaf_orders: 48
+  q24_networks_per_leaf_order: 2304
+  total_q24_networks: 110592
+static_forward_ledger:
+  current_instructions_per_tile: 108
+  mtm_instructions_per_tile: 90
+  saving_per_tile: 18
+  saving_per_forward: 108
+assembly_emitted: false
+reopen_only_if:
+  - q24_packet_mechanism_consumes_and_emits_mtm_at_no_extra_runtime_route_cost
+  - a_bounded_caller_never_crosses_a_q24_boundary
+  - target_isa_changes_the_packet_routing_cost

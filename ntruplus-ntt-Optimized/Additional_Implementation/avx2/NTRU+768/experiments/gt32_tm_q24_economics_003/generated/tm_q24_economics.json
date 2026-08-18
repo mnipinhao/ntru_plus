@@ -1,0 +1,405 @@
+{
+  "experiment": "GT32-TM-Q24-ECONOMICS-003",
+  "production_modified": false,
+  "source_hashes": {
+    "tm_generator": "e489fb8a4a29c0e105ba87b4db796f7b5570b340ce789c72119ed8c52b8c8167",
+    "tm_proof": "54151d252baea5a6bd405e33fd4cd132369d4535594aff68d76b353cad34f6c3",
+    "serialized_mapping": "9cb678fabff4c43d8c33eed365f8f29d62b6cc95536ba80540b86d80bb5018fa"
+  },
+  "fixed_forward_credit": {
+    "forward_calls_per_encap": 2,
+    "saving_per_forward": 108,
+    "total": 216
+  },
+  "current_q24_plus_adapter": {
+    "decode_increment": {
+      "found": true,
+      "pair_operations": 5,
+      "instructions": 10,
+      "path": [
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 2,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "perm2_pair",
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        }
+      ],
+      "states_at_previous_depth": 2076,
+      "degrees_per_tile": 4,
+      "tiles_per_polynomial": 6,
+      "instructions_per_tile": 40,
+      "instructions_per_polynomial": 240,
+      "shuffle_instructions_per_polynomial": 240,
+      "cross_128_instructions_per_polynomial": 48,
+      "peak_data_plus_temp_ymm": 3
+    },
+    "encode_increment": {
+      "found": true,
+      "pair_operations": 5,
+      "instructions": 10,
+      "path": [
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 2,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "perm2_pair",
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        },
+        {
+          "kind": "unpack_pair",
+          "unit_words": 1,
+          "reverse_sources": false,
+          "swap_outputs": false,
+          "instructions": 2
+        }
+      ],
+      "states_at_previous_depth": 2076,
+      "degrees_per_tile": 4,
+      "tiles_per_polynomial": 6,
+      "instructions_per_tile": 40,
+      "instructions_per_polynomial": 240,
+      "shuffle_instructions_per_polynomial": 240,
+      "cross_128_instructions_per_polynomial": 48,
+      "peak_data_plus_temp_ymm": 3
+    },
+    "D_plus_E": 480,
+    "encap_net_delta": 264
+  },
+  "direct_packet_search": {
+    "found": false,
+    "max_layers": 6,
+    "max_instructions_per_tile": 48,
+    "packet_schedule_permutation": "exhausted",
+    "qword_permutation_model": "all_24_permutations_free_optimistic",
+    "terminal_leaf_orders_tested": 1,
+    "layer_counts": [
+      {
+        "depth": 1,
+        "unique_states": 36,
+        "plane_states": 0,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 0
+      },
+      {
+        "depth": 2,
+        "unique_states": 888,
+        "plane_states": 0,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 0
+      },
+      {
+        "depth": 3,
+        "unique_states": 10248,
+        "plane_states": 3456,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 3456
+      },
+      {
+        "depth": 4,
+        "unique_states": 34344,
+        "plane_states": 9216,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 9216
+      },
+      {
+        "depth": 5,
+        "unique_states": 45360,
+        "plane_states": 9216,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 9216
+      },
+      {
+        "depth": 6,
+        "unique_states": 46080,
+        "plane_states": 9216,
+        "terminal_leaf_orders_tested": 1,
+        "terminal_state_tests": 9216
+      }
+    ],
+    "terminal_symmetry_coverage": 48,
+    "current_q24_transpose_instructions_per_tile": 24,
+    "next_uniform_layer_cost_per_tile": 56,
+    "incremental_lower_bound_per_polynomial": 192,
+    "symmetric_decode_encode_lower_bound": 384,
+    "encap_net_lower_bound": 168
+  },
+  "terminal_symmetry_proof": {
+    "terminal_leaf_orders": 48,
+    "single_symmetry_orbit": true,
+    "variable_orders": [
+      [
+        1,
+        3,
+        4,
+        0,
+        2
+      ],
+      [
+        1,
+        4,
+        3,
+        0,
+        2
+      ],
+      [
+        3,
+        1,
+        4,
+        0,
+        2
+      ],
+      [
+        3,
+        4,
+        1,
+        0,
+        2
+      ],
+      [
+        4,
+        1,
+        3,
+        0,
+        2
+      ],
+      [
+        4,
+        3,
+        1,
+        0,
+        2
+      ]
+    ],
+    "xor_constants": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1,
+        0,
+        0
+      ]
+    ],
+    "proof": "the 48 orders are 3! permutations of the three unpacked lane bits times 2^3 XOR orientations; the direct-network search exhausts the corresponding unit/bit orders and reverse/swap choices"
+  },
+  "split_128_terminal": {
+    "pure_split_128_store_or_load_closes": false,
+    "halves": [
+      {
+        "output_group": 0,
+        "output_half": 0,
+        "source_groups": [
+          0,
+          1
+        ],
+        "source_halves": [
+          0,
+          1
+        ],
+        "source_words": [
+          0,
+          8,
+          2,
+          10,
+          16,
+          24,
+          18,
+          26
+        ]
+      },
+      {
+        "output_group": 0,
+        "output_half": 1,
+        "source_groups": [
+          0,
+          1
+        ],
+        "source_halves": [
+          0,
+          1
+        ],
+        "source_words": [
+          1,
+          9,
+          3,
+          11,
+          17,
+          25,
+          19,
+          27
+        ]
+      },
+      {
+        "output_group": 1,
+        "output_half": 0,
+        "source_groups": [
+          0,
+          1
+        ],
+        "source_halves": [
+          0,
+          1
+        ],
+        "source_words": [
+          4,
+          12,
+          6,
+          14,
+          20,
+          28,
+          22,
+          30
+        ]
+      },
+      {
+        "output_group": 1,
+        "output_half": 1,
+        "source_groups": [
+          0,
+          1
+        ],
+        "source_halves": [
+          0,
+          1
+        ],
+        "source_words": [
+          5,
+          13,
+          7,
+          15,
+          21,
+          29,
+          23,
+          31
+        ]
+      }
+    ],
+    "conclusion": "each destination half mixes both source registers and both source halves"
+  },
+  "cost_vector_adapter_path": {
+    "incremental_instructions": 480,
+    "incremental_uops_estimate": 480,
+    "incremental_shuffle_ops": 480,
+    "incremental_load_ops": 0,
+    "incremental_store_ops": 0,
+    "incremental_memory_bytes": 0,
+    "incremental_cross_128_ops": 96,
+    "peak_ymm": 3,
+    "code_bytes_estimate": null
+  },
+  "decision": {
+    "persistent_tm": "n32_and_b3_qualified",
+    "q24_zero_debt": "already_stopped_by_002",
+    "adapter_economics": "static_loss",
+    "uniform_direct_packet_family": "no_route_through_48_instructions_per_tile",
+    "split_128_only": "not_sufficient",
+    "assembly": "hard_stop_in_tested_relaxed_families"
+  },
+  "not_concluded": [
+    "no_nonuniform_avx2_packet_network_exists",
+    "persistent_tm_can_never_win_a_non_q24_caller",
+    "inverse_progressive_schedule_is_executable"
+  ],
+  "reopen_only_if": [
+    "nonuniform_direct_q24_route_has_D_plus_E_below_216",
+    "new_packet_atom_absorbs_the_mtm_group_bit",
+    "caller_amortizes_more_than_two_forward_credits",
+    "target_isa_changes_cross_lane_routing_cost"
+  ]
+}
