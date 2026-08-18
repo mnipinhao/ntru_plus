@@ -43,8 +43,8 @@ python3 "$root/tools/prune_supercop_clean_asm.py" "$target/gt32_permutation_rela
 python3 "$root/tools/prune_supercop_clean_asm.py" "$target/gt32_native_basemul.s" \
 	gt_basemul_native_f0_j1_e0_asm_avx2
 
-cat > "$target/CLEAN-MANIFEST.txt" <<'EOF'
-implementation=avx2-gt-fastest-clean
+cat > "$target/CLEAN-MANIFEST.txt" <<EOF
+implementation=$name
 keypair=P-J1 BaseInv; F0xJ1 finalizer-free native BM; SP1 Q24 pack
 encap=Q24 SoA decode; N5-to-M; B3 general; H1 high-range Q24 pack
 decap=Q24 Decode3; B3-to-M; global inverse; T9; centered/lazy Q24 packs

@@ -1,0 +1,187 @@
+{
+  "call_boundary_static": {
+    "decision": "close-no-20-to-30-transition-excess",
+    "operations": {
+      "encap": {
+        "Gc": {
+          "calls": [
+            "4ce0 <gt32_q24_decode_soa_asm>",
+            "91e0 <hash_f>",
+            "92d0 <hash_h>",
+            "9580 <poly_cbd1>",
+            "8280 <gt32_tile4_frontend_wide_raw_asm>",
+            "ac80 <gt32_tile4_attr_forward_all_bm_soa_asm>",
+            "5ce0 <gt32_q24_encode_soa_lazy10788_asm>",
+            "9250 <hash_g>",
+            "97dd <poly_sotp_encode>",
+            "8280 <gt32_tile4_frontend_wide_raw_asm>",
+            "ac80 <gt32_tile4_attr_forward_all_bm_soa_asm>",
+            "cc80 <gt32_tile4_basemul_general_soa_soa_to_soa_asm>",
+            "9380 <poly_add>",
+            "8200 <gt32_q24_encode_soa_encap_hr_h1_asm>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "2100 <memset@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "20c0 <__stack_chk_fail@plt>"
+          ],
+          "ret_sites": 1,
+          "static_direct_call_sites": 21
+        },
+        "Official": {
+          "calls": [
+            "4913 <poly_frombytes>",
+            "5ab0 <hash_f>",
+            "5ba0 <hash_h>",
+            "6ca0 <poly_cbd1>",
+            "3f80 <poly_ntt>",
+            "4680 <poly_tobytes>",
+            "5b20 <hash_g>",
+            "6efd <poly_sotp_encode>",
+            "3f80 <poly_ntt>",
+            "62e0 <poly_basemul>",
+            "5c40 <poly_add>",
+            "4680 <poly_tobytes>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "2100 <memset@plt>",
+            "21c0 <__explicit_bzero_chk@plt>",
+            "20c0 <__stack_chk_fail@plt>"
+          ],
+          "ret_sites": 1,
+          "static_direct_call_sites": 19
+        }
+      }
+    },
+    "schema": "ntruplus768-gt32-call-boundary-closure-v1",
+    "scope": "successful-path parent functions plus cold failure sites; static call-site ceiling, not recursive dynamic call count"
+  },
+  "experiment": "PRODUCTION-REACHABLE-HOT-TEXT-COMPACTION-001",
+  "final_decision": {
+    "frontend_partial_reroll": "not-eligible-without-a-new-schedule-preserving-mechanism",
+    "next": "bounded-Decode-debt",
+    "production_baseline": "Gc/H0",
+    "promote_c0": false,
+    "promote_c1": false,
+    "reachable_hot_text_compaction": "closed-for-current-Q24-and-frontend-shapes",
+    "reopen_only_if": [
+      "at-least-3KiB-live-text-removal-costs-no-more-than-4-core-cycles-per-pack",
+      "a-compact-template-preserves-the-qualified-unrolled-schedule-without-scalar-route-dependencies",
+      "another-production-change-already-rebuilds-the-image-and-the-dormant-C0-control-is-regated"
+    ]
+  },
+  "phase_a": {
+    "encap_reachable_functions": 25,
+    "encap_reachable_named_bytes": 22559,
+    "linked_text_bytes": 64407,
+    "only_zero_cost_candidate": "gt32_q24_encode_soa_lazy10788_asm",
+    "post_ret_padding_bytes": 577
+  },
+  "phase_b_c0": {
+    "c0_symbol_bytes": 4543,
+    "c0_text_bytes": 63831,
+    "decision": "hard-stop-Encap-regresses-in-all-four-blocks",
+    "executed_prefix_identical": true,
+    "executed_prefix_sha256": {
+      "C0": "d6fc033c2925088ef24a32ed8c1328d08b7072da3e711522dec856f89f21e116",
+      "Gc": "d6fc033c2925088ef24a32ed8c1328d08b7072da3e711522dec856f89f21e116"
+    },
+    "formal_supercop": {
+      "dec": {
+        "compaction_block_deltas": [
+          42.75,
+          12.89583333333212,
+          -179.0,
+          -79.125
+        ],
+        "compaction_wins": 2,
+        "gcompact_minus_gc": -49.67708333333576,
+        "gcompact_minus_o": -288.3541666666679,
+        "q2_cycles": {
+          "Gc": 19199.385416666668,
+          "Gcompact": 19149.708333333332,
+          "O": 19438.0625
+        }
+      },
+      "enc": {
+        "compaction_block_deltas": [
+          100.70833333333576,
+          62.0625,
+          1.3541666666642413,
+          21.35416666666788
+        ],
+        "compaction_wins": 0,
+        "gcompact_minus_gc": 45.1875,
+        "gcompact_minus_o": 38.984375,
+        "q2_cycles": {
+          "Gc": 28090.333333333332,
+          "Gcompact": 28135.520833333332,
+          "O": 28096.536458333332
+        }
+      },
+      "keypair": {
+        "compaction_block_deltas": [
+          6.75,
+          -24.75,
+          -9.35416666666788,
+          50.89583333333212
+        ],
+        "compaction_wins": 2,
+        "gcompact_minus_gc": 8.182291666664241,
+        "gcompact_minus_o": -314.14583333333576,
+        "q2_cycles": {
+          "Gc": 21203.697916666668,
+          "Gcompact": 21211.880208333332,
+          "O": 21526.026041666668
+        }
+      }
+    },
+    "gc_symbol_bytes": 5120,
+    "gc_text_bytes": 64407,
+    "kat": "100-of-100-canonical-request-response-byte-exact",
+    "text_delta": -576
+  },
+  "phase_c_c1": {
+    "correctness": "exhaustive-[-12699,12699]-and-guard-page-pass-each-launch",
+    "decision": "hard-stop-local-cost-far-exceeds-2-to-4-cycle-density-budget",
+    "full_supercop_reason": "predeclared-local-stop-loss-exceeded-by-about-35-core-cycles-per-pack",
+    "full_supercop_run": false,
+    "launch_median_deltas": {
+      "normal": {
+        "one_q24": {
+          "core_cycles": 35.6945,
+          "instructions": 108.0,
+          "tsc": 22.296
+        },
+        "two_q24": {
+          "core_cycles": 70.43,
+          "instructions": 216.0,
+          "tsc": 43.818
+        }
+      },
+      "reversed": {
+        "one_q24": {
+          "core_cycles": 35.45399999999999,
+          "instructions": 108.0,
+          "tsc": 15.74
+        },
+        "two_q24": {
+          "core_cycles": 70.15899999999999,
+          "instructions": 216.0,
+          "tsc": 44.135999999999996
+        }
+      }
+    },
+    "shape": "six-fixed-route-block-loops-same-transpose-v9-reducer-and-packet-math",
+    "symbol_bytes": {
+      "candidate": 2321,
+      "control": 5120,
+      "delta": -2799
+    }
+  },
+  "schema": "ntruplus768-gt32-production-reachable-hot-text-compaction-v1"
+}

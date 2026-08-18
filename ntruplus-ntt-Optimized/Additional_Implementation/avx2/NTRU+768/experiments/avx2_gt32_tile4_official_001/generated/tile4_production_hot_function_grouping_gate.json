@@ -1,0 +1,118 @@
+{
+  "artifacts": {
+    "reachability": "generated/tile4_hot_function_reachability.json",
+    "static": "generated/tile4_hot_function_grouping_static.json",
+    "supercop": "results/tile4-production-hot-function-grouping-supercop.json"
+  },
+  "candidates": {
+    "H0": "physically pruned Gc with default linker order",
+    "H1": "Encap first-use semantic order",
+    "H2": "weighted transition/reusable-kernel grouping"
+  },
+  "decision": {
+    "H1_promote": false,
+    "H2_promote": false,
+    "grouping_family_status": "hard-stop-after-H0-H1-H2",
+    "next": "stop geometry search; retain closure and return to a structural non-layout mechanism or Decode debt",
+    "no_H3_H4_H5": true,
+    "production_baseline": "H0/Gc",
+    "reason": [
+      "H1 and H2 lose Encap in all four palindromic blocks",
+      "H1 and H2 lose Decap in all four palindromic blocks",
+      "Keypair-only H1 improvement cannot compensate two production regressions",
+      "all retained production bodies and linked text size are unchanged, so the loss is pure geometry/delivery"
+    ],
+    "reintroduce_F14_TF1": false
+  },
+  "experiment": "PRODUCTION-HOT-FUNCTION-GROUPING-001",
+  "reachability_summary": {
+    "cold_unreachable_named_bytes": 19618,
+    "decap_only_named_bytes": 12747,
+    "encap_direct_closure_function_count": 25,
+    "encap_direct_closure_named_bytes": 22559,
+    "encap_only_named_bytes": 5890,
+    "keypair_only_named_bytes": 9273,
+    "linked_text_bytes": 64407,
+    "shared_named_bytes": 16669
+  },
+  "schema": "gt32-production-hot-function-grouping-gate-v1",
+  "static_acceptance": {
+    "addresses_changed": true,
+    "common_bodies_identical": true,
+    "text_size_identical": true
+  },
+  "supercop_pooled": {
+    "dec": {
+      "H1_block_deltas": [
+        131.85416666666424,
+        171.91666666666788,
+        156.89583333333212,
+        179.125
+      ],
+      "H1_minus_H0": 160.078125,
+      "H1_wins": 0,
+      "H2_block_deltas": [
+        124.02083333333212,
+        171.89583333333576,
+        145.95833333333212,
+        126.39583333333212
+      ],
+      "H2_minus_H0": 142.91666666666788,
+      "H2_minus_H1": -17.16145833333212,
+      "H2_wins": 0,
+      "q2_cycles": {
+        "H0": 19145.6875,
+        "H1": 19305.765625,
+        "H2": 19288.604166666668
+      }
+    },
+    "enc": {
+      "H1_block_deltas": [
+        217.29166666666788,
+        140.41666666666788,
+        200.47916666666788,
+        274.5833333333321
+      ],
+      "H1_minus_H0": 210.453125,
+      "H1_wins": 0,
+      "H2_block_deltas": [
+        223.64583333333212,
+        200.1875,
+        237.16666666666788,
+        262.5625
+      ],
+      "H2_minus_H0": 228.421875,
+      "H2_minus_H1": 17.96875,
+      "H2_wins": 0,
+      "q2_cycles": {
+        "H0": 28165.161458333332,
+        "H1": 28375.614583333332,
+        "H2": 28393.583333333332
+      }
+    },
+    "keypair": {
+      "H1_block_deltas": [
+        -2.125,
+        -139.14583333333576,
+        -9.27083333333212,
+        -11.83333333333212
+      ],
+      "H1_minus_H0": -38.24479166666788,
+      "H1_wins": 4,
+      "H2_block_deltas": [
+        46.58333333333212,
+        -3.1666666666678793,
+        -20.4375,
+        48.8125
+      ],
+      "H2_minus_H0": 19.31770833333212,
+      "H2_minus_H1": 57.5625,
+      "H2_wins": 2,
+      "q2_cycles": {
+        "H0": 21253.401041666668,
+        "H1": 21215.15625,
+        "H2": 21272.71875
+      }
+    }
+  }
+}

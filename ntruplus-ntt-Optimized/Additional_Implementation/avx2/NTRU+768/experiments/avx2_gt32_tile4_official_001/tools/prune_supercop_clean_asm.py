@@ -11,7 +11,7 @@ from pathlib import Path
 GLOBL = re.compile(r"^\s*\.globl\s+([A-Za-z_][A-Za-z0-9_]*)\s*$")
 SIZE = re.compile(r"^\s*\.size\s+([A-Za-z_][A-Za-z0-9_]*),")
 MACRO_EMIT = re.compile(
-    r"^\s*(?:TILE4_[A-Z0-9_]*FUNCTION|FR_TRANSPOSE_CUT_FORWARD_FUNCTION)\s+"
+    r"^\s*(?:TILE4_[A-Z0-9_]*FUNCTION|FR_[A-Z0-9_]*FUNCTION)\s+"
     r"(gt[A-Za-z0-9_]*)"
 )
 

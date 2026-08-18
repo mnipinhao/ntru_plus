@@ -2,7 +2,7 @@
 set -eu
 
 if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
-	echo "usage: $0 IMPLEMENTATION O2|O3 [REPEATS]" >&2
+	echo "usage: $0 IMPLEMENTATION O2|O3|O3GC|HOT-H1|HOT-H2 [REPEATS]" >&2
 	exit 100
 fi
 
@@ -17,6 +17,8 @@ case "$optimization" in
 	O2) forced=$tool_root/supercop_okc_o2.sh ;;
 	O3) forced=$tool_root/supercop_okc_o3.sh ;;
 	O3GC) forced=$tool_root/supercop_okc_o3_gc.sh ;;
+	HOT-H1) forced=$tool_root/supercop_okc_o3_gc_hot_h1.sh ;;
+	HOT-H2) forced=$tool_root/supercop_okc_o3_gc_hot_h2.sh ;;
 	*) echo "unsupported optimization: $optimization" >&2; exit 100 ;;
 esac
 
