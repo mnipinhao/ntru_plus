@@ -131,6 +131,16 @@ I1 is bit-exact with the scalar inverse and I0 over the full test set.  The
 inverse DFT3, untwist, normalization, top merge, and coefficient-order stores,
 so it is not yet an Official `Delta I` measurement.
 
+The earlier Wave31 branch-fold experiment is preserved at
+`../wave31_invntt_branch_fold/`.  It established that the post-IDFT3 untwist,
+branch merge/correction, and normalization can be composed into a fixed
+lane-wise 2x2 map.  The current T9 tail subsumes that mechanism through the
+generator-owned `inverse_tail_matrix()` factors and the assembly
+`MATRIX_PAIR` evaluator.  Wave31 used a different GTN-L3 input ABI, scale,
+range, and lane map, so its assembly is not linked and its PMU numbers are not
+counted as current GT32 performance.  See
+`../wave31_invntt_branch_fold/GT32_INTEGRATION.md` for the compatibility audit.
+
 ## N5 contiguous qword frontend
 
 `gt32_tile4_frontend_wide_raw_asm()` implements the quartic-native N5 shape.
