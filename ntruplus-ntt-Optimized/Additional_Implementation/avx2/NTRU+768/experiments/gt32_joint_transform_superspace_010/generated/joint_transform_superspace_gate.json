@@ -1,0 +1,2996 @@
+{
+  "schema": "ntruplus768-gt32-joint-transform-superspace-010-v1",
+  "experiment": "GT32-JOINT-TRANSFORM-SUPERSPACE-010",
+  "production_modified": false,
+  "decision_unit": "2*(Top+Forward_L)+BaseMul_(L->J)+(Inverse_J+TopJoin)",
+  "semantic_coordinates": [
+    "u",
+    "r",
+    "k4",
+    "k3",
+    "k2",
+    "k1",
+    "k0",
+    "p1",
+    "p0"
+  ],
+  "coverage_registry": {
+    "global_R2_physical_trajectory": {
+      "status": "covered_do_not_repeat",
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_global_physical_layout_gate.json",
+        "sha256": "6e36bf5d111c5e78f83a29fad0ace47a3d7b19ed9449712bd55ecd2db3ca6ff6",
+        "recorded_decision": "emit-bounded-assembly-probe"
+      },
+      "scope": "5040 bit-axis states between Forward stages, BM entry, inverse stages and T9 entry",
+      "not_covered": "Top/R3 persistence and mixed-radix packet ownership"
+    },
+    "current_M_frontend_seam": {
+      "status": "covered_under_fixed_M_S2_S5",
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n5_m_frontend_seam_gate.json",
+        "sha256": "b6477cf72684c4b9b01a6ac0464d51d840eca3c76e39eb0d0ba17005f99becb9",
+        "recorded_decision": "static-hard-stop-current-packet-major-frontend-is-transverse-to-tile-major-M-core"
+      },
+      "result": "packet-pair S1 raises memory operations 96->144; keeping a partner packet needs 22 YMM",
+      "reopen_used_here": "change the factorization/packet consumer rather than preserving current M S2-S5"
+    },
+    "NTT32_first_and_R3": {
+      "status": "covered_narrow_families_imported",
+      "artifacts": [
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32first_split_twist_gate.json",
+          "sha256": "ab44f3b2b5d67f74d7464c51084e3c9e920cde8b8ac534218a566952d2e07d38",
+          "recorded_decision": "static-hard-stop-before-assembly"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_gt_pfa_native_gate.json",
+          "sha256": "cea4d6339ef2af32e65140d2f9f0dd9efe411c512f6ea510c18a88904db512fb",
+          "recorded_decision": "static-hard-stop-for-unchanged-reducer-and-canonical-suffix; joint-range-topology-search-only"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_gt_pfa_joint_gate.json",
+          "sha256": "b9fb259f1a0b1462cf990f52a9d8d5f7e3d0689e8385bdfe6832dfa4f9194634",
+          "recorded_decision": "range-and-coordinate-pass-no-static-acceleration-mechanism"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_mr_s3local_gate.json",
+          "sha256": "59abcdf3ea8413d0a3f8ab1c78b638489954e02c5ecb54c509b80767b6af34ac",
+          "recorded_decision": "baseline-static-hard-stop-joint-suffix-remains-generator-only"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_branchlocal_raw160_gate.json",
+          "sha256": "097ae9a62d9d51c4c184732998af192092f972b3cd8b6c8928766aef89d1fb32",
+          "recorded_decision": "static-hard-stop-before-assembly"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_branchlocal_scale_placement_gate.json",
+          "sha256": "9cefc488b5918d34c7638356a1d47bb375ad68bee99c25aac187b8f9019909f2",
+          "recorded_decision": "scale-placement-hard-stop-before-assembly"
+        }
+      ],
+      "remaining": "a changed consumer scale/basis contract or a genuinely smaller R3 closure frontier"
+    },
+    "R3_persistent_packet_and_pebble_families": {
+      "status": "covered_for_current_factorization",
+      "artifacts": [
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_physical_schedule_gate.json",
+          "sha256": "cf0a26d6db715522d95ad2317431babdf3dc3382a735c680efd5212c6c2c487b",
+          "recorded_decision": "emit-R3-wave-probe-R1-96B-and-R2-half-spill-not-established"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_gt_wave_producer_gate.json",
+          "sha256": "099b1bd8d482af7cb6a62c7f9018eb0035bcbd9f1f0ebc053e699bce8ed5602d",
+          "recorded_decision": "strict-zero-spill-6144B-isolated-producer-not-qualified-prior-rank-stop-withdrawn"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_n32_stage_native_tile_gate.json",
+          "sha256": "9a8f041ebd7e66427edb35c959b8c2ac409abb1aabcd2aa8f35a9c35e6d39f2e",
+          "recorded_decision": "no-assembly-current-8-10-12-stage-native-packetizations-fail-static-filter"
+        }
+      ],
+      "result": "strict zero-spill has a 16-data-plus-one-Montgomery-temp cut; the best allocated remedy is one spill/reload per component, while 8/10/12-YMM stage-native packets lose to source replay or routing"
+    },
+    "persistent_full_plane_radix2": {
+      "status": "covered_not_promoted",
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_plane_n16_stockham_stages_007/generated/plane_n16_stockham_gate.json",
+        "sha256": "f12f1174d78a104af15f804548bcecd04c12ca66b4746f0d0abf7a7bfd89f1f1"
+      },
+      "result": "progressive wins 8/8 launches"
+    },
+    "persistent_full_plane_radix4": {
+      "status": "covered_static_hard_stop",
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_plane_n16_radix4_route_elim_008/generated/plane_n16_radix4_gate.json",
+        "sha256": "4b911f47d1867f5b01a5d5ab5054a0225ac16e64031feb0a03e02379c7b642b8",
+        "recorded_decision": "static-hard-stop"
+      },
+      "result": "route saving is repaid by terminal/range repair"
+    },
+    "one_plane_Hybrid_L01": {
+      "status": "covered_static_hard_stop",
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_joint_transform_basis_009/generated/joint_transform_basis_gate.json",
+        "sha256": "83292e970b993599542726423d8ee85389850748e33d331951020ef5679e7bd4",
+        "recorded_decision": "static_hard_stop_first_one_plane_Hybrid_L01"
+      },
+      "result": "optimistic whole-island floor is +36 instructions; 19->12 chains is only 63->61 multiply uops"
+    },
+    "pair_and_compact_basis_arithmetic": {
+      "status": "covered_do_not_repeat",
+      "artifacts": [
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_pair_native_bm_gate.json",
+          "sha256": "f42b9f27ef811a1d0ea2626e3583bb6f7eae62173275a0f73e6a002de309c74e"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_terminal_karatsuba_basis_gate.json",
+          "sha256": "c14a425affb71189196363f181ce479751cbc4a88a4ca97578a3c240996b5c36"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_pair02_exact_dag_tile_gate.json",
+          "sha256": "ce07b344ef1ddcdb3f18c4d671b460c668561bfa38a9727ce71012b67f92034b"
+        }
+      ],
+      "remaining": "a basis generated by Top/Forward that deletes formation and inverse repair simultaneously"
+    }
+  },
+  "production_boundary_census": {
+    "sources": [
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt.s",
+        "sha256": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt_m.s",
+        "sha256": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/invntt.s",
+        "sha256": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa"
+      }
+    ],
+    "Forward_Top_R3_to_N32": {
+      "YMM_stores": 48,
+      "YMM_loads": 48,
+      "memory_operations": 96,
+      "bytes": 3072
+    },
+    "Inverse_InvN32_to_tail": {
+      "YMM_stores": 48,
+      "YMM_loads": 48,
+      "memory_operations": 96,
+      "bytes": 3072
+    },
+    "whole_2F_plus_I": {
+      "memory_operations": 288,
+      "bytes": 9216
+    },
+    "classification": "implementation boundary, not an algebraic requirement"
+  },
+  "architecture_families": [
+    {
+      "family": "current_progressive",
+      "status": "benchmark_control",
+      "R3_materialization": "full",
+      "terminal_basis": "M monomial"
+    },
+    {
+      "family": "producer_native_Hybrid",
+      "status": "first L01 node closed; other bases open only with a new joint deletion",
+      "R3_materialization": "unchanged in 009",
+      "terminal_basis": "variable"
+    },
+    {
+      "family": "R3_persistent_mixed_radix",
+      "status": "current 8/10/12 packetizations closed; smaller closure factorization open",
+      "R3_materialization": "primary variable",
+      "terminal_basis": "mixed (u,r,k,p)"
+    },
+    {
+      "family": "full_plane_or_Hybrid_R4",
+      "status": "full-plane R4 closed; consumer-selected Hybrid R4 conditional",
+      "R3_materialization": "not removed by 008",
+      "terminal_basis": "variable"
+    },
+    {
+      "family": "multiplication_selected_basis",
+      "status": "general basis open; unit-coefficient L01 node closed",
+      "R3_materialization": "must be scored jointly",
+      "terminal_basis": "T(a)"
+    },
+    {
+      "family": "RAW160_nonuniform_diagonal",
+      "status": "typed-scale-range-shaping-does-not-close-B3-contract",
+      "R3_materialization": "branch-local/controlled-spill trajectory",
+      "terminal_basis": "D(q) monomial"
+    }
+  ],
+  "materialization_frontier": {
+    "current_R3_first": {
+      "memory_operations_per_transform_boundary": 96,
+      "bytes_per_transform_boundary": 3072,
+      "executable_control": true
+    },
+    "packet_pair_S1_preserving_current_M": {
+      "memory_operations_per_Forward": 144,
+      "decision": "dominated_by_current"
+    },
+    "R3_wave_controlled_spill": {
+      "spill_store_load_instructions_per_Forward": 6,
+      "spill_bytes_per_Forward": 192,
+      "measured_net_tax_TSC_per_Forward": {
+        "normal": 8.5922,
+        "reversed": 8.5972
+      },
+      "status": "allocated local remedy; full source-to-terminal closure still needs changed range/consumer contract"
+    },
+    "stage_native_8_10_12YMM": {
+      "status": "current-8-10-12-packet-families-static-filtered-no-ASM",
+      "candidates": [
+        {
+          "name": "T0-8YMM-cohort4",
+          "data_YMM": 8,
+          "working_YMM": 8,
+          "peak_YMM_with_one_Montgomery_temp": 9,
+          "physical_layout": "cohort-4 fixed qword lanes",
+          "S1_S3_route_instructions_per_Forward": 0,
+          "tiles_per_Forward": 6,
+          "producer_DFT3_closure": false,
+          "closure_reason": "capacity 4 is smaller than the connected 6-component producer/DFT3 graph",
+          "best_no-materialization_source_shapes": [
+            {
+              "shape": "one branch x four qword lanes",
+              "cost": "the second branch replays the source wave",
+              "minimum_extra_wide_loads_per_Forward": 48,
+              "additional_fixed-factor_recomputation": true
+            },
+            {
+              "shape": "two branches x two qword lanes",
+              "cost": "two half-width passes over every source wave",
+              "minimum_extra_128bit_loads_per_Forward": 48,
+              "additional_half-width_top/twist_work": true,
+              "half-packet_insertions_per_Forward": 48
+            }
+          ],
+          "comparison_to_R3": {
+            "R3_spill_store_load_instructions_per_Forward": 6,
+            "T0_minimum_extra_source_load_instructions": 48,
+            "minimum_instruction_delta_before_recomputation": 42,
+            "measured_R3_net_tax_TSC_per_Forward": {
+              "normal": 8.5922,
+              "reversed": 8.5972
+            }
+          },
+          "assembly_eligible": false,
+          "decision": "static-filter-fail-source-replay-dominates-measured-R3-remedy"
+        },
+        {
+          "name": "T1-10YMM-component-local5",
+          "data_YMM": 10,
+          "working_YMM": 6,
+          "peak_YMM_with_one_Montgomery_temp": 11,
+          "physical_layout": "five component-local two-YMM packets",
+          "S1_S3_route_instructions_per_component": 4,
+          "S1_S3_route_instructions_per_Forward": 96,
+          "producer_DFT3_closure": false,
+          "closure_reason": "capacity 5 is still smaller than the connected 6-component graph",
+          "advantage_over_T0": "one fewer partial tile is possible, but no arithmetic chain or full boundary disappears",
+          "assembly_eligible": false,
+          "decision": "static-filter-fail-adds-96-routes-without-closing-producer-DFT3-boundary"
+        },
+        {
+          "name": "T2-12YMM-component-local6",
+          "data_YMM": 12,
+          "working_YMM": 4,
+          "peak_YMM_with_one_Montgomery_temp": 13,
+          "physical_layout": "six component-local two-YMM packets",
+          "S1_S3_route_instructions_per_component": 4,
+          "S1_S3_route_instructions_per_Forward": 96,
+          "tiles_per_Forward": 4,
+          "producer_DFT3_closure": true,
+          "DFT3_after_S3_extra_route": 0,
+          "source_packetization_without_new_materialization": {
+            "reason": "a closed tile fixes one qword lane across all three n3 rows and both branches",
+            "wide_source_vectors": 48,
+            "qword_lane_tiles": 4,
+            "minimum_source_loads_when_each_closed_tile_is_executed_separately": 192,
+            "extra_source_loads_over_one-wide-load-pass": 144
+          },
+          "route_credit": {
+            "current_half-native_DFT3_blends_per_component": 5,
+            "DFT3_components_per_Forward": 16,
+            "maximum_deleted_suffix_blends": 80,
+            "net_instructions_before_output_redeposit": 160,
+            "formula": "96 interstage routes + 144 extra source loads - 80 deleted suffix blends"
+          },
+          "assembly_eligible": false,
+          "decision": "static-filter-fail-zero-cut-closure-costs-more-than-entire-suffix-credit"
+        }
+      ]
+    },
+    "RAW160_branch_local": {
+      "Montgomery_chains": 160,
+      "peak_YMM": 13,
+      "extra_branch_materialization_memory_instructions": 42,
+      "old_blocker": "raw representative reaches 25887, above the frozen B3/R1-U producer limit 10788",
+      "typed_diagonal_reopen": "evaluated in this gate"
+    },
+    "strict_zero_materialization": {
+      "status": "not proved executable for current factorization",
+      "cut": "16 live data YMM plus one Montgomery temporary",
+      "not_a_global_theorem": true,
+      "reopen": "factorization that reduces the six-component closure frontier or deletes a complete producer wave"
+    }
+  },
+  "new_RAW160_typed_diagonal_search": {
+    "candidate_schedules": 65536,
+    "typed_contract": "Forward D(q); BaseMul D(q)^2; inverse discharges D(q)^2",
+    "BaseMul_extra_chains": 0,
+    "reason_BaseMul_is_free": "leaf scalar D commutes with quartic multiplication; output is intentionally typed D^2",
+    "current_B3_input_bound": 10788,
+    "safe_schedule_count_under_conservative_bound": 0,
+    "qualification_note": "zero means no schedule is range-qualified by the safe whole-space bound; exact interval refinement is additionally reported for every conservative Pareto point",
+    "best_terminal_bound": {
+      "mask": 17923,
+      "mask_hex": "0x4603",
+      "orientation_nibbles_S2_S5": [
+        3,
+        0,
+        6,
+        4
+      ],
+      "conservative_terminal_abs_bound": 25602,
+      "uniform_e0": false,
+      "distinct_terminal_scales": 7,
+      "inverse_extra_chains": 0,
+      "inverse_scale_chain_proof": {
+        "chains_S2_S5": 96,
+        "uniform_control_chains_S2_S5": 96,
+        "extra_chains": 0,
+        "per_stage": [
+          {
+            "stage": 5,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 30
+          },
+          {
+            "stage": 4,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 36
+          },
+          {
+            "stage": 3,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 18
+          },
+          {
+            "stage": 2,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 12
+          }
+        ]
+      },
+      "exact_interval_refinement": {
+        "exact_interval_terminal_abs_bound": 25577,
+        "branch_records": [
+          {
+            "branch": 0,
+            "bounds_by_k3": [
+              25519,
+              20205,
+              20173
+            ],
+            "maximum": 25519
+          },
+          {
+            "branch": 1,
+            "bounds_by_k3": [
+              25577,
+              20190,
+              20233
+            ],
+            "maximum": 25577
+          }
+        ],
+        "terminal_scale_vector": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1521,
+          1521,
+          1521,
+          1521,
+          1741,
+          1741,
+          1741,
+          1741,
+          3176,
+          3176,
+          1558,
+          1558,
+          1673,
+          1673,
+          2190,
+          2190,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "distinct_terminal_scales": 7
+      }
+    },
+    "best_with_no_inverse_chain_increase": {
+      "mask": 17923,
+      "mask_hex": "0x4603",
+      "orientation_nibbles_S2_S5": [
+        3,
+        0,
+        6,
+        4
+      ],
+      "conservative_terminal_abs_bound": 25602,
+      "uniform_e0": false,
+      "distinct_terminal_scales": 7,
+      "inverse_extra_chains": 0,
+      "inverse_scale_chain_proof": {
+        "chains_S2_S5": 96,
+        "uniform_control_chains_S2_S5": 96,
+        "extra_chains": 0,
+        "per_stage": [
+          {
+            "stage": 5,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 30
+          },
+          {
+            "stage": 4,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": true,
+                "high_difference_chain": true,
+                "chains": 2
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 36
+          },
+          {
+            "stage": 3,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 18
+          },
+          {
+            "stage": 2,
+            "slots": [
+              {
+                "slot": 0,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 1,
+                "low_sum_chain": false,
+                "high_difference_chain": false,
+                "chains": 0
+              },
+              {
+                "slot": 2,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              },
+              {
+                "slot": 3,
+                "low_sum_chain": false,
+                "high_difference_chain": true,
+                "chains": 1
+              }
+            ],
+            "chains_full_inverse": 12
+          }
+        ]
+      },
+      "exact_interval_refinement": {
+        "exact_interval_terminal_abs_bound": 25577,
+        "branch_records": [
+          {
+            "branch": 0,
+            "bounds_by_k3": [
+              25519,
+              20205,
+              20173
+            ],
+            "maximum": 25519
+          },
+          {
+            "branch": 1,
+            "bounds_by_k3": [
+              25577,
+              20190,
+              20233
+            ],
+            "maximum": 25577
+          }
+        ],
+        "terminal_scale_vector": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1521,
+          1521,
+          1521,
+          1521,
+          1741,
+          1741,
+          1741,
+          1741,
+          3176,
+          3176,
+          1558,
+          1558,
+          1673,
+          1673,
+          2190,
+          2190,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "distinct_terminal_scales": 7
+      }
+    },
+    "pareto": [
+      {
+        "mask": 0,
+        "mask_hex": "0x0000",
+        "orientation_nibbles_S2_S5": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "conservative_terminal_abs_bound": 26072,
+        "uniform_e0": true,
+        "distinct_terminal_scales": 1,
+        "inverse_extra_chains": -18,
+        "inverse_scale_chain_proof": {
+          "chains_S2_S5": 78,
+          "uniform_control_chains_S2_S5": 96,
+          "extra_chains": -18,
+          "per_stage": [
+            {
+              "stage": 5,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 24
+            },
+            {
+              "stage": 4,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 24
+            },
+            {
+              "stage": 3,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 18
+            },
+            {
+              "stage": 2,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 12
+            }
+          ]
+        },
+        "exact_interval_refinement": {
+          "exact_interval_terminal_abs_bound": 25577,
+          "branch_records": [
+            {
+              "branch": 0,
+              "bounds_by_k3": [
+                25519,
+                20205,
+                20173
+              ],
+              "maximum": 25519
+            },
+            {
+              "branch": 1,
+              "bounds_by_k3": [
+                25577,
+                20190,
+                20233
+              ],
+              "maximum": 25577
+            }
+          ],
+          "terminal_scale_vector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "distinct_terminal_scales": 1
+        }
+      },
+      {
+        "mask": 1024,
+        "mask_hex": "0x0400",
+        "orientation_nibbles_S2_S5": [
+          0,
+          0,
+          4,
+          0
+        ],
+        "conservative_terminal_abs_bound": 25698,
+        "uniform_e0": false,
+        "distinct_terminal_scales": 3,
+        "inverse_extra_chains": -12,
+        "inverse_scale_chain_proof": {
+          "chains_S2_S5": 84,
+          "uniform_control_chains_S2_S5": 96,
+          "extra_chains": -12,
+          "per_stage": [
+            {
+              "stage": 5,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 24
+            },
+            {
+              "stage": 4,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 30
+            },
+            {
+              "stage": 3,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 18
+            },
+            {
+              "stage": 2,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 12
+            }
+          ]
+        },
+        "exact_interval_refinement": {
+          "exact_interval_terminal_abs_bound": 25577,
+          "branch_records": [
+            {
+              "branch": 0,
+              "bounds_by_k3": [
+                25519,
+                20205,
+                20173
+              ],
+              "maximum": 25519
+            },
+            {
+              "branch": 1,
+              "bounds_by_k3": [
+                25577,
+                20190,
+                20233
+              ],
+              "maximum": 25577
+            }
+          ],
+          "terminal_scale_vector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            3418,
+            3418,
+            3418,
+            3418,
+            44,
+            44,
+            44,
+            44,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "distinct_terminal_scales": 3
+        }
+      },
+      {
+        "mask": 1536,
+        "mask_hex": "0x0600",
+        "orientation_nibbles_S2_S5": [
+          0,
+          0,
+          6,
+          0
+        ],
+        "conservative_terminal_abs_bound": 25676,
+        "uniform_e0": false,
+        "distinct_terminal_scales": 5,
+        "inverse_extra_chains": -6,
+        "inverse_scale_chain_proof": {
+          "chains_S2_S5": 90,
+          "uniform_control_chains_S2_S5": 96,
+          "extra_chains": -6,
+          "per_stage": [
+            {
+              "stage": 5,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 24
+            },
+            {
+              "stage": 4,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 36
+            },
+            {
+              "stage": 3,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 18
+            },
+            {
+              "stage": 2,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 12
+            }
+          ]
+        },
+        "exact_interval_refinement": {
+          "exact_interval_terminal_abs_bound": 25577,
+          "branch_records": [
+            {
+              "branch": 0,
+              "bounds_by_k3": [
+                25519,
+                20205,
+                20173
+              ],
+              "maximum": 25519
+            },
+            {
+              "branch": 1,
+              "bounds_by_k3": [
+                25577,
+                20190,
+                20233
+              ],
+              "maximum": 25577
+            }
+          ],
+          "terminal_scale_vector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1521,
+            1521,
+            1521,
+            1521,
+            1741,
+            1741,
+            1741,
+            1741,
+            3418,
+            3418,
+            3418,
+            3418,
+            44,
+            44,
+            44,
+            44,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "distinct_terminal_scales": 5
+        }
+      },
+      {
+        "mask": 17923,
+        "mask_hex": "0x4603",
+        "orientation_nibbles_S2_S5": [
+          3,
+          0,
+          6,
+          4
+        ],
+        "conservative_terminal_abs_bound": 25602,
+        "uniform_e0": false,
+        "distinct_terminal_scales": 7,
+        "inverse_extra_chains": 0,
+        "inverse_scale_chain_proof": {
+          "chains_S2_S5": 96,
+          "uniform_control_chains_S2_S5": 96,
+          "extra_chains": 0,
+          "per_stage": [
+            {
+              "stage": 5,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 30
+            },
+            {
+              "stage": 4,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": true,
+                  "high_difference_chain": true,
+                  "chains": 2
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 36
+            },
+            {
+              "stage": 3,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 18
+            },
+            {
+              "stage": 2,
+              "slots": [
+                {
+                  "slot": 0,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 1,
+                  "low_sum_chain": false,
+                  "high_difference_chain": false,
+                  "chains": 0
+                },
+                {
+                  "slot": 2,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                },
+                {
+                  "slot": 3,
+                  "low_sum_chain": false,
+                  "high_difference_chain": true,
+                  "chains": 1
+                }
+              ],
+              "chains_full_inverse": 12
+            }
+          ]
+        },
+        "exact_interval_refinement": {
+          "exact_interval_terminal_abs_bound": 25577,
+          "branch_records": [
+            {
+              "branch": 0,
+              "bounds_by_k3": [
+                25519,
+                20205,
+                20173
+              ],
+              "maximum": 25519
+            },
+            {
+              "branch": 1,
+              "bounds_by_k3": [
+                25577,
+                20190,
+                20233
+              ],
+              "maximum": 25577
+            }
+          ],
+          "terminal_scale_vector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1521,
+            1521,
+            1521,
+            1521,
+            1741,
+            1741,
+            1741,
+            1741,
+            3176,
+            3176,
+            1558,
+            1558,
+            1673,
+            1673,
+            2190,
+            2190,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "distinct_terminal_scales": 7
+        }
+      }
+    ]
+  },
+  "R3_stage_relocation_selective_center_search": {
+    "stage_positions": 6,
+    "center_policies_per_position": 8,
+    "candidate_schedules": 48,
+    "closure_model": "3 radix-3 rows times 2^d R2-prefix values, plus one serial Montgomery temporary",
+    "range_qualified_count": 5,
+    "range_and_register_qualified_count": 2,
+    "best_range_and_register_qualified": {
+      "R3_after_stage": 1,
+      "center_mask_hex": "0x7",
+      "centered_k3_rows": [
+        0,
+        1,
+        2
+      ],
+      "center_vectors_per_Forward": 48,
+      "center_instructions_per_Forward": 144,
+      "closure_data_YMM_per_u_component": 6,
+      "closure_peak_with_one_temp": 7,
+      "fits_16YMM_closure": true,
+      "branch_records": [
+        {
+          "branch": 0,
+          "pre_center_DFT3_abs_bound": 10595,
+          "terminal_abs_bound": 9419
+        },
+        {
+          "branch": 1,
+          "pre_center_DFT3_abs_bound": 10589,
+          "terminal_abs_bound": 9419
+        }
+      ],
+      "range_qualified_for_B3": true,
+      "optimistic_boundary_instruction_delta": 48
+    },
+    "qualified_schedules": [
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 9419
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 9419
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 7967
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 7967
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 6315
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 6315
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 4871
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 4871
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 3440
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 3440
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      }
+    ],
+    "all_schedules": [
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18344
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18391
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18344
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18391
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18328
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18391
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18328
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18391
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18344
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18345
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18344
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18345
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 18274
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 18332
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 0,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 3,
+        "closure_peak_with_one_temp": 4,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 5359,
+            "terminal_abs_bound": 11351
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 5351,
+            "terminal_abs_bound": 11351
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 18274
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 18332
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 16502
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 16546
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 18274
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 18332
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 16486
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 16546
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 18274
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 18332
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 16502
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 16503
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 18274
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 18332
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 1,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 6,
+        "closure_peak_with_one_temp": 7,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 10595,
+            "terminal_abs_bound": 9419
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 10589,
+            "terminal_abs_bound": 9419
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 21927
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 21985
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 18377
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 18424
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 21927
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 21985
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 18361
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 18424
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 21927
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 21985
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 18377
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 18378
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 21927
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 21985
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 2,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 12,
+        "closure_peak_with_one_temp": 13,
+        "fits_16YMM_closure": true,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 15749,
+            "terminal_abs_bound": 7967
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 15818,
+            "terminal_abs_bound": 7967
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 25519
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 25577
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 20205
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 20233
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 25519
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 25577
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 20173
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 20233
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 25519
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 25577
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 20205
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 20190
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 25519
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 25577
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 3,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 24,
+        "closure_peak_with_one_temp": 25,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 21185,
+            "terminal_abs_bound": 6315
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 21221,
+            "terminal_abs_bound": 6315
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 29031
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 29092
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 21970
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 22017
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 29031
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 29092
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 21954
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 22017
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 29031
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 29092
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 21970
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 21971
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 29031
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 29092
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 4,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 48,
+        "closure_peak_with_one_temp": 49,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 26713,
+            "terminal_abs_bound": 4871
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 26729,
+            "terminal_abs_bound": 4871
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x0",
+        "centered_k3_rows": [],
+        "center_vectors_per_Forward": 0,
+        "center_instructions_per_Forward": 0,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 32467
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 32528
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -96
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x1",
+        "centered_k3_rows": [
+          0
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 23686
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 23733
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x2",
+        "centered_k3_rows": [
+          1
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 32467
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 32528
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x3",
+        "centered_k3_rows": [
+          0,
+          1
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 23670
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 23733
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x4",
+        "centered_k3_rows": [
+          2
+        ],
+        "center_vectors_per_Forward": 16,
+        "center_instructions_per_Forward": 48,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 32467
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 32528
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": -48
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x5",
+        "centered_k3_rows": [
+          0,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 23686
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 23687
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x6",
+        "centered_k3_rows": [
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 32,
+        "center_instructions_per_Forward": 96,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 32467
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 32528
+          }
+        ],
+        "range_qualified_for_B3": false,
+        "optimistic_boundary_instruction_delta": 0
+      },
+      {
+        "R3_after_stage": 5,
+        "center_mask_hex": "0x7",
+        "centered_k3_rows": [
+          0,
+          1,
+          2
+        ],
+        "center_vectors_per_Forward": 48,
+        "center_instructions_per_Forward": 144,
+        "closure_data_YMM_per_u_component": 96,
+        "closure_peak_with_one_temp": 97,
+        "fits_16YMM_closure": false,
+        "branch_records": [
+          {
+            "branch": 0,
+            "pre_center_DFT3_abs_bound": 32467,
+            "terminal_abs_bound": 3440
+          },
+          {
+            "branch": 1,
+            "pre_center_DFT3_abs_bound": 32528,
+            "terminal_abs_bound": 3440
+          }
+        ],
+        "range_qualified_for_B3": true,
+        "optimistic_boundary_instruction_delta": 48
+      }
+    ],
+    "important_caveat": "closure capacity is necessary, not a complete producer allocation; source traversal/replay and physical lane routing remain to be charged"
+  },
+  "decision": {
+    "wave_completed": "coverage plus six-branch materialization and typed-diagonal RAW160 reopen",
+    "assembly_emitted": false,
+    "reason": "all 65536 existing-chain diagonal schedules remain above the 10788 B3 contract; no RAW160 ASM",
+    "superspace_closed": false,
+    "why_not_closed": [
+      "strict zero-materialization is not a theorem beyond the current six-component factorization",
+      "arbitrary multiplication-selected linear bases are not enumerated by this diagonal wave",
+      "Forward and BaseMul output layouts may still differ"
+    ],
+    "next": [
+      "allocate and score the best after-S1/after-S2 R3 selective-center frontier",
+      "synthesize its BaseMul output and inverse-entry trajectory"
+    ]
+  },
+  "hard_stop_rule": "only a complete 2F+B+I candidate dominated on every Pareto dimension may be pruned"
+}

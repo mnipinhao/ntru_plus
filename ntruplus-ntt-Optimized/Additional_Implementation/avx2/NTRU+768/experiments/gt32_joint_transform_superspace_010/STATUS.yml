@@ -1,0 +1,60 @@
+experiment: GT32-JOINT-TRANSFORM-SUPERSPACE-010
+status: active_wave1_completed_no_asm
+production_modified: false
+assembly_emitted: false
+
+decision_unit:
+  - two_Top_R3_Forward
+  - BaseMul_input_to_output_basis
+  - Inverse_R3_TopJoin
+
+production_boundary:
+  per_Forward: {stores: 48, loads: 48, bytes: 3072}
+  per_Inverse: {stores: 48, loads: 48, bytes: 3072}
+  whole_2F_plus_I: {memory_operations: 288, bytes: 9216}
+
+coverage:
+  imported_do_not_repeat:
+    - global_R2_physical_trajectory
+    - fixed_M_frontend_seam
+    - NTT32_first_and_R3_narrow_gates
+    - current_factorization_pebble_and_8_10_12YMM_packets
+    - persistent_full_plane_radix2
+    - persistent_full_plane_radix4
+    - one_plane_Hybrid_L01
+    - pair_Karatsuba_and_compact_basis_gates
+
+new_results:
+  RAW160_nonuniform_diagonal:
+    schedules: 65536
+    safe_whole_space_bound_count: 0
+    exact_refined_pareto_terminal_bound: 25577
+    B3_contract: 10788
+    decision: close_before_asm
+  R3_relocation_selective_center:
+    stage_positions: 6
+    center_policies_each: 8
+    candidates: 48
+    range_qualified: 5
+    range_and_capacity_qualified: 2
+    minimum_centered_rows: 3
+    minimum_center_instructions_per_Forward: 144
+    current_boundary_instructions_per_Forward: 96
+    decision: no_asm_capacity_is_not_complete_schedule_and_simple_relocation_has_no_compute_win
+
+family_status:
+  current_progressive: benchmark_control
+  producer_native_Hybrid: conditional_open
+  R3_persistent_mixed_radix: conditional_open_on_smaller_closure
+  full_plane_Hybrid_R4: conditional_open_on_consumer_selected_terminal
+  multiplication_selected_basis: conditional_open_on_joint_deletion
+  RAW160_diagonal: closed
+
+next:
+  - allocate_complete_producer_native_one_plane_Hybrid_or_full_plane_packet
+  - charge_source_replay_inactive_plane_materialization_and_all_row_centers
+  - synthesize_BM_and_inverse_only_after_a_source_to_terminal_packet_survives
+
+hard_stop_rule:
+  - prune_only_when_a_complete_island_candidate_is_Pareto_dominated
+  - do_not_use_isolated_chain_count_as_the_objective
