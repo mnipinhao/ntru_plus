@@ -58,6 +58,7 @@ N5_M_FRONTEND_SEAM_GATE := generated/tile4_n5_m_frontend_seam_gate.json
 N5_FRONTEND_LINEAR_CIRCUIT_GATE := generated/tile4_n5_frontend_linear_circuit_gate.json
 N5_SCALE_EDGE_SURVEY := generated/tile4_n5_scale_edge_survey.json
 SCALE_CONSUMER_FUSION_GATE := generated/tile4_scale_consumer_fusion_gate.json
+ENCAP_REP_ARCH_GATE := generated/tile4_encap_representation_architecture_gate.json
 GT32_GLOBAL_PHYSICAL_ASM_ARTIFACTS := \
 	generated/tile4_global_physical_constants.inc \
 	src/tile4_global_physical_asm.S
@@ -169,6 +170,16 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 	bench-n5-pm-progressive-suffix-pmu
 
 .PHONY: n5-scale-edge-survey-generate scale-consumer-fusion-generate
+.PHONY: encap-representation-architecture-generate
+
+encap-representation-architecture-generate: $(ENCAP_REP_ARCH_GATE)
+
+$(ENCAP_REP_ARCH_GATE): \
+	tools/generate_encap_representation_architecture_gate.py \
+	tools/generate_p_prime_joint_abi_survey.py \
+	tools/generate_gt32_global_physical_layout_gate.py \
+	generated/tile4_serialized_mapping.json
+	$(PYTHON) tools/generate_encap_representation_architecture_gate.py
 
 .PHONY: spcrt-b3-exec-generate spcrt-b3-exec-check \
 	bench-spcrt-b3-exec-short
@@ -207,7 +218,11 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 
 .PHONY: q24-lazy10788-static q24-lazy10788-check \
 	bench-q24-lazy10788-gtpack-short bench-q24-lazy10788-gtpack-pmu \
-	q24-lazy-schedules-generate bench-q24-lazy-schedules-short
+	q24-lazy-schedules-generate bench-q24-lazy-schedules-short \
+	q24-tf1-m-check bench-q24-tf1-m-short \
+	bench-q24-hotcompact-c1-short \
+	bench-encap-same-elf-residual bench-encap-same-elf-residual-pmu \
+	bench-encap-poly-island
 
 .PHONY: encap-candidate-check bench-keygen-encap-attribution-short \
 	bench-keygen-encap-attribution-pmu q24-encap-highrange-generate
@@ -961,6 +976,28 @@ bench-q24-codec-short: generate $(BUILD)/bench_q24_codec \
 		--reversed-binary $(BUILD)/bench_q24_codec_reversed \
 		--iterations 2000 --output results/tile4-q24-codec-short.json
 
+decode-debt-generate: generated/tile4_decode_debt.inc \
+		generated/tile4_decode_debt_static.json
+
+generated/tile4_decode_debt.inc generated/tile4_decode_debt_static.json: \
+		tools/generate_decode_debt_gate.py generated/tile4_q24_codec.json
+	$(PYTHON) tools/generate_decode_debt_gate.py
+
+encap-h-d01-mixed-tmvp-static: \
+		generated/tile4_encap_h_d01_mixed_tmvp_gate.json
+
+generated/tile4_encap_h_d01_mixed_tmvp_gate.json: \
+		tools/generate_encap_h_d01_mixed_tmvp_gate.py \
+		generated/tile4_q24_codec.json \
+		generated/tile4_pair02_exact_dag_tile_gate.json
+	$(PYTHON) tools/generate_encap_h_d01_mixed_tmvp_gate.py
+
+bench-decode-debt: decode-debt-generate $(BUILD)/bench_decode_debt \
+		$(BUILD)/bench_decode_debt_reversed
+	$(PYTHON) tools/run_decode_debt_gate.py $(BUILD)/bench_decode_debt \
+		$(BUILD)/bench_decode_debt_reversed --iterations 4000 --launches 4 \
+		--output results/tile4-decode-debt-gate.json
+
 bench-q24-prefix-short: generate $(BUILD)/bench_q24_prefix \
 		$(BUILD)/bench_q24_prefix_reversed
 	$(PYTHON) tools/run_q24_prefix.py $(BUILD)/bench_q24_prefix \
@@ -1075,6 +1112,50 @@ bench-q24-lazy-schedules-short: q24-lazy-schedules-generate \
 		--reversed-binaries $(Q24_LAZY_REVERSED_BINS) \
 		--iterations 2000 --launches 8 \
 		--output results/tile4-q24-lazy-schedules-short.json
+
+$(BUILD)/bench_q24_tf1_m: bench/bench_q24_tf1_m.c \
+		src/tile4_q24_codec_asm.S src/tile4.h \
+		generated/tile4_q24_codec.inc $(Q24_LAZY_SCHEDULE_INC) \
+		$(Q24_ENCAP_HR_INC) | $(BUILD)
+	$(CC) $(CFLAGS) -DQ24_M_TF1_GATE=1 -Isrc -o $@ bench/bench_q24_tf1_m.c \
+		src/tile4_q24_codec_asm.S
+
+$(BUILD)/bench_q24_tf1_m_reversed: bench/bench_q24_tf1_m.c \
+		src/tile4_q24_codec_asm.S src/tile4.h \
+		generated/tile4_q24_codec.inc $(Q24_LAZY_SCHEDULE_INC) \
+		$(Q24_ENCAP_HR_INC) | $(BUILD)
+	$(CC) $(CFLAGS) -DQ24_M_TF1_GATE=1 -Isrc -o $@ src/tile4_q24_codec_asm.S \
+		bench/bench_q24_tf1_m.c
+
+q24-tf1-m-check: q24-lazy-schedules-generate $(BUILD)/bench_q24_tf1_m
+	$(BUILD)/bench_q24_tf1_m 1 >/dev/null
+	@test "$$(nm -S $(BUILD)/bench_q24_tf1_m | awk \
+		'/ gt32_q24_encode_soa_lazy10788_asm$$/{print $$2}')" = \
+		"$$(nm -S $(BUILD)/bench_q24_tf1_m | awk \
+		'/ gt32_q24_encode_soa_tf1_asm$$/{print $$2}')"
+
+bench-q24-tf1-m-short: q24-tf1-m-check $(BUILD)/bench_q24_tf1_m_reversed
+	$(BUILD)/bench_q24_tf1_m 4000
+	$(BUILD)/bench_q24_tf1_m_reversed 4000
+
+$(BUILD)/bench_q24_hotcompact_c1: bench/bench_q24_hotcompact_c1.c \
+		src/tile4_q24_codec_asm.S src/tile4.h \
+		generated/tile4_q24_codec.inc $(Q24_LAZY_SCHEDULE_INC) \
+		$(Q24_ENCAP_HR_INC) | $(BUILD)
+	$(CC) $(CFLAGS) -Isrc -o $@ bench/bench_q24_hotcompact_c1.c \
+		src/tile4_q24_codec_asm.S
+
+$(BUILD)/bench_q24_hotcompact_c1_reversed: bench/bench_q24_hotcompact_c1.c \
+		src/tile4_q24_codec_asm.S src/tile4.h \
+		generated/tile4_q24_codec.inc $(Q24_LAZY_SCHEDULE_INC) \
+		$(Q24_ENCAP_HR_INC) | $(BUILD)
+	$(CC) $(CFLAGS) -Isrc -o $@ src/tile4_q24_codec_asm.S \
+		bench/bench_q24_hotcompact_c1.c
+
+bench-q24-hotcompact-c1-short: $(BUILD)/bench_q24_hotcompact_c1 \
+		$(BUILD)/bench_q24_hotcompact_c1_reversed
+	$(BUILD)/bench_q24_hotcompact_c1 4000
+	$(BUILD)/bench_q24_hotcompact_c1_reversed 4000
 
 bench-q24-decap-pmu: $(BUILD)/bench_q24_decap \
 		$(BUILD)/bench_q24_decap_reversed
@@ -1293,6 +1374,43 @@ audit: generate $(BUILD)/tile4_asm.o $(BUILD)/tile4_basemul_asm.o \
 
 bench-short: generate $(BUILD)/bench_forward_short
 	$(BUILD)/bench_forward_short 2000
+
+.PHONY: bench-frontend-f1 bench-frontend-f14-wave
+bench-frontend-f1: generate $(BUILD)/bench_frontend_f1 \
+		$(BUILD)/bench_frontend_f1_reversed
+	$(BUILD)/bench_frontend_f1 4000
+	$(BUILD)/bench_frontend_f1_reversed 4000
+
+$(BUILD)/bench_frontend_f1: bench/bench_frontend_f1.c src/tile4_asm.S \
+		generated/tile4_frontend_wide.inc generated/tile4_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -DGT32_FRONTEND_GATE_VARIANTS -Isrc -o $@ src/tile4_asm.S \
+		bench/bench_frontend_f1.c
+
+$(BUILD)/bench_frontend_f1_reversed: bench/bench_frontend_f1.c src/tile4_asm.S \
+		generated/tile4_frontend_wide.inc generated/tile4_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -DGT32_FRONTEND_GATE_VARIANTS -DGT32_F1_FIRST \
+		-Isrc -o $@ src/tile4_asm.S \
+		bench/bench_frontend_f1.c
+
+bench-frontend-f14-wave: generate $(BUILD)/bench_frontend_f1 \
+		$(BUILD)/bench_frontend_f14_wave_reversed
+	$(PYTHON) tools/run_frontend_f14_wave_gate.py \
+		--normal $(BUILD)/bench_frontend_f1 \
+		--reversed $(BUILD)/bench_frontend_f14_wave_reversed \
+		--iterations 4000 --launches 8 \
+		--output results/tile4-frontend-f14-wavefront.json
+
+$(BUILD)/bench_frontend_f14_wave_reversed: bench/bench_frontend_f1.c src/tile4_asm.S \
+		generated/tile4_frontend_wide.inc generated/tile4_constants.inc | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -DGT32_FRONTEND_GATE_VARIANTS -DGT32_F14_W2_FIRST \
+		-Isrc -o $@ src/tile4_asm.S bench/bench_frontend_f1.c
+
+.PHONY: bench-b3-wave
+bench-b3-wave: generate $(BUILD)/bench_b3_wave
+	$(BUILD)/bench_b3_wave 4000
+
+$(BUILD)/bench_b3_wave: bench/bench_b3_wave.c src/tile4_basemul_asm.S | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ src/tile4_basemul_asm.S bench/bench_b3_wave.c
 
 bench-official-short: generate $(BUILD)/bench_official_short
 	$(BUILD)/bench_official_short 2000
@@ -1530,6 +1648,11 @@ $(BUILD)/tile4_q24_codec_asm.o: src/tile4_q24_codec_asm.S \
 		$(Q24_LAZY_SCHEDULE_INC) $(Q24_ENCAP_HR_INC) | $(BUILD)
 	$(CC) $(CFLAGS) -c -o $@ src/tile4_q24_codec_asm.S
 
+$(BUILD)/tile4_q24_decode_debt.o: src/tile4_q24_codec_asm.S \
+		generated/tile4_q24_codec.inc generated/tile4_decode_debt.inc \
+		$(Q24_COMPACT_INC) $(Q24_LAZY_SCHEDULE_INC) $(Q24_ENCAP_HR_INC) | $(BUILD)
+	$(CC) $(CFLAGS) -DQ24_DECODE_DEBT_GATE=1 -c -o $@ $<
+
 $(BUILD)/tile4_q24_codec_cage_%.o: src/tile4_q24_codec_asm.S \
 		generated/tile4_q24_codec.inc $(Q24_COMPACT_INC) \
 		$(Q24_LAZY_SCHEDULE_INC) $(Q24_ENCAP_HR_INC) | $(BUILD)
@@ -1613,9 +1736,30 @@ $(BUILD)/tile4_kem_encap_candidate.o: src/tile4_kem_encap_candidate.c \
 		src/tile4_kem_encap_candidate.h src/tile4.h | $(BUILD)
 	$(CC) $(KEM_CFLAGS) -Werror -c -Isrc -I$(OFFICIAL) -o $@ $<
 
+$(BUILD)/tile4_kem_encap_q24_sum.o: src/tile4_kem_encap_q24_sum.c \
+		src/tile4_kem_encap_candidate.c src/tile4_kem_encap_candidate.h \
+		src/tile4.h | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -Werror -c -Isrc -I$(OFFICIAL) -o $@ $<
+
+$(BUILD)/tile4_kem_encap_f14.o: src/tile4_kem_encap_f14.c \
+		src/tile4_kem_encap_candidate.c src/tile4_kem_encap_candidate.h \
+		src/tile4.h | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -Werror -c -Isrc -I$(OFFICIAL) -o $@ $<
+
+$(BUILD)/tile4_kem_encap_tf1.o: src/tile4_kem_encap_tf1.c \
+		src/tile4_kem_encap_candidate.c src/tile4_kem_encap_candidate.h \
+		src/tile4.h | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -Werror -c -Isrc -I$(OFFICIAL) -o $@ $<
+
+$(BUILD)/tile4_kem_encap_f14_tf1.o: src/tile4_kem_encap_f14_tf1.c \
+		src/tile4_kem_encap_candidate.c src/tile4_kem_encap_candidate.h \
+		src/tile4.h | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -Werror -c -Isrc -I$(OFFICIAL) -o $@ $<
+
 $(BUILD)/test_tile4_kem_encap_candidate: \
 		tests/test_tile4_kem_encap_candidate.c \
 		$(BUILD)/tile4_kem_encap_candidate.o \
+		$(BUILD)/tile4_kem_encap_q24_sum.o \
 		src/tile4_asm.S src/tile4_basemul_asm.S src/tile4_q24_codec_asm.S \
 		src/tile4_encodeq_bridge_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S $(GEN) \
@@ -1627,9 +1771,10 @@ $(BUILD)/test_tile4_kem_encap_candidate: \
 		$(OFFICIAL)/asm/pack.s $(OFFICIAL)/fips202/fips202.c \
 		$(OFFICIAL)/fips202/KeccakP-1600-AVX2.s \
 		$(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
-	$(CC) $(KEM_CFLAGS) -Isrc -I$(OFFICIAL) -o $@ \
+	$(CC) $(KEM_CFLAGS) -DQ24_M_TF1_GATE=1 -Isrc -I$(OFFICIAL) -o $@ \
 		tests/test_tile4_kem_encap_candidate.c \
 		$(BUILD)/tile4_kem_encap_candidate.o \
+		$(BUILD)/tile4_kem_encap_q24_sum.o \
 		src/tile4_asm.S src/tile4_basemul_asm.S src/tile4_q24_codec_asm.S \
 		src/tile4_encodeq_bridge_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S \
@@ -1646,6 +1791,8 @@ encap-candidate-check: generate $(BUILD)/test_tile4_kem_encap_candidate
 	$(BUILD)/test_tile4_kem_encap_candidate
 
 KEYGEN_ENCAP_ATTR_GT := $(BUILD)/tile4_kem_encap_candidate.o \
+		$(BUILD)/tile4_kem_encap_q24_sum.o \
+		$(BUILD)/tile4_kem_encap_f14.o \
 		src/tile4_asm.S src/tile4_basemul_asm.S src/tile4_q24_codec_asm.S \
 		src/tile4_encodeq_bridge_asm.S \
 		src/tile4_forward_bm_soa_attribution_asm.S
@@ -1662,16 +1809,75 @@ KEYGEN_ENCAP_ATTR_OFFICIAL := $(OFFICIAL)/kem.c $(OFFICIAL)/poly.c \
 $(BUILD)/bench_keygen_encap_attribution: \
 		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_ATTR_GT) \
 		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
-	$(CC) $(KEM_CFLAGS) -Isrc -I$(OFFICIAL) -o $@ \
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-Isrc -I$(OFFICIAL) -o $@ \
+		-DGT32_FRONTEND_GATE_VARIANTS -DGT32_ENCAP_F14_WRAPPER \
 		bench/bench_keygen_encap_attribution.c \
 		$(KEYGEN_ENCAP_ATTR_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
 
 $(BUILD)/bench_keygen_encap_attribution_reversed: \
 		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_ATTR_GT) \
 		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
-	$(CC) $(KEM_CFLAGS) -Isrc -I$(OFFICIAL) -o $@ \
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-Isrc -I$(OFFICIAL) -o $@ \
+		-DGT32_FRONTEND_GATE_VARIANTS -DGT32_ENCAP_F14_WRAPPER \
 		bench/bench_keygen_encap_attribution.c \
 		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(KEYGEN_ENCAP_ATTR_GT)
+
+KEYGEN_ENCAP_F14_CLEAN_GT := $(BUILD)/tile4_kem_encap_candidate.o \
+		$(BUILD)/tile4_kem_encap_q24_sum.o \
+		src/tile4_asm.S src/tile4_basemul_asm.S src/tile4_q24_codec_asm.S \
+		src/tile4_encodeq_bridge_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S
+
+$(BUILD)/bench_encap_f14_clean_control: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DQ24_M_TF1_GATE=1 -Isrc -I$(OFFICIAL) -o $@ \
+		bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_F14_CLEAN_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_tf1_clean_control_reversed: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DQ24_M_TF1_GATE=1 -Isrc -I$(OFFICIAL) -o $@ \
+		bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(KEYGEN_ENCAP_F14_CLEAN_GT)
+
+$(BUILD)/bench_encap_f14_clean_candidate: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_F14_PRODUCTION -Isrc -I$(OFFICIAL) \
+		-o $@ bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_F14_CLEAN_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_f14_clean_control_nonpie: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fno-pie -no-pie -Isrc -I$(OFFICIAL) -o $@ \
+		bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_F14_CLEAN_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_f14_clean_candidate_nonpie: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fno-pie -no-pie -DGT32_FRONTEND_F14_PRODUCTION \
+		-Isrc -I$(OFFICIAL) -o $@ bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_F14_CLEAN_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_tf1_clean_candidate: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DQ24_M_TF1_GATE=1 -DQ24_M_TF1_PRODUCTION=1 -Isrc -I$(OFFICIAL) \
+		-o $@ bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_F14_CLEAN_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_tf1_clean_candidate_reversed: \
+		bench/bench_keygen_encap_attribution.c $(KEYGEN_ENCAP_F14_CLEAN_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DQ24_M_TF1_GATE=1 -DQ24_M_TF1_PRODUCTION=1 -Isrc -I$(OFFICIAL) \
+		-o $@ bench/bench_keygen_encap_attribution.c \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(KEYGEN_ENCAP_F14_CLEAN_GT)
 
 bench-keygen-encap-attribution-short: encap-candidate-check \
 		$(BUILD)/bench_keygen_encap_attribution \
@@ -1690,6 +1896,68 @@ bench-keygen-encap-attribution-pmu: encap-candidate-check \
 		--reversed-binary $(BUILD)/bench_keygen_encap_attribution_reversed \
 		--iterations 10000 \
 		--output results/tile4-keygen-encap-attribution-pmu.json
+
+ENCAP_RESIDUAL_GT := $(BUILD)/tile4_kem_encap_candidate.o \
+		$(BUILD)/tile4_kem_encap_f14.o $(BUILD)/tile4_kem_encap_tf1.o \
+		$(BUILD)/tile4_kem_encap_f14_tf1.o \
+		src/tile4_asm.S src/tile4_basemul_asm.S src/tile4_q24_codec_asm.S \
+		src/tile4_encodeq_bridge_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S
+
+$(BUILD)/bench_encap_same_elf_residual: \
+		bench/bench_encap_same_elf_residual.c $(ENCAP_RESIDUAL_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-DQ24_M_TF1_GATE=1 -Isrc -I$(OFFICIAL) -o $@ \
+		bench/bench_encap_same_elf_residual.c \
+		$(ENCAP_RESIDUAL_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_same_elf_residual_reversed: \
+		bench/bench_encap_same_elf_residual.c $(ENCAP_RESIDUAL_GT) \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-DQ24_M_TF1_GATE=1 -Isrc -I$(OFFICIAL) -o $@ \
+		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(ENCAP_RESIDUAL_GT) \
+		bench/bench_encap_same_elf_residual.c
+
+bench-encap-same-elf-residual: $(BUILD)/bench_encap_same_elf_residual \
+		$(BUILD)/bench_encap_same_elf_residual_reversed
+	$(PYTHON) tools/run_encap_same_elf_residual.py \
+		$(BUILD)/bench_encap_same_elf_residual \
+		--reversed-binary $(BUILD)/bench_encap_same_elf_residual_reversed \
+		--iterations 1000 --launches 8 --disable-aslr \
+		--output results/tile4-encap-same-elf-residual-aslr-off.json
+
+bench-encap-same-elf-residual-pmu: $(BUILD)/bench_encap_same_elf_residual \
+		$(BUILD)/bench_encap_same_elf_residual_reversed
+	$(PYTHON) tools/run_encap_same_elf_pmu.py \
+		$(BUILD)/bench_encap_same_elf_residual \
+		--reversed-binary $(BUILD)/bench_encap_same_elf_residual_reversed \
+		--iterations 20000 --launches 8 --disable-aslr \
+		--output results/tile4-encap-same-elf-residual-pmu-aslr-off.json
+
+ENCAP_POLY_ISLAND_GT := src/tile4_asm.S src/tile4_basemul_asm.S \
+		src/tile4_q24_codec_asm.S src/tile4_encodeq_bridge_asm.S \
+		src/tile4_forward_bm_soa_attribution_asm.S
+
+$(BUILD)/bench_encap_poly_island: bench/bench_encap_poly_island.c \
+		$(ENCAP_POLY_ISLAND_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS -DQ24_M_TF1_GATE=1 \
+		-Isrc -I$(OFFICIAL) -o $@ bench/bench_encap_poly_island.c \
+		$(ENCAP_POLY_ISLAND_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
+
+$(BUILD)/bench_encap_poly_island_reversed: bench/bench_encap_poly_island.c \
+		$(ENCAP_POLY_ISLAND_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS -DQ24_M_TF1_GATE=1 \
+		-Isrc -I$(OFFICIAL) -o $@ $(KEYGEN_ENCAP_ATTR_OFFICIAL) \
+		$(ENCAP_POLY_ISLAND_GT) bench/bench_encap_poly_island.c
+
+bench-encap-poly-island: $(BUILD)/bench_encap_poly_island \
+		$(BUILD)/bench_encap_poly_island_reversed
+	$(PYTHON) tools/run_encap_poly_island.py $(BUILD)/bench_encap_poly_island \
+		--reversed-binary $(BUILD)/bench_encap_poly_island_reversed \
+		--tsc-iterations 1000 --pmu-iterations 20000 --launches 8 \
+		--output results/tile4-encap-poly-island.json
 
 $(BUILD)/bench_encap_cumulative: bench/bench_encap_cumulative.c \
 		$(KEYGEN_ENCAP_ATTR_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
@@ -1720,14 +1988,16 @@ bench-encap-cumulative-pmu: $(BUILD)/bench_encap_cumulative \
 
 $(BUILD)/bench_encap_load_attribution: bench/bench_encap_load_attribution.c \
 		$(KEYGEN_ENCAP_ATTR_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
-	$(CC) $(KEM_CFLAGS) -Isrc -I$(OFFICIAL) -o $@ \
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-Isrc -I$(OFFICIAL) -o $@ \
 		bench/bench_encap_load_attribution.c \
 		$(KEYGEN_ENCAP_ATTR_GT) $(KEYGEN_ENCAP_ATTR_OFFICIAL)
 
 $(BUILD)/bench_encap_load_attribution_reversed: \
 		bench/bench_encap_load_attribution.c $(KEYGEN_ENCAP_ATTR_GT) \
 		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(GEN) | $(BUILD)
-	$(CC) $(KEM_CFLAGS) -Isrc -I$(OFFICIAL) -o $@ \
+	$(CC) $(KEM_CFLAGS) -DGT32_FRONTEND_GATE_VARIANTS \
+		-Isrc -I$(OFFICIAL) -o $@ \
 		bench/bench_encap_load_attribution.c \
 		$(KEYGEN_ENCAP_ATTR_OFFICIAL) $(KEYGEN_ENCAP_ATTR_GT)
 
@@ -1738,6 +2008,24 @@ bench-encap-load-attribution-pmu: $(BUILD)/bench_encap_load_attribution \
 		--reversed-binary $(BUILD)/bench_encap_load_attribution_reversed \
 		--iterations 10000 --pairs 8 \
 		--output results/tile4-encap-load-attribution-pmu.json
+
+.PHONY: bench-encap-outside-island-waterfall \
+	bench-encap-shared-transition-tsc
+bench-encap-outside-island-waterfall: $(BUILD)/bench_encap_load_attribution \
+		$(BUILD)/bench_encap_load_attribution_reversed
+	$(PYTHON) tools/run_encap_outside_island_waterfall.py \
+		$(BUILD)/bench_encap_load_attribution \
+		--reversed-binary $(BUILD)/bench_encap_load_attribution_reversed \
+		--iterations 10000 --pairs 4 \
+		--output results/tile4-encap-outside-island-waterfall.json
+
+bench-encap-shared-transition-tsc: $(BUILD)/bench_encap_load_attribution \
+		$(BUILD)/bench_encap_load_attribution_reversed
+	$(PYTHON) tools/run_encap_shared_transition_tsc.py \
+		$(BUILD)/bench_encap_load_attribution \
+		--reversed-binary $(BUILD)/bench_encap_load_attribution_reversed \
+		--iterations 10100 --pairs 8 \
+		--output results/tile4-encap-shared-transition-tsc.json
 
 bench-encap-load-stall-pmu: $(BUILD)/bench_encap_load_attribution \
 		$(BUILD)/bench_encap_load_attribution_reversed
@@ -3087,6 +3375,16 @@ Q24_BENCH_DEPS := generated/tile4_q24_codec.inc \
 	generated/tile4_serialized_mapping.h $(OFFICIAL)/asm/pack.s \
 	$(OFFICIAL)/consts.c
 
+$(BUILD)/bench_decode_debt: $(BUILD)/tile4_q24_decode_debt.o \
+		bench/bench_decode_debt.c src/tile4.h | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		$(BUILD)/tile4_q24_decode_debt.o bench/bench_decode_debt.c
+
+$(BUILD)/bench_decode_debt_reversed: $(BUILD)/tile4_q24_decode_debt.o \
+		bench/bench_decode_debt.c src/tile4.h | $(BUILD)
+	$(CC) $(CFLAGS) -Werror -Isrc -o $@ \
+		bench/bench_decode_debt.c $(BUILD)/tile4_q24_decode_debt.o
+
 $(BUILD)/bench_q24_codec: $(Q24_BENCH_SOURCES) $(Q24_BENCH_DEPS) | $(BUILD)
 	$(CC) $(CFLAGS) -Werror -DTILE4_ENCODEQ_DIRECT_EXPERIMENT=1 \
 		-Isrc -o $@ $(Q24_BENCH_SOURCES) \
@@ -3453,6 +3751,15 @@ $(BUILD)/bench_mtl_shuffle_class_reversed: bench/bench_mtl_shuffle_class.c bench
 
 bench-mtl-shuffle-class: $(BUILD)/bench_mtl_shuffle_class $(BUILD)/bench_mtl_shuffle_class_reversed
 	$(PYTHON) tools/run_mtl_shuffle_class_cost.py $^ --output results/tile4-mtl-shuffle-mix-cost.json
+
+crt-twist-coordinate-generate:
+	$(PYTHON) tools/generate_gt32_crt_twist_coordinate_gate.py
+
+geometric-twist-stage-gauge-generate:
+	$(PYTHON) tools/generate_gt32_geometric_twist_stage_gauge_gate.py
+
+shifted-dft3-two-chain-generate:
+	$(PYTHON) tools/generate_gt32_shifted_dft3_two_chain_gate.py
 
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__
