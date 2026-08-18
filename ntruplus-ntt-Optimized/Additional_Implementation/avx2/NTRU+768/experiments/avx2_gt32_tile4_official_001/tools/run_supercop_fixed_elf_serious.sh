@@ -11,6 +11,7 @@ gt=$2
 output=$3
 blocks=${4:-16}
 cpu=${BENCH_CPU:-1}
+disable_aslr=${BENCH_DISABLE_ASLR:-0}
 
 case "$blocks" in
 	''|*[!0-9]*|0) echo "BLOCKS must be a positive integer" >&2; exit 100 ;;
@@ -24,6 +25,7 @@ mkdir -p "$output"
 	echo "hostname=$(hostname)"
 	echo "kernel=$(uname -sr)"
 	echo "cpu=$cpu"
+	echo "disable_aslr=$disable_aslr"
 	echo "thread_siblings=$(cat /sys/devices/system/cpu/cpu$cpu/topology/thread_siblings_list 2>/dev/null || echo unavailable)"
 	echo "scaling_driver=$(cat /sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_driver 2>/dev/null || echo unavailable)"
 	echo "scaling_governor=$(cat /sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor 2>/dev/null || echo unavailable)"
@@ -50,7 +52,11 @@ while [ "$block" -le "$blocks" ]; do
 		if [ "$variant" = official ]; then binary=$official; else binary=$gt; fi
 		printf 'SERIOUS block=%d/%d position=%d variant=%s\n' \
 			"$block" "$blocks" "$position" "$variant"
-		taskset -c "$cpu" "$binary" > "$file"
+		if [ "$disable_aslr" = 1 ]; then
+			taskset -c "$cpu" setarch "$(uname -m)" -R "$binary" > "$file"
+		else
+			taskset -c "$cpu" "$binary" > "$file"
+		fi
 		position=$((position + 1))
 	done
 	block=$((block + 1))
