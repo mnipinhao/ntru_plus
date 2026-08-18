@@ -5909,3 +5909,606 @@ gate.  No ASM is emitted.  Reopen only for an exact route of at most 12
 instructions, producer-supplied pair-packed dwords, a wider ISA, or a later
 consumer contract that deletes another complete route.  The generated proof
 is `generated/tile4_prepared_f_b3_invs1_gate.json`.
+
+### Encap typed final-representation architecture gate (2026-08-17)
+
+`GT32-ENCAP-REPRESENTATION-ARCH-001` tests the bounded final-ciphertext
+proposal, not another universal ABI.  It freezes `h` and `r` in production M
+and enumerates all 120 coefficient-plane P-like Q-axis placements for:
+
+```text
+Forward(m) -> P
+B3(M,M)    -> P
+add(P,P)   -> P
+Q24(P)     -> wire
+```
+
+The accounting is executable AVX2 routing: the exact Forward schedule, the
+minimum physical-bit path from M-valued B3 lanes to P, and the residual Q24
+qword route.  B3 arithmetic, `vpaddw`, Q24 reduction and 12-bit packet math
+are common and excluded.
+
+No distinct P beats the current M island.  The best distinct layout
+`[q2,q1,q0,q3,q4]` saves 48 Forward instructions and 41 Q24 route
+instructions, but B3 must pay a 96-instruction M-to-P transition, producing a
+net **+7 instructions**.  Current Keygen P is net **+13 instructions** on this
+Encap edge.  Neither candidate deletes a complete transition,
+materialization, Montgomery chain, or checkpoint, so no assembly or `r_D`
+search is emitted.
+
+The search also identifies a smaller, different opportunity: retaining M and
+absorbing symmetric Q24 qword swaps into the transpose tail has a static
+ceiling of 25 instructions per pack, or 50 across the two Encap packs.  This
+is recorded as a deferred local Q24 code-shape probe, not as a representation
+architecture result; it remains below the required 50--80 core-cycle
+mechanism.  Reproduce with `make encap-representation-architecture-generate`;
+the proof is `generated/tile4_encap_representation_architecture_gate.json`.
+
+### Encap serializer-side M-domain add gate (2026-08-17)
+
+`GT32-ENCAP-Q24-SUM-M-001` keeps the production M representation and moves
+the final `+m` to the Q24 load seam.  The candidate loads the B3 product,
+uses 48 memory-source `vpaddw` operations for the M-domain message, and then
+reuses the proven v=9 high-range reduction and exact packet route.  Relative
+to the production control it removes the standalone 48-vector load/store
+`poly_add` pass and shrinks the Encap stack from 8,128 to 6,592 bytes.
+
+Correctness passes 1,000 high-range codec trials, the guarded final packet,
+100 full deterministic Encaps, and all 768 single-slot noncanonical public
+keys.  The local same-ELF edge is genuinely faster: Normal/Reversed launch
+medians are -17.78/-16.12 TSC (8/8 favorable each), while single-event PMU
+reports about -21.23/-25.68 core cycles.
+
+The full caller does not preserve that result.  Normal improves by -52.25
+TSC with 8/8 favorable launch medians, but Reversed is +14.26 TSC with only
+2/8 favorable.  The candidate also adds a distinct 4,914-byte unrolled
+serializer body.  Therefore the materialization deletion is locally
+qualified but production promotion is hard-stopped: its gain is smaller than
+the whole-image delivery perturbation.  No padding/alignment search is
+opened.  See `generated/tile4_encap_q24_sum_gate.json` and
+`results/tile4-encap-q24-sum-m-full-short.json`.
+
+### CRT / wide-twist coordinate gate (2026-08-17)
+
+`GT32-CRT-TWIST-COORDINATE-001` tests whether a different equivalent
+CRT/leaf coordinate can simplify or eliminate the 48 wide-twist Montgomery
+chains in one Forward.  The production table is highly structured, but the
+structure is slightly subtler than a plain `k mod 3` split.  Reducing
+`64*row+33*k` modulo 96 creates three cyclic row-ratio triplets separated by
+one representative carry seam; each individual row ratio consequently has
+only two values.
+
+The first search enumerates 3,072 affine parameters
+
+```text
+k3'  = a*k3 + b*(k32 mod 3) mod 3
+k32' = c*k32 + d*k3 mod 32
+```
+
+and finds 1,088 bijections.  None makes the twist multiplicatively
+separable, DFT3-column-permutation absorbable, or turns even one four-qword
+wide vector into a one- or two-constant vector.  In particular, the proposed
+`k3 +/- k32 mod 3` shears retain ratio cardinalities `[2,2,2,2]` and create
+240 NTT32 edges crossing the new row coordinate.  The only two candidates
+that preserve both DFT3 locality and radix-2 NTT32 geometry are the current
+coordinate and a global row inversion.
+
+There is nevertheless an exact positive algebraic result outside that
+affine family.  The carry-aware cyclic row rotations
+
+```text
+[0,2,0,1,2,0,1,2,...,0,1,2]
+```
+
+are common to both top-split branches and factor the table exactly as
+`T[branch,row,k] = A[branch,row] * B[branch,k]`.  The two `A` ratios are
+`[1,867,1520]` and `[1,1886,3200]`.  Away from the single CRT seam, `B` advances
+by `2^-1=1729` or `22^-1=1100` on every k edge.
+
+This separability does not accelerate the current N5 schedule.  The present
+wide-twist plus one-multiply DFT3 region costs 64 vector Montgomery chains per
+Forward.  Scaling the two nontrivial `A` rows and performing DFT3 costs 48;
+applying the common `B` after DFT3 adds another 48, for 96 total.  Pushing `B`
+into NTT32 instead makes the currently raw S1 nonidentity.  Its 96 scalar
+butterflies are packed as four YMM Montgomery chains per tile across six
+tiles: 24 vector chains.  The resulting total is therefore 72, not 144.
+The coordinate change simplifies the table but still adds eight vector
+chains in the current schedule.
+
+No assembly or cycle benchmark is emitted.  Reopen only if a joint
+DFT3/NTT32 factorization absorbs `B` without making S1 nonidentity, a
+non-affine executable topology deletes a complete Montgomery chain, or a
+wider ISA changes the cross-row economics.  Reproduce with
+`make crt-twist-coordinate-generate`; the complete proof is
+`generated/tile4_crt_twist_coordinate_gate.json`.
+
+### Stage-gauged geometric twist absorption (2026-08-17)
+
+`GT32-GEOMETRIC-TWIST-STAGE-GAUGE-001` follows the positive carry-aware
+factorization with the narrower question: can an equivalent separable gauge
+make the one raw radix-2 stage free, while the remaining four binary factors
+are absorbed by replacing existing S2--S5 twiddle constants?
+
+There are exactly three common cyclic-row gauges, differing by a global row
+rotation.  All five possible raw-stage bits were checked for both branches
+and all gauges (120 radix stage orders).  Every one of the sixteen edges in
+every possible raw stage has a nontrivial `B[k xor 2^bit]/B[k]` ratio; none is
+`1` or `-1`.  For distance 16 the two values are 2775 and 3310, with the
+single seam exchanging which branch receives the exceptional value.  Moving
+the seam or globally rotating rows cannot eliminate it.
+
+An accounting correction is essential.  The contaminated S1 contains 96
+quartic butterflies, but production packs them into four YMM Montgomery
+chains per tile across six tiles: **24 vector chains**, not 96.  The current
+wide twist plus DFT3 costs 64 vector chains.  The known separated schedule
+costs 32 for the two nontrivial A-row scalings, 16 for DFT3, and 24 for the
+new nonidentity raw stage, totaling 72; the lower four stages only replace
+existing constants.  Thus the best known schedule is `+8` vector chains, not
+the previously reported `+80`.
+
+No assembly is emitted.  The precise reopen condition is now small: synthesize
+`DFT3*diag(A)` in at most two YMM Montgomery chains per branch/group, find a
+non-cyclic gauge with one complete identity/negative-identity radix bit, or
+fold the raw-stage ratio into an independently required multiplication.
+Reproduce with `make geometric-twist-stage-gauge-generate`; the proof is
+`generated/tile4_geometric_twist_stage_gauge_gate.json`.
+
+### Shifted DFT3 two-chain multiplicative-complexity gate (2026-08-17)
+
+`GT32-SHIFTED-DFT3-TWO-CHAIN-001` tests the sole arithmetic continuation left
+by the corrected `72 versus 64` stage-gauge accounting.  For both branches the
+matrix is
+
+```text
+DFT3 * diag(1,a,a^2),
+a = 867 or 1886,  867*1886 = 1 (mod 3457).
+```
+
+The exhaustive sequential circuit model permits
+
+```text
+m0 = C0 * (alpha dot x)
+m1 = C1 * (b dot x + beta*m0)
+y  = Gamma*x + u*m0 + v*m1
+```
+
+with arbitrary field constants `C0,C1`; thus the second Montgomery chain may
+depend on the first.  G1 restricts all remaining coefficients to `0,+/-1`.
+For each branch it checks 44,928 distinct first-chain results over 13 small
+projective input lines and finds no solution.
+
+G2 exhaustively expands every cheap coefficient to `0,+/-1,+/-2`.  It checks
+all 1,953,125 small `Gamma` matrices per branch, 19,454/19,327 singular rank-2
+residuals, and 953,040 compatible small-plane basis factorizations per branch.
+There is no rank-at-most-one residual and no valid sequential two-chain
+factorization for either `a`.
+
+This is not an unrestricted theorem about field multiplicative complexity,
+but it closes the AVX2-relevant pure add/sub and bounded-double circuit family
+that motivated the gate.  No assembly or benchmark is emitted; the known
+three-chain A-scale plus DFT3 schedule remains, so the stage-gauged path stays
+at 72 versus the current 64 YMM chains.  Reopen only for a supplied symbolic
+identity outside this circuit model, or if the nonidentity raw-stage factor
+can be folded into an independently required producer multiplication.
+Reproduce with `make shifted-dft3-two-chain-generate`; the proof is
+`generated/tile4_shifted_dft3_two_chain_gate.json`.
+
+### Frontend dependency/schedule gate (2026-08-17)
+
+`GT32-FRONTEND-F1-F4-001` changes neither arithmetic, representation nor
+materialization.  F1 computes `s=L+H` independently of `t=-722H`, then emits
+`B0=L+t, B1=s-t`.  F4 routes branch 0 and launches its three Montgomery
+chains before routing branch 1, using the independent blends to cover the
+multiply latency.  F14 combines both changes.
+
+All four frontend bodies are exactly 3,917 bytes with the same 858
+disassembly lines, instruction multiset, register footprint and no spills.
+The 1,000-trial exact frontend/Forward differential and the complete
+`make check` pass.  Across two symbol orders and eight launches, F14 saves
+5.81--7.32 TSC and 10.39--11.87 core cycles per Forward; the two-Forward
+region saves 13.44--15.70 TSC and 20.96--23.10 core cycles, normally with
+18--20/20 paired wins.
+
+Whole Encap does not provide promotion evidence.  A same-ELF gate containing
+four 3.9-KiB frontend variants is image-polluted, while clean control/F14
+ELFs have identical section sizes and all relevant symbol addresses but
+still show launch/runtime variance larger than the intrinsic ~14-TSC effect,
+even as non-PIE binaries.  F14 is therefore retained as the default-off local
+kernel champion; production remains unchanged pending fixed-ELF SUPERcop
+corroboration.  See
+`generated/tile4_frontend_dependency_schedule_gate.json`.
+
+### Cross-unit wavefront scheduling closure (2026-08-17)
+
+`GT32-WAVEFRONT-SCHEDULING-001` tested the three remaining non-fusion
+software-pipeline boundaries with arithmetic, layouts, constants and range
+contracts frozen.  F14-W2 moves the next packet's two high-vector loads into
+the dead-register window between the current packet's two DFT3 tails.  It is
+exactly the same 3,917 bytes and instruction multiset as F14, uses all 16 YMM
+registers without spills, and passes 1,000 exact trials.  Across eight launches
+in both symbol orders, a full Forward improves by about 1.21--1.56 TSC and
+1.68--2.30 core cycles; two Forwards improve by about 2.39--2.65 TSC and
+3.90--4.09 core cycles.  This is a real same-work scheduling micro-win, but is
+too small for independent whole-image promotion.
+
+The N5 tile wavefront reuses each just-stored output register for the matching
+next-tile load.  It passes 1,000 trials and is negative in core cycles in all
+eight launches, but saves only 1.04 core cycles over the complete six-tile N5
+while growing the safely peeled symbol by 101 bytes.  The B3 block wavefront
+can preload all four next-block B planes in `ymm9..ymm12` during the four R^2
+chains with peak 13 YMM and no spill.  It also passes 1,000 trials and all eight
+launches, but saves only 1.47 core cycles while adding 184 bytes.  N5 and B3
+wavefronts are therefore hard-stopped; F14-W2 remains benchmark-only.  The
+combined result is that cross-unit scheduling is measurable but already below
+caller-significant scale on this AVX2 target.  See
+`generated/tile4_wavefront_schedule_gate.json` and
+`results/tile4-frontend-f14-wavefront.json`.
+
+### M-domain Q24 transpose-tail orientation (2026-08-17)
+
+`GT32-Q24-M-TF1-001` leaves the M layout, v=9 reducer, canonical correction,
+packet order and stores unchanged.  Of the control's 48 qword permutations,
+11 symmetric `0xb1` swaps are absorbed by reversing the corresponding final
+`vpunpcklqdq/vpunpckhqdq` operands and 14 pre-existing identity permutations
+are omitted.  The candidate therefore retires exactly 25 fewer instructions
+per serialization and retains only 23 `vpermq` instructions.
+
+Control and candidate occupy matched 5,120-byte cages.  Exhaustive scalar
+testing over `[-12699,12699]` is Official-byte-exact, the safe final packet is
+unchanged, and `make check` passes all 1,000 trials.  Across four launches in
+both symbol orders, a single pack saves 8.3--9.3 core cycles and 5.0--5.9 TSC;
+the mixed lazy10788/highrange12699 two-pack region saves 18.2--19.4 core cycles
+and 9.7--12.3 TSC.
+
+Full Encap is not promotion evidence: with identical relevant symbol
+addresses, eight-launch medians show -124.3 TSC in Normal but +6.3 TSC in
+Reversed.  This is consistent with whole-caller delivery variance exceeding
+the intrinsic approximately 11-TSC two-pack effect.  TF1 is retained as a
+default-off, locally qualified Q24 champion for later composition; production
+remains unchanged.  See `generated/tile4_q24_m_tf1_gate.json`.
+
+### Same-ELF Encap residual attribution (2026-08-17)
+
+`SAME-ELF-ENCAP-RESIDUAL-ATTRIBUTION-001` places C00 (Clean), C10
+(F14), C01 (TF1), and C11 (F14+TF1) in one ELF.  All four Encap wrappers are
+611 bytes; the two frontends are matched 3,917-byte bodies and the two Q24
+serializers are matched 5,120-byte cages.  The 100-case valid differential,
+malformed-public-key checks, and the complete 1,000-trial test suite pass.
+
+The full-call TSC factorial does not recover the known approximately -25-TSC
+local signal, even with ASLR disabled.  Normal reports C11-C00 = +22.4 TSC
+and Reversed -7.1 TSC, with large non-additive interactions.  A/A, A/B, B/A,
+B/B and homogeneous/alternating/blocked sequences do not show a stable
+predecessor or transition penalty.  This rejects a simple model in which one
+implementation consistently pollutes the next.
+
+Two interaction estimators are now reported separately.  The ordinary
+factorial interaction computed from the four reported cell medians is
+`C11-C10-C01+C00`: -9.4 TSC in Normal and -68.1 TSC in Reversed for the
+recorded run.  The median of the per-sample paired interactions is a different
+robust estimator (-17.7/-33.6 TSC in that run) and must not be labelled as the
+cell-median factorial interaction.
+
+Region-scoped PMU measurement changes the conclusion about the arithmetic
+signal.  Counters are enabled only after warm-up and C00/C11 are paired inside
+the same process.  C11 always retires exactly 51 fewer instructions and one
+fewer branch.  Across 64 pairs per placement it has a median core-cycle delta
+of -58.4 (50/64 negative, bootstrap median CI [-111.0,-17.4]) in Normal and
+-21.8 (34/64 negative, CI [-100.9,39.8]) in Reversed.  The known local signal
+is therefore visible in paired core work, but is not stable enough for
+full-caller TSC promotion in Reversed.
+
+L1I and iTLB miss deltas are effectively zero.  DSB/MITE delivery changes
+substantially with link order, while the architectural instruction delta stays
+fixed.  The remaining variance is classified as relative-code-geometry and
+frontend/branch-delivery sensitivity, not a Q24/Forward arithmetic loss and
+not an ASLR-base or cache-miss effect.  F14 and TF1 remain default-off local
+champions.  Future Official-versus-Clean claims below 100 cycles must use
+same-process paired region-scoped PMU, with TSC only as corroboration.  See
+`generated/tile4_encap_same_elf_residual_gate.json`.
+
+### Official versus Clean Encap polynomial island (2026-08-17)
+
+`SAME-ELF-OFFICIAL-CLEAN-POLY-ISLAND-001` now measures four same-ELF semantic
+regions: R1 Decodeq(h), R2 Forward(r)+Q24(rhat), R3
+Forward(m)+BaseMul+add+Q24(ciphertext) with prepared h/r, and R4 the complete
+island.  Hashes, CBD/SOTP production, and KEM copy/clear glue are outside the
+measured regions.  Official, current production Clean, and Clean+F14+TF1 use
+identical real producer outputs and produce exact R1--R4 endpoints over 100
+trials.
+
+With ASLR disabled, eight launches, explicit ABBA/BAAB pairing, and both link
+orders, R4 current Clean beats Official by 57.3/64.0 TSC and 78.8/107.6
+paired core cycles, while
+retiring exactly 1,003 fewer instructions.  F14+TF1 extends the R4 win to
+70.3/79.5 TSC and 108.8/143.6 core cycles, with 1,054 fewer instructions.
+Every R4 candidate/placement has a strictly negative bootstrap upper bound.
+
+The decomposition identifies the trade clearly.  Clean R1 costs +20.5/+20.6
+TSC and +33.5/+33.8 core cycles, while R2 saves 43.6/44.8 TSC and R3 saves
+37.2/43.4 TSC.  Retired-instruction closure is within 11--13 instructions:
+R4 minus R1/R2/R3 has only -13 instructions for Clean and about -11 for
+F14+TF1.  Core-cycle residual is placement-sensitive (+22.7/+6.3 Clean and
++20.4/approximately 0 F14+TF1), so arithmetic work closes but executable delivery does
+not.  GT also retires 654 more loads but 179 fewer stores in R4; the load debt
+is now a concrete next attribution target.
+
+The result formally qualifies the GT32 Encap polynomial architecture as the
+winner: current Clean is about 3.4--3.8% faster in TSC for this island, and the
+local-champion composition is about 4.2--4.8% faster.  F14+TF1 contributes another
+13.8/19.4 TSC over Clean in R4, below the prior 23--28 TSC local expectation,
+so it remains unpromoted.  GT still shifts several
+thousand delivered uops from DSB to MITE and pays about 20--23 DSB/MITE penalty
+cycles, yet wins; L1I and iTLB deltas remain negligible.  Therefore the
+remaining full-Encap problem is integration/front-end delivery and extra load
+work, not NTT/B3 arithmetic.  NTT arithmetic remains frozen.  The next
+experiment is load attribution outside/around the island, not another shuffle
+or alignment search.  See `generated/tile4_encap_poly_island_gate.json`.
+
+### Polynomial load closure and outside-island causal gate (2026-08-17)
+
+`POLY-ISLAND-LOAD-CLOSURE-001` closes the apparently suspicious load count.
+R1/R2/R3 contribute +105/+224/+329 retired loads, summing to +658 versus
+R4's +654; the residual is only -4 loads.  Stores similarly sum to -175
+versus -179, and instructions sum to -990 versus -1,003.  The +654 loads are
+therefore not hidden benchmark glue.  They are the structural footprint of
+the measured polynomial architecture.  Crucially, 553 of the 658 summed
+extra loads are in R2/R3, which are faster by 44 and 37--43 TSC.  Aggregate
+load reduction is not a valid objective; R1 Decode remains the only locally
+demonstrated polynomial debt.
+
+`SAME-ELF-ENCAP-OUTSIDE-ISLAND-RESIDUAL-001` initially exposed a measurement
+trap.  Duplicating the same shared C source in Official and GT cumulative
+prefixes let the compiler create different bodies, so the purported shared
+stage no longer had identical machine code.  The corrected harness calls one
+physical `noinline,noclone` prework symbol, one middle-glue symbol, and one
+common-tail symbol from both predecessors.  Architectural closure is exact:
+each shared stage has zero instruction/load/store delta, while the complete
+wrapper reports -1,009 instructions, +654 loads, and -179 stores.
+
+Adjacent cumulative-prefix latency subtraction is still not a component-cost
+estimator.  It varies sharply with cut, event group, and link order even when
+the incremental architectural work is exactly zero.  A stronger causal probe
+therefore brackets only the identical shared consumer after preparing either
+the Official or GT predecessor.  Middle glue differs by only +2.86 TSC in
+Normal (4/8 GT-favorable pairs) and -8.44 TSC in Reversed (6/8); common tail
+is -0.06/+1.28 TSC.  There is no stable 50--100-cycle intrinsic hash/SOTP or
+tail penalty.  The large whole-caller residual is a whole-prefix/whole-image
+delivery and code-geometry interaction, not missing polynomial work and not a
+specific shared crypto component.
+
+NTT/B3/Q24 arithmetic remains frozen.  The next valid gate is
+`PRODUCTION-HOT-CODE-CLOSURE-001`: remove unreachable benchmark variants and
+tables, verify the selected `.text`/`.rodata` reachability set, then benchmark
+a fixed production-shaped ELF.  See
+`generated/tile4_encap_poly_island_load_closure_gate.json` and
+`generated/tile4_encap_outside_island_gate.json`.
+
+### Production hot-code closure (2026-08-17)
+
+`PRODUCTION-HOT-CODE-CLOSURE-001` compares the same selected CleanGT KEM as
+an intentionally unpruned image (G0) and a physically pruned image (Gc).
+The gate found and fixed a real closure bug: the pruner recognized only the
+transpose-cut Forward emitter and missed other `FR_*FUNCTION` emitters, so two
+unused wavefront Forward variants survived the clean export.
+
+After the fix, linked `.text` falls from 128,919 to 64,407 bytes (-64,512,
+50.04%), and named GT text symbols fall from 75 to 18.  `.rodata` falls only
+from 57,576 to 56,808 bytes (-768, 1.33%); the remaining constants are mostly
+shared or physically monolithic, so table closure is not the dominant result.
+Normalized disassembly of every one of the 18 retained GT symbols is exactly
+identical between G0 and Gc, including instruction count, operands modulo RIP
+displacement, branches, and register allocation.  Thus the experiment changes
+image closure, not hot arithmetic.
+
+The formal SUPERcop matrix uses `BENCH_CPU=1`, O3 plus function/data sections
+and linker GC, and four valid palindromic blocks in the order
+Official/G0/Gc/Gc/G0/Official.  SUPERcop `try` and `constbranchindex` pass for
+every image/run.  Pooled stabilized-Q2 cycle deltas are:
+
+| operation | G0 - Official | Gc - Official | Gc - G0 |
+|---|---:|---:|---:|
+| keypair | -133.0 | -184.2 | -51.1 |
+| encap | +293.2 | +99.6 | -193.6 |
+| decap | -104.9 | -217.8 | -112.9 |
+
+Closure improves Encap and Decap in all four blocks; Keypair improves in three
+of four.  Encap's per-block Gc-G0 deltas are -100.8, -261.0, -296.2, and
+-28.2 cycles.  Therefore executable closure is a real delivery mechanism and
+recovers most of G0's Encap integration loss.  It does not finish Encap
+promotion: Gc remains about +100 cycles behind Official in the pooled result.
+
+A whole-process fixed-ELF PMU corroboration (16 samples/image) is diagnostic,
+not per-operation attribution.  Gc shifts about 197k uops away from MITE and
+373k toward DSB, reduces IDQ-not-delivered by about 103k, and reduces whole
+measure core cycles by about 56k.  This is directionally consistent with the
+closure hypothesis, although SUPERcop operation cycles remain the promotion
+metric.  No padding or alignment sweep was performed.
+
+Decision: physically pruned closure becomes the only valid CleanGT export
+shape; the unpruned image is retained only as the causal control.  Arithmetic,
+Q24 packet mathematics, and the selected hot instruction sequences remain
+frozen.  Encap still needs a separate mechanism or hot semantic grouping to
+close the remaining approximately 100-cycle gap.  See
+`generated/tile4_production_hot_code_closure_gate.json`,
+`results/tile4-production-hot-code-closure-supercop.json`, and
+`results/tile4-production-hot-code-closure-frontend-pmu.json`.
+
+### Production hot-function grouping (2026-08-17)
+
+`PRODUCTION-HOT-FUNCTION-GROUPING-001` tests the one remaining geometry
+hypothesis without changing arithmetic.  A direct-call/tail-jump reachability
+audit finds 22,559 named function bytes (25 functions) reachable from Encap,
+versus 64,407 linked `.text` bytes.  The classified unique named bytes are
+16,669 shared, 5,890 Encap-only, 9,273 Keypair-only, 12,747 Decap-only, and
+19,618 cold/unreachable.  This gave semantic clustering a legitimate static
+rationale.
+
+H0 is the pruned Gc default order.  H1 orders production sections by Encap
+first dynamic use.  H2 groups the reusable Forward/BaseMul/Q24 and hash chains
+using weighted transition rationale.  GNU ld's section-ordering-file performs
+only input-section permutation.  All three images have exactly 64,407 bytes of
+linked `.text`; normalized disassembly of all 105 common production functions
+is identical, while hot function addresses change.  H1/H2's extra 224 rodata
+bytes are only the longer compiler-identification string embedded by the
+SUPERcop harness, not implementation constants.
+
+Four fixed-core palindromic SUPERcop blocks use
+H0/H1/H2/H2/H1/H0.  Both semantic orders are decisive regressions:
+
+| operation | H1-H0 | H1 wins | H2-H0 | H2 wins |
+|---|---:|---:|---:|---:|
+| Keypair | -38.2 | 4/4 | +19.3 | 2/4 |
+| Encap | +210.5 | 0/4 | +228.4 | 0/4 |
+| Decap | +160.1 | 0/4 | +142.9 | 0/4 |
+
+Encap's H1 per-block deltas are +217.3/+140.4/+200.5/+274.6 cycles;
+H2 is +223.6/+200.2/+237.2/+262.6.  This is a cycle-level hard stop for
+semantic linear grouping.  Function proximity does not model the relevant DSB
+set/address interactions well enough, and concentrating Encap code damages the
+other production paths.  H1's small Keypair win cannot justify Encap and Decap
+regressions.
+
+Per the predeclared stop rule, there is no H3/H4/H5 search, no padding sweep,
+and F14/TF1 are not reintroduced.  H0/Gc remains the production baseline.
+Physical dead-code closure remains promoted; further function-order search is
+closed.  The next useful work must provide a non-layout structural mechanism,
+or return to the measured Decode debt.  See
+`generated/tile4_hot_function_reachability.json`,
+`generated/tile4_hot_function_grouping_static.json`,
+`generated/tile4_production_hot_function_grouping_gate.json`, and
+`results/tile4-production-hot-function-grouping-supercop.json`.
+
+### Production reachable-hot-text compaction (2026-08-17)
+
+`PRODUCTION-REACHABLE-HOT-TEXT-COMPACTION-001` tests whether G0-to-Gc's
+successful physical-closure mechanism continues inside the 25-function Encap
+reachable set.  The static census accounts for all 22,559 named bytes.  The
+only zero-cost intra-symbol candidate is the production lazy10788 Q24
+serializer: its executed body ends after 4,543 bytes but a placement cage pads
+the symbol to 5,120 bytes.  Decode, frontend, Forward and B3 have no comparable
+post-return NOP suffix.
+
+C0 removes only that cage.  The retained serializer instruction prefix has an
+identical SHA-256 in Gc and C0, the canonical 100-vector KAT is byte-exact, the
+symbol shrinks from 5,120 to 4,543 bytes, and linked `.text` shrinks from
+64,407 to 63,831 bytes.  Nevertheless, the formal fixed-CPU SUPERcop matrix
+`Official/Gc/C0/C0/Gc/Official` rejects it:
+
+| operation | C0 - Gc | C0 wins | C0 - Official |
+|---|---:|---:|---:|
+| keypair | +8.2 | 2/4 | -314.1 |
+| encap | +45.2 | 0/4 | +39.0 |
+| decap | -49.7 | 2/4 | -288.4 |
+
+Encap's four C0-Gc block deltas are +100.7/+62.1/+1.4/+21.4 cycles.  Thus a
+576-byte whole-text reduction is too small to lower frontend demand
+materially; its address remapping effect still dominates.  C0 is retained only
+as a dormant causal control and is not production-promoted.
+
+C1 then performs the one permitted code-density trade-off.  It groups the 12
+M-to-Q24 blocks into six fixed route templates while preserving the production
+transpose, v=9 reducer, canonicalization and packet format.  Exhaustive
+`[-12699,12699]` and guard-page tests pass.  The symbol shrinks from 5,120 to
+2,321 bytes (-2,799), but each pack retires 108 extra instructions and costs
+about +35.5 core cycles; two Encap packs cost about +70 core cycles.  This is
+far above the predeclared +2--4-cycle density budget, so C1 stops before a
+whole-image SUPERcop run.  Route-class reordering also requires safe block
+tails, and scalar table/loop dependencies destroy the unrolled schedule's
+throughput.
+
+The cheap call-boundary audit finds 21 static direct call sites in the GT
+Encap parent versus 19 in Official, not a 20--30-transition excess.  Wrapper
+closure is therefore closed as a primary mechanism.  Gc/H0 remains the clean
+production baseline; function reordering, padding, C0, C1 and frontend
+re-rolling are closed absent a new schedule-preserving compaction mechanism.
+The next bounded fallback is the measured Decode debt.  See
+`generated/tile4_reachable_hot_text_compaction_census.json`,
+`generated/tile4_production_reachable_hot_text_compaction_gate.json`,
+`results/tile4-q24-hotcompact-c1-local.json`, and
+`results/tile4-production-reachable-hot-text-compaction-supercop.json`.
+
+### R1 Decode debt closure (2026-08-17)
+
+`R1-DECODE-DEBT-001` separates the remaining Encap input-boundary debt without
+changing the production decoder.  D0 is the qualified Q24 bytes-to-private-M
+decoder.  D1 emits the exact same M words but intentionally omits canonical
+validation and is attribution-only.  D2 splits the operation into a
+bytes-to-wire-order-int16 unpacker and a wire-order-to-M router; this split
+materializes 1,536 bytes and is not a candidate ABI.
+
+Four launches per link order, fixed CPU 1, give these launch-median results:
+
+| region | Normal TSC | Normal core | Reversed TSC | Reversed core | instructions |
+|---|---:|---:|---:|---:|---:|
+| D0 full fused Decode | 116.1 | 183.9 | 115.3 | 184.9 | 609.5 |
+| D1 no validation | 103.7 | 166.0 | 104.3 | 166.5 | 546.5 |
+| D2 unpack only | 93.2 | 149.2 | 93.8 | 150.7 | 463.5 |
+| D2 M routing only | 64.0 | 102.4 | 64.0 | 102.4 | 303.5 |
+| D2 materialized split | 153.3 | 245.3 | 153.3 | 245.2 | 760.5 |
+
+Validation plus return aggregation accounts for 63 retired instructions and
+about 18 core cycles, but it is required by the public Decode contract.
+More importantly, unpack and M routing are not additive removable debts: the
+materialized D2 split costs about 60--61 more core cycles and 151 more
+instructions than D0.  The current Q24 shuffle masks already combine unpack
+with quartic placement; separately reconstructing wire order loses that
+fusion.
+
+D3 tests the only proposed large mechanism: replace each group's eight XMM
+packet loads with three contiguous YMM loads.  Every 96-byte group contains
+four 12-byte windows crossing a 128-bit boundary.  Each target register pairs
+one crossing and one non-crossing window at a different byte alignment.  On
+AVX2, the best packet-window factorization requires three source-lane gathers,
+two aligned crossing-window vectors, and four final lane merges per group.
+Against the current four `vinserti128`, that adds 60 route/shuffle operations
+over the polynomial, exceeding the predeclared +36 limit even though loads
+fall by 60.  The total instruction lower bound is therefore unchanged: load
+uops are exchanged one-for-one for cross-lane work.  D3 stops before ASM.
+
+Decision: retain the production Q24 decoder.  Validation cannot be removed,
+the wire/M split is decisively worse, and contiguous-load consolidation has no
+eligible AVX2 network under the gate.  Decode-local work is closed unless a
+full-width byte permute, a wider ISA, or a consumer contract removes the M
+transpose.  See `generated/tile4_decode_debt_static.json` and
+`results/tile4-decode-debt-gate.json`.
+
+### Encap Q24-native D01 x M TMVP gate (2026-08-17)
+
+`ENCAP-H-D01-MIXED-TMVP-B3-001` reopens exactly one typed edge: public-key
+Q24 Decode may emit pair-packed `h`, Forward still emits persistent M `r`, and
+a `vpmaddwd`/unsigned-REDC16 BaseMul must return M.  The generator simulates
+every word through the existing four-register Q24 transpose and the M
+`vpunpcklwd/hwd` consumer view.
+
+The natural eight-instruction Q24 endpoint is only *degree-blocked* D01.  It
+saves the four final qword unpacks per 16-leaf block, or 48 instructions per
+polynomial.  `vpmaddwd`, however, requires adjacent `(c0,c1)` and `(c2,c3)`
+pairs; four lane-local `vpshufb` per block are then mandatory.  Consumer-ready
+D01 therefore costs the same 12 routing instructions as current M.  The
+producer/consumer representation saving is exactly zero.
+
+The complete mixed arithmetic audit uses R1-U's actual four-instruction
+unsigned REDC16, not a hypothetical `vpmulld` reducer.  It also includes both
+8-leaf halves, six row vectors, four source reloads, eight dword
+compact/order pairs, half merges, three lambda-plane scratch stores, and the
+mandatory four full-width R-squared finalizers.  The disassembled current
+general MxM-to-M loop is 134 instructions.  The blocked-D zero-stack-spill
+schedule is 146; consumer-ready D is 142.  Including Decode routing over 12
+blocks, both candidate forms are 96 instructions larger than the current
+edge.
+
+The all-resident ideal needs at least 19 YMM.  A 13-YMM schedule is possible
+only by materializing three lambda-r planes in the public output block; it has
+no stack spill, but that materialization is included in the losing count.
+Range is not the blocker: the conservative four-term dot bound is
+149,133,312, unsigned REDC16 is bounded by 5,732, and the R-squared output by
+3,532.
+
+Decision: static hard stop before ASM.  The candidate is algebraically valid
+and its register problem can be scheduled around, but it does not make the
+Q24-to-B3 edge smaller.  Reopen only if the decoder can emit adjacent pairs
+before the eight-instruction blocked transpose, both halves can be reduced
+without compact/order work, the e=-1 result becomes directly consumable, or a
+wider ISA removes the half/register constraints.  See
+`generated/tile4_encap_h_d01_mixed_tmvp_gate.json`.

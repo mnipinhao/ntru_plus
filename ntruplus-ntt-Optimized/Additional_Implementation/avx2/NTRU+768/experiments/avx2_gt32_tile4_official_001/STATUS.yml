@@ -8408,3 +8408,827 @@ gt32_prepared_f_b3_invs1_20260814:
   artifacts:
     generator: tools/generate_prepared_f_b3_invs1_gate.py
     proof: generated/tile4_prepared_f_b3_invs1_gate.json
+
+gt32_encap_representation_architecture_20260817:
+  experiment: GT32-ENCAP-REPRESENTATION-ARCH-001
+  status: static-hard-stop-final-P-no-assembly
+  scope: Forward-m-to-P-plus-B3-MxM-to-P-plus-add-P-plus-Q24-P
+  frozen:
+    - h-and-r-production-M
+    - B3-arithmetic
+    - quartic-monomial-basis
+    - Montgomery-exponent-e0
+    - Q24-reduction-and-packet-math
+    - Official-byte-exact-wire-semantics
+  search:
+    q_axis_permutations: 120
+    compact_q24_candidates: 18
+  best_distinct_P:
+    q_axes: [q2, q1, q0, q3, q4]
+    forward_instruction_delta: -48
+    b3_M_to_P_instruction_delta: 96
+    q24_instruction_delta: -41
+    total_instruction_delta: 7
+  current_Keygen_P:
+    q_axes: [q1, q3, q0, q2, q4]
+    total_instruction_delta: 13
+  decision:
+    assembly_emitted: false
+    r_dual_layout_search_opened: false
+    reason:
+      - no-distinct-P-beats-current-M-final-island
+      - no-complete-transition-or-materialization-is-removed
+      - no-multiply-reduction-or-checkpoint-chain-is-removed
+  deferred_local_probe:
+    name: M-Q24-TF1
+    static_saving_per_pack_instructions: 25
+    two_encap_pack_ceiling_instructions: 50
+    status: deferred-below-architecture-cycle-gate
+  reopen_only_if:
+    - B3-directly-forms-pack-native-P-without-M-to-P-route
+    - Forward-P-deletes-a-complete-Q24-transpose-layer
+    - dual-r-layout-deletes-complete-routes-on-both-consumers
+    - target-ISA-changes-cross-half-permutation-economics
+  artifacts:
+    generator: tools/generate_encap_representation_architecture_gate.py
+    proof: generated/tile4_encap_representation_architecture_gate.json
+
+gt32_encap_q24_sum_m_20260817:
+  experiment: GT32-ENCAP-Q24-SUM-M-001
+  status: local-qualified-full-caller-hard-stop
+  contract:
+    inputs: [B3-general-private-M-e0, N5-message-private-M-e0]
+    output: Official-canonical-1152-byte-serialization
+    maximum_sum_abs_bound: 12699
+  static:
+    removed_vector_loads: 48
+    removed_vector_stores: 48
+    control_stack_bytes: 8128
+    candidate_stack_bytes: 6592
+    candidate_unique_serializer_bytes: 4914
+    spills: false
+  correctness:
+    codec_high_range_trials: 1000
+    full_encap_trials: 100
+    noncanonical_public_key_slots: 768
+    guard_page_tail: pass
+    byte_exact: true
+  local_same_elf:
+    normal: {delta_tsc: -17.778, negative_launch_medians: 8/8,
+      delta_core_cycles: -21.226032}
+    reversed: {delta_tsc: -16.1185, negative_launch_medians: 8/8,
+      delta_core_cycles: -25.680564}
+  full_encap_incremental:
+    normal: {delta_tsc: -52.246, negative_launch_medians: 8/8}
+    reversed: {delta_tsc: 14.2585, negative_launch_medians: 2/8}
+  decision:
+    production_promoted: false
+    reason:
+      - local-materialization-deletion-is-real
+      - full-caller-direction-reverses-with-link-placement
+      - unique-4914-byte-body-perturbs-whole-image-delivery
+      - two-placement-full-caller-gate-failed
+    no_followup:
+      - padding-or-alignment-search
+      - production-selector-change
+  artifacts:
+    proof: generated/tile4_encap_q24_sum_gate.json
+    short: results/tile4-encap-q24-sum-m-full-short.json
+    pmu: results/tile4-encap-q24-sum-m-pmu.json
+
+gt32_crt_twist_coordinate_20260817:
+  experiment: GT32-CRT-TWIST-COORDINATE-001
+  status: structured-positive-no-current-N5-chain-win
+  current:
+    wide_twist_Montgomery_chains_per_forward: 48
+    DFT3_Montgomery_chains_per_forward: 16
+    GT_BLEND3_vpblendd_per_forward: 96
+  affine_search:
+    family:
+      - k3-prime-equals-a-k3-plus-b-k32mod3
+      - k32-prime-equals-c-k32-plus-d-k3
+    raw_parameter_tuples: 3072
+    bijective_maps: 1088
+    multiplicatively_separable: 0
+    DFT3_absorbable: 0
+    candidates_with_single_constant_wide_vector: 0
+    topology_preserving_candidates: 2
+  proposed_shears:
+    k3_plus_k32mod3:
+      ratio_cardinalities: [2, 2, 2, 2]
+      NTT32_cross_row_edges: 240
+    k3_minus_k32mod3:
+      ratio_cardinalities: [2, 2, 2, 2]
+      NTT32_cross_row_edges: 240
+  carry_aware_coordinate:
+    exact_separation: T-equals-A-row-times-B-k
+    row_rotations_by_k: [0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1,
+      2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]
+    branch0_A: [1, 867, 1520]
+    branch1_A: [1, 1886, 3200]
+    branch0_B_common_step: 1729
+    branch1_B_common_step: 1100
+    single_CRT_seam: true
+  chain_accounting_per_forward:
+    current_wide_plus_DFT3: 64
+    separated_A_DFT3_plus_B_output_scale: 96
+    delta_output_scale: 32
+    new_S1_scalar_butterflies: 96
+    new_S1_YMM_vector_chains: 24
+    separated_A_DFT3_plus_B_in_NTT32_S1: 72
+    delta_NTT32_absorption: 8
+  decision:
+    assembly_emitted: false
+    benchmark_run: false
+    production_changed: false
+    reason:
+      - affine-shears-relocate-coupling-into-NTT32
+      - carry-aware-separation-is-algebraically-real
+      - common-B-factor-is-not-free-under-current-identity-S1
+      - no-complete-Montgomery-chain-is-deleted
+  reopen_only_if:
+    - joint-DFT3-NTT32-factorization-absorbs-B-without-new-S1-chains
+    - non-affine-executable-topology-deletes-a-complete-Montgomery-chain
+    - wider-ISA-changes-cross-row-topology-cost
+  artifacts:
+    generator: tools/generate_gt32_crt_twist_coordinate_gate.py
+    proof: generated/tile4_crt_twist_coordinate_gate.json
+
+gt32_geometric_twist_stage_gauge_20260817:
+  experiment: GT32-GEOMETRIC-TWIST-STAGE-GAUGE-001
+  status: all-separable-gauges-have-nonidentity-raw-stage
+  scope: carry-aware-separable-twist-plus-all-radix2-stage-orders
+  search:
+    common_cyclic_row_gauges: 3
+    radix_stage_orders: 120
+    raw_stage_bits: [0, 1, 2, 3, 4]
+    branches: 2
+  result:
+    identity_raw_edges: 0
+    minus_identity_raw_edges: 0
+    all_sixteen_edges_nontrivial_for_every_branch_bit_gauge: true
+    distance16_ratio_values: [2775, 3310]
+    seam_removable_by_global_row_rotation: false
+  corrected_accounting:
+    unit: YMM-Montgomery-chains-per-complete-Forward
+    current_wide_twist: 48
+    current_DFT3: 16
+    current_total: 64
+    separated_A_scaling: 32
+    separated_DFT3: 16
+    new_raw_stage_scalar_quartic_butterflies: 96
+    new_raw_stage_YMM_chains: 24
+    lower_four_stage_extra_chains: 0
+    candidate_total: 72
+    candidate_delta: 8
+  decision:
+    assembly_emitted: false
+    benchmark_run: false
+    reason:
+      - every-possible-raw-radix2-stage-is-nonidentity
+      - best-known-A-scaled-DFT3-needs-three-chains-per-branch-group
+      - candidate-adds-eight-vector-chains
+  reopen_only_if:
+    - A-scaled-DFT3-at-most-two-YMM-chains-per-branch-group
+    - non-cyclic-separable-gauge-has-complete-identity-or-minus-identity-bit
+    - raw-stage-ratio-folds-into-an-independently-required-multiply
+    - target-ISA-changes-packed-stage-economics
+  artifacts:
+    generator: tools/generate_gt32_geometric_twist_stage_gauge_gate.py
+    proof: generated/tile4_geometric_twist_stage_gauge_gate.json
+
+gt32_shifted_dft3_two_chain_20260817:
+  experiment: GT32-SHIFTED-DFT3-TWO-CHAIN-001
+  status: two-chain-small-coefficient-hard-stop
+  transform:
+    matrix: DFT3-times-diag-1-a-a2
+    rho: 2734
+    branch0: {a: 867, a2: 1520}
+    branch1: {a: 1886, a2: 3200}
+    branch_constants_are_inverses: true
+  circuit_model:
+    first_chain: C0-times-alpha-dot-x
+    second_chain: C1-times-b-dot-x-plus-beta-m0
+    output: Gamma-x-plus-u-m0-plus-v-m1
+    arbitrary_field_constants: [C0, C1]
+    second_chain_may_depend_on_first: true
+  G1:
+    cheap_coefficients: [0, 1, -1]
+    unique_first_chain_results_per_branch: 44928
+    projective_input_lines: 13
+    branch0_solution: false
+    branch1_solution: false
+  G2:
+    cheap_coefficients: [0, 1, -1, 2, -2]
+    Gamma_matrices_per_branch: 1953125
+    branch0_rank2_residuals: 19454
+    branch1_rank2_residuals: 19327
+    rank_at_most_one_residuals: 0
+    small_output_planes: 349
+    ordered_small_plane_bases: 15024
+    basis_factorizations_per_branch: 953040
+    branch0_solution: false
+    branch1_solution: false
+  decision:
+    assembly_emitted: false
+    benchmark_run: false
+    stage_gauge_status: arithmetic-route-paused
+    known_candidate_YMM_chains: 72
+    current_YMM_chains: 64
+    reason:
+      - no-two-chain-G1-circuit
+      - no-two-chain-G2-circuit
+      - known-three-chain-shifted-DFT3-remains
+  scope_limit:
+    - not-an-unrestricted-field-multiplicative-complexity-theorem
+    - exhaustive-for-stated-AVX2-small-coefficient-sequential-model
+  reopen_only_if:
+    - symbolic-identity-outside-small-coefficient-model
+    - raw-stage-ratio-folds-into-independently-required-producer-multiply
+    - representation-change-alters-shifted-DFT3-matrix
+  artifacts:
+    generator: tools/generate_gt32_shifted_dft3_two_chain_gate.py
+    proof: generated/tile4_shifted_dft3_two_chain_gate.json
+
+gt32_frontend_dependency_schedule_20260817:
+  experiment: GT32-FRONTEND-F1-F4-001
+  status: local-kernel-qualified-production-default-off
+  candidates:
+    F1: independent-L-plus-H-top-split-DAG
+    F4: branch-local-routing-with-cross-branch-latency-hiding
+    F14: F1-plus-F4
+  static:
+    bytes_each: 3917
+    disassembly_lines_each: 858
+    same_instruction_multiset: true
+    same_register_footprint: true
+    spills: false
+  correctness:
+    exact_frontend_trials: 1000
+    exact_forward_trials: 1000
+    make_check: pass
+  F14_local_eight_launch_two_placements:
+    forward_tsc_delta_range: [-7.324, -5.809]
+    two_forward_tsc_delta_range: [-15.701, -13.442]
+    forward_core_cycle_delta_range: [-11.868, -10.387]
+    two_forward_core_cycle_delta_range: [-23.104, -20.955]
+  whole_encap:
+    same_elf_gate: placement-polluted
+    clean_equal_size_equal_address_ELFs: runtime-variance-exceeds-intrinsic-effect
+    non_pie_control: runtime-variance-remains
+  decision:
+    production_promoted: false
+    keep: benchmark-only-local-champion
+    next: bounded-TF1-M-Q24-orientation-probe
+  artifact: generated/tile4_frontend_dependency_schedule_gate.json
+
+gt32_wavefront_scheduling_20260817:
+  experiment: GT32-WAVEFRONT-SCHEDULING-001
+  status: closed-below-caller-significant-scale
+  frozen:
+    - arithmetic
+    - representation
+    - twiddles-and-constants
+    - range-and-Montgomery-contracts
+  F14_W2:
+    mechanism: two-next-packet-loads-between-current-DFT3-tails
+    static: {bytes_F14: 3917, bytes_W2: 3917, peak_ymm: 16, spills: 0, instruction_delta: 0}
+    normal_forward: {tsc_delta: -1.2055, core_cycle_delta: -2.299, negative_launches: 8/8}
+    reversed_forward: {tsc_delta: -1.5565, core_cycle_delta: -1.681, negative_launches: 8/8}
+    decision: retain-benchmark-only-same-size-schedule-oracle
+  N5_tile_wave:
+    mechanism: store-current-vector-then-load-corresponding-next-tile-vector
+    static: {peak_ymm: 16, spills: 0, code_growth_bytes: 101}
+    result: {core_cycle_delta: -1.0425, negative_launches: 8/8}
+    decision: hard-stop
+  B3_block_wave:
+    mechanism: preload-four-next-B-planes-during-current-RSQ-finalizer
+    static: {peak_ymm: 13, spills: 0, code_growth_bytes: 184}
+    result: {core_cycle_delta: -1.4705, negative_launches: 8/8}
+    decision: hard-stop
+  correctness:
+    F14_W2_exact_trials: 1000
+    N5_wave_exact_trials: 1000
+    B3_wave_exact_trials: 1000
+    status: pass
+  production_promoted: false
+  reopen_only_if:
+    - complete-instruction-or-dependency-layer-is-removed
+    - producer-consumer-change-frees-registers-without-code-growth
+    - target-ISA-or-microarchitecture-changes
+  artifacts:
+    decision: generated/tile4_wavefront_schedule_gate.json
+    runtime: results/tile4-frontend-f14-wavefront.json
+
+gt32_q24_m_tf1_20260817:
+  experiment: GT32-Q24-M-TF1-001
+  status: local-kernel-qualified-production-default-off
+  frozen:
+    - M-private-SoA-layout
+    - v9-reducer-and-range-contracts
+    - packet-order-and-stores
+    - Q24-packing-mathematics
+  static:
+    control_vpermq_per_pack: 48
+    absorbed_symmetric_swaps: 11
+    removed_identity_permutations: 14
+    candidate_vpermq_per_pack: 23
+    retired_instruction_delta_per_pack: -25
+    matched_symbol_bytes: 5120
+    spills: false
+  correctness:
+    exhaustive_scalar_range: [-12699, 12699]
+    official_bytes: exact
+    make_check_1000_trials: pass
+  local_four_launch_two_placements:
+    single_core_cycle_saving_range: [8.297, 9.277]
+    single_tsc_saving_range: [4.950, 5.940]
+    mixed_two_pack_core_cycle_saving_range: [18.157, 19.437]
+    mixed_two_pack_tsc_saving_range: [9.695, 12.262]
+  full_encap_eight_launch:
+    relevant_symbol_addresses_identical: true
+    normal_delta_tsc: -124.298
+    reversed_delta_tsc: 6.317
+    interpretation: delivery-variance-exceeds-intrinsic-effect
+  decision:
+    production_promoted: false
+    keep: default-off-local-Q24-champion
+    next: same-ELF-residual-attribution-before-another-local-shuffle-probe
+  artifact: generated/tile4_q24_m_tf1_gate.json
+
+gt32_encap_same_elf_residual_20260817:
+  experiment: SAME-ELF-ENCAP-RESIDUAL-ATTRIBUTION-001
+  status: attribution-complete-no-production-promotion
+  variants:
+    C00: current-clean
+    C10: F14-only
+    C01: TF1-only
+    C11: F14-plus-TF1
+  static:
+    encap_wrapper_bytes_each: 611
+    frontend_bytes_each: 3917
+    q24_cage_bytes_each: 5120
+    C11_instruction_delta: -51
+    C11_branch_delta: -1
+  correctness:
+    valid_differential_trials: 100
+    malformed_public_key: pass
+    make_check_1000_trials: pass
+  aslr_off_full_tsc:
+    normal_FQ_delta: 22.367
+    reversed_FQ_delta: -7.098
+    interaction_estimators:
+      definition: factorial-from-cell-medians-is-distinct-from-median-of-paired-interactions
+      recorded_normal:
+        factorial_from_cell_medians: -9.364
+        paired_interaction_median: -17.745
+      recorded_reversed:
+        factorial_from_cell_medians: -68.086
+        paired_interaction_median: -33.580
+    expected_local_delta_range: [-28.0, -23.0]
+    signal_closure: false
+  predecessor_sequence:
+    transition_matrix: complete
+    homogeneous_alternating_blocked: complete
+    stable_predecessor_penalty: false
+  paired_region_pmu:
+    pairs_per_placement: 64
+    normal_core_cycle_delta: -58.418
+    normal_negative_pairs: 50
+    normal_bootstrap_median_ci: [-110.959, -17.358]
+    reversed_core_cycle_delta: -21.772
+    reversed_negative_pairs: 34
+    reversed_bootstrap_median_ci: [-100.879, 39.805]
+    instruction_delta_both: -51.000
+    branch_delta_both: -1.000
+    l1i_itlb_delta: approximately-zero
+    frontend_delivery: link-order-sensitive-DSB-MITE-mix
+  decision:
+    local_signal_visible_in_paired_core_cycles: true
+    full_caller_tsc_promotion_evidence: false
+    simple_predecessor_pollution_model: rejected
+    cause_class: relative-code-geometry-frontend-branch-delivery
+    production_promoted: false
+    keep:
+      - F14-default-off-local-champion
+      - TF1-default-off-local-champion
+    benchmark_policy:
+      - same-process-paired-region-scoped-PMU-primary
+      - TSC-secondary-for-sub-100-cycle-effects
+  artifact: generated/tile4_encap_same_elf_residual_gate.json
+
+gt32_encap_polynomial_island_20260817:
+  experiment: SAME-ELF-OFFICIAL-CLEAN-POLY-ISLAND-001
+  status: polynomial-architecture-qualified-winner
+  measured_regions:
+    R1: Decodeq-h
+    R2: Forward-r-plus-Q24-rhat
+    R3: Forward-m-plus-general-BaseMul-plus-add-m-plus-Q24-ciphertext
+    R4: complete-R1-plus-R2-plus-R3-island
+  excluded:
+    - hashes
+    - CBD-and-SOTP-production
+    - KEM-copy-clear-glue
+  correctness:
+    real_producer_trials: 100
+    rhat_bytes: exact
+    ciphertext_polynomial_bytes: exact
+  method:
+    same_elf: true
+    aslr: disabled-with-setarch-R
+    placements: [normal, reversed]
+    launches_per_placement: 8
+    tsc_samples_per_placement: 160
+    paired_pmu_samples_per_placement: 64
+    pairing: ABBA-BAAB-all-three-variant-pairs
+  current_clean_minus_official:
+    normal:
+      R1_tsc: 20.505
+      R2_tsc: -43.645
+      R3_tsc: -37.168
+      R4_tsc: -57.270
+      R4_core_cycles: -78.825
+      R4_instructions: -1003.000
+      R4_loads: 654.000
+      R4_stores: -179.000
+      residual_core_cycles: 22.718
+      residual_instructions: -13.000
+    reversed:
+      R1_tsc: 20.558
+      R2_tsc: -44.772
+      R3_tsc: -43.435
+      R4_tsc: -64.041
+      R4_core_cycles: -107.599
+      R4_instructions: -1003.000
+      R4_loads: 654.000
+      R4_stores: -179.000
+      residual_core_cycles: 6.291
+      residual_instructions: -13.000
+  F14_TF1_minus_official:
+    normal:
+      R4_tsc: -70.321
+      R4_core_cycles: -108.805
+      R4_instructions: -1054.000
+      versus_clean_R4_tsc: -13.846
+      versus_clean_R4_core_cycles: -25.323
+    reversed:
+      R4_tsc: -79.507
+      R4_core_cycles: -143.588
+      R4_instructions: -1054.000
+      versus_clean_R4_tsc: -19.369
+      versus_clean_R4_core_cycles: -32.856
+  decision:
+    polynomial_island_winner: true
+    NTT_B3_arithmetic: frozen
+    F14_TF1_kernel_qualification: pass
+    F14_TF1_whole_image_promotion: false
+    full_encap_residual_class: integration-frontend-delivery-and-extra-loads
+    next: retired-load-attribution-outside-and-around-polynomial-island
+  artifact: generated/tile4_encap_poly_island_gate.json
+
+gt32_encap_poly_island_load_closure_20260817:
+  experiment: POLY-ISLAND-LOAD-CLOSURE-001
+  status: passed-aggregate-load-count-not-actionable
+  clean_minus_official:
+    R1_decode: {instructions: 70, loads: 105, stores: 1}
+    R2_r_path: {instructions: -445, loads: 224, stores: -82}
+    R3_final_path: {instructions: -615, loads: 329, stores: -94}
+    summed: {instructions: -990, loads: 658, stores: -175}
+    R4_observed: {instructions: -1003, loads: 654, stores: -179}
+    R4_minus_sum: {instructions: -13, loads: -4, stores: -4}
+  interpretation:
+    - 553-of-658-summed-extra-loads-belong-to-faster-R2-R3
+    - extra-load-count-is-structural-not-hidden-benchmark-glue
+    - only-R1-decode-is-a-proven-local-polynomial-debt
+  decision:
+    aggregate_load_reduction_target: rejected
+    NTT_B3_Q24_arithmetic_reopen: false
+  artifact: generated/tile4_encap_poly_island_load_closure_gate.json
+
+gt32_encap_outside_island_residual_20260817:
+  experiment: SAME-ELF-ENCAP-OUTSIDE-ISLAND-RESIDUAL-001
+  status: causal-attribution-complete-no-local-shared-glue-debt
+  method:
+    same_elf: true
+    aslr: disabled-with-setarch-R
+    cpu_affinity: 1
+    placements: [normal, reversed]
+    pairing: ABBA-BAAB
+    shared_code: one-physical-noinline-noclone-symbol-per-shared-stage
+  architectural_closure:
+    full_wrapper: {instructions: -1009, loads: 654, stores: -179}
+    shared_prework_delta: {instructions: 0, loads: 0, stores: 0}
+    middle_glue_delta: {instructions: 0, loads: 0, stores: 0}
+    shared_tail_delta: {instructions: 0, loads: 0, stores: 0}
+  direct_identical_consumer_tsc:
+    normal:
+      shared_prework: {delta: 4.010, gt_favorable_pairs: 0-of-8}
+      middle_glue: {delta: 2.860, gt_favorable_pairs: 4-of-8}
+      shared_tail: {delta: -0.060, gt_favorable_pairs: 6-of-8}
+    reversed:
+      shared_prework: {delta: -0.445, gt_favorable_pairs: 4-of-8}
+      middle_glue: {delta: -8.440, gt_favorable_pairs: 6-of-8}
+      shared_tail: {delta: 1.280, gt_favorable_pairs: 2-of-8}
+  rejected_interpretations:
+    - middle-hash-SOTP-glue-has-a-stable-50-to-100-cycle-GT-penalty
+    - clear-tail-has-a-stable-large-GT-penalty
+    - adjacent-cumulative-prefix-latency-is-an-additive-component-cost
+  remaining_cause_class:
+    - whole-prefix-whole-image-executable-delivery
+    - relative-code-geometry-frontend-interaction
+  next:
+    - PRODUCTION-HOT-CODE-CLOSURE-001
+    - prune-unreachable-variants-and-tables
+    - fixed-production-shaped-ELF-benchmark
+  artifacts:
+    - generated/tile4_encap_outside_island_gate.json
+    - results/tile4-encap-outside-island-waterfall.json
+    - results/tile4-encap-shared-transition-tsc.json
+
+gt32_production_hot_code_closure_20260817:
+  experiment: PRODUCTION-HOT-CODE-CLOSURE-001
+  status: passed-physical-closure-is-a-real-delivery-mechanism
+  frozen:
+    - N5-arithmetic
+    - B3-arithmetic
+    - M-representation
+    - Q24-packet-mathematics
+    - Decode-arithmetic
+  images:
+    official: avx2
+    G0: avx2-gt-hotclosure-g0-unpruned
+    Gc: avx2-gt-hotclosure-gc-pruned
+  static_closure:
+    text_bytes: {G0: 128919, Gc: 64407, delta: -64512, reduction_percent: 50.041}
+    rodata_bytes: {G0: 57576, Gc: 56808, delta: -768, reduction_percent: 1.334}
+    named_GT_text_symbols: {G0: 75, Gc: 18}
+    removed_named_GT_text_bytes: 63604
+    hot_instruction_equivalence: all-18-retained-GT-symbols-normalized-equal
+    pruner_bug_fixed: FR_WAVEFRONT_FUNCTION-and-all-FR-function-emitters-now-covered
+  supercop:
+    cpu_affinity: 1
+    compiler: gcc-15.2-O3-fPIC-fPIE-function-sections-data-sections-gc-sections
+    valid_blocks: 4
+    block_order: [Official, G0, Gc, Gc, G0, Official]
+    correctness: try-and-constbranchindex-pass-every-run
+    pooled_stabilized_Q2_cycles:
+      keypair: {G0_minus_Official: -133.026, Gc_minus_Official: -184.167, Gc_minus_G0: -51.141, closure_wins: 3-of-4}
+      encap: {G0_minus_Official: 293.151, Gc_minus_Official: 99.589, Gc_minus_G0: -193.563, closure_wins: 4-of-4}
+      decap: {G0_minus_Official: -104.854, Gc_minus_Official: -217.802, Gc_minus_G0: -112.948, closure_wins: 4-of-4}
+    encap_closure_block_deltas: [-100.750, -261.000, -296.250, -28.250]
+  whole_measure_frontend_PMU_corroboration:
+    scope: whole-process-not-per-operation
+    samples_per_image: 16
+    Gc_minus_G0:
+      core_cycles: -55999.5
+      DSB_uops: 372313.0
+      MITE_uops: -196701.5
+      IDQ_uops_not_delivered: -103282.5
+      DSB_to_MITE_penalty_cycles: 2592.5
+  decision:
+    physical_clean_export: promote-Gc-shape
+    unpruned_export: causal-control-only
+    arithmetic_reopen: false
+    encap_backend_promotion: false
+    reason: Gc-still-about-100-cycles-behind-Official-Encap
+    next:
+      - semantic-hot-function-grouping-or-new-structural-mechanism
+      - no-padding-or-alignment-sweep
+  artifacts:
+    - generated/tile4_production_hot_code_closure_gate.json
+    - results/tile4-production-hot-code-closure-supercop.json
+    - results/tile4-production-hot-code-closure-frontend-pmu.json
+
+gt32_production_hot_function_grouping_20260817:
+  experiment: PRODUCTION-HOT-FUNCTION-GROUPING-001
+  status: hard-stop-semantic-grouping-regresses-Encap-and-Decap
+  baseline: H0-physically-pruned-Gc
+  candidates:
+    H1: Encap-first-use-semantic-order
+    H2: weighted-transition-reusable-kernel-order
+  reachability:
+    linked_text_bytes: 64407
+    encap_direct_closure: {functions: 25, named_bytes: 22559}
+    shared_named_bytes: 16669
+    encap_only_named_bytes: 5890
+    keypair_only_named_bytes: 9273
+    decap_only_named_bytes: 12747
+    cold_unreachable_named_bytes: 19618
+    limitation: direct-call-and-tail-jump-linked-ELF-closure
+  static_control:
+    text_bytes: {H0: 64407, H1: 64407, H2: 64407}
+    common_production_functions_compared: 105
+    normalized_bodies_identical: true
+    hot_addresses_changed: true
+    arithmetic_changed: false
+    H1_H2_rodata_extra_bytes: 224-compiler-identification-only
+  supercop:
+    cpu_affinity: 1
+    valid_blocks: 4
+    order: [H0, H1, H2, H2, H1, H0]
+    correctness: try-and-constbranchindex-pass-every-run
+    pooled_Q2_cycles:
+      keypair: {H0: 21253.4, H1: 21215.2, H2: 21272.7, H1_minus_H0: -38.2, H2_minus_H0: 19.3, H1_wins: 4-of-4, H2_wins: 2-of-4}
+      encap: {H0: 28165.2, H1: 28375.6, H2: 28393.6, H1_minus_H0: 210.5, H2_minus_H0: 228.4, H1_wins: 0-of-4, H2_wins: 0-of-4}
+      decap: {H0: 19145.7, H1: 19305.8, H2: 19288.6, H1_minus_H0: 160.1, H2_minus_H0: 142.9, H1_wins: 0-of-4, H2_wins: 0-of-4}
+    encap_H1_block_deltas: [217.292, 140.417, 200.479, 274.583]
+    encap_H2_block_deltas: [223.646, 200.188, 237.167, 262.562]
+  decision:
+    H1_promote: false
+    H2_promote: false
+    H3_H4_H5: forbidden-by-stop-rule
+    padding_alignment_sweep: false
+    reintroduce_F14_TF1: false
+    production_baseline: H0-Gc
+    physical_dead_code_closure: remains-promoted
+    semantic_function_ordering: closed
+    next:
+      - structural-non-layout-mechanism
+      - or-measured-Decode-debt
+  artifacts:
+    - generated/tile4_hot_function_reachability.json
+    - generated/tile4_hot_function_grouping_static.json
+    - generated/tile4_production_hot_function_grouping_gate.json
+    - results/tile4-production-hot-function-grouping-supercop.json
+
+gt32_production_reachable_hot_text_compaction_20260817:
+  experiment: PRODUCTION-REACHABLE-HOT-TEXT-COMPACTION-001
+  status: hard-stop-current-reachable-hot-compaction-shapes
+  baseline: Gc-H0-physically-pruned-clean-export
+  phase_a:
+    encap_reachable_functions: 25
+    encap_reachable_named_bytes: 22559
+    linked_text_bytes: 64407
+    zero_cost_intra_symbol_candidate:
+      symbol: gt32_q24_encode_soa_lazy10788_asm
+      symbol_bytes: 5120
+      executed_body_bytes: 4543
+      post_ret_padding_bytes: 577
+  phase_b_C0:
+    change: remove-only-post-ret-q24-lazy-cage
+    linked_text_bytes: {Gc: 64407, C0: 63831, delta: -576}
+    executed_prefix: byte-identical-sha256
+    kat: canonical-100-of-100-byte-exact
+    supercop:
+      cpu_affinity: 1
+      blocks: 4
+      order: [Official, Gc, C0, C0, Gc, Official]
+      keypair: {C0_minus_Gc: 8.182, wins: 2-of-4, C0_minus_Official: -314.146}
+      encap: {C0_minus_Gc: 45.188, wins: 0-of-4, C0_minus_Official: 38.984}
+      decap: {C0_minus_Gc: -49.677, wins: 2-of-4, C0_minus_Official: -288.354}
+      encap_block_deltas: [100.708, 62.062, 1.354, 21.354]
+    decision: reject-address-remapping-dominates-576-byte-resource-reduction
+  phase_c_C1:
+    shape: six-fixed-route-M-to-Q24-block-loops
+    packet_math: unchanged
+    correctness: exhaustive-minus12699-to12699-and-guard-page-pass
+    symbol_bytes: {control: 5120, candidate: 2321, delta: -2799}
+    per_pack_launch_median:
+      normal: {tsc: 22.296, core_cycles: 35.694, instructions: 108}
+      reversed: {tsc: 15.740, core_cycles: 35.454, instructions: 108}
+    two_pack_launch_median:
+      normal: {tsc: 43.818, core_cycles: 70.430, instructions: 216}
+      reversed: {tsc: 44.136, core_cycles: 70.159, instructions: 216}
+    full_supercop: not-run-predeclared-local-stop-loss-exceeded
+    decision: reject-scalar-route-loop-and-safe-tail-cost-destroys-density-trade
+  call_boundary_static:
+    official_parent_direct_call_sites: 19
+    gt_parent_direct_call_sites: 21
+    decision: close-no-20-to-30-transition-excess
+  final_decision:
+    production_baseline: Gc-H0
+    C0_promote: false
+    C1_promote: false
+    semantic_grouping: closed
+    padding_alignment: closed
+    frontend_reroll: closed-without-new-schedule-preserving-mechanism
+    next: bounded-Decode-debt
+  artifacts:
+    - generated/tile4_reachable_hot_text_compaction_census.json
+    - generated/tile4_call_boundary_closure_static.json
+    - generated/tile4_production_reachable_hot_text_compaction_gate.json
+    - results/tile4-q24-hotcompact-c1-local.json
+    - results/tile4-production-reachable-hot-text-compaction-supercop.json
+
+gt32_r1_decode_debt_20260817:
+  experiment: R1-DECODE-DEBT-001
+  status: closed-no-production-eligible-local-mechanism
+  production_symbol_changed: false
+  correctness:
+    valid_random_trials: 1000
+    d1_output: exact-private-M-D0-words
+    d1_rejection: intentionally-disabled-attribution-only
+    d2_unpack: exact-canonical-wire-order-int16
+    d2_route: exact-private-M-D0-words
+    malformed_D0_D2: exact-reject
+  benchmark:
+    cpu_affinity: 1
+    launches_per_placement: 4
+    samples_per_launch: 20
+    iterations: 4000
+    normal:
+      D0: {tsc: 116.102, core_cycles: 183.934, instructions: 609.509}
+      D1_no_validation: {tsc: 103.707, core_cycles: 166.047, instructions: 546.509}
+      D2_unpack: {tsc: 93.196, core_cycles: 149.176, instructions: 463.509}
+      D2_route: {tsc: 63.992, core_cycles: 102.368, instructions: 303.509}
+      D2_split: {tsc: 153.297, core_cycles: 245.274, instructions: 760.509}
+    reversed:
+      D0: {tsc: 115.345, core_cycles: 184.915, instructions: 609.509}
+      D1_no_validation: {tsc: 104.252, core_cycles: 166.484, instructions: 546.509}
+      D2_unpack: {tsc: 93.792, core_cycles: 150.663, instructions: 463.509}
+      D2_route: {tsc: 63.986, core_cycles: 102.368, instructions: 303.509}
+      D2_split: {tsc: 153.309, core_cycles: 245.220, instructions: 760.509}
+  attribution:
+    validation_and_return_aggregation:
+      retired_instructions: 63
+      core_cycles_range: [17.887, 18.431]
+      removable_in_production: false
+    materialized_wire_M_split:
+      extra_instructions: 151
+      extra_core_cycles_range: [60.305, 61.340]
+      conclusion: current-Q24-masks-already-fuse-unpack-and-GT-placement
+  D3_three_contiguous_ymm_loads:
+    load_delta: -60
+    added_route_shuffle_lower_bound: 60
+    allowed_added_shuffle: 36
+    assembly_emitted: false
+    reason: three-lane-gathers-plus-two-aligns-plus-four-merges-per-96B-group
+  decision:
+    production_decoder: retain-current-Q24-GT-unpack
+    full_supercop: not-run-static-D3-stop
+    decode_local_search: closed
+    reopen_only_if:
+      - full-width-byte-permute-or-wider-ISA
+      - consumer-contract-removes-private-M-transpose
+      - cross-128-byte-window-operation-eliminates-separate-lane-merge
+  artifacts:
+    - generated/tile4_decode_debt.inc
+    - generated/tile4_decode_debt_static.json
+    - results/tile4-decode-debt-gate.json
+
+gt32_encap_h_d01_mixed_tmvp_b3_20260817:
+  experiment: ENCAP-H-D01-MIXED-TMVP-B3-001
+  status: static-hard-stop-before-assembly
+  scope: Q24-pk-to-D01-h_times_Forward-M-r_to-M-output
+  frozen:
+    - Forward-r-current-M
+    - final-M-and-Q24-serializer
+    - Encap-caller-and-hash-glue
+    - quartic-ring-and-lambda-semantics
+  physical_proof:
+    current_M_route_instructions_per_16_leaves: 12
+    blocked_D01_route_instructions_per_16_leaves: 8
+    blocked_D01_decoder_saving_per_polynomial: 48
+    blocked_to_adjacent_vpmaddwd_pairs_per_16_leaves: 4
+    consumer_pair_repayment_per_polynomial: 48
+    net_representation_saving: 0
+    consumer_ready_D_equals_M_vpunpck_pair_view: true
+  complete_B3_static:
+    current_general_MxM_to_M_loop: 134
+    blocked_D01xM_to_M_loop: 146
+    consumer_ready_D01xM_to_M_loop: 142
+    blocks: 12
+    current_decode_route_plus_B3: 1752
+    candidate_decode_route_plus_B3: 1848
+    candidate_minus_current: 96
+    included:
+      input_loads_h_and_r: 8
+      blocked_D_pair_shuffles: 4
+      lambda_Montgomery: 12
+      lambda_output_scratch_stores: 3
+      row_formations_and_source_reloads: 16
+      vpmaddwd_and_add: 24
+      unsigned_REDC16: 32
+      dword_compact_and_order: 16
+      half_merges: 4
+      R2_finalizers: 16
+      final_stores: 4
+      loop_control: 7
+  register_gate:
+    ideal_all_resident_peak_YMM: 19
+    ideal_spill_free: false
+    executable_output_scratch_peak_YMM: 13
+    stack_spills: 0
+    output_scratch_vectors: 3
+  range:
+    h_abs_bound: 3456
+    r_abs_bound: 10788
+    int32_dot_bound: 149133312
+    unsigned_REDC16_abs_bound: 5732
+    post_R2_abs_bound: 3532
+    int32_safe: true
+    int16_safe: true
+  decision:
+    assembly_emitted: false
+    production_changed: false
+    reason:
+      - decoder-saving-is-repaid-by-adjacent-pair-formation
+      - complete-edge-is-96-instructions-larger
+      - both-8-leaf-halves-require-compaction-order-and-merge
+      - general-e0-output-requires-four-R2-finalizers
+    reopen_only_if:
+      - decoder-emits-adjacent-pairs-before-blocked-transpose
+      - REDC-eliminates-half-compaction-and-order
+      - consumer-accepts-e-minus1-without-R2-finalizer
+      - wider-ISA-removes-register-and-half-merge-debt
+  artifact: generated/tile4_encap_h_d01_mixed_tmvp_gate.json
