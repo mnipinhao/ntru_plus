@@ -1,20 +1,25 @@
 # Source provenance
 
-This directory was exported from:
+This implementation was selected from:
 
 ```text
 experiments/avx2_gt32_tile4_official_001
 ```
 
 using the Gc/H0 selected call graph. The initial source selection was made by
-`tools/install_supercop_fastest_clean.sh`; this directory then performed only
-production cleanup:
+`tools/install_supercop_fastest_clean.sh`, first staged under
+`clean/avx2-gt32-clean`, and then promoted to this NTRU+768 source root.  The
+production cleanup performed the following:
 
 - experimental selectors were resolved;
 - unused assembly function emissions were pruned;
 - files and selected symbols were renamed;
 - the three NTT assembly translation units were kept separate;
 - documentation and a non-overwriting SUPERcop installer were added.
+
+Official sources and local test/KAT harnesses are resolved from the frozen
+`third_party/NTRUplus-official-main` tree; no second Official implementation is
+kept in this directory.
 
 Selected source families were:
 

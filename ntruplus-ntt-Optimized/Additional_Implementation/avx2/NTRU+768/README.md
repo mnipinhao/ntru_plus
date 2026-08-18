@@ -1,8 +1,9 @@
-# NTRU+768 AVX2 clean implementation
+# NTRU+768 AVX2 GT Clean implementation
 
-This directory is a standalone, production-shaped export of the fastest
-qualified GT implementation.  It is intentionally separate from the
-`experiments/` tree and follows SUPERcop's flat implementation layout.
+This directory is the production-shaped source root of the fastest qualified
+GT implementation.  It follows SUPERcop's flat implementation layout.  The
+`experiments/` subdirectory is archival research material and is not part of
+the production source list.
 
 The public API is unchanged:
 
@@ -30,14 +31,25 @@ encapsulation and decapsulation use the persistent M path.  See
 [`SYMBOLS.md`](SYMBOLS.md) for symbol notation and [`LAYOUTS.md`](LAYOUTS.md)
 for the typed representation contracts.
 
-This snapshot deliberately excludes default-off experiments such as F14,
+The production root deliberately excludes default-off experiments such as F14,
 TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and linker-padding
 variants.  A candidate enters this directory only after it is selected as a
 whole-operation component.
 
+The frozen Official implementation is not duplicated here.  Local tests and
+KAT harnesses are taken from:
+
+```text
+../../../../third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
+```
+
+`make check` builds and runs the GT Clean functional test and KAT generator
+using that frozen third-party harness.  Production source files remain the
+flat files in this directory.
+
 ## Reproduction
 
-Install into a fresh SUPERcop implementation directory:
+Install the production file set into a fresh SUPERcop implementation directory:
 
 ```sh
 ./install-supercop.sh /home/nuc/supercop-20260627 avx2-gt32-clean

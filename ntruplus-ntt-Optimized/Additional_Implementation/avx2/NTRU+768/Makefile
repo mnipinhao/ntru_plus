@@ -1,91 +1,62 @@
-CC = gcc
-PYTHON ?= python3
-CFLAGS += -Wall -Wextra -Wpedantic -Wmissing-prototypes -Wredundant-decls \
-  -Wshadow -Wpointer-arith -mavx2 -mbmi2 -mpopcnt -maes \
-  -march=native -mtune=native -O3 -fomit-frame-pointer
-NISTFLAGS += -Wno-unused-result -mavx2 -mbmi2 -mpopcnt -maes \
-  -march=native -mtune=native -O3 -fomit-frame-pointer
-RM = /bin/rm -f
+CC ?= gcc
+OFFICIAL_ROOT ?= ../../../../third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
+BUILD_DIR ?= build
 
-SOURCES= asm/add.s asm/baseinv.s asm/basemul.s asm/cbd.s asm/crepmod3.s asm/invntt.s asm/ntt.s asm/pack.s consts.c kem.c poly.c symmetric.c fips202/fips202.c fips202/KeccakP-1600-AVX2.s
-HEADERS= params.h api.h poly.h symmetric.h fips202/fips202.h fips202/KeccakP-1600-SnP.h
+COMMON_FLAGS = -Wall -Wextra -Wpedantic -Wmissing-prototypes \
+	-Wredundant-decls -Wshadow -Wpointer-arith -mavx2 -mbmi2 \
+	-mpopcnt -maes -march=native -mtune=native -O3 -fomit-frame-pointer
+CFLAGS += $(COMMON_FLAGS)
+NISTFLAGS += $(COMMON_FLAGS) -Wno-unused-result
 
-GT_ROOT = experiments/gt_ntt
-GT_SOURCES = \
-	$(GT_ROOT)/gt_keygen_native.c \
-	$(GT_ROOT)/gt_native_pack.c \
-	$(GT_ROOT)/gt_native_pack_asm.S \
-	$(GT_ROOT)/gt_baseinv_native.c \
-	$(GT_ROOT)/gt_basemul_soa.c \
-	$(GT_ROOT)/gt_ntt_tables.c \
-	$(GT_ROOT)/gt_ntt_frontend_stage12_soa.S \
-	$(GT_ROOT)/gt_ntt_stage345_soa.s \
-	$(GT_ROOT)/gt_baseinv_native_prepare_asm.S \
-	$(GT_ROOT)/gt_basemul_layout_asm.S
-GT_HEADERS = \
-	$(GT_ROOT)/gt_keygen_native.h \
-	$(GT_ROOT)/gt_native_pack.h \
-	$(GT_ROOT)/gt_native_pack_tables.inc \
-	$(GT_ROOT)/gt_native_pack_asm_tables.inc \
-	$(GT_ROOT)/gt_baseinv_native.h \
-	$(GT_ROOT)/gt_basemul_soa.h \
-	$(GT_ROOT)/gt_basemul_soa_tables.inc \
-	$(GT_ROOT)/gt_forward_lazy_bounds.h \
-	$(GT_ROOT)/gt_ntt_avx2.h \
-	$(GT_ROOT)/gt_ntt_tables.h \
-	$(GT_ROOT)/gt_ntt_frontend_tables.inc \
-	$(GT_ROOT)/gt_ntt_frontend_fixed_offsets.inc \
-	$(GT_ROOT)/gt_ntt_stage345_native_fused.inc
-GT_CPPFLAGS = -DGT_HAVE_AVX2_ASM=1 -I. -I$(GT_ROOT)
+C_SOURCES = \
+	baseinv.c consts.c decap.c encap.c fips202.c kem.c keygen.c poly.c \
+	symmetric.c
+ASM_SOURCES = \
+	add.s basemul.s batch_inverse.s cbd.s crepmod3.s invntt.s ntt.s \
+	ntt_m.s ntt_p.s pack.s KeccakP-1600-AVX2.s
+SOURCES = $(C_SOURCES) $(ASM_SOURCES)
+HEADERS = \
+	KeccakP-1600-SnP.h api.h baseinv.h basemul.h consts.h fips202.h \
+	internal.h ntt.h ntt_bounds.h params.h poly.h symmetric.h util.h
 
-.PHONY: all PQCgenKAT_kem PQCgenKAT_kem_gt_keygen test \
-	test-gt-keygen bench-gt-keygen check-gt-native-pack-tables clean
+TEST_SOURCE = $(OFFICIAL_ROOT)/test/test.c
+RANDOMBYTES_SOURCE = $(OFFICIAL_ROOT)/randombytes.c
+RANDOMBYTES_HEADER = $(OFFICIAL_ROOT)/randombytes.h
+KAT_SOURCES = \
+	$(OFFICIAL_ROOT)/kat/PQCgenKAT_kem.c \
+	$(OFFICIAL_ROOT)/kat/aes.c \
+	$(OFFICIAL_ROOT)/kat/rng.c
+KAT_HEADERS = $(OFFICIAL_ROOT)/kat/aes.h $(OFFICIAL_ROOT)/kat/rng.h
 
-BUILD_DIR = build
+.PHONY: all check test test-run PQCgenKAT_kem kat-run check-hashes clean
 
-all: \
-	test \
-	PQCgenKAT_kem
+all: test PQCgenKAT_kem
 
-PQCgenKAT_kem: $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c
+check: check-hashes test-run kat-run
+
+test: $(BUILD_DIR)/test
+
+$(BUILD_DIR)/test: $(HEADERS) $(SOURCES) $(RANDOMBYTES_HEADER) \
+		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(NISTFLAGS) -I. -o $(BUILD_DIR)/PQCgenKAT_kem kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c $(SOURCES)
+	$(CC) $(CFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE) $(SOURCES)
 
-PQCgenKAT_kem_gt_keygen: check-gt-native-pack-tables $(HEADERS) \
-		$(GT_HEADERS) kat/aes.h kat/rng.h $(SOURCES) $(GT_SOURCES) \
-		kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c
+test-run: $(BUILD_DIR)/test
+	$(BUILD_DIR)/test
+
+PQCgenKAT_kem: $(BUILD_DIR)/PQCgenKAT_kem
+
+$(BUILD_DIR)/PQCgenKAT_kem: $(HEADERS) $(SOURCES) $(KAT_HEADERS) $(KAT_SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(NISTFLAGS) $(GT_CPPFLAGS) \
-		-DNTRUPLUS_EXTERNAL_KEYPAIR=1 \
-		-DNTRUPLUS_GT_KEYPAIR_API=crypto_kem_keypair \
-		-o $(BUILD_DIR)/PQCgenKAT_kem_gt_keygen \
-		kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c \
-		$(SOURCES) $(GT_SOURCES)
+	$(CC) $(NISTFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+		$(KAT_SOURCES) $(SOURCES)
 
-test: $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I. -o $(BUILD_DIR)/test randombytes.c test/test.c $(SOURCES)
+kat-run: $(BUILD_DIR)/PQCgenKAT_kem
+	cd $(BUILD_DIR) && ./PQCgenKAT_kem
 
-test-gt-keygen: check-gt-native-pack-tables $(BUILD_DIR)/bench_gt_keygen
-	$(BUILD_DIR)/bench_gt_keygen validate
-
-bench-gt-keygen: check-gt-native-pack-tables $(BUILD_DIR)/bench_gt_keygen
-
-$(BUILD_DIR)/bench_gt_keygen: $(HEADERS) randombytes.h $(SOURCES) \
-		$(GT_SOURCES) $(GT_HEADERS) test/bench_gt_keygen.c
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(GT_CPPFLAGS) \
-		-DNTRUPLUS_BENCH_INTERNAL=1 \
-		-o $@ test/bench_gt_keygen.c $(SOURCES) $(GT_SOURCES)
-
-check-gt-native-pack-tables:
-	$(PYTHON) $(GT_ROOT)/generate_gt_native_pack_tables.py \
-		--consts consts.c \
-		--check $(GT_ROOT)/gt_native_pack_tables.inc
-	$(PYTHON) $(GT_ROOT)/generate_gt_native_pack_tables.py \
-		--consts consts.c \
-		--check-asm $(GT_ROOT)/gt_native_pack_asm_tables.inc
+check-hashes:
+	sha256sum -c SHA256SUMS
 
 clean:
-	$(RM) PQCkemKAT_*.req PQCkemKAT_*.rsp
 	$(RM) -r $(BUILD_DIR)

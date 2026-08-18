@@ -1,189 +1,9 @@
 #include <immintrin.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include "params.h"
 #include "poly.h"
-#include "consts.h"
-
-static inline __m256i fqmul_avx2(__m256i a, __m256i b, __m256i B,  __m256i q)
-{
-    __m256i l, h, r;
-
-    l  = _mm256_mullo_epi16(a, B);
-    h  = _mm256_mulhi_epi16(a, b);
-    l  = _mm256_mulhi_epi16(l, q);
-    r = _mm256_sub_epi16(h, l);
-
-    return r;
-}
-
-static inline __m256i fqsqr_avx2(__m256i a,  __m256i q, __m256i qinv)
-{
-    __m256i l, h, r;
-    __m256i A;
-
-    A = _mm256_mullo_epi16(a, qinv);
-    l  = _mm256_mullo_epi16(a, A);
-    h  = _mm256_mulhi_epi16(a, a);
-    l  = _mm256_mulhi_epi16(l, q);
-    r = _mm256_sub_epi16(h, l);
-
-    return r;
-}
-
-static inline __m256i fqinv_avx2(__m256i r)
-{
-    const __m256i qinv     = _mm256_load_si256((const __m256i *)_16xqinv);
-    const __m256i q        = _mm256_load_si256((const __m256i *)_16xq);
-    const __m256i Rinvqinv = _mm256_load_si256((const __m256i *)_16xRinvqinv);
-    const __m256i Rinv     = _mm256_load_si256((const __m256i *)_16xRinv);
-
-    __m256i T1, T2;
-    __m256i t1, t2, t3;
-
-    T1  = _mm256_mullo_epi16(r, qinv);
-    t1 = fqsqr_avx2(r, q, qinv);   // 10 
-    
-    T2 = _mm256_mullo_epi16(t1, qinv);
-    t2 = fqsqr_avx2(t1, q, qinv);      // 100 
-    t2 = fqsqr_avx2(t2, q, qinv);      // 1000 
-    t3 = fqsqr_avx2(t2, q, qinv);      // 10000 
-    t1 = fqmul_avx2(t2, t1, T2, q);    // 1010 
-
-    T2 = _mm256_mullo_epi16(t1, qinv);
-    t2 = fqmul_avx2(t3, t1, T2, q);    // 11010 
-    t2 = fqsqr_avx2(t2, q, qinv);      // 110100 
-    t2 = fqmul_avx2(t2, r, T1, q);     // 110101 
-    t1 = fqmul_avx2(t2, t1, T2, q);    // 111111
-
-    t2 = fqsqr_avx2(t2, q, qinv);      // 1101010
-    t2 = fqsqr_avx2(t2, q, qinv);      // 11010100 
-    t2 = fqsqr_avx2(t2, q, qinv);      // 110101000 
-    t2 = fqsqr_avx2(t2, q, qinv);      // 1101010000 
-    t2 = fqsqr_avx2(t2, q, qinv);      // 11010100000
-    t2 = fqsqr_avx2(t2, q, qinv);      // 110101000000 
-
-    T2 = _mm256_mullo_epi16(t2, qinv);
-    t2 = fqmul_avx2(t1, t2, T2, q);    // 110101111111 
-
-    t2 = fqmul_avx2(t2, Rinv, Rinvqinv, q);
-
-    return t2;
-}
-
-static inline int poly_fqinv_batch(__m256i *restrict r)
-{
-    const __m256i qinv = _mm256_load_si256((const __m256i *)_16xqinv);
-    const __m256i q    = _mm256_load_si256((const __m256i *)_16xq);
-    const __m256i z    = _mm256_setzero_si256();
-
-    __m256i t[12];
-    __m256i R[12];
-
-    __m256i inv;
-
-    t[0] = r[0];
-
-    for (size_t i = 1; i < 12; i++) {
-        __m256i ri = r[i];
-        __m256i Bi = _mm256_mullo_epi16(ri, qinv);
-        R[i] = Bi;
-        t[i] = fqmul_avx2(t[i-1], ri, Bi, q);
-    }
-
-    __m256i mask_zero = _mm256_cmpeq_epi16(t[11], z);
-    if (!_mm256_testz_si256(mask_zero, mask_zero)) return 1;
-
-    inv = fqinv_avx2(t[11]);
-
-    for (size_t i = 11; i > 0; i--) {
-        __m256i ti  = t[i - 1];
-        __m256i ri  = r[i];
-        __m256i INV = _mm256_mullo_epi16(inv, qinv);
-
-        __m256i l0 = _mm256_mulhi_epi16(_mm256_mullo_epi16(ti, INV), q);
-        __m256i l1 = _mm256_mulhi_epi16(_mm256_mullo_epi16(inv, R[i]), q);
-        __m256i h0 = _mm256_mulhi_epi16(ti, inv);
-        __m256i h1 = _mm256_mulhi_epi16(inv, ri);
-
-        r[i] = _mm256_sub_epi16(h0, l0);
-        inv  = _mm256_sub_epi16(h1, l1);
-    }
-
-    r[0] = inv;
-
-    return 0;
-}
-
-static inline void poly_baseinv_2(poly *r, const __m256i den[12])
-{
-    const __m256i qinv = _mm256_load_si256((const __m256i *)_16xqinv);
-    const __m256i q    = _mm256_load_si256((const __m256i *)_16xq);
-
-    for (size_t i = 0; i < 12; i++) {
-        __m256i r0 = _mm256_load_si256((const __m256i *)&r->coeffs[64*i +  0]);
-        __m256i r1 = _mm256_load_si256((const __m256i *)&r->coeffs[64*i + 16]);
-        __m256i r2 = _mm256_load_si256((const __m256i *)&r->coeffs[64*i + 32]);
-        __m256i r3 = _mm256_load_si256((const __m256i *)&r->coeffs[64*i + 48]);
-
-        __m256i t = den[i];
-        __m256i T = _mm256_mullo_epi16(t, qinv);
-
-        __m256i l, h;
-
-        l  = _mm256_mullo_epi16(r0, T);
-        h  = _mm256_mulhi_epi16(r0, t);
-        l  = _mm256_mulhi_epi16(l, q);
-        r0 = _mm256_sub_epi16(h, l);
-
-        l  = _mm256_mullo_epi16(r1, T);
-        h  = _mm256_mulhi_epi16(r1, t);
-        l  = _mm256_mulhi_epi16(l, q);
-        r1 = _mm256_sub_epi16(l, h);
-
-        l  = _mm256_mullo_epi16(r2, T);
-        h  = _mm256_mulhi_epi16(r2, t);
-        l  = _mm256_mulhi_epi16(l, q);
-        r2 = _mm256_sub_epi16(h, l);
-
-        l  = _mm256_mullo_epi16(r3, T);
-        h  = _mm256_mulhi_epi16(r3, t);
-        l  = _mm256_mulhi_epi16(l, q);
-        r3 = _mm256_sub_epi16(l, h);
-
-        _mm256_store_si256((__m256i *)&r->coeffs[64*i +  0], r0);
-        _mm256_store_si256((__m256i *)&r->coeffs[64*i + 16], r1);
-        _mm256_store_si256((__m256i *)&r->coeffs[64*i + 32], r2);
-        _mm256_store_si256((__m256i *)&r->coeffs[64*i + 48], r3);
-    }
-}
-
-/*************************************************
-* Name:        poly_baseinv
-*
-* Description: Inversion of polynomial in NTT domain
-*
-* Arguments:   - poly *r:       pointer to output polynomial
-*              - const poly *a: pointer to input polynomial
-* 
-* Returns:     integer
-**************************************************/
-int poly_baseinv(poly *r, const poly *a)
-{
-    __m256i den[12];
-
-    poly_baseinv_1(r, den, a);
-
-    if(poly_fqinv_batch(den))
-    {
-        for (size_t j = 0; j < NTRUPLUS_N; ++j)
-            r->coeffs[j] = 0;
-        return 1;
-    }
-
-    poly_baseinv_2(r, den);
-
-    return 0;
-}
 
 /*************************************************
 * Name:        poly_sotp_decode
@@ -388,14 +208,19 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N/8], const poly *a, const uint8_t buf
     fail_mask = _mm256_and_si256(fail_mask, mask55);
 
     int fail = !_mm256_testz_si256(fail_mask, fail_mask);
-    __m256i m = _mm256_set1_epi8((uint8_t)(fail - 1)); // fail=0 -> 0xFF, fail=1 -> 0x00
+    volatile uint8_t mask = (uint8_t)(fail - 1);
+    const __m256i m = _mm256_set1_epi8((char)mask);
+    size_t i = 0;
 
-    for (size_t i = 0; i + 32 <= NTRUPLUS_N / 8; i += 32)
+    for (; i + 32 <= NTRUPLUS_N / 8; i += 32)
     {
         __m256i x = _mm256_loadu_si256((const __m256i *)(msg + i));
         x = _mm256_and_si256(x, m);
         _mm256_storeu_si256((__m256i *)(msg + i), x);
     }
+
+    for (; i < NTRUPLUS_N / 8; i++)
+        msg[i] &= mask;
 
     return fail;
 }
