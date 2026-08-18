@@ -1,0 +1,3 @@
+# Forward AoS stage map
+
+CRT formation is HALF-LOCAL: four contiguous natural coefficients are duplicated into each branch half. Root multiplication and accumulation are LANE-WISE with `[z00×4,z01×4,z10×4,z11×4]`; final output is an aligned physical-vector store. No SoA array or final transpose is built. In a 32×3 factorization, length-2 is HALF-LOCAL, length 4/8/16/32 are CROSS-YMM partner blocks, and DFT3 is LANE-WISE across three same-pair vectors. The correct direct prototype costs 48×96 evaluations (9,216 source loads, 13,824 Montgomery chains, 4,608 table loads): prohibitive, so a staged 32×3 schedule is mandatory.
