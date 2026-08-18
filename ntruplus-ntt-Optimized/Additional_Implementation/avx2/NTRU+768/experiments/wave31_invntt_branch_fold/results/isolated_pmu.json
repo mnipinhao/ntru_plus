@@ -1,0 +1,446 @@
+{
+  "schema": "wave20-focused-pmu-v1",
+  "timestamp_utc": "2026-07-31T06:17:06.518308+00:00",
+  "binary": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/wave31_invntt_branch_fold/build/wave31_same_binary",
+  "binary_sha256": "b75072fa87943f975ed15c3ab7bede2c12bc60f36be960fab23c5acb31574097",
+  "core": 3,
+  "iterations": 200000,
+  "counted_warmup_calls": 100,
+  "balanced_order": true,
+  "host": {
+    "uname": "Linux nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209 7.0.0-14-generic #14-Ubuntu SMP PREEMPT_DYNAMIC Mon Apr 13 11:09:53 UTC 2026 x86_64 GNU/Linux",
+    "lscpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           46 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  22\nOn-line CPU(s) list:                     0-21\nVendor ID:                               GenuineIntel\nModel name:                              Intel(R) Core(TM) Ultra 7 155H\nCPU family:                              6\nModel:                                   170\nThread(s) per core:                      2\nCore(s) per socket:                      16\nSocket(s):                               1\nStepping:                                4\nCPU(s) scaling MHz:                      18%\nCPU max MHz:                             4800.0000\nCPU min MHz:                             400.0000\nBogoMIPS:                                5990.40\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid bus_lock_detect movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nVirtualization:                          VT-x\nL1d cache:                               544 KiB (14 instances)\nL1i cache:                               896 KiB (14 instances)\nL2 cache:                                18 MiB (9 instances)\nL3 cache:                                24 MiB (1 instance)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-21\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Not affected\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS Not affected; BHI BHI_DIS_S\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace"
+  },
+  "samples": [
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 868.4431884057971,
+      "instructions_per_call": 2865.9364267866067,
+      "ipc": 3.300085100612755,
+      "raw_counts": {
+        "cpu_core/cycles": 173775482.0,
+        "cpu_core/instructions": 573473879.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 0,
+      "position": 0
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1351.183308345827,
+      "instructions_per_call": 3821.936536731634,
+      "ipc": 2.828584776857999,
+      "raw_counts": {
+        "cpu_core/cycles": 270371780.0,
+        "cpu_core/instructions": 764769501.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 0,
+      "position": 1
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1142.5395052473764,
+      "instructions_per_call": 3398.936491754123,
+      "ipc": 2.9748962518527566,
+      "raw_counts": {
+        "cpu_core/cycles": 228622155.0,
+        "cpu_core/instructions": 680127192.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 0,
+      "position": 2
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1230.9697051474263,
+      "instructions_per_call": 3638.9365067466265,
+      "ipc": 2.956154397244741,
+      "raw_counts": {
+        "cpu_core/cycles": 246317038.0,
+        "cpu_core/instructions": 728151195.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 0,
+      "position": 3
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 857.6440729635183,
+      "instructions_per_call": 2865.9364367816092,
+      "ipc": 3.3416384804929655,
+      "raw_counts": {
+        "cpu_core/cycles": 171614579.0,
+        "cpu_core/instructions": 573473881.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 1,
+      "position": 0
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1239.2330584707647,
+      "instructions_per_call": 3638.9365067466265,
+      "ipc": 2.936442408369204,
+      "raw_counts": {
+        "cpu_core/cycles": 247970535.0,
+        "cpu_core/instructions": 728151195.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 1,
+      "position": 1
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1127.0440779610194,
+      "instructions_per_call": 3398.9365067466265,
+      "ipc": 3.015797317258238,
+      "raw_counts": {
+        "cpu_core/cycles": 225521520.0,
+        "cpu_core/instructions": 680127195.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 1,
+      "position": 2
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1341.2666766616692,
+      "instructions_per_call": 3821.9365467266366,
+      "ipc": 2.8494978763203176,
+      "raw_counts": {
+        "cpu_core/cycles": 268387462.0,
+        "cpu_core/instructions": 764769503.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 1,
+      "position": 3
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1146.805012493753,
+      "instructions_per_call": 3398.936486756622,
+      "ipc": 2.96383120907848,
+      "raw_counts": {
+        "cpu_core/cycles": 229475683.0,
+        "cpu_core/instructions": 680127191.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 2,
+      "position": 0
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1243.3561619190405,
+      "instructions_per_call": 3638.936511744128,
+      "ipc": 2.9267048519127963,
+      "raw_counts": {
+        "cpu_core/cycles": 248795568.0,
+        "cpu_core/instructions": 728151196.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 2,
+      "position": 1
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 866.8063768115942,
+      "instructions_per_call": 2865.9364317841078,
+      "ipc": 3.3063167374540865,
+      "raw_counts": {
+        "cpu_core/cycles": 173447956.0,
+        "cpu_core/instructions": 573473880.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 2,
+      "position": 2
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1366.3185207396302,
+      "instructions_per_call": 3821.936536731634,
+      "ipc": 2.79725150374358,
+      "raw_counts": {
+        "cpu_core/cycles": 273400336.0,
+        "cpu_core/instructions": 764769501.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 2,
+      "position": 3
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1131.9368015992004,
+      "instructions_per_call": 3398.936491754123,
+      "ipc": 3.002761715099381,
+      "raw_counts": {
+        "cpu_core/cycles": 226500554.0,
+        "cpu_core/instructions": 680127192.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 3,
+      "position": 0
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1339.8145477261369,
+      "instructions_per_call": 3821.936536731634,
+      "ipc": 2.8525862353248996,
+      "raw_counts": {
+        "cpu_core/cycles": 268096891.0,
+        "cpu_core/instructions": 764769501.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 3,
+      "position": 1
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 857.1955322338831,
+      "instructions_per_call": 2865.936421789105,
+      "ipc": 3.3433870266686636,
+      "raw_counts": {
+        "cpu_core/cycles": 171524826.0,
+        "cpu_core/instructions": 573473878.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 3,
+      "position": 2
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1235.7200249875063,
+      "instructions_per_call": 3638.936511744128,
+      "ipc": 2.9447904364752193,
+      "raw_counts": {
+        "cpu_core/cycles": 247267577.0,
+        "cpu_core/instructions": 728151196.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 3,
+      "position": 3
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 859.2125987006497,
+      "instructions_per_call": 2865.9364367816092,
+      "ipc": 3.3355381905661554,
+      "raw_counts": {
+        "cpu_core/cycles": 171928441.0,
+        "cpu_core/instructions": 573473881.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 4,
+      "position": 0
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1345.9761719140429,
+      "instructions_per_call": 3821.9365267366315,
+      "ipc": 2.839527627968075,
+      "raw_counts": {
+        "cpu_core/cycles": 269329832.0,
+        "cpu_core/instructions": 764769499.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 4,
+      "position": 1
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1125.1020289855073,
+      "instructions_per_call": 3398.9364817591204,
+      "ipc": 3.021002890576871,
+      "raw_counts": {
+        "cpu_core/cycles": 225132916.0,
+        "cpu_core/instructions": 680127190.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 4,
+      "position": 2
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1265.0027536231885,
+      "instructions_per_call": 3638.936516741629,
+      "ipc": 2.876623395734974,
+      "raw_counts": {
+        "cpu_core/cycles": 253127051.0,
+        "cpu_core/instructions": 728151197.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 4,
+      "position": 3
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 872.498155922039,
+      "instructions_per_call": 2865.9364367816092,
+      "ipc": 3.284747844255262,
+      "raw_counts": {
+        "cpu_core/cycles": 174586881.0,
+        "cpu_core/instructions": 573473881.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 5,
+      "position": 0
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1238.4466366816591,
+      "instructions_per_call": 3638.936511744128,
+      "ipc": 2.9383070727168614,
+      "raw_counts": {
+        "cpu_core/cycles": 247813172.0,
+        "cpu_core/instructions": 728151196.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 5,
+      "position": 1
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1135.054347826087,
+      "instructions_per_call": 3398.9364817591204,
+      "ipc": 2.9945143052127277,
+      "raw_counts": {
+        "cpu_core/cycles": 227124375.0,
+        "cpu_core/instructions": 680127190.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 5,
+      "position": 2
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1342.0901899050475,
+      "instructions_per_call": 3821.9365417291356,
+      "ipc": 2.847749406468381,
+      "raw_counts": {
+        "cpu_core/cycles": 268552247.0,
+        "cpu_core/instructions": 764769502.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 5,
+      "position": 3
+    },
+    {
+      "operation": "inverse-fold-lazy",
+      "cycles_per_call": 1132.6825737131435,
+      "instructions_per_call": 3398.9365267366315,
+      "ipc": 3.00078469080202,
+      "raw_counts": {
+        "cpu_core/cycles": 226649783.0,
+        "cpu_core/instructions": 680127199.0
+      },
+      "stdout": "operation=inverse-fold-lazy iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 6,
+      "position": 0
+    },
+    {
+      "operation": "inverse-fold-exact",
+      "cycles_per_call": 1233.0807746126936,
+      "instructions_per_call": 3638.936511744128,
+      "ipc": 2.9510933806320234,
+      "raw_counts": {
+        "cpu_core/cycles": 246739463.0,
+        "cpu_core/instructions": 728151196.0
+      },
+      "stdout": "operation=inverse-fold-exact iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 6,
+      "position": 1
+    },
+    {
+      "operation": "inverse-materialized",
+      "cycles_per_call": 865.098055972014,
+      "instructions_per_call": 2865.9364367816092,
+      "ipc": 3.3128457716408537,
+      "raw_counts": {
+        "cpu_core/cycles": 173106121.0,
+        "cpu_core/instructions": 573473881.0
+      },
+      "stdout": "operation=inverse-materialized iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 6,
+      "position": 2
+    },
+    {
+      "operation": "inverse-algebraic",
+      "cycles_per_call": 1336.9190854572714,
+      "instructions_per_call": 3821.936531734133,
+      "ipc": 2.8587642837239486,
+      "raw_counts": {
+        "cpu_core/cycles": 267517509.0,
+        "cpu_core/instructions": 764769500.0
+      },
+      "stdout": "operation=inverse-algebraic iterations=200000 warmups=100 checksum=00000000000000a2",
+      "repetition": 6,
+      "position": 3
+    }
+  ],
+  "summary": {
+    "inverse-algebraic": {
+      "evidence": "measured",
+      "samples": 7,
+      "cycles": {
+        "median": 1342.0901899050475,
+        "q25": 1340.5406121939031,
+        "q75": 1348.579740129935,
+        "iqr": 8.039127936031946
+      },
+      "instructions": {
+        "median": 3821.936536731634
+      },
+      "ipc": {
+        "median": 2.847749406468381
+      }
+    },
+    "inverse-fold-exact": {
+      "evidence": "measured",
+      "samples": 7,
+      "cycles": {
+        "median": 1238.4466366816591,
+        "q25": 1234.4003998000999,
+        "q75": 1241.2946101949026,
+        "iqr": 6.8942103948027125
+      },
+      "instructions": {
+        "median": 3638.936511744128
+      },
+      "ipc": {
+        "median": 2.9383070727168614
+      }
+    },
+    "inverse-fold-lazy": {
+      "evidence": "measured",
+      "samples": 7,
+      "cycles": {
+        "median": 1132.6825737131435,
+        "q25": 1129.49043978011,
+        "q75": 1138.7969265367317,
+        "iqr": 9.30648675662178
+      },
+      "instructions": {
+        "median": 3398.936491754123
+      },
+      "ipc": {
+        "median": 3.00078469080202
+      }
+    },
+    "inverse-materialized": {
+      "evidence": "measured",
+      "samples": 7,
+      "cycles": {
+        "median": 865.098055972014,
+        "q25": 858.428335832084,
+        "q75": 867.6247826086956,
+        "iqr": 9.196446776611538
+      },
+      "instructions": {
+        "median": 2865.9364367816092
+      },
+      "ipc": {
+        "median": 3.3128457716408537
+      }
+    }
+  }
+}

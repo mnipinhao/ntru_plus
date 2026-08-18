@@ -1,0 +1,336 @@
+{
+  "schema": "wave20-focused-pmu-v1",
+  "timestamp_utc": "2026-07-31T06:22:59.513684+00:00",
+  "binary": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/wave31_invntt_branch_fold/build/wave31_full_kem_same_binary",
+  "binary_sha256": "ac852c94e9b3e4a94ac6562e220c7670e696159c4ad6091a022730edb0ed0069",
+  "core": 3,
+  "iterations": 100000,
+  "counted_warmup_calls": 30,
+  "balanced_order": true,
+  "host": {
+    "uname": "Linux nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209 7.0.0-14-generic #14-Ubuntu SMP PREEMPT_DYNAMIC Mon Apr 13 11:09:53 UTC 2026 x86_64 GNU/Linux",
+    "lscpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           46 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  22\nOn-line CPU(s) list:                     0-21\nVendor ID:                               GenuineIntel\nModel name:                              Intel(R) Core(TM) Ultra 7 155H\nCPU family:                              6\nModel:                                   170\nThread(s) per core:                      2\nCore(s) per socket:                      16\nSocket(s):                               1\nStepping:                                4\nCPU(s) scaling MHz:                      20%\nCPU max MHz:                             4800.0000\nCPU min MHz:                             400.0000\nBogoMIPS:                                5990.40\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid bus_lock_detect movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nVirtualization:                          VT-x\nL1d cache:                               544 KiB (14 instances)\nL1i cache:                               896 KiB (14 instances)\nL2 cache:                                18 MiB (9 instances)\nL3 cache:                                24 MiB (1 instance)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-21\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Not affected\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS Not affected; BHI BHI_DIS_S\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace"
+  },
+  "samples": [
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21072.783165050485,
+      "instructions_per_call": 52928.43032090373,
+      "ipc": 2.5116962437446944,
+      "raw_counts": {
+        "cpu_core/cycles": 2107910500.0,
+        "cpu_core/instructions": 5294430885.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 0,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20945.5055683295,
+      "instructions_per_call": 52459.4299810057,
+      "ipc": 2.504567378899968,
+      "raw_counts": {
+        "cpu_core/cycles": 2095178922.0,
+        "cpu_core/instructions": 5247516781.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 0,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21045.0989003299,
+      "instructions_per_call": 52928.43029091273,
+      "ipc": 2.515000311549167,
+      "raw_counts": {
+        "cpu_core/cycles": 2105141243.0,
+        "cpu_core/instructions": 5294430882.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 1,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20809.8199840048,
+      "instructions_per_call": 52459.42993102069,
+      "ipc": 2.5208978247453824,
+      "raw_counts": {
+        "cpu_core/cycles": 2081606293.0,
+        "cpu_core/instructions": 5247516776.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 1,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21186.46845946216,
+      "instructions_per_call": 52928.43032090373,
+      "ipc": 2.4982186352660007,
+      "raw_counts": {
+        "cpu_core/cycles": 2119282440.0,
+        "cpu_core/instructions": 5294430885.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 2,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20761.280635809257,
+      "instructions_per_call": 52459.42993102069,
+      "ipc": 2.5267916199994986,
+      "raw_counts": {
+        "cpu_core/cycles": 2076750902.0,
+        "cpu_core/instructions": 5247516776.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 2,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21112.185524342698,
+      "instructions_per_call": 52928.430390882735,
+      "ipc": 2.5070085865745817,
+      "raw_counts": {
+        "cpu_core/cycles": 2111851918.0,
+        "cpu_core/instructions": 5294430892.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 3,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20797.345076477057,
+      "instructions_per_call": 52459.42993102069,
+      "ipc": 2.522409939254948,
+      "raw_counts": {
+        "cpu_core/cycles": 2080358428.0,
+        "cpu_core/instructions": 5247516776.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 3,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21122.751184644607,
+      "instructions_per_call": 52928.43029091273,
+      "ipc": 2.505754569006597,
+      "raw_counts": {
+        "cpu_core/cycles": 2112908801.0,
+        "cpu_core/instructions": 5294430882.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 4,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20897.180975707288,
+      "instructions_per_call": 52459.429961011694,
+      "ipc": 2.510359173421292,
+      "raw_counts": {
+        "cpu_core/cycles": 2090345013.0,
+        "cpu_core/instructions": 5247516779.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 4,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21791.203418974306,
+      "instructions_per_call": 52928.43044086774,
+      "ipc": 2.428889741572567,
+      "raw_counts": {
+        "cpu_core/cycles": 2179774078.0,
+        "cpu_core/instructions": 5294430897.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 5,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20863.52830150955,
+      "instructions_per_call": 52459.429961011694,
+      "ipc": 2.514408359070123,
+      "raw_counts": {
+        "cpu_core/cycles": 2086978736.0,
+        "cpu_core/instructions": 5247516779.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 5,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21529.925382385285,
+      "instructions_per_call": 52928.43038088574,
+      "ipc": 2.4583657138073107,
+      "raw_counts": {
+        "cpu_core/cycles": 2153638436.0,
+        "cpu_core/instructions": 5294430891.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 6,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 21159.66302109367,
+      "instructions_per_call": 52459.430080975704,
+      "ipc": 2.479218597606204,
+      "raw_counts": {
+        "cpu_core/cycles": 2116601092.0,
+        "cpu_core/instructions": 5247516791.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 6,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 22319.139088273518,
+      "instructions_per_call": 52928.430550834746,
+      "ipc": 2.3714369242245263,
+      "raw_counts": {
+        "cpu_core/cycles": 2232583483.0,
+        "cpu_core/instructions": 5294430908.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 7,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 20796.841297610717,
+      "instructions_per_call": 52459.4299410177,
+      "ipc": 2.5224710421310275,
+      "raw_counts": {
+        "cpu_core/cycles": 2080308035.0,
+        "cpu_core/instructions": 5247516777.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 7,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21366.360811756473,
+      "instructions_per_call": 52928.43036089173,
+      "ipc": 2.4771850867448038,
+      "raw_counts": {
+        "cpu_core/cycles": 2137277072.0,
+        "cpu_core/instructions": 5294430889.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 8,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 21051.66563031091,
+      "instructions_per_call": 52459.4300009997,
+      "ipc": 2.491937261508981,
+      "raw_counts": {
+        "cpu_core/cycles": 2105798113.0,
+        "cpu_core/instructions": 5247516783.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 8,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21378.61533539938,
+      "instructions_per_call": 52928.43036089173,
+      "ipc": 2.4757651293370335,
+      "raw_counts": {
+        "cpu_core/cycles": 2138502892.0,
+        "cpu_core/instructions": 5294430889.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 9,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 21078.530130960713,
+      "instructions_per_call": 52459.4299910027,
+      "ipc": 2.4887612971622186,
+      "raw_counts": {
+        "cpu_core/cycles": 2108485369.0,
+        "cpu_core/instructions": 5247516782.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 9,
+      "position": 1
+    },
+    {
+      "operation": "dec-lazy-asm-nocenter-three-child",
+      "cycles_per_call": 21401.025362391283,
+      "instructions_per_call": 52928.43044086774,
+      "ipc": 2.4731726421800606,
+      "raw_counts": {
+        "cpu_core/cycles": 2140744567.0,
+        "cpu_core/instructions": 5294430897.0
+      },
+      "stdout": "operation=dec-lazy-asm-nocenter-three-child iterations=100000 warmups=30 checksum=ece9c159f59c7aea",
+      "repetition": 10,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-lazy",
+      "cycles_per_call": 21339.056053184046,
+      "instructions_per_call": 52459.430030990705,
+      "ipc": 2.4583763171268824,
+      "raw_counts": {
+        "cpu_core/cycles": 2134545777.0,
+        "cpu_core/instructions": 5247516786.0
+      },
+      "stdout": "operation=dec-wave31-fold-lazy iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 10,
+      "position": 1
+    }
+  ],
+  "summary": {
+    "dec-lazy-asm-nocenter-three-child": {
+      "evidence": "measured",
+      "samples": 11,
+      "cycles": {
+        "median": 21366.360811756473,
+        "q25": 21117.468354493652,
+        "q75": 21465.475372388282,
+        "iqr": 348.0070178946298
+      },
+      "instructions": {
+        "median": 52928.43036089173
+      },
+      "ipc": {
+        "median": 2.4771850867448038
+      }
+    },
+    "dec-wave31-fold-lazy": {
+      "evidence": "measured",
+      "samples": 11,
+      "cycles": {
+        "median": 20897.180975707288,
+        "q25": 20803.58253024093,
+        "q75": 21065.09788063581,
+        "iqr": 261.51535039488226
+      },
+      "instructions": {
+        "median": 52459.429961011694
+      },
+      "ipc": {
+        "median": 2.510359173421292
+      }
+    }
+  }
+}

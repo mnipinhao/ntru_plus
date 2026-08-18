@@ -1,0 +1,79 @@
+{
+  "schema": "wave31-summary-v1",
+  "official_commit": "0c249d5828b90e8dd5de2c8405323d5ee2a0ce41",
+  "gt_commit_with_dirty_worktree": "76a0c183f73fb008a808c0c3ebe97af8415ecad5",
+  "production_changed": false,
+  "correctness": {
+    "montgomery_composition_checks": 2655744,
+    "deterministic_pair_checks": 3840768,
+    "random_l3_differential_rounds": 512,
+    "malformed_ciphertext_rounds": 128,
+    "valid_dec_byte_exact": true,
+    "sysv_amd64_abi": true,
+    "linkage_audit": true
+  },
+  "range": {
+    "lazy_signed16_universal_bound": 5053,
+    "exact_centered_bound": 1728
+  },
+  "isolated_intel_pmu": {
+    "policy": {
+      "same_binary": true,
+      "balanced_order": true,
+      "core": 3,
+      "iterations": 200000,
+      "repetitions": 7
+    },
+    "algebraic": {
+      "cycles": 1342.0901899050475,
+      "cycles_iqr": 8.039127936031946,
+      "instructions": 3821.936536731634,
+      "ipc": 2.847749406468381
+    },
+    "fold_lazy": {
+      "cycles": 1132.6825737131435,
+      "cycles_iqr": 9.30648675662178,
+      "instructions": 3398.936491754123,
+      "ipc": 3.00078469080202
+    },
+    "fold_exact": {
+      "cycles": 1238.4466366816591,
+      "cycles_iqr": 6.8942103948027125,
+      "instructions": 3638.936511744128,
+      "ipc": 2.9383070727168614
+    },
+    "official_materialized": {
+      "cycles": 865.098055972014,
+      "cycles_iqr": 9.196446776611538,
+      "instructions": 2865.9364367816092,
+      "ipc": 3.3128457716408537
+    }
+  },
+  "attribution": {
+    "lazy_vs_algebraic_cycles": -209.407616191904,
+    "lazy_vs_algebraic_instructions": -423.000044977511,
+    "exact_vs_algebraic_cycles": -103.6435532233884,
+    "exact_vs_algebraic_instructions": -183.000024987506,
+    "lazy_vs_official_cycles": 267.5845177411295,
+    "exact_vs_official_cycles": 373.3485807096451
+  },
+  "dec_pairwise_intel_pmu": {
+    "lazy_gain_cycles": 296.2606518044596,
+    "exact_gain_cycles": 132.47792662201083,
+    "confidence": "medium_due_to_wide_iqr"
+  },
+  "linked_text": {
+    "same_binary_bytes": 361220,
+    "full_kem_binary_bytes": 456291,
+    "branch_fold_object_bytes": 36410,
+    "algebraic_symbol_bytes": 3758,
+    "fold_lazy_symbol_bytes": 3554,
+    "fold_exact_symbol_bytes": 3674
+  },
+  "decision": {
+    "branch_fold": "measured_win_keep",
+    "preferred_endpoint": "lazy",
+    "production": "not_yet",
+    "reason": "full correctness passes and cycles improve, but isolated inverse remains slower than Official"
+  }
+}

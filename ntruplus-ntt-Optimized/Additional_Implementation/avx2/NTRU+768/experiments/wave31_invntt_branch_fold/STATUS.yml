@@ -1,0 +1,41 @@
+schema: wave31-status-v1
+status: default_off_asm_complete_measured_go
+production_changed: false
+asm_implemented: true
+pmu_measured: true
+official_commit: 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41
+selected_boundary: dft3_complete_branches_to_canonical_output
+performance_claim: intel_pmu_same_binary
+proof:
+  exhaustive_unary_montgomery_compositions: 2655744
+  deterministic_branch_pairs: 3840768
+  exact_raw_bound_normal_0_to_q: 3599
+  exact_raw_bound_rminus1_0_to_q: 3605
+  exact_raw_bound_normal_signed16: 5091
+  exact_raw_bound_rminus1_signed16: 5053
+decision:
+  default_off_asm_prototype: keep
+  production: not_yet
+  preferred_endpoint: lazy
+  reason: isolated_and_dec_win_confirmed_but_inverse_remains_slower_than_official
+correctness:
+  montgomery_composition: pass
+  random_l3_differential_rounds: 512
+  valid_dec_byte_differential: pass
+  malformed_ciphertext_rounds: 128
+  sysv_amd64_abi: pass
+  exact_linkage: pass
+measurements:
+  host: local_intel
+  core: 3
+  isolated:
+    algebraic_cycles: 1342.0901899050475
+    fold_lazy_cycles: 1132.6825737131435
+    fold_exact_cycles: 1238.4466366816591
+    official_materialized_cycles: 865.098055972014
+    lazy_gain_cycles: 209.407616191904
+    exact_gain_cycles: 103.6435532233884
+  dec_pairwise:
+    algebraic_vs_lazy_gain_cycles: 296.2606518044596
+    algebraic_vs_exact_gain_cycles: 132.47792662201083
+  caveat: dec_cycle_iqr_is_high; isolated_result_is_primary_attribution

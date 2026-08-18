@@ -1,0 +1,388 @@
+{
+  "schema": "wave20-focused-pmu-v1",
+  "timestamp_utc": "2026-07-31T06:24:49.356703+00:00",
+  "binary": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/wave31_invntt_branch_fold/build/wave31_full_kem_same_binary",
+  "binary_sha256": "0fca550e18506dc6f9bcc424c1bed2f70d3e9a553b629ded16b85fdbceb31fb0",
+  "core": 3,
+  "iterations": 100000,
+  "counted_warmup_calls": 30,
+  "balanced_order": true,
+  "host": {
+    "uname": "Linux nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209 7.0.0-14-generic #14-Ubuntu SMP PREEMPT_DYNAMIC Mon Apr 13 11:09:53 UTC 2026 x86_64 GNU/Linux",
+    "lscpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           46 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  22\nOn-line CPU(s) list:                     0-21\nVendor ID:                               GenuineIntel\nModel name:                              Intel(R) Core(TM) Ultra 7 155H\nCPU family:                              6\nModel:                                   170\nThread(s) per core:                      2\nCore(s) per socket:                      16\nSocket(s):                               1\nStepping:                                4\nCPU(s) scaling MHz:                      17%\nCPU max MHz:                             4800.0000\nCPU min MHz:                             400.0000\nBogoMIPS:                                5990.40\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid bus_lock_detect movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nVirtualization:                          VT-x\nL1d cache:                               544 KiB (14 instances)\nL1i cache:                               896 KiB (14 instances)\nL2 cache:                                18 MiB (9 instances)\nL3 cache:                                24 MiB (1 instance)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-21\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Not affected\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS Not affected; BHI BHI_DIS_S\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace"
+  },
+  "samples": [
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21595.522803159052,
+      "instructions_per_call": 52882.43048085574,
+      "ipc": 2.4487682452920265,
+      "raw_counts": {
+        "cpu_core/cycles": 2160200146.0,
+        "cpu_core/instructions": 5289829521.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 0,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21777.642697190844,
+      "instructions_per_call": 52699.43042087374,
+      "ipc": 2.4198868148236987,
+      "raw_counts": {
+        "cpu_core/cycles": 2178417599.0,
+        "cpu_core/instructions": 5271524025.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 0,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21747.49191242627,
+      "instructions_per_call": 52882.43042087374,
+      "ipc": 2.4316565162466994,
+      "raw_counts": {
+        "cpu_core/cycles": 2175401616.0,
+        "cpu_core/instructions": 5289829515.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 1,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21658.37940617815,
+      "instructions_per_call": 52699.43041087674,
+      "ipc": 2.4332120803020008,
+      "raw_counts": {
+        "cpu_core/cycles": 2166487692.0,
+        "cpu_core/instructions": 5271524024.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 1,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21995.867209837048,
+      "instructions_per_call": 52882.430470858744,
+      "ipc": 2.4041984781217685,
+      "raw_counts": {
+        "cpu_core/cycles": 2200246597.0,
+        "cpu_core/instructions": 5289829520.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 2,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21595.964610616815,
+      "instructions_per_call": 52699.43045086474,
+      "ipc": 2.4402443419895734,
+      "raw_counts": {
+        "cpu_core/cycles": 2160244340.0,
+        "cpu_core/instructions": 5271524028.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 2,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21680.51368589423,
+      "instructions_per_call": 52882.43045086474,
+      "ipc": 2.439168703150751,
+      "raw_counts": {
+        "cpu_core/cycles": 2168701784.0,
+        "cpu_core/instructions": 5289829518.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 3,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21190.802549235228,
+      "instructions_per_call": 52699.43040087973,
+      "ipc": 2.486901110915294,
+      "raw_counts": {
+        "cpu_core/cycles": 2119715979.0,
+        "cpu_core/instructions": 5271524023.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 3,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21466.45413375987,
+      "instructions_per_call": 52882.43040087973,
+      "ipc": 2.4634916447478195,
+      "raw_counts": {
+        "cpu_core/cycles": 2147289407.0,
+        "cpu_core/instructions": 5289829513.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 4,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21178.459372188343,
+      "instructions_per_call": 52699.430310906726,
+      "ipc": 2.48835051619061,
+      "raw_counts": {
+        "cpu_core/cycles": 2118481291.0,
+        "cpu_core/instructions": 5271524014.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 4,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21585.19978006598,
+      "instructions_per_call": 52882.43041087674,
+      "ipc": 2.449939354265967,
+      "raw_counts": {
+        "cpu_core/cycles": 2159167534.0,
+        "cpu_core/instructions": 5289829514.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 5,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21231.001179646108,
+      "instructions_per_call": 52699.43032090373,
+      "ipc": 2.4821924258299233,
+      "raw_counts": {
+        "cpu_core/cycles": 2123737048.0,
+        "cpu_core/instructions": 5271524015.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 5,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21770.241647505747,
+      "instructions_per_call": 52882.43044086774,
+      "ipc": 2.4291154548083105,
+      "raw_counts": {
+        "cpu_core/cycles": 2177677272.0,
+        "cpu_core/instructions": 5289829517.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 6,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21494.2644306708,
+      "instructions_per_call": 52699.43037088873,
+      "ipc": 2.451790362069351,
+      "raw_counts": {
+        "cpu_core/cycles": 2150071271.0,
+        "cpu_core/instructions": 5271524020.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 6,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21260.21579526142,
+      "instructions_per_call": 52882.43040087973,
+      "ipc": 2.4873891643501764,
+      "raw_counts": {
+        "cpu_core/cycles": 2126659386.0,
+        "cpu_core/instructions": 5289829513.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 7,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21447.826871938418,
+      "instructions_per_call": 52699.43038088574,
+      "ipc": 2.457098833161313,
+      "raw_counts": {
+        "cpu_core/cycles": 2145426122.0,
+        "cpu_core/instructions": 5271524021.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 7,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21675.582035389383,
+      "instructions_per_call": 52882.43040087973,
+      "ipc": 2.439723662992736,
+      "raw_counts": {
+        "cpu_core/cycles": 2168208471.0,
+        "cpu_core/instructions": 5289829513.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 8,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21650.092192342297,
+      "instructions_per_call": 52699.43042087374,
+      "ipc": 2.434143464733775,
+      "raw_counts": {
+        "cpu_core/cycles": 2165658722.0,
+        "cpu_core/instructions": 5271524025.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 8,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21782.693152054384,
+      "instructions_per_call": 52882.430430870736,
+      "ipc": 2.4277269142857687,
+      "raw_counts": {
+        "cpu_core/cycles": 2178922796.0,
+        "cpu_core/instructions": 5289829516.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 9,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21822.439618114564,
+      "instructions_per_call": 52699.430430870736,
+      "ipc": 2.4149192919349645,
+      "raw_counts": {
+        "cpu_core/cycles": 2182898635.0,
+        "cpu_core/instructions": 5271524026.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 9,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21491.267909627113,
+      "instructions_per_call": 52882.430390882735,
+      "ipc": 2.460647301651002,
+      "raw_counts": {
+        "cpu_core/cycles": 2149771529.0,
+        "cpu_core/instructions": 5289829512.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 10,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21188.460931720485,
+      "instructions_per_call": 52699.430390882735,
+      "ipc": 2.4871759473567194,
+      "raw_counts": {
+        "cpu_core/cycles": 2119481747.0,
+        "cpu_core/instructions": 5271524022.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 10,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21510.503388983307,
+      "instructions_per_call": 52882.43037088873,
+      "ipc": 2.4584468998513853,
+      "raw_counts": {
+        "cpu_core/cycles": 2151695654.0,
+        "cpu_core/instructions": 5289829510.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 11,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21463.04487653704,
+      "instructions_per_call": 52699.43037088873,
+      "ipc": 2.4553566688246864,
+      "raw_counts": {
+        "cpu_core/cycles": 2146948379.0,
+        "cpu_core/instructions": 5271524020.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 11,
+      "position": 1
+    },
+    {
+      "operation": "dec-wave31-algebraic",
+      "cycles_per_call": 21435.895251424572,
+      "instructions_per_call": 52882.430350894734,
+      "ipc": 2.467003581172114,
+      "raw_counts": {
+        "cpu_core/cycles": 2144232602.0,
+        "cpu_core/instructions": 5289829508.0
+      },
+      "stdout": "operation=dec-wave31-algebraic iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 12,
+      "position": 0
+    },
+    {
+      "operation": "dec-wave31-fold-exact",
+      "cycles_per_call": 21196.022833150055,
+      "instructions_per_call": 52699.43032090373,
+      "ipc": 2.486288618187518,
+      "raw_counts": {
+        "cpu_core/cycles": 2120238164.0,
+        "cpu_core/instructions": 5271524015.0
+      },
+      "stdout": "operation=dec-wave31-fold-exact iterations=100000 warmups=30 checksum=da3f8496f452bf5c",
+      "repetition": 12,
+      "position": 1
+    }
+  ],
+  "summary": {
+    "dec-wave31-algebraic": {
+      "evidence": "measured",
+      "samples": 13,
+      "cycles": {
+        "median": 21595.522803159052,
+        "q25": 21491.267909627113,
+        "q75": 21747.49191242627,
+        "iqr": 256.22400279915746
+      },
+      "instructions": {
+        "median": 52882.43041087674
+      },
+      "ipc": {
+        "median": 2.4487682452920265
+      }
+    },
+    "dec-wave31-fold-exact": {
+      "evidence": "measured",
+      "samples": 13,
+      "cycles": {
+        "median": 21463.04487653704,
+        "q25": 21196.022833150055,
+        "q75": 21650.092192342297,
+        "iqr": 454.0693591922427
+      },
+      "instructions": {
+        "median": 52699.430390882735
+      },
+      "ipc": {
+        "median": 2.4553566688246864
+      }
+    }
+  }
+}
