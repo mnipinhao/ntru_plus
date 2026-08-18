@@ -47,6 +47,33 @@ KAT harnesses are taken from:
 using that frozen third-party harness.  Production source files remain the
 flat files in this directory.
 
+## Link-time constant-table closure
+
+Assembly-local constant tables are emitted in independently collectable
+`.rodata.gtclean.*` input sections.  The local build enables
+`-ffunction-sections -fdata-sections` and `--gc-sections`, so a selected
+production symbol retains only the table groups it references.  Adjacent
+labels without an independent alignment boundary remain in one section; this
+preserves intentional base-plus-offset table contracts.
+
+This is an executable-image hygiene rule, not an arithmetic optimization.
+It removes dormant experiment tables and makes selected-symbol placement less
+dependent on uncalled variants.  It does not imply that every removed byte
+would otherwise cause a dynamic load.
+
+For the bundled functional-test ELF on the qualification host, the closure
+changed:
+
+| Section / file | Before | After |
+|---|---:|---:|
+| `.text` | 47,608 B | 47,096 B |
+| `.rodata` | 59,664 B | 20,640 B |
+| ELF file | 130,888 B | 89,080 B |
+
+The comparison is build-harness-specific.  Qualification additionally checks
+that normalized instruction sequences of common production symbols are
+unchanged and that the generated KAT response is byte-exact.
+
 ## Reproduction
 
 Install the production file set into a fresh SUPERcop implementation directory:

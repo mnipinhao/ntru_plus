@@ -4,9 +4,11 @@ BUILD_DIR ?= build
 
 COMMON_FLAGS = -Wall -Wextra -Wpedantic -Wmissing-prototypes \
 	-Wredundant-decls -Wshadow -Wpointer-arith -mavx2 -mbmi2 \
-	-mpopcnt -maes -march=native -mtune=native -O3 -fomit-frame-pointer
+	-mpopcnt -maes -march=native -mtune=native -O3 -fomit-frame-pointer \
+	-ffunction-sections -fdata-sections
 CFLAGS += $(COMMON_FLAGS)
 NISTFLAGS += $(COMMON_FLAGS) -Wno-unused-result
+LDFLAGS += -Wl,--gc-sections
 
 C_SOURCES = \
 	baseinv.c consts.c decap.c encap.c fips202.c kem.c keygen.c poly.c \
@@ -39,7 +41,7 @@ test: $(BUILD_DIR)/test
 $(BUILD_DIR)/test: $(HEADERS) $(SOURCES) $(RANDOMBYTES_HEADER) \
 		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
 		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE) $(SOURCES)
 
 test-run: $(BUILD_DIR)/test
@@ -49,7 +51,7 @@ PQCgenKAT_kem: $(BUILD_DIR)/PQCgenKAT_kem
 
 $(BUILD_DIR)/PQCgenKAT_kem: $(HEADERS) $(SOURCES) $(KAT_HEADERS) $(KAT_SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(NISTFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+	$(CC) $(NISTFLAGS) $(LDFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
 		$(KAT_SOURCES) $(SOURCES)
 
 kat-run: $(BUILD_DIR)/PQCgenKAT_kem

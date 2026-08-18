@@ -1,5 +1,28 @@
 # Benchmark record
 
+## Constant-table-GC fixed-ELF comparison
+
+The independently exported `avx2-gt32-clean-tablegc` implementation was
+freshly built next to Official and measured with the same 16-block, 64-launch
+fixed-ELF method.  GT `.text` remains 64,343 bytes while `.rodata` falls
+from 56,808 to 21,576 bytes.
+
+With ASLR disabled, GT minus Official is:
+
+| Operation | Delta cycles | Relative | Favorable blocks |
+|---|---:|---:|---:|
+| Keypair | **-345.11** | **-1.606%** | 16/16 |
+| Encap | **+102.18** | **+0.365%** | 1/16 |
+| Decap | **-219.19** | **-1.134%** | 16/16 |
+
+With ASLR enabled, the deltas are -304.15, +150.65, and -228.81 cycles,
+respectively.  Although the ASLR-on medians are more favorable than the
+preceding Clean typed image, block dispersion does not consistently improve.
+Table GC is therefore retained as image hygiene, but it does not by itself
+close whole-image delivery variance.  Full hashes, KAT evidence, statistics,
+and raw-run policy are documented in
+`experiments/avx2_gt32_tile4_official_001/results/tablegc-formal-20260818/REPORT.md`.
+
 ## Fresh formal comparison
 
 The finalized `avx2-clean-typed-v1` directory was compiled alongside Official

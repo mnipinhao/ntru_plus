@@ -718,15 +718,19 @@
  Q24_ENCODE_RR_PACKET %ymm5,%xmm5,228,1104,0
  Q24_ENCODE_RR_PACKET %ymm4,%xmm4,30,1128,1
 .endm
+ .section .rodata.gtclean.pack.q24_decode_mask_0123,"a",@progbits
 .p2align 5
 .Lq24_decode_mask_0123:
  .byte 0,1,1,2,3,4,4,5,6,7,7,8,9,10,10,11,0,1,1,2,3,4,4,5,6,7,7,8,9,10,10,11
+ .section .rodata.gtclean.pack.q24_decode_mask_1032,"a",@progbits
 .p2align 5
 .Lq24_decode_mask_1032:
  .byte 6,7,7,8,9,10,10,11,0,1,1,2,3,4,4,5,6,7,7,8,9,10,10,11,0,1,1,2,3,4,4,5
+ .section .rodata.gtclean.pack.q24_decode_mask_2310,"a",@progbits
 .p2align 5
 .Lq24_decode_mask_2310:
  .byte 6,7,7,8,9,10,10,11,0,1,1,2,3,4,4,5,0,1,1,2,3,4,4,5,6,7,7,8,9,10,10,11
+ .section .rodata.gtclean.pack.q24_decode_mask_3201,"a",@progbits
 .p2align 5
 .Lq24_decode_mask_3201:
  .byte 0,1,1,2,3,4,4,5,6,7,7,8,9,10,10,11,6,7,7,8,9,10,10,11,0,1,1,2,3,4,4,5
@@ -2673,6 +2677,7 @@ ntruplus768_equal_m_modq12699_avx2:
  ret
  .size ntruplus768_equal_m_modq12699_avx2,.-ntruplus768_equal_m_modq12699_avx2
  .section .rodata
+ .section .rodata.gtclean.pack.q24_low12,"a",@progbits
  .p2align 5
 .Lq24_low12:
  .rept 16
@@ -2690,6 +2695,7 @@ ntruplus768_equal_m_modq12699_avx2:
  .rept 16
  .short 9
  .endr
+ .section .rodata.gtclean.pack.q24_compare12,"a",@progbits
  .p2align 5
 .Lq24_compare12:
  .rept 2

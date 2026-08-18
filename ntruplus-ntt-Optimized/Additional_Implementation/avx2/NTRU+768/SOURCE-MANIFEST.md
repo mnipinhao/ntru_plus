@@ -13,6 +13,10 @@ production cleanup performed the following:
 
 - experimental selectors were resolved;
 - unused assembly function emissions were pruned;
+- independently aligned assembly constant tables were placed in collectable
+  `.rodata.gtclean.*` sections;
+- the local qualification build enabled function/data sections and linker
+  garbage collection;
 - files and selected symbols were renamed;
 - the three NTT assembly translation units were kept separate;
 - documentation and a non-overwriting SUPERcop installer were added.
