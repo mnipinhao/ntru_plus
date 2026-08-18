@@ -1,0 +1,28 @@
+experiment: GT32-CURRENT-M-TERMINAL-SALVAGE-004
+scope: isolated_generator_only
+production_modified: false
+status: static_win_below_assembly_margin
+baseline_instructions_per_tile: 108
+gates:
+  A_s4_native_existing_s5:
+    total_per_tile: 104
+    saving_per_forward: 24
+  B_packed4_qpair02:
+    total_per_tile: 104
+    saving_per_forward: 24
+  C_compact_s5_exact_m:
+    total_per_tile: 114
+    minimum_postroute_per_tile: 24
+thresholds:
+  assembly_eligible_at_or_below: 100
+  ideal_at_or_below: 96
+decision: stop_before_assembly
+not_concluded:
+  - no_nonuniform_cross_pair_schedule_can_reach_100
+  - four_move_deletion_has_zero_cycle_value
+  - persistent_tm_arithmetic_failed
+reopen_only_if:
+  - joint_nonuniform_schedule_removes_at_least_four_more_instructions_per_tile
+  - consumer_absorbs_remaining_current_m_deposit
+  - output_contract_changes
+

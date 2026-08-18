@@ -1,0 +1,269 @@
+{
+  "experiment": "GT32-CURRENT-M-TERMINAL-SALVAGE-004",
+  "production_modified": false,
+  "source_hashes": {
+    "tm_generator": "e489fb8a4a29c0e105ba87b4db796f7b5570b340ce789c72119ed8c52b8c8167",
+    "ntt_m": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0"
+  },
+  "baseline": {
+    "s4": 40,
+    "s5": 36,
+    "packed_to_planes": 32,
+    "total_per_tile": 108
+  },
+  "A_s4_native_existing_s5": {
+    "minimum_operand_route": {
+      "found": true,
+      "pair_operations": 2,
+      "instructions": 4,
+      "path": [
+        {
+          "kind": "perm2",
+          "reverse": false,
+          "swap": false
+        },
+        {
+          "kind": "unpack",
+          "unit_words": 4,
+          "reverse": false,
+          "swap": false
+        }
+      ],
+      "pairs_per_tile": 4,
+      "instructions_per_tile": 16,
+      "proof": "the minimum is one paired vperm2i128 layer followed by one paired qword-unpack layer"
+    },
+    "ledger": {
+      "s4_native": 32,
+      "s4n_to_existing_s5_operands": 16,
+      "s5_arithmetic_direct_destinations": 24,
+      "packed_to_planes_and_stores": 32,
+      "total": 104,
+      "removed_final_moves": 4,
+      "montgomery_chains": 4
+    }
+  },
+  "B_alternate_packed_qpair": {
+    "status": "same_lower_bound_as_A",
+    "reason": "PACKED4/QPAIR02 change pair ownership but not the two required physical dimensions: S4-native half ownership and S5 qword ownership. The exhaustive pair route still requires four instructions per pair; PACKED4 only realizes the same direct-destination saving.",
+    "best_total": 104
+  },
+  "C_compact_s5_exact_m": {
+    "postroute_search": {
+      "terminal_orders": 48,
+      "post_cost_histogram_per_tile": {
+        "40": 24,
+        "32": 20,
+        "24": 4
+      },
+      "minimum_post_instructions_per_tile": 24,
+      "best_candidates": [
+        {
+          "terminal_index": 24,
+          "leaf_order": [
+            0,
+            4,
+            2,
+            6,
+            8,
+            12,
+            10,
+            14,
+            1,
+            5,
+            3,
+            7,
+            9,
+            13,
+            11,
+            15
+          ],
+          "post_instructions_per_degree": 6,
+          "post_instructions_per_tile": 24,
+          "post_path": [
+            {
+              "kind": "unpack",
+              "unit_words": 2,
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "perm2",
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "unpack",
+              "unit_words": 1,
+              "reverse": false,
+              "swap": false
+            }
+          ]
+        },
+        {
+          "terminal_index": 25,
+          "leaf_order": [
+            8,
+            12,
+            10,
+            14,
+            0,
+            4,
+            2,
+            6,
+            9,
+            13,
+            11,
+            15,
+            1,
+            5,
+            3,
+            7
+          ],
+          "post_instructions_per_degree": 6,
+          "post_instructions_per_tile": 24,
+          "post_path": [
+            {
+              "kind": "unpack",
+              "unit_words": 2,
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "perm2",
+              "reverse": true,
+              "swap": false
+            },
+            {
+              "kind": "unpack",
+              "unit_words": 1,
+              "reverse": false,
+              "swap": false
+            }
+          ]
+        },
+        {
+          "terminal_index": 26,
+          "leaf_order": [
+            2,
+            6,
+            0,
+            4,
+            10,
+            14,
+            8,
+            12,
+            3,
+            7,
+            1,
+            5,
+            11,
+            15,
+            9,
+            13
+          ],
+          "post_instructions_per_degree": 6,
+          "post_instructions_per_tile": 24,
+          "post_path": [
+            {
+              "kind": "unpack",
+              "unit_words": 2,
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "perm2",
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "unpack",
+              "unit_words": 1,
+              "reverse": false,
+              "swap": false
+            }
+          ]
+        },
+        {
+          "terminal_index": 27,
+          "leaf_order": [
+            10,
+            14,
+            8,
+            12,
+            2,
+            6,
+            0,
+            4,
+            11,
+            15,
+            9,
+            13,
+            3,
+            7,
+            1,
+            5
+          ],
+          "post_instructions_per_degree": 6,
+          "post_instructions_per_tile": 24,
+          "post_path": [
+            {
+              "kind": "unpack",
+              "unit_words": 2,
+              "reverse": false,
+              "swap": false
+            },
+            {
+              "kind": "perm2",
+              "reverse": true,
+              "swap": false
+            },
+            {
+              "kind": "unpack",
+              "unit_words": 1,
+              "reverse": false,
+              "swap": false
+            }
+          ]
+        }
+      ],
+      "sequential_total_per_tile": 114,
+      "proof_scope": "exact BFS over paired wd/dq/qdq unpacks and vperm2i128"
+    },
+    "ledger": {
+      "s4_native": 32,
+      "l4n_to_compact_planes": 24,
+      "compact_constant_loads": 2,
+      "s5_arithmetic": 24,
+      "exact_current_m_postroute": 24,
+      "stores": 8,
+      "total": 114,
+      "montgomery_chains": 4
+    }
+  },
+  "best": {
+    "total_per_tile": 104,
+    "saving_per_tile": 4,
+    "saving_per_forward": 24
+  },
+  "gate": {
+    "assembly_threshold": 100,
+    "ideal_threshold": 96,
+    "hard_stop_at_or_above": 108
+  },
+  "decision": {
+    "exact_current_m_static_win_exists": true,
+    "assembly": "stop_below_promotion_margin",
+    "best_variant": "A_or_B_direct_destination"
+  },
+  "not_concluded": [
+    "no_nonuniform_cross_pair_schedule_can_reach_100",
+    "four_move_deletion_has_zero_cycle_value",
+    "persistent_tm_arithmetic_failed"
+  ],
+  "reopen_only_if": [
+    "a_joint_nonuniform_schedule_eliminates_at_least_four_more_instructions_per_tile",
+    "an_output_contract_other_than_exact_current_m_is_selected",
+    "a_consumer_absorbs_the_remaining_current_m_deposit"
+  ]
+}
