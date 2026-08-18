@@ -7,8 +7,8 @@ The optimization unit is the successful-attempt Keygen P island:
 
 The 48 compact-S5 terminal orders from experiment 002 are re-evaluated in
 the *P* coordinate system.  BaseInv and BaseMul must close by table relabel
-only.  P-pack is synthesized directly from the candidate layout; a P_TM->P
-adapter is never admitted into the cost model.
+only.  P-pack is first tested for direct closure; when that fails, the exact
+P_TM->P adapter cost is charged to establish the stop condition.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ HERE = Path(__file__).resolve().parent
 EXPERIMENT = HERE.parent
 NTRU = EXPERIMENT.parent.parent
 E002 = EXPERIMENT.parent / "gt32_persistent_twiddle_major_002"
+E003 = EXPERIMENT.parent / "gt32_tm_q24_economics_003"
 LEGACY = EXPERIMENT.parent / "avx2_gt32_tile4_official_001"
 
 
@@ -40,6 +41,35 @@ def load_002():
 
 
 G = load_002()
+
+
+def load_003():
+    path = E003 / "tools" / "generate_economics_gate.py"
+    spec = importlib.util.spec_from_file_location("tm_q24_economics_003", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+E = load_003()
+
+
+def p_post_s4_inputs() -> list[tuple[int, ...]]:
+    """Exact token state emitted by P_MONT_HALF_PACKED.
+
+    Unlike M experiment 002, P performs the VPERM2I128 half selection inside
+    S4 before its butterfly.  The terminal search must therefore start after
+    that selection rather than from the pre-S4 SUM/DIFF token state.
+    """
+    raw = G.s4_native_inputs()
+    packed = []
+    for pair in range(4):
+        packed.extend([
+            G.perm2(raw[2 * pair], raw[2 * pair + 1], False),
+            G.perm2(raw[2 * pair], raw[2 * pair + 1], True),
+        ])
+    return packed
 
 
 def sha256(path: Path) -> str:
@@ -117,26 +147,6 @@ def remap_table(table: list[list[int]], leaf_permutation: dict) -> list[list[int
     return [[int(value) for value in row] for row in result]
 
 
-def asymmetric_mask_cost(permutation: list[int]) -> int:
-    """Cost after free packet-half selection and TF1 symmetric reversal.
-
-    The pack can select either 128-bit half at no route cost.  Within a YMM,
-    TF1 absorbs 00 and 11 qword orientations; 01/10 needs one VPSHUFB.
-    """
-    if sorted(permutation) != [0, 1, 2, 3]:
-        raise AssertionError("not a qword permutation")
-    halves = (permutation[:2], permutation[2:])
-    bits = []
-    for half in halves:
-        if half in ([0, 1], [2, 3]):
-            bits.append(0)
-        elif half in ([1, 0], [3, 2]):
-            bits.append(1)
-        else:
-            raise AssertionError(f"cross-pair qword route {permutation}")
-    return int(bits[0] != bits[1])
-
-
 def current_p_pack_residual_masks(pack_path: Path) -> int:
     body = macro_body(pack_path.read_text(), "Q24_ENCODE_P_SOA_HALF_SCATTER_SP1_BODY")
     return sum("vpshufb .Lq24_p_half_mask_" in line for line in body)
@@ -193,6 +203,7 @@ def main() -> None:
         "serialized_mapping": serialized,
         "permutation_mapping": permutation,
         "experiment_002_generator": E002 / "tools" / "generate_persistent_gate.py",
+        "experiment_003_generator": E003 / "tools" / "generate_economics_gate.py",
     }.items()}
 
     p_mapping = p_serialized_mapping(serialized, permutation)
@@ -201,8 +212,9 @@ def main() -> None:
         temporary.flush()
         temporary_path = Path(temporary.name)
 
-        inputs = G.s4_native_inputs()
-        target, exact_flow = G.target_lh(inputs)
+        raw_inputs = G.s4_native_inputs()
+        inputs = p_post_s4_inputs()
+        target, exact_flow = G.target_lh(raw_inputs)
         networks = G.search_24_candidates(inputs, target)
         candidates = []
         for index, network in enumerate(networks):
@@ -210,14 +222,16 @@ def main() -> None:
                 network["common_leaf_lane_permutation"]
             )
             closure = G.q24_route_closure(temporary_path, leaf_permutation)
-            if closure["status"] != "closed_by_eight_packet_progressive_transpose":
-                raise AssertionError(f"unexpected P-pack closure: {closure['status']}")
             permutations = [
                 route["qword_permutation"]
-                for tile in closure["eight_packet_routes"]
+                for tile in closure.get("eight_packet_routes", [])
                 for route in tile["register_routes"]
             ]
-            residual_masks = sum(asymmetric_mask_cost(item) for item in permutations)
+            residual_masks = (sum(E.asymmetric_mask_cost(item) for item in permutations)
+                              if permutations else None)
+            adapter, reverse_adapter = E.adapter_routes(
+                G, network["common_leaf_lane_permutation"]
+            )
             candidates.append({
                 "index": index,
                 "terminal_leaf_order": network["common_leaf_lane_permutation"],
@@ -229,15 +243,27 @@ def main() -> None:
                 ],
                 "pack_peak_ymm": closure["candidate_peak_ymm"],
                 "pack_residual_asymmetric_masks": residual_masks,
-                "pack_routes": closure["eight_packet_routes"],
+                "pack_routes": closure.get("eight_packet_routes", []),
+                "exact_current_p_to_tm_adapter": adapter,
+                "exact_tm_to_current_p_adapter": reverse_adapter,
             })
 
     current_masks = current_p_pack_residual_masks(pack)
     assert current_masks == 13
     for candidate in candidates:
-        candidate["pack_instruction_delta"] = (
-            candidate["pack_residual_asymmetric_masks"] - current_masks
-        )
+        # No candidate closes with the existing 24-instruction/tile packet
+        # transpose.  The constructive exact adapter is therefore the known
+        # upper bound.  Uniform layered direct routes are granular in eight
+        # instructions/tile, so failure at 24 also establishes a +48/pack
+        # lower bound for that family.
+        if candidate["pack_closure_status"].startswith("closed_by_"):
+            candidate["pack_instruction_delta"] = (
+                candidate["pack_residual_asymmetric_masks"] - current_masks
+            )
+        else:
+            candidate["pack_instruction_delta"] = candidate[
+                "exact_tm_to_current_p_adapter"
+            ]["instructions_per_polynomial"]
         candidate["successful_keygen_instruction_delta"] = (
             2 * (90 - 100) * 6 + 3 * candidate["pack_instruction_delta"]
         )
@@ -278,7 +304,7 @@ def main() -> None:
     ]
 
     result = {
-        "schema": "ntruplus768-gt32-p-twiddle-major-keygen-005-v1",
+        "schema": "ntruplus768-gt32-p-twiddle-major-keygen-005-v2",
         "experiment": "GT32-P-TWIDDLE-MAJOR-KEYGEN-005",
         "production_modified": False,
         "sources": sources,
@@ -311,11 +337,7 @@ def main() -> None:
         },
         "pack_gate": {
             "current_SP1_residual_asymmetric_masks": current_masks,
-            "candidate_residual_mask_distribution": {
-                str(key): value for key, value in sorted(Counter(
-                    item["pack_residual_asymmetric_masks"] for item in candidates
-                ).items())
-            },
+            "candidate_residual_mask_distribution": {},
             "pack_instruction_delta_distribution": {
                 str(key): value for key, value in sorted(pack_deltas.items())
             },
@@ -323,8 +345,18 @@ def main() -> None:
                 item["pack_closure_status"].startswith("closed_by_")
                 for item in candidates
             ),
-            "global_P_TM_to_P_repair": False,
-            "transpose_instruction_delta": 0,
+            "direct_24_instruction_per_tile_status_distribution": dict(Counter(
+                item["pack_closure_status"] for item in candidates
+            )),
+            "uniform_direct_next_possible_increment_per_pack": 48,
+            "exact_adapter_instruction_delta_distribution": {
+                str(key): value for key, value in sorted(Counter(
+                    item["exact_tm_to_current_p_adapter"]["instructions_per_polynomial"]
+                    for item in candidates
+                ).items())
+            },
+            "global_P_TM_to_P_repair": True,
+            "transpose_instruction_delta": selected["pack_instruction_delta"],
             "reduction_and_packet_math_changed": False,
             "load_store_count_changed": False,
             "selected_incremental_debt": selected["pack_instruction_delta"],
@@ -339,18 +371,31 @@ def main() -> None:
             },
         },
         "selected_candidate": selected,
+        "executable_audit": {
+            "status": "caught_model_error_before_benchmark",
+            "initial_model": "experiment-002 pre-S4 M token state",
+            "correct_model": "P_MONT_HALF_PACKED post-S4 token state",
+            "observed": "emitted diagnostic Forward failed differential trial 0",
+            "disposition": "diagnostic assembly removed; no performance benchmark run",
+        },
         "decision": {
-            "classification": "assembly_eligible_pack_debt_1_to_16",
+            "classification": "static_hard_stop_pack_debt_at_least_40",
             "selected_pack_instruction_delta": selected["pack_instruction_delta"],
             "successful_keygen_instruction_delta": selected[
                 "successful_keygen_instruction_delta"
             ],
             "reason": (
-                "P_TM saves 60 instructions per Forward; all consumers stay in the "
-                "same degree-plane layout, BaseInv/BaseMul need table relabel only, "
-                "and direct P-pack adds only asymmetric half-mask repairs"
+                "The corrected P post-S4 token state preserves the 60-instruction "
+                "Forward credit and zero-debt BaseInv/BaseMul closure, but no legal "
+                "terminal closes the existing direct P-pack network.  The best exact "
+                "adapter costs 48 instructions/pack, exceeding the stop threshold."
             ),
-            "next": "bounded executable P_TM Forward plus direct SP1-like P_TM pack",
+            "next": "stop before assembly; retain current P and P-suffix oracle",
+            "executable_audit": (
+                "the initial M-derived token model emitted assembly but failed the "
+                "Forward differential at trial 0; correcting the post-S4 P token "
+                "state produced this hard stop"
+            ),
         },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
