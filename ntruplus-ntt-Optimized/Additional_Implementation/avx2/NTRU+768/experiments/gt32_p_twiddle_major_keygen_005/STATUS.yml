@@ -1,0 +1,32 @@
+experiment: GT32-P-TWIDDLE-MAJOR-KEYGEN-005
+scope: generator_only_joint_keygen_p_island
+production_modified: false
+status: assembly_eligible
+baseline:
+  forward_terminal_instructions_per_tile: 100
+  successful_keygen_forwards: 2
+  successful_keygen_packs: 3
+candidate:
+  forward_terminal_instructions_per_tile: 90
+  forward_saving_per_call: 60
+  legal_terminal_orders: 48
+  direct_p_pack_orders_closed: 48
+  current_pack_residual_masks: 13
+  candidate_pack_residual_masks: 23
+  pack_instruction_delta: 10
+closure:
+  baseinv_runtime_repair: 0
+  basemul_runtime_repair: 0
+  global_p_tm_to_p_repair: false
+  montgomery_chain_delta: 0
+  peak_ymm: 15
+  spill_required: false
+economics:
+  successful_keygen_instruction_delta: -90
+  rejection_credit_used: false
+decision: continue_to_bounded_executable_asm
+next:
+  - implement P_TM Forward terminal in experiment only
+  - implement direct SP1-like P_TM pack in experiment only
+  - run exact Forward/BaseInv/BaseMul/pack differentials
+  - benchmark full K3-K5 before any production promotion
