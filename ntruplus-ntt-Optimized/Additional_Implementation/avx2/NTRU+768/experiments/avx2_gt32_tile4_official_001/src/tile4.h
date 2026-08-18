@@ -58,6 +58,15 @@ void gt32_q24_encode_soa_asm(
 void gt32_q24_encode_soa_lazy10788_asm(
 	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+/* Benchmark-only code-density probe: identical M/Q24 arithmetic expressed as
+ * six fixed-route block loops instead of twelve fully unrolled blocks. */
+void gt32_q24_encode_soa_lazy10788_compact_c1_asm(
+	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+/* Benchmark-only M-domain transpose-tail orientation probe. */
+void gt32_q24_encode_soa_tf1_asm(
+	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
 /* Benchmark-only: same contract with pair/pack constants register-resident. */
 void gt32_q24_encode_soa_lazy10788_rr_asm(
 	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
@@ -74,6 +83,10 @@ void gt32_q24_encode_p_soa_halfscatter_lazy10788_asm(
 void gt32_q24_encode_soa_encap_hr_h1_asm(
 	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_q24_encode_soa_encap_hr_sum_asm(
+	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
+	const int16_t product[GT32_TILE4_POLY_WORDS],
+	const int16_t message[GT32_TILE4_POLY_WORDS]);
 void gt32_q24_encode_soa_encap_hr_h2_asm(
 	uint8_t out[GT32_TILE4_SERIALIZED_BYTES],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
@@ -392,6 +405,26 @@ void gt32_tile4_frontend_fixed_raw_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
 void gt32_tile4_frontend_wide_raw_asm(int16_t out[GT32_TILE4_POLY_WORDS],
 	const int16_t in[GT32_TILE4_POLY_WORDS]);
+/* Benchmark-only F1: identical result/instruction multiset, shorter top-split DAG. */
+void gt32_tile4_frontend_wide_raw_f1_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_frontend_wide_raw_f4_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_frontend_wide_raw_f14_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_frontend_wide_raw_f14_w2_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_forward_all_pair_wave_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t in[GT32_TILE4_POLY_WORDS]);
+void gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm(
+	int16_t out[GT32_TILE4_POLY_WORDS],
+	const int16_t a[GT32_TILE4_POLY_WORDS],
+	const int16_t b[GT32_TILE4_POLY_WORDS]);
 
 /*
  * One tile is one (k3, branch) and four quartic coefficients:

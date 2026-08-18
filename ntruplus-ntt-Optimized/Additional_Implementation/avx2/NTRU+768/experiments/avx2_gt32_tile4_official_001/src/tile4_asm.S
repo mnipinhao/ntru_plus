@@ -370,8 +370,7 @@
 	STORE_TILE
 .endm
 
-.macro FORWARD_BODY_PAIR
-	LOAD_TILE
+.macro FORWARD_BODY_PAIR_CORE
 	RAW_CROSS4 %ymm0,%ymm4,%ymm1,%ymm5,%ymm2,%ymm6,%ymm3,%ymm7
 	MONT_CROSS4 %ymm0,%ymm2,%ymm1,%ymm3,%ymm4,%ymm6,%ymm5,%ymm7, .Ltile4_fwd_s2_qinv, .Ltile4_fwd_s2_factor
 	MONT_CROSS4 %ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5,%ymm6,%ymm7, .Ltile4_fwd_s3_qinv, .Ltile4_fwd_s3_factor
@@ -383,6 +382,11 @@
 	MONT_LOCAL_QWORD_PAIR %ymm2,%ymm3, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 32
 	MONT_LOCAL_QWORD_PAIR %ymm4,%ymm5, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 64
 	MONT_LOCAL_QWORD_PAIR %ymm6,%ymm7, .Ltile4_fwd_s5_pair_qinv,.Ltile4_fwd_s5_pair_factor, 96
+.endm
+
+.macro FORWARD_BODY_PAIR
+	LOAD_TILE
+	FORWARD_BODY_PAIR_CORE
 	STORE_TILE
 .endm
 
@@ -585,6 +589,49 @@ gt32_tile4_forward_all_pair_asm:
 	ret
 .size gt32_tile4_forward_all_pair_asm,.-gt32_tile4_forward_all_pair_asm
 
+/*
+ * Benchmark-only N5 cross-tile wavefront.  Once an output register has been
+ * stored, immediately reuse it for the corresponding vector of the next
+ * independent tile.  The final tile is peeled to avoid an out-of-bounds
+ * speculative source load.
+ */
+.p2align 5
+.globl gt32_tile4_forward_all_pair_wave_asm
+.type gt32_tile4_forward_all_pair_wave_asm,@function
+gt32_tile4_forward_all_pair_wave_asm:
+	vmovdqa .Ltile4_q(%rip), %ymm15
+	movl $6, %ecx
+	LOAD_TILE
+.p2align 5
+.Ltile4_forward_all_pair_wave_loop:
+	FORWARD_BODY_PAIR_CORE
+	decl %ecx
+	je .Ltile4_forward_all_pair_wave_last
+	vmovdqu %ymm0,   0(%rdi)
+	vmovdqu 256(%rsi), %ymm0
+	vmovdqu %ymm1,  32(%rdi)
+	vmovdqu 288(%rsi), %ymm1
+	vmovdqu %ymm2,  64(%rdi)
+	vmovdqu 320(%rsi), %ymm2
+	vmovdqu %ymm3,  96(%rdi)
+	vmovdqu 352(%rsi), %ymm3
+	vmovdqu %ymm4, 128(%rdi)
+	vmovdqu 384(%rsi), %ymm4
+	vmovdqu %ymm5, 160(%rdi)
+	vmovdqu 416(%rsi), %ymm5
+	vmovdqu %ymm6, 192(%rdi)
+	vmovdqu 448(%rsi), %ymm6
+	vmovdqu %ymm7, 224(%rdi)
+	vmovdqu 480(%rsi), %ymm7
+	addq $256, %rsi
+	addq $256, %rdi
+	jmp .Ltile4_forward_all_pair_wave_loop
+.Ltile4_forward_all_pair_wave_last:
+	STORE_TILE
+	vzeroupper
+	ret
+.size gt32_tile4_forward_all_pair_wave_asm,.-gt32_tile4_forward_all_pair_wave_asm
+
 	.section .text.gt32_tile4_forward_all_pair_id_center_asm,"ax",@progbits
 .p2align 5
 .globl gt32_tile4_forward_all_pair_id_center_asm
@@ -758,6 +805,24 @@ gt32_tile4_inverse_all_pair_selective_asm:
 	vpsubw %ymm14, \v2, \v2
 .endm
 
+.macro MONT_WIDE3_START v0,v1,v2,offset
+	vpmullw \offset+0(%rdx), \v0, %ymm12
+	vpmullw \offset+32(%rdx), \v1, %ymm13
+	vpmullw \offset+64(%rdx), \v2, %ymm14
+	vpmulhw \offset+0(%rcx), \v0, \v0
+	vpmulhw \offset+32(%rcx), \v1, \v1
+	vpmulhw \offset+64(%rcx), \v2, \v2
+.endm
+
+.macro MONT_WIDE3_FINISH v0,v1,v2
+	vpmulhw %ymm15, %ymm12, %ymm12
+	vpmulhw %ymm15, %ymm13, %ymm13
+	vpmulhw %ymm15, %ymm14, %ymm14
+	vpsubw %ymm12, \v0, \v0
+	vpsubw %ymm13, \v1, \v1
+	vpsubw %ymm14, \v2, \v2
+.endm
+
 .macro DFT3_WIDE_STORE x0,x1,x2,o0,o1,o2
 	vpsubw \x2, \x1, %ymm0
 	vpmullw .Ltile4_frontend_omega3_qinv(%rip), %ymm0, %ymm1
@@ -809,6 +874,180 @@ gt32_tile4_inverse_all_pair_selective_asm:
 	addq $32, %rdi
 .endm
 
+/*
+ * F1 dependency-only variant of FRONTEND_WIDE_ITER_BODY.
+ *
+ * The control computes branch 1 as L + (H - t), where t = -722 H.
+ * This variant first computes s = L + H independently of t, then forms
+ * branch 1 as s - t.  Branch 0 remains L + t.  The instruction multiset,
+ * register footprint, stores and mathematical result are unchanged.
+ */
+.macro FRONTEND_WIDE_F1_ITER_BODY disp,x0,y0,z0,x1,y1,z1
+	vmovdqu 0+\disp(%rsi), %ymm0
+	vmovdqu 256+\disp(%rsi), %ymm1
+	vmovdqu 512+\disp(%rsi), %ymm2
+	vmovdqu 768+\disp(%rsi), %ymm3
+	vmovdqu 1024+\disp(%rsi), %ymm4
+	vmovdqu 1280+\disp(%rsi), %ymm5
+
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm3, %ymm6
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm4, %ymm7
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm5, %ymm8
+	/* s = L + H is independent of the three multiply results. */
+	vpaddw %ymm0, %ymm3, %ymm3
+	vpaddw %ymm1, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm5, %ymm5
+	/* branch 0 = L + t; branch 1 = s - t. */
+	vpaddw %ymm6, %ymm0, %ymm0
+	vpaddw %ymm7, %ymm1, %ymm1
+	vpaddw %ymm8, %ymm2, %ymm2
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpsubw %ymm7, %ymm4, %ymm4
+	vpsubw %ymm8, %ymm5, %ymm5
+
+	GT_BLEND3 \x0,\y0,\z0,%ymm6,%ymm7,%ymm8
+	GT_BLEND3 \x1,\y1,\z1,%ymm9,%ymm10,%ymm11
+	MONT_WIDE3 %ymm6,%ymm7,%ymm8,0
+	MONT_WIDE3 %ymm9,%ymm10,%ymm11,96
+	DFT3_WIDE_STORE %ymm6,%ymm7,%ymm8,0,512,1024
+	DFT3_WIDE_STORE %ymm9,%ymm10,%ymm11,256,768,1280
+	addq $192, %rdx
+	addq $192, %rcx
+	addq $32, %rdi
+.endm
+
+/*
+ * F4: route branch 0, launch its three Montgomery chains, then use branch-1
+ * routing to cover their latency before correction.  This is the executable
+ * 16-YMM form of branch-local routing; six simultaneous correction temps
+ * would require at least 19 YMM registers.
+ */
+.macro FRONTEND_WIDE_F4_TAIL x0,y0,z0,x1,y1,z1
+	GT_BLEND3 \x0,\y0,\z0,%ymm6,%ymm7,%ymm8
+	MONT_WIDE3_START %ymm6,%ymm7,%ymm8,0
+	GT_BLEND3 \x1,\y1,\z1,%ymm9,%ymm10,%ymm11
+	MONT_WIDE3_FINISH %ymm6,%ymm7,%ymm8
+	MONT_WIDE3 %ymm9,%ymm10,%ymm11,96
+	DFT3_WIDE_STORE %ymm6,%ymm7,%ymm8,0,512,1024
+	DFT3_WIDE_STORE %ymm9,%ymm10,%ymm11,256,768,1280
+	addq $192, %rdx
+	addq $192, %rcx
+	addq $32, %rdi
+.endm
+
+.macro FRONTEND_WIDE_F4_ITER_BODY disp,x0,y0,z0,x1,y1,z1
+	vmovdqu 0+\disp(%rsi), %ymm0
+	vmovdqu 256+\disp(%rsi), %ymm1
+	vmovdqu 512+\disp(%rsi), %ymm2
+	vmovdqu 768+\disp(%rsi), %ymm3
+	vmovdqu 1024+\disp(%rsi), %ymm4
+	vmovdqu 1280+\disp(%rsi), %ymm5
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm3, %ymm6
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm4, %ymm7
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm5, %ymm8
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpsubw %ymm7, %ymm4, %ymm4
+	vpsubw %ymm8, %ymm5, %ymm5
+	vpaddw %ymm0, %ymm3, %ymm3
+	vpaddw %ymm1, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm5, %ymm5
+	vpaddw %ymm6, %ymm0, %ymm0
+	vpaddw %ymm7, %ymm1, %ymm1
+	vpaddw %ymm8, %ymm2, %ymm2
+	FRONTEND_WIDE_F4_TAIL \x0,\y0,\z0,\x1,\y1,\z1
+.endm
+
+.macro FRONTEND_WIDE_F14_ITER_BODY disp,x0,y0,z0,x1,y1,z1
+	vmovdqu 0+\disp(%rsi), %ymm0
+	vmovdqu 256+\disp(%rsi), %ymm1
+	vmovdqu 512+\disp(%rsi), %ymm2
+	vmovdqu 768+\disp(%rsi), %ymm3
+	vmovdqu 1024+\disp(%rsi), %ymm4
+	vmovdqu 1280+\disp(%rsi), %ymm5
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm3, %ymm6
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm4, %ymm7
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm5, %ymm8
+	vpaddw %ymm0, %ymm3, %ymm3
+	vpaddw %ymm1, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm5, %ymm5
+	vpaddw %ymm6, %ymm0, %ymm0
+	vpaddw %ymm7, %ymm1, %ymm1
+	vpaddw %ymm8, %ymm2, %ymm2
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpsubw %ymm7, %ymm4, %ymm4
+	vpsubw %ymm8, %ymm5, %ymm5
+	FRONTEND_WIDE_F4_TAIL \x0,\y0,\z0,\x1,\y1,\z1
+.endm
+
+/*
+ * F14-W2 cross-packet wavefront.
+ *
+ * After the first branch DFT3 has stored its three outputs, ymm4/ymm5 are
+ * dead while the second branch uses only ymm0..ymm3, ymm9..ymm11 and ymm15.
+ * Move the next packet's last two input loads into that window.  The next
+ * body consequently loads only ymm0..ymm3.  This changes neither the
+ * instruction multiset nor the register footprint and needs no moves/spills.
+ */
+.macro FRONTEND_WIDE_F14_W2_ITER_BODY disp,nextdisp,preloaded,hasnext,x0,y0,z0,x1,y1,z1
+	vmovdqu 0+\disp(%rsi), %ymm0
+	vmovdqu 256+\disp(%rsi), %ymm1
+	vmovdqu 512+\disp(%rsi), %ymm2
+	vmovdqu 768+\disp(%rsi), %ymm3
+.if !\preloaded
+	vmovdqu 1024+\disp(%rsi), %ymm4
+	vmovdqu 1280+\disp(%rsi), %ymm5
+.endif
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm3, %ymm6
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm4, %ymm7
+	vpmullw .Ltile4_frontend_zeta_top_raw(%rip), %ymm5, %ymm8
+	vpaddw %ymm0, %ymm3, %ymm3
+	vpaddw %ymm1, %ymm4, %ymm4
+	vpaddw %ymm2, %ymm5, %ymm5
+	vpaddw %ymm6, %ymm0, %ymm0
+	vpaddw %ymm7, %ymm1, %ymm1
+	vpaddw %ymm8, %ymm2, %ymm2
+	vpsubw %ymm6, %ymm3, %ymm3
+	vpsubw %ymm7, %ymm4, %ymm4
+	vpsubw %ymm8, %ymm5, %ymm5
+
+	GT_BLEND3 \x0,\y0,\z0,%ymm6,%ymm7,%ymm8
+	MONT_WIDE3_START %ymm6,%ymm7,%ymm8,0
+	GT_BLEND3 \x1,\y1,\z1,%ymm9,%ymm10,%ymm11
+	MONT_WIDE3_FINISH %ymm6,%ymm7,%ymm8
+	MONT_WIDE3 %ymm9,%ymm10,%ymm11,96
+	DFT3_WIDE_STORE %ymm6,%ymm7,%ymm8,0,512,1024
+.if \hasnext
+	/* Cover part of branch-1's DFT3 latency with the next packet's loads. */
+	vmovdqu 1024+\nextdisp(%rsi), %ymm4
+	vmovdqu 1280+\nextdisp(%rsi), %ymm5
+.endif
+	DFT3_WIDE_STORE %ymm9,%ymm10,%ymm11,256,768,1280
+	addq $192, %rdx
+	addq $192, %rcx
+	addq $32, %rdi
+.endm
+
+.macro EMIT_FRONTEND_WIDE_F14_W2
+	.p2align 5
+	.globl gt32_tile4_frontend_wide_raw_f14_w2_asm
+	.type gt32_tile4_frontend_wide_raw_f14_w2_asm,@function
+gt32_tile4_frontend_wide_raw_f14_w2_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+	FRONTEND_WIDE_F14_W2_ITER_BODY 0,32,0,1,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+	FRONTEND_WIDE_F14_W2_ITER_BODY 32,64,1,1,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+	FRONTEND_WIDE_F14_W2_ITER_BODY 64,96,1,1,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+	FRONTEND_WIDE_F14_W2_ITER_BODY 96,128,1,1,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+	FRONTEND_WIDE_F14_W2_ITER_BODY 128,160,1,1,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+	FRONTEND_WIDE_F14_W2_ITER_BODY 160,192,1,1,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+	FRONTEND_WIDE_F14_W2_ITER_BODY 192,224,1,1,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+	FRONTEND_WIDE_F14_W2_ITER_BODY 224,0,1,0,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+	vzeroupper
+	ret
+	.size gt32_tile4_frontend_wide_raw_f14_w2_asm,.-gt32_tile4_frontend_wide_raw_f14_w2_asm
+.endm
+
 .macro FRONTEND_WIDE_E1_ITER_BODY disp,x0,y0,z0,x1,y1,z1
 	vmovdqu 0+\disp(%rsi), %ymm0
 	vmovdqu 256+\disp(%rsi), %ymm1
@@ -852,13 +1091,25 @@ gt32_tile4_inverse_all_pair_selective_asm:
 .endm
 
 .macro FRONTEND_WIDE_ITER_0 disp
+#ifdef GT32_FRONTEND_F14_PRODUCTION
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+#else
 	FRONTEND_WIDE_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+#endif
 .endm
 .macro FRONTEND_WIDE_ITER_1 disp
+#ifdef GT32_FRONTEND_F14_PRODUCTION
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+#else
 	FRONTEND_WIDE_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+#endif
 .endm
 .macro FRONTEND_WIDE_ITER_2 disp
+#ifdef GT32_FRONTEND_F14_PRODUCTION
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+#else
 	FRONTEND_WIDE_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+#endif
 .endm
 
 /*
@@ -951,6 +1202,48 @@ gt32_tile4_frontend_fixed_raw_asm:
 .size gt32_tile4_frontend_fixed_raw_asm,.-gt32_tile4_frontend_fixed_raw_asm
 
 /* N5: contiguous quartic loads and qword-granular Good--Thomas blends. */
+#ifdef GT32_FRONTEND_GATE_VARIANTS
+#ifdef GT32_F1_FIRST
+/* Reversed-placement attribution build: emit F1 before the control. */
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+.p2align 5
+.globl gt32_tile4_frontend_wide_raw_f1_asm
+.type gt32_tile4_frontend_wide_raw_f1_asm,@function
+gt32_tile4_frontend_wide_raw_f1_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	vzeroupper
+	ret
+.size gt32_tile4_frontend_wide_raw_f1_asm,.-gt32_tile4_frontend_wide_raw_f1_asm
+
+/* Restore the production macro family before emitting the control. */
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+#endif
+#endif
 .p2align 5
 .globl gt32_tile4_frontend_wide_raw_asm
 .type gt32_tile4_frontend_wide_raw_asm,@function
@@ -962,6 +1255,92 @@ gt32_tile4_frontend_wide_raw_asm:
 	vzeroupper
 	ret
 .size gt32_tile4_frontend_wide_raw_asm,.-gt32_tile4_frontend_wide_raw_asm
+
+/* Benchmark-only F1 top-split dependency rewrite. */
+#ifdef GT32_FRONTEND_GATE_VARIANTS
+#ifndef GT32_F1_FIRST
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_F1_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+.p2align 5
+.globl gt32_tile4_frontend_wide_raw_f1_asm
+.type gt32_tile4_frontend_wide_raw_f1_asm,@function
+gt32_tile4_frontend_wide_raw_f1_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	vzeroupper
+	ret
+.size gt32_tile4_frontend_wide_raw_f1_asm,.-gt32_tile4_frontend_wide_raw_f1_asm
+#endif
+
+/* Benchmark-only F4 branch-local routing schedule. */
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_F4_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_F4_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_F4_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+.p2align 5
+.globl gt32_tile4_frontend_wide_raw_f4_asm
+.type gt32_tile4_frontend_wide_raw_f4_asm,@function
+gt32_tile4_frontend_wide_raw_f4_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	vzeroupper
+	ret
+.size gt32_tile4_frontend_wide_raw_f4_asm,.-gt32_tile4_frontend_wide_raw_f4_asm
+
+/* Benchmark-only combined F1 dependency rewrite plus F4 routing schedule. */
+#ifdef GT32_F14_W2_FIRST
+	EMIT_FRONTEND_WIDE_F14_W2
+#endif
+.purgem FRONTEND_WIDE_ITER_0
+.purgem FRONTEND_WIDE_ITER_1
+.purgem FRONTEND_WIDE_ITER_2
+.macro FRONTEND_WIDE_ITER_0 disp
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm0,%ymm1,%ymm2,%ymm3,%ymm4,%ymm5
+.endm
+.macro FRONTEND_WIDE_ITER_1 disp
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm1,%ymm2,%ymm0,%ymm4,%ymm5,%ymm3
+.endm
+.macro FRONTEND_WIDE_ITER_2 disp
+	FRONTEND_WIDE_F14_ITER_BODY \disp,%ymm2,%ymm0,%ymm1,%ymm5,%ymm3,%ymm4
+.endm
+.p2align 5
+.globl gt32_tile4_frontend_wide_raw_f14_asm
+.type gt32_tile4_frontend_wide_raw_f14_asm,@function
+gt32_tile4_frontend_wide_raw_f14_asm:
+	leaq .Ltile4_frontend_wide_twist_qinv(%rip), %rdx
+	leaq .Ltile4_frontend_wide_twist_factor(%rip), %rcx
+	vmovdqa .Ltile4_q(%rip), %ymm15
+#include "../generated/tile4_frontend_wide.inc"
+	vzeroupper
+	ret
+.size gt32_tile4_frontend_wide_raw_f14_asm,.-gt32_tile4_frontend_wide_raw_f14_asm
+
+#ifndef GT32_F14_W2_FIRST
+	EMIT_FRONTEND_WIDE_F14_W2
+#endif
+#endif
 
 /* Benchmark-only private frontend: coefficient input and output carry e=1. */
 .purgem FRONTEND_WIDE_ITER_0

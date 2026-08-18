@@ -10,11 +10,24 @@
 
 #define WORDS GT32_TILE4_POLY_WORDS
 
+#ifndef GT32_ENCAP_FRONTEND
+#define GT32_ENCAP_FRONTEND gt32_tile4_frontend_wide_raw_asm
+#endif
+
+#ifndef GT32_ENCAP_R_PACK
+#define GT32_ENCAP_R_PACK gt32_q24_encode_soa_lazy10788_asm
+#endif
+
+#ifndef GT32_ENCAP_C_PACK
+#define GT32_ENCAP_C_PACK gt32_q24_encode_soa_encap_hr_h1_asm
+#endif
+
 typedef struct {
 	int16_t h[WORDS];
 	int16_t r[WORDS];
 	int16_t m[WORDS];
-#if !defined(GT32_ENCAP_FOUR_POLY_ADD_M) || !GT32_ENCAP_FOUR_POLY_ADD_M
+#if (!defined(GT32_ENCAP_FOUR_POLY_ADD_M) || !GT32_ENCAP_FOUR_POLY_ADD_M) && \
+	(!defined(GT32_ENCAP_Q24_SUM_M) || !GT32_ENCAP_Q24_SUM_M)
 	int16_t c[WORDS];
 #endif
 	int16_t work[WORDS];
@@ -23,11 +36,15 @@ typedef struct {
 static void forward_coeff_to_private_soa(int16_t out[WORDS],
 	int16_t work[WORDS], const int16_t in[WORDS])
 {
-	gt32_tile4_frontend_wide_raw_asm(work, in);
+	GT32_ENCAP_FRONTEND(work, in);
 	gt32_tile4_attr_forward_all_bm_soa_asm(out, work);
 }
 
-int crypto_kem_enc_derand_gt32_candidate(
+#ifndef GT32_ENCAP_CANDIDATE_SYMBOL
+#define GT32_ENCAP_CANDIDATE_SYMBOL crypto_kem_enc_derand_gt32_candidate
+#endif
+
+int GT32_ENCAP_CANDIDATE_SYMBOL(
 	uint8_t ct[CRYPTO_CIPHERTEXTBYTES], uint8_t ss[CRYPTO_BYTES],
 	const uint8_t pk[CRYPTO_PUBLICKEYBYTES],
 	const uint8_t coins[NTRUPLUS_N / 8])
@@ -49,24 +66,32 @@ int crypto_kem_enc_derand_gt32_candidate(
 	hash_h(buf, msg);
 
 	poly_cbd1((poly *)(void *)scratch.work, buf + NTRUPLUS_SYMBYTES);
-#if defined(GT32_ENCAP_FOUR_POLY_ADD_M) && GT32_ENCAP_FOUR_POLY_ADD_M
+#if (defined(GT32_ENCAP_FOUR_POLY_ADD_M) && GT32_ENCAP_FOUR_POLY_ADD_M) || \
+	(defined(GT32_ENCAP_Q24_SUM_M) && GT32_ENCAP_Q24_SUM_M)
 	/* The N5 core has an exact in-place contract after the frontend deposit. */
 	forward_coeff_to_private_soa(scratch.r, scratch.r, scratch.work);
 #else
 	forward_coeff_to_private_soa(scratch.r, scratch.c, scratch.work);
 #endif
 	/* Forward private-SoA has the proven e=0, |word| <= 10788 contract. */
-	gt32_q24_encode_soa_lazy10788_asm(ct, scratch.r);
+	GT32_ENCAP_R_PACK(ct, scratch.r);
 	hash_g(ct, ct);
 
 	poly_sotp_encode((poly *)(void *)scratch.work, msg, ct);
-#if defined(GT32_ENCAP_FOUR_POLY_ADD_M) && GT32_ENCAP_FOUR_POLY_ADD_M
+#if defined(GT32_ENCAP_Q24_SUM_M) && GT32_ENCAP_Q24_SUM_M
+	forward_coeff_to_private_soa(scratch.m, scratch.m, scratch.work);
+	gt32_tile4_basemul_general_soa_soa_to_soa_asm(scratch.work,
+		scratch.h, scratch.r);
+
+	/* Add the M-domain message at the serializer load seam. */
+	gt32_q24_encode_soa_encap_hr_sum_asm(ct, scratch.work, scratch.m);
+#elif defined(GT32_ENCAP_FOUR_POLY_ADD_M) && GT32_ENCAP_FOUR_POLY_ADD_M
 	forward_coeff_to_private_soa(scratch.m, scratch.m, scratch.work);
 	gt32_tile4_basemul_general_soa_soa_add_m_asm(scratch.work,
 		scratch.h, scratch.r, scratch.m);
 
 	/* B3-general e=0 plus N5 m is proven within |word| <= 12699. */
-	gt32_q24_encode_soa_encap_hr_h1_asm(ct, scratch.work);
+	GT32_ENCAP_C_PACK(ct, scratch.work);
 #else
 	forward_coeff_to_private_soa(scratch.m, scratch.c, scratch.work);
 	gt32_tile4_basemul_general_soa_soa_to_soa_asm(scratch.c,
@@ -75,7 +100,7 @@ int crypto_kem_enc_derand_gt32_candidate(
 		(const poly *)(const void *)scratch.m);
 
 	/* B3-general e=0 plus N5 m is proven within |word| <= 12699. */
-	gt32_q24_encode_soa_encap_hr_h1_asm(ct, scratch.c);
+	GT32_ENCAP_C_PACK(ct, scratch.c);
 #endif
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)

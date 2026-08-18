@@ -1,0 +1,3 @@
+#define GT32_ENCAP_FRONTEND gt32_tile4_frontend_wide_raw_f14_asm
+#define GT32_ENCAP_CANDIDATE_SYMBOL crypto_kem_enc_derand_gt32_f14_candidate
+#include "tile4_kem_encap_candidate.c"

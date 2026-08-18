@@ -1,0 +1,77 @@
+{
+  "schema": "ntruplus768-gt32-wavefront-scheduling-v1",
+  "experiment": "GT32-WAVEFRONT-SCHEDULING-001",
+  "date": "2026-08-17",
+  "frozen": [
+    "arithmetic",
+    "representation",
+    "twiddles and constants",
+    "range and Montgomery contracts"
+  ],
+  "candidates": {
+    "F14_W2": {
+      "mechanism": "move two next-packet high-vector loads between the two current-packet DFT3 tails",
+      "boundaries": 7,
+      "peak_ymm": 16,
+      "spills": 0,
+      "instruction_delta": 0,
+      "symbol_bytes": {"F14": 3917, "W2": 3917},
+      "normal": {
+        "forward_tsc_median_delta": -1.2055,
+        "forward_core_cycle_median_delta": -2.299,
+        "two_forward_tsc_median_delta": -2.3855,
+        "two_forward_core_cycle_median_delta": -3.896,
+        "negative_launches": "8/8"
+      },
+      "reversed": {
+        "forward_tsc_median_delta": -1.5565,
+        "forward_core_cycle_median_delta": -1.681,
+        "two_forward_tsc_median_delta": -2.654,
+        "two_forward_core_cycle_median_delta": -4.088,
+        "negative_launches": "8/8"
+      },
+      "decision": "retain benchmark-only micro-win; too small for independent production promotion"
+    },
+    "N5_tile_wave": {
+      "mechanism": "store each current-tile vector and immediately load the corresponding next-tile vector",
+      "boundaries": 5,
+      "preloaded_vectors_per_boundary": 8,
+      "peak_ymm": 16,
+      "spills": 0,
+      "symbol_bytes": {"control": 968, "candidate": 1069},
+      "eight_launch_tsc_median_delta": -0.658,
+      "eight_launch_core_cycle_median_delta": -1.0425,
+      "negative_core_cycle_launches": "8/8",
+      "decision": "hard stop: approximately one core cycle does not repay the peeled tail and 101-byte code growth"
+    },
+    "B3_block_wave": {
+      "mechanism": "preload four next-block B planes into dead ymm9..ymm12 during current R-squared finalization",
+      "boundaries": 11,
+      "peak_ymm": 13,
+      "spills": 0,
+      "symbol_bytes": {"control": 684, "candidate": 868},
+      "eight_launch_tsc_median_delta": -1.0675,
+      "eight_launch_core_cycle_median_delta": -1.4705,
+      "negative_launches": "8/8",
+      "decision": "hard stop: real but sub-two-cycle effect with 184-byte code growth"
+    }
+  },
+  "correctness": {
+    "F14_W2_exact_trials": 1000,
+    "N5_wave_exact_trials": 1000,
+    "B3_wave_exact_trials": 1000,
+    "status": "pass"
+  },
+  "overall_decision": {
+    "production_promoted": false,
+    "status": "wavefront scheduling locally measurable but exhausted below caller-significant scale",
+    "keep": "F14-W2 as a benchmark-only same-size schedule oracle",
+    "stop": ["N5 cross-tile wavefront", "B3 cross-block wavefront"],
+    "reopen_only_if": [
+      "a schedule removes instructions or a complete dependency layer",
+      "a new producer or consumer frees additional registers without code growth",
+      "the target ISA or microarchitecture changes"
+    ]
+  },
+  "runtime_detail": "results/tile4-frontend-f14-wavefront.json"
+}

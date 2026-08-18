@@ -1,0 +1,748 @@
+{
+  "schema": "ntruplus768-gt32-f14-cross-packet-wavefront-v1",
+  "experiment": "F14-CROSS-PACKET-WAVEFRONT-001",
+  "candidate": "W2: preload next packet ymm4/ymm5 between branch DFT3 tails",
+  "frozen": [
+    "arithmetic",
+    "instruction multiset",
+    "3917-byte symbol size",
+    "twiddles",
+    "layout and output"
+  ],
+  "static": {
+    "preloaded_vectors_per_boundary": 2,
+    "boundaries": 7,
+    "peak_ymm": 16,
+    "spills": 0,
+    "extra_moves": 0,
+    "instruction_delta": 0
+  },
+  "iterations": 4000,
+  "launches_per_placement": 8,
+  "placements": {
+    "normal": {
+      "binary": "build/bench_frontend_f1",
+      "launches": [
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.572,
+            "wins": 16
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": 2.652,
+            "wins": 8
+          },
+          "region:forward_f14_w2": {
+            "delta": -0.899,
+            "wins": 11
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.205,
+            "wins": 15
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.908,
+            "wins": 19
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.363,
+            "wins": 20
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.584,
+            "wins": 16
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.419,
+            "wins": 18
+          },
+          "region:forward_f14_w2": {
+            "delta": -0.969,
+            "wins": 16
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.495,
+            "wins": 16
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.488,
+            "wins": 17
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.686,
+            "wins": 17
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.515,
+            "wins": 16
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.536,
+            "wins": 15
+          },
+          "region:forward_f14_w2": {
+            "delta": -0.249,
+            "wins": 12
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.782,
+            "wins": 18
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.789,
+            "wins": 20
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.733,
+            "wins": 19
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.365,
+            "wins": 15
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -0.547,
+            "wins": 11
+          },
+          "region:forward_f14_w2": {
+            "delta": -2.032,
+            "wins": 16
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.103,
+            "wins": 17
+          },
+          "region:2forward_f14_w2": {
+            "delta": -1.703,
+            "wins": 14
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.378,
+            "wins": 17
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -0.868,
+            "wins": 13
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.225,
+            "wins": 16
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.389,
+            "wins": 16
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.871,
+            "wins": 16
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.958,
+            "wins": 19
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.669,
+            "wins": 16
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.411,
+            "wins": 14
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.517,
+            "wins": 19
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.303,
+            "wins": 12
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.529,
+            "wins": 18
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.19,
+            "wins": 18
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.974,
+            "wins": 19
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -0.733,
+            "wins": 15
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -1.839,
+            "wins": 15
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.108,
+            "wins": 13
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.522,
+            "wins": 15
+          },
+          "region:2forward_f14_w2": {
+            "delta": -1.934,
+            "wins": 16
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.054,
+            "wins": 18
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.5,
+            "wins": 16
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.671,
+            "wins": 19
+          },
+          "region:forward_f14_w2": {
+            "delta": -2.602,
+            "wins": 14
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.541,
+            "wins": 18
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.283,
+            "wins": 18
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.818,
+            "wins": 14
+          }
+        }
+      ],
+      "summary": {
+        "region:frontend_f14_w2": {
+          "launch_deltas": [
+            -1.572,
+            -1.584,
+            -1.515,
+            -1.365,
+            -0.868,
+            -1.411,
+            -0.733,
+            -1.5
+          ],
+          "launch_wins": [
+            16,
+            16,
+            16,
+            15,
+            13,
+            14,
+            15,
+            16
+          ],
+          "median_delta": -1.4555,
+          "negative_launches": 8
+        },
+        "pmu_region:frontend_f14_w2": {
+          "launch_deltas": [
+            2.652,
+            -2.419,
+            -2.536,
+            -0.547,
+            -2.225,
+            -2.517,
+            -1.839,
+            -2.671
+          ],
+          "launch_wins": [
+            8,
+            18,
+            15,
+            11,
+            16,
+            19,
+            15,
+            19
+          ],
+          "median_delta": -2.322,
+          "negative_launches": 7
+        },
+        "region:forward_f14_w2": {
+          "launch_deltas": [
+            -0.899,
+            -0.969,
+            -0.249,
+            -2.032,
+            -1.389,
+            -1.303,
+            -1.108,
+            -2.602
+          ],
+          "launch_wins": [
+            11,
+            16,
+            12,
+            16,
+            16,
+            12,
+            13,
+            14
+          ],
+          "median_delta": -1.2055,
+          "negative_launches": 8
+        },
+        "pmu_region:forward_f14_w2": {
+          "launch_deltas": [
+            -1.205,
+            -2.495,
+            -1.782,
+            -2.103,
+            -2.871,
+            -2.529,
+            -1.522,
+            -2.541
+          ],
+          "launch_wins": [
+            15,
+            16,
+            18,
+            17,
+            16,
+            18,
+            15,
+            18
+          ],
+          "median_delta": -2.2990000000000004,
+          "negative_launches": 8
+        },
+        "region:2forward_f14_w2": {
+          "launch_deltas": [
+            -2.908,
+            -2.488,
+            -2.789,
+            -1.703,
+            -2.958,
+            -2.19,
+            -1.934,
+            -2.283
+          ],
+          "launch_wins": [
+            19,
+            17,
+            20,
+            14,
+            19,
+            18,
+            16,
+            18
+          ],
+          "median_delta": -2.3855,
+          "negative_launches": 8
+        },
+        "pmu_region:2forward_f14_w2": {
+          "launch_deltas": [
+            -4.363,
+            -3.686,
+            -3.733,
+            -4.378,
+            -3.669,
+            -3.974,
+            -4.054,
+            -3.818
+          ],
+          "launch_wins": [
+            20,
+            17,
+            19,
+            17,
+            16,
+            19,
+            18,
+            14
+          ],
+          "median_delta": -3.896,
+          "negative_launches": 8
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_frontend_f14_wave_reversed",
+      "launches": [
+        {
+          "region:frontend_f14_w2": {
+            "delta": 1.368,
+            "wins": 7
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.877,
+            "wins": 14
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.559,
+            "wins": 17
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.41,
+            "wins": 16
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.756,
+            "wins": 19
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.942,
+            "wins": 18
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -1.076,
+            "wins": 14
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.103,
+            "wins": 15
+          },
+          "region:forward_f14_w2": {
+            "delta": -0.56,
+            "wins": 11
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.841,
+            "wins": 17
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.673,
+            "wins": 18
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.087,
+            "wins": 16
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": 2.058,
+            "wins": 7
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": 0.819,
+            "wins": 9
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.554,
+            "wins": 14
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.857,
+            "wins": 17
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.573,
+            "wins": 17
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.99,
+            "wins": 15
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": 0.731,
+            "wins": 8
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.605,
+            "wins": 13
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.957,
+            "wins": 14
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.51,
+            "wins": 15
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.901,
+            "wins": 16
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -5.117,
+            "wins": 17
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": 3.699,
+            "wins": 6
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": 1.099,
+            "wins": 9
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.564,
+            "wins": 14
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.708,
+            "wins": 14
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.681,
+            "wins": 19
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.089,
+            "wins": 18
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": 5.295,
+            "wins": 7
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -2.41,
+            "wins": 16
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.364,
+            "wins": 16
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.654,
+            "wins": 16
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.635,
+            "wins": 17
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -4.347,
+            "wins": 17
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": -0.686,
+            "wins": 11
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": 6.871,
+            "wins": 5
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.323,
+            "wins": 15
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -2.671,
+            "wins": 17
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.615,
+            "wins": 17
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -3.817,
+            "wins": 19
+          }
+        },
+        {
+          "region:frontend_f14_w2": {
+            "delta": 0.938,
+            "wins": 9
+          },
+          "pmu_region:frontend_f14_w2": {
+            "delta": -1.356,
+            "wins": 11
+          },
+          "region:forward_f14_w2": {
+            "delta": -1.936,
+            "wins": 13
+          },
+          "pmu_region:forward_f14_w2": {
+            "delta": -1.551,
+            "wins": 15
+          },
+          "region:2forward_f14_w2": {
+            "delta": -2.123,
+            "wins": 16
+          },
+          "pmu_region:2forward_f14_w2": {
+            "delta": -1.154,
+            "wins": 10
+          }
+        }
+      ],
+      "summary": {
+        "region:frontend_f14_w2": {
+          "launch_deltas": [
+            1.368,
+            -1.076,
+            2.058,
+            0.731,
+            3.699,
+            5.295,
+            -0.686,
+            0.938
+          ],
+          "launch_wins": [
+            7,
+            14,
+            7,
+            8,
+            6,
+            7,
+            11,
+            9
+          ],
+          "median_delta": 1.153,
+          "negative_launches": 2
+        },
+        "pmu_region:frontend_f14_w2": {
+          "launch_deltas": [
+            -2.877,
+            -2.103,
+            0.819,
+            -2.605,
+            1.099,
+            -2.41,
+            6.871,
+            -1.356
+          ],
+          "launch_wins": [
+            14,
+            15,
+            9,
+            13,
+            9,
+            16,
+            5,
+            11
+          ],
+          "median_delta": -1.7295000000000003,
+          "negative_launches": 5
+        },
+        "region:forward_f14_w2": {
+          "launch_deltas": [
+            -1.559,
+            -0.56,
+            -1.554,
+            -1.957,
+            -1.564,
+            -1.364,
+            -1.323,
+            -1.936
+          ],
+          "launch_wins": [
+            17,
+            11,
+            14,
+            14,
+            14,
+            16,
+            15,
+            13
+          ],
+          "median_delta": -1.5565,
+          "negative_launches": 8
+        },
+        "pmu_region:forward_f14_w2": {
+          "launch_deltas": [
+            -1.41,
+            -1.841,
+            -1.857,
+            -1.51,
+            -1.708,
+            -1.654,
+            -2.671,
+            -1.551
+          ],
+          "launch_wins": [
+            16,
+            17,
+            17,
+            15,
+            14,
+            16,
+            17,
+            15
+          ],
+          "median_delta": -1.681,
+          "negative_launches": 8
+        },
+        "region:2forward_f14_w2": {
+          "launch_deltas": [
+            -2.756,
+            -2.673,
+            -2.573,
+            -2.901,
+            -2.681,
+            -2.635,
+            -2.615,
+            -2.123
+          ],
+          "launch_wins": [
+            19,
+            18,
+            17,
+            16,
+            19,
+            17,
+            17,
+            16
+          ],
+          "median_delta": -2.654,
+          "negative_launches": 8
+        },
+        "pmu_region:2forward_f14_w2": {
+          "launch_deltas": [
+            -3.942,
+            -4.087,
+            -4.99,
+            -5.117,
+            -4.089,
+            -4.347,
+            -3.817,
+            -1.154
+          ],
+          "launch_wins": [
+            18,
+            16,
+            15,
+            17,
+            18,
+            17,
+            19,
+            10
+          ],
+          "median_delta": -4.088,
+          "negative_launches": 8
+        }
+      }
+    }
+  },
+  "decision": {
+    "local_effect": "small-positive",
+    "production_promoted": false,
+    "reason": "same-work wavefront is measurable, but only about 2 core cycles per Forward",
+    "next": "N5 cross-tile wavefront static liveness gate"
+  }
+}

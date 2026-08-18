@@ -1,0 +1,63 @@
+{
+  "schema": "ntruplus768-gt32-encap-q24-sum-m-v1",
+  "experiment": "GT32-ENCAP-Q24-SUM-M-001",
+  "contract": {
+    "product_layout": "private M SoA, e=0",
+    "message_layout": "private M SoA, e=0",
+    "product_abs_bounds_by_degree": [1792, 1838, 1888, 1911],
+    "message_abs_bound": 10788,
+    "sum_abs_bound": 12699,
+    "output": "Official canonical 1152-byte serialization"
+  },
+  "static": {
+    "removed_poly_add_vector_loads": 48,
+    "removed_poly_add_vector_stores": 48,
+    "candidate_stack_bytes": 6592,
+    "control_stack_bytes": 8128,
+    "candidate_unique_serializer_bytes": 4914,
+    "spill": false
+  },
+  "correctness": {
+    "codec_high_range_random_trials": 1000,
+    "full_encap_valid_trials": 100,
+    "noncanonical_public_key_slots": 768,
+    "guard_page_tail": "pass",
+    "result": "byte-exact-pass"
+  },
+  "local_same_elf": {
+    "normal": {
+      "launch_median_delta_tsc": -17.778,
+      "negative_launch_medians": "8/8",
+      "single_event_core_cycle_delta": -21.226032
+    },
+    "reversed": {
+      "launch_median_delta_tsc": -16.1185,
+      "negative_launch_medians": "8/8",
+      "single_event_core_cycle_delta": -25.680564
+    }
+  },
+  "full_encap_incremental_same_elf": {
+    "normal": {
+      "launch_median_delta_tsc": -52.246,
+      "negative_launch_medians": "8/8"
+    },
+    "reversed": {
+      "launch_median_delta_tsc": 14.2585,
+      "negative_launch_medians": "2/8"
+    }
+  },
+  "decision": {
+    "status": "local-qualified-full-caller-hard-stop",
+    "production_promoted": false,
+    "reason": [
+      "local-materialization-deletion-is-real",
+      "full-caller-direction-reverses-with-link-placement",
+      "unique-serializer-body-adds-4914-bytes-of-code-shape",
+      "two-placement-full-caller-gate-failed"
+    ]
+  },
+  "artifacts": {
+    "short": "results/tile4-encap-q24-sum-m-full-short.json",
+    "pmu": "results/tile4-encap-q24-sum-m-pmu.json"
+  }
+}

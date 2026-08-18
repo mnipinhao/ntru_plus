@@ -26,6 +26,23 @@
 	vpmaxuw \dst, \acc, \acc
 .endm
 
+#if defined(Q24_DECODE_DEBT_GATE)
+.macro Q24_DECODE_REG_NOVAL low,high,safelow,safehigh,mask,dst,tmp
+	Q24_LOAD12 \low,%xmm14,\safelow
+	Q24_LOAD12 \high,%xmm15,\safehigh
+	vinserti128 $1, %xmm15, %ymm14, \dst
+	vpshufb \mask(%rip), \dst, \dst
+	vpsrlw $4, \dst, \tmp
+	vpblendw $0xaa, \tmp, \dst, \dst
+	vpand %ymm12, \dst, \dst
+.endm
+
+.macro Q24_DECODE_WIRE_PACKET low,high,safelow,safehigh,out,acc
+	Q24_DECODE_REG \low,\high,\safelow,\safehigh,.Lq24_decode_mask_0123,%ymm0,%ymm14,\acc
+	vmovdqu %ymm0, \out(%rdi)
+.endm
+#endif
+
 .macro Q24_DECODE_AOS_PACKET low,high,safelow,safehigh,mask,acc,out
 	Q24_DECODE_REG \low,\high,\safelow,\safehigh,\mask,%ymm0,%ymm14,\acc
 	vmovdqu %ymm0, \out(%rdi)
@@ -153,6 +170,9 @@
 	/* The generated include ends in fixed shuffle masks. */
 	.section .rodata
 #include "../generated/tile4_q24_codec.inc"
+#if defined(Q24_DECODE_DEBT_GATE)
+#include "../generated/tile4_decode_debt.inc"
+#endif
 #if defined(Q24_SOA_COMPACT) || defined(Q24_SOA_PATTERN_COMPACT) || \
 	defined(Q24_INCLUDE_COMPACT_TABLES)
 #include "../generated/tile4_q24_compact.inc"
@@ -273,6 +293,50 @@ gt32_q24_decode3_soa_asm:
 	ret
 	.size gt32_q24_decode3_soa_asm,.-gt32_q24_decode3_soa_asm
 
+#if defined(Q24_DECODE_DEBT_GATE)
+	/* D1: identical private-M result, intentionally omitting rejection work. */
+	.section .text.gt32_q24_decode_soa_noval_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_decode_soa_noval_asm
+	.type gt32_q24_decode_soa_noval_asm,@function
+gt32_q24_decode_soa_noval_asm:
+	Q24_DECODE_INIT
+	Q24_DECODE_SOA_NOVAL_BODY
+	xorl %eax, %eax
+	vzeroupper
+	ret
+	.size gt32_q24_decode_soa_noval_asm,.-gt32_q24_decode_soa_noval_asm
+
+	/* D2a: canonical wire-order int16, preserving the normal reject result. */
+	.section .text.gt32_q24_decode_wire_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_decode_wire_asm
+	.type gt32_q24_decode_wire_asm,@function
+gt32_q24_decode_wire_asm:
+	xorl %eax, %eax
+	Q24_DECODE_INIT
+	Q24_DECODE_ZERO
+	Q24_DECODE_WIRE_BODY
+	Q24_DECODE_FINISH
+	testl %eax, %eax
+	setne %al
+	movzbl %al, %eax
+	vzeroupper
+	ret
+	.size gt32_q24_decode_wire_asm,.-gt32_q24_decode_wire_asm
+
+	/* D2b: already-unpacked wire-order int16 to current private-M. */
+	.section .text.gt32_q24_route_wire_to_soa_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_route_wire_to_soa_asm
+	.type gt32_q24_route_wire_to_soa_asm,@function
+gt32_q24_route_wire_to_soa_asm:
+	Q24_ROUTE_WIRE_TO_SOA_BODY
+	vzeroupper
+	ret
+	.size gt32_q24_route_wire_to_soa_asm,.-gt32_q24_route_wire_to_soa_asm
+#endif
+
 	.section .text.gt32_q24_encode_aos_asm,"ax",@progbits
 	.p2align 5
 	.globl gt32_q24_encode_aos_asm
@@ -350,6 +414,57 @@ gt32_q24_encode_soa_asm:
 	Q24_LAZY_REDUCE2 \a,\b,%ymm0,%ymm1
 	Q24_LAZY_PACK2 \a,\ax,\ap,\ao,\asafe,\b,\bx,\bp,\bo,\bsafe,\
 		%ymm0,%xmm0,%ymm1,%xmm1
+.endm
+
+/* TF1 keeps the L1 schedule but omits qword permutations represented by the
+ * final transpose orientation (and pre-existing identity permutations). */
+.macro Q24_LAZY_PACK2_TF1 a,ax,ap,ao,asafe,b,bx,bp,bo,bsafe,t0,t0x,t1,t1x
+.if \ap != 228
+	vpermq $\ap, \a, \a
+.endif
+.if \bp != 228
+	vpermq $\bp, \b, \b
+.endif
+	vpsraw $15, \a, \t0
+	vpsraw $15, \b, \t1
+	vpand %ymm15, \t0, \t0
+	vpand %ymm15, \t1, \t1
+	vpaddw \t0, \a, \a
+	vpaddw \t1, \b, \b
+	vpmaddwd .Lq24_pair_factor(%rip), \a, \a
+	vpmaddwd .Lq24_pair_factor(%rip), \b, \b
+	vpshufb .Lq24_pack_mask(%rip), \a, \a
+	vpshufb .Lq24_pack_mask(%rip), \b, \b
+	Q24_LAZY_STORE_PACKET \a,\ax,\t0x,\ao,\asafe
+	Q24_LAZY_STORE_PACKET \b,\bx,\t1x,\bo,\bsafe
+.endm
+
+.macro Q24_LAZY_PAIR_TF1 a,ax,ap,ao,asafe,b,bx,bp,bo,bsafe
+	Q24_LAZY_REDUCE2 \a,\b,%ymm0,%ymm1
+	Q24_LAZY_PACK2_TF1 \a,\ax,\ap,\ao,\asafe,\b,\bx,\bp,\bo,\bsafe,\
+		%ymm0,%xmm0,%ymm1,%xmm1
+.endm
+
+.macro Q24_ENCODE_TF1_PACKET src,srcx,perm,offset,safe
+	vpmulhrsw %ymm13, \src, %ymm14
+	vpmullw %ymm15, %ymm14, %ymm14
+	vpsubw %ymm14, \src, \src
+.if \perm != 228
+	vpermq $\perm, \src, \src
+.endif
+	vpsraw $15, \src, %ymm14
+	vpand %ymm15, %ymm14, %ymm14
+	vpaddw %ymm14, \src, \src
+	vpmaddwd .Lq24_pair_factor(%rip), \src, \src
+	vpshufb .Lq24_pack_mask(%rip), \src, \src
+	vmovdqu \srcx, \offset(%rdi)
+	vextracti128 $1, \src, %xmm14
+.if \safe
+	vmovq %xmm14, \offset+12(%rdi)
+	vpextrd $2, %xmm14, \offset+20(%rdi)
+.else
+	vmovdqu %xmm14, \offset+12(%rdi)
+.endif
 .endm
 
 .macro Q24_LAZY_QUAD_REDUCE a,ax,ap,ao,asafe,b,bx,bp,bo,bsafe,c,cx,cp,co,csafe,d,dx,dp,do,dsafe
@@ -503,6 +618,70 @@ gt32_q24_encode_soa_asm:
 #include "../generated/tile4_q24_p_encode.inc"
 #include "../generated/tile4_q24_pack3_compact.inc"
 
+/* C1 code-density probe.  Each table entry is {M source byte offset,
+ * serialized destination byte offset}.  The five ordinary route classes and
+ * the safe final packet retain the exact production transpose, v=9 reducer,
+ * canonicalization and Q24 store atoms. */
+	.section .rodata.gt32_q24_hotcompact_c1,"a",@progbits
+	.p2align 1
+.Lq24_hc_a:
+	.short 0,0, 128,96, 768,768, 896,864
+.Lq24_hc_b:
+	.short 1152,192, 384,960
+.Lq24_hc_c:
+	.short 1024,288
+.Lq24_hc_d:
+	.short 512,384, 640,480, 1280,672
+.Lq24_hc_e:
+	.short 1408,576
+.Lq24_hc_f:
+	.short 256,1056
+
+.macro Q24_HOTCOMPACT_C1_BLOCK a,ax,ap,b,bx,bp,c,cx,cp,d,dx,dp,safe
+	vmovdqu 0(%rax), %ymm0
+	vmovdqu 32(%rax), %ymm1
+	vmovdqu 64(%rax), %ymm2
+	vmovdqu 96(%rax), %ymm3
+	Q24_TRANSPOSE ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+	Q24_LAZY_QUAD_REDUCE \a,\ax,\ap,0,0,\b,\bx,\bp,24,0,\c,\cx,\cp,48,0,\d,\dx,\dp,72,\safe
+	Q24_LAZY_PACK4 \a,\ax,\ap,0,0,\b,\bx,\bp,24,0,\c,\cx,\cp,48,0,\d,\dx,\dp,72,\safe
+.endm
+
+.macro Q24_HOTCOMPACT_C1_LOOP table,count,a,ax,ap,b,bx,bp,c,cx,cp,d,dx,dp,safe
+	leaq \table(%rip), %r8
+	movl $\count, %r9d
+.Lq24_hc_loop_\@:
+	movzwl 0(%r8), %eax
+	leaq (%rsi,%rax), %rax
+	movzwl 2(%r8), %edi
+	addq %r10, %rdi
+	Q24_HOTCOMPACT_C1_BLOCK \a,\ax,\ap,\b,\bx,\bp,\c,\cx,\cp,\d,\dx,\dp,\safe
+	addq $4, %r8
+	decl %r9d
+	jnz .Lq24_hc_loop_\@
+.endm
+
+	.section .text.gt32_q24_encode_soa_lazy10788_compact_c1_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_encode_soa_lazy10788_compact_c1_asm
+	.type gt32_q24_encode_soa_lazy10788_compact_c1_asm,@function
+gt32_q24_encode_soa_lazy10788_compact_c1_asm:
+	movq %rdi, %r10
+	vmovdqa .Lq24_q(%rip), %ymm15
+	vmovdqa .Lq24_v(%rip), %ymm13
+	/* Route-class order is not serialized order.  Use the safe 12-byte tail
+	 * for every block's fourth packet so an earlier class cannot overstore the
+	 * first four bytes of a block emitted by a later class. */
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_a,4,%ymm7,%xmm7,177,%ymm6,%xmm6,75,%ymm4,%xmm4,75,%ymm5,%xmm5,75,1
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_b,2,%ymm4,%xmm4,228,%ymm5,%xmm5,228,%ymm6,%xmm6,228,%ymm7,%xmm7,228,1
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_c,1,%ymm6,%xmm6,228,%ymm7,%xmm7,228,%ymm5,%xmm5,228,%ymm4,%xmm4,30,1
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_d,3,%ymm5,%xmm5,30,%ymm4,%xmm4,177,%ymm7,%xmm7,30,%ymm6,%xmm6,177,1
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_e,1,%ymm6,%xmm6,30,%ymm7,%xmm7,30,%ymm5,%xmm5,30,%ymm4,%xmm4,177,1
+	Q24_HOTCOMPACT_C1_LOOP .Lq24_hc_f,1,%ymm6,%xmm6,228,%ymm7,%xmm7,228,%ymm5,%xmm5,228,%ymm4,%xmm4,30,1
+	vzeroupper
+	ret
+	.size gt32_q24_encode_soa_lazy10788_compact_c1_asm,.-gt32_q24_encode_soa_lazy10788_compact_c1_asm
+
 	.section .text.gt32_q24_encode_soa_lazy10788_asm,"ax",@progbits
 	.p2align 5
 	.globl gt32_q24_encode_soa_lazy10788_asm
@@ -512,7 +691,11 @@ gt32_q24_encode_soa_lazy10788_asm:
 	vmovdqa .Lq24_q(%rip), %ymm15
 	vmovdqa .Lq24_v(%rip), %ymm13
 #if Q24_LAZY_SCHEDULE == 0
+#if defined(Q24_M_TF1_PRODUCTION) && Q24_M_TF1_PRODUCTION
+	Q24_ENCODE_SOA_TF1_BODY
+#else
 	Q24_ENCODE_SOA_BODY
+#endif
 #elif Q24_LAZY_SCHEDULE == 1
 	Q24_ENCODE_SOA_L1_BODY
 #elif Q24_LAZY_SCHEDULE == 2
@@ -526,6 +709,24 @@ gt32_q24_encode_soa_lazy10788_asm:
 	ret
 	.org .Lq24_lazy_cage_begin + 5120, 0x90
 	.size gt32_q24_encode_soa_lazy10788_asm,.-gt32_q24_encode_soa_lazy10788_asm
+
+#if defined(Q24_M_TF1_GATE)
+	/* Benchmark-only M-domain TF1 probe.  Match the production L0 control's
+	 * cage so unrelated following-symbol addresses do not move. */
+	.section .text.gt32_q24_encode_soa_tf1_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_encode_soa_tf1_asm
+	.type gt32_q24_encode_soa_tf1_asm,@function
+gt32_q24_encode_soa_tf1_asm:
+.Lq24_tf1_cage_begin:
+	vmovdqa .Lq24_q(%rip), %ymm15
+	vmovdqa .Lq24_v(%rip), %ymm13
+	Q24_ENCODE_SOA_TF1_BODY
+	vzeroupper
+	ret
+	.org .Lq24_tf1_cage_begin + 5120, 0x90
+	.size gt32_q24_encode_soa_tf1_asm,.-gt32_q24_encode_soa_tf1_asm
+#endif
 
 	/*
 	 * Benchmark-only M-domain serializer with the two packet constants kept
@@ -697,6 +898,28 @@ gt32_q24_encode_p_soa_halfscatter_rr_lazy10788_asm:
 gt32_q24_encode_soa_encap_hr_h1_asm:
 	jmp gt32_q24_encode_soa_lazy10788_asm
 	.size gt32_q24_encode_soa_encap_hr_h1_asm,.-gt32_q24_encode_soa_encap_hr_h1_asm
+
+	/*
+	 * Serializer-side Encap sum gate.
+	 *
+	 * rsi: B3-general private-SoA e=0 product
+	 * rdx: N5 private-SoA e=0 message
+	 *
+	 * Each source block is added before the frozen M->Q24 transpose.  The
+	 * proven |product + message| <= 12699 contract is then handled by the
+	 * same v=9 reducer and packet route as the production H1 serializer.
+	 */
+	.section .text.gt32_q24_encode_soa_encap_hr_sum_asm,"ax",@progbits
+	.p2align 5
+	.globl gt32_q24_encode_soa_encap_hr_sum_asm
+	.type gt32_q24_encode_soa_encap_hr_sum_asm,@function
+gt32_q24_encode_soa_encap_hr_sum_asm:
+	vmovdqa .Lq24_q(%rip), %ymm15
+	vmovdqa .Lq24_v(%rip), %ymm13
+	Q24_ENCODE_SOA_SUM_BODY
+	vzeroupper
+	ret
+	.size gt32_q24_encode_soa_encap_hr_sum_asm,.-gt32_q24_encode_soa_encap_hr_sum_asm
 
 	/* H2: canonicalize each four-plane source block before packet routing. */
 	.macro Q24_HR_REDUCE4 a,b,c,d

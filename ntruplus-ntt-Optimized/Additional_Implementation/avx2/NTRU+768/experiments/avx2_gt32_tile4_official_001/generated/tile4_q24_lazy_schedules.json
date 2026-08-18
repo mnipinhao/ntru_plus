@@ -6,6 +6,7 @@
   "variants": {
     "L0": "serial packet reduce-pack-store control",
     "L1": "two-packet operation-class interleave",
+    "L1_TF1": "L1 with final qword orientation absorbed",
     "L2": "four-packet reduce-first then serial pack",
     "L3": "four-packet operation-class software pipeline"
   },
@@ -16,5 +17,10 @@
     "range",
     "scale"
   ],
-  "matched_code_cage_bytes": 5120
+  "matched_code_cage_bytes": 5120,
+  "tf1": {
+    "removed_vpermq_per_pack": 25,
+    "expected_removed": 25,
+    "remaining_vpermq_per_pack": 23
+  }
 }

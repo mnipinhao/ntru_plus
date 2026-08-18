@@ -6138,6 +6138,31 @@ def emit_q24_codec(asm_path: Path, metadata_path: Path,
                 f"{record['encode_vpermq_imm']},"
                 f"{24 * record['packet']},{int(record['packet'] == 47)}"
             )
+    lines.extend([".endm", "", ".macro Q24_ENCODE_SOA_SUM_BODY"])
+    for group in range(12):
+        group_records = packets[4 * group:4 * group + 4]
+        block = group_records[0]["destination_vector"] // 4
+        assert all(record["destination_vector"] // 4 == block
+                   for record in group_records)
+        lines.extend([
+            f"\tvmovdqu {128 * block + 0}(%rsi), %ymm0",
+            f"\tvmovdqu {128 * block + 32}(%rsi), %ymm1",
+            f"\tvmovdqu {128 * block + 64}(%rsi), %ymm2",
+            f"\tvmovdqu {128 * block + 96}(%rsi), %ymm3",
+            f"\tvpaddw {128 * block + 0}(%rdx), %ymm0, %ymm0",
+            f"\tvpaddw {128 * block + 32}(%rdx), %ymm1, %ymm1",
+            f"\tvpaddw {128 * block + 64}(%rdx), %ymm2, %ymm2",
+            f"\tvpaddw {128 * block + 96}(%rdx), %ymm3, %ymm3",
+            "\tQ24_TRANSPOSE ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7",
+        ])
+        for record in group_records:
+            register = 4 + record["destination_vector"] % 4
+            lines.append(
+                "\tQ24_ENCODE_REG_PACKET "
+                f"%ymm{register},%xmm{register},"
+                f"{record['encode_vpermq_imm']},"
+                f"{24 * record['packet']},{int(record['packet'] == 47)}"
+            )
     lines.extend([".endm", "", ".macro Q24_ENCODE_SOA_RR_BODY"])
     for group in range(12):
         group_records = packets[4 * group:4 * group + 4]

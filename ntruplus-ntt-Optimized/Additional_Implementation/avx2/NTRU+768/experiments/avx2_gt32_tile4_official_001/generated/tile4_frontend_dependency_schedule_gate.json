@@ -1,0 +1,72 @@
+{
+  "schema": "ntruplus768-gt32-frontend-dependency-schedule-v1",
+  "experiment": "GT32-FRONTEND-F1-F4-001",
+  "date": "2026-08-17",
+  "control": "production N5 wide-raw frontend",
+  "candidates": {
+    "F1": "compute s=L+H independently of t=-722H; B0=L+t; B1=s-t",
+    "F4": "route branch 0, launch three Montgomery chains, route branch 1 during multiply latency, then finish both branches",
+    "F14": "F1 plus F4"
+  },
+  "static": {
+    "control_bytes": 3917,
+    "F1_bytes": 3917,
+    "F4_bytes": 3917,
+    "F14_bytes": 3917,
+    "disassembled_instruction_lines_each": 858,
+    "same_instruction_multiset": true,
+    "same_register_footprint": true,
+    "spills": false,
+    "clean_control_and_F14_ELF_text_bytes": 242494,
+    "clean_control_and_F14_symbol_addresses_identical": true
+  },
+  "correctness": {
+    "frontend_exact_trials": 1000,
+    "full_forward_exact_trials": 1000,
+    "make_check_trials": 1000,
+    "status": "pass"
+  },
+  "local_results": {
+    "F1": {
+      "forward_tsc_typical_delta": [-4.0, -4.7],
+      "two_forward_tsc_typical_delta": [-8.0, -10.0],
+      "forward_core_cycle_delta": [-7.8, -7.4]
+    },
+    "F4": {
+      "forward_tsc_delta": [-3.10, -3.07],
+      "two_forward_tsc_delta": [-5.82, -5.37],
+      "forward_core_cycle_delta": [-5.69, -4.46]
+    },
+    "F14_eight_launch_two_placements": {
+      "forward_tsc_delta_range": [-7.324, -5.809],
+      "two_forward_tsc_delta_range": [-15.701, -13.442],
+      "forward_core_cycle_delta_range": [-11.868, -10.387],
+      "two_forward_core_cycle_delta_range": [-23.104, -20.955],
+      "typical_wins_per_20": [18, 20]
+    }
+  },
+  "whole_encap": {
+    "polluted_same_ELF_gate": {
+      "normal_launch_median_delta_range": [-109.308, -40.325],
+      "reversed_launch_median_delta_range": [-60.905, 21.368],
+      "decision": "invalid-for-promotion-because-four-3917-byte-frontends-and-two-caller-wrappers-perturb-image"
+    },
+    "clean_fixed_geometry": {
+      "PIE": "launch variance exceeds the intrinsic approximately 14 TSC two-Forward effect",
+      "non_PIE": "fixed absolute addresses still leave launch/runtime variance much larger than the intrinsic effect",
+      "decision": "whole-caller-delivery-unresolved"
+    }
+  },
+  "decision": {
+    "F1": "kernel-qualified",
+    "F4": "kernel-qualified",
+    "F14": "local-kernel-champion-default-off",
+    "production_promoted": false,
+    "reason": [
+      "exact dependency-only improvement is stable in TSC and core cycles",
+      "full Encap benchmark cannot resolve the small intrinsic effect from launch-level runtime variance",
+      "no production selector change without a fixed-ELF SUPERcop corroboration"
+    ],
+    "next": "bounded TF1 M-Q24 orientation probe"
+  }
+}

@@ -124,6 +124,7 @@ static void guard_test(void)
 	gt32_q24_encode_aos_asm(edge, input);
 	gt32_q24_encode_soa_lazy10788_asm(edge, input);
 	gt32_q24_encode_soa_encap_hr_h1_asm(edge, input);
+	gt32_q24_encode_soa_encap_hr_sum_asm(edge, input, input);
 	gt32_q24_encode_soa_encap_hr_h2_asm(edge, input);
 	if (gt32_q24_encode_soa_lazy10788_verify_asm(edge, input) != 0)
 		exit(1);
@@ -147,6 +148,9 @@ static void correctness(void)
 	int16_t c1[WORDS] __attribute__((aligned(64)));
 	int16_t f1[WORDS] __attribute__((aligned(64)));
 	int16_t h1[WORDS] __attribute__((aligned(64)));
+	int16_t product[WORDS] __attribute__((aligned(64)));
+	int16_t message[WORDS] __attribute__((aligned(64)));
+	int16_t sum[WORDS] __attribute__((aligned(64)));
 	uint32_t state = UINT32_C(0x024c0dec);
 
 	for (unsigned trial = 0; trial < 1000; trial++) {
@@ -174,6 +178,27 @@ static void correctness(void)
 		memset(encoded, 0xa5, sizeof(encoded));
 		gt32_q24_encode_soa_asm(encoded, soa);
 		require_equal("encode-soa", encoded, bytes, BYTES);
+		for (unsigned i = BYTES; i < sizeof(encoded); i++)
+			if (encoded[i] != 0xa5)
+				exit(1);
+	}
+
+	/* Encap serializer-side sum: B3-general e=0 plus N5 e=0. */
+	for (unsigned trial = 0; trial < 1000; trial++) {
+		for (unsigned i = 0; i < WORDS; i++) {
+			const int32_t product_bound = 1911;
+			const int32_t message_bound = 10788;
+			product[i] = (int16_t)((int32_t)(next_random(&state)
+				% (uint32_t)(2 * product_bound + 1)) - product_bound);
+			message[i] = (int16_t)((int32_t)(next_random(&state)
+				% (uint32_t)(2 * message_bound + 1)) - message_bound);
+			sum[i] = (int16_t)((int32_t)product[i] + message[i]);
+		}
+		pack_reference_lazy10788(expected, sum,
+			gt32_tile4_serialized_to_bm_soa);
+		memset(encoded, 0xa5, sizeof(encoded));
+		gt32_q24_encode_soa_encap_hr_sum_asm(encoded, product, message);
+		require_equal("encode-soa-encap-sum", encoded, expected, BYTES);
 		for (unsigned i = BYTES; i < sizeof(encoded); i++)
 			if (encoded[i] != 0xa5)
 				exit(1);

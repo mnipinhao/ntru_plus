@@ -1,0 +1,3 @@
+#define GT32_ENCAP_Q24_SUM_M 1
+#define GT32_ENCAP_CANDIDATE_SYMBOL crypto_kem_enc_derand_gt32_q24_sum_candidate
+#include "tile4_kem_encap_candidate.c"

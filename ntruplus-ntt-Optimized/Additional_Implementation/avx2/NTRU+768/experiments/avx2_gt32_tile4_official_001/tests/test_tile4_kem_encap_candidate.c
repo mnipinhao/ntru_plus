@@ -66,8 +66,10 @@ int main(void)
 	uint8_t coins[NTRUPLUS_N / 8];
 	uint8_t off_ct[CRYPTO_CIPHERTEXTBYTES];
 	uint8_t gt_ct[CRYPTO_CIPHERTEXTBYTES];
+	uint8_t sum_ct[CRYPTO_CIPHERTEXTBYTES];
 	uint8_t off_ss[CRYPTO_BYTES];
 	uint8_t gt_ss[CRYPTO_BYTES];
+	uint8_t sum_ss[CRYPTO_BYTES];
 
 	for (size_t i = 0; i < sizeof entropy; i++)
 		entropy[i] = (uint8_t)(17U + 29U * i);
@@ -82,8 +84,12 @@ int main(void)
 		const int off = official_enc_derand(off_ct, off_ss, pk, coins);
 		const int gt = crypto_kem_enc_derand_gt32_candidate(gt_ct, gt_ss,
 			pk, coins);
+		const int sum = crypto_kem_enc_derand_gt32_q24_sum_candidate(sum_ct,
+			sum_ss, pk, coins);
 		if (off != gt || memcmp(off_ct, gt_ct, sizeof off_ct) != 0
-			|| memcmp(off_ss, gt_ss, sizeof off_ss) != 0) {
+			|| off != sum || memcmp(off_ct, sum_ct, sizeof off_ct) != 0
+			|| memcmp(off_ss, gt_ss, sizeof off_ss) != 0
+			|| memcmp(off_ss, sum_ss, sizeof off_ss) != 0) {
 			fprintf(stderr, "valid differential failed trial=%u off=%d gt=%d\n",
 				trial, off, gt);
 			return 1;
@@ -99,8 +105,13 @@ int main(void)
 		const int off = official_enc_derand(off_ct, off_ss, bad_pk, coins);
 		const int gt = crypto_kem_enc_derand_gt32_candidate(gt_ct, gt_ss,
 			bad_pk, coins);
-		if (off != 1 || gt != 1 || memcmp(off_ct, gt_ct, sizeof off_ct) != 0
-			|| memcmp(off_ss, gt_ss, sizeof off_ss) != 0) {
+		const int sum = crypto_kem_enc_derand_gt32_q24_sum_candidate(sum_ct,
+			sum_ss, bad_pk, coins);
+		if (off != 1 || gt != 1 || sum != 1
+			|| memcmp(off_ct, gt_ct, sizeof off_ct) != 0
+			|| memcmp(off_ct, sum_ct, sizeof off_ct) != 0
+			|| memcmp(off_ss, gt_ss, sizeof off_ss) != 0
+			|| memcmp(off_ss, sum_ss, sizeof off_ss) != 0) {
 			fprintf(stderr, "noncanonical differential failed slot=%u\n", slot);
 			return 1;
 		}

@@ -1,0 +1,62 @@
+{
+  "schema": "ntruplus768-gt32-q24-m-tf1-v1",
+  "experiment": "GT32-Q24-M-TF1-001",
+  "date": "2026-08-17",
+  "frozen": [
+    "private M SoA input layout",
+    "v=9 centered reducer",
+    "canonical sign correction",
+    "Q24 packet order and stores",
+    "lazy10788 and highrange12699 scale contracts"
+  ],
+  "mechanism": {
+    "description": "absorb symmetric qword swaps into final transpose operand orientation",
+    "control_vpermq_per_pack": 48,
+    "absorbed_symmetric_swaps": 11,
+    "removed_identity_permutations": 14,
+    "candidate_vpermq_per_pack": 23,
+    "retired_instruction_delta_per_pack": -25,
+    "matched_symbol_bytes": 5120,
+    "spill_delta": 0
+  },
+  "correctness": {
+    "all_scalar_values_inclusive": [-12699, 12699],
+    "output": "Official byte-exact",
+    "safe_tail": "unchanged",
+    "make_check_1000_trials": "pass"
+  },
+  "local_four_launches_per_placement": {
+    "normal": {
+      "single_lazy10788_tsc_delta_range": [-5.940, -5.588],
+      "single_lazy10788_core_cycle_delta_range": [-9.234, -8.912],
+      "single_highrange12699_tsc_delta_range": [-5.787, -5.574],
+      "single_highrange12699_core_cycle_delta_range": [-9.277, -8.973],
+      "mixed_two_pack_tsc_delta_range": [-12.262, -11.333],
+      "mixed_two_pack_core_cycle_delta_range": [-19.437, -18.157]
+    },
+    "reversed": {
+      "single_lazy10788_tsc_delta_range": [-5.264, -5.240],
+      "single_lazy10788_core_cycle_delta_range": [-8.652, -8.313],
+      "single_highrange12699_tsc_delta_range": [-5.422, -4.950],
+      "single_highrange12699_core_cycle_delta_range": [-8.489, -8.297],
+      "mixed_two_pack_tsc_delta_range": [-12.252, -9.695],
+      "mixed_two_pack_core_cycle_delta_range": [-18.427, -18.370]
+    }
+  },
+  "full_encap_eight_launch_attribution": {
+    "all_relevant_symbol_addresses_identical_between_control_and_candidate": true,
+    "normal_control_median_tsc": 17788.125,
+    "normal_candidate_median_tsc": 17663.827,
+    "normal_delta_tsc": -124.298,
+    "reversed_control_median_tsc": 17483.441,
+    "reversed_candidate_median_tsc": 17489.758,
+    "reversed_delta_tsc": 6.317,
+    "interpretation": "no large regression; whole-caller delivery noise exceeds the intrinsic two-pack effect"
+  },
+  "decision": {
+    "local_kernel": "qualified",
+    "production_promoted": false,
+    "reason": "stable 8-9 core-cycle saving per pack, but no placement-stable full-Encap evidence",
+    "role": "default-off local Q24 champion for future composition gates"
+  }
+}

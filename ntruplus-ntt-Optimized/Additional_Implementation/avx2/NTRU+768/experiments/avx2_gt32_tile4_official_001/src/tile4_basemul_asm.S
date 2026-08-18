@@ -445,6 +445,43 @@
 	.endm
 
 	/*
+	 * Same finalizer, but fill the now-dead B registers with the next block
+	 * while the four R^2 correction chains are in flight.  The caller peels
+	 * the final block, so the +128-byte reads are always in bounds.
+	 */
+	.macro TILE4_OUTPUT_SOA_LATE_RSQ_PRELOAD_B
+	vmovdqu   0(%rdi), %ymm5
+	vmovdqu  32(%rdi), %ymm6
+	vmovdqu  64(%rdi), %ymm7
+	vmovdqa %ymm15, %ymm8
+
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm5, %ymm1
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm6, %ymm2
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm7, %ymm3
+	vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm8, %ymm4
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm5, %ymm5
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm6, %ymm6
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm7, %ymm7
+	vpmulhw .Ltile4_bm_rsq(%rip), %ymm8, %ymm8
+	vmovdqu 128(%rdx), %ymm9
+	vmovdqu 160(%rdx), %ymm10
+	vmovdqu 192(%rdx), %ymm11
+	vmovdqu 224(%rdx), %ymm12
+	vpmulhw %ymm0, %ymm1, %ymm1
+	vpmulhw %ymm0, %ymm2, %ymm2
+	vpmulhw %ymm0, %ymm3, %ymm3
+	vpmulhw %ymm0, %ymm4, %ymm4
+	vpsubw %ymm1, %ymm5, %ymm5
+	vpsubw %ymm2, %ymm6, %ymm6
+	vpsubw %ymm3, %ymm7, %ymm7
+	vpsubw %ymm4, %ymm8, %ymm8
+	vmovdqu %ymm5,   0(%rdi)
+	vmovdqu %ymm6,  32(%rdi)
+	vmovdqu %ymm7,  64(%rdi)
+	vmovdqu %ymm8,  96(%rdi)
+	.endm
+
+	/*
 	 * Encap edge probe: finish the general e=0 conversion and consume the
 	 * already-SoA message before the sole materializing store.  r10 points at
 	 * the four message planes for the current 16-quartic block.
@@ -831,6 +868,65 @@ gt32_tile4_basemul_general_soa_soa_add_m_asm:
 		TILE4_OUTPUT_AOS_LATE_RSQ,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_general_soa_soa_to_soa_asm, \
 		TILE4_OUTPUT_SOA_LATE_RSQ,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA
+
+	/* Benchmark-only B3 block-wavefront probe for the Encap general product. */
+	.p2align 5
+	.globl gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm
+	.type gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm,@function
+gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm:
+	leaq .Ltile4_bm_lambda(%rip), %r8
+	leaq .Ltile4_bm_lambda_qinv(%rip), %r9
+	vmovdqa .Ltile4_bm_q(%rip), %ymm0
+	movl $12, %ecx
+	TILE4_INPUT_B_SOA
+	.p2align 5
+.Ltile4_bm_b3_wave_loop:
+	TILE4_INPUT_A_SOA
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm1, %ymm5
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm2, %ymm6
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm3, %ymm7
+	vpmullw .Ltile4_bm_qinv(%rip), %ymm4, %ymm8
+
+	TILE4_MONT_FIRST ymm2,ymm6,ymm12
+	TILE4_MONT_ADD   ymm3,ymm7,ymm11
+	TILE4_MONT_ADD   ymm4,ymm8,ymm10
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm9
+	vmovdqu %ymm15, 0(%rdi)
+
+	TILE4_MONT_FIRST ymm3,ymm7,ymm12
+	TILE4_MONT_ADD   ymm4,ymm8,ymm11
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm10
+	TILE4_MONT_ADD   ymm2,ymm6,ymm9
+	vmovdqu %ymm15, 32(%rdi)
+
+	TILE4_MONT_FIRST ymm4,ymm8,ymm12
+	TILE4_MONT_LAMBDA
+	TILE4_MONT_ADD   ymm1,ymm5,ymm11
+	TILE4_MONT_ADD   ymm2,ymm6,ymm10
+	TILE4_MONT_ADD   ymm3,ymm7,ymm9
+	vmovdqu %ymm15, 64(%rdi)
+
+	TILE4_MONT_FIRST ymm1,ymm5,ymm12
+	TILE4_MONT_ADD   ymm2,ymm6,ymm11
+	TILE4_MONT_ADD   ymm3,ymm7,ymm10
+	TILE4_MONT_ADD   ymm4,ymm8,ymm9
+	decl %ecx
+	je .Ltile4_bm_b3_wave_last
+	TILE4_OUTPUT_SOA_LATE_RSQ_PRELOAD_B
+	addq $128, %rsi
+	addq $128, %rdx
+	addq $128, %rdi
+	addq $32, %r8
+	addq $32, %r9
+	jmp .Ltile4_bm_b3_wave_loop
+.Ltile4_bm_b3_wave_last:
+	TILE4_OUTPUT_SOA_LATE_RSQ
+	vzeroupper
+	ret
+	.size gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm,.-gt32_tile4_basemul_general_soa_soa_to_soa_wave_asm
+
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_basemul_e1_soa_aos_to_aos_asm, \
 		TILE4_OUTPUT_AOS_LATE_RAW,TILE4_INPUT_A_SOA,TILE4_INPUT_B_AOS
 	TILE4_BASEMUL_B3_FUNCTION gt32_tile4_attr_basemul_c3_l1_aos_asm, \

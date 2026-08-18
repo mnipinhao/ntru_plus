@@ -1,0 +1,4 @@
+#define GT32_ENCAP_R_PACK gt32_q24_encode_soa_tf1_asm
+#define GT32_ENCAP_C_PACK gt32_q24_encode_soa_tf1_asm
+#define GT32_ENCAP_CANDIDATE_SYMBOL crypto_kem_enc_derand_gt32_tf1_candidate
+#include "tile4_kem_encap_candidate.c"
