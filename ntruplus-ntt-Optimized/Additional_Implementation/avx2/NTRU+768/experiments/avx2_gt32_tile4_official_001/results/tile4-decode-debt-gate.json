@@ -1,0 +1,572 @@
+{
+  "correctness": "1000 random valid, malformed rejection attribution, exact M output",
+  "decision": "d3-static-hard-stop; retain-current-production-decoder",
+  "experiment": "R1-DECODE-DEBT-001",
+  "method": "fixed CPU1, 20 medians per launch, four launches, PMU core cycles primary",
+  "placements": {
+    "normal": {
+      "binary": "build/bench_decode_debt",
+      "launches": [
+        {
+          "launch": 1,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 184.014,
+              "instructions": 609.509,
+              "tsc": 115.039
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.033,
+              "instructions": 546.509,
+              "tsc": 103.697
+            },
+            "d2_route": {
+              "core_cycles": 102.365,
+              "instructions": 303.509,
+              "tsc": 63.998
+            },
+            "d2_split": {
+              "core_cycles": 245.181,
+              "instructions": 760.509,
+              "tsc": 153.346
+            },
+            "d2_unpack": {
+              "core_cycles": 149.136,
+              "instructions": 463.509,
+              "tsc": 93.151
+            }
+          }
+        },
+        {
+          "launch": 2,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 183.809,
+              "instructions": 609.509,
+              "tsc": 116.905
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.061,
+              "instructions": 546.509,
+              "tsc": 103.716
+            },
+            "d2_route": {
+              "core_cycles": 102.374,
+              "instructions": 303.509,
+              "tsc": 63.999
+            },
+            "d2_split": {
+              "core_cycles": 245.358,
+              "instructions": 760.509,
+              "tsc": 153.433
+            },
+            "d2_unpack": {
+              "core_cycles": 149.111,
+              "instructions": 463.509,
+              "tsc": 93.183
+            }
+          }
+        },
+        {
+          "launch": 3,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 184.09,
+              "instructions": 609.509,
+              "tsc": 116.846
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.093,
+              "instructions": 546.509,
+              "tsc": 105.858
+            },
+            "d2_route": {
+              "core_cycles": 102.371,
+              "instructions": 303.509,
+              "tsc": 63.986
+            },
+            "d2_split": {
+              "core_cycles": 245.243,
+              "instructions": 760.509,
+              "tsc": 153.248
+            },
+            "d2_unpack": {
+              "core_cycles": 149.216,
+              "instructions": 463.509,
+              "tsc": 95.197
+            }
+          }
+        },
+        {
+          "launch": 4,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 183.853,
+              "instructions": 609.509,
+              "tsc": 115.357
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.014,
+              "instructions": 546.509,
+              "tsc": 103.653
+            },
+            "d2_route": {
+              "core_cycles": 102.36,
+              "instructions": 303.509,
+              "tsc": 63.986
+            },
+            "d2_split": {
+              "core_cycles": 245.304,
+              "instructions": 760.509,
+              "tsc": 153.223
+            },
+            "d2_unpack": {
+              "core_cycles": 149.388,
+              "instructions": 463.509,
+              "tsc": 93.208
+            }
+          }
+        }
+      ],
+      "summary": {
+        "attribution": {
+          "core_cycles": {
+            "routing": 102.368,
+            "split_materialized_minus_d0": 61.34,
+            "unpack": 149.176,
+            "validation_d0_minus_d1": 17.886500000000012
+          },
+          "instructions": {
+            "routing": 303.509,
+            "split_materialized_minus_d0": 151.0,
+            "unpack": 463.509,
+            "validation_d0_minus_d1": 63.0
+          },
+          "tsc": {
+            "routing": 63.992,
+            "split_materialized_minus_d0": 37.195499999999996,
+            "unpack": 93.19550000000001,
+            "validation_d0_minus_d1": 12.394999999999996
+          }
+        },
+        "d0_full": {
+          "core_cycles": 183.9335,
+          "instructions": 609.509,
+          "tsc": 116.1015
+        },
+        "d1_no_validation": {
+          "core_cycles": 166.047,
+          "instructions": 546.509,
+          "tsc": 103.7065
+        },
+        "d2_route": {
+          "core_cycles": 102.368,
+          "instructions": 303.509,
+          "tsc": 63.992
+        },
+        "d2_split": {
+          "core_cycles": 245.2735,
+          "instructions": 760.509,
+          "tsc": 153.297
+        },
+        "d2_unpack": {
+          "core_cycles": 149.176,
+          "instructions": 463.509,
+          "tsc": 93.19550000000001
+        }
+      }
+    },
+    "reversed": {
+      "binary": "build/bench_decode_debt_reversed",
+      "launches": [
+        {
+          "launch": 1,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 184.757,
+              "instructions": 609.509,
+              "tsc": 115.629
+            },
+            "d1_no_validation": {
+              "core_cycles": 165.97,
+              "instructions": 546.509,
+              "tsc": 103.662
+            },
+            "d2_route": {
+              "core_cycles": 102.373,
+              "instructions": 303.509,
+              "tsc": 63.995
+            },
+            "d2_split": {
+              "core_cycles": 245.157,
+              "instructions": 760.509,
+              "tsc": 153.373
+            },
+            "d2_unpack": {
+              "core_cycles": 150.334,
+              "instructions": 463.509,
+              "tsc": 93.626
+            }
+          }
+        },
+        {
+          "launch": 2,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 184.946,
+              "instructions": 609.509,
+              "tsc": 115.249
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.14,
+              "instructions": 546.509,
+              "tsc": 103.698
+            },
+            "d2_route": {
+              "core_cycles": 102.363,
+              "instructions": 303.509,
+              "tsc": 63.986
+            },
+            "d2_split": {
+              "core_cycles": 245.542,
+              "instructions": 760.509,
+              "tsc": 153.269
+            },
+            "d2_unpack": {
+              "core_cycles": 149.225,
+              "instructions": 463.509,
+              "tsc": 93.236
+            }
+          }
+        },
+        {
+          "launch": 3,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 185.339,
+              "instructions": 609.509,
+              "tsc": 115.441
+            },
+            "d1_no_validation": {
+              "core_cycles": 166.828,
+              "instructions": 546.509,
+              "tsc": 108.445
+            },
+            "d2_route": {
+              "core_cycles": 102.363,
+              "instructions": 303.509,
+              "tsc": 63.983
+            },
+            "d2_split": {
+              "core_cycles": 245.283,
+              "instructions": 760.509,
+              "tsc": 153.349
+            },
+            "d2_unpack": {
+              "core_cycles": 150.991,
+              "instructions": 463.509,
+              "tsc": 93.957
+            }
+          }
+        },
+        {
+          "launch": 4,
+          "metrics": {
+            "d0_full": {
+              "core_cycles": 184.883,
+              "instructions": 609.509,
+              "tsc": 115.236
+            },
+            "d1_no_validation": {
+              "core_cycles": 173.241,
+              "instructions": 546.509,
+              "tsc": 104.805
+            },
+            "d2_route": {
+              "core_cycles": 102.379,
+              "instructions": 303.509,
+              "tsc": 63.985
+            },
+            "d2_split": {
+              "core_cycles": 245.017,
+              "instructions": 760.509,
+              "tsc": 153.233
+            },
+            "d2_unpack": {
+              "core_cycles": 152.06,
+              "instructions": 463.509,
+              "tsc": 94.846
+            }
+          }
+        }
+      ],
+      "summary": {
+        "attribution": {
+          "core_cycles": {
+            "routing": 102.368,
+            "split_materialized_minus_d0": 60.305499999999995,
+            "unpack": 150.66250000000002,
+            "validation_d0_minus_d1": 18.430500000000023
+          },
+          "instructions": {
+            "routing": 303.509,
+            "split_materialized_minus_d0": 151.0,
+            "unpack": 463.509,
+            "validation_d0_minus_d1": 63.0
+          },
+          "tsc": {
+            "routing": 63.9855,
+            "split_materialized_minus_d0": 37.964,
+            "unpack": 93.7915,
+            "validation_d0_minus_d1": 11.093500000000006
+          }
+        },
+        "d0_full": {
+          "core_cycles": 184.9145,
+          "instructions": 609.509,
+          "tsc": 115.345
+        },
+        "d1_no_validation": {
+          "core_cycles": 166.48399999999998,
+          "instructions": 546.509,
+          "tsc": 104.2515
+        },
+        "d2_route": {
+          "core_cycles": 102.368,
+          "instructions": 303.509,
+          "tsc": 63.9855
+        },
+        "d2_split": {
+          "core_cycles": 245.22,
+          "instructions": 760.509,
+          "tsc": 153.309
+        },
+        "d2_unpack": {
+          "core_cycles": 150.66250000000002,
+          "instructions": 463.509,
+          "tsc": 93.7915
+        }
+      }
+    }
+  },
+  "schema": "ntruplus768-gt32-r1-decode-debt-runtime-v1",
+  "static_gate": {
+    "d0_control": {
+      "cross_128_insert": 48,
+      "loads": 96,
+      "transpose_shuffles": 144,
+      "unpack_vpshufb": 48
+    },
+    "d1": {
+      "removed_finish_instructions": 6,
+      "removed_packet_vpmaxuw": 48,
+      "role": "attribution-only; not canonical-rejection-capable"
+    },
+    "d2": {
+      "route_probe": "wire-order-int16-to-current-private-M",
+      "unpack_probe": "bytes-to-canonical-wire-order-int16",
+      "warning": "the split materializes 1536 bytes and is attribution only"
+    },
+    "d3_delta_vs_control": {
+      "loads": -60,
+      "minimum_total_instruction_delta_before_loop_control": 0,
+      "pre_unpack_route_or_merge": 60
+    },
+    "d3_three_ymm_load_lower_bound": {
+      "aligned_crossing_vector_formations": 24,
+      "lane_select_or_merge": 48,
+      "loads": 36,
+      "peak_ymm_lower_bound": 12,
+      "source_lane_gathers": 36,
+      "transpose_shuffles": 144,
+      "unpack_vpshufb": 48
+    },
+    "decision": "static-hard-stop-d3-added-route-lower-bound-60-exceeds-36",
+    "eligibility": {
+      "added_shuffle_at_most_36": false,
+      "load_delta_at_most_minus_48": true,
+      "zero_spill_not_disproven": true
+    },
+    "experiment": "R1-DECODE-DEBT-001",
+    "groups": [
+      {
+        "group": 0,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 1,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 2,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 3,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 4,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 5,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 6,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 7,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 8,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 9,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 10,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      },
+      {
+        "group": 11,
+        "packet_start_mod16": [
+          0,
+          12,
+          8,
+          4,
+          0,
+          12,
+          8,
+          4
+        ],
+        "twelve_byte_windows_crossing_128b": 4
+      }
+    ],
+    "proof": {
+      "avx2_constraint": "vpshufb and vpalignr are independently lane-local; vpalignr applies one immediate to both 128-bit lanes",
+      "per_96_byte_group": "three contiguous YMM loads expose six 128-bit lanes; four of the eight 12-byte coefficient windows cross a 128-bit boundary.  Each desired output register pairs one crossing window with one non-crossing window at a different byte alignment, so a uniform lane-local shuffle cannot form both. The best packet-window factorization needs three source-lane gathers, two aligned crossing-window vectors, and four final lane merges per group."
+    },
+    "reopen_only_if": [
+      "a byte-window instruction can cross 128-bit lanes without a separate merge",
+      "a wider ISA provides full-width byte permutes",
+      "the consumer accepts a representation that removes the four-way M transpose"
+    ],
+    "schema": "ntruplus768-gt32-r1-decode-debt-static-v1"
+  }
+}

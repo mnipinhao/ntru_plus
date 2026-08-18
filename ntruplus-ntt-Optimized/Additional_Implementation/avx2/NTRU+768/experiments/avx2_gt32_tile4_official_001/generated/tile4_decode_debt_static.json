@@ -1,0 +1,219 @@
+{
+  "schema": "ntruplus768-gt32-r1-decode-debt-static-v1",
+  "experiment": "R1-DECODE-DEBT-001",
+  "d0_control": {
+    "loads": 96,
+    "cross_128_insert": 48,
+    "unpack_vpshufb": 48,
+    "transpose_shuffles": 144
+  },
+  "d1": {
+    "removed_packet_vpmaxuw": 48,
+    "removed_finish_instructions": 6,
+    "role": "attribution-only; not canonical-rejection-capable"
+  },
+  "d2": {
+    "unpack_probe": "bytes-to-canonical-wire-order-int16",
+    "route_probe": "wire-order-int16-to-current-private-M",
+    "warning": "the split materializes 1536 bytes and is attribution only"
+  },
+  "d3_three_ymm_load_lower_bound": {
+    "loads": 36,
+    "source_lane_gathers": 36,
+    "aligned_crossing_vector_formations": 24,
+    "lane_select_or_merge": 48,
+    "unpack_vpshufb": 48,
+    "transpose_shuffles": 144,
+    "peak_ymm_lower_bound": 12
+  },
+  "d3_delta_vs_control": {
+    "loads": -60,
+    "pre_unpack_route_or_merge": 60,
+    "minimum_total_instruction_delta_before_loop_control": 0
+  },
+  "proof": {
+    "per_96_byte_group": "three contiguous YMM loads expose six 128-bit lanes; four of the eight 12-byte coefficient windows cross a 128-bit boundary.  Each desired output register pairs one crossing window with one non-crossing window at a different byte alignment, so a uniform lane-local shuffle cannot form both. The best packet-window factorization needs three source-lane gathers, two aligned crossing-window vectors, and four final lane merges per group.",
+    "avx2_constraint": "vpshufb and vpalignr are independently lane-local; vpalignr applies one immediate to both 128-bit lanes"
+  },
+  "eligibility": {
+    "load_delta_at_most_minus_48": true,
+    "added_shuffle_at_most_36": false,
+    "zero_spill_not_disproven": true
+  },
+  "decision": "static-hard-stop-d3-added-route-lower-bound-60-exceeds-36",
+  "reopen_only_if": [
+    "a byte-window instruction can cross 128-bit lanes without a separate merge",
+    "a wider ISA provides full-width byte permutes",
+    "the consumer accepts a representation that removes the four-way M transpose"
+  ],
+  "groups": [
+    {
+      "group": 0,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 1,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 2,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 3,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 4,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 5,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 6,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 7,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 8,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 9,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 10,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    },
+    {
+      "group": 11,
+      "packet_start_mod16": [
+        0,
+        12,
+        8,
+        4,
+        0,
+        12,
+        8,
+        4
+      ],
+      "twelve_byte_windows_crossing_128b": 4
+    }
+  ]
+}
