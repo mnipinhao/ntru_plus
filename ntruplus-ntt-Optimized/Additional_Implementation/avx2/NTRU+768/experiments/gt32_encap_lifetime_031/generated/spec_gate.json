@@ -1,0 +1,47 @@
+{
+  "031_change": {
+    "arithmetic_changed": false,
+    "decode_rejection_changed": false,
+    "forward_contract": "frontend output aliases NTT_M output",
+    "hash_boundary_changed": false,
+    "removed_polynomial_scratch_objects": 1,
+    "static_stack_byte_credit": 1536
+  },
+  "032_deferred_obligations": {
+    "canonical_highrange_pack_required": true,
+    "degree_bounds": [
+      12580,
+      12626,
+      12676,
+      12699
+    ],
+    "raw_word_equality_is_not_the_only_spec_gate": true,
+    "same_M_lane_bijection": true,
+    "signed_int16_safe": true
+  },
+  "algorithm_12_edges": [
+    "CBD1(r)",
+    "NTT(r)",
+    "Encodeq(r_hat)",
+    "G(exact-r-bytes)",
+    "SOTP.Encode",
+    "NTT(m)",
+    "Decodeq(pk)-with-canonical-rejection",
+    "h_hat-circle-r_hat-plus-m_hat",
+    "Encodeq(c_hat)"
+  ],
+  "benchmark_allowed_after_correctness": true,
+  "executable_correctness_requirements": {
+    "compare_exact_m_hat_words": true,
+    "compare_exact_r_hat_words": true,
+    "compare_final_ciphertext": true,
+    "compare_pre_G_Encodeq_bytes": true,
+    "compare_production_caller": true,
+    "compare_shared_secret": true,
+    "noncanonical_slots_set_to_q": 768,
+    "random_exact_checkpoint_trials": 1000
+  },
+  "experiment": "GT32-ENCAP-LIFETIME-031",
+  "production_modified": false,
+  "schema": "ntruplus768-gt32-encap-lifetime-031-v1"
+}

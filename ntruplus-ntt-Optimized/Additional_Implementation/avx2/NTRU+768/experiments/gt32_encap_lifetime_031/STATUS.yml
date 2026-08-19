@@ -1,0 +1,42 @@
+experiment: GT32-ENCAP-LIFETIME-031
+status: correctness-qualified-benchmark-positive-not-delivery-qualified
+production_changed: false
+scope:
+  implemented:
+    - four-polynomial encap scratch
+    - frontend output deposited into r and m
+    - in-place M Forward
+  unchanged:
+    - canonical public-key Decodeq rejection
+    - CBD1 and SOTP
+    - Encodeq-r-hat then G boundary
+    - B3 and poly_add
+    - highrange12699 final canonical pack
+  deferred:
+    - B3 final-store add-m (032)
+benchmark_allowed_only_after:
+  - exact checkpoint differential passes: true
+  - all-slot noncanonical rejection passes: true
+  - candidate stack-frame audit confirms 1536-byte reduction: true
+benchmark:
+  method: SUPERcop adjacent cpucycles and stabilized Q2, same fixed ELF
+  cycle_backend: default-perfevent
+  pinned_cpu: 0
+  launches: 16
+  observations_per_variant_per_launch: 96
+  control_median_q2_core_cycles: 28276.542
+  candidate_median_q2_core_cycles: 28043.417
+  paired_median_delta_core_cycles: -78.271
+  paired_median_delta_percent: -0.277
+  favorable_launches: 13/16
+  paired_mad_core_cycles: 158.125
+  bootstrap_median_95ci_core_cycles: [-288.250, -12.708]
+decision:
+  production_promotion: false
+  reason:
+    - positive median and confidence interval
+    - only 81.25 percent favorable launches
+    - launch variance exceeds the median effect
+  next_reopen_condition:
+    - another production code-shape change permits a fresh composition gate
+    - a matched-address implementation isolates stack-lifetime effect from code delivery

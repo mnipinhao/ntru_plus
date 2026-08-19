@@ -9,6 +9,23 @@ The production implementation remains the parent directory.  A research
 result is copied there only after whole-operation qualification; keeping an
 experiment here does not select it at build or run time.
 
+## Progressive M formation coverage
+
+[Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed
+NTRU-Prime-inspired progressive-SoA line.  It records that Stage4/Stage5 joint
+M formation was already covered by the global physical-layout and plane-N16
+gates, and closes the remaining affine packed-to-M terminal question at an
+exact 12-instruction minimum over all 720 semantic bit-axis assignments.  The
+result is scoped: arbitrary non-affine blend DAGs are not claimed impossible.
+
+## Spec-gated Encap lifetime work
+
+[Experiment 031](gt32_encap_lifetime_031/) isolates the four-polynomial Encap
+scratch schedule.  It treats pre-`G` `Encodeq(r_hat)` bytes, canonical public-
+key rejection and final ciphertext bytes as immutable Algorithm-12 edges.  The
+separate B3-final-store add-m proposal is recorded as 032 proof obligations
+and is not mixed into the 031 correctness gate.
+
 ## Research wave 013–029: final conclusion
 
 This wave tested whether cross-R3/qword packets, degree-8 leaves, pair-native
