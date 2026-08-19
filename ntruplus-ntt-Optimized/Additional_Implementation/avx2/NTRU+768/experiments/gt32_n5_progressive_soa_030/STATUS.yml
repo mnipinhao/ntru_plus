@@ -1,0 +1,20 @@
+experiment: GT32-N5-PROGRESSIVE-SOA-030
+status: closed-scoped
+production_changed: false
+decision:
+  p0_axis_affine_terminal: hard-stop-at-12
+  p1_stage5_m_joint: already-covered-by-global-physical-001
+  p2_stage4_stage5_progressive: already-covered-by-global-physical-001
+  p3_partial_m_to_b3_add: already-closed-by-register-and-repayment-gates
+scope:
+  proved:
+    - exact packed and M semantic-selector states
+    - shortest path over all 720 affine bit-axis states
+    - no route below 12 instructions in the modeled AVX2 family
+  not_proved:
+    - global lower bound over arbitrary non-affine blend DAGs
+    - a new KEM delivery advantage for the existing global-physical candidate
+reopen_only_if:
+  - an exact non-affine circuit uses fewer than 12 instructions per block
+  - a consumer accepts a different terminal and deletes a complete route
+  - a new register allocation reduces the B3 frontier below 16 live YMM

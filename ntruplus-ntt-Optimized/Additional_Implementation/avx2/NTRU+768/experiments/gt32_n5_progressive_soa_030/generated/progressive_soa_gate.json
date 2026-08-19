@@ -1,0 +1,180 @@
+{
+  "coverage_audit": {
+    "P0_prior": {
+      "artifact": "GT32-TRANSPOSE-REDEPOSIT-001",
+      "covered": "exact 12-op current and VSHUFPS alternatives",
+      "gap_closed_here": "complete 720-state affine bit-axis minimum"
+    },
+    "P1_stage5_plus_M": {
+      "artifact": "GT32-GLOBAL-PHYSICAL-LAYOUT-001",
+      "detail": "selected progressive Forward moves coefficient axes during S1--S5 and needs only one final 8-instruction qword unpack layer",
+      "status": "already-executed-and-serious-qualified-for-polymul"
+    },
+    "P2_stage4_stage5_progressive": {
+      "artifacts": [
+        "GT32-GLOBAL-PHYSICAL-LAYOUT-001",
+        "GT32-PLANE-N16-STOCKHAM-STAGES-007",
+        "GT32-PLANE-N16-RADIX4-ROUTE-ELIM-008"
+      ],
+      "status": "already-covered"
+    },
+    "P3_partial_M_to_B3_add": {
+      "B3_live_YMM": 16,
+      "artifact": "GT32-TRANSPOSE-REDEPOSIT-001 phase D",
+      "minimum_terminal_fragment_YMM": 2,
+      "proved_peak_YMM": 18,
+      "reason": "spill/materialization or transpose repayment",
+      "status": "static-stop"
+    },
+    "P4_frontend_early_NTT32": {
+      "artifact": "N5 P/M specialized frontend seam gate",
+      "reason": "16-YMM frontend and increased memory operations",
+      "status": "deferred/closed-under-current-packet-major-producer"
+    }
+  },
+  "experiment": "GT32-N5-PROGRESSIVE-SOA-030",
+  "overall_decision": "do-not-emit-assembly; pure structured permutation is locally closed, and Stage4/5 progressive M formation was already tested",
+  "p0_affine_terminal_gate": {
+    "M_physical_bits_low_to_high": [
+      "q1",
+      "v1",
+      "q0",
+      "v0",
+      "c0",
+      "c1"
+    ],
+    "allowed_families": [
+      "YMM-register-selector-rename",
+      "vperm2i128-half/register-bit-swap",
+      "vpermq-lane/half-bit-swap",
+      "vpshufb+vpermq-cross-half-lane-swap",
+      "vpshufb/vpshufd-lane-bit-swap",
+      "vpunpckl/hdq",
+      "vpunpckl/hqdq",
+      "vpunpckl/hwd"
+    ],
+    "decision": "hard-stop-current-axis-affine-terminal-at-12",
+    "minimum_instructions_per_16_leaf_block": 12,
+    "no_route_below_12": true,
+    "packed_physical_bits_low_to_high": [
+      "c0",
+      "c1",
+      "q1",
+      "v0",
+      "q0",
+      "v1"
+    ],
+    "proof_scope": "all affine semantic-bit assignments reachable through the modeled full-four-YMM AVX2 lane/register bit transitions",
+    "route": [
+      {
+        "after": [
+          "c0",
+          "c1",
+          "q1",
+          "v0",
+          "v1",
+          "q0"
+        ],
+        "before": [
+          "c0",
+          "c1",
+          "q1",
+          "v0",
+          "q0",
+          "v1"
+        ],
+        "family": "YMM-register-selector-rename",
+        "instructions": 0,
+        "physical_bits": [
+          4,
+          5
+        ]
+      },
+      {
+        "after": [
+          "q0",
+          "c0",
+          "c1",
+          "v0",
+          "v1",
+          "q1"
+        ],
+        "before": [
+          "c0",
+          "c1",
+          "q1",
+          "v0",
+          "v1",
+          "q0"
+        ],
+        "family": "vpunpckl/hwd",
+        "instructions": 4,
+        "source_register_bit": 5,
+        "unit_word_log2": 0
+      },
+      {
+        "after": [
+          "q1",
+          "q0",
+          "c0",
+          "v0",
+          "v1",
+          "c1"
+        ],
+        "before": [
+          "q0",
+          "c0",
+          "c1",
+          "v0",
+          "v1",
+          "q1"
+        ],
+        "family": "vpunpckl/hwd",
+        "instructions": 4,
+        "source_register_bit": 5,
+        "unit_word_log2": 0
+      },
+      {
+        "after": [
+          "q1",
+          "v1",
+          "q0",
+          "v0",
+          "c0",
+          "c1"
+        ],
+        "before": [
+          "q1",
+          "q0",
+          "c0",
+          "v0",
+          "v1",
+          "c1"
+        ],
+        "family": "vpunpckl/hdq",
+        "instructions": 4,
+        "source_register_bit": 4,
+        "unit_word_log2": 1
+      }
+    ],
+    "scope_caveat": "not a global lower bound over arbitrary non-affine DAGs that split and recombine lane fragments with blends",
+    "semantic_axes": [
+      "c0",
+      "c1",
+      "q0",
+      "q1",
+      "v0",
+      "v1"
+    ],
+    "slot_mapping_sha256": "394fd2e7846f1b251218fde71b667ce1006b5e8a585545c27defb0d1b0c4ddd1",
+    "states_in_complete_search_space": 720,
+    "states_reached_by_shortest_path_search": 708
+  },
+  "production_modified": false,
+  "reopen_only_if": [
+    "exact non-affine circuit below 12 instructions per block",
+    "consumer-selected terminal deletes a complete route",
+    "B3 allocation frees at least two YMM without recomputation"
+  ],
+  "schema": "ntruplus768-gt32-n5-progressive-soa-030-v1"
+}
