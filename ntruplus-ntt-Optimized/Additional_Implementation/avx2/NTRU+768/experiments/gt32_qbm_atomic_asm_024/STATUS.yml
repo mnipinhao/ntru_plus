@@ -1,0 +1,56 @@
+experiment: GT32-QBM-ATOMIC-ASM-024
+status: cycle_hard_stop_four_factor_atomic_expanded_packet
+production_modified: false
+gt_clean_modified: false
+
+correctness:
+  random_trials: 1000
+  boundary_vectors: pass
+  alias: pass
+  normal: pass
+  reversed: pass
+
+matched_geometry:
+  cage_bytes_per_symbol: 768
+  stack_references: 0
+  spills: 0
+  control_instructions_through_ret: 36
+  atomic_instructions_through_ret: 39
+  dynamic_instruction_delta_per_call: 144
+
+short_tsc_atomic_minus_control:
+  normal:
+    launch_median: 38.8735
+    negative_launches: 0
+    launches: 4
+    sample_wins: 6
+    samples: 160
+  reversed:
+    launch_median: 34.50125
+    negative_launches: 0
+    launches: 4
+    sample_wins: 0
+    samples: 160
+
+pmu_atomic_minus_control_per_call:
+  normal:
+    core_cycles: 56.011483
+    retired_instructions: 143.817674
+    retired_uop_slots: 191.979816
+    port_5_11_uops: 128.353735
+  reversed:
+    core_cycles: 58.539120
+    retired_instructions: 139.841747
+    retired_uop_slots: 187.874777
+    port_5_11_uops: 127.320474
+
+decision:
+  closed:
+    - current-input current-REDC four-factor atomic expanded packet
+    - claim that reducer latency hides this packet's extra routing
+  open:
+    - producer-native preweighted or narrowed operands
+    - delayed or fused QBM-to-inverse reduction
+    - nonlinear prepared-key representations
+    - wider SIMD or a different ISA
+  next: producer_QBM_inverse_pipeline_gate_only_if_a_full_boundary_disappears

@@ -1,0 +1,48 @@
+experiment: GT32-QBM-WIDE-CONSUMER-025
+status: static_stop_direct_wide_consumer_current_merge_contract
+production_modified: false
+gt_clean_modified: false
+assembly_emitted: false
+
+actual_first_consumer:
+  operation: quadratic_to_quartic_merge2
+  outputs:
+    - plus_plus_minus
+    - montgomery_weighted_plus_minus_difference
+  followed_by: inverse_size2_identity_butterfly
+
+current_per_vector:
+  redc32_chains: 2
+  redc32_instructions: 10
+  merge_montgomery16_chains: 1
+  merge_montgomery16_instructions: 4
+
+direct_vpmulld:
+  legal_full_vector: false
+  c0_difference_bound: 23887872
+  c1_difference_bound: 47775744
+  maximum_merge_weight_abs: 1726
+  c0_safe_lanes: 44
+  c1_safe_lanes: 28
+  total_lanes: 768
+
+signed_word_fused_reducer:
+  algebra_verified: true
+  probes: 3842880
+  conservative_pre_redc_abs: 57814157
+  conservative_output_abs: 2611
+  known_instructions: 10
+  current_redc_then_montgomery_instructions: 9
+  critical_chain_shorter: false
+
+decision:
+  closed:
+    - delayed_redc_with_unchanged_merge2
+    - direct_vpmulld_merge_weight_fusion_at_current_bounds
+    - signed_word_fusion_as_an_instruction_or_critical_path_win
+  open:
+    - producer_native_weighted_sum_difference_dots
+    - representation_that_deletes_merge2_or_one_complete_reducer
+    - narrowed_or_nonlinear_prepared_operands
+    - wider_simd_or_new_isa
+  next: producer_native_preweight_only_with_operation_class_deletion

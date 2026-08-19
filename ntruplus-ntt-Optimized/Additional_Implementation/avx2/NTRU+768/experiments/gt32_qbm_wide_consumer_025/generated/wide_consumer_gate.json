@@ -1,0 +1,120 @@
+{
+  "actual_consumer": {
+    "first_operation": "quadratic-to-quartic merge2",
+    "next_operation": "identity inverse size-2 butterfly",
+    "not_first_operation": "inverse NTT twiddle",
+    "outputs": [
+      "sum = plus + minus",
+      "high = Mont(plus - minus, merge_weight_mont)"
+    ]
+  },
+  "bounds": {
+    "qbm_c0_accumulator_abs": 11943936,
+    "qbm_c1_accumulator_abs": 23887872,
+    "signed_i32_difference_safe": true,
+    "wide_difference_abs": {
+      "c0": 23887872,
+      "c1": 47775744
+    }
+  },
+  "current_boundary_per_original_vector": {
+    "REDC32_chains": 2,
+    "REDC32_instructions": 10,
+    "merge_Montgomery16_chains": 1,
+    "merge_Montgomery16_instructions": 4,
+    "note": "pack/order and merge routing are separate from these arithmetic chains"
+  },
+  "decision": {
+    "assembly_emitted": false,
+    "closed": [
+      "delay REDC32 while retaining the existing merge2 arithmetic",
+      "single-vpmulld direct merge-weight fusion over the proved full range",
+      "signed-word-decomposition fusion as an instruction/critical-path win"
+    ],
+    "next": "producer-native preweight gate only if it deletes merge2 or one complete reducer",
+    "open": [
+      "producer-native weighted sum/difference dots that delete merge2 work",
+      "a changed QBM-to-inverse representation that removes a full merge or reduction boundary",
+      "narrowed/nonlinear prepared operands",
+      "wider SIMD or ISA with dense 32x32-to-64 and reduction support"
+    ],
+    "status": "static_stop_direct_wide_consumer_current_merge_contract"
+  },
+  "delayed_without_weight_fusion": {
+    "REDC32_chains": 2,
+    "merge_Montgomery16_chains": 1,
+    "operation_class_deleted": false,
+    "reason": "the invertible sum/difference merge still has the same number of independent output residues; delaying REDC only moves both reducers"
+  },
+  "direct_vpmulld_weight_fusion": {
+    "legal_for_full_vector": false,
+    "maximum_centered_merge_weight_abs": 1726,
+    "per_coordinate": {
+      "c0": {
+        "difference_bound": 23887872,
+        "maximum_product_abs": 41230467072,
+        "safe_lanes": 44,
+        "safe_weight_abs_threshold": 89,
+        "total_lanes": 768,
+        "uniformly_legal": false
+      },
+      "c1": {
+        "difference_bound": 47775744,
+        "maximum_product_abs": 82460934144,
+        "safe_lanes": 28,
+        "safe_weight_abs_threshold": 44,
+        "total_lanes": 768,
+        "uniformly_legal": false
+      }
+    },
+    "reason": "wide accumulator times the real merge weight overflows signed i32"
+  },
+  "experiment": "GT32-QBM-WIDE-CONSUMER-025",
+  "instruction_comparison_weighted_difference": {
+    "best_known_legal_direct_word_decomposition": 10,
+    "credit": -1,
+    "critical_chain_shorter": false,
+    "current_REDC32_then_Montgomery16": 9
+  },
+  "scale": {
+    "merge_sum": "R^-1",
+    "merge_weighted_difference": "R^-1",
+    "qbm_i32_after_REDC": "R^-1"
+  },
+  "schema": "ntruplus768-gt32-qbm-wide-consumer-025-v1",
+  "signed_word_decomposition_fused_reducer": {
+    "conservative_output_abs": 2611,
+    "conservative_pre_REDC_abs": 57814157,
+    "identity": "REDC(low_s*w+high_s*(wR)+carry*(wR)) == w*x*R^-1 mod q",
+    "known_instruction_count": 10,
+    "known_instruction_sequence": [
+      "vpslld-16-expose-low-sign",
+      "vpsrad-31-carry-mask",
+      "vpmaddwd-[w,wR]-word-decomposition",
+      "vpand-carry-correction",
+      "vpaddd-carry-correction",
+      "vpmullw-qinv",
+      "vpand-lowword",
+      "vpmaddwd-q",
+      "vpsubd",
+      "vpsrad-16"
+    ],
+    "observed_output_abs": 2587,
+    "observed_pre_REDC_abs": 57468213,
+    "random_and_boundary_probes": 3842880,
+    "signed_i16_output_safe": true,
+    "signed_i32_safe": true
+  },
+  "sources": [
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/src/qbm_intrinsic.c",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/src/inverse_stage1_intrinsic.c",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/proofs/qbm-range-and-schedule.md",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/quadratic-constants.h"
+  ],
+  "vpmuldq_64bit": {
+    "avx2_packed_64bit_modular_reducer_available": false,
+    "eight_lane_products_require_at_least_two_vectors": true,
+    "legal": true,
+    "operation_class_deleted": false
+  }
+}

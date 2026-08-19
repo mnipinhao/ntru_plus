@@ -1,0 +1,164 @@
+{
+  "assembly_emitted": false,
+  "coverage_reconciliation": {
+    "existing_QBM_is_atomic_for_both_outputs": false,
+    "existing_QBM_is_pair_native": true,
+    "existing_QBM_uses_vpmaddwd": true,
+    "existing_formula": [
+      "c0=vpmaddwd([e0,e1],[f0,root*f1])",
+      "c1=vpmaddwd([e0,e1],[f1,f0])"
+    ],
+    "new_question": "can duplicating each quadratic into four words emit c0 and c1 from one madd without losing more SIMD density/routing than it saves?"
+  },
+  "decision": {
+    "emit_ASM": false,
+    "next_priority": "cross-factor lane packing and packed-two-residue feasibility gate (023), then bounded ASM and whole-pipeline gates if still open",
+    "not_closed": [
+      "higher-density cross-factor packing",
+      "cycle-level scheduling of the four-word duplicated packet",
+      "producer-to-QBM-to-inverse reduction-boundary co-design",
+      "prepared-key amortization of one weighted operand across many calls",
+      "a hardware primitive producing two independent dot outputs without duplication",
+      "AVX-512 or a wider-register target",
+      "a different algebra that deletes REDC32 or preweight chains"
+    ],
+    "reason": [
+      "the selected executable QBM already uses the proposed two pair dots",
+      "one-madd dual-output packets halve factor density from eight to four",
+      "whole vpmaddwd, REDC32, and best-case preweight chain counts do not fall",
+      "on-the-fly expanded packet lower bound is 26 versus 22 instructions",
+      "persistent expansion is net +48 memory instructions before formation/preweight",
+      "deferred i32 output does not match the weighted inverse-entry contract"
+    ],
+    "scope_closed": [
+      "simple [e0,e1] pair-dot reformulation of current QBM",
+      "instruction-count promotion under the exact modeled packet/reduction schedule"
+    ],
+    "status": "static_reject_current_ABI_atomic_pair_unbenchmarked"
+  },
+  "evidence": [
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_incomplete_ntt_018/generated/degree8_incomplete_ntt_gate.json",
+      "sha256": "d4dc421f8866dc05a59ac2cda4399847a97bc66796821ff24c66de10d0241c2d"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_first_cut_impossibility_021/generated/first_cut_impossibility.json",
+      "sha256": "2afd43cc39bbc1e21932d36fdd763204a9e5c7b09d38053fff4d5fc1d5bcf424"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/qbm-static-schedules.json",
+      "sha256": "6335d9528cc01cd801e0b5f7ee32274c93047f15c751bf8240e2519598c13e63"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/quadratic-range-metadata.json",
+      "sha256": "412892568dbac026d10ba7d1f6af2e7255bfe84aca925f566f9fa2fc6e6478f5"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/src/qbm_intrinsic.c",
+      "sha256": "cb99bfc4a37b5cfeb8d0d6e8b5beba914133942e11b9069289e0c95698f5becb"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/proofs/qbm-range-and-schedule.md",
+      "sha256": "a9e80e613a3a54fa6d332cfc73bb87d24ed0cde14808b6c3f0bfa7393c933c25"
+    }
+  ],
+  "exact_algebra": {
+    "c0_dot": "[e0,e1] dot [f0,root*f1]",
+    "c1_dot": "[e0,e1] dot [f1,f0]",
+    "degree8_leaves": 96,
+    "quadratic_factors": 384,
+    "result": "exact",
+    "signed_boundary_differentials": 240000
+  },
+  "experiment": "GT32-QBM-PAIR-MADDWD-022",
+  "liveness_gate": {
+    "one_madd_expanded_packet": "both outputs can be adjacent dwords only for four factors/YMM; two packets are required and the whole madd/REDC counts remain unchanged",
+    "source_rank_drop_is_not_free": "processing half the lanes does not free an architectural source YMM; a dynamic mixed-semantic register or smaller producer batch is required",
+    "two_madd_current_packet": "the first c0 result must remain live while original e0/e1 and f0/f1 are still required by c1, so it does not cross the 021 first cut"
+  },
+  "prepared_operand_note": {
+    "existing_candidate": "QBM-ASYMMETRIC-DUAL",
+    "one_time_precompute_instructions": 240,
+    "runtime_QBM_instructions_if_weighted_operand_already_prepared": 912,
+    "scope": "potential prepared-key amortization, not a standard KEM or atomic-output win",
+    "selected_single_call_total": 1056,
+    "standard_single_call_total": 1152
+  },
+  "production_modified": false,
+  "range_and_reduction": {
+    "REDC32_output_interval": [
+      -2092,
+      2093
+    ],
+    "REDC32_sequence": [
+      "vpmullw-qinv",
+      "vpand-lowword",
+      "vpmaddwd-q",
+      "vpsubd",
+      "vpsrad-16"
+    ],
+    "c0_i32_bound": 11943936,
+    "c1_i32_bound": 23887872,
+    "deferred_i32_inverse_accumulation": {
+      "reason": "degree8/interpolation and inverse entry require distinct constant weights; retaining i32 would require vpmulld/wider products or multiple output dots, so the two REDC32 chains do not disappear",
+      "status": "hard-stop-current-inverse-contract"
+    },
+    "input_bound": 3456,
+    "negative_32768_case_excluded": true,
+    "signed_i32_safe": true,
+    "weighted_operand_bound": 1728
+  },
+  "resource_gate": {
+    "atomic_expanded_on_the_fly": {
+      "A_packet_construction_lower_bound": 2,
+      "B_swap_and_two_packet_interleaves_lower_bound": 3,
+      "REDC32_instructions": 10,
+      "atomic_packets_per_8_factors": 2,
+      "factors_per_YMM": 4,
+      "instructions_per_8_factors_lower_bound": 26,
+      "loads_current_A_B": 2,
+      "pack_order": 2,
+      "preweight_Montgomery16_instructions": 4,
+      "regression_vs_selected_instructions": 192,
+      "store": 1,
+      "vpmaddwd": 2,
+      "whole_QBM_instruction_lower_bound": 1248
+    },
+    "atomic_expanded_persistent_optimistic": {
+      "QBM_credit_per_8_factors_vs_selected": 3,
+      "QBM_instructions_per_8_factors_optimistic": 19,
+      "current_bytes_per_operand": 1536,
+      "expanded_bytes_per_operand": 3072,
+      "extra_QBM_vector_loads_two_operands": 96,
+      "extra_bytes_two_operands": 3072,
+      "extra_memory_instructions": 192,
+      "extra_producer_vector_stores_two_operands": 96,
+      "net_instruction_regression_before_formation_and_preweight": 48,
+      "whole_QBM_credit_instructions": 144
+    },
+    "selected": {
+      "REDC32_chains_per_8_factors": 2,
+      "factors_per_YMM": 8,
+      "instructions_per_8_factors": 22,
+      "loads_per_8_factors": 2,
+      "pack_order_per_8_factors": 2,
+      "pair_swap_per_8_factors": 1,
+      "peak_YMM": 11,
+      "preweight_Montgomery16_chains_per_8_factors": 1,
+      "stores_per_8_factors": 1,
+      "vectors": 48,
+      "vpmaddwd_per_8_factors": 2,
+      "whole_QBM_instructions": 1056,
+      "whole_REDC32_chains": 96,
+      "whole_preweight_chains": 48,
+      "whole_vpmaddwd": 96
+    },
+    "whole_resource_deltas_atomic_vs_selected": {
+      "REDC32_chains": 0,
+      "SIMD_factor_density_percent": 50,
+      "preweight_Montgomery16_chains_best_case": 0,
+      "vpmaddwd": 0
+    }
+  },
+  "schema": "ntruplus768-gt32-qbm-pair-maddwd-022-v1"
+}

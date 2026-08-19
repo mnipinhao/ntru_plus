@@ -1,0 +1,44 @@
+experiment: GT32-QBM-PAIR-MADDWD-022
+status: static_reject_current_ABI_atomic_pair_unbenchmarked
+production_modified: false
+assembly_emitted: false
+
+existing_QBM:
+  selected: QBM-PREWEIGHT
+  pair_native: true
+  vpmaddwd_per_8_factors: 2
+  REDC32_chains_per_8_factors: 2
+  preweight_chains_per_8_factors: 1
+  instructions_per_8_factors: 22
+  whole_instructions: 1056
+  peak_YMM: 11
+
+atomic_expanded:
+  factors_per_YMM: 4
+  packets_per_8_factors: 2
+  vpmaddwd_delta: 0
+  REDC32_chain_delta: 0
+  preweight_chain_best_case_delta: 0
+  on_the_fly_instructions_per_8_factors_lower_bound: 26
+  whole_instruction_regression: 192
+  persistent_net_regression_before_formation: 48
+
+range:
+  input_bound: 3456
+  weighted_bound: 1728
+  c0_i32_bound: 11943936
+  c1_i32_bound: 23887872
+  signed_i32_safe: true
+
+decision:
+  closed:
+    - simple_pair_dot_reformulation
+    - instruction_count_promotion_for_modeled_packet_and_reduction_schedule
+  open:
+    - higher_density_cross_factor_packing
+    - scheduled_ASM_cycle_gate
+    - producer_QBM_inverse_reduction_codesign
+    - prepared_key_weighted_operand_amortization
+    - wider_or_dual_output_dot_hardware
+    - algebra_deleting_REDC32_or_preweight_chain
+  next: GT32-QBM-CROSS-FACTOR-PACKING-023

@@ -1,0 +1,126 @@
+{
+  "assembly_emitted": false,
+  "decision": {
+    "emit_ASM": false,
+    "next_priority": "bounded ASM for selected QBM versus four-factor atomic expanded packet with matched symbol geometry (024)",
+    "not_closed": [
+      "the four-factor expanded packet's actual scheduled cycle performance",
+      "nonlinear or narrowed-range producer encoding",
+      "producer-side preweight and QBM/inverse delayed reduction co-design",
+      "post-REDC packed representation for a different consumer"
+    ],
+    "scope_closed": [
+      "cross-factor permutation with one i32 coordinate per destination lane",
+      "direct radix-q packed dual residue using two safe i16 linear products"
+    ],
+    "status": "conditional_packing_stop_current_i16_pre_REDC_contract"
+  },
+  "evidence": [
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_qbm_pair_maddwd_022/generated/qbm_pair_maddwd_gate.json",
+      "sha256": "c04e9465a6ff10938a4d6d5a27bb0f9d9421f8be4b85ea05937934a87fa822f4"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_incomplete_ntt_018/generated/degree8_incomplete_ntt_gate.json",
+      "sha256": "d4dc421f8866dc05a59ac2cda4399847a97bc66796821ff24c66de10d0241c2d"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/quadratic-range-metadata.json",
+      "sha256": "412892568dbac026d10ba7d1f6af2e7255bfe84aca925f566f9fa2fc6e6478f5"
+    }
+  ],
+  "experiment": "GT32-QBM-CROSS-FACTOR-PACKING-023",
+  "ordinary_i32_coordinate_lane_proof": {
+    "capacity_table": [
+      {
+        "destination_dword_lanes": 8,
+        "factors": 1,
+        "one_instruction_feasible": true,
+        "required_i32_coordinates": 2
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 2,
+        "one_instruction_feasible": true,
+        "required_i32_coordinates": 4
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 3,
+        "one_instruction_feasible": true,
+        "required_i32_coordinates": 6
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 4,
+        "one_instruction_feasible": true,
+        "required_i32_coordinates": 8
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 5,
+        "one_instruction_feasible": false,
+        "required_i32_coordinates": 10
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 6,
+        "one_instruction_feasible": false,
+        "required_i32_coordinates": 12
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 7,
+        "one_instruction_feasible": false,
+        "required_i32_coordinates": 14
+      },
+      {
+        "destination_dword_lanes": 8,
+        "factors": 8,
+        "one_instruction_feasible": false,
+        "required_i32_coordinates": 16
+      }
+    ],
+    "cross_factor_permutation_changes_capacity": false,
+    "independent_outputs_per_quadratic_factor": 2,
+    "maximum_factors_per_instruction": 4,
+    "scope": "one independent pre-REDC i32 coordinate per dword lane",
+    "vpmaddwd_destination_dword_lanes": 8
+  },
+  "packed_two_residue_escape": {
+    "canonical_encoding": "c0 + q*c1",
+    "canonical_encoding_max": 11950848,
+    "canonical_encoding_states": 11950849,
+    "direct_A_form_bounds": {
+      "abs_e0_plus_q_e1": 11950848,
+      "abs_root_e1_plus_q_e0": 17912448,
+      "fits_signed_i16": false,
+      "root_abs_max": 1726
+    },
+    "fits_24_bits_after_reduction": true,
+    "lazy_input_bound": 3456,
+    "maximum_matrix_entry_from_two_safe_products": 162,
+    "maximum_safe_i16_linear_form_coefficient_L1": 9,
+    "post_REDC_pack_note": "two canonical residues can be packed into one dword only after both coordinates have already been produced and reduced; this does not cross the atomic first-result liveness cut",
+    "pre_REDC_bilinear_matrix": [
+      [
+        1,
+        3457
+      ],
+      [
+        3457,
+        "root"
+      ]
+    ],
+    "required_off_diagonal_matrix_entry": 3457,
+    "result": "not_formable_by_one_pre_REDC_vpmaddwd_under_current_lazy_i16_contract"
+  },
+  "packing_search_result": {
+    "eight_factors_one_instruction_radix_q_escape_current_contract": false,
+    "eight_factors_one_instruction_standard_i32_ABI": false,
+    "four_factors_one_instruction_expanded_packet": true,
+    "interpretation": "the 8-to-4 density drop is structural for current full-range linear i16 preparation and pre-REDC output, not merely a factor-order choice"
+  },
+  "production_modified": false,
+  "schema": "ntruplus768-gt32-qbm-cross-factor-packing-023-v1"
+}

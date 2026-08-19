@@ -1,0 +1,28 @@
+experiment: GT32-QBM-CROSS-FACTOR-PACKING-023
+status: conditional_packing_stop_current_i16_pre_REDC_contract
+production_modified: false
+assembly_emitted: false
+
+ordinary_i32_coordinates:
+  destination_dword_lanes: 8
+  outputs_per_factor: 2
+  maximum_factors_per_instruction: 4
+  cross_factor_permutation_changes_capacity: false
+
+packed_residue_escape:
+  encoding: c0_plus_q_times_c1
+  post_REDC_fits_24_bits: true
+  pre_REDC_current_contract_feasible: false
+  safe_linear_form_coefficient_L1: 9
+  maximum_two_product_matrix_entry: 162
+  required_entry: 3457
+
+decision:
+  closed:
+    - cross_factor_permutation_with_one_i32_coordinate_per_lane
+    - direct_radix_q_encoding_from_current_lazy_i16_inputs
+  open:
+    - four_factor_atomic_packet_cycle_performance
+    - nonlinear_or_narrowed_range_producer
+    - producer_QBM_inverse_delayed_reduction
+  next: GT32-QBM-ATOMIC-ASM-024
