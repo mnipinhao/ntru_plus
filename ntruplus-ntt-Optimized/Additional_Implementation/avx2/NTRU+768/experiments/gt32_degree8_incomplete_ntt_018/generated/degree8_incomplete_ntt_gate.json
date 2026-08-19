@@ -1,0 +1,1797 @@
+{
+  "assembly_emitted": false,
+  "bilinear_rank": {
+    "Alder_Strassen_lower_bound_2n_minus_t": 12,
+    "arithmetic_acceleration_vs_known_quadratic_factorization": 0,
+    "construction": "four irreducible quadratic products times rank 3",
+    "constructive_upper_bound": 12,
+    "dimension": 8,
+    "exact_rank": 12,
+    "interpretation": "degree-8 is not a lower-rank multiplication; any win must come from deleting S5/inverse-S5/routing or a better executable packet",
+    "maximal_components": 4
+  },
+  "coverage_correction": {
+    "GT16_direction": "192 quartics split into 384 quadratic components",
+    "GT16_does_not_persist_a_degree8_ABI": true,
+    "degree8_direction": "192 quartics pair into 96 degree-8 components",
+    "relationship": "GT16 is a conjugated complete executable schedule for the same factor algebra, but not a direct persistent degree8 packet ABI",
+    "remaining_gap": "delete work relative to GT16 split/QBM/merge rather than replay it"
+  },
+  "current_boundary_credit": {
+    "S5_Montgomery_chains_per_Forward": 24,
+    "S5_instructions_per_Forward": 216,
+    "calls_per_256_byte_tile": 4,
+    "instructions_per_call": 9,
+    "inverse_initial_S5_and_routing_not_credited": true,
+    "selected_forward_S5_macro": "FR_MONT_QWORD_PACKED",
+    "sources": [
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s",
+        "sha256": "b53b5b91997297c0e6b5a4a58ca146de56dc6098f84beef1eb10d2e61a093fbe"
+      },
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/invntt.s",
+        "sha256": "9d8f0325576af6a5ea5245a348967e31f10d2dfe6df0fdeaf1b6db0fe0f982a5"
+      },
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/basemul.s",
+        "sha256": "90cf6cc1950ecdc736681ae022646461abff4b0e09dc20035d5c334ddd1437a0"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/README.md",
+        "sha256": "06ea929d6da790fe4e75ec9dbbb77c7fb8f85ba219a9abd2f06735c0a273027b"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/STATUS.yml",
+        "sha256": "f40eaef47fb4a6685712aa2d1620b8b674b44b04a12c140db438c7451179b466"
+      }
+    ],
+    "terminal_plane_routing_not_included": true,
+    "tiles_per_Forward": 6,
+    "two_Forward_S5_Montgomery_chains": 48,
+    "two_Forward_S5_instructions": 432
+  },
+  "decision": {
+    "emit_ASM": false,
+    "next_gate": "synthesize one 16-leaf degree8 packet BM plus inverse entry",
+    "not_claimed": [
+      "degree8 is faster",
+      "degree16 is covered",
+      "dynamic semantic packets or streamed LHS/RHS coupling are covered"
+    ],
+    "requirements": [
+      "whole 2F+B+I vector multiply uops do not increase",
+      "both current Forward S5 layers are removed",
+      "inverse S5/entry repair is removed rather than replayed inside BM",
+      "peak live YMM <= 15 and no spills",
+      "no new full-vector range checkpoint",
+      "constructive schedule has at least 20-TSC-equivalent static margin"
+    ],
+    "status": "algebra_pass_executable_packet_open",
+    "stop_if": [
+      "rank-12 evaluation/recombination recreates current S5 twice plus inverse S5",
+      "degree8 packet needs a persistent representation above 16 YMM",
+      "Montgomery/checkpoint work increases after crediting deleted S5 chains"
+    ]
+  },
+  "exact_algebra": {
+    "degree8_leaves": 96,
+    "quadratic_factors_per_degree8_leaf": 4,
+    "quartic_pair_identity": "(x^4-lambda)(x^4+lambda)=x^8-lambda^2",
+    "records": [
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 1,
+        "k3": 0,
+        "lambda": 1729,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 2593,
+        "negative_lambda": 1728,
+        "quadratic_roots": [
+          110,
+          3347,
+          1631,
+          1826
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 3,
+        "k3": 0,
+        "lambda": 3103,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 864,
+        "negative_lambda": 354,
+        "quadratic_roots": [
+          1375,
+          2082,
+          1374,
+          2083
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 5,
+        "k3": 0,
+        "lambda": 858,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 3280,
+        "negative_lambda": 2599,
+        "quadratic_roots": [
+          1687,
+          1770,
+          1726,
+          1731
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 7,
+        "k3": 0,
+        "lambda": 968,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 177,
+        "negative_lambda": 2489,
+        "quadratic_roots": [
+          1383,
+          2074,
+          833,
+          2624
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 9,
+        "k3": 0,
+        "lambda": 1108,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 429,
+        "negative_lambda": 2349,
+        "quadratic_roots": [
+          809,
+          2648,
+          1090,
+          2367
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 11,
+        "k3": 0,
+        "lambda": 275,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 3028,
+        "negative_lambda": 3182,
+        "quadratic_roots": [
+          1470,
+          1987,
+          203,
+          3254
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 13,
+        "k3": 0,
+        "lambda": 3435,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 484,
+        "negative_lambda": 22,
+        "quadratic_roots": [
+          1439,
+          2018,
+          1003,
+          2454
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 15,
+        "k3": 0,
+        "lambda": 1748,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 2973,
+        "negative_lambda": 1709,
+        "quadratic_roots": [
+          1026,
+          2431,
+          438,
+          3019
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 17,
+        "k3": 0,
+        "lambda": 892,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 554,
+        "negative_lambda": 2565,
+        "quadratic_roots": [
+          1557,
+          1900,
+          427,
+          3030
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 19,
+        "k3": 0,
+        "lambda": 1095,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 2903,
+        "negative_lambda": 2362,
+        "quadratic_roots": [
+          449,
+          3008,
+          152,
+          3305
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 21,
+        "k3": 0,
+        "lambda": 2678,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 1866,
+        "negative_lambda": 779,
+        "quadratic_roots": [
+          226,
+          3231,
+          986,
+          2471
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 23,
+        "k3": 0,
+        "lambda": 1869,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 1591,
+        "negative_lambda": 1588,
+        "quadratic_roots": [
+          632,
+          2825,
+          1503,
+          1954
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 25,
+        "k3": 0,
+        "lambda": 2725,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 3446,
+        "negative_lambda": 732,
+        "quadratic_roots": [
+          1717,
+          1740,
+          1228,
+          2229
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 27,
+        "k3": 0,
+        "lambda": 3163,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 11,
+        "negative_lambda": 294,
+        "quadratic_roots": [
+          1008,
+          2449,
+          1522,
+          1935
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 29,
+        "k3": 0,
+        "lambda": 2236,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 874,
+        "negative_lambda": 1221,
+        "quadratic_roots": [
+          1285,
+          2172,
+          589,
+          2868
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 31,
+        "k3": 0,
+        "lambda": 218,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 2583,
+        "negative_lambda": 3239,
+        "quadratic_roots": [
+          506,
+          2951,
+          1280,
+          2177
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 1,
+        "k3": 0,
+        "lambda": 1100,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 50,
+        "negative_lambda": 2357,
+        "quadratic_roots": [
+          517,
+          2940,
+          406,
+          3051
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 3,
+        "k3": 0,
+        "lambda": 2482,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 3407,
+        "negative_lambda": 975,
+        "quadratic_roots": [
+          1277,
+          2180,
+          1618,
+          1839
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 5,
+        "k3": 0,
+        "lambda": 78,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 2627,
+        "negative_lambda": 3379,
+        "quadratic_roots": [
+          1405,
+          2052,
+          876,
+          2581
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 7,
+        "k3": 0,
+        "lambda": 88,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 830,
+        "negative_lambda": 3369,
+        "quadratic_roots": [
+          1451,
+          2006,
+          579,
+          2878
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 9,
+        "k3": 0,
+        "lambda": 415,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 2832,
+        "negative_lambda": 3042,
+        "quadratic_roots": [
+          691,
+          2766,
+          1666,
+          1791
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 11,
+        "k3": 0,
+        "lambda": 25,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 625,
+        "negative_lambda": 3432,
+        "quadratic_roots": [
+          5,
+          3452,
+          83,
+          3374
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 13,
+        "k3": 0,
+        "lambda": 3455,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 4,
+        "negative_lambda": 2,
+        "quadratic_roots": [
+          195,
+          3262,
+          220,
+          3237
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 15,
+        "k3": 0,
+        "lambda": 1416,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 3453,
+        "negative_lambda": 2041,
+        "quadratic_roots": [
+          709,
+          2748,
+          707,
+          2750
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 17,
+        "k3": 0,
+        "lambda": 2281,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 176,
+        "negative_lambda": 1176,
+        "quadratic_roots": [
+          1441,
+          2016,
+          413,
+          3044
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 19,
+        "k3": 0,
+        "lambda": 2928,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 3281,
+        "negative_lambda": 529,
+        "quadratic_roots": [
+          1001,
+          2456,
+          23,
+          3434
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 21,
+        "k3": 0,
+        "lambda": 872,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 3301,
+        "negative_lambda": 2585,
+        "quadratic_roots": [
+          1012,
+          2445,
+          897,
+          2560
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 23,
+        "k3": 0,
+        "lambda": 1427,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 156,
+        "negative_lambda": 2030,
+        "quadratic_roots": [
+          1178,
+          2279,
+          887,
+          2570
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 25,
+        "k3": 0,
+        "lambda": 562,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 1257,
+        "negative_lambda": 2895,
+        "quadratic_roots": [
+          1264,
+          2193,
+          451,
+          3006
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 27,
+        "k3": 0,
+        "lambda": 3116,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 2200,
+        "negative_lambda": 341,
+        "quadratic_roots": [
+          1485,
+          1972,
+          452,
+          3005
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 29,
+        "k3": 0,
+        "lambda": 3346,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 1950,
+        "negative_lambda": 111,
+        "quadratic_roots": [
+          854,
+          2603,
+          343,
+          3114
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 31,
+        "k3": 0,
+        "lambda": 2534,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 1507,
+        "negative_lambda": 923,
+        "quadratic_roots": [
+          304,
+          3153,
+          898,
+          2559
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 1,
+        "k3": 1,
+        "lambda": 1367,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 1909,
+        "negative_lambda": 2090,
+        "quadratic_roots": [
+          91,
+          3366,
+          1255,
+          2202
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 3,
+        "k3": 1,
+        "lambda": 124,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 1548,
+        "negative_lambda": 3333,
+        "quadratic_roots": [
+          591,
+          2866,
+          131,
+          3326
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 5,
+        "k3": 1,
+        "lambda": 1926,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 115,
+        "negative_lambda": 1531,
+        "quadratic_roots": [
+          1150,
+          2307,
+          1652,
+          1805
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 7,
+        "k3": 1,
+        "lambda": 1907,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 3342,
+        "negative_lambda": 1550,
+        "quadratic_roots": [
+          547,
+          2910,
+          92,
+          3365
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 9,
+        "k3": 1,
+        "lambda": 940,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 2065,
+        "negative_lambda": 2517,
+        "quadratic_roots": [
+          135,
+          3322,
+          1216,
+          2241
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 11,
+        "k3": 1,
+        "lambda": 1681,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 1392,
+        "negative_lambda": 1776,
+        "quadratic_roots": [
+          41,
+          3416,
+          1372,
+          2085
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 13,
+        "k3": 1,
+        "lambda": 2078,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 291,
+        "negative_lambda": 1379,
+        "quadratic_roots": [
+          1599,
+          1858,
+          1653,
+          1804
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 15,
+        "k3": 1,
+        "lambda": 1458,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 3166,
+        "negative_lambda": 1999,
+        "quadratic_roots": [
+          974,
+          2483,
+          1649,
+          1808
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 17,
+        "k3": 1,
+        "lambda": 1543,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 2433,
+        "negative_lambda": 1914,
+        "quadratic_roots": [
+          629,
+          2828,
+          621,
+          2836
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 19,
+        "k3": 1,
+        "lambda": 3425,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 1024,
+        "negative_lambda": 32,
+        "quadratic_roots": [
+          780,
+          2677,
+          880,
+          2577
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 21,
+        "k3": 1,
+        "lambda": 3183,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 2479,
+        "negative_lambda": 274,
+        "quadratic_roots": [
+          693,
+          2764,
+          250,
+          3207
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 23,
+        "k3": 1,
+        "lambda": 400,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 978,
+        "negative_lambda": 3057,
+        "quadratic_roots": [
+          20,
+          3437,
+          332,
+          3125
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 25,
+        "k3": 1,
+        "lambda": 315,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 2429,
+        "negative_lambda": 3142,
+        "quadratic_roots": [
+          1389,
+          2068,
+          1624,
+          1833
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 27,
+        "k3": 1,
+        "lambda": 1685,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 1028,
+        "negative_lambda": 1772,
+        "quadratic_roots": [
+          1651,
+          1806,
+          442,
+          3015
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 29,
+        "k3": 1,
+        "lambda": 1248,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 1854,
+        "negative_lambda": 2209,
+        "quadratic_roots": [
+          1294,
+          2163,
+          47,
+          3410
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 31,
+        "k3": 1,
+        "lambda": 1408,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 1603,
+        "negative_lambda": 2049,
+        "quadratic_roots": [
+          1110,
+          2347,
+          1141,
+          2316
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 1,
+        "k3": 1,
+        "lambda": 3267,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 1530,
+        "negative_lambda": 190,
+        "quadratic_roots": [
+          82,
+          3375,
+          713,
+          2744
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 3,
+        "k3": 1,
+        "lambda": 3154,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 1927,
+        "negative_lambda": 303,
+        "quadratic_roots": [
+          1025,
+          2432,
+          270,
+          3187
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 5,
+        "k3": 1,
+        "lambda": 2375,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 2258,
+        "negative_lambda": 1082,
+        "quadratic_roots": [
+          1509,
+          1948,
+          159,
+          3298
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 7,
+        "k3": 1,
+        "lambda": 2059,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 1199,
+        "negative_lambda": 1398,
+        "quadratic_roots": [
+          151,
+          3306,
+          259,
+          3198
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 9,
+        "k3": 1,
+        "lambda": 714,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 1617,
+        "negative_lambda": 2743,
+        "quadratic_roots": [
+          1094,
+          2363,
+          184,
+          3273
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 11,
+        "k3": 1,
+        "lambda": 2667,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 1840,
+        "negative_lambda": 790,
+        "quadratic_roots": [
+          153,
+          3304,
+          1157,
+          2300
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 13,
+        "k3": 1,
+        "lambda": 1446,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 2888,
+        "negative_lambda": 2011,
+        "quadratic_roots": [
+          947,
+          2510,
+          182,
+          3275
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 15,
+        "k3": 1,
+        "lambda": 2961,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 569,
+        "negative_lambda": 496,
+        "quadratic_roots": [
+          262,
+          3195,
+          1182,
+          2275
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 17,
+        "k3": 1,
+        "lambda": 3283,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 2620,
+        "negative_lambda": 174,
+        "quadratic_roots": [
+          155,
+          3302,
+          884,
+          2573
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 19,
+        "k3": 1,
+        "lambda": 2197,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 837,
+        "negative_lambda": 1260,
+        "quadratic_roots": [
+          209,
+          3248,
+          679,
+          2778
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 21,
+        "k3": 1,
+        "lambda": 2175,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 1449,
+        "negative_lambda": 1282,
+        "quadratic_roots": [
+          1237,
+          2220,
+          1175,
+          2282
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 23,
+        "k3": 1,
+        "lambda": 1922,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 2008,
+        "negative_lambda": 1535,
+        "quadratic_roots": [
+          94,
+          3363,
+          869,
+          2588
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 25,
+        "k3": 1,
+        "lambda": 1600,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 1820,
+        "negative_lambda": 1857,
+        "quadratic_roots": [
+          40,
+          3417,
+          664,
+          2793
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 27,
+        "k3": 1,
+        "lambda": 1096,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 1637,
+        "negative_lambda": 2361,
+        "quadratic_roots": [
+          500,
+          2957,
+          1386,
+          2071
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 29,
+        "k3": 1,
+        "lambda": 742,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 901,
+        "negative_lambda": 2715,
+        "quadratic_roots": [
+          1242,
+          2215,
+          1258,
+          2199
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 31,
+        "k3": 1,
+        "lambda": 128,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 2556,
+        "negative_lambda": 3329,
+        "quadratic_roots": [
+          1697,
+          1760,
+          1560,
+          1897
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 1,
+        "k3": 2,
+        "lambda": 361,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 2412,
+        "negative_lambda": 3096,
+        "quadratic_roots": [
+          19,
+          3438,
+          376,
+          3081
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 3,
+        "k3": 2,
+        "lambda": 230,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 1045,
+        "negative_lambda": 3227,
+        "quadratic_roots": [
+          1491,
+          1966,
+          1243,
+          2214
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 5,
+        "k3": 2,
+        "lambda": 673,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 62,
+        "negative_lambda": 2784,
+        "quadratic_roots": [
+          620,
+          2837,
+          79,
+          3378
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 7,
+        "k3": 2,
+        "lambda": 582,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 3395,
+        "negative_lambda": 2875,
+        "quadratic_roots": [
+          836,
+          2621,
+          741,
+          2716
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 9,
+        "k3": 2,
+        "lambda": 1409,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 963,
+        "negative_lambda": 2048,
+        "quadratic_roots": [
+          674,
+          2783,
+          126,
+          3331
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 11,
+        "k3": 2,
+        "lambda": 1501,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 2494,
+        "negative_lambda": 1956,
+        "quadratic_roots": [
+          1511,
+          1946,
+          1575,
+          1882
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 13,
+        "k3": 2,
+        "lambda": 1401,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 2682,
+        "negative_lambda": 2056,
+        "quadratic_roots": [
+          160,
+          3297,
+          801,
+          2656
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 15,
+        "k3": 2,
+        "lambda": 251,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 775,
+        "negative_lambda": 3206,
+        "quadratic_roots": [
+          1457,
+          2000,
+          1370,
+          2087
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 17,
+        "k3": 2,
+        "lambda": 1022,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 470,
+        "negative_lambda": 2435,
+        "quadratic_roots": [
+          1271,
+          2186,
+          1048,
+          2409
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 19,
+        "k3": 2,
+        "lambda": 2394,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 2987,
+        "negative_lambda": 1063,
+        "quadratic_roots": [
+          331,
+          3126,
+          728,
+          2729
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 21,
+        "k3": 2,
+        "lambda": 1053,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 2569,
+        "negative_lambda": 2404,
+        "quadratic_roots": [
+          919,
+          2538,
+          736,
+          2721
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 23,
+        "k3": 2,
+        "lambda": 1188,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 888,
+        "negative_lambda": 2269,
+        "quadratic_roots": [
+          612,
+          2845,
+          1171,
+          2286
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 25,
+        "k3": 2,
+        "lambda": 417,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 1039,
+        "negative_lambda": 3040,
+        "quadratic_roots": [
+          328,
+          3129,
+          605,
+          2852
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 27,
+        "k3": 2,
+        "lambda": 2066,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 2418,
+        "negative_lambda": 1391,
+        "quadratic_roots": [
+          643,
+          2814,
+          1080,
+          2377
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 29,
+        "k3": 2,
+        "lambda": 3430,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 729,
+        "negative_lambda": 27,
+        "quadratic_roots": [
+          878,
+          2579,
+          636,
+          2821
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 0,
+        "high_Q": 31,
+        "k3": 2,
+        "lambda": 1831,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 2728,
+        "negative_lambda": 1626,
+        "quadratic_roots": [
+          604,
+          2853,
+          1036,
+          2421
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 1,
+        "k3": 2,
+        "lambda": 2547,
+        "low_Q": 0,
+        "monomial_product_factor_checks": 256,
+        "mu": 1877,
+        "negative_lambda": 910,
+        "quadratic_roots": [
+          435,
+          3022,
+          307,
+          3150
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 3,
+        "k3": 2,
+        "lambda": 1278,
+        "low_Q": 2,
+        "monomial_product_factor_checks": 256,
+        "mu": 1580,
+        "negative_lambda": 2179,
+        "quadratic_roots": [
+          252,
+          3205,
+          1348,
+          2109
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 5,
+        "k3": 2,
+        "lambda": 1004,
+        "low_Q": 4,
+        "monomial_product_factor_checks": 256,
+        "mu": 2029,
+        "negative_lambda": 2453,
+        "quadratic_roots": [
+          543,
+          2914,
+          717,
+          2740
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 7,
+        "k3": 2,
+        "lambda": 1310,
+        "low_Q": 6,
+        "monomial_product_factor_checks": 256,
+        "mu": 1428,
+        "negative_lambda": 2147,
+        "quadratic_roots": [
+          1602,
+          1855,
+          320,
+          3137
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 9,
+        "k3": 2,
+        "lambda": 2328,
+        "low_Q": 8,
+        "monomial_product_factor_checks": 256,
+        "mu": 2465,
+        "negative_lambda": 1129,
+        "quadratic_roots": [
+          1672,
+          1785,
+          1482,
+          1975
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 11,
+        "k3": 2,
+        "lambda": 765,
+        "low_Q": 10,
+        "monomial_product_factor_checks": 256,
+        "mu": 992,
+        "negative_lambda": 2692,
+        "quadratic_roots": [
+          158,
+          3299,
+          1240,
+          2217
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 13,
+        "k3": 2,
+        "lambda": 2013,
+        "low_Q": 12,
+        "monomial_product_factor_checks": 256,
+        "mu": 565,
+        "negative_lambda": 1444,
+        "quadratic_roots": [
+          752,
+          2705,
+          38,
+          3419
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 15,
+        "k3": 2,
+        "lambda": 2537,
+        "low_Q": 14,
+        "monomial_product_factor_checks": 256,
+        "mu": 2892,
+        "negative_lambda": 920,
+        "quadratic_roots": [
+          971,
+          2486,
+          475,
+          2982
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 17,
+        "k3": 2,
+        "lambda": 1350,
+        "low_Q": 16,
+        "monomial_product_factor_checks": 256,
+        "mu": 661,
+        "negative_lambda": 2107,
+        "quadratic_roots": [
+          1286,
+          2171,
+          1297,
+          2160
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 19,
+        "k3": 2,
+        "lambda": 1789,
+        "low_Q": 18,
+        "monomial_product_factor_checks": 256,
+        "mu": 2796,
+        "negative_lambda": 1668,
+        "quadratic_roots": [
+          1210,
+          2247,
+          656,
+          2801
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 21,
+        "k3": 2,
+        "lambda": 410,
+        "low_Q": 20,
+        "monomial_product_factor_checks": 256,
+        "mu": 2164,
+        "negative_lambda": 3047,
+        "quadratic_roots": [
+          1208,
+          2249,
+          1385,
+          2072
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 23,
+        "k3": 2,
+        "lambda": 108,
+        "low_Q": 22,
+        "monomial_product_factor_checks": 256,
+        "mu": 1293,
+        "negative_lambda": 3349,
+        "quadratic_roots": [
+          1272,
+          2185,
+          1701,
+          1756
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 25,
+        "k3": 2,
+        "lambda": 1295,
+        "low_Q": 24,
+        "monomial_product_factor_checks": 256,
+        "mu": 380,
+        "negative_lambda": 2162,
+        "quadratic_roots": [
+          1224,
+          2233,
+          1115,
+          2342
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 27,
+        "k3": 2,
+        "lambda": 2702,
+        "low_Q": 26,
+        "monomial_product_factor_checks": 256,
+        "mu": 3077,
+        "negative_lambda": 755,
+        "quadratic_roots": [
+          1472,
+          1985,
+          1619,
+          1838
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 29,
+        "k3": 2,
+        "lambda": 2826,
+        "low_Q": 28,
+        "monomial_product_factor_checks": 256,
+        "mu": 606,
+        "negative_lambda": 631,
+        "quadratic_roots": [
+          1361,
+          2096,
+          915,
+          2542
+        ]
+      },
+      {
+        "all_quadratic_factors_irreducible": true,
+        "branch": 1,
+        "high_Q": 31,
+        "k3": 2,
+        "lambda": 795,
+        "low_Q": 30,
+        "monomial_product_factor_checks": 256,
+        "mu": 2851,
+        "negative_lambda": 2662,
+        "quadratic_roots": [
+          1456,
+          2001,
+          662,
+          2795
+        ]
+      }
+    ],
+    "total_exact_monomial_factor_checks": 24576
+  },
+  "experiment": "GT32-DEGREE8-INCOMPLETE-NTT-018",
+  "hypothesis": "stop NTT32 before S5, retain 96 degree-8 leaves, and replace S5 + two quartic products + inverse-S5 with a native degree-8 BM",
+  "post_011_coverage_registry": {
+    "census_warning": "011 enumerates representation classes; it is not executable closure of all 96 states",
+    "closed_or_narrowed": {
+      "fixed_qword_R3_semantics": "exact-and-executable-loss-013-through-016",
+      "pair_Hadamard_free_absorption": "closed-017",
+      "persistent_128bit_R3_semantics": "closed-012",
+      "persistent_expanded_K2": "capacity-stop-011"
+    },
+    "evidence": [
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_avx2_packing_superspace_011/STATUS.yml",
+        "sha256": "1a939d39d1904a3d9a38fdfd8dac661ca4a51da4c8c6759a85bf832da556eb29"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_avx2_packing_superspace_011/README.md",
+        "sha256": "cc5c68d2d03248ee6d48d368f3669e688c47c3be45742e3388dfd1d5f40e26e2"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_semantic_packet_012/STATUS.yml",
+        "sha256": "56be8e41b54ac40f9c43a825b076d52051a316a81fe294d41cda015c5b347e25"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_semantic_packet_012/README.md",
+        "sha256": "ba475a216f358eb93164deb2839ba34236653c1ede04d872efd85d6f750c52e2"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_qword_semantic_packet_013/STATUS.yml",
+        "sha256": "55301b424d1d723f7e13ded3af36bcef4a6624f712f1c2787ebfe6038bbc588a"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_qword_semantic_packet_013/README.md",
+        "sha256": "6ed764c29ccdba04cb172ee613829aae05c8b5a01f5360f1fd942875f23a8d89"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_qword_b3_inverse_range_014/STATUS.yml",
+        "sha256": "7a9ef8c9665b8849aab0a91a566e7b7ccc17135b50f91f8fc8eed67b93da472b"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_qword_b3_inverse_range_014/README.md",
+        "sha256": "7090a70fc85348e1cc0e2c0ecdd6a3d4b101573abb7c8bc6d797041f62604e9b"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_qword_kem_caller_closure_015/STATUS.yml",
+        "sha256": "bc9a9b9532888d0558d94f5c924b20ed806f5b4fa071d1c32ffaff50fabbf672"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_qword_kem_caller_closure_015/README.md",
+        "sha256": "9ac69d593ef3c2e4b38c764616c9038e1e372d772c1520bab3a626ba19567ed5"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_qword_forward_asm_016/STATUS.yml",
+        "sha256": "dd5a4c72cf5b4be3528216fd1bc830269daa0e7aae3255ef55023885795cd78c"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_qword_forward_asm_016/README.md",
+        "sha256": "9a374a1bd1427bd015774b16201617ff307a477f9194217ad5b2de1b08aa8d11"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree_basis_commutation_017/STATUS.yml",
+        "sha256": "9723ae2fdad4888087f7375811aefcf5ab8153c70ea7c99619e475ec9ac2360e"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree_basis_commutation_017/README.md",
+        "sha256": "1e2acceac07abd23616d80634a8ba163bffc540369199ce0dd678efa5b2ca42a"
+      }
+    ],
+    "open": {
+      "BaseMul_pair_native_packet_beyond_tested_L01_L02_nodes": "open",
+      "LHS_RHS_coupled_stream": "high-priority",
+      "arbitrary_bilinear_basis": "technical-open-low-priority",
+      "degree8_incomplete_NTT": "018-algebra-pass-executable-open",
+      "dynamic_stage_semantic_packet": "high-priority",
+      "mixed_width_stream": "secondary-open",
+      "streamed_evaluation_representation": "high-priority"
+    }
+  },
+  "production_modified": false,
+  "schema": "ntruplus768-gt32-degree8-incomplete-ntt-018-v1"
+}

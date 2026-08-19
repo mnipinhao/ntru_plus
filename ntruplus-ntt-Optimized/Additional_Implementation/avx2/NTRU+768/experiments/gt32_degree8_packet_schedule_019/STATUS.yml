@@ -1,0 +1,31 @@
+experiment: GT32-DEGREE8-PACKET-SCHEDULE-019
+status: static_hard_stop_direct_degree8_packet_current_QBM
+production_modified: false
+assembly_emitted: false
+
+existing_executable_control:
+  implementation: GT16_quadratic
+  two_split_instructions: 672
+  QBM_instructions: 1056
+  merge_instructions: 432
+  total: 2160
+  terminal_saving_TSC: 48.840
+  inverse_regression_TSC: 214.364
+  tracked_chain_regression_TSC: 181.486
+
+capacity:
+  factor_vectors_per_operand: 8
+  selected_QBM_peak_YMM: 11
+  persistent_both_minimum_YMM: 17
+  one_side_live_peak_YMM: 18
+  root_stream_peak_YMM: 18
+  architectural_YMM: 16
+
+decision:
+  emit_ASM: false
+  next: streamed_evaluation_plus_LHS_RHS_coupled_producer
+  reopen_only_if:
+    - QBM_peak_YMM_at_most_9
+    - dynamic_packet_kills_source_planes_before_first_factor
+    - interleaved_Forwards_emit_consume_one_factor_at_a_time
+    - new_bilinear_form_deletes_complete_split_or_merge

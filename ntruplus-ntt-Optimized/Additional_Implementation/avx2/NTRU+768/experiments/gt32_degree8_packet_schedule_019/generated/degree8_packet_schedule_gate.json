@@ -1,0 +1,107 @@
+{
+  "assembly_emitted": false,
+  "coverage_reconciliation": {
+    "GT16_complete_executable_regions": [
+      "NTT16 Forward plus fused quadratic split",
+      "QBM-PREWEIGHT",
+      "scale-2 quadratic merge",
+      "lazy CT16 inverse"
+    ],
+    "GT16_persistent_degree8_ABI": false,
+    "GT16_same_four_quadratic_factor_algebra": true,
+    "remaining_question": "can a direct packet remove one of those regions rather than only changing where it materializes?"
+  },
+  "decision": {
+    "emit_ASM": false,
+    "next_priority": "streamed evaluation plus LHS/RHS-coupled producer schedule",
+    "reason": [
+      "the algebraic rank-12 path is already executable in GT16",
+      "the only zero-spill schedule uses the already measured materialized boundary",
+      "persistent and one-side-live direct packets exceed 16 YMM",
+      "fusing the inverse first load was already slower",
+      "no complete split/merge or multiply class is deleted by the direct ABI alone"
+    ],
+    "reopen_only_if": [
+      "a QBM schedule peaks at 9 YMM or less",
+      "a dynamic stage packet kills source planes before the first QBM factor",
+      "LHS/RHS interleaving produces and consumes one factor without retaining eight planes",
+      "a new bilinear realization deletes a complete split or merge transform"
+    ],
+    "scope_closed": [
+      "direct degree8 packet with selected QBM-PREWEIGHT",
+      "persistent two-operand factor packet",
+      "one-side-materialized while all other-side factors remain live",
+      "root-by-root stream while all eight pre-S5 planes remain live"
+    ],
+    "status": "static_hard_stop_direct_degree8_packet_current_QBM"
+  },
+  "evidence": [
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/qbm-static-schedules.json",
+      "sha256": "6335d9528cc01cd801e0b5f7ee32274c93047f15c751bf8240e2519598c13e63"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/results/round4c-chain-floor.json",
+      "sha256": "a7c590c5d765ede08a4121b77b9feb989dfeeefee357c4b013b7f3fa9706bf30"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/results/round4c-decision.json",
+      "sha256": "e30f27fc750a142952e22f6d808972ea4523333cd23fd53a5d188afeb46b698e"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/STATUS.yml",
+      "sha256": "f40eaef47fb4a6685712aa2d1620b8b674b44b04a12c140db438c7451179b466"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/README.md",
+      "sha256": "06ea929d6da790fe4e75ec9dbbb77c7fb8f85ba219a9abd2f06735c0a273027b"
+    }
+  ],
+  "experiment": "GT32-DEGREE8-PACKET-SCHEDULE-019",
+  "packet_capacity": {
+    "architectural_YMM": 16,
+    "degree8_leaves_per_block": 16,
+    "direct_root_stream_first_factor_peak_YMM": 18,
+    "direct_root_stream_pass": false,
+    "one_materialized_A_plus_live_B_during_QBM_peak_YMM": 18,
+    "one_materialized_A_plus_live_B_pass": false,
+    "persistent_A_and_B_minimum_YMM": 17,
+    "persistent_A_and_B_pass": false,
+    "quadratic_factor_vectors_per_operand": 8,
+    "reason": "all four factors occupy eight vectors per operand; selected QBM peaks at 11 including one A/B pair, so seven unconsumed factor vectors push a one-sided live schedule to 18"
+  },
+  "parent": {
+    "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_incomplete_ntt_018/generated/degree8_incomplete_ntt_gate.json",
+    "sha256": "d4dc421f8866dc05a59ac2cda4399847a97bc66796821ff24c66de10d0241c2d"
+  },
+  "production_modified": false,
+  "schedule_candidates": {
+    "D8_FULL_MATERIALIZATION": {
+      "instructions": 2160,
+      "status": "already executable and measured as GT16 quadratic control"
+    },
+    "D8_ONE_SIDE_MATERIALIZED": {
+      "peak_YMM_lower_bound": 18,
+      "status": "must spill or materialize remaining live factor vectors"
+    },
+    "D8_PERSISTENT_AB": {
+      "peak_YMM_lower_bound": 17,
+      "status": "capacity-hard-stop"
+    },
+    "D8_ROOT_STREAM": {
+      "peak_YMM_lower_bound": 18,
+      "status": "must reread/recompute sources or spill"
+    }
+  },
+  "schema": "ntruplus768-gt32-degree8-packet-schedule-019-v1",
+  "selected_executable_control": {
+    "QBM_instructions": 1056,
+    "boundary_total_instructions": 2160,
+    "fused_first_inverse_load_was_slower_percent": 0.78248,
+    "inverse_measured_regression_TSC": 214.364,
+    "legacy_best_chain_regression_TSC": 181.486,
+    "merge_instructions": 432,
+    "split_instructions_two_Forwards": 672,
+    "terminal_measured_saving_TSC": 48.84
+  }
+}

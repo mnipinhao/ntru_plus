@@ -1,0 +1,51 @@
+experiment: GT32-DEGREE-BASIS-COMMUTATION-017
+status: completed_static_hard_stop_current_degree_basis_absorption
+production_modified: false
+assembly_emitted: false
+
+scope:
+  - BaseMul_selected_quartic_degree_basis
+  - exact_selected_Forward_and_inverse_commutation
+  - pair_Hadamard_01_23
+  - pair_Hadamard_02_13
+  - pair_Hadamard_03_12
+  - signed_output_row_permutations
+
+structural_finding:
+  transform_axis: 32_leaf_Q_axis
+  basis_axis: 4_quartic_degree_axis
+  relation: orthogonal_tensor_axes
+  consequence: basis_change_commutes_but_is_not_free
+  Forward_terminal_degree_add_sub: 0
+
+optimistic_cost_floor:
+  blocks_of_16_leaves: 12
+  two_input_formations: 96
+  inverse_output_undo: 48
+  total: 144
+  inverse2_scale_cost_charged: 0
+  delivery_cost_charged: 0
+  maximum_known_BM_credit: 108
+  minimum_whole_island_delta: 36
+  current_B3_vector_multiply_uops_per_block: 63
+  known_Hybrid_vector_multiply_uops_per_block: 61
+
+decision:
+  emit_ASM: false
+  reason:
+    - current_Forward_butterflies_do_not_form_degree_linear_combinations
+    - current_inverse_butterflies_do_not_consume_degree_linear_combinations
+    - T_and_inverse_T_are_moved_not_deleted
+    - optimistic_boundary_floor_exceeds_known_BM_credit
+
+not_closed:
+  - arbitrary_dense_bilinear_bases
+  - producer_native_degree_forms
+  - consumer_native_transformed_coefficients
+  - changed_leaf_decomposition
+
+reopen_only_if:
+  - producer_or_consumer_semantics_delete_T_or_inverse_T
+  - multiply_or_reduction_uop_saving_exceeds_executable_formation_floor
+  - no_new_Montgomery_chain_or_range_checkpoint
+  - transform_decomposition_mixes_quartic_degrees

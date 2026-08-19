@@ -1,0 +1,54 @@
+experiment: GT32-DEGREE8-INCOMPLETE-NTT-018
+status: algebra_pass_executable_packet_open
+production_modified: false
+assembly_emitted: false
+
+coverage_audit:
+  census_011_is_not_full_executable_closure: true
+  dynamic_stage_packet: open
+  BaseMul_pair_native_packet: open_beyond_tested_nodes
+  streamed_evaluation: open
+  LHS_RHS_coupled_stream: open
+  degree8_incomplete_NTT: algebra_pass_executable_open
+  mixed_width_stream: secondary_open
+  arbitrary_bilinear_basis: technical_open_low_priority
+
+coverage_correction:
+  GT16_quadratic: splits_192_quartics_into_384_quadratics
+  degree8_cut: pairs_192_quartics_into_96_degree8_leaves
+  relationship: conjugated_executable_schedule_of_same_factor_algebra
+  remaining_gap: direct_degree8_packet_without_replaying_split_merge
+
+exact_algebra:
+  degree8_leaves: 96
+  quartic_pair: (x4-lambda)*(x4+lambda)=x8-lambda_squared
+  irreducible_quadratic_factors_per_leaf: 4
+  exact_monomial_factor_checks: 24576
+  bilinear_rank_lower_bound: 12
+  bilinear_rank_constructive_upper_bound: 12
+  exact_bilinear_rank: 12
+
+current_credit:
+  Forward_S5_instructions: 216
+  Forward_S5_Montgomery_chains: 24
+  two_Forward_S5_instructions: 432
+  two_Forward_S5_Montgomery_chains: 48
+  terminal_and_inverse_routing_credit_not_yet_counted: true
+
+decision:
+  emit_ASM: false
+  next: synthesize_one_degree8_packet_BM_and_inverse_entry
+  require:
+    - whole_2F_B_I_multiply_uops_nonincreasing
+    - delete_both_Forward_S5_layers
+    - delete_inverse_S5_without_replay
+    - peak_YMM_at_most_15
+    - no_spill
+    - no_new_global_checkpoint
+    - at_least_20_TSC_equivalent_static_margin
+
+not_covered:
+  - degree16_cut
+  - dynamic_stage_semantic_packet
+  - streamed_evaluation
+  - LHS_RHS_coupled_packet

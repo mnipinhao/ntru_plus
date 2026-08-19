@@ -1,0 +1,33 @@
+experiment: GT32-DEG8-FIRST-CUT-IMPOSSIBILITY-021
+status: structural_proof_pass_single_rank1_streaming_impossible
+production_modified: false
+assembly_emitted: false
+
+algebra:
+  leaf_instances: 96
+  decomposition: four_irreducible_quadratic_fields
+  nonzero_multiplication_map_ranks: [2, 4, 6, 8]
+  minimum_nonzero_rank: 2
+
+theorem:
+  applies_to: arbitrary_rank1_bilinear_decomposition
+  removing_one_left_form_remaining_rank: 8
+  removing_one_right_form_remaining_rank: 8
+  first_cut_YMM: 17
+
+two_term_bridge:
+  pair_count: 66
+  rank_drop_pairs: 12
+  rank_after_atomic_pair_removal: 7
+  both_operand_source_live: 14
+  current_output_columns_proportional: false
+
+decision:
+  closed:
+    - arbitrary_rank1_decomposition_consumed_one_term_at_a_time
+    - alternative_rank12_search_for_single_term_rank_drop
+  open:
+    - atomic_rank2_hardware_contraction
+    - pair_native_vpmaddwd_i32_accumulation
+    - wider_register_ISA
+  next: GT32-QBM-PAIR-MADDWD-022

@@ -1,0 +1,485 @@
+{
+  "assembly_emitted": false,
+  "caller_provenance": {
+    "evidence": [
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/encap.c",
+        "sha256": "c6707654ec50808b07d73662fa25da56551219d9b14926eb8daa750a541fa8b9"
+      },
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/decap.c",
+        "sha256": "7146f52b955edac48a0ab8214a7ca7449717b9eb081df17aee8b38fc29c7c3b9"
+      },
+      {
+        "path": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/keygen.c",
+        "sha256": "0d5ddb28e708d146c08150423e48c064566a23c3020c35dbc2da7464f2419d99"
+      }
+    ],
+    "interpretation": "a two-Forward coupled producer is a synthetic polynomial primitive; standard KEM promotion would additionally need decode/BaseInv typed producers",
+    "standard_KEM_edges": {
+      "decap_first": "decoded-c times decoded-f",
+      "decap_second": "subtraction-result times decoded-hinv",
+      "encap": "decoded-h times Forward-r",
+      "keygen": "Forward-F0 times BaseInv-J1"
+    },
+    "two_fresh_Forward_operands_in_one_BM": false
+  },
+  "decision": {
+    "next_priority": "prove whether the minimum nonzero multiplication-map rank forbids a single-term rank drop for every rank-1 decomposition (experiment 021)",
+    "not_closed": [
+      "a different bilinear decomposition whose first removed form lowers source rank",
+      "producer-specific decode/BaseInv contraction rather than two Forward producers",
+      "a wider-register ISA",
+      "a design that deletes products rather than only rescheduling rank-12 forms"
+    ],
+    "reason": [
+      "no first bilinear term lowers either operand's remaining span below rank eight",
+      "the first product therefore requires at least 17 YMM before real QBM temporaries",
+      "direct inverse recombination changes W but not the input-form liveness cut",
+      "replay or one-side materialization violates the declared gate",
+      "the standard KEM call graph has no two-fresh-Forward BM edge"
+    ],
+    "scope_closed": [
+      "the fixed four-quadratic rank-12 forms in any consumption order",
+      "no-replay no-materialization LHS/RHS coupling on 16-YMM AVX2",
+      "W-prime direct inverse accumulation as a remedy for the first input cut"
+    ],
+    "status": "static_hard_stop_fixed_rank12_streamed_contraction_AVX2"
+  },
+  "evidence": [
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_incomplete_ntt_018/generated/degree8_incomplete_ntt_gate.json",
+      "sha256": "d4dc421f8866dc05a59ac2cda4399847a97bc66796821ff24c66de10d0241c2d"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_degree8_packet_schedule_019/generated/degree8_packet_schedule_gate.json",
+      "sha256": "fbaf0f9ccd06db7cc9055f2e9414562c4ae56c90e083b099236d0e3179746736"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/qbm-static-schedules.json",
+      "sha256": "6335d9528cc01cd801e0b5f7ee32274c93047f15c751bf8240e2519598c13e63"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/results/round4c-chain-floor.json",
+      "sha256": "a7c590c5d765ede08a4121b77b9feb989dfeeefee357c4b013b7f3fa9706bf30"
+    },
+    {
+      "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/tile4-streaming-b-short.json",
+      "sha256": "442c3452969dd9dd6cb5c2bb3a8b6a0b4291675d3d521b340e2d10958b833aec"
+    }
+  ],
+  "exact_rank12_contraction": {
+    "all_leaf_first_cut_rank_pairs": [
+      [
+        8,
+        8
+      ]
+    ],
+    "bilinear_products_added_by_basis_composition": 0,
+    "degree8_leaf_instances_checked": 96,
+    "direct_inverse_basis_rule": "W_prime = T_inverse_entry * W",
+    "direct_inverse_composition_is_algebraically_valid": true,
+    "input_form_names": [
+      "r0:E",
+      "r0:O",
+      "r0:E+O",
+      "r1:E",
+      "r1:O",
+      "r1:E+O",
+      "r2:E",
+      "r2:O",
+      "r2:E+O",
+      "r3:E",
+      "r3:O",
+      "r3:E+O"
+    ],
+    "input_form_rows": [
+      [
+        1,
+        0,
+        110,
+        0,
+        1729,
+        0,
+        55,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        110,
+        0,
+        1729,
+        0,
+        55
+      ],
+      [
+        1,
+        1,
+        110,
+        110,
+        1729,
+        1729,
+        55,
+        55
+      ],
+      [
+        1,
+        0,
+        3347,
+        0,
+        1729,
+        0,
+        3402,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        3347,
+        0,
+        1729,
+        0,
+        3402
+      ],
+      [
+        1,
+        1,
+        3347,
+        3347,
+        1729,
+        1729,
+        3402,
+        3402
+      ],
+      [
+        1,
+        0,
+        1631,
+        0,
+        1728,
+        0,
+        913,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        1631,
+        0,
+        1728,
+        0,
+        913
+      ],
+      [
+        1,
+        1,
+        1631,
+        1631,
+        1728,
+        1728,
+        913,
+        913
+      ],
+      [
+        1,
+        0,
+        1826,
+        0,
+        1728,
+        0,
+        2544,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        1826,
+        0,
+        1728,
+        0,
+        2544
+      ],
+      [
+        1,
+        1,
+        1826,
+        1826,
+        1728,
+        1728,
+        2544,
+        2544
+      ]
+    ],
+    "input_form_span_rank": 8,
+    "monomial_product_checks": 6144,
+    "output_rank": 8,
+    "output_recombination_matrix_W": [
+      [
+        2593,
+        1756,
+        0,
+        2593,
+        1701,
+        0,
+        2593,
+        1272,
+        0,
+        2593,
+        2185,
+        0
+      ],
+      [
+        864,
+        864,
+        2593,
+        864,
+        864,
+        2593,
+        864,
+        864,
+        2593,
+        864,
+        864,
+        2593
+      ],
+      [
+        55,
+        2593,
+        0,
+        3402,
+        2593,
+        0,
+        913,
+        2593,
+        0,
+        2544,
+        2593,
+        0
+      ],
+      [
+        3402,
+        3402,
+        55,
+        55,
+        55,
+        3402,
+        2544,
+        2544,
+        913,
+        913,
+        913,
+        2544
+      ],
+      [
+        1729,
+        55,
+        0,
+        1729,
+        3402,
+        0,
+        1728,
+        913,
+        0,
+        1728,
+        2544,
+        0
+      ],
+      [
+        1728,
+        1728,
+        1729,
+        1728,
+        1728,
+        1729,
+        1729,
+        1729,
+        1728,
+        1729,
+        1729,
+        1728
+      ],
+      [
+        110,
+        1729,
+        0,
+        3347,
+        1729,
+        0,
+        1631,
+        1728,
+        0,
+        1826,
+        1728,
+        0
+      ],
+      [
+        3347,
+        3347,
+        110,
+        110,
+        110,
+        3347,
+        1826,
+        1826,
+        1631,
+        1631,
+        1631,
+        1826
+      ]
+    ]
+  },
+  "experiment": "GT32-DEG8-STREAMED-BILINEAR-CONTRACTION-020",
+  "forbidden_escape_accounting": {
+    "existing_materialized_control": {
+      "inverse_regression_TSC": 214.364,
+      "split_QBM_merge_instructions": 2160,
+      "terminal_saving_TSC": 48.84,
+      "tracked_best_2F_B_I_regression_TSC": 181.486
+    },
+    "old_streaming_B_negative_control": {
+      "forward_B_plus_BM_regression_TSC": 208.65,
+      "interpretation": "the old M-plane stream is not proof against degree-8 contraction, but confirms that replay/scratch plus serialized BM is not free",
+      "same_DAG": false
+    },
+    "one_operand_materialization": {
+      "bytes_stored_plus_reloaded": 3072,
+      "status": "is a complete operand materialization, not streamed contraction",
+      "vector_memory_ops_all_blocks": 96,
+      "vector_stores_plus_reloads_per_block": 16
+    },
+    "source_replay": {
+      "extra_vector_loads_per_operand_block": 24,
+      "extra_vector_loads_two_operands_all_blocks": 288,
+      "status": "forbidden by gate and recreates a source-memory boundary"
+    }
+  },
+  "gate_results": {
+    "1_input_streaming_DAG": "hard-stop-first-product-cut-is-17-YMM",
+    "2_QBM_16_YMM_closure": "fail-even-with-optimistic-one-register-product",
+    "3_direct_inverse_accumulation": "algebra-pass-execution-blocked-by-input-cut",
+    "4_whole_island_margin": "not-scored-mandatory-no-spill-gate-failed",
+    "5_emit_ASM": false
+  },
+  "input_streaming_pebble_gate": {
+    "DP_assumption": "each product is consumed using one register and no inverse-output accumulator remains live; real QBM can only use more registers",
+    "all_first_cuts_at_least_17_YMM": true,
+    "first_product_cuts": [
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 0
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 1
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 2
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 3
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 4
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 5
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 6
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 7
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 8
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 9
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 10
+      },
+      {
+        "minimum_live_YMM": 17,
+        "product_or_accumulator_YMM": 1,
+        "remaining_left_rank": 8,
+        "remaining_right_rank": 8,
+        "term": 11
+      }
+    ],
+    "form_count_per_operand": 12,
+    "initial_form_span_rank_per_operand": 8,
+    "optimistic_all_order_DP_peak_YMM": 17,
+    "optimistic_best_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "production_modified": false,
+  "register_decision": {
+    "QBM_9_YMM_variant_sufficient": false,
+    "abstract_first_product_lower_bound_YMM": 17,
+    "architectural_YMM": 16,
+    "inverse_accumulation_effect": "W-prime removes a canonical merge algebraically but needs an output/product accumulator; it cannot reduce the 17-YMM first cut",
+    "selected_QBM_peak_YMM": 11,
+    "why_destructive_order_does_not_start": "after deleting any one of the 12 Karatsuba forms, the other 11 still span all eight source dimensions on both LHS and RHS; the first nonlinear product therefore needs a seventeenth slot"
+  },
+  "schema": "ntruplus768-gt32-deg8-streamed-contraction-020-v1"
+}

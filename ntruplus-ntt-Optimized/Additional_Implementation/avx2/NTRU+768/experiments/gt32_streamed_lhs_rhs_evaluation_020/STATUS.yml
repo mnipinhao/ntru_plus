@@ -1,0 +1,41 @@
+experiment: GT32-DEG8-STREAMED-BILINEAR-CONTRACTION-020
+status: static_hard_stop_fixed_rank12_streamed_contraction_AVX2
+production_modified: false
+assembly_emitted: false
+
+exact:
+  bilinear_rank: 12
+  input_form_span_per_operand: 8
+  deleting_any_first_form_remaining_rank: 8
+  degree8_leaf_instances_checked: 96
+  monomial_product_checks: 6144
+  direct_inverse_composition: algebraically_valid
+
+pebbling:
+  states: 4096
+  architectural_YMM: 16
+  optimistic_minimum_peak_YMM: 17
+  selected_QBM_peak_YMM: 11
+  source_replay_allowed: false
+  global_materialization_allowed: false
+
+gate_results:
+  input_streaming_DAG: fail_first_product_cut
+  QBM_closure: fail_even_with_one_register_optimistic_product
+  direct_inverse_accumulation: algebra_pass_execution_blocked
+  whole_island_margin: not_scored
+  emit_ASM: false
+
+caller_provenance:
+  two_fresh_Forward_operands_in_standard_KEM_BM: false
+
+decision:
+  closed:
+    - fixed_four_quadratic_rank12_forms_in_any_order
+    - no_replay_no_materialization_LHS_RHS_coupling_on_AVX2
+    - direct_inverse_W_prime_as_remedy_for_input_liveness
+  open:
+    - different_bilinear_decomposition_with_early_rank_drop
+    - decode_or_BaseInv_typed_contraction_producer
+    - wider_register_ISA
+  next: degree8_first_cut_structural_impossibility_021
