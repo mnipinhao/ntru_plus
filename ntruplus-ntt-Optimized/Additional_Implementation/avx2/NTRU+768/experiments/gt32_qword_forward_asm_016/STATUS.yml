@@ -1,0 +1,58 @@
+experiment: GT32-QWORD-FORWARD-ASM-016
+status: executable_correct_performance_hard_stop
+production_modified: false
+gt_clean_modified: false
+
+correctness:
+  forward_random_trials: 1000
+  forward_mod_q_exact: true
+  out_eq_in_alias: true
+  kem_valid_and_malformed_trials: 1000
+  encap_byte_exact: true
+  decap_return_and_secret_exact: true
+
+corrected_contract:
+  dif_phase_coordinate: input_q
+  terminal_physical_coordinate: bit_reversed_q
+  terminal_max_abs_bound: 14358
+  encap_zero_extra_instruction_closure: true
+  decap_zero_extra_instruction_closure: true
+
+benchmark:
+  fixed_elf: true
+  aslr_disabled: true
+  cpu: 18
+  launches: 8
+  paired_samples_per_launch: 20
+  calls_per_sample: 64
+  order: alternating_AB_BA
+  launch_median_delta_tsc:
+    forward: [9, 4, 23, -7, 7, 8, -7, -7]
+    encap: [-29, -20, -26, 0, -20, -9, -43, -50]
+    decap: [22, -5, 25, 61, 11, 35, -14, 28]
+  median_delta_tsc:
+    forward: 5.5
+    encap: -23.0
+    decap: 23.5
+  negative_launch_medians:
+    forward: 3
+    encap: 7
+    decap: 2
+
+code_shape:
+  production_frontend_plus_core_bytes: 4973
+  candidate_frontend_plus_core_bytes: 5637
+  candidate_minus_production_bytes: 664
+  static_dynamic_instruction_delta_per_forward: -32
+  added_montgomery_chains_per_forward: 16
+
+decision:
+  assembly_correct: true
+  promote: false
+  reason:
+    - standalone Forward is not faster
+    - Decap regresses at the launch median
+    - Encap-only gain is small and cannot be attributed to intrinsic Forward work
+  reopen_only_if:
+    - the 16 added Montgomery chains are eliminated or moved off the critical resource
+    - a smaller reusable core preserves the route deletion without code-delivery debt

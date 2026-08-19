@@ -1,0 +1,39 @@
+experiment: GT32-CROSS-R3-QWORD-B3-INVERSE-RANGE-014
+status: selective_normalization_cost_hard_stop
+production_modified: false
+assembly_emitted: false
+
+result:
+  b3_zero_input_normalization: true
+  b3_output_abs_bounds: [6797, 11461, 16187, 2719]
+  current_inverse_zero_repair_closes: false
+  current_inverse_i1_terminal_abs_bound: 40334
+  plane_selective_center:
+    coefficients: [0, 1, 2]
+    vectors: 36
+    instructions: 108
+  vector_selective_center:
+    proof: locally_irreducible_not_global_minimum
+    vectors: 24
+    instructions: 72
+  static_2F_B3_current_inverse:
+    forward_delta: -64
+    selective_center_delta: 72
+    net_delta: 8
+    deleted_vpblendd: 192
+    added_vector_multiply_uops: 144
+
+decision:
+  assembly_eligible: false
+  reason: >-
+    The actual nonuniform terminal is legal for B3, but not for the unchanged
+    inverse.  The best known whole-YMM repair consumes the entire Forward
+    instruction saving and adds multiply-port pressure.
+  reopen_only_if:
+    - exact global vector search proves a substantially cheaper repair
+    - conjugated inverse closes representative range without repair
+    - inverse consumer range or output contract changes
+  does_not_block:
+    - Encap Forward callsites that do not feed InvNTT
+    - post-inverse Decap Forward callsites
+  gt_clean_modified: false

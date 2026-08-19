@@ -1,0 +1,2195 @@
+{
+  "assembly_emitted": false,
+  "cost_accounting": {
+    "interpretation": "a real routing class disappears, but the candidate trades shuffle uops for multiply chains; static instruction saving is not runtime evidence",
+    "inverse_if_range_closes": {
+      "added_Montgomery_chains": 16,
+      "added_weighted_stage_instructions": 64,
+      "deleted_vpblendd": 96,
+      "operation_class_deleted": "BLEND3_OUT qword routing",
+      "static_instruction_delta": -32
+    },
+    "per_Forward": {
+      "added_Montgomery_chains": 16,
+      "added_weighted_S1_instructions": 64,
+      "deleted_vpblendd": 96,
+      "operation_class_deleted": "GT_BLEND3 qword routing",
+      "static_instruction_delta": -32
+    },
+    "whole_2F_plus_I_if_inverse_range_closes": {
+      "added_Montgomery_chains": 48,
+      "added_vector_multiply_uops": 144,
+      "boundary_memory_operations_delta": 0,
+      "routing_deleted": 288,
+      "static_instruction_delta": -96,
+      "weighted_stage_instructions_added": 192
+    }
+  },
+  "decision": {
+    "GT_Clean_modified": false,
+    "forward_assembly_eligible": false,
+    "forward_semantic_schedule_pass": true,
+    "next": "GT32-CROSS-R3-QWORD-B3-INVERSE-RANGE-014",
+    "not_a_012_repeat": "no persistent 128-bit ownership and no 18-YMM join; ownership is qword phase metadata that collapses to scale 1 across R2",
+    "reason": "Forward deletes the complete GT_BLEND3 class, returns the exact current BM ABI, remains signed-i16 safe, and colors without spills. Its conservative terminal bound 14358 is below the current wide-raw control bound 17724 but above the frozen uniform B3 contract 10788. The exact inverse modular dual exists, but its selected-schedule representative range is also still open.",
+    "status": "semantic_and_routing_pass_range_contract_open",
+    "whole_2F_plus_I_assembly_eligible": false
+  },
+  "experiment": "GT32-CROSS-R3-QWORD-SEMANTIC-PACKET-013",
+  "forward_range": {
+    "candidate_below_current_wide_raw_control": true,
+    "candidate_producer_max_abs_bound": 5220,
+    "current_NTT32_input_contract": 1728,
+    "current_wide_raw_control_terminal_max_abs_bound": 17724,
+    "frozen_uniform_B3_bound_10788_met": false,
+    "input_coefficients": [
+      -3,
+      4
+    ],
+    "method": "exact top-split/twist/DFT3 enumeration; exhaustive fixed-factor Montgomery images over symmetric lane bounds plus triangle inequality through all five R2 stages",
+    "records": [
+      {
+        "branch": 0,
+        "current_k3": 0,
+        "packet_row": 0,
+        "producer_max_abs_bound": 5220,
+        "stages": [
+          {
+            "factor_set": [
+              1
+            ],
+            "max_abs_bound": 6926,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              1,
+              2749
+            ],
+            "max_abs_bound": 8651,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              1,
+              1716,
+              1936,
+              2749
+            ],
+            "max_abs_bound": 10495,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              1,
+              39,
+              550,
+              1716,
+              1936,
+              2216,
+              2749,
+              3413
+            ],
+            "max_abs_bound": 12384,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              1,
+              39,
+              281,
+              436,
+              550,
+              1015,
+              1716,
+              1784,
+              1899,
+              1936,
+              1993,
+              2190,
+              2216,
+              2749,
+              2869,
+              3413
+            ],
+            "max_abs_bound": 14188,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          13613,
+          13613,
+          13652,
+          13652,
+          13639,
+          13639,
+          13828,
+          13828,
+          13730,
+          13730,
+          13834,
+          13834,
+          13832,
+          13832,
+          13968,
+          13968,
+          13795,
+          13795,
+          13785,
+          13785,
+          13933,
+          13933,
+          13807,
+          13807,
+          13934,
+          13934,
+          13776,
+          13776,
+          13998,
+          13998,
+          14188,
+          14188
+        ],
+        "terminal_max_abs_bound": 14188
+      },
+      {
+        "branch": 0,
+        "current_k3": 2,
+        "packet_row": 1,
+        "producer_max_abs_bound": 5163,
+        "stages": [
+          {
+            "factor_set": [
+              722
+            ],
+            "max_abs_bound": 6938,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              248,
+              2734
+            ],
+            "max_abs_bound": 8807,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              460,
+              722,
+              1164,
+              1346
+            ],
+            "max_abs_bound": 10754,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              699,
+              1880,
+              2734,
+              2916,
+              3362
+            ],
+            "max_abs_bound": 12582,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              205,
+              460,
+              502,
+              675,
+              722,
+              834,
+              1164,
+              1331,
+              1346,
+              2044,
+              2106,
+              2376,
+              2802,
+              2818,
+              3002,
+              3403
+            ],
+            "max_abs_bound": 14319,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          14041,
+          14041,
+          14139,
+          14139,
+          14106,
+          14106,
+          14276,
+          14276,
+          13993,
+          13993,
+          14107,
+          14107,
+          13962,
+          13962,
+          14101,
+          14101,
+          13839,
+          13839,
+          14046,
+          14046,
+          14061,
+          14061,
+          13800,
+          13800,
+          14319,
+          14319,
+          14209,
+          14209,
+          14070,
+          14070,
+          14054,
+          14054
+        ],
+        "terminal_max_abs_bound": 14319
+      },
+      {
+        "branch": 0,
+        "current_k3": 1,
+        "packet_row": 2,
+        "producer_max_abs_bound": 5189,
+        "stages": [
+          {
+            "factor_set": [
+              2734
+            ],
+            "max_abs_bound": 6969,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              460,
+              722
+            ],
+            "max_abs_bound": 8851,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              2734
+            ],
+            "max_abs_bound": 10731,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              460,
+              502,
+              722,
+              1164,
+              1346,
+              2802,
+              2818,
+              3002
+            ],
+            "max_abs_bound": 12647,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              630,
+              699,
+              800,
+              1880,
+              2496,
+              2734,
+              2816,
+              2909,
+              2916,
+              3086,
+              3362,
+              3370,
+              3393
+            ],
+            "max_abs_bound": 14266,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          14035,
+          14035,
+          14157,
+          14157,
+          14083,
+          14083,
+          14071,
+          14071,
+          13975,
+          13975,
+          13959,
+          13959,
+          14266,
+          14266,
+          14085,
+          14085,
+          13972,
+          13972,
+          14006,
+          14006,
+          14119,
+          14119,
+          13940,
+          13940,
+          13930,
+          13930,
+          13980,
+          13980,
+          14004,
+          14004,
+          14082,
+          14082
+        ],
+        "terminal_max_abs_bound": 14266
+      },
+      {
+        "branch": 1,
+        "current_k3": 0,
+        "packet_row": 0,
+        "producer_max_abs_bound": 5182,
+        "stages": [
+          {
+            "factor_set": [
+              1
+            ],
+            "max_abs_bound": 6914,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              1,
+              2749
+            ],
+            "max_abs_bound": 8676,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              1,
+              1716,
+              1936,
+              2749
+            ],
+            "max_abs_bound": 10538,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              1,
+              39,
+              550,
+              1716,
+              1936,
+              2216,
+              2749,
+              3413
+            ],
+            "max_abs_bound": 12372,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              1,
+              39,
+              281,
+              436,
+              550,
+              1015,
+              1716,
+              1784,
+              1899,
+              1936,
+              1993,
+              2190,
+              2216,
+              2749,
+              2869,
+              3413
+            ],
+            "max_abs_bound": 14084,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          13501,
+          13501,
+          13548,
+          13548,
+          13535,
+          13535,
+          13699,
+          13699,
+          13626,
+          13626,
+          13730,
+          13730,
+          13728,
+          13728,
+          13864,
+          13864,
+          13691,
+          13691,
+          13681,
+          13681,
+          13829,
+          13829,
+          13703,
+          13703,
+          13830,
+          13830,
+          13672,
+          13672,
+          13894,
+          13894,
+          14084,
+          14084
+        ],
+        "terminal_max_abs_bound": 14084
+      },
+      {
+        "branch": 1,
+        "current_k3": 2,
+        "packet_row": 1,
+        "producer_max_abs_bound": 5190,
+        "stages": [
+          {
+            "factor_set": [
+              722
+            ],
+            "max_abs_bound": 6953,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              248,
+              2734
+            ],
+            "max_abs_bound": 8825,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              460,
+              722,
+              1164,
+              1346
+            ],
+            "max_abs_bound": 10772,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              699,
+              1880,
+              2734,
+              2916,
+              3362
+            ],
+            "max_abs_bound": 12612,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              205,
+              460,
+              502,
+              675,
+              722,
+              834,
+              1164,
+              1331,
+              1346,
+              2044,
+              2106,
+              2376,
+              2802,
+              2818,
+              3002,
+              3403
+            ],
+            "max_abs_bound": 14270,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          13992,
+          13992,
+          14090,
+          14090,
+          14058,
+          14058,
+          14227,
+          14227,
+          13944,
+          13944,
+          14058,
+          14058,
+          13913,
+          13913,
+          14052,
+          14052,
+          13790,
+          13790,
+          13997,
+          13997,
+          14012,
+          14012,
+          13751,
+          13751,
+          14270,
+          14270,
+          14160,
+          14160,
+          14022,
+          14022,
+          14005,
+          14005
+        ],
+        "terminal_max_abs_bound": 14270
+      },
+      {
+        "branch": 1,
+        "current_k3": 1,
+        "packet_row": 2,
+        "producer_max_abs_bound": 5200,
+        "stages": [
+          {
+            "factor_set": [
+              2734
+            ],
+            "max_abs_bound": 6989,
+            "signed_int16_safe": true,
+            "stage": 1
+          },
+          {
+            "factor_set": [
+              460,
+              722
+            ],
+            "max_abs_bound": 8860,
+            "signed_int16_safe": true,
+            "stage": 2
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              2734
+            ],
+            "max_abs_bound": 10744,
+            "signed_int16_safe": true,
+            "stage": 3
+          },
+          {
+            "factor_set": [
+              460,
+              502,
+              722,
+              1164,
+              1346,
+              2802,
+              2818,
+              3002
+            ],
+            "max_abs_bound": 12680,
+            "signed_int16_safe": true,
+            "stage": 4
+          },
+          {
+            "factor_set": [
+              248,
+              357,
+              395,
+              630,
+              699,
+              800,
+              1880,
+              2496,
+              2734,
+              2816,
+              2909,
+              2916,
+              3086,
+              3362,
+              3370,
+              3393
+            ],
+            "max_abs_bound": 14358,
+            "signed_int16_safe": true,
+            "stage": 5
+          }
+        ],
+        "terminal_abs_bounds_by_physical_Q": [
+          14123,
+          14123,
+          14245,
+          14245,
+          14171,
+          14171,
+          14159,
+          14159,
+          14067,
+          14067,
+          14051,
+          14051,
+          14358,
+          14358,
+          14177,
+          14177,
+          14054,
+          14054,
+          14087,
+          14087,
+          14200,
+          14200,
+          14021,
+          14021,
+          14022,
+          14022,
+          14072,
+          14072,
+          14096,
+          14096,
+          14174,
+          14174
+        ],
+        "terminal_max_abs_bound": 14358
+      }
+    ],
+    "signed_int16_safe": true,
+    "terminal_max_abs_bound": 14358
+  },
+  "full_R2_phase_closure": {
+    "coordinate": "DIF input Q through S1-S5; terminal Q is bit-reversed and the exact column_j mapping is recorded separately",
+    "exact_NTT32_basis_checks": 96,
+    "packet_rows": [
+      {
+        "current_k3": 0,
+        "initial_scales_by_input_Q": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "packet_row": 0,
+        "phase_multiplier": 0,
+        "stage1_factor_by_low_input_Q": {
+          "0": 1,
+          "1": 1,
+          "10": 1,
+          "11": 1,
+          "12": 1,
+          "13": 1,
+          "14": 1,
+          "15": 1,
+          "2": 1,
+          "3": 1,
+          "4": 1,
+          "5": 1,
+          "6": 1,
+          "7": 1,
+          "8": 1,
+          "9": 1
+        },
+        "stages": [
+          {
+            "distance": 16,
+            "distinct_factors": [
+              1
+            ],
+            "nonidentity_butterflies": 0,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 1
+          },
+          {
+            "distance": 8,
+            "distinct_factors": [
+              1,
+              2749
+            ],
+            "nonidentity_butterflies": 8,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 2
+          },
+          {
+            "distance": 4,
+            "distinct_factors": [
+              1,
+              1716,
+              1936,
+              2749
+            ],
+            "nonidentity_butterflies": 12,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 3
+          },
+          {
+            "distance": 2,
+            "distinct_factors": [
+              1,
+              39,
+              550,
+              1716,
+              1936,
+              2216,
+              2749,
+              3413
+            ],
+            "nonidentity_butterflies": 14,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 4
+          },
+          {
+            "distance": 1,
+            "distinct_factors": [
+              1,
+              39,
+              281,
+              436,
+              550,
+              1015,
+              1716,
+              1784,
+              1899,
+              1936,
+              1993,
+              2190,
+              2216,
+              2749,
+              2869,
+              3413
+            ],
+            "nonidentity_butterflies": 15,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 5
+          }
+        ],
+        "terminal_current_scale": 1
+      },
+      {
+        "current_k3": 2,
+        "initial_scales_by_input_Q": [
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734,
+          722,
+          1,
+          2734
+        ],
+        "packet_row": 1,
+        "phase_multiplier": 1,
+        "stage1_factor_by_low_input_Q": {
+          "0": 722,
+          "1": 722,
+          "10": 722,
+          "11": 722,
+          "12": 722,
+          "13": 722,
+          "14": 722,
+          "15": 722,
+          "2": 722,
+          "3": 722,
+          "4": 722,
+          "5": 722,
+          "6": 722,
+          "7": 722,
+          "8": 722,
+          "9": 722
+        },
+        "stages": [
+          {
+            "distance": 16,
+            "distinct_factors": [
+              722
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1
+            ],
+            "stage": 1
+          },
+          {
+            "distance": 8,
+            "distinct_factors": [
+              248,
+              2734
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              1,
+              2734,
+              722,
+              1,
+              2734,
+              722,
+              1,
+              2734
+            ],
+            "stage": 2
+          },
+          {
+            "distance": 4,
+            "distinct_factors": [
+              460,
+              722,
+              1164,
+              1346
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1,
+              1,
+              2734,
+              722,
+              1
+            ],
+            "stage": 3
+          },
+          {
+            "distance": 2,
+            "distinct_factors": [
+              248,
+              357,
+              395,
+              699,
+              1880,
+              2734,
+              2916,
+              3362
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734,
+              1,
+              2734
+            ],
+            "stage": 4
+          },
+          {
+            "distance": 1,
+            "distinct_factors": [
+              205,
+              460,
+              502,
+              675,
+              722,
+              834,
+              1164,
+              1331,
+              1346,
+              2044,
+              2106,
+              2376,
+              2802,
+              2818,
+              3002,
+              3403
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 5
+          }
+        ],
+        "terminal_current_scale": 1
+      },
+      {
+        "current_k3": 1,
+        "initial_scales_by_input_Q": [
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722,
+          2734,
+          1,
+          722
+        ],
+        "packet_row": 2,
+        "phase_multiplier": 2,
+        "stage1_factor_by_low_input_Q": {
+          "0": 2734,
+          "1": 2734,
+          "10": 2734,
+          "11": 2734,
+          "12": 2734,
+          "13": 2734,
+          "14": 2734,
+          "15": 2734,
+          "2": 2734,
+          "3": 2734,
+          "4": 2734,
+          "5": 2734,
+          "6": 2734,
+          "7": 2734,
+          "8": 2734,
+          "9": 2734
+        },
+        "stages": [
+          {
+            "distance": 16,
+            "distinct_factors": [
+              2734
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1
+            ],
+            "stage": 1
+          },
+          {
+            "distance": 8,
+            "distinct_factors": [
+              460,
+              722
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              1,
+              722,
+              2734,
+              1,
+              722,
+              2734,
+              1,
+              722
+            ],
+            "stage": 2
+          },
+          {
+            "distance": 4,
+            "distinct_factors": [
+              248,
+              357,
+              395,
+              2734
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1,
+              1,
+              722,
+              2734,
+              1
+            ],
+            "stage": 3
+          },
+          {
+            "distance": 2,
+            "distinct_factors": [
+              460,
+              502,
+              722,
+              1164,
+              1346,
+              2802,
+              2818,
+              3002
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722,
+              1,
+              722
+            ],
+            "stage": 4
+          },
+          {
+            "distance": 1,
+            "distinct_factors": [
+              248,
+              357,
+              395,
+              630,
+              699,
+              800,
+              1880,
+              2496,
+              2734,
+              2816,
+              2909,
+              2916,
+              3086,
+              3362,
+              3370,
+              3393
+            ],
+            "nonidentity_butterflies": 16,
+            "scales_after": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "stage": 5
+          }
+        ],
+        "terminal_current_scale": 1
+      }
+    ],
+    "physical_Q_to_column_j": {
+      "0": 0,
+      "1": 16,
+      "10": 30,
+      "11": 14,
+      "12": 18,
+      "13": 2,
+      "14": 10,
+      "15": 26,
+      "16": 3,
+      "17": 19,
+      "18": 27,
+      "19": 11,
+      "2": 24,
+      "20": 15,
+      "21": 31,
+      "22": 7,
+      "23": 23,
+      "24": 9,
+      "25": 25,
+      "26": 1,
+      "27": 17,
+      "28": 21,
+      "29": 5,
+      "3": 8,
+      "30": 13,
+      "31": 29,
+      "4": 12,
+      "5": 28,
+      "6": 4,
+      "7": 20,
+      "8": 6,
+      "9": 22
+    },
+    "terminal_is_current_BM_ABI": true,
+    "weighted_S1": {
+      "Top_branches": 2,
+      "added_Montgomery_chains_per_Forward": 16,
+      "added_instructions_per_Forward": 64,
+      "packet_rows": 2,
+      "raw_to_mont_instruction_delta_per_macro": 16,
+      "vector_chains_per_row_and_branch": 4
+    }
+  },
+  "hypothesis": "qword is the common semantic granularity of GT_BLEND3 and R2-S1; replace explicit routing with an evolving row/phase ownership",
+  "inverse_duality": {
+    "blocker": "the selected inverse has a different staged representative/range schedule; exact inverse factor tables and interval propagation are required before assembly",
+    "deleted_BLEND3_OUT_per_inverse": 96,
+    "estimated_added_instructions": 64,
+    "exact_mod_q": true,
+    "matrix_duality": "inverse(candidate Forward producer+R2)",
+    "register_coloring_reuses_forward_weighted_stage_proof": true,
+    "reversed_weighted_stage_added_Montgomery_chains": 16,
+    "signed_i16_representative_range_proved": false,
+    "target_tail": "phase^-1 + Swap12 before IDFT3, no BLEND3_OUT",
+    "terminal_input_ABI": "unchanged current private-M/BM output"
+  },
+  "parent": {
+    "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_cross_r3_semantic_packet_012/generated/cross_r3_semantic_packet_gate.json",
+    "sha256": "166048ba6b8cbc336bcfc096916d085ffb779abbe36febb9b5b4db50577fbbfb"
+  },
+  "producer_conjugation": {
+    "exact_mod_q": true,
+    "identity": "D*T*Cq = Phiq*Swap12*D*Tprimeq",
+    "omega3": 2734,
+    "producer_effect": "delete GT_BLEND3; relabel the three twist rows, store DFT rows as k3=[0,2,1], and carry qword phases into NTT32",
+    "records": [
+      {
+        "GT_BLEND3_source_by_output_row": [
+          0,
+          2,
+          1
+        ],
+        "arbitrary_diagonal_twist_basis_checks": 3,
+        "candidate_row_to_current_k3": [
+          0,
+          2,
+          1
+        ],
+        "candidate_scale_exponents": [
+          0,
+          0,
+          0
+        ],
+        "qword_semantic_mod3": 0
+      },
+      {
+        "GT_BLEND3_source_by_output_row": [
+          1,
+          0,
+          2
+        ],
+        "arbitrary_diagonal_twist_basis_checks": 3,
+        "candidate_row_to_current_k3": [
+          0,
+          2,
+          1
+        ],
+        "candidate_scale_exponents": [
+          0,
+          1,
+          2
+        ],
+        "qword_semantic_mod3": 1
+      },
+      {
+        "GT_BLEND3_source_by_output_row": [
+          2,
+          1,
+          0
+        ],
+        "arbitrary_diagonal_twist_basis_checks": 3,
+        "candidate_row_to_current_k3": [
+          0,
+          2,
+          1
+        ],
+        "candidate_scale_exponents": [
+          0,
+          2,
+          4
+        ],
+        "qword_semantic_mod3": 2
+      }
+    ]
+  },
+  "production_modified": false,
+  "schema": "gt32-cross-r3-qword-semantic-packet-v1",
+  "source_audit": {
+    "BLEND3_OUT": {
+      "vpblendd": 6
+    },
+    "FR_MONT_CROSS4": {
+      "vmovdqa": 4,
+      "vpaddw": 4,
+      "vpmulhw": 8,
+      "vpmullw": 4,
+      "vpsubw": 8
+    },
+    "FR_RAW_CROSS4": {
+      "vmovdqa": 4,
+      "vpaddw": 4,
+      "vpsubw": 4
+    },
+    "GT_BLEND3": {
+      "vpblendd": 6
+    },
+    "selected_counts": {
+      "BLEND3_OUT_per_inverse": 96,
+      "GT_BLEND3_per_Forward": 96,
+      "whole_2F_plus_I_R3_routing": 288
+    },
+    "sources": [
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt.s",
+        "sha256": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt_m.s",
+        "sha256": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/invntt.s",
+        "sha256": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/gt32_3x32_mapping.json",
+        "sha256": "c298095da16197247d172f1d61153ffdb4933cf095af8a4dd0ebc8e7516684c9"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_range_metadata.json",
+        "sha256": "440ef0827370d499ffeb85c8941b0cbfc727a8c932e50082a9d43f3c4f544cfb"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_private_inverse_range.json",
+        "sha256": "cdf45a1bd76d7b92041d5c86c1c8a191d2c310ec94ca37a60c168f1191591401"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_forward_landing_baseinv_gate.json",
+        "sha256": "9eecb760b78a790a0a069ba66f16ad7da748c6998ae18fe97b9f948de5a8c1de"
+      }
+    ]
+  },
+  "weighted_stage_register_allocator": {
+    "IR": [
+      {
+        "dst": "lo0",
+        "mnemonic": "vpmullw",
+        "src": [
+          "h0"
+        ]
+      },
+      {
+        "dst": "lo1",
+        "mnemonic": "vpmullw",
+        "src": [
+          "h1"
+        ]
+      },
+      {
+        "dst": "lo2",
+        "mnemonic": "vpmullw",
+        "src": [
+          "h2"
+        ]
+      },
+      {
+        "dst": "lo3",
+        "mnemonic": "vpmullw",
+        "src": [
+          "h3"
+        ]
+      },
+      {
+        "dst": "hi0",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "h0"
+        ]
+      },
+      {
+        "dst": "hi1",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "h1"
+        ]
+      },
+      {
+        "dst": "hi2",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "h2"
+        ]
+      },
+      {
+        "dst": "hi3",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "h3"
+        ]
+      },
+      {
+        "dst": "corr0",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "q",
+          "lo0"
+        ]
+      },
+      {
+        "dst": "corr1",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "q",
+          "lo1"
+        ]
+      },
+      {
+        "dst": "corr2",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "q",
+          "lo2"
+        ]
+      },
+      {
+        "dst": "corr3",
+        "mnemonic": "vpmulhw",
+        "src": [
+          "q",
+          "lo3"
+        ]
+      },
+      {
+        "dst": "red0",
+        "mnemonic": "vpsubw",
+        "src": [
+          "hi0",
+          "corr0"
+        ]
+      },
+      {
+        "dst": "red1",
+        "mnemonic": "vpsubw",
+        "src": [
+          "hi1",
+          "corr1"
+        ]
+      },
+      {
+        "dst": "red2",
+        "mnemonic": "vpsubw",
+        "src": [
+          "hi2",
+          "corr2"
+        ]
+      },
+      {
+        "dst": "red3",
+        "mnemonic": "vpsubw",
+        "src": [
+          "hi3",
+          "corr3"
+        ]
+      },
+      {
+        "dst": "minus0",
+        "mnemonic": "vpsubw",
+        "src": [
+          "l0",
+          "red0"
+        ]
+      },
+      {
+        "dst": "minus1",
+        "mnemonic": "vpsubw",
+        "src": [
+          "l1",
+          "red1"
+        ]
+      },
+      {
+        "dst": "minus2",
+        "mnemonic": "vpsubw",
+        "src": [
+          "l2",
+          "red2"
+        ]
+      },
+      {
+        "dst": "minus3",
+        "mnemonic": "vpsubw",
+        "src": [
+          "l3",
+          "red3"
+        ]
+      },
+      {
+        "dst": "plus0",
+        "mnemonic": "vpaddw",
+        "src": [
+          "l0",
+          "red0"
+        ]
+      },
+      {
+        "dst": "plus1",
+        "mnemonic": "vpaddw",
+        "src": [
+          "l1",
+          "red1"
+        ]
+      },
+      {
+        "dst": "plus2",
+        "mnemonic": "vpaddw",
+        "src": [
+          "l2",
+          "red2"
+        ]
+      },
+      {
+        "dst": "plus3",
+        "mnemonic": "vpaddw",
+        "src": [
+          "l3",
+          "red3"
+        ]
+      },
+      {
+        "dst": "out_h0",
+        "mnemonic": "vmovdqa",
+        "src": [
+          "minus0"
+        ]
+      },
+      {
+        "dst": "out_h1",
+        "mnemonic": "vmovdqa",
+        "src": [
+          "minus1"
+        ]
+      },
+      {
+        "dst": "out_h2",
+        "mnemonic": "vmovdqa",
+        "src": [
+          "minus2"
+        ]
+      },
+      {
+        "dst": "out_h3",
+        "mnemonic": "vmovdqa",
+        "src": [
+          "minus3"
+        ]
+      }
+    ],
+    "architectural_YMM": 16,
+    "coloring": {
+      "corr0": 3,
+      "corr1": 9,
+      "corr2": 10,
+      "corr3": 11,
+      "h0": 0,
+      "h1": 1,
+      "h2": 2,
+      "h3": 3,
+      "hi0": 13,
+      "hi1": 0,
+      "hi2": 1,
+      "hi3": 2,
+      "l0": 4,
+      "l1": 5,
+      "l2": 6,
+      "l3": 7,
+      "lo0": 9,
+      "lo1": 10,
+      "lo2": 11,
+      "lo3": 12,
+      "minus0": 2,
+      "minus1": 9,
+      "minus2": 10,
+      "minus3": 11,
+      "out_h0": 1,
+      "out_h1": 2,
+      "out_h2": 5,
+      "out_h3": 6,
+      "plus0": 13,
+      "plus1": 4,
+      "plus2": 3,
+      "plus3": 0,
+      "q": 8,
+      "red0": 12,
+      "red1": 3,
+      "red2": 0,
+      "red3": 1
+    },
+    "exact_coloring_minimum_YMM": 14,
+    "interference_edges": 352,
+    "live_intervals": {
+      "corr0": [
+        8,
+        12
+      ],
+      "corr1": [
+        9,
+        13
+      ],
+      "corr2": [
+        10,
+        14
+      ],
+      "corr3": [
+        11,
+        15
+      ],
+      "h0": [
+        -1,
+        4
+      ],
+      "h1": [
+        -1,
+        5
+      ],
+      "h2": [
+        -1,
+        6
+      ],
+      "h3": [
+        -1,
+        7
+      ],
+      "hi0": [
+        4,
+        12
+      ],
+      "hi1": [
+        5,
+        13
+      ],
+      "hi2": [
+        6,
+        14
+      ],
+      "hi3": [
+        7,
+        15
+      ],
+      "l0": [
+        -1,
+        20
+      ],
+      "l1": [
+        -1,
+        21
+      ],
+      "l2": [
+        -1,
+        22
+      ],
+      "l3": [
+        -1,
+        23
+      ],
+      "lo0": [
+        0,
+        8
+      ],
+      "lo1": [
+        1,
+        9
+      ],
+      "lo2": [
+        2,
+        10
+      ],
+      "lo3": [
+        3,
+        11
+      ],
+      "minus0": [
+        16,
+        24
+      ],
+      "minus1": [
+        17,
+        25
+      ],
+      "minus2": [
+        18,
+        26
+      ],
+      "minus3": [
+        19,
+        27
+      ],
+      "out_h0": [
+        24,
+        28
+      ],
+      "out_h1": [
+        25,
+        28
+      ],
+      "out_h2": [
+        26,
+        28
+      ],
+      "out_h3": [
+        27,
+        28
+      ],
+      "plus0": [
+        20,
+        28
+      ],
+      "plus1": [
+        21,
+        28
+      ],
+      "plus2": [
+        22,
+        28
+      ],
+      "plus3": [
+        23,
+        28
+      ],
+      "q": [
+        -1,
+        27
+      ],
+      "red0": [
+        12,
+        20
+      ],
+      "red1": [
+        13,
+        21
+      ],
+      "red2": [
+        14,
+        22
+      ],
+      "red3": [
+        15,
+        23
+      ]
+    },
+    "peak_live_virtual_YMM": 14,
+    "zero_spill": true
+  }
+}

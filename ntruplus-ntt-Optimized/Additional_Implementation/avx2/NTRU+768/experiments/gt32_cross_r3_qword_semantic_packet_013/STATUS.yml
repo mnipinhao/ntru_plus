@@ -1,0 +1,45 @@
+experiment: GT32-CROSS-R3-QWORD-SEMANTIC-PACKET-013
+status: semantic_and_routing_pass_range_contract_open
+production_modified: false
+assembly_emitted: false
+
+passed:
+  - exact D*T*Cq conjugation for all three qword semantic classes
+  - arbitrary diagonal twist basis proof
+  - exact physical-Q to column-j mapping
+  - complete five-stage NTT32 basis equality
+  - terminal scale returns to current BM ABI
+  - complete GT_BLEND3 routing class deleted
+  - weighted S1 colors in 14 YMM with zero spills
+  - signed-int16 Forward range
+
+cost:
+  per_forward:
+    deleted_vpblendd: 96
+    added_weighted_s1_instructions: 64
+    static_instruction_delta: -32
+    added_montgomery_chains: 16
+  whole_2F_plus_I_if_inverse_range_closes:
+    routing_deleted: 288
+    weighted_stage_instructions_added: 192
+    static_instruction_delta: -96
+    added_montgomery_chains: 48
+    added_vector_multiply_uops: 144
+
+range:
+  candidate_producer_max_abs_bound: 5220
+  candidate_terminal_max_abs_bound: 14358
+  current_wide_raw_control_terminal_bound: 17724
+  frozen_uniform_b3_bound: 10788
+  frozen_uniform_b3_contract_met: false
+
+open:
+  - joint B3 correctness/range proof for the 14358 producer contract
+  - selected inverse representative/range proof
+
+decision:
+  forward_semantic_schedule_pass: true
+  forward_assembly_eligible: false
+  whole_2F_plus_I_assembly_eligible: false
+  next: GT32-CROSS-R3-QWORD-B3-INVERSE-RANGE-014
+  gt_clean_modified: false

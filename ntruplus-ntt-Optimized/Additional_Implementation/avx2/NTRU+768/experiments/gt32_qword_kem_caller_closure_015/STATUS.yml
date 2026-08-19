@@ -1,0 +1,27 @@
+experiment: GT32-QWORD-KEM-CALLER-CLOSURE-015
+status: kem_caller_zero_cost_closure_pass
+production_modified: false
+assembly_emitted: false
+
+q24_reduce9:
+  full_signed_int16_max_residual: 3291
+  f013_terminal_max_residual: 2372
+  canonical_output: [0, 3456]
+
+encap:
+  general_b3_output_abs_bounds: [1783, 1815, 1847, 1856]
+  b3_plus_m_abs_bounds: [16141, 16173, 16205, 16214]
+  zero_extra_instruction_closure: true
+
+decap:
+  c_minus_mhat_interval: [-14358, 17814]
+  general_b3_output_abs_bounds: [1783, 1815, 1847, 1865]
+  native_equality_difference_interval: [-16223, 16223]
+  zero_extra_instruction_closure: true
+
+decision:
+  encap_assembly_eligible: true
+  decap_forward_assembly_eligible: true
+  inverse_014_blocks_current_kem_callsites: false
+  next: GT32-QWORD-FORWARD-ASM-016
+  gt_clean_modified: false
