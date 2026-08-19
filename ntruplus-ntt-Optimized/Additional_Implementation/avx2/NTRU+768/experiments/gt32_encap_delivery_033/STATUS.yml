@@ -1,0 +1,41 @@
+experiment: GT32-ENCAP-DELIVERY-033A
+status: address-sensitive-delivery-confirmed-no-padding-promotion
+production_changed: false
+arithmetic_changed: false
+controls:
+  A: current GT deterministic Encap
+  B: 031 four-polynomial Encap
+  C: 031 plus 032 B3 final-store add-m
+geometry:
+  binary_type: non-PIE fixed-address
+  cage_bytes: 4096
+  candidate_page_offsets: [0, 32, 64, 96, 128, 160, 192, 224]
+  all_elf_sizes_equal: true
+  all_non_candidate_selected_addresses_fixed: true
+benchmark:
+  cycle_backend: default-perfevent
+  pinned_core: true
+  launches_per_offset: 48
+  observations_per_variant_per_launch: 96
+  offset_order_interleaved: true
+  abc_order_rotated: true
+  C_minus_B_median_range_core_cycles: [0.021, 45.958]
+  clearly_bad_offsets: [32, 64, 96, 160]
+  winning_offsets: []
+pmu_median_candidate_minus_B_per_call:
+  retired_instructions: -131.0
+  branches: -10.0
+  branch_misses: approximately +1.8 to +1.9
+  idq_uops_not_delivered: approximately +287 to +314
+  l1i_and_itlb_misses: approximately unchanged
+decision:
+  production_padding_rule: false
+  candidate_promotion: false
+  close:
+    - B3 page-offset magic-padding sweep
+    - further B3 arithmetic or scheduling changes
+  next_if_continued:
+    - 033B deterministic operation-hot section ordering
+    - retain minimal timing harness and separate PMU ELF
+  deferred:
+    - private no-vzeroupper
