@@ -1,0 +1,113 @@
+{
+  "alpha_signs_by_k3": [
+    [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      -1,
+      -1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      -1,
+      -1
+    ],
+    [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      -1,
+      -1,
+      1,
+      1,
+      -1,
+      -1,
+      1,
+      1,
+      -1,
+      -1
+    ]
+  ],
+  "benchmark_eligible": false,
+  "cage_bytes": 32768,
+  "constants": {
+    "candidate_ntt16_vectors": 72,
+    "candidate_stage1_vectors": 24,
+    "control_ntt16_vectors": 51
+  },
+  "experiment": "GT32-UNWEIGHTED-MERGE-ASM-027",
+  "functions": {
+    "qbm_inverse_control_rows_asm": {
+      "candidate": false,
+      "dft3_montgomery_chains": 16,
+      "ntt16_montgomery_chains": 51,
+      "postweight_montgomery_chains": 48,
+      "stage1_montgomery_chains": 48,
+      "terminal_blends": 0,
+      "terminal_repaired": false
+    },
+    "qbm_inverse_heterogeneous_rows_asm": {
+      "candidate": true,
+      "dft3_montgomery_chains": 16,
+      "ntt16_montgomery_chains": 72,
+      "postweight_montgomery_chains": 48,
+      "stage1_montgomery_chains": 24,
+      "terminal_blends": 0,
+      "terminal_repaired": false
+    },
+    "qbm_inverse_repaired_rows_asm": {
+      "candidate": true,
+      "dft3_montgomery_chains": 16,
+      "ntt16_montgomery_chains": 72,
+      "postweight_montgomery_chains": 48,
+      "stage1_montgomery_chains": 24,
+      "terminal_blends": 48,
+      "terminal_repaired": true
+    }
+  },
+  "max_montgomery_depth": {
+    "candidate_max_montgomery_depth": 6,
+    "control_max_montgomery_depth": 6
+  },
+  "purpose": "executable counterexample to the 026 absolute-scale propagation",
+  "semantic_valid": false,
+  "terminal_permutation": {
+    "difference_lanes": [
+      2,
+      0,
+      1
+    ],
+    "sum_lanes": [
+      0,
+      1,
+      2
+    ]
+  }
+}

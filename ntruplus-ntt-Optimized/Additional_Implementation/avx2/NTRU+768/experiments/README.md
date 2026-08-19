@@ -1,0 +1,124 @@
+# GT32 experiment archive
+
+This directory contains default-off research gates.  None of these files is
+part of the GT Clean production source list.  Each numbered experiment owns
+its generator, generated evidence, status, reproduction target, and any
+benchmark-only implementation.
+
+The production implementation remains the parent directory.  A research
+result is copied there only after whole-operation qualification; keeping an
+experiment here does not select it at build or run time.
+
+## Research wave 013–029: final conclusion
+
+This wave tested whether cross-R3/qword packets, degree-8 leaves, pair-native
+`vpmaddwd`, delayed reduction, or merge/inverse basis conjugation can replace
+the current AVX2 QBM→merge→inverse architecture.
+
+The combined conclusion is:
+
+```text
+The alternative representations are mathematically viable in several local
+cuts, but under the current AVX2 i16 ABI they either add normalization,
+materialization, shuffle pressure, or Montgomery chains before reaching the
+same coefficient consumer.  The current QBM→merge→inverse/DFT3 chain is near
+architecture closure for the standard API and present producer contracts.
+```
+
+This is not an instruction-count-only conclusion:
+
+- 016 and 024 are executable cycle/PMU hard stops;
+- 021 is a structural rank proof;
+- 027 is a correctness correction discovered by native ASM differential;
+- 028 exhaustively proves a Montgomery-chain lower bound for the direct
+  conjugated DFT3 family;
+- 029 proves the zero-new-chain producer character condition fails for three
+  of four difference-lane classes.
+
+## Gate map
+
+### Cross-R3/qword packet trajectory
+
+| Gate | Result | Meaning |
+|---|---|---|
+| [013](gt32_cross_r3_qword_semantic_packet_013/) | semantic/routing pass | 64-bit qword semantics can cross R3, but range remained open |
+| [014](gt32_cross_r3_qword_b3_inverse_range_014/) | hard stop | required selective normalization erases the routing credit |
+| [015](gt32_qword_kem_caller_closure_015/) | caller closure pass | current KEM callsites can consume the typed bound without extra repair |
+| [016](gt32_qword_forward_asm_016/) | executable performance stop | correct qword Forward loses on cycles despite the semantic closure |
+
+The useful result is the typed range/caller proof from 015; the persistent
+qword Forward architecture is not selected.
+
+### Degree-basis and degree-8 trajectory
+
+| Gate | Result | Meaning |
+|---|---|---|
+| [017](gt32_degree_basis_commutation_017/) | static stop | current degree-basis transform cannot be absorbed for free |
+| [018](gt32_degree8_incomplete_ntt_018/) | algebra pass | degree-8 incomplete NTT is mathematically valid |
+| [019](gt32_degree8_packet_schedule_019/) | static hard stop | direct degree-8 packet materialization is too expensive for current QBM |
+| [020](gt32_streamed_lhs_rhs_evaluation_020/) | static hard stop | fixed rank-12 streamed contraction does not close on AVX2 |
+| [021](gt32_degree8_first_cut_impossibility_021/) | structural proof | one rank-one first-cut stream cannot realize the required contraction |
+
+Degree-8 algebra remains possible, but it needs a genuinely coupled producer
+or a different ISA/decomposition; rearranging the current materialization is
+closed.
+
+### Pair-native QBM and reduction trajectory
+
+| Gate | Result | Meaning |
+|---|---|---|
+| [022](gt32_qbm_pair_maddwd_022/) | static reject | local pair packing shows no instruction-class deletion |
+| [023](gt32_qbm_cross_factor_packing_023/) | conditional stop | cross-factor density does not close under current i16/pre-REDC contract |
+| [024](gt32_qbm_atomic_asm_024/) | cycle/PMU hard stop | atomic dual output adds real port 5/11 pressure and loses 35–39 TSC |
+| [025](gt32_qbm_wide_consumer_025/) | static stop | direct wide consumer cannot remove the present reducer safely |
+
+024 supersedes instruction-count speculation for the current atomic packing:
+the extra routing is a measured backend cost.
+
+### Merge-basis and conjugated-inverse trajectory
+
+| Gate | Result | Meaning |
+|---|---|---|
+| [026](gt32_qbm_producer_native_merge_basis_026/) | superseded | Gate A rank proof remains valid; Gate B used the wrong scale relation |
+| [027](gt32_unweighted_merge_asm_027/) | semantic stop | native ASM exposed that `45 Mont + 48 blend` is not an equivalent graph |
+| [028](gt32_conjugated_dft3_synthesis_028/) | chain lower-bound stop | direct scaled DFT3 raises the whole chain from 115 to at least 144 Montgomery chains |
+| [029](gt32_character_compatible_producer_029/) | producer-family stop | only one of four lane classes is character-compatible at zero new chain cost |
+
+The correction chain is important:
+
+```text
+026 proposed absolute-weight propagation
+  -> 027 replaced it with exact candidate/current propagation
+  -> 028 tested direct DFT3 consumption of that exact scale
+  -> 029 tested the only zero-cost diagonal producer family
+```
+
+Do not quote 026 Gate B chain/range/permutation numbers as correctness or
+performance evidence.  Use 027–029.
+
+## Current closure and reopening rules
+
+Closed under the current AVX2 target and standard persistent ABI:
+
+- local atomic dual-output packing;
+- immediate wide-consumer reduction removal;
+- unweighted merge followed by permutation/blend repair;
+- direct conjugated DFT3 with at most two rank-one Montgomery updates;
+- zero-new-chain diagonal producer character relabeling;
+- current degree-8 materialized or fixed-rank streamed cuts.
+
+Still open only when the mechanism changes materially:
+
+- a non-diagonal coupled producer that deletes a complete operation class;
+- an existing producer chain that selectively forms the difference coordinate;
+- a prepared-key time/memory representation outside the standard API cost;
+- a new DFT3 factorization outside 028 with a proved chain count below three;
+- a different decomposition or wider ISA.
+
+## Reproduction policy
+
+Run `make check` inside an experiment directory.  Checks must preserve the
+committed generated evidence; `clean` may remove build products but not source
+or status files.  Cycle results must include their stored JSON and matched
+normal/reversed methodology.  Static gates must state the exact searched
+family so that a local stop is not mistaken for a universal impossibility.

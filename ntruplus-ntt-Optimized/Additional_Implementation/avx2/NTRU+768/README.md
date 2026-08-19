@@ -36,6 +36,9 @@ TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and linker-padding
 variants.  A candidate enters this directory only after it is selected as a
 whole-operation component.
 
+The numbered research archive and its current architecture-closure summary are
+documented in [`experiments/README.md`](experiments/README.md).
+
 The frozen Official implementation is not duplicated here.  Local tests and
 KAT harnesses are taken from:
 

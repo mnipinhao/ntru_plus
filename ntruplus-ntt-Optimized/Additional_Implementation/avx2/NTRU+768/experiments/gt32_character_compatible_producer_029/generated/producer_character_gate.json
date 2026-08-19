@@ -1,0 +1,112 @@
+{
+  "all_lane_classes_have_zero_chain_solution": false,
+  "classes": [
+    {
+      "lanes": [
+        2,
+        3
+      ],
+      "merge_weight_is_character": true,
+      "normalized_merge_weight": [
+        1,
+        -723,
+        722
+      ],
+      "terminal_merge_weight": [
+        -270,
+        1618,
+        -1348
+      ],
+      "zero_chain_diagonal_producer_solution_exists": true
+    },
+    {
+      "lanes": [
+        6,
+        7
+      ],
+      "merge_weight_is_character": false,
+      "normalized_merge_weight": [
+        1,
+        723,
+        -722
+      ],
+      "terminal_merge_weight": [
+        1272,
+        94,
+        1178
+      ],
+      "zero_chain_diagonal_producer_solution_exists": false
+    },
+    {
+      "lanes": [
+        10,
+        11
+      ],
+      "merge_weight_is_character": false,
+      "normalized_merge_weight": [
+        1,
+        -723,
+        -722
+      ],
+      "terminal_merge_weight": [
+        -1370,
+        -1649,
+        438
+      ],
+      "zero_chain_diagonal_producer_solution_exists": false
+    },
+    {
+      "lanes": [
+        14,
+        15
+      ],
+      "merge_weight_is_character": false,
+      "normalized_merge_weight": [
+        1,
+        723,
+        -722
+      ],
+      "terminal_merge_weight": [
+        780,
+        449,
+        331
+      ],
+      "zero_chain_diagonal_producer_solution_exists": false
+    }
+  ],
+  "decision": {
+    "assembly_eligible": false,
+    "open": [
+      "non_diagonal_coupled_producer_that_deletes_an_operation_class",
+      "prepared_key_time_memory_representation",
+      "new_producer_with_an_existing_selective_difference_chain"
+    ],
+    "reason": "Not every terminal merge-weight class is a DFT3 character. A free diagonal producer relabel scales both bilinear products and therefore cannot make both the sum and weighted-difference coordinates character-compatible. Selective difference-only scaling requires the rank-two output mix already proved by 026A.",
+    "status": "static_stop_zero_new_chain_diagonal_producer_character_family"
+  },
+  "experiment": "GT32-CHARACTER-COMPATIBLE-PRODUCER-029",
+  "producer_provenance": {
+    "BaseInv": {
+      "existing_output_scaling_may_be_foldable": true,
+      "result": "same_diagonal_scaling_obstruction_as_Forward"
+    },
+    "Decode": {
+      "constant_relabel_possible": false,
+      "existing_constant_chain": null,
+      "result": "nontrivial_alpha_requires_new_runtime_or_prepared_work"
+    },
+    "Forward": {
+      "constant_relabel_possible": true,
+      "existing_constant_chain": "round4c_forward_preweight_mont",
+      "result": "fails_simultaneous_sum_and_difference_character_condition"
+    },
+    "prepared_key": {
+      "result": "separate_time_memory_API_not_zero_cost_standard_KEM_producer"
+    }
+  },
+  "required_conditions": {
+    "difference_ratio": "alpha / merge_weight must be a DFT3 character",
+    "equivalent_test": "merge_weight must itself be a DFT3 character",
+    "sum_ratio": "alpha must be a DFT3 character"
+  }
+}

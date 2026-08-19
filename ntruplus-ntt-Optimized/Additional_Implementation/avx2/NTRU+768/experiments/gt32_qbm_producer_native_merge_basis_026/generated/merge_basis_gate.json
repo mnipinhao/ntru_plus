@@ -1,0 +1,618 @@
+{
+  "decision": {
+    "assembly_emitted": false,
+    "closed": [
+      "independent producer linear transforms eliminating merge mixing with only two diagonal products",
+      "alpha=+/-1 unweighted merge basis with the current coefficient-output inverse contract"
+    ],
+    "next": "close current QBM-to-merge2 architecture unless the inverse output consumer changes",
+    "open": [
+      "a downstream consumer that natively accepts lane-heterogeneous k3 order",
+      "producer scaling only after a merge basis with negative whole-pipeline cost exists",
+      "prepared or wider-ISA representations that change the output contract"
+    ],
+    "status": "superseded_by_027_exact_conjugation_correction"
+  },
+  "experiment": "GT32-QBM-PRODUCER-NATIVE-MERGE-BASIS-026",
+  "gate_A_separable_basis": {
+    "desired_output_rank": 2,
+    "difference_determinant": "-w^2 != 0",
+    "difference_matrix_symbolic": [
+      [
+        "w",
+        0
+      ],
+      [
+        0,
+        "-w"
+      ]
+    ],
+    "same_two_component_products_without_output_mix_possible": false,
+    "single_component_product_maximum_rank": 1,
+    "sum_determinant_mod_q": 1,
+    "sum_matrix": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  "gate_B_unweighted_merge_basis": {
+    "arithmetic_instruction_credit": 12,
+    "assembly_eligible": false,
+    "candidate": [
+      "u=p+m",
+      "d=alpha*(p-m), alpha lane-wise +/-1"
+    ],
+    "dft3": {
+      "cube_roots": [
+        1,
+        722,
+        -723
+      ],
+      "current_coefficient_output_route_lower_bound": 48,
+      "heterogeneous_within_ymm": true,
+      "lane_classes": [
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 0,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 1,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 2,
+          "raw_scale": [
+            -270,
+            1618,
+            -1348
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 3,
+          "raw_scale": [
+            -270,
+            1618,
+            -1348
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 4,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 5,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 6,
+          "raw_scale": [
+            1272,
+            94,
+            1178
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              -1,
+              -1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 7,
+          "raw_scale": [
+            1272,
+            94,
+            1178
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              -1,
+              -1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 8,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 9,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 10,
+          "raw_scale": [
+            -1370,
+            -1649,
+            438
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 11,
+          "raw_scale": [
+            -1370,
+            -1649,
+            438
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              1,
+              -1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 12,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "sum",
+          "dft3_output_permutation": [
+            0,
+            1,
+            2
+          ],
+          "lane": 13,
+          "raw_scale": [
+            1,
+            1,
+            1
+          ],
+          "sign_normalization": {
+            "character_index": 0,
+            "normalized": [
+              1,
+              1,
+              1
+            ],
+            "signs": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 14,
+          "raw_scale": [
+            780,
+            449,
+            331
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              -1,
+              -1
+            ]
+          }
+        },
+        {
+          "degree_class": "difference",
+          "dft3_output_permutation": [
+            2,
+            0,
+            1
+          ],
+          "lane": 15,
+          "raw_scale": [
+            780,
+            449,
+            331
+          ],
+          "sign_normalization": {
+            "character_index": 2,
+            "normalized": [
+              1,
+              -723,
+              722
+            ],
+            "signs": [
+              1,
+              -1,
+              -1
+            ]
+          }
+        }
+      ],
+      "omega": -723,
+      "permutation_classes": [
+        {
+          "lanes": 8,
+          "permutation": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "lanes": 8,
+          "permutation": [
+            2,
+            0,
+            1
+          ]
+        }
+      ],
+      "reason": "sum lanes retain identity k3 order while difference lanes require a cyclic DFT3 output permutation"
+    },
+    "inverse_chain_propagation": [
+      {
+        "candidate_chains": 24,
+        "current_chains": 0,
+        "new_identity_chains": 24,
+        "removed_nonidentity_chains": 0,
+        "stage": "inverse-size2-identity"
+      },
+      {
+        "candidate_chains": 24,
+        "current_chains": 12,
+        "new_identity_chains": 12,
+        "removed_nonidentity_chains": 0,
+        "stage": "inverse-length-4"
+      },
+      {
+        "candidate_chains": 24,
+        "current_chains": 18,
+        "new_identity_chains": 6,
+        "removed_nonidentity_chains": 0,
+        "stage": "inverse-length-8"
+      },
+      {
+        "candidate_chains": 24,
+        "current_chains": 21,
+        "new_identity_chains": 3,
+        "removed_nonidentity_chains": 0,
+        "stage": "inverse-length-16"
+      }
+    ],
+    "merge_montgomery_chains_removed": 48,
+    "montgomery_instructions_per_chain": 4,
+    "net_instruction_lower_bound_after_route": 36,
+    "net_montgomery_chains_saved": 3,
+    "new_identity_chains": 45,
+    "range": {
+      "first_new_chain_occurs_before_existing_center_twice": true,
+      "new_full_checkpoint_required": false,
+      "qbm_REDC_interval": [
+        -2092,
+        2093
+      ],
+      "signed_int16_safe": true,
+      "trace": [
+        {
+          "correction": "existing-center-twice",
+          "input_abs": 4185,
+          "mont_high_abs": 1749,
+          "output_abs": 1728,
+          "raw_output_abs": 5934,
+          "stage": "inverse-size2-identity"
+        },
+        {
+          "correction": "none",
+          "input_abs": 1728,
+          "mont_high_abs": 1739,
+          "output_abs": 3467,
+          "raw_output_abs": 3467,
+          "stage": "inverse-length-4"
+        },
+        {
+          "correction": "existing-center-once",
+          "input_abs": 3467,
+          "mont_high_abs": 1780,
+          "output_abs": 1790,
+          "raw_output_abs": 5247,
+          "stage": "inverse-length-8"
+        },
+        {
+          "correction": "none",
+          "input_abs": 1790,
+          "mont_high_abs": 1755,
+          "output_abs": 3545,
+          "raw_output_abs": 3545,
+          "stage": "inverse-length-16"
+        },
+        {
+          "difference_abs": 7090,
+          "input_abs": 3545,
+          "omega_product_abs": 1815,
+          "raw_output_abs": 10635,
+          "signed_int16_safe": true,
+          "stage": "inverse-dft3-before-postweight"
+        }
+      ],
+      "unweighted_sum_difference_interval": [
+        -4185,
+        4185
+      ]
+    },
+    "removed_existing_nonidentity_chains": 0,
+    "validity": "invalid_scale_propagation_superseded_by_027"
+  },
+  "gate_C_producer_provenance": {
+    "executed": false,
+    "reason": "Gate B saves only three Montgomery chains before requiring 48 lane-heterogeneous DFT3 blends under the current coefficient consumer"
+  },
+  "schema": "ntruplus768-gt32-qbm-producer-native-merge-basis-026-v1",
+  "sources": [
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/src/qbm_intrinsic.c",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/src/inverse_stage1_intrinsic.c",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/quadratic-range-metadata.json",
+    "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt16_quadratic_official_001/generated/quadratic-constants.h"
+  ]
+}

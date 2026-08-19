@@ -1,0 +1,34 @@
+experiment: GT32-UNWEIGHTED-MERGE-ASM-027
+status: semantic_static_stop_before_cycle_benchmark
+production_modified: false
+gt_clean_modified: false
+
+requested_cycle_gate:
+  status: not_valid_to_run
+  reason: claimed_candidate_is_not_mathematically_equivalent
+  current_max_montgomery_depth: 6
+  claimed_candidate_max_montgomery_depth: 6
+
+correction:
+  old_026_scale: weight_times_alpha
+  exact_candidate_over_current_scale: alpha_divided_by_weight
+  exhaustive_sign_search: no_difference_lane_is_a_dft3_character
+  forty_eight_blend_repair_exact: false
+
+artifacts:
+  exact_proof: generated/exact_conjugation_gate.json
+  diagnostic_asm: generated/merge_basis_asm.S
+  native_negative_test: tests/test_merge_basis.c
+
+decision:
+  closed:
+    - 026_claimed_45_montgomery_plus_48_blend_graph
+    - terminal_blend_absorption_for_that_graph
+  open:
+    - algebra_outside_028_two_rank_one_update_dft3_search
+    - non_diagonal_coupled_producer_with_operation_class_deletion
+    - prepared_key_time_memory_representation
+  followups:
+    conjugated_dft3_028: static_stop_candidate_at_least_3_chains_vs_current_1
+    producer_character_029: static_stop_only_1_of_4_lane_classes_compatible
+  benchmark_numbers_reported: false

@@ -1,0 +1,53 @@
+experiment: GT32-QBM-PRODUCER-NATIVE-MERGE-BASIS-026
+status: superseded_by_027_exact_conjugation_correction
+production_modified: false
+gt_clean_modified: false
+assembly_emitted: false
+
+gate_A:
+  status: proved_impossible
+  scope: independent_linear_producer_transforms_same_two_diagonal_products_no_output_mix
+  reason: desired_bilinear_outputs_rank_2_but_each_component_product_rank_at_most_1
+
+gate_B:
+  validity: invalid_scale_propagation_do_not_use
+  correction: candidate_current_ratio_is_inverse_merge_weight_not_merge_weight
+  candidate: lane_signed_unweighted_merge_basis
+  merge_montgomery_chains_removed: 48
+  inverse_identity_chains_added:
+    size2: 24
+    length4: 12
+    length8: 6
+    length16: 3
+    total: 45
+  existing_nonidentity_chains_removed: 0
+  net_montgomery_chains_saved: 3
+  arithmetic_instruction_credit: 12
+  range:
+    unweighted_merge_interval: [-4185, 4185]
+    new_checkpoint_required: false
+    inverse_stage_raw_bounds: [5934, 3467, 5247, 3545]
+    dft3_raw_bound: 10635
+    signed_int16_safe: true
+  dft3:
+    sum_lane_order: [0, 1, 2]
+    difference_lane_order: [2, 0, 1]
+    lanes_per_class: 8
+    minimum_blends: 48
+  static_net_instruction_lower_bound: 36
+  assembly_eligible: false
+
+gate_C:
+  executed: false
+  reason: no_negative_cost_merge_basis_from_gate_B
+
+decision:
+  closed:
+    - producer_linear_basis_eliminating_merge_with_same_two_products
+    - unweighted_merge_basis_with_current_inverse_coefficient_output
+    - producer_preweight_that_only_relocates_existing_work
+  open:
+    - downstream_consumer_native_mixed_k3_lane_order
+    - prepared_representation_with_changed_output_contract
+    - wider_simd_or_new_isa
+  next: close_current_qbm_merge2_architecture

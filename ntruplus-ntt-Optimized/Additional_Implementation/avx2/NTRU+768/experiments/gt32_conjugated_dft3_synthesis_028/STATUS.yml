@@ -1,0 +1,25 @@
+experiment: GT32-CONJUGATED-DFT3-SYNTHESIS-028
+status: static_stop_conjugated_dft3_adds_montgomery_chains
+production_modified: false
+gt_clean_modified: false
+assembly_emitted: false
+
+search:
+  exact_target: F_times_diag_inverse_rho
+  signed_base_entries: [-1, 0, 1]
+  signed_input_output_forms: [-1, 0, 1]
+  maximum_rank_one_montgomery_updates_exhausted: 2
+  free_k3_sign_variants_per_lane_class: 4
+
+result:
+  current_dft3_chains: 1
+  candidate_dft3_chain_lower_bound: 3
+  current_merge_inverse_through_dft3_chains: 115
+  candidate_merge_inverse_through_dft3_chain_lower_bound: 144
+  candidate_minus_current_lower_bound: 29
+
+decision:
+  assembly_eligible: false
+  reopen_only_if:
+    - exact_factorization_outside_signed_base_plus_two_rank_one_updates
+    - proven_candidate_dft3_chains_below_3
