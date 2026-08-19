@@ -1,0 +1,298 @@
+{
+  "assembly_emitted": false,
+  "boundary_memory": {
+    "cross_packet_per_Forward_boundary_before_R2_join_repair": {
+      "YMM_loads": 48,
+      "YMM_stores": 48,
+      "bytes": 3072,
+      "memory_operations": 96
+    },
+    "cross_packet_per_inverse_boundary_before_R2_join_repair": {
+      "YMM_loads": 48,
+      "YMM_stores": 48,
+      "bytes": 3072,
+      "memory_operations": 96
+    },
+    "current_per_Forward_boundary": {
+      "YMM_loads": 48,
+      "YMM_stores": 48,
+      "bytes": 3072,
+      "memory_operations": 96
+    },
+    "current_per_inverse_boundary": {
+      "YMM_loads": 48,
+      "YMM_stores": 48,
+      "bytes": 3072,
+      "memory_operations": 96
+    },
+    "packet_major_effect": "turns six distant branch stores into contiguous iteration packets but does not reduce the 48 values, stores, or loads",
+    "unpriced_nonnegative_debt": "the mandatory R2 L/H join cut or replay",
+    "whole_2F_plus_I_candidate_floor": {
+      "bytes": 9216,
+      "memory_operations": 288
+    },
+    "whole_2F_plus_I_current": {
+      "bytes": 9216,
+      "memory_operations": 288
+    }
+  },
+  "candidate_contract": {
+    "BaseMul_in_scope": false,
+    "basis": "coefficient",
+    "companion_packet": "same Top pair and row for the original high half",
+    "high128": "Top-B, same R3 row and original low half",
+    "lane_width": 16,
+    "low128": "Top-A, fixed R3 row and original low half",
+    "memory_order": "iteration_then_R3_row_then_LH"
+  },
+  "complete_R2_consumer_gate": {
+    "consequence": "the missing R2 layer requires L/H interaction; a full resident join does not fit, so an extra cut, replay, or a different packet evolution is mandatory",
+    "exact_connectivity": {
+      "mapping_artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/gt32_3x32_mapping.json",
+        "sha256": "c298095da16197247d172f1d61153ffdb4933cf095af8a4dd0ebc8e7516684c9"
+      },
+      "missing_NTT32_bit": 1,
+      "original_128bit_half_selector": "physical_Q bit 1",
+      "separate_L_H_streams_are_complete_NTT32": false,
+      "tile4_qword_formula": "physical_Q mod 4",
+      "with_all_five_NTT32_bits": 32,
+      "without_original_half_leaf_bit": 16
+    },
+    "simple_complete_consumer_status": "static_hard_stop",
+    "state_capacity_for_one_Top_pair": {
+      "H_stream_YMM": 8,
+      "L_stream_YMM": 8,
+      "architectural_YMM": 16,
+      "data_YMM_at_required_join": 16,
+      "minimum_Montgomery_temporary": 1,
+      "minimum_live_YMM": 18,
+      "q_register": 1
+    }
+  },
+  "current_source_audit": {
+    "BLEND3_OUT": {
+      "groups": 8,
+      "instructions_per_invocation": {
+        "vpblendd": 6
+      },
+      "invocations_per_inverse_group": 2,
+      "vpblendd_per_Inverse": 96
+    },
+    "GT_BLEND3": {
+      "instructions_per_invocation": {
+        "vpblendd": 6
+      },
+      "invocations_per_Forward_iteration": 2,
+      "iterations": 8,
+      "vpblendd_per_Forward": 96
+    },
+    "sources": [
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt.s",
+        "sha256": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/ntt_m.s",
+        "sha256": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0"
+      },
+      {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/invntt.s",
+        "sha256": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa"
+      }
+    ],
+    "whole_2F_plus_I_R3_routing": {
+      "vpblendd": 288
+    }
+  },
+  "decision": {
+    "GT_Clean_modified": false,
+    "assembly_eligible": false,
+    "closed_scope": "coefficient-basis i16 packet ProwL=[A.low|B.low], ProwH=[A.high|B.high] with persistent Top-A/Top-B half ownership",
+    "next": "GT32-CROSS-R3-QWORD-SEMANTIC-PACKET-013",
+    "not_closed": [
+      "cross-R3 qword semantic packets",
+      "a half packet whose ownership evolves and deletes the missing-bit join",
+      "BaseMul-selected pair packets",
+      "streamed evaluation packets"
+    ],
+    "operation_class_deleted": false,
+    "reason": "the best exact natural producer and inverse networks each replace twelve qword blends with twelve mixed half/qword routing instructions; the 2F+I R3 routing total remains 288.  The separated L/H streams also omit one required NTT32 bit and need an 18-YMM join or another cut",
+    "status": "static_hard_stop_cross_R3_128bit_half_packet_P0"
+  },
+  "experiment": "GT32-CROSS-R3-SEMANTIC-PACKET-012",
+  "inverse_join_synthesis": {
+    "current_BLEND3_OUT_routing_instructions": 12,
+    "exact_symbolic_equality": true,
+    "operation_class_deleted": false,
+    "qword_mix_vpblendd_or_vshufps": 6,
+    "qword_route_packets": 6,
+    "split_Top_A_B_vperm2i128": 6,
+    "total_routing_instructions": 12
+  },
+  "parent": {
+    "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_avx2_packing_superspace_011/generated/avx2_packing_superspace_gate.json",
+    "sha256": "cb26f9192029d469806263aa533d79ba6211c9205ce378464b6404ffdb8c8759"
+  },
+  "producer_route_synthesis": {
+    "current_GT_BLEND3_cost": {
+      "total_routing_instructions": 12,
+      "vpblendd": 12
+    },
+    "global_minimum_claimed": false,
+    "operation_class_deleted": false,
+    "route_first_control": {
+      "GT_BLEND3_vpblendd": 12,
+      "pair_routed_halves_vperm2i128": 6,
+      "total": 18
+    },
+    "scope_of_exactness": "exact symbolic equality and complete enumeration of the two natural two-layer normal forms: pair-A/B-halves first or route-R3 first",
+    "source_pair_first_cost": {
+      "qword_mix_vpblendd_or_vshufps": 6,
+      "total_routing_instructions": 12,
+      "vperm2i128": 6
+    },
+    "source_pair_first_exact": true,
+    "source_pair_first_operations": [
+      {
+        "inputs": [
+          "A.x",
+          "B.x"
+        ],
+        "instruction": "vperm2i128",
+        "output": "XL",
+        "semantic": "pair Top A/B L halves"
+      },
+      {
+        "inputs": [
+          "A.x",
+          "B.x"
+        ],
+        "instruction": "vperm2i128",
+        "output": "XH",
+        "semantic": "pair Top A/B H halves"
+      },
+      {
+        "inputs": [
+          "A.y",
+          "B.y"
+        ],
+        "instruction": "vperm2i128",
+        "output": "YL",
+        "semantic": "pair Top A/B L halves"
+      },
+      {
+        "inputs": [
+          "A.y",
+          "B.y"
+        ],
+        "instruction": "vperm2i128",
+        "output": "YH",
+        "semantic": "pair Top A/B H halves"
+      },
+      {
+        "inputs": [
+          "A.z",
+          "B.z"
+        ],
+        "instruction": "vperm2i128",
+        "output": "ZL",
+        "semantic": "pair Top A/B L halves"
+      },
+      {
+        "inputs": [
+          "A.z",
+          "B.z"
+        ],
+        "instruction": "vperm2i128",
+        "output": "ZH",
+        "semantic": "pair Top A/B H halves"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P0L",
+        "semantic": "select odd qword from second prepacked source"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P0H",
+        "semantic": "select odd qword from second prepacked source"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P1L",
+        "semantic": "select odd qword from second prepacked source"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P1H",
+        "semantic": "select odd qword from second prepacked source"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P2L",
+        "semantic": "select odd qword from second prepacked source"
+      },
+      {
+        "instruction": "vpblendd_or_vshufps",
+        "output": "P2H",
+        "semantic": "select odd qword from second prepacked source"
+      }
+    ],
+    "target_packets": {
+      "P0H": [
+        "A.z.q2",
+        "A.x.q3",
+        "B.z.q2",
+        "B.x.q3"
+      ],
+      "P0L": [
+        "A.x.q0",
+        "A.y.q1",
+        "B.x.q0",
+        "B.y.q1"
+      ],
+      "P1H": [
+        "A.y.q2",
+        "A.z.q3",
+        "B.y.q2",
+        "B.z.q3"
+      ],
+      "P1L": [
+        "A.z.q0",
+        "A.x.q1",
+        "B.z.q0",
+        "B.x.q1"
+      ],
+      "P2H": [
+        "A.x.q2",
+        "A.y.q3",
+        "B.x.q2",
+        "B.y.q3"
+      ],
+      "P2L": [
+        "A.y.q0",
+        "A.z.q1",
+        "B.y.q0",
+        "B.z.q1"
+      ]
+    }
+  },
+  "production_modified": false,
+  "schema": "gt32-cross-r3-semantic-packet-v1",
+  "whole_route_accounting": {
+    "R2_routing_floor": "unchanged arithmetic topology plus mandatory L/H join debt",
+    "branch_major_scatter_gather": "replaced by packet-major addresses but not fewer memory operations",
+    "candidate_2F_plus_I_before_R2_join_debt": {
+      "total_R3_routing_instructions": 288,
+      "vpblendd_or_vshufps": 144,
+      "vperm2i128": 144
+    },
+    "current_2F_plus_I": {
+      "total_R3_routing_instructions": 288,
+      "vpblendd": 288
+    },
+    "physical_operation_classes_eliminated": [],
+    "routing_instruction_delta": 0
+  }
+}

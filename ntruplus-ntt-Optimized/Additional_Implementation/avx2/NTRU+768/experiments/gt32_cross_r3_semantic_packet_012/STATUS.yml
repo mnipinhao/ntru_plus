@@ -1,0 +1,61 @@
+experiment: GT32-CROSS-R3-SEMANTIC-PACKET-012
+status: static_hard_stop_cross_R3_128bit_half_packet_P0
+production_modified: false
+assembly_emitted: false
+
+candidate:
+  lane_width: 16
+  basis: coefficient
+  low128: Top_A_fixed_R3_row_original_low_half
+  high128: Top_B_same_R3_row_original_low_half
+  companion: same_Top_pair_and_row_original_high_half
+  memory: iteration_packet_major
+
+current_audit:
+  GT_BLEND3_vpblendd_per_Forward: 96
+  BLEND3_OUT_vpblendd_per_Inverse: 96
+  whole_2F_plus_I_R3_vpblendd: 288
+
+producer_exact_normal_forms:
+  route_first: 18
+  pair_AB_halves_first: 12
+  current: 12
+  operation_class_deleted: false
+
+complete_R2_gate:
+  original_half_selector: physical_Q_bit_1
+  separate_stream_connectivity: 16
+  required_connectivity: 32
+  L_stream_YMM: 8
+  H_stream_YMM: 8
+  minimum_join_YMM_with_q_and_temp: 18
+  available_YMM: 16
+  result: additional_cut_replay_or_changed_ownership_required
+
+inverse_exact_route:
+  qword_mixes: 6
+  vperm2i128: 6
+  total: 12
+  current: 12
+  operation_class_deleted: false
+
+boundary_floor:
+  whole_2F_plus_I_memory_operations: 288
+  bytes: 9216
+  extra_R2_join_debt_charged: false
+
+decision:
+  assembly_eligible: false
+  reason:
+    - R3_routing_remains_288_instructions
+    - no_complete_operation_class_is_deleted
+    - complete_R2_requires_an_18_YMM_join_or_an_extra_cut
+
+closed_scope:
+  - coefficient_i16
+  - persistent_Top_A_Top_B_half_ownership
+  - ProwL_A_low_B_low
+  - ProwH_A_high_B_high
+
+next: GT32-CROSS-R3-QWORD-SEMANTIC-PACKET-013
+GT_Clean: untouched
