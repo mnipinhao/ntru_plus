@@ -1,0 +1,94 @@
+{
+  "baseline": "031 four-polynomial Encap",
+  "experiment": "GT32-ENCAP-B3-ADDM-032",
+  "layout": {
+    "B3_output": "M private SoA, four degree planes per 16-leaf tile",
+    "candidate_m_offsets_match": true,
+    "degree_plane_offsets": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "m_input": "same M private SoA produced by the same Forward",
+    "permutation_repair": 0
+  },
+  "operation_delta": {
+    "B3_final_stores_remain_and_store_sum": 48,
+    "m_loads_remain": 48,
+    "removed_B3_result_reloads": 48,
+    "removed_standalone_sum_stores": 48,
+    "removed_vector_bytes": 3072,
+    "vpaddw_remain": 48
+  },
+  "production_modified": false,
+  "range": {
+    "B3_final_degree_bounds": [
+      1791,
+      1826,
+      1861,
+      1872
+    ],
+    "B3_raw_degree_bounds": [
+      4644,
+      7274,
+      9904,
+      10804
+    ],
+    "Q24_reducer_contract": "full signed int16 (exhaustively proven by Q24 generator)",
+    "decoded_h_bound": 3456,
+    "forward_stage_bounds": {
+      "S1_raw": 10550,
+      "S2": 12338,
+      "S3": 14278,
+      "S4": 16299,
+      "S5_M_terminal": 18424,
+      "frontend_DFT3": 5275,
+      "omega3_product": 1777,
+      "top_split": 723,
+      "twist": 1749
+    },
+    "maximum": 20296,
+    "method": "conservative absolute-value propagation over selected assembly DAG",
+    "obsolete_contract": {
+      "first_observed_counterexample": 12882,
+      "forward_bound": 10788,
+      "status": "contradicted by current selected executable",
+      "sum_bound": 12699
+    },
+    "selected_factors": {
+      "B3_R2": 867,
+      "B3_lambda": 1728,
+      "S2_S3_S4_S5": [
+        366,
+        1118,
+        1339,
+        1591
+      ],
+      "frontend_omega3": 886,
+      "frontend_twist": 1728,
+      "top_raw": 722
+    },
+    "signed_int16_no_wrap": true,
+    "signed_montgomery_bound": "ceil(A*F/65536)+ceil(3457/2)",
+    "single_runtime_product_bound": 2701,
+    "sum_degree_bounds": [
+      20215,
+      20250,
+      20285,
+      20296
+    ]
+  },
+  "scale": {
+    "B3_general_output_exponent": 0,
+    "m_forward_exponent": 0,
+    "sum_exponent": 0
+  },
+  "schema": "ntruplus768-gt32-encap-b3-addm-032-proof-v2",
+  "serialization": {
+    "candidate_packer": "ntruplus768_pack_m_highrange12699_avx2",
+    "executable_differential_required": true,
+    "note": "symbol name is stale; body tail-jumps to full-signed-int16 reducer",
+    "required_result": "byte-exact Encodeq((h_hat circle r_hat + m_hat) mod q)"
+  }
+}

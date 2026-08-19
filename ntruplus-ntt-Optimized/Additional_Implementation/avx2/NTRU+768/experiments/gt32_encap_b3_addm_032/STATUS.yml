@@ -1,0 +1,57 @@
+experiment: GT32-ENCAP-B3-ADDM-032
+status: correctness-qualified-local-win-full-caller-hard-stop
+production_changed: false
+baseline: 031 four-polynomial Encap
+implemented:
+  - B3 final-store add-m using the existing production seam
+  - normal and reversed matched symbol order
+  - generated current-executable range proof
+  - fixed-ELF SUPERcop-style local and full-caller gates
+static_delta:
+  removed_b3_result_loads: 48
+  removed_standalone_sum_stores: 48
+  removed_vector_bytes: 3072
+  retained_m_loads: 48
+  retained_vpaddw: 48
+  retained_final_sum_stores: 48
+  candidate_b3_spills: 0
+correctness:
+  exact_local_and_full_trials: 1000
+  noncanonical_single_slot_trials: 768
+  all_passed: true
+range:
+  stale_contract:
+    forward: 10788
+    final_sum: 12699
+    status: contradicted-by-executable-counterexample
+  first_observed_counterexample: 12882
+  generated_current_forward_bound: 18424
+  generated_current_sum_bounds: [20215, 20250, 20285, 20296]
+  signed_int16_no_wrap: true
+benchmark:
+  method: SUPERcop adjacent cpucycles and stabilized Q2, same fixed ELF
+  cycle_backend: default-perfevent
+  launches_per_placement: 32
+  observations_per_variant_per_launch: 96
+  normal:
+    local_delta_core_cycles: -29.375
+    local_favorable_launches: 32/32
+    local_bootstrap_95ci: [-32.667, -27.833]
+    full_delta_core_cycles: 1.875
+    full_favorable_launches: 16/32
+    full_bootstrap_95ci: [-60.042, 49.917]
+  reversed:
+    local_delta_core_cycles: -9.167
+    local_favorable_launches: 30/32
+    local_bootstrap_95ci: [-13.000, -6.250]
+    full_delta_core_cycles: -5.771
+    full_favorable_launches: 17/32
+    full_bootstrap_95ci: [-35.833, 24.167]
+decision:
+  production_promotion: false
+  reasons:
+    - reversed local result misses the predeclared 20-core-cycle threshold
+    - full Encap is neutral in both placements
+    - both full-caller confidence intervals cross zero
+  reopen_only_if:
+    - a future production image or caller code-shape change naturally alters delivery
