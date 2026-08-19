@@ -1,0 +1,2278 @@
+{
+  "AVX2_instruction_semantics": {
+    "vpblendd_vpblendw": {
+      "architecture_use": "merge typed packets when ownership is already aligned",
+      "unit": "selected dword/word lanes"
+    },
+    "vperm2i128": {
+      "architecture_use": "exchange or select complete typed semantic objects",
+      "unit": "128-bit half"
+    },
+    "vpmaddwd": {
+      "architecture_use": "BaseMul-selected dot/pair packets",
+      "unit": "adjacent signed-word pairs contracted to dwords"
+    },
+    "vpshufb": {
+      "architecture_use": "local packet formation only; cannot cross halves",
+      "unit": "bytes within independent 128-bit halves"
+    },
+    "vpunpckldq_vpunpckhdq": {
+      "architecture_use": "interleave widened pair results",
+      "unit": "32-bit pair/accumulator"
+    },
+    "vpunpcklqdq_vpunpckhqdq": {
+      "architecture_use": "pair qword objects without crossing 128-bit lanes",
+      "unit": "64-bit quartic/pair object within each half"
+    },
+    "vpunpcklwd_vpunpckhwd": {
+      "architecture_use": "interleave pair components or leaf subsets",
+      "unit": "16-bit coefficient/form"
+    },
+    "vshufps": {
+      "architecture_use": "two-source dword packet routing",
+      "unit": "32-bit lanes within independent 128-bit halves"
+    }
+  },
+  "assembly_emitted": false,
+  "coverage_registry": {
+    "BaseMul_pair_and_K2": {
+      "artifacts": [
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_pair_native_bm_gate.json",
+          "sha256": "f42b9f27ef811a1d0ea2626e3583bb6f7eae62173275a0f73e6a002de309c74e"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_pair02_exact_dag_tile_gate.json",
+          "recorded_decision": "static-hard-stop-before-Pair02-assembly",
+          "sha256": "ce07b344ef1ddcdb3f18c4d671b460c668561bfa38a9727ce71012b67f92034b"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_terminal_karatsuba_basis_gate.json",
+          "recorded_decision": "stop-compact-terminal-basis-no-new-mechanism",
+          "sha256": "c14a425affb71189196363f181ce479751cbc4a88a4ca97578a3c240996b5c36"
+        }
+      ],
+      "missing": "producer-born pair/evaluation packets with inverse-native output",
+      "status": "algebra_and_posthoc_formation_covered"
+    },
+    "Cross_R3_packets": {
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_joint_transform_superspace_010/generated/joint_transform_superspace_gate.json",
+        "sha256": "1ca3a950398821e1146c8dd3dc422995b30181946da263d9a0101d4d49cf00de"
+      },
+      "missing": "128-bit halves as independently typed R3 semantic objects across the whole island",
+      "status": "narrow_8_10_12YMM_and_relocation_gates_only"
+    },
+    "Current_and_plane_packets": {
+      "artifacts": [
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_plane_n16_stockham_stages_007/generated/plane_n16_stockham_gate.json",
+          "sha256": "f12f1174d78a104af15f804548bcecd04c12ca66b4746f0d0abf7a7bfd89f1f1"
+        },
+        {
+          "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_plane_n16_radix4_route_elim_008/generated/plane_n16_radix4_gate.json",
+          "recorded_decision": "static-hard-stop",
+          "sha256": "4b911f47d1867f5b01a5d5ab5054a0225ac16e64031feb0a03e02379c7b642b8"
+        }
+      ],
+      "status": "covered_controls"
+    },
+    "Level1_bit_permutation": {
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_global_physical_layout_gate.json",
+        "recorded_decision": "emit-bounded-assembly-probe",
+        "sha256": "6e36bf5d111c5e78f83a29fad0ace47a3d7b19ed9449712bd55ecd2db3ca6ff6"
+      },
+      "scope": "fixed 128xi16 tensor with logical axes assigned to register/lane bits",
+      "status": "substantially_covered"
+    },
+    "i32_accumulation": {
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_aos_dot_redc16_gate.json",
+        "sha256": "64bd22f723ff83d2062cdeaa67b9ede0d8e8b4375f03cd9eea59dad940a849c1"
+      },
+      "missing": "a mixed-width producer/BM/inverse schedule; persistent i32 is capacity-blocked below",
+      "status": "isolated_AoS_dot_REDC32_and_REDC16_evidence_only"
+    },
+    "one_plane_Hybrid_L01": {
+      "artifact": {
+        "path": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_joint_transform_basis_009/generated/joint_transform_basis_gate.json",
+        "recorded_decision": "static_hard_stop_first_one_plane_Hybrid_L01",
+        "sha256": "83292e970b993599542726423d8ee85389850748e33d331951020ef5679e7bd4"
+      },
+      "missing": "other pair partitions and a producer-native packet that persists through inverse",
+      "status": "one_family_covered_not_general_Hybrid"
+    },
+    "operand_coupled_packets": {
+      "missing": "a two-runtime-operand packet whose coupling deletes a complete load/formation class",
+      "status": "not_globally_searched"
+    }
+  },
+  "decision": {
+    "GT_Clean_modified": false,
+    "Level1_permutation_search": "substantially covered",
+    "Level2_packet_search": "partially covered",
+    "Level3_algebraic_SIMD_basis": "only narrow L01/terminal gates covered",
+    "first_next_gate": "cross_R3 i16 coefficient packet with independently typed 128-bit halves",
+    "reopen_i32_only_if": "a transient widened DAG deletes a complete reduction class including conversion cost",
+    "status": "coverage_gap_confirmed_next_family_selected_no_asm",
+    "why_not_evaluation_first": "expanded K2 requires nine vectors per operand and therefore a streaming proof before it is executable"
+  },
+  "exact_basis_library": {
+    "K2_L01_expanded": {
+      "class": "redundant_karatsuba_evaluation",
+      "forms": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ],
+      "rank_mod_q": 4,
+      "redundant": true,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 9
+    },
+    "coeff": {
+      "class": "monomial",
+      "forms": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "inverse_mod_q": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "quartic_tensor_support": {
+        "by_output": [
+          {
+            "lambda_weighted": 3,
+            "nonzero_tensor_coefficients": 4,
+            "output": 0
+          },
+          {
+            "lambda_weighted": 2,
+            "nonzero_tensor_coefficients": 4,
+            "output": 1
+          },
+          {
+            "lambda_weighted": 1,
+            "nonzero_tensor_coefficients": 4,
+            "output": 2
+          },
+          {
+            "lambda_weighted": 0,
+            "nonzero_tensor_coefficients": 4,
+            "output": 3
+          }
+        ],
+        "lambda_weighted": 6,
+        "nonzero_tensor_coefficients": 16,
+        "warning": "support count is exact but is not bilinear rank or an AVX2 instruction count"
+      },
+      "rank_mod_q": 4,
+      "redundant": false,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 4
+    },
+    "pair01_sumdiff": {
+      "class": "invertible_pair_evaluation",
+      "forms": [
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          0,
+          1,
+          -1
+        ]
+      ],
+      "inverse_mod_q": [
+        [
+          1729,
+          1729,
+          0,
+          0
+        ],
+        [
+          1729,
+          1728,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1729,
+          1729
+        ],
+        [
+          0,
+          0,
+          1729,
+          1728
+        ]
+      ],
+      "quartic_tensor_support": {
+        "by_output": [
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 16,
+            "output": 0
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 16,
+            "output": 1
+          },
+          {
+            "lambda_weighted": 4,
+            "nonzero_tensor_coefficients": 16,
+            "output": 2
+          },
+          {
+            "lambda_weighted": 4,
+            "nonzero_tensor_coefficients": 16,
+            "output": 3
+          }
+        ],
+        "lambda_weighted": 32,
+        "nonzero_tensor_coefficients": 64,
+        "warning": "support count is exact but is not bilinear rank or an AVX2 instruction count"
+      },
+      "rank_mod_q": 4,
+      "redundant": false,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 4
+    },
+    "pair02_sumdiff": {
+      "class": "invertible_pair_evaluation",
+      "forms": [
+        [
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          -1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          -1
+        ]
+      ],
+      "inverse_mod_q": [
+        [
+          1729,
+          1729,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1729,
+          1729
+        ],
+        [
+          1729,
+          1728,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1729,
+          1728
+        ]
+      ],
+      "quartic_tensor_support": {
+        "by_output": [
+          {
+            "lambda_weighted": 8,
+            "nonzero_tensor_coefficients": 16,
+            "output": 0
+          },
+          {
+            "lambda_weighted": 8,
+            "nonzero_tensor_coefficients": 16,
+            "output": 1
+          },
+          {
+            "lambda_weighted": 8,
+            "nonzero_tensor_coefficients": 16,
+            "output": 2
+          },
+          {
+            "lambda_weighted": 8,
+            "nonzero_tensor_coefficients": 16,
+            "output": 3
+          }
+        ],
+        "lambda_weighted": 32,
+        "nonzero_tensor_coefficients": 64,
+        "warning": "support count is exact but is not bilinear rank or an AVX2 instruction count"
+      },
+      "rank_mod_q": 4,
+      "redundant": false,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 4
+    },
+    "pair03_sumdiff": {
+      "class": "invertible_pair_evaluation",
+      "forms": [
+        [
+          1,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          -1
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          -1,
+          0
+        ]
+      ],
+      "inverse_mod_q": [
+        [
+          1729,
+          1729,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1729,
+          1729
+        ],
+        [
+          0,
+          0,
+          1729,
+          1728
+        ],
+        [
+          1729,
+          1728,
+          0,
+          0
+        ]
+      ],
+      "quartic_tensor_support": {
+        "by_output": [
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 18,
+            "output": 0
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 18,
+            "output": 1
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 20,
+            "output": 2
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 20,
+            "output": 3
+          }
+        ],
+        "lambda_weighted": 48,
+        "nonzero_tensor_coefficients": 76,
+        "warning": "support count is exact but is not bilinear rank or an AVX2 instruction count"
+      },
+      "rank_mod_q": 4,
+      "redundant": false,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 4
+    },
+    "walsh4": {
+      "class": "invertible_full_evaluation",
+      "forms": [
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          -1,
+          1,
+          -1
+        ],
+        [
+          1,
+          1,
+          -1,
+          -1
+        ],
+        [
+          1,
+          -1,
+          -1,
+          1
+        ]
+      ],
+      "inverse_mod_q": [
+        [
+          2593,
+          2593,
+          2593,
+          2593
+        ],
+        [
+          2593,
+          864,
+          2593,
+          864
+        ],
+        [
+          2593,
+          2593,
+          864,
+          864
+        ],
+        [
+          2593,
+          864,
+          864,
+          2593
+        ]
+      ],
+      "quartic_tensor_support": {
+        "by_output": [
+          {
+            "lambda_weighted": 10,
+            "nonzero_tensor_coefficients": 20,
+            "output": 0
+          },
+          {
+            "lambda_weighted": 10,
+            "nonzero_tensor_coefficients": 20,
+            "output": 1
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 25,
+            "output": 2
+          },
+          {
+            "lambda_weighted": 12,
+            "nonzero_tensor_coefficients": 25,
+            "output": 3
+          }
+        ],
+        "lambda_weighted": 44,
+        "nonzero_tensor_coefficients": 90,
+        "warning": "support count is exact but is not bilinear rank or an AVX2 instruction count"
+      },
+      "rank_mod_q": 4,
+      "redundant": false,
+      "spans_quartic_coefficients": true,
+      "stored_forms": 4
+    }
+  },
+  "experiment": "GT32-AVX2-PACKING-SUPERSPACE-011",
+  "family_census": {
+    "BaseMul_pair_packet": {
+      "basis_variants": [
+        "coeff",
+        "pair01_sumdiff",
+        "pair02_sumdiff",
+        "pair03_sumdiff"
+      ],
+      "coverage_classes": [
+        "algebra_and_posthoc_formation_covered_persistence_open",
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling"
+      ],
+      "half_modes": [
+        "component_pair_halves",
+        "even_odd_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 8,
+      "minimum_vectors_per_16_leaves_per_poly": 4,
+      "persistent_no_spill_states": 16,
+      "semantic": "adjacent coefficient pairs prepared for bilinear operations",
+      "states_enumerated": 32
+    },
+    "cross_R3_packet": {
+      "basis_variants": [
+        "coeff",
+        "pair01_sumdiff",
+        "pair02_sumdiff",
+        "pair03_sumdiff",
+        "walsh4"
+      ],
+      "coverage_classes": [
+        "narrow_R3_packets_covered_typed_halves_open",
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling"
+      ],
+      "half_modes": [
+        "R3_branch_pair_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 8,
+      "minimum_vectors_per_16_leaves_per_poly": 4,
+      "persistent_no_spill_states": 10,
+      "semantic": "matching leaf subsets from distinct R3 branches in low/high halves",
+      "states_enumerated": 20
+    },
+    "current_packet": {
+      "basis_variants": [
+        "coeff"
+      ],
+      "coverage_classes": [
+        "covered_control",
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling"
+      ],
+      "half_modes": [
+        "quartic_pair_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 8,
+      "minimum_vectors_per_16_leaves_per_poly": 4,
+      "persistent_no_spill_states": 2,
+      "semantic": "four leaves times four quartic coefficients",
+      "states_enumerated": 4
+    },
+    "evaluation_packet": {
+      "basis_variants": [
+        "K2_L01_expanded"
+      ],
+      "coverage_classes": [
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling",
+        "terminal_forms_covered_persistent_stream_open"
+      ],
+      "half_modes": [
+        "evaluation_class_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 18,
+      "minimum_vectors_per_16_leaves_per_poly": 9,
+      "persistent_no_spill_states": 0,
+      "semantic": "linear evaluation forms rather than materialized monomial coefficients",
+      "states_enumerated": 4
+    },
+    "hybrid_strip": {
+      "basis_variants": [
+        "coeff",
+        "pair01_sumdiff",
+        "pair02_sumdiff",
+        "pair03_sumdiff"
+      ],
+      "coverage_classes": [
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling",
+        "one_L01_trajectory_covered_family_open"
+      ],
+      "half_modes": [
+        "leaf_subset_halves",
+        "component_pair_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 8,
+      "minimum_vectors_per_16_leaves_per_poly": 4,
+      "persistent_no_spill_states": 16,
+      "semantic": "eight leaves times two quartic components per vector",
+      "states_enumerated": 32
+    },
+    "plane_strip": {
+      "basis_variants": [
+        "coeff"
+      ],
+      "coverage_classes": [
+        "covered_control",
+        "not_globally_covered_lane_width",
+        "not_globally_covered_operand_coupling"
+      ],
+      "half_modes": [
+        "leaf_subset_halves"
+      ],
+      "maximum_vectors_per_16_leaves_per_poly": 8,
+      "minimum_vectors_per_16_leaves_per_poly": 4,
+      "persistent_no_spill_states": 2,
+      "semantic": "sixteen leaves of one coefficient plane",
+      "states_enumerated": 4
+    }
+  },
+  "lane_width_gate": {
+    "persistent_full_block_i32": {
+      "available_YMM": 16,
+      "decision": "static_stop_for_persistent_two_operand_full_block_without_spill_or_replay",
+      "minimum_with_q_and_one_arithmetic_temp": 18,
+      "two_operands": 16,
+      "vectors_per_operand": 8
+    },
+    "transient_i32_accumulator": {
+      "reason": "widening after packet formation may still win if it deletes multiple REDC16 chains before repacking",
+      "required_mechanism": "delete a complete reduction class; width conversion alone is insufficient",
+      "status": "conditional_open"
+    }
+  },
+  "open_frontier": [
+    {
+      "family": "cross_R3_packet",
+      "hard_stop": "source replay, a six-array materialization, or no complete operation-class deletion",
+      "next_exact_gate": "allocate Top->R3-paired packet->first complete R2 consumer and the symmetric inverse join",
+      "priority": 1,
+      "state": "i16/coeff/R3_branch_pair_halves/single_poly",
+      "why_new": "low/high 128-bit halves are typed branch objects, not two halves of one bit permutation"
+    },
+    {
+      "capacity_fact": "nine vectors per operand means eighteen before constants; a persistent two-operand block must stream",
+      "family": "evaluation_packet",
+      "hard_stop": "materialize all nine forms for both operands or reconstruct monomial output before inverse",
+      "next_exact_gate": "prove producer formation and BM consumption in one bounded stream, then synthesize inverse-native output",
+      "priority": 2,
+      "state": "i16/K2_L01_expanded/evaluation_class_halves/single_poly",
+      "why_new": "stored words are redundant linear forms, not coefficients"
+    },
+    {
+      "family": "BaseMul_pair_packet",
+      "hard_stop": "same 12/13-chain economics with an additional checkpoint or terminal repair",
+      "next_exact_gate": "tensor/range screen before any physical schedule",
+      "priority": 3,
+      "state": "i16/pair03_sumdiff/component_pair_halves/single_poly",
+      "why_new": "L03 persistent producer/inverse trajectory is not covered by the L01 Hybrid or Pair02 gates"
+    },
+    {
+      "family": "mixed_width_transient",
+      "hard_stop": "no reduction-chain deletion or any full-block persistent i32 state",
+      "next_exact_gate": "instruction-DAG comparison against selected B3 with pack/unpack and REDC charged",
+      "priority": 4,
+      "state": "i16 producer -> i32 accumulator -> i16 inverse packet",
+      "why_new": "lane width changes only inside the bilinear consumer"
+    }
+  ],
+  "production_modified": false,
+  "representation_grammar": {
+    "half_semantics": [
+      "R3_branch_pair_halves",
+      "component_pair_halves",
+      "evaluation_class_halves",
+      "even_odd_halves",
+      "leaf_subset_halves",
+      "quartic_pair_halves"
+    ],
+    "lane_width": [
+      16,
+      32
+    ],
+    "linear_basis": [
+      "coeff",
+      "pair01_sumdiff",
+      "pair02_sumdiff",
+      "pair03_sumdiff",
+      "walsh4",
+      "K2_L01_expanded"
+    ],
+    "operand_coupling": [
+      "single_poly",
+      "lhs_rhs_pair"
+    ],
+    "semantic_packet": [
+      "current_packet",
+      "plane_strip",
+      "hybrid_strip",
+      "cross_R3_packet",
+      "BaseMul_pair_packet",
+      "evaluation_packet"
+    ],
+    "state_count": 96
+  },
+  "schema": "gt32-avx2-packing-superspace-v1",
+  "scope_correction": {
+    "new_independent_dimensions": [
+      "semantic_packet",
+      "linear_basis",
+      "half_semantics",
+      "operand_coupling",
+      "lane_width"
+    ],
+    "non_claim": "the explicit grammar is a coverage census, not an exhaustive enumeration of arbitrary linear representations",
+    "old_state": "bijection from seven logical bits to register/lane bits over a fixed 128xi16 tensor"
+  },
+  "states": [
+    {
+      "basis": "coeff",
+      "coverage_class": "covered_control",
+      "half_semantics": "quartic_pair_halves",
+      "id": "current_packet/coeff/i16/quartic_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "current_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "quartic_pair_halves",
+      "id": "current_packet/coeff/i16/quartic_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "current_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "quartic_pair_halves",
+      "id": "current_packet/coeff/i32/quartic_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "current_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "quartic_pair_halves",
+      "id": "current_packet/coeff/i32/quartic_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "current_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "covered_control",
+      "half_semantics": "leaf_subset_halves",
+      "id": "plane_strip/coeff/i16/leaf_subset_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "plane_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "leaf_subset_halves",
+      "id": "plane_strip/coeff/i16/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "plane_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "plane_strip/coeff/i32/leaf_subset_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "plane_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "plane_strip/coeff/i32/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "plane_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/coeff/i16/leaf_subset_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/coeff/i16/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/coeff/i32/leaf_subset_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/coeff/i32/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/coeff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/coeff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/coeff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/coeff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i16/leaf_subset_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i16/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i32/leaf_subset_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i32/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair01_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i16/leaf_subset_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i16/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i32/leaf_subset_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i32/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair02_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i16/leaf_subset_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i16/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i32/leaf_subset_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "leaf_subset_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i32/leaf_subset_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "one_L01_trajectory_covered_family_open",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "hybrid_strip/pair03_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "hybrid_strip",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "narrow_R3_packets_covered_typed_halves_open",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/coeff/i16/R3_branch_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/coeff/i16/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/coeff/i32/R3_branch_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/coeff/i32/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "narrow_R3_packets_covered_typed_halves_open",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair01_sumdiff/i16/R3_branch_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair01_sumdiff/i16/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair01_sumdiff/i32/R3_branch_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair01_sumdiff/i32/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "narrow_R3_packets_covered_typed_halves_open",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair02_sumdiff/i16/R3_branch_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair02_sumdiff/i16/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair02_sumdiff/i32/R3_branch_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair02_sumdiff/i32/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "narrow_R3_packets_covered_typed_halves_open",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair03_sumdiff/i16/R3_branch_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair03_sumdiff/i16/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair03_sumdiff/i32/R3_branch_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/pair03_sumdiff/i32/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "walsh4",
+      "coverage_class": "narrow_R3_packets_covered_typed_halves_open",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/walsh4/i16/R3_branch_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "walsh4",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/walsh4/i16/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "walsh4",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/walsh4/i32/R3_branch_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "walsh4",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "R3_branch_pair_halves",
+      "id": "cross_R3_packet/walsh4/i32/R3_branch_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "cross_R3_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/coeff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/coeff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/coeff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/coeff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/coeff/i16/even_odd_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/coeff/i16/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "coeff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/coeff/i32/even_odd_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "coeff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/coeff/i32/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i16/even_odd_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i16/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i32/even_odd_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair01_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair01_sumdiff/i32/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i16/even_odd_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i16/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i32/even_odd_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair02_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair02_sumdiff/i32/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i16/component_pair_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i16/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i32/component_pair_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "component_pair_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i32/component_pair_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "algebra_and_posthoc_formation_covered_persistence_open",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i16/even_odd_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i16/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 10,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": true,
+      "two_operand_vectors_before_constants": 8,
+      "vectors_per_16_leaves_per_poly": 4
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i32/even_odd_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "single_poly",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "pair03_sumdiff",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "even_odd_halves",
+      "id": "BaseMul_pair_packet/pair03_sumdiff/i32/even_odd_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 18,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "BaseMul_pair_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 16,
+      "vectors_per_16_leaves_per_poly": 8,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "K2_L01_expanded",
+      "coverage_class": "terminal_forms_covered_persistent_stream_open",
+      "half_semantics": "evaluation_class_halves",
+      "id": "evaluation_packet/K2_L01_expanded/i16/evaluation_class_halves/single_poly",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 20,
+      "operand_coupling": "single_poly",
+      "packet": "evaluation_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 18,
+      "vectors_per_16_leaves_per_poly": 9
+    },
+    {
+      "basis": "K2_L01_expanded",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_operand_coupling",
+      "half_semantics": "evaluation_class_halves",
+      "id": "evaluation_packet/K2_L01_expanded/i16/evaluation_class_halves/lhs_rhs_pair",
+      "lane_width": 16,
+      "lanes_per_YMM": 16,
+      "minimum_live_with_q_and_one_temp": 20,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "evaluation_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 18,
+      "vectors_per_16_leaves_per_poly": 9
+    },
+    {
+      "basis": "K2_L01_expanded",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "evaluation_class_halves",
+      "id": "evaluation_packet/K2_L01_expanded/i32/evaluation_class_halves/single_poly",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 38,
+      "operand_coupling": "single_poly",
+      "packet": "evaluation_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 36,
+      "vectors_per_16_leaves_per_poly": 18,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    },
+    {
+      "basis": "K2_L01_expanded",
+      "coupling_observation": "placing lhs/rhs in opposite halves does not by itself feed vpmaddwd; the instruction still requires two source operands",
+      "coverage_class": "not_globally_covered_lane_width",
+      "half_semantics": "evaluation_class_halves",
+      "id": "evaluation_packet/K2_L01_expanded/i32/evaluation_class_halves/lhs_rhs_pair",
+      "lane_width": 32,
+      "lanes_per_YMM": 8,
+      "minimum_live_with_q_and_one_temp": 38,
+      "operand_coupling": "lhs_rhs_pair",
+      "packet": "evaluation_packet",
+      "persistent_two_operand_no_spill_capacity": false,
+      "two_operand_vectors_before_constants": 36,
+      "vectors_per_16_leaves_per_poly": 18,
+      "width_observation": "coefficient storage doubles versus i16; AVX2 has eight dword lanes and no packed 32-bit high-half multiply matching the current REDC16 path"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+experiment: GT32-AVX2-PACKING-SUPERSPACE-011
+status: coverage_gap_confirmed_wave1_completed_no_asm
+production_modified: false
+assembly_emitted: false
+
+scope_correction:
+  old: fixed_128xi16_tensor_bit_axis_permutation
+  new_dimensions:
+    - semantic_packet
+    - linear_basis
+    - half_semantics
+    - operand_coupling
+    - lane_width
+  non_claim: not_an_exhaustive_enumeration_of_arbitrary_linear_representations
+
+grammar:
+  explicit_states: 96
+  packet_families:
+    - current_packet
+    - plane_strip
+    - hybrid_strip
+    - cross_R3_packet
+    - BaseMul_pair_packet
+    - evaluation_packet
+  lane_widths: [16, 32]
+  operand_coupling: [single_poly, lhs_rhs_pair]
+
+coverage:
+  Level1_permutation: substantially_covered
+  Level2_packet: partially_covered_real_gap
+  Level3_algebraic_basis: narrow_L01_and_terminal_only_real_gap
+
+exact_results:
+  basis_sets_checked: 6
+  all_span_quartic_space: true
+  square_bases_mechanically_inverted: true
+  persistent_i32_two_operand_minimum_YMM: 18
+  persistent_i32_no_spill_decision: static_stop
+  expanded_K2_vectors_per_operand: 9
+  expanded_K2_two_operand_vectors_before_constants: 18
+
+next_gate:
+  priority: 1
+  family: cross_R3_packet
+  state: i16_coeff_R3_branch_pair_halves_single_poly
+  required_scope:
+    - Top_to_R3_paired_packet
+    - first_complete_R2_consumer
+    - symmetric_inverse_R2_join
+    - inverse_R3_and_TopJoin
+  hard_stop_if:
+    - source_replay
+    - six_array_materialization_reappears
+    - no_complete_operation_class_deleted
+
+later_frontier:
+  - expanded_K2_evaluation_packet_stream
+  - pair03_persistent_producer_inverse_trajectory
+  - transient_i32_accumulator_only_if_reduction_class_disappears
+
+GT_Clean: untouched
