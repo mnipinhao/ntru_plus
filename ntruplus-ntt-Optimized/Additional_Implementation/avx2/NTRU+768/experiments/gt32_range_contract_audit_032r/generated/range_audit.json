@@ -1,0 +1,46 @@
+{
+  "current_executable_input_bound": [
+    -20296,
+    20296
+  ],
+  "decision": "current-20296-contract-pass",
+  "executable_packet_differential_required": true,
+  "exhaustive_values_checked": 40593,
+  "experiment": "GT32-RANGE-CONTRACT-AUDIT-032R",
+  "full_signed_int16_supplement": {
+    "centered_output_range": [
+      -3291,
+      3291
+    ],
+    "pass": true,
+    "values_checked": 65536
+  },
+  "historical_names_are_not_current_bounds": true,
+  "reducer": {
+    "avx2": [
+      "vpmulhrsw v=9",
+      "vpmullw q=3457",
+      "vpsubw",
+      "sign add q"
+    ],
+    "canonical_output_range": [
+      0,
+      3456
+    ],
+    "centered_output_range": [
+      -2739,
+      2739
+    ],
+    "formula": "t=(x*9+16384)>>15; y=x-t*3457; z=y+(y<0?3457:0)",
+    "mod_q_congruence": true,
+    "quotient_range": [
+      -6,
+      6
+    ],
+    "signed_int16_safe": true,
+    "single_sign_correction_sufficient": true
+  },
+  "schema": "ntruplus768-gt32-range-contract-audit-032r-v1",
+  "selected_body": "ntruplus768_pack_m_lazy10788_avx2",
+  "selected_symbol": "ntruplus768_pack_m_highrange12699_avx2"
+}
