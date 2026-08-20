@@ -172,6 +172,10 @@ The main knobs are `SUPERCOP_ROOT`, `SUPERCOP_CAMPAIGN_ROOT`, `BENCH_CPU`,
 `SUPERCOP_IMPLEMENTATION`, and `RESULT_TAG`. Scripts derive repository paths
 and never embed a user's home directory.
 
+Omit `SUPERCOP_COMPILER_WRAPPER` for native SUPERCOP selection. Set it to
+`bench/supercop/okc-o3gc.sh` for the common O3GC comparison; the runner backs
+up and restores the campaign's `okc-amd64` selector and records its hash.
+
 ## Promotion and clean production
 
 Promotion requires all correctness/security gates, a successful SUPERCOP
@@ -183,6 +187,9 @@ Keygen, encapsulation, and decapsulation may use different source-resolved
 winners. A failed candidate remains in the experiment. Qualified source is
 cleaned into `NTRU+{864,1152}/clean/avx2-fastest-clean/` with no selector,
 dead variant, experiment include, workspace symlink, or build-time generator.
+Install a qualified tree as `avx2-fastest-clean` with
+`scripts/install_supercop_clean.py`; the installer refuses nested or unqualified
+clean trees and never overwrites an existing implementation.
 
 ## Release packaging
 

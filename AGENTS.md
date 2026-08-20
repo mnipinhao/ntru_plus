@@ -35,6 +35,11 @@ before making changes.
 
 ## SUPERCOP source of truth
 
+- The production performance baseline is the pinned SUPERCOP release recorded
+  in `bench/supercop.lock`.
+- Import upstream NTRU+864 and NTRU+1152 AVX2 sources from
+  `crypto_kem/ntruplus{864,1152}/avx2` in that snapshot.
+- Never use `ntruplus-KpqC-Final/` as the primary performance baseline.
 - Never modify a pristine SUPERCOP snapshot.
 - Install candidates under new implementation names in a disposable SUPERCOP
   campaign copy.
