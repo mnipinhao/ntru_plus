@@ -1,0 +1,66 @@
+{
+  "branch_policy": "all direct conditional branches are fixed-count/public-parameter loops",
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3 -fstack-usage",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "objects": {
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/full-audit/gt9x16_forward.o": {
+      "functions": {
+        "ntruplus1152_exp001_gt9x16_forward_small": {
+          "direct_conditional_branches": 7,
+          "forbidden_instructions": [],
+          "indirect_control_transfers": [],
+          "stack": {
+            "bytes": 5696,
+            "kind": "static"
+          },
+          "static_instruction_count": 304,
+          "text_bytes": 1282
+        }
+      },
+      "sha256": "c251f1da18099f6769b6dcfcbfe60193a9dd73bb0154886ac57c8c43c74af887"
+    },
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/full-audit/ntt9_reference.o": {
+      "functions": {
+        "ntruplus1152_exp001_ntt9_reference": {
+          "direct_conditional_branches": 1,
+          "forbidden_instructions": [],
+          "indirect_control_transfers": [],
+          "stack": {
+            "bytes": 608,
+            "kind": "static"
+          },
+          "static_instruction_count": 611,
+          "text_bytes": 3000
+        }
+      },
+      "sha256": "4eb1897e94ae04a9059cb54c46a9f5a1201ba56b372ee07d9bfa358632e8214e"
+    },
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/full-audit/top_split_adapter.o": {
+      "functions": {
+        "ntruplus1152_exp001_top_split_small": {
+          "direct_conditional_branches": 1,
+          "forbidden_instructions": [],
+          "indirect_control_transfers": [],
+          "stack": {
+            "bytes": 8,
+            "kind": "static"
+          },
+          "static_instruction_count": 29,
+          "text_bytes": 124
+        },
+        "ntruplus1152_exp001_top_split_to_gt_adapter": {
+          "direct_conditional_branches": 3,
+          "forbidden_instructions": [],
+          "indirect_control_transfers": [],
+          "stack": {
+            "bytes": 56,
+            "kind": "static"
+          },
+          "static_instruction_count": 378,
+          "text_bytes": 1708
+        }
+      },
+      "sha256": "49d4fde9d33c026415273aea34ced2b770d26608754b9eb7d2ec0fc645201f71"
+    }
+  }
+}

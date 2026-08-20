@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: ntt16-island-validated
+state: full-forward-correct-transform-diagnostic-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -11,7 +11,10 @@ gates:
   shear_invariant: passed
   materialized_shear_differential: passed
   randomized_boundary_alias_canary: passed
-  differential: partial-through-ntt16
+  top_split_adapter: passed-bit-exact-existing-avx2-small-arithmetic
+  ntt9_reference: passed-two-radix3-layers
+  component_index_oracle: passed-all-branches-rows-lanes-and-terminal-positions
+  differential: passed-full-forward-canonicalized-vs-pinned-official-avx2
   kat: pending
   range: passed-bit-exact-permutation
   sanitizer: passed-asan-ubsan
@@ -19,11 +22,14 @@ gates:
   constant_time: passed-static-current-slice
   ntt16_stage8: passed-fusion-differential-table-provenance-only
   ntt16_full: passed-source-table-differential
-  ntt9_reference: pending
-  full_forward_ntt: pending
+  full_forward_ntt: passed-1010-random-boundary-impulse-plus-alias-canary
+  transform_paired: passed-diagnostic-only-gt-slower
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
 diagnostic_result: results/shear-intel155h-20260820-005/shear-diagnostic.json
-next_step: connect-existing-top-split-and-reference-ntt9-for-full-forward-differential
+transform_diagnostic_result: results/transform-intel155h-20260820-001/transform-paired.json
+milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
+checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
+next_step: profile-layout-costs-then-fuse-ntt16-distances-4-2-1-as-radix8-without-canonicalizing-between-layers
 rejected_candidates: []

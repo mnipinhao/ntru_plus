@@ -14,34 +14,58 @@ CPPFLAGS_LOCAL := -Isrc -Iref -Igenerated
 CFLAGS_STRICT := -std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror
 SHEAR_SOURCES := src/gt9x16_shear.c ref/gt9x16_oracle.c
 SHEAR_HEADERS := src/gt9x16_shear.h ref/gt9x16_oracle.h
+UPSTREAM := upstream/supercop-avx2
+OFFICIAL_FORWARD := $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s
+FULL_SOURCES := src/gt9x16_shear.c src/top_split_adapter.c src/gt9x16_forward.c ref/ntt9_reference.c
+FULL_HEADERS := src/gt9x16_shear.h src/gt9x16_forward.h ref/ntt9_reference.h generated/gt9x16-full-forward-tables.h
+FULL_CPPFLAGS := $(CPPFLAGS_LOCAL) -I$(UPSTREAM)
+PAIRED_CFLAGS := $(CFLAGS_STRICT) -O3
 
-.PHONY: generate check sanitize audit bench-local bench-local-record supercop-check supercop-install-candidate \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-transform-paired \
+ bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
 
 generate:
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS_STRICT) -O3 -I$(UPSTREAM) tools/probe_official_layout.c $(OFFICIAL_FORWARD) -o $(BUILD)/probe-official-layout
+	$(BUILD)/probe-official-layout generated/official-avx2-layout-probe.json
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h
+	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h
 
 check:
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS_STRICT) -O3 -I$(UPSTREAM) tools/probe_official_layout.c $(OFFICIAL_FORWARD) -o $(BUILD)/probe-official-layout
+	$(BUILD)/probe-official-layout $(BUILD)/official-avx2-layout-probe.json
+	cmp generated/official-avx2-layout-probe.json $(BUILD)/official-avx2-layout-probe.json
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json --check
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h --check
+	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
+	$(CC) $(CFLAGS_STRICT) -O3 $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward
+	$(BUILD)/test-full-forward
 
 sanitize:
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-shear-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
 
 audit:
-	mkdir -p $(BUILD) generated
+	mkdir -p $(BUILD) $(BUILD)/full-audit generated
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -c src/gt9x16_shear.c -o $(BUILD)/gt9x16-shear.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -S src/gt9x16_shear.c -o generated/gt9x16-shear.s
 	$(PYTHON) tools/audit_gt9x16_shear.py --object $(BUILD)/gt9x16-shear.o --assembly generated/gt9x16-shear.s --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fno-inline" --output generated/gt9x16-shear-audit.json
+	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
+	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
+	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
+	$(PYTHON) tools/audit_full_forward.py --object $(BUILD)/full-audit/top_split_adapter.o --object $(BUILD)/full-audit/gt9x16_forward.o --object $(BUILD)/full-audit/ntt9_reference.o --stack-usage $(BUILD)/full-audit/top_split_adapter.su --stack-usage $(BUILD)/full-audit/gt9x16_forward.su --stack-usage $(BUILD)/full-audit/ntt9_reference.su --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fstack-usage" --output generated/gt9x16-full-forward-audit.json
 
 bench-local:
 	mkdir -p $(BUILD)
@@ -52,6 +76,16 @@ bench-local-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) bench/bench_gt9x16_shear.c -o $(BUILD)/bench-gt9x16-shear
 	$(PYTHON) tools/run_shear_benchmark.py --binary $(BUILD)/bench-gt9x16-shear --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-shear-audit.json --output results/$(RESULT_TAG)/shear-diagnostic.json
+
+bench-transform-paired:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) bench/bench_full_forward_paired.c -o $(BUILD)/bench-full-forward-paired
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-full-forward-paired
+
+bench-transform-paired-record:
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) bench/bench_full_forward_paired.c -o $(BUILD)/bench-full-forward-paired
+	$(PYTHON) tools/run_transform_paired.py --binary $(BUILD)/bench-full-forward-paired --cpu $(BENCH_CPU) --launches 9 --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/transform-paired.json
 
 supercop-check:
 	test -n "$(SUPERCOP_ROOT)"
