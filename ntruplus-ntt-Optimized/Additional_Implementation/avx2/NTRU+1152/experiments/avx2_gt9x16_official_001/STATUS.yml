@@ -1,17 +1,29 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: scaffolded
+state: ntt16-island-validated
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
 gates:
-  generator: pending
-  differential: pending
+  generator: passed
+  gt_mapping_oracle: passed
+  row_relabel_oracle: passed
+  shear_invariant: passed
+  materialized_shear_differential: passed
+  randomized_boundary_alias_canary: passed
+  differential: partial-through-ntt16
   kat: pending
-  range: pending
-  abi: pending
-  constant_time: pending
+  range: passed-bit-exact-permutation
+  sanitizer: passed-asan-ubsan
+  abi: passed-no-vector-spills-callee-saved-gpr-only
+  constant_time: passed-static-current-slice
+  ntt16_stage8: passed-fusion-differential-table-provenance-only
+  ntt16_full: passed-source-table-differential
+  ntt9_reference: pending
+  full_forward_ntt: pending
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
+diagnostic_result: results/shear-intel155h-20260820-005/shear-diagnostic.json
+next_step: connect-existing-top-split-and-reference-ntt9-for-full-forward-differential
 rejected_candidates: []

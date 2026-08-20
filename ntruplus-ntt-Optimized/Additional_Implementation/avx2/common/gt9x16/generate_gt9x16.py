@@ -7,15 +7,24 @@ import argparse
 import json
 from pathlib import Path
 
-from model import MODELS
+from model import MODELS, SHEAR_STAGES, gt_input_index, gt_output_index
 
 
 def rendered(parameter: int) -> str:
     model = MODELS[parameter]
     model.validate()
     document = model.as_dict()
-    document["mapping"] = "coefficient,radix9_digit,lane_block,lane"
-    document["status"] = "structural-only-no-arithmetic-constants"
+    document["coordinate_mapping"] = "coefficient,radix9_digit,lane_block,lane"
+    document["gt_input_index"] = [[gt_input_index(u, v) for v in range(16)] for u in range(9)]
+    document["gt_output_index"] = [[gt_output_index(p, q) for q in range(16)] for p in range(9)]
+    document["row_relabel"] = [(5 * row) % 9 for row in range(9)]
+    document["shear_lane_shifts"] = [lane % 9 for lane in range(16)]
+    document["shear_stages"] = [
+        {"shift": shift, "mask": f"0x{mask:02X}", "cycle": list(cycle)}
+        for shift, mask, cycle in SHEAR_STAGES
+    ]
+    document["post_shear_invariant"] = "Z[a]=Y[a].low||Y[(a+1)%9].high"
+    document["status"] = "verified-structural-mapping-no-arithmetic-constants"
     return json.dumps(document, indent=2, sort_keys=True) + "\n"
 
 

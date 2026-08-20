@@ -1,0 +1,240 @@
+{
+  "assembly_audit": {
+    "assembly": "generated/gt9x16-shear.s",
+    "assembly_sha256": "1d3963e44c26527e401d9a55d90b77726a92cfd4cfee2607469380753db2d939",
+    "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3 -fno-inline",
+    "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+    "functions": {
+      "ntruplus1152_exp001_gt9x16_ntt16_finish_row": {
+        "conditional_branches": 0,
+        "designed_peak_live_ymm_upper_bound": 10,
+        "distinct_ymm_count": 6,
+        "distinct_ymm_registers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "forbidden_instructions": [],
+        "input_vector_loads": 1,
+        "memory_operand_instruction_count": 25,
+        "output_vector_stores": 1,
+        "routing_blend_or_half_combine_instructions": 6,
+        "stack_references": 1,
+        "static_instruction_count": 120,
+        "text_bytes": 510,
+        "vector_stack_references": 0,
+        "vpblendw": 1
+      },
+      "ntruplus1152_exp001_gt9x16_shear_materialized": {
+        "conditional_branches": 0,
+        "designed_peak_live_ymm_upper_bound": 10,
+        "distinct_ymm_count": 10,
+        "distinct_ymm_registers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "forbidden_instructions": [],
+        "input_vector_loads": 9,
+        "memory_operand_instruction_count": 18,
+        "output_vector_stores": 9,
+        "routing_blend_or_half_combine_instructions": 9,
+        "stack_references": 0,
+        "static_instruction_count": 69,
+        "text_bytes": 342,
+        "vector_stack_references": 0,
+        "vpblendw": 27
+      },
+      "ntruplus1152_exp001_gt9x16_shear_stage8": {
+        "conditional_branches": 0,
+        "designed_peak_live_ymm_upper_bound": 15,
+        "distinct_ymm_count": 12,
+        "distinct_ymm_registers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "forbidden_instructions": [],
+        "input_vector_loads": 9,
+        "memory_operand_instruction_count": 37,
+        "output_vector_stores": 9,
+        "routing_blend_or_half_combine_instructions": 9,
+        "stack_references": 0,
+        "static_instruction_count": 162,
+        "text_bytes": 796,
+        "vector_stack_references": 0,
+        "vpblendw": 27
+      },
+      "ntruplus1152_exp001_gt9x16_shear_z": {
+        "conditional_branches": 0,
+        "designed_peak_live_ymm_upper_bound": 10,
+        "distinct_ymm_count": 10,
+        "distinct_ymm_registers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "forbidden_instructions": [],
+        "input_vector_loads": 9,
+        "memory_operand_instruction_count": 18,
+        "output_vector_stores": 9,
+        "routing_blend_or_half_combine_instructions": 0,
+        "stack_references": 0,
+        "static_instruction_count": 58,
+        "text_bytes": 288,
+        "vector_stack_references": 0,
+        "vpblendw": 27
+      }
+    },
+    "object": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/gt9x16-shear.o",
+    "object_sha256": "2ac8ecf210d4fbd49e06d0bae1258009a8fb9a7428189327db42b27630725ea2"
+  },
+  "benchmark_class": "repository-local-diagnostic-not-for-promotion",
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-20T05:07:13.340659+00:00",
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-14-generic",
+  "launches": 9,
+  "samples_per_launch": 201,
+  "summary": {
+    "avx2_27_blend_full_ntt16_branch0": {
+      "cycles_per_call_by_launch": [
+        301.745,
+        300.184,
+        300.289,
+        299.086,
+        300.371,
+        300.09,
+        298.503,
+        298.495,
+        298.644
+      ],
+      "maximum_cycles_per_call": 301.745,
+      "median_cycles_per_call": 300.09,
+      "minimum_cycles_per_call": 298.495
+    },
+    "avx2_27_blend_full_ntt16_branch1": {
+      "cycles_per_call_by_launch": [
+        302.871,
+        301.464,
+        300.355,
+        298.954,
+        301.103,
+        300.468,
+        298.481,
+        298.483,
+        298.622
+      ],
+      "maximum_cycles_per_call": 302.871,
+      "median_cycles_per_call": 300.355,
+      "minimum_cycles_per_call": 298.481
+    },
+    "avx2_27_blend_fused_stage8_branch0": {
+      "cycles_per_call_by_launch": [
+        35.827,
+        35.826,
+        35.826,
+        35.819,
+        35.826,
+        35.824,
+        35.821,
+        35.821,
+        45.678
+      ],
+      "maximum_cycles_per_call": 45.678,
+      "median_cycles_per_call": 35.826,
+      "minimum_cycles_per_call": 35.819
+    },
+    "avx2_27_blend_fused_stage8_branch1": {
+      "cycles_per_call_by_launch": [
+        35.822,
+        35.824,
+        35.828,
+        35.829,
+        35.826,
+        35.827,
+        35.822,
+        35.822,
+        45.674
+      ],
+      "maximum_cycles_per_call": 45.674,
+      "median_cycles_per_call": 35.826,
+      "minimum_cycles_per_call": 35.822
+    },
+    "avx2_27_blend_z": {
+      "cycles_per_call_by_launch": [
+        11.419,
+        11.639,
+        11.428,
+        11.419,
+        11.421,
+        11.42,
+        11.429,
+        11.429,
+        25.904
+      ],
+      "maximum_cycles_per_call": 25.904,
+      "median_cycles_per_call": 11.428,
+      "minimum_cycles_per_call": 11.419
+    },
+    "avx2_materialized_y": {
+      "cycles_per_call_by_launch": [
+        13.754,
+        14.029,
+        13.753,
+        13.752,
+        13.754,
+        13.755,
+        13.747,
+        13.75,
+        28.986
+      ],
+      "maximum_cycles_per_call": 28.986,
+      "median_cycles_per_call": 13.754,
+      "minimum_cycles_per_call": 13.747
+    },
+    "scalar_materialized_y": {
+      "cycles_per_call_by_launch": [
+        69.033,
+        70.488,
+        69.054,
+        69.023,
+        69.054,
+        69.027,
+        69.037,
+        69.029,
+        70.583
+      ],
+      "maximum_cycles_per_call": 70.583,
+      "median_cycles_per_call": 69.037,
+      "minimum_cycles_per_call": 69.023
+    }
+  }
+}
