@@ -43,6 +43,18 @@ FUNCTIONS = {
         "vpblendw": 2, "vpblendd": 2, "vpmullw": 4,
         "input_loads": 2, "output_stores": 2, "peak_live_ymm": 15,
     },
+    "ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 36,
+        "input_loads": 20, "output_stores": 18, "peak_live_ymm": 11,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 36,
+        "input_loads": 20, "output_stores": 18, "peak_live_ymm": 13,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear": {
+        "vpblendw": 171, "vpblendd": 18, "vpmullw": 36,
+        "input_loads": 162, "output_stores": 18, "peak_live_ymm": 15,
+    },
 }
 
 
@@ -60,6 +72,7 @@ def main() -> int:
     parser.add_argument("--object", type=Path, required=True)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--macro-source", type=Path, required=True)
+    parser.add_argument("--extra-macro-source", type=Path, action="append", default=[])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compiler", default="cc")
     parser.add_argument("--cflags", required=True)
@@ -77,6 +90,10 @@ def main() -> int:
         "source_sha256": hashlib.sha256(args.source.read_bytes()).hexdigest(),
         "register_macro_source": str(args.macro_source),
         "register_macro_source_sha256": hashlib.sha256(args.macro_source.read_bytes()).hexdigest(),
+        "extra_macro_sources": {
+            str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in args.extra_macro_source
+        },
         "compiler": subprocess.run([args.compiler, "--version"], check=True, text=True,
                                    stdout=subprocess.PIPE).stdout.splitlines()[0],
         "cflags": args.cflags,
@@ -86,7 +103,7 @@ def main() -> int:
         body = function_body(disassembly, name)
         lines = re.findall(r"^\s*[0-9a-f]+:\s+.*$", body, re.MULTILINE)
         ymm_registers = sorted({int(value) for value in re.findall(r"\bymm(\d+)\b", body)})
-        input_loads = sum(bool(re.search(r"\bvmovdqu\s+ymm\d+.*,\s*YMMWORD PTR \[rsi", line)) for line in lines)
+        input_loads = sum(bool(re.search(r"\bvmovdqu\s+[xy]mm\d+.*,\s*[XY]MMWORD PTR \[rsi", line)) for line in lines)
         output_stores = sum(bool(re.search(r"\bvmovdqu\s+YMMWORD PTR \[rdi.*\],\s*ymm\d+", line)) for line in lines)
         calls = len(re.findall(r"\bcall\b", body))
         vzeroupper = len(re.findall(r"\bvzeroupper\b", body))

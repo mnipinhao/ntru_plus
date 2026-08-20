@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-c3-persistent-routing-selected
+state: checkpoint-c4-nine-row-persistent-selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -36,6 +36,9 @@ gates:
   checkpoint_c3_correctness: passed-bit-exact-row-pair
   checkpoint_c3_routing: passed-44-to-18-instructions
   checkpoint_c3_benchmark: passed-local-30.6-percent-win
+  checkpoint_c4_from_z: passed-sequential-and-two-row-pipeline
+  checkpoint_c4_natural: passed-zero-materialization-17.9-percent-win
+  checkpoint_c4_persistent_output: passed-no-final-reconstruction
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -44,15 +47,18 @@ transform_diagnostic_result: results/transform-intel155h-20260820-001/transform-
 ntt16_diagnostic_result: results/ntt16-intel155h-20260820-002/ntt16-diagnostic.json
 c2_diagnostic_result: results/c2-intel155h-20260820-001/c2-diagnostic.json
 c3_diagnostic_result: results/c3-intel155h-20260820-001/c3-diagnostic.json
+c4_diagnostic_result: results/c4-intel155h-20260820-001/c4-diagnostic.json
 milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
 checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
 pipeline_checkpoint: structural-audit-and-layout-codesign-complete
 checkpoint_c: c0-selected-c1-rejected
 checkpoint_c2: pair-packed-distance8-marginal-full-ntt16-rejected
 checkpoint_c3: official-style-persistent-sd-row-pair-selected
-next_step: integrate-nine-row-skewed-shear-with-c3-persistent-sd-before-ntt9
+checkpoint_c4: nine-row-natural-persistent-pair-selected
+next_step: implement-vector-ntt9-directly-on-c4-persistent-sd-layout
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
 selected_candidates:
   - c3-official-routing-row-pair-is-0.694x-c2-row-pair
+  - c4-natural-nine-row-pair-is-0.821x-c0-pair

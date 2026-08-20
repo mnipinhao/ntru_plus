@@ -116,3 +116,18 @@ Source: `results/c3-intel155h-20260820-001/c3-diagnostic.json`.
 C3 wins by 30.6% with the same four Montgomery chains and identical two-load,
 two-store boundary. It selects persistent routing for the next nine-row/shear
 integration experiment; it does not yet authorize NTT9 work.
+
+## Checkpoint C4 nine-row persistent pair
+
+Source: `results/c4-intel155h-20260820-001/c4-diagnostic.json`.
+
+| Variant | Median cycles / nine-row pair |
+| --- | ---: |
+| C0 natural two islands | 179.941 |
+| C4 from-Z sequential | 97.730 |
+| C4 from-Z two-row pipeline | 95.277 |
+| C4 natural, zero intermediate materialization | 147.811 |
+
+Natural C4 wins by 17.9%, retains 36 Montgomery chains, and writes persistent
+S/D without final reconstruction. This passes the local gate to start a vector
+NTT9 that directly consumes this layout.

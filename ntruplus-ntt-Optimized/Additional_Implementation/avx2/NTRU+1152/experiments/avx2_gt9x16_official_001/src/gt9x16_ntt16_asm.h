@@ -50,4 +50,18 @@ void ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair(
     ntruplus1152_exp001_gt_ntt16_row_pair *output,
     const ntruplus1152_exp001_gt_ntt16_row_pair *input);
 
+typedef struct { int16_t state[9][2][16]; } ntruplus1152_exp001_gt_persistent_pair;
+void ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *skewed_input);
+void ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *skewed_input);
+void ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0(
+    ntruplus1152_exp001_gt_ntt16_row_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+
 #endif

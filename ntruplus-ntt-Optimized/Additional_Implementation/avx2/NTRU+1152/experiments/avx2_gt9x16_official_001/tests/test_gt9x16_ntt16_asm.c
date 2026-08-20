@@ -117,6 +117,8 @@ static void test_trial(int trial) {
 static void test_pair(int trial) {
   ntruplus1152_exp001_gt_row_pair input, expected, actual, skewed, stage8_expected;
   ntruplus1152_exp001_gt_ntt16_row_pair row_input, row_c2, row_c3;
+  ntruplus1152_exp001_gt_ntt16_row_pair row_probe;
+  ntruplus1152_exp001_gt_persistent_pair c4_sequential, c4_pipelined, c4_natural;
   int coefficient, lane, row = trial % 9, previous = (row + 8) % 9;
   fill_case(&input.coefficient[0], trial);
   fill_case(&input.coefficient[1], trial + 10007);
@@ -143,6 +145,19 @@ static void test_pair(int trial) {
   }
   ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair(&row_c2, &row_input);
   ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair(&row_c3, &row_input);
+  if (row == 0) {
+    ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0(&row_probe, &input);
+    for (coefficient = 0; coefficient < 2; ++coefficient)
+      for (lane = 0; lane < 8; ++lane)
+        if (row_probe.coefficient[0][coefficient * 8 + lane] != row_input.coefficient[coefficient][lane] ||
+            row_probe.coefficient[1][coefficient * 8 + lane] != row_input.coefficient[coefficient][lane + 8]) {
+          fprintf(stderr, "c4 input probe mismatch trial=%d coefficient=%d lane=%d got=%d/%d want=%d/%d\n",
+                  trial, coefficient, lane,
+                  row_probe.coefficient[0][coefficient * 8 + lane], row_probe.coefficient[1][coefficient * 8 + lane],
+                  row_input.coefficient[coefficient][lane], row_input.coefficient[coefficient][lane + 8]);
+          exit(1);
+        }
+  }
   for (coefficient = 0; coefficient < 2; ++coefficient) {
     if (memcmp(row_c2.coefficient[coefficient], expected.coefficient[coefficient].values[row], 32) != 0 ||
         memcmp(row_c3.coefficient[coefficient], expected.coefficient[coefficient].values[row], 32) != 0) {
@@ -154,6 +169,31 @@ static void test_pair(int trial) {
   ntruplus1152_exp001_gt9x16_ntt16_c2_pair(&actual, &input);
   compare("c2-pair-0", trial, &expected.coefficient[0], &actual.coefficient[0]);
   compare("c2-pair-1", trial, &expected.coefficient[1], &actual.coefficient[1]);
+  ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential(&c4_sequential, &skewed);
+  ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined(&c4_pipelined, &skewed);
+  ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear(&c4_natural, &input);
+  for (row = 0; row < 9; ++row) {
+    for (coefficient = 0; coefficient < 2; ++coefficient) {
+      for (lane = 0; lane < 8; ++lane) {
+        int index = coefficient * 8 + lane;
+        int16_t want_even = expected.coefficient[coefficient].values[row][2 * lane];
+        int16_t want_odd = expected.coefficient[coefficient].values[row][2 * lane + 1];
+        if (c4_sequential.state[row][0][index] != want_even ||
+            c4_sequential.state[row][1][index] != want_odd ||
+            c4_pipelined.state[row][0][index] != want_even ||
+            c4_pipelined.state[row][1][index] != want_odd ||
+            c4_natural.state[row][0][index] != want_even ||
+            c4_natural.state[row][1][index] != want_odd) {
+          fprintf(stderr, "c4 persistent mismatch trial=%d coefficient=%d row=%d lane=%d want=%d/%d seq=%d/%d pipe=%d/%d natural=%d/%d\n",
+                  trial, coefficient, row, lane, want_even, want_odd,
+                  c4_sequential.state[row][0][index], c4_sequential.state[row][1][index],
+                  c4_pipelined.state[row][0][index], c4_pipelined.state[row][1][index],
+                  c4_natural.state[row][0][index], c4_natural.state[row][1][index]);
+          exit(1);
+        }
+      }
+    }
+  }
 
   if (trial < 64) {
     actual = input;
@@ -204,6 +244,6 @@ int main(void) {
     test_pair(trial);
   }
   test_canaries();
-  puts("GT9x16 NTT16 C0/C1/C2/C3: 10003 bit-exact, alias, repeat, and canary cases passed");
+  puts("GT9x16 NTT16 C0/C1/C2/C3/C4: 10003 bit-exact, alias, repeat, and canary cases passed");
   return 0;
 }

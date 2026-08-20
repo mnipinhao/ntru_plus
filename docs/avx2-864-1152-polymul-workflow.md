@@ -123,6 +123,11 @@ through 128→64→32→16-bit granularities with only one final terminal-major
 reconstruction. A winning row-pair result must next survive complete nine-row
 skewed-shear integration; NTT9 remains paused until that gate passes.
 
+The 1152 C4 gate passes when natural-input nine-row pair processing retains a
+directional win with zero intermediate materialization and persistent S/D
+output. After that result, reopen NTT9 only in a form that consumes persistent
+S/D directly; a coefficient-major boundary does not qualify.
+
 Official AVX2 leaves YMM registers caller-clobbered and returns without
 `vzeroupper`. The candidate should remove unnecessary internal function
 boundaries, not insert cleanup instructions. `vzeroupper` is considered only

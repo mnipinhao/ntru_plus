@@ -142,6 +142,35 @@ ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair:
   ret
 .size ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair, .-ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair
 
+.include "asm/gt9x16_ntt16_c4.inc"
+.globl ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential
+.type ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential,@function
+ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential:
+  C4_FROM_Z_SEQUENTIAL_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential, .-ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_sequential
+.globl ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined
+.type ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined,@function
+ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined:
+  C4_FROM_Z_PIPELINED_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined, .-ntruplus1152_exp001_gt9x16_ntt16_c4_from_z_pipelined
+.globl ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear
+.type ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear,@function
+ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear:
+  C4_WITH_SHEAR_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear, .-ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear
+.globl ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0
+.type ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0,@function
+ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0:
+  C4_BUILD_PAIRED_LOW
+  vmovdqu YMMWORD PTR [rdi], ymm0
+  C4_BUILD_HIGH 0
+  vmovdqu YMMWORD PTR [rdi + 32], ymm9
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0, .-ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0
+
 .include "generated/gt9x16-ntt16-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

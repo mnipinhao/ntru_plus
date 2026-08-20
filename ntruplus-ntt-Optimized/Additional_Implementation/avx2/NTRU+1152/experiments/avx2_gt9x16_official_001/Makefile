@@ -23,7 +23,7 @@ PAIRED_CFLAGS := $(CFLAGS_STRICT) -O3
 NTT16_ASM := asm/gt9x16_ntt16.S
 NTT16_HEADERS := src/gt9x16_ntt16_asm.h generated/gt9x16-ntt16-constants.inc
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-transform-paired \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-transform-paired \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -71,7 +71,7 @@ audit:
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -S src/gt9x16_shear.c -o generated/gt9x16-shear.s
 	$(PYTHON) tools/audit_gt9x16_shear.py --object $(BUILD)/gt9x16-shear.o --assembly generated/gt9x16-shear.s --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fno-inline" --output generated/gt9x16-shear-audit.json
 	$(CC) -mavx2 -I. -c $(NTT16_ASM) -o $(BUILD)/gt9x16-ntt16.o
-	$(PYTHON) tools/audit_gt9x16_ntt16_asm.py --object $(BUILD)/gt9x16-ntt16.o --source $(NTT16_ASM) --macro-source asm/gt9x16_ntt16.inc --compiler $(CC) --cflags=-mavx2 --output generated/gt9x16-ntt16-audit.json
+	$(PYTHON) tools/audit_gt9x16_ntt16_asm.py --object $(BUILD)/gt9x16-ntt16.o --source $(NTT16_ASM) --macro-source asm/gt9x16_ntt16.inc --extra-macro-source asm/gt9x16_ntt16_c2.inc --extra-macro-source asm/gt9x16_ntt16_c4.inc --compiler $(CC) --cflags=-mavx2 --output generated/gt9x16-ntt16-audit.json
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
@@ -122,6 +122,16 @@ bench-c3-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_gt9x16_ntt16_c3.c -o $(BUILD)/bench-gt9x16-ntt16-c3
 	$(PYTHON) tools/run_c3_benchmark.py --binary $(BUILD)/bench-gt9x16-ntt16-c3 --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --output results/$(RESULT_TAG)/c3-diagnostic.json
+
+bench-c4:
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_gt9x16_ntt16_c4.c -o $(BUILD)/bench-gt9x16-ntt16-c4
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-gt9x16-ntt16-c4
+
+bench-c4-record: audit
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_gt9x16_ntt16_c4.c -o $(BUILD)/bench-gt9x16-ntt16-c4
+	$(PYTHON) tools/run_c4_benchmark.py --binary $(BUILD)/bench-gt9x16-ntt16-c4 --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --output results/$(RESULT_TAG)/c4-diagnostic.json
 
 bench-transform-paired:
 	mkdir -p $(BUILD)

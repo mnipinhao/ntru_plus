@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint C3 persistent routing selected; nine-row integration precedes NTT9.**
+**Checkpoint C4 nine-row persistent pair selected; direct-layout NTT9 reopened.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -78,3 +78,8 @@ routing reduces one row-pair from 72.619 to 50.413 cycles and routing from 44
 to 18 instructions. Terminal pairing remains viable; C2's per-layer canonical
 reconstruction is the rejected choice. The next gate is a complete nine-row
 shear→C3 path, still before NTT9.
+
+Checkpoint C4 completes that gate. The natural-input nine-row pair is 17.9%
+faster than two C0 islands, has zero intermediate materialization, and leaves
+all rows in persistent S/D form. NTT9 work is reopened only for a kernel that
+consumes this representation directly.

@@ -12,3 +12,5 @@ Tracked repository-local diagnostics:
   complete NTT16 A/B, including chain and packing audit. Diagnostic only.
 - `c3-intel155h-20260820-001/c3-diagnostic.json`: one-row pair persistent-S/D
   Official-routing A/B and leaf audit. Diagnostic only.
+- `c4-intel155h-20260820-001/c4-diagnostic.json`: nine-row sequential/pipelined
+  from-Z and zero-materialization natural-input pair evidence. Diagnostic only.
