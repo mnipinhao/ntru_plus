@@ -33,6 +33,7 @@ generate:
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h
+	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json
 
 check:
 	mkdir -p $(BUILD)
@@ -42,6 +43,7 @@ check:
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json --check
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h --check
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --check
+	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	mkdir -p $(BUILD)
@@ -58,7 +60,7 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
 
 audit:
-	mkdir -p $(BUILD) $(BUILD)/full-audit generated
+	mkdir -p $(BUILD) $(BUILD)/full-audit $(BUILD)/structure generated
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -c src/gt9x16_shear.c -o $(BUILD)/gt9x16-shear.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -S src/gt9x16_shear.c -o generated/gt9x16-shear.s
 	$(PYTHON) tools/audit_gt9x16_shear.py --object $(BUILD)/gt9x16-shear.o --assembly generated/gt9x16-shear.s --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fno-inline" --output generated/gt9x16-shear-audit.json
@@ -66,6 +68,12 @@ audit:
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
 	$(PYTHON) tools/audit_full_forward.py --object $(BUILD)/full-audit/top_split_adapter.o --object $(BUILD)/full-audit/gt9x16_forward.o --object $(BUILD)/full-audit/ntt9_reference.o --stack-usage $(BUILD)/full-audit/top_split_adapter.su --stack-usage $(BUILD)/full-audit/gt9x16_forward.su --stack-usage $(BUILD)/full-audit/ntt9_reference.su --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fstack-usage" --output generated/gt9x16-full-forward-audit.json
+	$(CC) $(PAIRED_CFLAGS) $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) bench/bench_full_forward_paired.c -o $(BUILD)/structure/gt-pipeline
+	$(CC) -mavx2 -c $(UPSTREAM)/ntt.s -o $(BUILD)/structure/official-ntt.o
+	$(CC) -mavx2 -c $(UPSTREAM)/basemul.s -o $(BUILD)/structure/official-basemul.o
+	$(CC) -mavx2 -c $(UPSTREAM)/baseinv.s -o $(BUILD)/structure/official-baseinv.o
+	$(CC) -mavx2 -c $(UPSTREAM)/invntt.s -o $(BUILD)/structure/official-invntt.o
+	$(PYTHON) tools/audit_pipeline_structure.py --candidate-elf $(BUILD)/structure/gt-pipeline --official-object $(BUILD)/structure/official-ntt.o --official-object $(BUILD)/structure/official-basemul.o --official-object $(BUILD)/structure/official-baseinv.o --official-object $(BUILD)/structure/official-invntt.o --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output generated/gt9x16-pipeline-structure-audit.json
 
 bench-local:
 	mkdir -p $(BUILD)

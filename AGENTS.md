@@ -67,5 +67,24 @@ before making changes.
 - Produce the final KpqC-style package through the documented non-overwriting
   exporter; never assemble it manually.
 
+## GT pipeline co-design rules
+
+- Audit the linked binary, not only C source, for hot-stage calls, frames,
+  vector stack traffic, scalar loops, and compiler-inserted `vzeroupper`.
+- Official forward, BaseMul/BaseInv, and inverse are the target structural
+  model: call-free AVX2 leaf functions with no internal `vzeroupper`.
+- Do not add `vzeroupper` as generic cleanup. Consider it only at a demonstrated
+  outer AVX-to-legacy-SSE boundary and retain paired benchmark evidence.
+- Co-design the terminal physical layout across forward, BaseMul/BaseInv, and
+  inverse before optimizing an isolated transform.
+- Preserve digit-reversed GT rows/lanes when consumers can use them directly;
+  do not canonicalize merely for readability.
+- Full-real benchmarks include every adapter, transpose, and scatter that still
+  exists. Component microbenchmarks diagnose costs but cannot subtract them
+  from end-to-end timing.
+- Proceed in order: structural audit, pipeline-layout contract, single-block
+  explicit AVX2 NTT16, Official-derived vector NTT9 baseline, fused-radix9
+  research, then the complete forward/BaseMul/inverse arithmetic island.
+
 The detailed workflow document is authoritative for paths, commands,
 measurement labels, gates, and release requirements.

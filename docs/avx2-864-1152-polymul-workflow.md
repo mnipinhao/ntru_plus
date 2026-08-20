@@ -86,6 +86,36 @@ Development proceeds through primitive differential tests, a complete
 KEM, and finally a flat SUPERCOP implementation. Isolated wins do not skip
 these steps.
 
+### GT pipeline checkpoint order
+
+GT work treats forward, terminal arithmetic, and inverse as one physical-layout
+design. After the scalar/permutation hypothesis is validated, proceed in this
+order:
+
+1. Compare linked GT compiler output against pinned Official `ntt.s`,
+   `basemul.s`, `baseinv.s`, and `invntt.s`. Record calls, frames, vector stack
+   traffic, `vzeroupper`, scalar loops, and materialization boundaries.
+2. Generate a terminal-layout contract spanning forward output, BaseMul/BaseInv
+   operands, and inverse input. Evaluate at least three layouts before selecting
+   the next prototype ABI.
+3. Implement shear, distance-8, and distances 4/2/1 as one leaf-ish explicit
+   AVX2 NTT16 block. Do not call row helpers or canonicalize between layers.
+4. Adapt Official's AVX2 radix-3 Montgomery schedule into one straight-line
+   two-layer NTT9 baseline. It is a baseline; the next research step examines a
+   fused radix-9 schedule and delayed/precombined reductions.
+5. Build the native-layout top-split→forward→BaseMul/BaseInv→inverse island and
+   qualify polynomial multiplication before any production claim.
+
+Official AVX2 leaves YMM registers caller-clobbered and returns without
+`vzeroupper`. The candidate should remove unnecessary internal function
+boundaries, not insert cleanup instructions. `vzeroupper` is considered only
+for a measured outer AVX-to-legacy-SSE transition.
+
+Two timing views are retained. `full-real` includes all adapters, transposes,
+and scatters that still execute. Component timings locate hotspots but never
+exclude a real conversion from end-to-end comparison. A conversion reaches zero
+cost only when adjacent producer/consumer schedules actually absorb it.
+
 ## Validation gates
 
 Run gates in this order and stop at the first failure:

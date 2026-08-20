@@ -54,3 +54,11 @@ The paired transform result is deliberately diagnostic. It includes the
 explicit gather/pre-twist adapter, eight materialized correctness-first NTT16
 islands, scalar NTT9, and scatter to Official's packed layout. It does not
 qualify the candidate or justify a SUPERCOP/KEM run.
+
+## Pipeline co-design checkpoint
+
+`STRUCTURE.md` records the linked Official-vs-GT structure audit. `LAYOUT.md`
+selects the provisional native terminal ABI spanning forward, BaseMul/BaseInv,
+and inverse. The next implementation checkpoint is a single explicit AVX2
+NTT16 hot block using that ABI; the current helper-based C path remains the
+correctness oracle and is not incrementally patched into production shape.
