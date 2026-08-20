@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: pipeline-structure-audited-layout-codesigned
+state: checkpoint-c-ntt16-c0-selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -27,13 +27,19 @@ gates:
   pipeline_structure_audit: passed-official-leaf-vs-gt-reference-tax-recorded
   terminal_layout_contract: passed-forward-basemul-baseinv-inverse
   selected_terminal_layout: gt-row-terminal-lane
+  checkpoint_c_c0: passed-hand-avx2-bit-exact-zero-frame-register-body
+  checkpoint_c_c1: passed-correctness-rejected-performance
+  checkpoint_c_benchmark: passed-repository-local-diagnostic-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
 diagnostic_result: results/shear-intel155h-20260820-005/shear-diagnostic.json
 transform_diagnostic_result: results/transform-intel155h-20260820-001/transform-paired.json
+ntt16_diagnostic_result: results/ntt16-intel155h-20260820-002/ntt16-diagnostic.json
 milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
 checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
 pipeline_checkpoint: structural-audit-and-layout-codesign-complete
-next_step: implement-single-leafish-explicit-avx2-shear-distance8-radix8-block-in-selected-native-layout
-rejected_candidates: []
+checkpoint_c: c0-selected-c1-rejected
+next_step: expand-c0-register-body-directly-into-two-layer-official-style-radix3-ntt9-baseline
+rejected_candidates:
+  - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0

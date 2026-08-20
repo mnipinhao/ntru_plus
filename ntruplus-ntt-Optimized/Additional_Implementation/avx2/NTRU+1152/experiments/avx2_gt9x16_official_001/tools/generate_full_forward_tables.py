@@ -81,10 +81,21 @@ def emit_1d(name: str, values: list[int]) -> str:
     return f"static const int16_t {name}[{len(values)}] = {{\n" + ",\n".join(lines) + "\n};\n"
 
 
+def emit_asm_words(label: str, values: list[int]) -> str:
+    lines = ["  .short " + ", ".join(str(value) for value in values[i:i + 16])
+             for i in range(0, len(values), 16)]
+    return f".p2align 5\n{label}:\n" + "\n".join(lines) + "\n"
+
+
+def expand_groups(values: list[int], repetitions: int) -> list[int]:
+    return [value for value in values for _ in range(repetitions)]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", type=Path, required=True)
     parser.add_argument("--header", type=Path, required=True)
+    parser.add_argument("--asm-constants", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     experiment = Path(__file__).resolve().parents[1]
@@ -196,15 +207,53 @@ def main() -> int:
                           official_avx2_map[branch])
     header += "\n#endif\n"
 
+    even_words = [
+        0, 1, 0, 1, 4, 5, 4, 5, 8, 9, 8, 9, 12, 13, 12, 13,
+        0, 1, 0, 1, 4, 5, 4, 5, 8, 9, 8, 9, 12, 13, 12, 13,
+    ]
+    odd_words = [
+        2, 3, 2, 3, 6, 7, 6, 7, 10, 11, 10, 11, 14, 15, 14, 15,
+        2, 3, 2, 3, 6, 7, 6, 7, 10, 11, 10, 11, 14, 15, 14, 15,
+    ]
+    asm = "/* Generated from the full-forward oracle; do not hand-edit. */\n.section .rodata\n"
+    asm += emit_asm_words(".Lgt_q", [Q] * 16)
+    asm += emit_asm_words(".Lgt_stage8_zeta", [mont_stages[0][0]] * 8)
+    asm += emit_asm_words(".Lgt_stage8_qinv", [qinv_stages[0][0]] * 8)
+    for index, name in enumerate(("stage4", "stage2", "stage1"), start=1):
+        repetitions = 16 // len(mont_stages[index])
+        asm += emit_asm_words(f".Lgt_c0_{name}_zeta",
+                              expand_groups(mont_stages[index], repetitions))
+        asm += emit_asm_words(f".Lgt_c0_{name}_qinv",
+                              expand_groups(qinv_stages[index], repetitions))
+    asm += emit_asm_words(".Lgt_c1_stage2_plus_zeta",
+                          [mont_stages[2][0]] * 8 + [mont_stages[2][2]] * 8)
+    asm += emit_asm_words(".Lgt_c1_stage2_plus_qinv",
+                          [qinv_stages[2][0]] * 8 + [qinv_stages[2][2]] * 8)
+    asm += emit_asm_words(".Lgt_c1_stage2_minus_zeta",
+                          [mont_stages[2][1]] * 8 + [mont_stages[2][3]] * 8)
+    asm += emit_asm_words(".Lgt_c1_stage2_minus_qinv",
+                          [qinv_stages[2][1]] * 8 + [qinv_stages[2][3]] * 8)
+    for state in range(4):
+        asm += emit_asm_words(f".Lgt_c1_stage1_{state}_zeta",
+                              [mont_stages[3][state]] * 8 + [mont_stages[3][state + 4]] * 8)
+        asm += emit_asm_words(f".Lgt_c1_stage1_{state}_qinv",
+                              [qinv_stages[3][state]] * 8 + [qinv_stages[3][state + 4]] * 8)
+    asm += ".p2align 5\n.Lgt_even_words:\n  .byte " + ", ".join(map(str, even_words)) + "\n"
+    asm += ".p2align 5\n.Lgt_odd_words:\n  .byte " + ", ".join(map(str, odd_words)) + "\n"
+
     if args.check:
         if (not args.json.is_file() or args.json.read_text(encoding="utf-8") != json_text or
-                not args.header.is_file() or args.header.read_text(encoding="utf-8") != header):
+                not args.header.is_file() or args.header.read_text(encoding="utf-8") != header or
+                not args.asm_constants.is_file() or
+                args.asm_constants.read_text(encoding="utf-8") != asm):
             raise SystemExit("generated full-forward tables are stale")
         return 0
     args.json.parent.mkdir(parents=True, exist_ok=True)
     args.header.parent.mkdir(parents=True, exist_ok=True)
+    args.asm_constants.parent.mkdir(parents=True, exist_ok=True)
     args.json.write_text(json_text, encoding="utf-8")
     args.header.write_text(header, encoding="utf-8")
+    args.asm_constants.write_text(asm, encoding="utf-8")
     return 0
 
 

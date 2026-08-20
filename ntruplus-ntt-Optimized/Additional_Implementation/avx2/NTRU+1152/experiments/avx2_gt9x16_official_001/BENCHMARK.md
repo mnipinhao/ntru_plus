@@ -68,3 +68,23 @@ GCC's static stack report is 5,696 bytes for the current full-forward wrapper
 the scalar NTT9, 56 bytes for the adapter, and 8 bytes for top split. These are
 correctness-baseline costs and explicit optimization targets, not a production
 stack contract.
+
+## Checkpoint C NTT16 island
+
+Nine fresh pinned launches use 201 hot-L1 batches each. Leaf variants include
+nine input loads and nine output stores; body replay places loads/stores outside
+128 consecutive register-body iterations.
+
+Source: `results/ntt16-intel155h-20260820-002/ntt16-diagnostic.json`.
+
+| Variant | Median cycles/island | Interpretation |
+| --- | ---: | --- |
+| retained C reference | 289.533 | prior ~300-cycle baseline |
+| C0 realistic leaf | 105.076 | selected structural port |
+| C0 arithmetic body | 101.647 | diagnostic lower boundary |
+| C1 split-representation leaf | 196.453 | rejected: duplicate arithmetic |
+
+C0 removes about 64% of the reference cost. C1 is about 87% slower than C0:
+eliminating two intermediate routing blends costs 36 additional vector
+Montgomery multiplies. This is local diagnostic evidence only; the next gate
+is register-to-register C0→NTT9 integration and a full-forward paired run.

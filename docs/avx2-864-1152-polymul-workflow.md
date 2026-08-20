@@ -106,6 +106,12 @@ order:
 5. Build the native-layout top-split→forward→BaseMul/BaseInv→inverse island and
    qualify polynomial multiplication before any production claim.
 
+For the 1152 experiment, Checkpoint C records both a faithful structural C0
+and a split-representation C1 in `CHECKPOINT-C.md`. C0 is selected; C1 remains
+as a correctness-validated performance rejection. The C0 register-only macro
+is the required input boundary for step 4. No isolated island result changes
+the SUPERCOP promotion gates.
+
 Official AVX2 leaves YMM registers caller-clobbered and returns without
 `vzeroupper`. The candidate should remove unnecessary internal function
 boundaries, not insert cleanup instructions. `vzeroupper` is considered only

@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**GT permutation hypothesis validated; transform competitiveness not yet tested.**
+**Checkpoint C register-resident NTT16 validated; C0 selected for NTT9 integration.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -44,8 +44,9 @@ The compiler currently represents the nine materialization operations as
 The isolated fused stage-8 differential proves only that consuming `Z[a].low` and
 `Z[a-1].high` is equivalent to materializing `Y` before the same Montgomery
 butterfly. A correctness-first AVX2 routing baseline for distances 4/2/1 now
-matches its scalar source-table oracle, retaining CT output order. It does
-The complete correctness-first path now matches pinned Official AVX2
+matches its scalar source-table oracle, retaining CT output order. It does not
+by itself establish a complete transform result. The complete correctness-first
+path now matches pinned Official AVX2
 `poly_ntt` for its `[-3,4]` small-input contract. NTT16 lanes remain four-bit
 reversed and NTT9 rows remain two-trit reversed; the generated oracle performs
 the mapping instead of inserting cosmetic permutations.
@@ -59,6 +60,9 @@ qualify the candidate or justify a SUPERCOP/KEM run.
 
 `STRUCTURE.md` records the linked Official-vs-GT structure audit. `LAYOUT.md`
 selects the provisional native terminal ABI spanning forward, BaseMul/BaseInv,
-and inverse. The next implementation checkpoint is a single explicit AVX2
-NTT16 hot block using that ABI; the current helper-based C path remains the
-correctness oracle and is not incrementally patched into production shape.
+and inverse. `CHECKPOINT-C.md` records the explicit assembly island. C0 is a
+zero-frame, call-free port of the verified shear and all NTT16 stages, with a
+register-only macro over `ymm0..ymm8`. C1 is correctness-valid but rejected
+because its split representation doubles vector Montgomery multiplies. C0 is
+selected for the next straight-line NTT9 checkpoint; neither result is
+production-qualified.
