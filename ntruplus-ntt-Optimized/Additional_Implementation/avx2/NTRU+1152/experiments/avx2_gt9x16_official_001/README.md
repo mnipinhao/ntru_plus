@@ -66,3 +66,9 @@ register-only macro over `ymm0..ymm8`. C1 is correctness-valid but rejected
 because its split representation doubles vector Montgomery multiplies. C0 is
 selected for the next straight-line NTT9 checkpoint; neither result is
 production-qualified.
+
+Checkpoint C2 then tested terminal-coefficient pair packing before starting
+NTT9. It halves Montgomery chains, but the complete two-island transform is
+46.8% slower because operand compression, row reconstruction, and the initial
+shear boundary dominate. C2 is retained as a negative experiment. Checkpoint D
+is paused while the physical AVX2 orientation is reassessed.

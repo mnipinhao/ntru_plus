@@ -88,3 +88,18 @@ C0 removes about 64% of the reference cost. C1 is about 87% slower than C0:
 eliminating two intermediate routing blends costs 36 additional vector
 Montgomery multiplies. This is local diagnostic evidence only; the next gate
 is register-to-register C0→NTT9 integration and a full-forward paired run.
+
+## Checkpoint C2 terminal-pair packing
+
+Source: `results/c2-intel155h-20260820-001/c2-diagnostic.json`.
+
+| Two-island variant | Median cycles |
+| --- | ---: |
+| distance-8 C0, 18 chains | 38.539 |
+| distance-8 C2, 9 pair-packed chains | 37.186 |
+| full NTT16 C0, 72 chains | 181.199 |
+| full NTT16 C2, 36 pair-packed chains | 266.010 |
+
+The isolated distance-8 gain is only 3.5%; the full pair-packed transform is
+46.8% slower. C2 is rejected and NTT9 work is paused pending a physical-layout
+reassessment. See `CHECKPOINT-C2.md` for routing and memory-boundary counts.

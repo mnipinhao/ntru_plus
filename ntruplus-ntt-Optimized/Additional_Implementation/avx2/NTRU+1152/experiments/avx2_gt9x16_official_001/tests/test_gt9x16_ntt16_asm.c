@@ -114,6 +114,40 @@ static void test_trial(int trial) {
   }
 }
 
+static void test_pair(int trial) {
+  ntruplus1152_exp001_gt_row_pair input, expected, actual, skewed, stage8_expected;
+  int coefficient;
+  fill_case(&input.coefficient[0], trial);
+  fill_case(&input.coefficient[1], trial + 10007);
+  for (coefficient = 0; coefficient < 2; ++coefficient) {
+    ntruplus1152_exp001_gt9x16_ntt16_c0(
+        &expected.coefficient[coefficient], &input.coefficient[coefficient]);
+    ntruplus1152_exp001_gt9x16_shear_z(
+        &skewed.coefficient[coefficient], &input.coefficient[coefficient]);
+  }
+  ntruplus1152_exp001_gt9x16_ntt16_c0_pair(&actual, &input);
+  compare("c0-pair-0", trial, &expected.coefficient[0], &actual.coefficient[0]);
+  compare("c0-pair-1", trial, &expected.coefficient[1], &actual.coefficient[1]);
+  ntruplus1152_exp001_gt9x16_stage8_c0_pair(&stage8_expected, &skewed);
+  ntruplus1152_exp001_gt9x16_stage8_c2_pair(&actual, &skewed);
+  compare("c2-stage8-0", trial, &stage8_expected.coefficient[0], &actual.coefficient[0]);
+  compare("c2-stage8-1", trial, &stage8_expected.coefficient[1], &actual.coefficient[1]);
+  ntruplus1152_exp001_gt9x16_ntt16_c2_pair(&actual, &input);
+  compare("c2-pair-0", trial, &expected.coefficient[0], &actual.coefficient[0]);
+  compare("c2-pair-1", trial, &expected.coefficient[1], &actual.coefficient[1]);
+
+  if (trial < 64) {
+    actual = input;
+    ntruplus1152_exp001_gt9x16_ntt16_c2_pair(&actual, &actual);
+    compare("c2-pair-alias-0", trial, &expected.coefficient[0], &actual.coefficient[0]);
+    compare("c2-pair-alias-1", trial, &expected.coefficient[1], &actual.coefficient[1]);
+    actual = skewed;
+    ntruplus1152_exp001_gt9x16_stage8_c2_pair(&actual, &actual);
+    compare("c2-stage8-alias-0", trial, &stage8_expected.coefficient[0], &actual.coefficient[0]);
+    compare("c2-stage8-alias-1", trial, &stage8_expected.coefficient[1], &actual.coefficient[1]);
+  }
+}
+
 static void test_canaries(void) {
   struct guarded {
     uint64_t before[4];
@@ -148,8 +182,9 @@ int main(void) {
   int trial;
   for (trial = 0; trial < TRIALS; ++trial) {
     test_trial(trial);
+    test_pair(trial);
   }
   test_canaries();
-  puts("GT9x16 NTT16 C0/C1: 10003 bit-exact, alias, repeat, and canary cases passed");
+  puts("GT9x16 NTT16 C0/C1/C2: 10003 bit-exact, alias, repeat, and canary cases passed");
   return 0;
 }

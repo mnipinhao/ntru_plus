@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-c-ntt16-c0-selected
+state: checkpoint-c2-rejected-layout-reassessment
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -30,16 +30,22 @@ gates:
   checkpoint_c_c0: passed-hand-avx2-bit-exact-zero-frame-register-body
   checkpoint_c_c1: passed-correctness-rejected-performance
   checkpoint_c_benchmark: passed-repository-local-diagnostic-only
+  checkpoint_c2_twiddle_independence: passed-terminal-coefficient-independent
+  checkpoint_c2_distance8: passed-correctness-marginal-3.5-percent-win
+  checkpoint_c2_full_ntt16: passed-correctness-rejected-46.8-percent-regression
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
 diagnostic_result: results/shear-intel155h-20260820-005/shear-diagnostic.json
 transform_diagnostic_result: results/transform-intel155h-20260820-001/transform-paired.json
 ntt16_diagnostic_result: results/ntt16-intel155h-20260820-002/ntt16-diagnostic.json
+c2_diagnostic_result: results/c2-intel155h-20260820-001/c2-diagnostic.json
 milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
 checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
 pipeline_checkpoint: structural-audit-and-layout-codesign-complete
 checkpoint_c: c0-selected-c1-rejected
-next_step: expand-c0-register-body-directly-into-two-layer-official-style-radix3-ntt9-baseline
+checkpoint_c2: pair-packed-distance8-marginal-full-ntt16-rejected
+next_step: reassess-avx2-physical-orientation-before-ntt9
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
+  - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

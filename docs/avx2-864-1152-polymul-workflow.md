@@ -112,6 +112,12 @@ as a correctness-validated performance rejection. The C0 register-only macro
 is the required input boundary for step 4. No isolated island result changes
 the SUPERCOP promotion gates.
 
+Checkpoint C2 must precede NTT9 integration: pair terminal coefficients and
+measure whether fuller Montgomery-lane utilization survives operand packing
+and row reconstruction. If only an isolated stage wins while the complete
+NTT16 pair regresses, pause radix-3 work and reassess the physical AVX2
+orientation. The 1152 C2 result follows this rejection branch.
+
 Official AVX2 leaves YMM registers caller-clobbered and returns without
 `vzeroupper`. The candidate should remove unnecessary internal function
 boundaries, not insert cleanup instructions. `vzeroupper` is considered only

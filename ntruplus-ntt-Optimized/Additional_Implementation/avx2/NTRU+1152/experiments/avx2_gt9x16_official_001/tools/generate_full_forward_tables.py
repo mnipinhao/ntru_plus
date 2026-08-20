@@ -217,8 +217,8 @@ def main() -> int:
     ]
     asm = "/* Generated from the full-forward oracle; do not hand-edit. */\n.section .rodata\n"
     asm += emit_asm_words(".Lgt_q", [Q] * 16)
-    asm += emit_asm_words(".Lgt_stage8_zeta", [mont_stages[0][0]] * 8)
-    asm += emit_asm_words(".Lgt_stage8_qinv", [qinv_stages[0][0]] * 8)
+    asm += emit_asm_words(".Lgt_stage8_zeta", [mont_stages[0][0]] * 16)
+    asm += emit_asm_words(".Lgt_stage8_qinv", [qinv_stages[0][0]] * 16)
     for index, name in enumerate(("stage4", "stage2", "stage1"), start=1):
         repetitions = 16 // len(mont_stages[index])
         asm += emit_asm_words(f".Lgt_c0_{name}_zeta",
@@ -238,8 +238,17 @@ def main() -> int:
                               [mont_stages[3][state]] * 8 + [mont_stages[3][state + 4]] * 8)
         asm += emit_asm_words(f".Lgt_c1_stage1_{state}_qinv",
                               [qinv_stages[3][state]] * 8 + [qinv_stages[3][state + 4]] * 8)
+    for index, name in enumerate(("stage4", "stage2", "stage1"), start=1):
+        unique = expand_groups(mont_stages[index], 8 // len(mont_stages[index]))
+        unique_qinv = expand_groups(qinv_stages[index], 8 // len(qinv_stages[index]))
+        asm += emit_asm_words(f".Lgt_c2_{name}_zeta", unique + unique)
+        asm += emit_asm_words(f".Lgt_c2_{name}_qinv", unique_qinv + unique_qinv)
     asm += ".p2align 5\n.Lgt_even_words:\n  .byte " + ", ".join(map(str, even_words)) + "\n"
     asm += ".p2align 5\n.Lgt_odd_words:\n  .byte " + ", ".join(map(str, odd_words)) + "\n"
+    compress_even = [0, 1, 4, 5, 8, 9, 12, 13] + [128] * 8
+    compress_odd = [2, 3, 6, 7, 10, 11, 14, 15] + [128] * 8
+    asm += ".p2align 5\n.Lgt_c2_compress_even:\n  .byte " + ", ".join(map(str, compress_even * 2)) + "\n"
+    asm += ".p2align 5\n.Lgt_c2_compress_odd:\n  .byte " + ", ".join(map(str, compress_odd * 2)) + "\n"
 
     if args.check:
         if (not args.json.is_file() or args.json.read_text(encoding="utf-8") != json_text or

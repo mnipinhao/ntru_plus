@@ -22,4 +22,21 @@ void ntruplus1152_exp001_gt9x16_ntt16_c1_repeat(
     const ntruplus1152_exp001_gt_rows *input,
     unsigned int repetitions);
 
+typedef struct {
+  ntruplus1152_exp001_gt_rows coefficient[2];
+} ntruplus1152_exp001_gt_row_pair;
+
+void ntruplus1152_exp001_gt9x16_ntt16_c0_pair(
+    ntruplus1152_exp001_gt_row_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+void ntruplus1152_exp001_gt9x16_stage8_c0_pair(
+    ntruplus1152_exp001_gt_row_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+void ntruplus1152_exp001_gt9x16_stage8_c2_pair(
+    ntruplus1152_exp001_gt_row_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt16_c2_pair(
+    ntruplus1152_exp001_gt_row_pair *output,
+    const ntruplus1152_exp001_gt_row_pair *input);
+
 #endif

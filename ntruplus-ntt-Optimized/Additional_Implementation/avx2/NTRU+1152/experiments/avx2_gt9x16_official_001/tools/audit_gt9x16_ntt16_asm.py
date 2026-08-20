@@ -19,6 +19,22 @@ FUNCTIONS = {
         "vpblendw": 63, "vpblendd": 27, "vpmullw": 72,
         "peak_live_ymm": 16,
     },
+    "ntruplus1152_exp001_gt9x16_ntt16_c0_pair": {
+        "vpblendw": 72, "vpblendd": 36, "vpmullw": 72,
+        "input_loads": 18, "output_stores": 18, "peak_live_ymm": 15,
+    },
+    "ntruplus1152_exp001_gt9x16_stage8_c0_pair": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 18,
+        "input_loads": 18, "output_stores": 18, "peak_live_ymm": 13,
+    },
+    "ntruplus1152_exp001_gt9x16_stage8_c2_pair": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 9,
+        "input_loads": 20, "output_stores": 18, "peak_live_ymm": 11,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt16_c2_pair": {
+        "vpblendw": 54, "vpblendd": 0, "vpmullw": 36,
+        "input_loads": 38, "output_stores": 36, "peak_live_ymm": 16,
+    },
 }
 
 
@@ -73,6 +89,10 @@ def main() -> int:
         size_match = re.search(rf"^[0-9a-f]+\s+([0-9a-f]+)\s+\w\s+{re.escape(name)}$", symbols, re.MULTILINE)
         counts = {mnemonic: len(re.findall(rf"\b{mnemonic}\b", body)) for mnemonic in
                   ("vpblendw", "vpblendd", "vpmullw", "vpmulhw")}
+        routing_counts = {mnemonic: len(re.findall(rf"\b{mnemonic}\b", body)) for mnemonic in
+                          ("vinserti128", "vextracti128", "vperm2i128", "vpermq",
+                           "vpshufb", "vpshufd", "vpunpcklqdq", "vpunpckhqdq",
+                           "vpunpckldq", "vpunpckhdq", "vpunpcklwd", "vpunpckhwd")}
         entry = {
             **counts,
             "montgomery_vector_multiplies": counts["vpmullw"],
@@ -89,16 +109,21 @@ def main() -> int:
             "designed_peak_live_ymm": expected["peak_live_ymm"],
             "static_instruction_count": len(lines),
             "text_bytes": int(size_match.group(1), 16) if size_match else None,
+            "pack_unpack_instructions": routing_counts,
+            "pack_unpack_instruction_total": sum(routing_counts.values()),
         }
         report["functions"][name] = entry
         for mnemonic in ("vpblendw", "vpblendd", "vpmullw"):
             if entry[mnemonic] != expected[mnemonic]:
                 raise SystemExit(f"{name}: expected {expected[mnemonic]} {mnemonic}, found {entry[mnemonic]}")
-        if input_loads != 9 or output_stores != 9:
-            raise SystemExit(f"{name}: expected 9 input loads and 9 output stores")
+        expected_loads = expected.get("input_loads", 9)
+        expected_stores = expected.get("output_stores", 9)
+        if input_loads != expected_loads or output_stores != expected_stores:
+            raise SystemExit(f"{name}: expected {expected_loads} input loads and {expected_stores} output stores, found {input_loads}/{output_stores}")
         if calls or vzeroupper or frame_instructions or stack_references or vector_spills or forbidden:
             raise SystemExit(f"{name}: leaf/stack/forbidden instruction audit failed")
-        if ymm_registers != list(range(16)):
+        if name in ("ntruplus1152_exp001_gt9x16_ntt16_c0",
+                    "ntruplus1152_exp001_gt9x16_ntt16_c1") and ymm_registers != list(range(16)):
             raise SystemExit(f"{name}: expected explicit use of ymm0..ymm15")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
