@@ -35,6 +35,14 @@ FUNCTIONS = {
         "vpblendw": 54, "vpblendd": 0, "vpmullw": 36,
         "input_loads": 38, "output_stores": 36, "peak_live_ymm": 16,
     },
+    "ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 4,
+        "input_loads": 2, "output_stores": 2, "peak_live_ymm": 16,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair": {
+        "vpblendw": 2, "vpblendd": 2, "vpmullw": 4,
+        "input_loads": 2, "output_stores": 2, "peak_live_ymm": 15,
+    },
 }
 
 
@@ -91,7 +99,8 @@ def main() -> int:
                   ("vpblendw", "vpblendd", "vpmullw", "vpmulhw")}
         routing_counts = {mnemonic: len(re.findall(rf"\b{mnemonic}\b", body)) for mnemonic in
                           ("vinserti128", "vextracti128", "vperm2i128", "vpermq",
-                           "vpshufb", "vpshufd", "vpunpcklqdq", "vpunpckhqdq",
+                           "vpshufb", "vpshufd", "vpsllq", "vpsrlq",
+                           "vpunpcklqdq", "vpunpckhqdq",
                            "vpunpckldq", "vpunpckhdq", "vpunpcklwd", "vpunpckhwd")}
         entry = {
             **counts,
@@ -111,6 +120,8 @@ def main() -> int:
             "text_bytes": int(size_match.group(1), 16) if size_match else None,
             "pack_unpack_instructions": routing_counts,
             "pack_unpack_instruction_total": sum(routing_counts.values()),
+            "routing_including_blends_total": (sum(routing_counts.values()) +
+                                                counts["vpblendw"] + counts["vpblendd"]),
         }
         report["functions"][name] = entry
         for mnemonic in ("vpblendw", "vpblendd", "vpmullw"):

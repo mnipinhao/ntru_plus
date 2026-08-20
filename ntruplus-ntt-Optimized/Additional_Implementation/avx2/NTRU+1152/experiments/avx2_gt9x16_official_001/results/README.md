@@ -10,3 +10,5 @@ Tracked repository-local diagnostics:
   SUPERCOP evidence.
 - `c2-intel155h-20260820-001/c2-diagnostic.json`: terminal-pair distance-8 and
   complete NTT16 A/B, including chain and packing audit. Diagnostic only.
+- `c3-intel155h-20260820-001/c3-diagnostic.json`: one-row pair persistent-S/D
+  Official-routing A/B and leaf audit. Diagnostic only.

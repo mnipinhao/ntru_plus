@@ -128,6 +128,20 @@ ntruplus1152_exp001_gt9x16_ntt16_c2_pair:
   ret
 .size ntruplus1152_exp001_gt9x16_ntt16_c2_pair, .-ntruplus1152_exp001_gt9x16_ntt16_c2_pair
 
+.globl ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair
+.type ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair,@function
+ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair:
+  GT9X16_C2_ROW_PAIR_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair, .-ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair
+
+.globl ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair
+.type ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair,@function
+ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair:
+  GT9X16_C3_ROW_PAIR_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair, .-ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair
+
 .include "generated/gt9x16-ntt16-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

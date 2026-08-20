@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint C register-resident NTT16 validated; C0 selected for NTT9 integration.**
+**Checkpoint C3 persistent routing selected; nine-row integration precedes NTT9.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -72,3 +72,9 @@ NTT9. It halves Montgomery chains, but the complete two-island transform is
 46.8% slower because operand compression, row reconstruction, and the initial
 shear boundary dominate. C2 is retained as a negative experiment. Checkpoint D
 is paused while the physical AVX2 orientation is reassessed.
+
+Checkpoint C3 refines that conclusion. Official-style persistent sum/difference
+routing reduces one row-pair from 72.619 to 50.413 cycles and routing from 44
+to 18 instructions. Terminal pairing remains viable; C2's per-layer canonical
+reconstruction is the rejected choice. The next gate is a complete nine-row
+shear→C3 path, still before NTT9.

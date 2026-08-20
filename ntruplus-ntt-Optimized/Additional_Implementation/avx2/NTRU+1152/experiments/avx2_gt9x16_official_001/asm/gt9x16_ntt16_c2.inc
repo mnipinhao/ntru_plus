@@ -111,3 +111,59 @@
 .macro GT9X16_C2_FULL_PAIR_FROM_Z_BODY
   GT9X16_C2_ROWS 1
 .endm
+
+/* One row-pair from canonical pre-stage8 rows; C2 reconstructs every layer. */
+.macro GT9X16_C2_ROW_PAIR_BODY
+  vmovdqu ymm0, YMMWORD PTR [rsi]
+  vmovdqu ymm1, YMMWORD PTR [rsi + 32]
+  vextracti128 xmm2, ymm0, 1
+  vextracti128 xmm3, ymm1, 1
+  vinserti128 ymm10, ymm2, xmm3, 1
+  vinserti128 ymm9, ymm0, xmm1, 1
+  GT9X16_C2_MONT .Lgt_stage8_zeta, .Lgt_stage8_qinv
+  vperm2i128 ymm0, ymm13, ymm14, 0x20
+  vperm2i128 ymm1, ymm13, ymm14, 0x31
+  GT9X16_C2_STAGE4
+  GT9X16_C2_STAGE2
+  GT9X16_C2_STAGE1
+  vmovdqu YMMWORD PTR [rdi], ymm0
+  vmovdqu YMMWORD PTR [rdi + 32], ymm1
+.endm
+
+/* Official-style persistent S/D representation, reconstructed only once. */
+.macro GT9X16_C3_ROW_PAIR_BODY
+  vmovdqu ymm0, YMMWORD PTR [rsi]
+  vmovdqu ymm1, YMMWORD PTR [rsi + 32]
+  vextracti128 xmm2, ymm0, 1
+  vextracti128 xmm3, ymm1, 1
+  vinserti128 ymm10, ymm2, xmm3, 1
+  vinserti128 ymm9, ymm0, xmm1, 1
+  GT9X16_C2_MONT .Lgt_stage8_zeta, .Lgt_stage8_qinv
+
+  /* 128 -> 64: previous S/D directly form the next A/B. */
+  vpunpcklqdq ymm9, ymm13, ymm14
+  vpunpckhqdq ymm10, ymm13, ymm14
+  GT9X16_C2_MONT .Lgt_c2_stage4_zeta, .Lgt_c2_stage4_qinv
+
+  /* 64 -> 32: exchange dword halves without canonical rows. */
+  vpsllq ymm2, ymm14, 32
+  vpsrlq ymm3, ymm13, 32
+  vpblendd ymm9, ymm13, ymm2, 0xaa
+  vpblendd ymm10, ymm3, ymm14, 0xaa
+  GT9X16_C2_MONT .Lgt_c2_stage2_zeta, .Lgt_c2_stage2_qinv
+
+  /* 32 -> 16: exchange word halves, still in persistent S/D form. */
+  vpsllq ymm2, ymm14, 16
+  vpsrlq ymm3, ymm13, 16
+  vpblendw ymm9, ymm13, ymm2, 0xaa
+  vpblendw ymm10, ymm3, ymm14, 0xaa
+  GT9X16_C2_MONT .Lgt_c2_stage1_zeta, .Lgt_c2_stage1_qinv
+
+  /* Single terminal-major reconstruction at the external boundary. */
+  vpunpcklwd ymm2, ymm13, ymm14
+  vpunpckhwd ymm3, ymm13, ymm14
+  vperm2i128 ymm0, ymm2, ymm3, 0x20
+  vperm2i128 ymm1, ymm2, ymm3, 0x31
+  vmovdqu YMMWORD PTR [rdi], ymm0
+  vmovdqu YMMWORD PTR [rdi + 32], ymm1
+.endm

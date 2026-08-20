@@ -39,4 +39,15 @@ void ntruplus1152_exp001_gt9x16_ntt16_c2_pair(
     ntruplus1152_exp001_gt_row_pair *output,
     const ntruplus1152_exp001_gt_row_pair *input);
 
+typedef struct {
+  int16_t coefficient[2][16];
+} ntruplus1152_exp001_gt_ntt16_row_pair;
+
+void ntruplus1152_exp001_gt9x16_ntt16_c2_row_pair(
+    ntruplus1152_exp001_gt_ntt16_row_pair *output,
+    const ntruplus1152_exp001_gt_ntt16_row_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt16_c3_row_pair(
+    ntruplus1152_exp001_gt_ntt16_row_pair *output,
+    const ntruplus1152_exp001_gt_ntt16_row_pair *input);
+
 #endif

@@ -118,6 +118,11 @@ and row reconstruction. If only an isolated stage wins while the complete
 NTT16 pair regresses, pause radix-3 work and reassess the physical AVX2
 orientation. The 1152 C2 result follows this rejection branch.
 
+Before abandoning terminal pairing, test Official-style persistent S/D routing
+through 128→64→32→16-bit granularities with only one final terminal-major
+reconstruction. A winning row-pair result must next survive complete nine-row
+skewed-shear integration; NTT9 remains paused until that gate passes.
+
 Official AVX2 leaves YMM registers caller-clobbered and returns without
 `vzeroupper`. The candidate should remove unnecessary internal function
 boundaries, not insert cleanup instructions. `vzeroupper` is considered only

@@ -103,3 +103,16 @@ Source: `results/c2-intel155h-20260820-001/c2-diagnostic.json`.
 The isolated distance-8 gain is only 3.5%; the full pair-packed transform is
 46.8% slower. C2 is rejected and NTT9 work is paused pending a physical-layout
 reassessment. See `CHECKPOINT-C2.md` for routing and memory-boundary counts.
+
+## Checkpoint C3 persistent S/D routing
+
+Source: `results/c3-intel155h-20260820-001/c3-diagnostic.json`.
+
+| One two-terminal row-pair | Median cycles | Routing instructions |
+| --- | ---: | ---: |
+| C2 reconstruct/repack each layer | 72.619 | 44 |
+| C3 Official-style persistent S/D | 50.413 | 18 |
+
+C3 wins by 30.6% with the same four Montgomery chains and identical two-load,
+two-store boundary. It selects persistent routing for the next nine-row/shear
+integration experiment; it does not yet authorize NTT9 work.
