@@ -1,0 +1,315 @@
+{
+  "schema": "ntruplus768-gt32-quartic-tensor-lowering-059b-v1",
+  "experiment": "GT32-QUARTIC-TENSOR-LOWERING-059B",
+  "status": "research-continue",
+  "production_modified": false,
+  "source_hashes": {
+    "quartic_tensor_059.json": "7fb355ffe6329f9fe9afb0b1cabd77c7df41f37abdc975024618c9f3145f43c5",
+    "tile4_basemul_constants.inc": "87ddaaad9308087e43ca8beb363cd9169d7a06ad0852dde3d5b3a8f6f6c2f53f"
+  },
+  "field_and_leaf_proof": {
+    "q": 3457,
+    "q_minus_1": 3456,
+    "d2_required_root_order": 1152,
+    "1152_divides_q_minus_1": true,
+    "lambda_entries": 192,
+    "all_lambda_are_squares": true,
+    "all_lambda_are_not_fourth_powers": true,
+    "factorization": "x^4-lambda=(x^2-mu)(x^2+mu)",
+    "mu_unique_balanced_abs_max": 1726
+  },
+  "exactness": {
+    "R7_A_basis_products": 3072,
+    "R7_B_basis_products": 3072,
+    "R6_CRT_basis_products": 3072,
+    "expected_each": 3072
+  },
+  "architectures": {
+    "R7_A": {
+      "points": [
+        -4,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        "inf"
+      ],
+      "algebraic_variable_products": 7,
+      "producer_form_stats": {
+        "rows": 7,
+        "supports": [
+          4,
+          4,
+          4,
+          1,
+          4,
+          4,
+          1
+        ],
+        "add_sub_lower_bound": 15,
+        "zero": 6,
+        "unit": 13,
+        "power_of_two": 9,
+        "general_constant": 0,
+        "max_balanced_abs": 64
+      },
+      "direct_W_lambda_stats": {
+        "nonzero_mean": 24.989583333333332,
+        "general_constant_mean": 24.9375,
+        "general_constant_min": 21,
+        "general_constant_max": 25,
+        "max_balanced_abs": 1728
+      },
+      "producer_native_contract": "seven evaluation planes per operand",
+      "consumer_exit": "dense W_lambda returns monomial quartic",
+      "liveness": {
+        "on_the_fly_source_planes": 8,
+        "output_accumulators": 4,
+        "estimated_extra_form_product_temps": 4,
+        "on_the_fly_peak_lower_bound": 16,
+        "producer_native_streaming_peak_estimate": 9,
+        "status": "requires explicit schedule; producer-native form is favored"
+      }
+    },
+    "R7_B_symmetric": {
+      "points": [
+        0,
+        1,
+        -1,
+        2,
+        -2,
+        4,
+        -4
+      ],
+      "algebraic_variable_products": 7,
+      "producer_form_stats": {
+        "rows": 7,
+        "supports": [
+          1,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "add_sub_lower_bound": 18,
+        "zero": 3,
+        "unit": 13,
+        "power_of_two": 12,
+        "general_constant": 0,
+        "max_balanced_abs": 64
+      },
+      "direct_W_lambda_stats": {
+        "nonzero_mean": 26.0,
+        "general_constant_mean": 25.90625,
+        "general_constant_min": 18,
+        "general_constant_max": 26,
+        "max_balanced_abs": 1727
+      },
+      "even_odd_product_map_stats": {
+        "rows": 7,
+        "supports": [
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "add_sub_lower_bound": 6,
+        "zero": 36,
+        "unit": 1,
+        "power_of_two": 0,
+        "general_constant": 12,
+        "max_balanced_abs": 1728
+      },
+      "even_odd_output_map_stats": {
+        "nonzero_mean": 14.0,
+        "general_constant_mean": 13.958333333333334,
+        "general_constant_min": 10,
+        "general_constant_max": 14,
+        "max_balanced_abs": 1727
+      },
+      "shared_mechanism": "three P(t)+P(-t) and three P(t)-P(-t) pairs split interpolation into even and odd 3x3 systems",
+      "producer_native_contract": "seven symmetric evaluation planes",
+      "consumer_exit": "factored even/odd W_lambda returns monomial quartic",
+      "liveness": {
+        "pair_products_before_even_odd_combine": 6,
+        "even_odd_channels": 6,
+        "status": "shared pair combine is explicit; AVX2 schedule pending"
+      }
+    },
+    "R6_quadratic_CRT": {
+      "algebraic_variable_products": 6,
+      "factor_components": [
+        "x^2-mu",
+        "x^2+mu"
+      ],
+      "current_quartic_boundary": {
+        "split_constant_Montgomery_per_operand": 2,
+        "split_add_sub_per_operand": 6,
+        "two_operands_split_constant_chains": 4,
+        "quadratic_branch_lambda_constant_chains": 2,
+        "quartic_CRT_merge_constant_chains": 4,
+        "quartic_CRT_merge_add_sub": 4,
+        "warning": "this is deliberately not the target architecture"
+      },
+      "native_d2_B3": {
+        "input_planes_per_operand": 4,
+        "variable_product_chains": 6,
+        "quadratic_mu_constant_chains": 2,
+        "total_B3_Montgomery_chain_classes": 8,
+        "output_add_sub": 6,
+        "quartic_split_inside_B3": 0,
+        "quartic_merge_inside_B3": 0,
+        "peak_YMM_estimate": 15,
+        "spill_free_feasibility": "plausible, not yet executable proof"
+      },
+      "producer_native_opportunity": [
+        "Q24 Decode(h) directly emits plus/minus quadratic planes",
+        "d2 Forward(r) and d2 Forward(m) terminate in quadratic planes"
+      ],
+      "consumer_native_opportunity": [
+        "add(m) is direct in the same d2 representation",
+        "Q24 serializer folds the final CRT merge into packet formation"
+      ],
+      "mu_stats": {
+        "unique": 192,
+        "balanced_abs_max": 1726,
+        "first_eight": [
+          -504,
+          -253,
+          316,
+          -1515,
+          -761,
+          640,
+          -977,
+          950
+        ]
+      },
+      "first_lambda_tensor": {
+        "lambda": 1655,
+        "mu": -504,
+        "U_balanced": [
+          [
+            1,
+            0,
+            -504,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            -504
+          ],
+          [
+            1,
+            1,
+            -504,
+            -504
+          ],
+          [
+            1,
+            0,
+            504,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            504
+          ],
+          [
+            1,
+            1,
+            504,
+            504
+          ]
+        ],
+        "W_balanced": [
+          [
+            -1728,
+            -252,
+            0,
+            -1728,
+            252,
+            0
+          ],
+          [
+            1728,
+            1728,
+            -1728,
+            1728,
+            1728,
+            -1728
+          ],
+          [
+            1485,
+            -1728,
+            0,
+            -1485,
+            -1728,
+            0
+          ],
+          [
+            -1485,
+            -1485,
+            1485,
+            1485,
+            1485,
+            -1485
+          ]
+        ]
+      }
+    }
+  },
+  "pareto": {
+    "current": {
+      "algebraic_variable_products": 9,
+      "selected_physical_Montgomery_chains": 12,
+      "producer_native": true,
+      "wire_native": "Q24-qualified M boundary"
+    },
+    "R7_A": {
+      "algebraic_variable_products": 7,
+      "producer_native_opportunity": true,
+      "consumer_native_opportunity": "limited by dense W_lambda"
+    },
+    "R7_B": {
+      "algebraic_variable_products": 7,
+      "producer_native_opportunity": true,
+      "consumer_native_opportunity": "even/odd factored W"
+    },
+    "R6_CRT": {
+      "algebraic_variable_products": 6,
+      "native_d2_B3_chain_classes": 8,
+      "producer_native_opportunity": "very large",
+      "consumer_native_opportunity": "very large"
+    }
+  },
+  "research_decision": {
+    "R7_A": "continue as tensor-lowering control",
+    "R7_B": "continue to explicit even/odd AVX2 DAG",
+    "R6_CRT": "promote to architecture research candidate 060",
+    "production_promotion": false,
+    "reason": "all three change an operation class; R6 additionally admits a native d2 producer/consumer contract and removes split/merge from B3"
+  },
+  "unresolved": [
+    "exact range and representative schedule for R7 and R6",
+    "constant-Montgomery sharing and W_lambda lowering",
+    "executable peak-YMM proof",
+    "d2 Forward/Inverse transform tables and physical layout",
+    "direct d2 Q24 decode/encode mapping and canonical rejection",
+    "whole Encap consumer graph cost"
+  ],
+  "next": {
+    "primary": "060 d2 / GT 3x64 quadratic-leaf Encap architecture gate",
+    "parallel_control": "059C explicit R7-B even/odd lowering",
+    "no_cycle_threshold_at_research_stage": true
+  }
+}

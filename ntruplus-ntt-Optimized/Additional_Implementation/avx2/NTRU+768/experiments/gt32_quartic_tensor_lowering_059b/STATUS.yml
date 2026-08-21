@@ -1,0 +1,28 @@
+experiment: GT32-QUARTIC-TENSOR-LOWERING-059B
+status: research-continue
+production_modified: false
+architectures:
+  R7_A:
+    variable_products: 7
+    decision: retain_as_lowering_control
+  R7_B_symmetric:
+    variable_products: 7
+    mechanism: even_odd_factored_interpolation
+    decision: continue_to_explicit_AVX2_DAG
+  R6_quadratic_CRT:
+    variable_products: 6
+    native_d2_B3_chain_classes: 8
+    mechanism: producer_and_consumer_native_quadratic_leaves
+    decision: promote_to_060_architecture_research
+exactness:
+  lambda_entries: 192
+  basis_products_per_lambda: 16
+  checks_per_architecture: 3072
+research_gate:
+  cycle_threshold: none
+  total_instruction_threshold: none
+  production_promotion: false
+next:
+  primary: 060_d2_GT_3x64_architecture
+  control: 059C_R7B_even_odd_lowering
+artifact: generated/quartic_tensor_lowering_059b.json
