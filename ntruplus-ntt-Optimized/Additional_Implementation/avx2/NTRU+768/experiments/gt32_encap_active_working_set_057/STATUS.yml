@@ -1,0 +1,46 @@
+experiment: GT32-ENCAP-ACTIVE-WORKING-SET-057
+status: closed
+production_modified: false
+question: >-
+  Does reducing the active Encap polynomial working set from five objects to
+  four recover a stable part of the exact-production data-side debt?
+profiles:
+  a:
+    active_polynomials: 5
+    reserved_polynomials: 5
+  b:
+    active_polynomials: 4
+    reserved_polynomials: 5
+    causal_role: primary
+  c:
+    active_polynomials: 4
+    reserved_polynomials: 4
+    causal_role: secondary_frame_release
+controls:
+  - A and B share one wrapper and one hot-body address
+  - selected GT arithmetic and codec symbols unchanged
+  - no fusion
+  - CPU 1 affinity
+  - balanced six-order launches
+  - balanced mirrored PMU blocks
+correctness:
+  valid_differentials: 1000
+  malformed_single_q_slots: 768
+  result: pass
+results:
+  b_minus_a_core_cycles: -8.375
+  b_minus_a_ci95: [-68.5833, 30.4583]
+  b_minus_a_favorable_launches: 26/48
+  b_minus_a_l1d_pending_cycles: 0.0878
+  c_minus_a_core_cycles: -0.375
+  c_minus_a_ci95: [-108.625, 27.1667]
+  c_minus_a_favorable_launches: 24/48
+  c_minus_b_core_cycles: -25.9583
+  c_minus_b_ci95: [-58.7917, 6.5417]
+decision: >-
+  Close active-cardinality-only optimization. Leaving one complete polynomial
+  slot untouched does not produce a stable latency or L1D-pending improvement.
+reopen_only_if:
+  - a complete store/reload or operation class is deleted
+  - hardware evidence identifies a specific entry-load stall owner
+  - memory traffic, rather than only object liveness, is reduced
