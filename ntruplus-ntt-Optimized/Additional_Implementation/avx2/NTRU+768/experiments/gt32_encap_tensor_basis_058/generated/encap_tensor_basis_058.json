@@ -1,0 +1,91 @@
+{
+  "schema": "ntruplus768-gt32-encap-tensor-basis-coverage-v1",
+  "experiment": "GT32-ENCAP-TENSOR-BASIS-058",
+  "scope": "generator-only WIRE12-aware coverage and lower-bound gate for the current quartic algebra and structured ternary basis class",
+  "production_modified": false,
+  "question": "Does a structured quartic degree basis already covered by the K2 search become attractive after accounting for the complete Encap WIRE12 consumer graph?",
+  "frozen": [
+    "Good-Thomas factorization and current quartic leaves",
+    "current K2/TMVP multiplication tensor",
+    "WIRE12 semantics and canonical bytes",
+    "current CBD and SOTP coefficient producers",
+    "AVX2 with sixteen YMM registers"
+  ],
+  "source_artifacts": {
+    "tile4_terminal_karatsuba_basis_gate.json": "c14a425affb71189196363f181ce479751cbc4a88a4ca97578a3c240996b5c36",
+    "tile4_encap_h_d01_mixed_tmvp_gate.json": "f66e4d5ac95cec6da28328889e0da443fa5990eb9e6c1890dc87cb79bc41f9f2",
+    "tile4_encap_representation_architecture_gate.json": "24dd89d9bd88c48474d6023719ee0c477ac0bd9266b99bdbaa896f3c4c6f718f",
+    "tile4_p_prime_joint_abi_survey.json": "ca5cfcc487acabde634799ac60948287d9cd434ef563742fce2a3f4fbeccfac4"
+  },
+  "coverage": {
+    "sign_normalized_ternary_rows": 40,
+    "rank_four_bases": 72780,
+    "K2_eligible_bases": 979,
+    "zero_arithmetic_wire_bases_up_to_lane_order": 1,
+    "physical_q_axis_permutations_separately_surveyed": 120,
+    "mixed_Q24_D01_x_M_TMVP_separately_gated": true
+  },
+  "wire_basis_proof": {
+    "wire_coordinates": "quartic monomial coefficients c0,c1,c2,c3",
+    "zero_arithmetic_linear_conversion_condition": "each output selects one existing coordinate; invertibility therefore forces a permutation matrix",
+    "lane_permutations": "optimistically treated as absorbable into existing Q24 shuffle masks",
+    "nonmonomial_basis": "requires at least one add/sub operation and cannot be formed by byte/lane routing alone",
+    "signed_monomial_note": "a negative coordinate is not free at WIRE12 because canonical q-x correction is arithmetic; the sign-normalized zero-cost class contains the ordinary monomial basis"
+  },
+  "encap_graph": {
+    "wire_to_basis": [
+      "Decode(h)"
+    ],
+    "coefficient_producer_to_basis": [
+      "CBD(r)->Forward",
+      "SOTP(m)->Forward"
+    ],
+    "basis_to_wire": [
+      "serialize(r-hat)",
+      "serialize(ciphertext)"
+    ],
+    "basis_preserving": [
+      "B3",
+      "add(m)"
+    ],
+    "potential_nonmonomial_boundary_crossings": 5,
+    "accounting_rule": "a candidate receives no credit for moving basis formation between these edges; it must delete work from the complete graph"
+  },
+  "structured_basis_result": {
+    "current_monomial_formation_plus_K2_lower_bound": 6,
+    "best_nonmonomial_formation_plus_K2_lower_bound": 9,
+    "nonmonomial_K2_operand_synthesis_improvement": 0,
+    "wire_boundary_cost_direction": "strictly worse than monomial",
+    "dominance": "within this class, no nonmonomial basis lowers K2 operand synthesis, while every nonmonomial basis adds arithmetic at one or more producer/wire boundaries"
+  },
+  "independent_negative_controls": {
+    "Q24_D01_decoder_saving": 48,
+    "Q24_D01_representation_net": 0,
+    "mixed_D01xM_TMVP_complete_edge_delta_instructions": 96,
+    "best_distinct_P_complete_representation_delta_instructions": 7,
+    "interpretation": "wire-proximate physical grouping and leaf-order relabeling have already failed to delete a complete B3 operation class"
+  },
+  "decision": "close-structured-current-tensor-basis-repack-space",
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "claim_boundary": {
+    "closed": [
+      "same GT leaves plus current K2/TMVP tensor plus a rank-four sign-normalized ternary degree basis",
+      "Q24 D01 mixed TMVP that repairs the representation inside B3",
+      "monomial leaf-order/P-like variants that only relabel lambda or move shuffles"
+    ],
+    "not_closed": [
+      "arbitrary GL(4,q) bases",
+      "a genuinely different bilinear multiplication tensor/decomposition",
+      "a different leaf degree or Good-Thomas factorization",
+      "producer-native redundant forms that delete a complete consumer operation"
+    ]
+  },
+  "reopen_only_if": [
+    "a new bilinear tensor deletes a vector multiply or complete REDC/recombination class",
+    "a producer emits the new tensor operands without a separate basis transform",
+    "the consumer remains nonmonomial through a later protocol boundary and avoids wire repair",
+    "the transform factorization or quartic leaf algebra itself changes"
+  ],
+  "next_research_unit": "search a new quartic bilinear tensor with explicit AVX2 lowering and full Encap graph credit, or move to I1 transform/leaf redesign"
+}

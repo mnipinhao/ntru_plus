@@ -1,0 +1,36 @@
+experiment: GT32-ENCAP-TENSOR-BASIS-058
+status: closed
+production_modified: false
+kind: generator-only-coverage-and-lower-bound
+scope: >-
+  Current GT leaves, current K2/TMVP tensor, structured sign-normalized ternary
+  quartic bases, and the complete Encap WIRE12 consumer graph.
+coverage:
+  sign_normalized_ternary_rows: 40
+  rank_four_bases: 72780
+  K2_eligible_bases: 979
+  physical_q_axis_permutations_separately_surveyed: 120
+result:
+  current_monomial_formation_plus_K2_lower_bound: 6
+  best_nonmonomial_formation_plus_K2_lower_bound: 9
+  nonmonomial_K2_operand_synthesis_improvement: 0
+  potential_nonmonomial_encap_boundary_crossings: 5
+decision: close-structured-current-tensor-basis-repack-space
+assembly_emitted: false
+benchmark_run: false
+claim_boundary:
+  closed:
+    - current leaves plus current K2/TMVP tensor plus structured ternary degree basis
+    - Q24 D01 mixed TMVP with repair inside B3
+    - monomial P-like variants that only move shuffles or relabel lambda
+  not_closed:
+    - arbitrary GL(4,q) bases
+    - a genuinely different bilinear tensor or decomposition
+    - a different leaf degree or GT factorization
+    - producer-native redundant forms that delete a complete operation
+reopen_only_if:
+  - a vector multiply or complete REDC/recombination class is deleted
+  - producer-native tensor operands avoid a separate basis transform
+  - a nonmonomial representation survives through a later protocol boundary
+  - transform factorization or leaf algebra changes
+artifact: generated/encap_tensor_basis_058.json
