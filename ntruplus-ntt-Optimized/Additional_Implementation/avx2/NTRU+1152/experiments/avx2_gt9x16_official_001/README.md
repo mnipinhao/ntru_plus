@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint F-R3A scaled paper-R3R3 closure completed; R1/R2 AVX2 is next.**
+**Checkpoint F-R3B selects R2-cached provisionally; adjusted NTT16 is next.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -109,3 +109,10 @@ forward scale closes through BaseMul, BaseInv `den[18]`, keypair ratios, and
 the existing inverse normalization multiplication without a standalone scale
 pass. No performance result exists until R1/R2 assembly is implemented. See
 `CHECKPOINT-F-R3.md`.
+
+Checkpoint F-R3B implements R1 plus memory/cached R2 leaves under the same
+persistent-S/D ABI. R1 is 13.0% faster than R0; R2-memory is neutral relative
+to R1; R2-cached is another 2.1% faster by eliminating twist memory operands.
+All variants pass schedule-exact, modulo-q `4*R0`, alias, canary, sanitizer,
+and generated cut-point range gates. R2-cached is selected only for the next
+R2-plus-adjusted-NTT16 checkpoint. See `CHECKPOINT-F-R3B.md`.

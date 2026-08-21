@@ -62,6 +62,18 @@ static const int16_t ntruplus1152_exp001_ntt9_zeta[8] = {
 static const int16_t ntruplus1152_exp001_ntt9_qinv[8] = {
   -19, -19, -19, -19, 16436, -28815, -28815, -21308
 };
+static const int16_t ntruplus1152_exp001_paper_kappa[1] = {
+  1538
+};
+static const int16_t ntruplus1152_exp001_paper_kappa_qinv[1] = {
+  27394
+};
+static const int16_t ntruplus1152_exp001_paper_rhoinv[1] = {
+  682
+};
+static const int16_t ntruplus1152_exp001_paper_rhoinv_qinv[1] = {
+  -29782
+};
 static const int16_t ntruplus1152_exp001_official_component_branch0[144] = {
   54, 55, 52, 53, 50, 51, 48, 49, 58, 59, 56, 57,
   60, 61, 63, 62, 80, 81, 83, 82, 87, 86, 85, 84,

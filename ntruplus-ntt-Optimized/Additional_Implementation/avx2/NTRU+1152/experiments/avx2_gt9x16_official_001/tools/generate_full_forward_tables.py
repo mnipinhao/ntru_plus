@@ -185,6 +185,10 @@ def main() -> int:
     qinv_stages = [[signed16(value * QINV) for value in stage] for stage in mont_stages]
     ntt9_mont = [montgomery(value) for value in ntt9_stage1 + ntt9_stage2]
     ntt9_qinv = [signed16(value * QINV) for value in ntt9_mont]
+    paper_kappa_mont = montgomery(omega - pow(omega, 2, Q))
+    paper_kappa_qinv = signed16(paper_kappa_mont * QINV)
+    paper_rhoinv_mont = montgomery(pow(root9_relabelled, -1, Q))
+    paper_rhoinv_qinv = signed16(paper_rhoinv_mont * QINV)
     official_map = [[entry["official_component"] for entry in branch] for branch in components]
     official_avx2_map = [[position for entry in branch for position in entry["official_avx2_positions"]]
                          for branch in components]
@@ -203,6 +207,10 @@ def main() -> int:
         header += emit_1d(f"ntruplus1152_exp001_gt_{name}_qinv", qinvs)
     header += emit_1d("ntruplus1152_exp001_ntt9_zeta", ntt9_mont)
     header += emit_1d("ntruplus1152_exp001_ntt9_qinv", ntt9_qinv)
+    header += emit_1d("ntruplus1152_exp001_paper_kappa", [paper_kappa_mont])
+    header += emit_1d("ntruplus1152_exp001_paper_kappa_qinv", [paper_kappa_qinv])
+    header += emit_1d("ntruplus1152_exp001_paper_rhoinv", [paper_rhoinv_mont])
+    header += emit_1d("ntruplus1152_exp001_paper_rhoinv_qinv", [paper_rhoinv_qinv])
     for branch in range(2):
         header += emit_1d(f"ntruplus1152_exp001_official_component_branch{branch}", official_map[branch])
         header += emit_1d(f"ntruplus1152_exp001_official_avx2_position_branch{branch}",
@@ -221,6 +229,11 @@ def main() -> int:
     asm += emit_asm_words(".Lgt_q", [Q] * 16)
     asm += emit_asm_words(".Lgt_w", [-886] * 16)
     asm += emit_asm_words(".Lgt_wqinv", [13706] * 16)
+    asm += emit_asm_words(".Lgt_v", [9] * 16)
+    asm += emit_asm_words(".Lgt_paper_kappa", [paper_kappa_mont] * 16)
+    asm += emit_asm_words(".Lgt_paper_kappa_qinv", [paper_kappa_qinv] * 16)
+    asm += emit_asm_words(".Lgt_paper_rhoinv", [paper_rhoinv_mont] * 16)
+    asm += emit_asm_words(".Lgt_paper_rhoinv_qinv", [paper_rhoinv_qinv] * 16)
     asm += emit_asm_words(".Lgt_stage8_zeta", [mont_stages[0][0]] * 16)
     asm += emit_asm_words(".Lgt_stage8_qinv", [qinv_stages[0][0]] * 16)
     for index, (zeta, qinv) in enumerate(zip(ntt9_mont, ntt9_qinv)):

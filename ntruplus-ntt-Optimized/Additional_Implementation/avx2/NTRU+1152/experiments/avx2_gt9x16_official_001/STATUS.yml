@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f-r3a-scaled-paper-r3r3-closure-complete
+state: checkpoint-f-r3b-r2-cached-provisional-ntt9-selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -56,8 +56,17 @@ gates:
   checkpoint_f_r3_paper_row_map: passed-p-0-3-6-1-4-7-8-2-5
   checkpoint_f_r3_scale_ledger: passed-forward-basemul-baseinv-den18-inverse
   checkpoint_f_r3_standalone_scale_pass: not-required-final-normalization-fold
-  checkpoint_f_r3_range: pending-executable-r1-r2
-  checkpoint_f_r3_benchmark: pending-executable-r1-r2
+  checkpoint_f_r3_range: completed-by-f-r3b-kem-small-and-adjusted-distance8
+  checkpoint_f_r3_benchmark: completed-by-f-r3b-repository-local-diagnostic
+  checkpoint_f_r3b_r1: passed-schedule-exact-modq-scale4-alias-canary
+  checkpoint_f_r3b_r2_memory: passed-schedule-exact-modq-scale4-alias-canary
+  checkpoint_f_r3b_r2_cached: passed-schedule-exact-modq-scale4-alias-canary
+  checkpoint_f_r3b_range: passed-all-cutpoints-and-adjusted-distance8-i16
+  checkpoint_f_r3b_static_audit: passed-leaf-no-frame-spill-routing-vzeroupper
+  checkpoint_f_r3b_gate_a: passed-r1-is-0.870x-r0
+  checkpoint_f_r3b_gate_b_memory: neutral-r2-memory-is-1.000x-r1
+  checkpoint_f_r3b_gate_b_cached: passed-r2-cached-is-0.979x-r1
+  checkpoint_f_r3b_benchmark: passed-repository-local-diagnostic-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -78,7 +87,9 @@ checkpoint_c4: nine-row-natural-persistent-pair-selected
 checkpoint_d: official-stage-baseline-and-two-order-decision-complete
 checkpoint_e: ntt-domain-representation-closure-contract-complete
 checkpoint_f_r3: scaled-paper-r3r3-producer-algebra-and-scale-closure-complete
-next_step: implement-r1-r2-avx2-persistent-sd-bitexact-scale4-range-audit-then-paired-diagnostic
+checkpoint_f_r3b: r2-cached-selected-provisional-ntt9-only
+f_r3b_diagnostic_result: results/f-r3b-intel155h-20260821-001/ntt9-paper-paired.json
+next_step: connect-r2-cached-to-paper-row-adjusted-ntt16-all-stages-then-paired-combined-transform
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

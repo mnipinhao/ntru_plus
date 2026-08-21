@@ -66,5 +66,14 @@ void ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0(
 void ntruplus1152_exp001_gt9x16_ntt9_d_a(
     ntruplus1152_exp001_gt_persistent_pair *output,
     const ntruplus1152_exp001_gt_persistent_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt9_r1(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt9_r2_memory(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt9_r2_cached(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
 
 #endif

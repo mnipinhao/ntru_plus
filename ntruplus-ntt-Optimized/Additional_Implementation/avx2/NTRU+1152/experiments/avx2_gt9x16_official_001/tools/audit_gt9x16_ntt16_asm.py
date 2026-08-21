@@ -59,6 +59,24 @@ FUNCTIONS = {
         "vpblendw": 0, "vpblendd": 0, "vpmullw": 36,
         "input_loads": 18, "output_stores": 36, "peak_live_ymm": 12,
     },
+    "ntruplus1152_exp001_gt9x16_ntt9_r1": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 38,
+        "input_loads": 18, "output_stores": 36, "peak_live_ymm": 11,
+        "montgomery_chains": 20, "barrett_vectors": 18,
+        "constant_explicit_loads": 4, "constant_memory_operands": 16,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt9_r2_memory": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 38,
+        "input_loads": 18, "output_stores": 36, "peak_live_ymm": 11,
+        "montgomery_chains": 20, "barrett_vectors": 18,
+        "constant_explicit_loads": 4, "constant_memory_operands": 16,
+    },
+    "ntruplus1152_exp001_gt9x16_ntt9_r2_cached": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 38,
+        "input_loads": 18, "output_stores": 36, "peak_live_ymm": 15,
+        "montgomery_chains": 20, "barrett_vectors": 18,
+        "constant_explicit_loads": 8, "constant_memory_operands": 0,
+    },
 }
 
 
@@ -117,7 +135,12 @@ def main() -> int:
         forbidden = re.findall(r"\b(?:idiv|div|vgather\w*|vscatter\w*)\b", body)
         size_match = re.search(rf"^[0-9a-f]+\s+([0-9a-f]+)\s+\w\s+{re.escape(name)}$", symbols, re.MULTILINE)
         counts = {mnemonic: len(re.findall(rf"\b{mnemonic}\b", body)) for mnemonic in
-                  ("vpblendw", "vpblendd", "vpmullw", "vpmulhw")}
+                  ("vpblendw", "vpblendd", "vpmullw", "vpmulhw", "vpmulhrsw",
+                   "vpaddw", "vpsubw")}
+        rip_lines = [line for line in lines if "[rip" in line]
+        constant_explicit_loads = sum(bool(re.search(
+            r"\bvmov\w*\s+ymm\d+\s*,.*\[rip", line)) for line in rip_lines)
+        constant_memory_operands = len(rip_lines) - constant_explicit_loads
         routing_counts = {mnemonic: len(re.findall(rf"\b{mnemonic}\b", body)) for mnemonic in
                           ("vinserti128", "vextracti128", "vperm2i128", "vpermq",
                            "vpshufb", "vpshufd", "vpsllq", "vpsrlq",
@@ -125,7 +148,12 @@ def main() -> int:
                            "vpunpckldq", "vpunpckhdq", "vpunpcklwd", "vpunpckhwd")}
         entry = {
             **counts,
-            "montgomery_vector_multiplies": counts["vpmullw"],
+            "montgomery_vector_multiplies": expected.get("montgomery_chains", counts["vpmullw"]),
+            "barrett_reduction_vector_multiplies": counts["vpmulhrsw"],
+            "all_vpmullw_including_barrett": counts["vpmullw"],
+            "vector_add_subtract_instructions": counts["vpaddw"] + counts["vpsubw"],
+            "constant_explicit_loads": constant_explicit_loads,
+            "constant_memory_operands": constant_memory_operands,
             "input_row_loads": input_loads,
             "output_row_stores": output_stores,
             "calls": calls,
@@ -152,6 +180,11 @@ def main() -> int:
         expected_stores = expected.get("output_stores", 9)
         if input_loads != expected_loads or output_stores != expected_stores:
             raise SystemExit(f"{name}: expected {expected_loads} input loads and {expected_stores} output stores, found {input_loads}/{output_stores}")
+        for metric, actual in (("barrett_vectors", counts["vpmulhrsw"]),
+                               ("constant_explicit_loads", constant_explicit_loads),
+                               ("constant_memory_operands", constant_memory_operands)):
+            if metric in expected and actual != expected[metric]:
+                raise SystemExit(f"{name}: expected {expected[metric]} {metric}, found {actual}")
         if calls or vzeroupper or frame_instructions or stack_references or vector_spills or forbidden:
             raise SystemExit(f"{name}: leaf/stack/forbidden instruction audit failed")
         if name in ("ntruplus1152_exp001_gt9x16_ntt16_c0",

@@ -181,3 +181,20 @@ algebraic diagnostics only. F-R3B must compare R0/R1/R2 in one ELF with the
 same persistent-S/D input/output, compiler flags, pinning, residency, balanced
 order, and observation count; adapters may not be omitted from a full-real
 view.
+
+## Checkpoint F-R3B paired NTT9 result
+
+Source: `results/f-r3b-intel155h-20260821-001/ntt9-paper-paired.json`.
+Values cover all eight NTT9 instances in a 1152 forward transform.
+
+| Variant | Median cycles | Cycles / NTT9 | Interpretation |
+| --- | ---: | ---: | --- |
+| R0 | 322 | 40.25 | generic 18-chain baseline |
+| R1 | 280 | 35.00 | scaled radix-3 wins 13.0% |
+| R2-memory | 280 | 35.00 | Figure 9(b) address schedule alone is neutral |
+| R2-cached | 274 | 34.25 | two resident twists win another 2.1% |
+
+The balanced paired medians are `R1-R0=-42`, `R2-memory-R1=0`, and
+`R2-cached-R1=-6` cycles. R2-cached is provisional for the combined
+NTT9-plus-adjusted-NTT16 test only. This result is repository-local and cannot
+select an ABI or production implementation.

@@ -181,6 +181,47 @@ ntruplus1152_exp001_gt9x16_ntt9_d_a:
   ret
 .size ntruplus1152_exp001_gt9x16_ntt9_d_a, .-ntruplus1152_exp001_gt9x16_ntt9_d_a
 
+.include "asm/gt9x16_ntt9_paper.inc"
+.globl ntruplus1152_exp001_gt9x16_ntt9_r1
+.type ntruplus1152_exp001_gt9x16_ntt9_r1,@function
+ntruplus1152_exp001_gt9x16_ntt9_r1:
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  vmovdqa ymm1, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm2, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  vmovdqa ymm3, YMMWORD PTR [rip + .Lgt_v]
+  PAPER_R1_STREAM 0
+  PAPER_R1_STREAM 1
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt9_r1, .-ntruplus1152_exp001_gt9x16_ntt9_r1
+
+.globl ntruplus1152_exp001_gt9x16_ntt9_r2_memory
+.type ntruplus1152_exp001_gt9x16_ntt9_r2_memory,@function
+ntruplus1152_exp001_gt9x16_ntt9_r2_memory:
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  vmovdqa ymm1, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm2, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  vmovdqa ymm3, YMMWORD PTR [rip + .Lgt_v]
+  PAPER_R2_MEMORY_STREAM 0
+  PAPER_R2_MEMORY_STREAM 1
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt9_r2_memory, .-ntruplus1152_exp001_gt9x16_ntt9_r2_memory
+
+.globl ntruplus1152_exp001_gt9x16_ntt9_r2_cached
+.type ntruplus1152_exp001_gt9x16_ntt9_r2_cached,@function
+ntruplus1152_exp001_gt9x16_ntt9_r2_cached:
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  vmovdqa ymm1, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm2, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  vmovdqa ymm3, YMMWORD PTR [rip + .Lgt_v]
+  vmovdqa ymm4, YMMWORD PTR [rip + .Lgt_ntt9_qinv4]
+  vmovdqa ymm5, YMMWORD PTR [rip + .Lgt_ntt9_zeta4]
+  vmovdqa ymm6, YMMWORD PTR [rip + .Lgt_paper_rhoinv_qinv]
+  vmovdqa ymm7, YMMWORD PTR [rip + .Lgt_paper_rhoinv]
+  PAPER_R2_CACHED_STREAM 0
+  PAPER_R2_CACHED_STREAM 1
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt9_r2_cached, .-ntruplus1152_exp001_gt9x16_ntt9_r2_cached
+
 .include "generated/gt9x16-ntt16-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

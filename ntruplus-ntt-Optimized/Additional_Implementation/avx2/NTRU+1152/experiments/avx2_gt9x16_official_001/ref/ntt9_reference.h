@@ -7,5 +7,11 @@
 void ntruplus1152_exp001_ntt9_reference(
     ntruplus1152_exp001_gt_rows *output,
     const ntruplus1152_exp001_gt_rows *input);
+void ntruplus1152_exp001_ntt9_r1_reference(
+    ntruplus1152_exp001_gt_rows *output,
+    const ntruplus1152_exp001_gt_rows *input);
+void ntruplus1152_exp001_ntt9_r2_reference(
+    ntruplus1152_exp001_gt_rows *output,
+    const ntruplus1152_exp001_gt_rows *input);
 
 #endif
