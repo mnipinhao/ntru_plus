@@ -1,0 +1,112 @@
+{
+  "schema": "ntruplus768-gt32-d4-norm-absorption-matrix-v1",
+  "experiment": "GT32-D4-NORM-ABSORPTION-MATRIX-C",
+  "status": "research-open-no-free-absorption-proved",
+  "production_modified": false,
+  "source_hashes": {
+    "d4_fixed_modulus_norm.json": "a85da5a8a04996e6d8295026802e7a7b484fd659058e99d5f04037cd48c358f6",
+    "tile4_asm.S": "cb09d8d0933eca6b559950ab30c371e88029954b8e367057cb3f5946a3ea421f",
+    "tile4_q24_codec_asm.S": "1d1efdb04218820f38d6a1d8136c7c82c5caacca0826202073741570a168c299"
+  },
+  "matrix": {
+    "Forward": {
+      "1": {
+        "boundary": "Forward",
+        "degree": 1,
+        "factor": "s^1",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "frontend twist and NTT32 high-arm Montgomery chains",
+        "can_fuse_into_existing_operation": "not in the current schedule",
+        "required_mechanism": "conjugate the full transform constants/physical trajectory so every low and high output receives the degree diagonal",
+        "current_verdict": "open topology gate; changing only terminal constants is insufficient because low arms bypass the multiply"
+      },
+      "2": {
+        "boundary": "Forward",
+        "degree": 2,
+        "factor": "s^2",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "frontend twist and NTT32 high-arm Montgomery chains",
+        "can_fuse_into_existing_operation": "not in the current schedule",
+        "required_mechanism": "conjugate the full transform constants/physical trajectory so every low and high output receives the degree diagonal",
+        "current_verdict": "open topology gate; changing only terminal constants is insufficient because low arms bypass the multiply"
+      },
+      "3": {
+        "boundary": "Forward",
+        "degree": 3,
+        "factor": "s^3",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "frontend twist and NTT32 high-arm Montgomery chains",
+        "can_fuse_into_existing_operation": "not in the current schedule",
+        "required_mechanism": "conjugate the full transform constants/physical trajectory so every low and high output receives the degree diagonal",
+        "current_verdict": "open topology gate; changing only terminal constants is insufficient because low arms bypass the multiply"
+      }
+    },
+    "Q24_inverse": {
+      "1": {
+        "boundary": "Q24 inverse",
+        "degree": 1,
+        "factor": "s^-1",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "v=9 quotient estimate, multiply-by-q correction, sign fix, pair pack",
+        "can_fuse_into_existing_operation": "no direct constant-table fusion",
+        "required_mechanism": "joint wide constant multiply + modular reduction + packet formation, or consume already-normalized late K output",
+        "current_verdict": "open wide-exit gate; Q24 has reduction multiplies but no existing arbitrary-constant Montgomery chain"
+      },
+      "2": {
+        "boundary": "Q24 inverse",
+        "degree": 2,
+        "factor": "s^-2",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "v=9 quotient estimate, multiply-by-q correction, sign fix, pair pack",
+        "can_fuse_into_existing_operation": "no direct constant-table fusion",
+        "required_mechanism": "joint wide constant multiply + modular reduction + packet formation, or consume already-normalized late K output",
+        "current_verdict": "open wide-exit gate; Q24 has reduction multiplies but no existing arbitrary-constant Montgomery chain"
+      },
+      "3": {
+        "boundary": "Q24 inverse",
+        "degree": 3,
+        "factor": "s^-3",
+        "standalone_full_width_chains": 12,
+        "existing_operation": "v=9 quotient estimate, multiply-by-q correction, sign fix, pair pack",
+        "can_fuse_into_existing_operation": "no direct constant-table fusion",
+        "required_mechanism": "joint wide constant multiply + modular reduction + packet formation, or consume already-normalized late K output",
+        "current_verdict": "open wide-exit gate; Q24 has reduction multiplies but no existing arbitrary-constant Montgomery chain"
+      }
+    }
+  },
+  "standalone_accounting": {
+    "Forward_per_polynomial": 36,
+    "two_Forward": 72,
+    "Q24_per_polynomial": 36,
+    "two_Q24": 72,
+    "B3_credit": -36,
+    "net_if_nothing_absorbs": 108
+  },
+  "direct_answers": {
+    "Forward_degree1": "not free in current schedule",
+    "Forward_degree2": "not free in current schedule",
+    "Forward_degree3": "not free in current schedule",
+    "Q24_inverse_degree1": "not a direct reuse of v=9/q operations",
+    "Q24_inverse_degree2": "not a direct reuse of v=9/q operations",
+    "Q24_inverse_degree3": "not a direct reuse of v=9/q operations"
+  },
+  "important_distinction": {
+    "closed": "simple constant relabeling of the current terminal or Q24 reducer does not absorb the diagonal",
+    "open": [
+      "full Forward conjugation with a new physical trajectory",
+      "wide inverse-diagonal plus Q24 REDC/pack exit",
+      "asymmetric raw-h times normalized-r tensor",
+      "059C late K exit where normalization is folded into the interpolation constants"
+    ]
+  },
+  "decision": {
+    "production": false,
+    "continue": true,
+    "priority": [
+      "benchmark pooled ninth-product first",
+      "lower Q24 inverse diagonal as one wide exit",
+      "only then attempt full Forward conjugation"
+    ],
+    "reason": "the matrix finds no free current-operation absorption, but two joint-operation mechanisms remain algebraically distinct and untested"
+  }
+}

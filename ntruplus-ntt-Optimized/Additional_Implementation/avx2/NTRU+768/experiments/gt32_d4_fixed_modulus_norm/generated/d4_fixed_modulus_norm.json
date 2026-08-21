@@ -1,0 +1,127 @@
+{
+  "schema": "ntruplus768-gt32-d4-fixed-modulus-normalization-v1",
+  "experiment": "GT32-D4-FIXED-MODULUS-NORM",
+  "status": "research-continue",
+  "production_modified": false,
+  "source_hashes": {
+    "tile4_basemul_constants.inc": "87ddaaad9308087e43ca8beb363cd9169d7a06ad0852dde3d5b3a8f6f6c2f53f",
+    "tile4_pair_native_bm_gate.json": "f42b9f27ef811a1d0ea2626e3583bb6f7eae62173275a0f73e6a002de309c74e"
+  },
+  "field_proof": {
+    "q": 3457,
+    "fixed_modulus_constant": 2,
+    "two_is_square": true,
+    "two_is_not_fourth_power": true,
+    "sqrt_two": 220,
+    "lambda_entries": 192,
+    "all_lambda_over_two_are_fourth_powers": true,
+    "identity": "lambda_i=2*s_i^4",
+    "isomorphism": "x=s_i*y maps x^4-lambda_i to s_i^4*(y^4-2)"
+  },
+  "diagonal_abi": {
+    "coordinates": [
+      "a0",
+      "s*a1",
+      "s^2*a2",
+      "s^3*a3"
+    ],
+    "root_count": 192,
+    "unique_selected_roots": 192,
+    "selected_root_balanced_abs_max": 1687,
+    "first_sixteen_roots_balanced": [
+      1560,
+      155,
+      82,
+      184,
+      1242,
+      209,
+      270,
+      153,
+      40,
+      1175,
+      159,
+      182,
+      500,
+      94,
+      151,
+      262
+    ],
+    "words_per_polynomial": 768,
+    "bytes_per_polynomial": 1536,
+    "footprint_change": 0
+  },
+  "exactness": {
+    "roundtrip_basis_checks": 768,
+    "quartic_product_basis_checks": 3072,
+    "all_pass": true
+  },
+  "B3_operation_classes": {
+    "current_per_16_quartics": {
+      "chain0_chain1_variable_full_width": 8,
+      "mixed_chain2_full_width": 4,
+      "total_Montgomery_chains": 12
+    },
+    "normalized_y4_minus_2_per_16_quartics": {
+      "chain0_chain1_variable_full_width": 8,
+      "pooled_ninth_variable_full_width": 1,
+      "total_Montgomery_chains": 9,
+      "fixed_two_linear_vectors_lower_bound": 3,
+      "pool_and_redeposit_routing": "required and not yet lowered"
+    },
+    "Montgomery_chain_class_delta": -3,
+    "important_correction": "lambda normalization does not simply delete chain2: its first qword is the ninth variable product and must be pooled or kept"
+  },
+  "range_first_cut": {
+    "largest_existing_product_abs_bound": 2889,
+    "fixed_two_doubled_abs_bound": 5778,
+    "int16_safe_for_individual_doubled_terms": true,
+    "complete_normalized_recombination_bound": "pending exact DAG lowering",
+    "R2_finalizer_may_supply_terminal_reduction": true
+  },
+  "producer_consumer_graph": {
+    "Decode_h_standalone_normalization": {
+      "constant_Montgomery_chains_per_16_leaves": 3,
+      "polynomial_chains": 36,
+      "target": "absorb into Q24 decode placement or asymmetric B3 operand"
+    },
+    "Forward_r_and_m": {
+      "standalone_output_scaling_chains_per_polynomial": 36,
+      "two_Forward_standalone_chains": 72,
+      "target": "fold s^degree into transform twist/terminal constants",
+      "current_terminal_low_arm_bypass": "prevents claiming this absorption without a new topology schedule"
+    },
+    "B3": {
+      "chain_saving_per_16_leaves": 3,
+      "polynomial_chain_saving": 36,
+      "new_linear_two_vectors_per_16_leaves_lower_bound": 3
+    },
+    "two_Q24_exits": {
+      "standalone_inverse_scaling_chains_per_polynomial": 36,
+      "two_exits_standalone_chains": 72,
+      "target": "combine s^-degree, Montgomery scale, canonical reduction and packet routing"
+    },
+    "warning": "the standalone boundary costs exceed the B3 credit; research continues only because Forward/Q24/asymmetric absorption are new mechanisms"
+  },
+  "asymmetric_opening": {
+    "question": "can h remain wire-cheap while r/m are normalized, with h-side diagonal factors absorbed into the asymmetric B3 tensor",
+    "not_covered_by_058": true,
+    "not_resolved_here": true
+  },
+  "research_decision": {
+    "decision": "continue-to-normalized-B3-pooling-and-boundary-absorption-gates",
+    "production_promotion": false,
+    "reasons": [
+      "all 192 leaf rings become one exact y^4-2 algebra",
+      "three full-width Montgomery chain classes can be replaced by pooled variable work plus linear doubling",
+      "representation footprint remains 1536 bytes",
+      "Forward terminal and Q24 inverse scaling absorption remain genuinely untested"
+    ],
+    "no_cycle_threshold": true
+  },
+  "next": [
+    "lower pooled ninth-product plus three fixed-two vectors with exact YMM routing",
+    "search Forward twist/terminal placement for diag(1,s,s2,s3)",
+    "construct inverse-diagonal plus Q24 REDC32 packet exit",
+    "search asymmetric raw-h times normalized-r to normalized-output tensor"
+  ]
+}

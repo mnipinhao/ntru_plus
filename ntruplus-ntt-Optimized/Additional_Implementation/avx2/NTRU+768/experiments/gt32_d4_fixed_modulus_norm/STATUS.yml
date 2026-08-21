@@ -1,0 +1,46 @@
+experiment: GT32-D4-FIXED-MODULUS-NORM
+status: research-continue
+production_modified: false
+fixed_algebra: F_3457[y]/(y^4-2)
+exactness:
+  lambda_entries: 192
+  coordinate_roundtrips: 768
+  quartic_basis_products: 3072
+representation:
+  coordinates: [a0, s_a1, s2_a2, s3_a3]
+  bytes: 1536
+operation_class:
+  current_Montgomery_chains_per_16_quartics: 12
+  normalized_variable_chains: 9
+  fixed_two_linear_vectors_lower_bound: 3
+  pool_redeposit_routing: pending
+decision: continue-to-normalized-B3-pooling-and-boundary-absorption-gates
+production_promotion: false
+artifact: generated/d4_fixed_modulus_norm.json
+pooled_ninth_product:
+  status: research-continue-to-matched-asm
+  current_mixed_chains:
+    instructions: 16
+    vector_multiplies: 12
+  candidate:
+    instructions: 19
+    vector_multiplies: 3
+    full_width_Montgomery_chain_delta: -3
+    vector_multiply_instruction_delta: -9
+    peak_YMM_estimate: 10
+  instruction_count_is_not_a_stop_gate: true
+  artifact: generated/d4_norm_pooled_ninth_routing.json
+absorption_matrix:
+  status: research-open-no-free-absorption-proved
+  standalone_chains:
+    two_Forward: 72
+    two_Q24_inverse: 72
+    B3_credit: -36
+    net_if_nothing_absorbs: 108
+  current_schedule_free_absorptions: 0
+  open:
+    - full_Forward_conjugated_trajectory
+    - wide_inverse_diagonal_Q24_exit
+    - asymmetric_raw_h_normalized_r_tensor
+    - persistent_R7_late_K_absorption
+  artifact: generated/d4_norm_absorption_matrix.json

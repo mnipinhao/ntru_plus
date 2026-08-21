@@ -1,0 +1,137 @@
+{
+  "schema": "ntruplus768-gt32-d4-norm-pooled-ninth-routing-v1",
+  "experiment": "GT32-D4-NORM-POOLED-NINTH-B",
+  "status": "research-continue-to-matched-asm",
+  "production_modified": false,
+  "source_hash": "a85da5a8a04996e6d8295026802e7a7b484fd659058e99d5f04037cd48c358f6",
+  "symbolic_exactness": {
+    "input_qwords": [
+      [
+        "v0",
+        "f0.1",
+        "f0.2",
+        "f0.3"
+      ],
+      [
+        "v1",
+        "f1.1",
+        "f1.2",
+        "f1.3"
+      ],
+      [
+        "v2",
+        "f2.1",
+        "f2.2",
+        "f2.3"
+      ],
+      [
+        "v3",
+        "f3.1",
+        "f3.2",
+        "f3.3"
+      ]
+    ],
+    "gather_t01": [
+      "v0",
+      "v1",
+      "f0.2",
+      "f1.2"
+    ],
+    "gather_t23": [
+      "v2",
+      "v3",
+      "f2.2",
+      "f3.2"
+    ],
+    "pooled_variable_qwords": [
+      "v0",
+      "v1",
+      "v2",
+      "v3"
+    ],
+    "output_qwords": [
+      [
+        "M(v0)",
+        "2*f0.1",
+        "2*f0.2",
+        "2*f0.3"
+      ],
+      [
+        "M(v1)",
+        "2*f1.1",
+        "2*f1.2",
+        "2*f1.3"
+      ],
+      [
+        "M(v2)",
+        "2*f2.1",
+        "2*f2.2",
+        "2*f2.3"
+      ],
+      [
+        "M(v3)",
+        "2*f3.1",
+        "2*f3.2",
+        "2*f3.3"
+      ]
+    ],
+    "pass": true
+  },
+  "constructive_AVX2_route": [
+    "vpunpcklqdq chain2_1,chain2_0 -> [v0,v1,*,*]",
+    "vpunpcklqdq chain2_3,chain2_2 -> [v2,v3,*,*]",
+    "vperm2i128 0x20 -> [v0,v1,v2,v3]",
+    "one full-width Montgomery chain on the pooled vector",
+    "four vpaddw form the twelve fixed-2 qwords in place",
+    "four qword selects plus four vpblendd redeposit M(v_i) into qword0"
+  ],
+  "static_comparison_per_16_quartics": {
+    "current_four_mixed_chains": {
+      "Montgomery_chains": 4,
+      "vector_multiply_instructions": 12,
+      "subtract_instructions": 4,
+      "total": 16
+    },
+    "candidate": {
+      "gather": {
+        "vpunpcklqdq": 2,
+        "vperm2i128": 1
+      },
+      "pooled_Montgomery": {
+        "vector_multiply_instructions": 3,
+        "subtract_instructions": 1
+      },
+      "fixed_two": {
+        "vpaddw": 4
+      },
+      "scatter": {
+        "vpermq_or_equivalent_select": 4,
+        "vpblendd": 4
+      }
+    },
+    "candidate_total_instructions": 19,
+    "instruction_delta": 3,
+    "full_width_Montgomery_chain_delta": -3,
+    "vector_multiply_instruction_delta": -9,
+    "backend_trade": "nine vector multiplies are replaced by gather/scatter shuffles, four linear doubles, and three extra total instructions"
+  },
+  "routing_floor": {
+    "constructive_template_cost": 15,
+    "gather_binary_merge_lower_bound": 3,
+    "four_fixed_two_outputs_lower_bound": 4,
+    "four_output_redeposit_merge_lower_bound": 4,
+    "global_AVX2_minimum_proved": false,
+    "note": "15 is the exact cost of the audited gather/Mont/double/blend template, not a universal circuit lower bound."
+  },
+  "liveness": {
+    "peak_YMM_estimate": 10,
+    "spill_free": true,
+    "pool_and_redeposit_can_reuse_chain2_temporaries": true
+  },
+  "decision": {
+    "continue": true,
+    "reason": "the first route is +3 instructions but deletes nine vector multiply instructions and three full Montgomery chains; only executable port/latency evidence can adjudicate it",
+    "do_not_close_on_instruction_count": true,
+    "next": "emit current-vs-pooled matched assembly for one 16-quartic block"
+  }
+}
