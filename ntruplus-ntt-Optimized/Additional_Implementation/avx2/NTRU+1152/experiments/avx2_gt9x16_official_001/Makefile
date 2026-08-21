@@ -26,6 +26,7 @@ OFFICIAL_PARTITIONS := generated/official-ntt-stage-partitions.s
 OFFICIAL_PARTITION_HEADERS := src/official_stage_partitions.h
 G0_CONTROL_RESULT := results/f-r3d-intel155h-20260821-001/paper-pipeline-paired.json
 G0_GENERATOR_ARGS := --component-oracle generated/gt9x16-component-oracle.json --pipeline-layout generated/gt9x16-pipeline-layout.json --cost-matrix generated/gt9x16-representation-cost-matrix.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --control-result $(G0_CONTROL_RESULT) --graph-output generated/g0-consumer-graph.json --views-output generated/g0-representation-views.json
+G1_GENERATOR_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g0-views generated/g0-representation-views.json --oracle-output generated/g1-edge-oracles.json --debt-output generated/g1-edge-debt-matrix.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -51,6 +52,7 @@ generate:
 	$(PYTHON) tools/generate_ntt9_paper_range.py --tables generated/gt9x16-full-forward-tables.h --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --json generated/gt9x16-ntt9-paper-range.json --header generated/gt9x16-ntt9-paper-range.h --asm-constants generated/gt9x16-paper-adjusted-ntt16-constants.inc
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS)
 	$(PYTHON) tools/generate_g0_representation_views.py $(G0_GENERATOR_ARGS)
+	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -72,12 +74,14 @@ check:
 	$(PYTHON) tools/generate_ntt9_paper_range.py --tables generated/gt9x16-full-forward-tables.h --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --json generated/gt9x16-ntt9-paper-range.json --header generated/gt9x16-ntt9-paper-range.h --asm-constants generated/gt9x16-paper-adjusted-ntt16-constants.inc --check
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS) --check
 	$(PYTHON) tools/generate_g0_representation_views.py $(G0_GENERATOR_ARGS) --check
+	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
 	$(PYTHON) tests/test_representation_contract.py
 	$(PYTHON) tests/test_scaled_r3r3_oracle.py
 	$(PYTHON) tests/test_g0_representation_views.py
+	$(PYTHON) tests/test_g1_edge_oracles.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear

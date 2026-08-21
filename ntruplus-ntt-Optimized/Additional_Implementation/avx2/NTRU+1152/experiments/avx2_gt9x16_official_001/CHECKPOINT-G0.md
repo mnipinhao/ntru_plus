@@ -62,11 +62,12 @@ as zero.
 
 ## G1 order and gates
 
-G1 first builds independent scalar/layout oracles for every shortlisted edge.
-It then prototypes F1 producer-side reconstruction and F5 arithmetic-store
-inverse feed before speculative terminal-basis work. Each linked object must
-pass algebra, scale, signed-16 range, ABI, alias/canary, and constant-time
-checks before timing.
+G1A first builds independent scalar/layout oracles for every shortlisted edge.
+G1B measures F1's real producer-boundary tax, while the orthogonal G1C measures
+F5 arithmetic-store/inverse-head debt and credit. G1D covers F4's real
+encapsulation downstream, and G1E performs F3's cheap-basis algebraic search.
+Each linked object must pass algebra, scale, signed-16 range, ABI, alias/canary,
+and constant-time checks before timing.
 
 Only same-ELF paired measurements of the three complete paths above may select
 a view. A forward-only win, static routing estimate, or isolated BaseMul win

@@ -132,3 +132,9 @@ S/D remains the measured control. F2 `p,-p` is deferred because the current R2
 row order makes three of four nonzero pairs nonadjacent and no cheap factor
 identity has been proved. A universal natural-order boundary is rejected
 because it requires a standalone full-array pass.
+
+G1A materializes these policies as five edge oracles in
+`generated/g1-edge-oracles.json`. F1 prices the forward producer tail; F5
+separately prices BMScale/BaseInv stores against inverse heads. They are not a
+pipeline selection. `generated/g1-edge-debt-matrix.json` keeps all unmeasured
+producer debt, consumer credit, and net deltas null.

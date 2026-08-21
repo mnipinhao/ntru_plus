@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g0-consumer-edge-representation-shortlist-complete
+state: checkpoint-g1a-all-shortlist-edge-oracle-closure-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -93,6 +93,15 @@ gates:
   checkpoint_g0_p_neg_p_audit: deferred-three-of-four-nonzero-pairs-nonadjacent
   checkpoint_g0_shortlist: passed-four-new-g1-views
   checkpoint_g0_benchmark: not-run-design-checkpoint-only
+  checkpoint_g1a_component_permutations: passed-five-edges-times-1152-cell-bijections
+  checkpoint_g1a_terminal_basis: passed-identity-edges-and-depth2-cheap-family
+  checkpoint_g1a_frequency_gauge: passed-identity-control-explicit-rekey-points
+  checkpoint_g1a_scale_relation: passed-bmscale-path-baseinv-direct-normalization-open
+  checkpoint_g1a_absorption_map: passed-nine-adjacent-arithmetic-and-address-nodes
+  checkpoint_g1a_standalone_conversion: passed-none
+  checkpoint_g1a_edge_cost_matrix: passed-unknown-cycles-null
+  checkpoint_g1a_f1_f5_orthogonality: passed-independent-experiments
+  checkpoint_g1a_benchmark: not-run-oracle-checkpoint-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -120,7 +129,8 @@ f_r3c_diagnostic_result: results/f-r3c-intel155h-20260821-001/paper-combined-pai
 checkpoint_f_r3d: d0-cleanup-and-d1-two-row-pipeline-complete-d2-not-required
 f_r3d_diagnostic_result: results/f-r3d-intel155h-20260821-001/paper-pipeline-paired.json
 checkpoint_g0: consumer-edge-graph-static-pruning-and-four-view-g1-shortlist-complete
-next_step: g1-oracles-then-f1-producer-reconstruction-and-f5-consumer-store-prototypes
+checkpoint_g1a: five-edge-component-basis-gauge-scale-and-absorption-oracles-complete
+next_step: g1b-f1-producer-tail-tax-and-g1c-f5-consumer-tail-head-credit-are-independent
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

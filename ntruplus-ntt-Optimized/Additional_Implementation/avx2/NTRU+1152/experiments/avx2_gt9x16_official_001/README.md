@@ -12,9 +12,9 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint G0 freezes a consumer-edge representation design space and a
-four-view G1 shortlist without adding assembly or treating unknown costs as
-zero. F-R3D D1 remains the measured forward control.**
+**Checkpoint G1A closes five producer/consumer edge oracles derived from the
+four shortlisted views, without adding assembly or replacing unknown cycle
+debt/credit with zero. F-R3D D1 remains the measured forward control.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -134,3 +134,11 @@ scaled-multiply/inverse, and BaseInv/inverse paths;
 separates measured/generated/hypothesis evidence, rejects standalone full-array
 canonicalization, defers the nonlocal `p,-p` row pairing, and shortlists F1,
 F3, F4, and F5 for G1. See `CHECKPOINT-G0.md`.
+
+Checkpoint G1A generates exact 1,152-cell permutations and explicit terminal
+basis, gauge, scale, absorption-point, runtime-operation, and range contracts
+for F1, F3, F4, and the two F5 branches. It also replaces the sequential
+F1-then-F5 interpretation with orthogonal G1B/G1C experiments and a
+null-preserving edge debt/credit matrix. F3 is a closed cheap-basis family, not
+an ASM-selected basis; BaseInv→inverse normalization remains open. See
+`CHECKPOINT-G1A.md`.

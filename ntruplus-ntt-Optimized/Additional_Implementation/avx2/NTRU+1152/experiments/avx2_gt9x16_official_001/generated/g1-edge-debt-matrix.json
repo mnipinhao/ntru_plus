@@ -1,0 +1,244 @@
+{
+  "checkpoint": "G1A-null-preserving-edge-cost-matrix",
+  "cycle_sign_convention": {
+    "consumer_credit": "positive is saved",
+    "net_delta": "debt-credit; negative wins",
+    "producer_debt": "positive is slower"
+  },
+  "measurement_order": [
+    "G1B F1 D1-tail terminal-major tax",
+    "G1C F5 BMScale-tail+inverse-head and BaseInv-tail+inverse-head",
+    "G1D F4 BMAdd+actual downstream",
+    "G1E F3 cheap-basis symbolic search before ASM"
+  ],
+  "null_policy": "unknown cycles are null, never zero",
+  "rows": [
+    {
+      "BMAdd_edge": {
+        "measurement_status": "definition-baseline",
+        "net_delta_cycles": 0
+      },
+      "BMScale_edge": {
+        "measurement_status": "definition-baseline",
+        "net_delta_cycles": 0
+      },
+      "BaseInv_edge": {
+        "measurement_status": "definition-baseline",
+        "net_delta_cycles": 0
+      },
+      "candidate": "F0-control",
+      "forward_edge": {
+        "measurement_status": "definition-baseline",
+        "net_delta_cycles": 0
+      },
+      "inverse_edge": {
+        "measurement_status": "definition-baseline",
+        "net_delta_cycles": 0
+      }
+    },
+    {
+      "BMAdd_edge": {
+        "applicability": "credit-search",
+        "consumer_credit_cycles": null,
+        "edge": "F1.forward-store-to-terminal-arithmetic-load",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BMScale_edge": {
+        "applicability": "credit-search",
+        "consumer_credit_cycles": null,
+        "edge": "F1.forward-store-to-terminal-arithmetic-load",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BaseInv_edge": {
+        "applicability": "credit-search",
+        "consumer_credit_cycles": null,
+        "edge": "F1.forward-store-to-terminal-arithmetic-load",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "candidate": "F1-terminal-major",
+      "forward_edge": {
+        "applicability": "yes",
+        "consumer_credit_cycles": null,
+        "edge": "F1.forward-store-to-terminal-arithmetic-load",
+        "known_static_debt": 144,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "measure fused D1 tail",
+        "producer_debt_cycles": null
+      },
+      "inverse_edge": {
+        "applicability": "unknown",
+        "consumer_credit_cycles": null,
+        "edge": "F1.forward-store-to-terminal-arithmetic-load",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      }
+    },
+    {
+      "BMAdd_edge": {
+        "applicability": "candidate-dependent",
+        "consumer_credit_cycles": null,
+        "edge": "F3.forward-to-terminal-arithmetic-cheap-basis",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BMScale_edge": {
+        "applicability": "candidate-dependent",
+        "consumer_credit_cycles": null,
+        "edge": "F3.forward-to-terminal-arithmetic-cheap-basis",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BaseInv_edge": {
+        "applicability": "candidate-dependent",
+        "consumer_credit_cycles": null,
+        "edge": "F3.forward-to-terminal-arithmetic-cheap-basis",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "candidate": "F3-cheap-basis",
+      "forward_edge": {
+        "applicability": "candidate-dependent",
+        "consumer_credit_cycles": null,
+        "edge": "F3.forward-to-terminal-arithmetic-cheap-basis",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "inverse_edge": {
+        "applicability": "candidate-dependent",
+        "consumer_credit_cycles": null,
+        "edge": "F3.forward-to-terminal-arithmetic-cheap-basis",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      }
+    },
+    {
+      "BMAdd_edge": {
+        "applicability": "encap-only",
+        "consumer_credit_cycles": null,
+        "edge": "F4.forward-store-to-bmadd-downstream",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BMScale_edge": {
+        "applicability": "not-applicable"
+      },
+      "BaseInv_edge": {
+        "applicability": "not-applicable"
+      },
+      "candidate": "F4-encapsulation",
+      "forward_edge": {
+        "applicability": "encap-only",
+        "consumer_credit_cycles": null,
+        "edge": "F4.forward-store-to-bmadd-downstream",
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "inverse_edge": {
+        "applicability": "not-applicable"
+      }
+    },
+    {
+      "BMAdd_edge": {
+        "applicability": "not-applicable"
+      },
+      "BMScale_edge": {
+        "applicability": "yes",
+        "consumer_credit_cycles": null,
+        "edge": "F5.bmscale-store-to-inverse-head",
+        "known_static_debt": 144,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "BaseInv_edge": {
+        "applicability": "yes",
+        "consumer_credit_cycles": null,
+        "edge": "F5.baseinv-store-to-inverse-head",
+        "known_static_debt": 144,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "candidate": "F5-inverse-feed",
+      "forward_edge": {
+        "applicability": "independent-not-priced",
+        "consumer_credit_cycles": null,
+        "edge": null,
+        "known_static_debt": null,
+        "measurement_status": "not-measured",
+        "net_delta_cycles": null,
+        "note": "",
+        "producer_debt_cycles": null
+      },
+      "inverse_edge": {
+        "BMScale_path": {
+          "applicability": "credit-search",
+          "consumer_credit_cycles": null,
+          "edge": "F5.bmscale-store-to-inverse-head",
+          "known_static_debt": null,
+          "measurement_status": "not-measured",
+          "net_delta_cycles": null,
+          "note": "",
+          "producer_debt_cycles": null
+        },
+        "BaseInv_path": {
+          "applicability": "credit-search",
+          "consumer_credit_cycles": null,
+          "edge": "F5.baseinv-store-to-inverse-head",
+          "known_static_debt": null,
+          "measurement_status": "not-measured",
+          "net_delta_cycles": null,
+          "note": "",
+          "producer_debt_cycles": null
+        }
+      }
+    }
+  ],
+  "schema": "gt-edge-debt-credit/v1",
+  "selection_rule": "G1 records edge debt/credit and only prunes dominated views; G2 selects on complete paths",
+  "source_sha256": {
+    "g0_views": "f5ae091e5895afab77f048e0daf43b06f2ee40592c92a2795b565f69d3d5020d",
+    "lifecycle_audit": "63f21134d36faa206abe31ebe238eba52d8bf27a4f6b16e9654efcaa28b09833",
+    "pipeline_layout": "6154be5e7ebdc6ccec319f3faad014bc66323ea2447616336e86b1b7ea8bfa9f",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  }
+}
