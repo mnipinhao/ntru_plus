@@ -1,0 +1,41 @@
+experiment: GT32-ENCAP-DATA-GEOMETRY-056
+status: closed
+production_modified: false
+question: >-
+  Does changing only the physical offsets of h/r/m/c/work inside the existing
+  five-polynomial Clean-GT Encap frame recover the CBD, producer, B3, or full
+  caller debt observed by experiment 055?
+profiles:
+  p0: {h: 0, r: 1, m: 2, c: 3, work: 4}
+  p1: {h: 0, r: 1, m: 2, c: 4, work: 3}
+  p2: {h: 1, r: 2, m: 3, c: 4, work: 0}
+controls:
+  - one shared function and ELF
+  - fixed 8128-byte frame
+  - identical arithmetic and traffic volume
+  - fixed downstream symbol addresses
+  - CPU 1 affinity
+  - balanced six-order paired launches
+  - balanced mirrored PMU blocks
+correctness:
+  valid_differentials: 1000
+  malformed_single_q_slots: 768
+  result: pass
+result:
+  p1_cbd_core_cycles: 0.625
+  p1_rprod_core_cycles: 0.25
+  p1_b3_core_cycles: 0.75
+  p1_full_core_cycles: 15.0833
+  p2_cbd_core_cycles: 0.1042
+  p2_rprod_core_cycles: -0.2292
+  p2_b3_core_cycles: -1.8542
+  p2_full_core_cycles: 5.1042
+  pmu_l1d_pending_reduction: false
+decision: >-
+  Close the simple stack-slot/data-offset hypothesis. The 055 CBD and B3 debts
+  are not recovered by permuting the same five 1536-byte objects. Structural
+  working-set deletion remains a separate reopen condition.
+reopen_only_if:
+  - a complete polynomial or materialization is deleted
+  - a B3 entry load is demonstrated to own stalls
+  - a new hardware premise predicts a specific address conflict
