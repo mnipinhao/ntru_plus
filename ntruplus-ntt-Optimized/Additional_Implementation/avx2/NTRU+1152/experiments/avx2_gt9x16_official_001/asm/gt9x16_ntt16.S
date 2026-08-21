@@ -171,6 +171,16 @@ ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0:
   ret
 .size ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0, .-ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0
 
+.include "asm/gt9x16_ntt9.inc"
+.globl ntruplus1152_exp001_gt9x16_ntt9_d_a
+.type ntruplus1152_exp001_gt9x16_ntt9_d_a,@function
+ntruplus1152_exp001_gt9x16_ntt9_d_a:
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  NTT9_STREAM 0
+  NTT9_STREAM 1
+  ret
+.size ntruplus1152_exp001_gt9x16_ntt9_d_a, .-ntruplus1152_exp001_gt9x16_ntt9_d_a
+
 .include "generated/gt9x16-ntt16-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

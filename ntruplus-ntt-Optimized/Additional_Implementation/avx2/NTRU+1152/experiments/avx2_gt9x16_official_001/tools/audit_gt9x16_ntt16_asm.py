@@ -55,6 +55,10 @@ FUNCTIONS = {
         "vpblendw": 171, "vpblendd": 18, "vpmullw": 36,
         "input_loads": 162, "output_stores": 18, "peak_live_ymm": 15,
     },
+    "ntruplus1152_exp001_gt9x16_ntt9_d_a": {
+        "vpblendw": 0, "vpblendd": 0, "vpmullw": 36,
+        "input_loads": 18, "output_stores": 36, "peak_live_ymm": 12,
+    },
 }
 
 

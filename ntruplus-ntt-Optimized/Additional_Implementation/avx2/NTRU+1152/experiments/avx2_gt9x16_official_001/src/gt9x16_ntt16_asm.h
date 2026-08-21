@@ -63,5 +63,8 @@ void ntruplus1152_exp001_gt9x16_ntt16_c4_with_shear(
 void ntruplus1152_exp001_gt9x16_ntt16_c4_probe_row0(
     ntruplus1152_exp001_gt_ntt16_row_pair *output,
     const ntruplus1152_exp001_gt_row_pair *input);
+void ntruplus1152_exp001_gt9x16_ntt9_d_a(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
 
 #endif

@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-c4-nine-row-persistent-selected
+state: checkpoint-d-official-stage-and-ntt9-first-oracle-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -39,6 +39,12 @@ gates:
   checkpoint_c4_from_z: passed-sequential-and-two-row-pipeline
   checkpoint_c4_natural: passed-zero-materialization-17.9-percent-win
   checkpoint_c4_persistent_output: passed-no-final-reconstruction
+  official_stage_extraction: passed-10003-bit-exact-vs-pinned-poly-ntt
+  official_stage_paired_baseline: passed-repository-local-diagnostic-only
+  checkpoint_d_a_ntt9: passed-10003-bit-exact-persistent-sd-and-alias
+  checkpoint_d_a_performance: retained-baseline-1.274x-official-radix3
+  checkpoint_d_b_phase_identity: passed-actual-positive-exponent-convention
+  checkpoint_d_b_adjusted_twiddles: passed-complete-9x16-linear-basis
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -48,6 +54,7 @@ ntt16_diagnostic_result: results/ntt16-intel155h-20260820-002/ntt16-diagnostic.j
 c2_diagnostic_result: results/c2-intel155h-20260820-001/c2-diagnostic.json
 c3_diagnostic_result: results/c3-intel155h-20260820-001/c3-diagnostic.json
 c4_diagnostic_result: results/c4-intel155h-20260820-001/c4-diagnostic.json
+official_stage_diagnostic_result: results/official-stages-intel155h-20260821-001/official-stage-paired.json
 milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
 checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
 pipeline_checkpoint: structural-audit-and-layout-codesign-complete
@@ -55,7 +62,8 @@ checkpoint_c: c0-selected-c1-rejected
 checkpoint_c2: pair-packed-distance8-marginal-full-ntt16-rejected
 checkpoint_c3: official-style-persistent-sd-row-pair-selected
 checkpoint_c4: nine-row-natural-persistent-pair-selected
-next_step: implement-vector-ntt9-directly-on-c4-persistent-sd-layout
+checkpoint_d: official-stage-baseline-and-two-order-decision-complete
+next_step: implement-ntt9-first-with-p-dependent-adjusted-ntt16-twiddles
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

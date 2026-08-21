@@ -59,6 +59,9 @@ static const int16_t ntruplus1152_exp001_gt_stage1_qinv[8] = {
 static const int16_t ntruplus1152_exp001_ntt9_zeta[8] = {
   -147, -147, -147, -147, -460, 1265, 1265, 708
 };
+static const int16_t ntruplus1152_exp001_ntt9_qinv[8] = {
+  -19, -19, -19, -19, 16436, -28815, -28815, -21308
+};
 static const int16_t ntruplus1152_exp001_official_component_branch0[144] = {
   54, 55, 52, 53, 50, 51, 48, 49, 58, 59, 56, 57,
   60, 61, 63, 62, 80, 81, 83, 82, 87, 86, 85, 84,

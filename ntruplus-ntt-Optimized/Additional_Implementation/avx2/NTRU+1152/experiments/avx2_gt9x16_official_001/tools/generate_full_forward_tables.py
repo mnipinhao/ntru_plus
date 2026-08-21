@@ -184,6 +184,7 @@ def main() -> int:
     mont_stages = [[montgomery(value) for value in stage] for stage in ntt16_twiddles]
     qinv_stages = [[signed16(value * QINV) for value in stage] for stage in mont_stages]
     ntt9_mont = [montgomery(value) for value in ntt9_stage1 + ntt9_stage2]
+    ntt9_qinv = [signed16(value * QINV) for value in ntt9_mont]
     official_map = [[entry["official_component"] for entry in branch] for branch in components]
     official_avx2_map = [[position for entry in branch for position in entry["official_avx2_positions"]]
                          for branch in components]
@@ -201,6 +202,7 @@ def main() -> int:
         header += emit_1d(f"ntruplus1152_exp001_gt_{name}_zeta", values)
         header += emit_1d(f"ntruplus1152_exp001_gt_{name}_qinv", qinvs)
     header += emit_1d("ntruplus1152_exp001_ntt9_zeta", ntt9_mont)
+    header += emit_1d("ntruplus1152_exp001_ntt9_qinv", ntt9_qinv)
     for branch in range(2):
         header += emit_1d(f"ntruplus1152_exp001_official_component_branch{branch}", official_map[branch])
         header += emit_1d(f"ntruplus1152_exp001_official_avx2_position_branch{branch}",
@@ -217,8 +219,13 @@ def main() -> int:
     ]
     asm = "/* Generated from the full-forward oracle; do not hand-edit. */\n.section .rodata\n"
     asm += emit_asm_words(".Lgt_q", [Q] * 16)
+    asm += emit_asm_words(".Lgt_w", [-886] * 16)
+    asm += emit_asm_words(".Lgt_wqinv", [13706] * 16)
     asm += emit_asm_words(".Lgt_stage8_zeta", [mont_stages[0][0]] * 16)
     asm += emit_asm_words(".Lgt_stage8_qinv", [qinv_stages[0][0]] * 16)
+    for index, (zeta, qinv) in enumerate(zip(ntt9_mont, ntt9_qinv)):
+        asm += emit_asm_words(f".Lgt_ntt9_zeta{index}", [zeta] * 16)
+        asm += emit_asm_words(f".Lgt_ntt9_qinv{index}", [qinv] * 16)
     for index, name in enumerate(("stage4", "stage2", "stage1"), start=1):
         repetitions = 16 // len(mont_stages[index])
         asm += emit_asm_words(f".Lgt_c0_{name}_zeta",

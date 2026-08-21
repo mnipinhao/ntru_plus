@@ -131,3 +131,25 @@ Source: `results/c4-intel155h-20260820-001/c4-diagnostic.json`.
 Natural C4 wins by 17.9%, retains 36 Montgomery chains, and writes persistent
 S/D without final reconstruction. This passes the local gate to start a vector
 NTT9 that directly consumes this layout.
+
+## Checkpoint D Official-stage paired baseline
+
+Source: `results/official-stages-intel155h-20260821-001/official-stage-paired.json`.
+The stage functions are mechanically extracted from pinned Official `ntt.s`;
+their sequential composition passes 10,003 bit-exact comparisons with the
+original function. Input reset is outside timing.
+
+| Partition / implementation | Median cycles | Candidate - Official |
+| --- | ---: | ---: |
+| Official T0 | 70 | — |
+| Official T3x3 | 252 | — |
+| D-A persistent NTT9, four pairs | 321 | +69 |
+| Official T2x4 | 474 | — |
+| C4 from-Z, four pairs | 422 | -52 |
+| C4 natural, four pairs | 630 | +156 |
+| Official full forward | 754 | — |
+
+The `630 - 422 = 208` cycle gap isolates the natural GT producer tax and is
+consistent with the earlier 210.136-cycle estimate.
+D-B is selected next because its exact basis oracle absorbs the shear phase
+into p-dependent NTT16 twiddles while retaining bit/trit-reversed orders.

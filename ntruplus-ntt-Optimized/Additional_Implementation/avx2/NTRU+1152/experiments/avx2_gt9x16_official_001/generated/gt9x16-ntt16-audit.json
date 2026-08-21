@@ -3,7 +3,8 @@
   "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
   "extra_macro_sources": {
     "asm/gt9x16_ntt16_c2.inc": "773ad2a77b2174845a1d168b37419c079c7908b652cf833f6725c893ad578315",
-    "asm/gt9x16_ntt16_c4.inc": "ccec773084717de1c1e5e5e5905b49909b75234f048a6d86f7c9a8841fd6ed5d"
+    "asm/gt9x16_ntt16_c4.inc": "ccec773084717de1c1e5e5e5905b49909b75234f048a6d86f7c9a8841fd6ed5d",
+    "asm/gt9x16_ntt9.inc": "90cff87b77d891943b57bf00177904f6fd7baa83fc15ac8d38c021085b74da0c"
   },
   "functions": {
     "ntruplus1152_exp001_gt9x16_ntt16_c0": {
@@ -480,6 +481,57 @@
       "vpmullw": 36,
       "vzeroupper": 0
     },
+    "ntruplus1152_exp001_gt9x16_ntt9_d_a": {
+      "calls": 0,
+      "designed_peak_live_ymm": 12,
+      "distinct_ymm_count": 12,
+      "distinct_ymm_registers": [
+        0,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "forbidden_instructions": [],
+      "frame_instructions": 0,
+      "input_row_loads": 18,
+      "montgomery_vector_multiplies": 36,
+      "output_row_stores": 36,
+      "pack_unpack_instruction_total": 0,
+      "pack_unpack_instructions": {
+        "vextracti128": 0,
+        "vinserti128": 0,
+        "vperm2i128": 0,
+        "vpermq": 0,
+        "vpshufb": 0,
+        "vpshufd": 0,
+        "vpsllq": 0,
+        "vpsrlq": 0,
+        "vpunpckhdq": 0,
+        "vpunpckhqdq": 0,
+        "vpunpckhwd": 0,
+        "vpunpckldq": 0,
+        "vpunpcklqdq": 0,
+        "vpunpcklwd": 0
+      },
+      "routing_including_blends_total": 0,
+      "stack_references": 0,
+      "static_instruction_count": 479,
+      "text_bytes": 2045,
+      "vector_spills": 0,
+      "vpblendd": 0,
+      "vpblendw": 0,
+      "vpmulhw": 72,
+      "vpmullw": 36,
+      "vzeroupper": 0
+    },
     "ntruplus1152_exp001_gt9x16_stage8_c0_pair": {
       "calls": 0,
       "designed_peak_live_ymm": 13,
@@ -580,10 +632,10 @@
       "vzeroupper": 0
     }
   },
-  "object": "build/gt9x16-ntt16.o",
-  "object_sha256": "17df7d7f38bbae25887d99bd1b51244be1628a8ca2cfc0ae3ebfe234f250e701",
+  "object": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/gt9x16-ntt16.o",
+  "object_sha256": "3614d4207c598519a59a14388ee5c61ff75d06e39263a479cf3dc3587478f82d",
   "register_macro_source": "asm/gt9x16_ntt16.inc",
   "register_macro_source_sha256": "bc43c2843c3fe4b33a06454fa1040fa48154ff9a3043a2906e1569551f2514f4",
   "source": "asm/gt9x16_ntt16.S",
-  "source_sha256": "a92071069a5bddad6cb7aa1ed25ee29c87cea38fd3c0824a139d0c28ce0a5fb9"
+  "source_sha256": "258aa2ca4daae3338b19dcd7cfbdb88afc4fda19a25625de5bacf28766ede3e9"
 }

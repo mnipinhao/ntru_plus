@@ -1,0 +1,201 @@
+{
+  "benchmark_class": "repository-local-official-stage-paired-not-for-promotion",
+  "blocks_per_launch": 16,
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "comparisons": {
+    "T2x4": {
+      "candidate": "gt-c4-from-z",
+      "candidate_minus_official_by_launch": [
+        -52.0,
+        -52.0,
+        -52.0,
+        -52.0,
+        -52.0,
+        -53.0,
+        -52.5,
+        -52.0,
+        -52.0
+      ],
+      "candidate_over_official": 0.890295358649789,
+      "median_candidate_minus_official_cycles": -52.0
+    },
+    "T2x4-natural": {
+      "candidate": "gt-c4-natural",
+      "candidate_minus_official_by_launch": [
+        156.0,
+        156.0,
+        156.0,
+        156.0,
+        156.0,
+        156.0,
+        156.0,
+        156.0,
+        156.0
+      ],
+      "candidate_over_official": 1.3291139240506329,
+      "median_candidate_minus_official_cycles": 156.0
+    },
+    "T3x3": {
+      "candidate": "gt-d-a",
+      "candidate_minus_official_by_launch": [
+        74.0,
+        69.0,
+        69.0,
+        69.0,
+        68.0,
+        68.5,
+        68.0,
+        70.0,
+        70.0
+      ],
+      "candidate_over_official": 1.2738095238095237,
+      "median_candidate_minus_official_cycles": 69.0
+    }
+  },
+  "compiler": "cc",
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-21T02:24:45.659986+00:00",
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "observations_per_slot": 96,
+  "summary": {
+    "T0:official": {
+      "cycles_by_launch": [
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        68,
+        70
+      ],
+      "maximum": 70,
+      "median_cycles": 70,
+      "minimum": 68
+    },
+    "T2x4-natural:gt-c4-natural": {
+      "cycles_by_launch": [
+        630.0,
+        630.0,
+        630.0,
+        630.0,
+        630.0,
+        630.0,
+        630.0,
+        630.0,
+        630.0
+      ],
+      "maximum": 630.0,
+      "median_cycles": 630.0,
+      "minimum": 630.0
+    },
+    "T2x4-natural:official": {
+      "cycles_by_launch": [
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0
+      ],
+      "maximum": 474.0,
+      "median_cycles": 474.0,
+      "minimum": 474.0
+    },
+    "T2x4:gt-c4-from-z": {
+      "cycles_by_launch": [
+        422.0,
+        422.0,
+        422.0,
+        422.0,
+        422.0,
+        421.0,
+        421.5,
+        422.0,
+        422.0
+      ],
+      "maximum": 422.0,
+      "median_cycles": 422.0,
+      "minimum": 421.0
+    },
+    "T2x4:official": {
+      "cycles_by_launch": [
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0,
+        474.0
+      ],
+      "maximum": 474.0,
+      "median_cycles": 474.0,
+      "minimum": 474.0
+    },
+    "T3x3:gt-d-a": {
+      "cycles_by_launch": [
+        336.0,
+        321.0,
+        321.0,
+        321.0,
+        320.0,
+        320.5,
+        320.0,
+        322.0,
+        322.0
+      ],
+      "maximum": 336.0,
+      "median_cycles": 321.0,
+      "minimum": 320.0
+    },
+    "T3x3:official": {
+      "cycles_by_launch": [
+        262.0,
+        252.0,
+        252.0,
+        252.0,
+        252.0,
+        252.0,
+        252.0,
+        252.0,
+        252.0
+      ],
+      "maximum": 262.0,
+      "median_cycles": 252.0,
+      "minimum": 252.0
+    },
+    "full:official": {
+      "cycles_by_launch": [
+        752,
+        752,
+        752,
+        754,
+        752,
+        754,
+        754,
+        754,
+        754
+      ],
+      "maximum": 754,
+      "median_cycles": 754,
+      "minimum": 752
+    }
+  },
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  }
+}

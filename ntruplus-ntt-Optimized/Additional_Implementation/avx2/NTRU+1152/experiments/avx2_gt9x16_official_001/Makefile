@@ -22,8 +22,10 @@ FULL_CPPFLAGS := $(CPPFLAGS_LOCAL) -I$(UPSTREAM)
 PAIRED_CFLAGS := $(CFLAGS_STRICT) -O3
 NTT16_ASM := asm/gt9x16_ntt16.S
 NTT16_HEADERS := src/gt9x16_ntt16_asm.h generated/gt9x16-ntt16-constants.inc
+OFFICIAL_PARTITIONS := generated/official-ntt-stage-partitions.s
+OFFICIAL_PARTITION_HEADERS := src/official_stage_partitions.h
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-transform-paired \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -36,6 +38,8 @@ generate:
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --asm-constants generated/gt9x16-ntt16-constants.inc
 	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json
+	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json
+	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS)
 
 check:
 	mkdir -p $(BUILD)
@@ -46,13 +50,18 @@ check:
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h --check
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --asm-constants generated/gt9x16-ntt16-constants.inc --check
 	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json --check
+	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json --check
+	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
+	$(PYTHON) tests/test_ntt9_first_oracle.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
-	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) src/gt9x16_shear.c $(NTT16_ASM) tests/test_gt9x16_ntt16_asm.c -o $(BUILD)/test-gt9x16-ntt16-asm
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) src/gt9x16_shear.c ref/ntt9_reference.c $(NTT16_ASM) tests/test_gt9x16_ntt16_asm.c -o $(BUILD)/test-gt9x16-ntt16-asm
 	$(BUILD)/test-gt9x16-ntt16-asm
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -I$(UPSTREAM) tests/test_official_stage_partitions.c $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/test-official-stage-partitions
+	$(BUILD)/test-official-stage-partitions
 	$(CC) $(CFLAGS_STRICT) -O3 $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward
 	$(BUILD)/test-full-forward
 
@@ -60,7 +69,7 @@ sanitize:
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-shear-sanitize
-	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) src/gt9x16_shear.c $(NTT16_ASM) tests/test_gt9x16_ntt16_asm.c -o $(BUILD)/test-gt9x16-ntt16-asm-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) src/gt9x16_shear.c ref/ntt9_reference.c $(NTT16_ASM) tests/test_gt9x16_ntt16_asm.c -o $(BUILD)/test-gt9x16-ntt16-asm-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-ntt16-asm-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
@@ -71,7 +80,7 @@ audit:
 	$(CC) $(CFLAGS_STRICT) -O3 -fno-inline $(CPPFLAGS_LOCAL) -S src/gt9x16_shear.c -o generated/gt9x16-shear.s
 	$(PYTHON) tools/audit_gt9x16_shear.py --object $(BUILD)/gt9x16-shear.o --assembly generated/gt9x16-shear.s --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fno-inline" --output generated/gt9x16-shear-audit.json
 	$(CC) -mavx2 -I. -c $(NTT16_ASM) -o $(BUILD)/gt9x16-ntt16.o
-	$(PYTHON) tools/audit_gt9x16_ntt16_asm.py --object $(BUILD)/gt9x16-ntt16.o --source $(NTT16_ASM) --macro-source asm/gt9x16_ntt16.inc --extra-macro-source asm/gt9x16_ntt16_c2.inc --extra-macro-source asm/gt9x16_ntt16_c4.inc --compiler $(CC) --cflags=-mavx2 --output generated/gt9x16-ntt16-audit.json
+	$(PYTHON) tools/audit_gt9x16_ntt16_asm.py --object $(BUILD)/gt9x16-ntt16.o --source $(NTT16_ASM) --macro-source asm/gt9x16_ntt16.inc --extra-macro-source asm/gt9x16_ntt16_c2.inc --extra-macro-source asm/gt9x16_ntt16_c4.inc --extra-macro-source asm/gt9x16_ntt9.inc --compiler $(CC) --cflags=-mavx2 --output generated/gt9x16-ntt16-audit.json
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
@@ -132,6 +141,16 @@ bench-c4-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_gt9x16_ntt16_c4.c -o $(BUILD)/bench-gt9x16-ntt16-c4
 	$(PYTHON) tools/run_c4_benchmark.py --binary $(BUILD)/bench-gt9x16-ntt16-c4 --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --output results/$(RESULT_TAG)/c4-diagnostic.json
+
+bench-official-stages:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) bench/bench_official_stages_paired.c $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/bench-official-stages
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-official-stages
+
+bench-official-stages-record:
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) bench/bench_official_stages_paired.c $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/bench-official-stages
+	$(PYTHON) tools/run_official_stage_benchmark.py --binary $(BUILD)/bench-official-stages --cpu $(BENCH_CPU) --launches 9 --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --upstream upstream --output results/$(RESULT_TAG)/official-stage-paired.json
 
 bench-transform-paired:
 	mkdir -p $(BUILD)

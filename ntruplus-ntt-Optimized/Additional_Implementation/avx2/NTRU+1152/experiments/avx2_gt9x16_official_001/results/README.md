@@ -14,3 +14,6 @@ Tracked repository-local diagnostics:
   Official-routing A/B and leaf audit. Diagnostic only.
 - `c4-intel155h-20260820-001/c4-diagnostic.json`: nine-row sequential/pipelined
   from-Z and zero-materialization natural-input pair evidence. Diagnostic only.
+- `official-stages-intel155h-20260821-001/official-stage-paired.json`: pinned
+  Official T0/T3x3/T2x4 stage medians paired with D-A and four C4 pairs.
+  Repository-local diagnostic only.

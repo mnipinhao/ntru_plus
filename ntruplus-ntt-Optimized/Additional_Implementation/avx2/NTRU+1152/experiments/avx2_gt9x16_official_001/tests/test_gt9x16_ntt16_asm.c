@@ -8,6 +8,7 @@
 #include "gt9x16-full-forward-tables.h"
 #include "gt9x16_ntt16_asm.h"
 #include "gt9x16_shear.h"
+#include "ntt9_reference.h"
 
 #define TRIALS 10003
 
@@ -119,6 +120,8 @@ static void test_pair(int trial) {
   ntruplus1152_exp001_gt_ntt16_row_pair row_input, row_c2, row_c3;
   ntruplus1152_exp001_gt_ntt16_row_pair row_probe;
   ntruplus1152_exp001_gt_persistent_pair c4_sequential, c4_pipelined, c4_natural;
+  ntruplus1152_exp001_gt_persistent_pair d_a, d_a_alias, d_a_expected;
+  ntruplus1152_exp001_gt_rows ntt9_input, ntt9_output;
   int coefficient, lane, row = trial % 9, previous = (row + 8) % 9;
   fill_case(&input.coefficient[0], trial);
   fill_case(&input.coefficient[1], trial + 10007);
@@ -194,6 +197,28 @@ static void test_pair(int trial) {
       }
     }
   }
+  for (coefficient = 0; coefficient < 2; ++coefficient) {
+    for (row = 0; row < 9; ++row)
+      for (lane = 0; lane < 16; ++lane)
+        ntt9_input.values[row][lane] = c4_natural.state[row][coefficient][lane];
+    ntruplus1152_exp001_ntt9_reference(&ntt9_output, &ntt9_input);
+    for (row = 0; row < 9; ++row)
+      for (lane = 0; lane < 16; ++lane)
+        d_a_expected.state[row][coefficient][lane] = ntt9_output.values[row][lane];
+  }
+  ntruplus1152_exp001_gt9x16_ntt9_d_a(&d_a, &c4_natural);
+  if (memcmp(&d_a, &d_a_expected, sizeof d_a) != 0) {
+    fprintf(stderr, "D-A persistent NTT9 mismatch trial=%d\n", trial);
+    exit(1);
+  }
+  if (trial < 64) {
+    d_a_alias = c4_natural;
+    ntruplus1152_exp001_gt9x16_ntt9_d_a(&d_a_alias, &d_a_alias);
+    if (memcmp(&d_a_alias, &d_a_expected, sizeof d_a_alias) != 0) {
+      fprintf(stderr, "D-A persistent NTT9 alias mismatch trial=%d\n", trial);
+      exit(1);
+    }
+  }
 
   if (trial < 64) {
     actual = input;
@@ -244,6 +269,6 @@ int main(void) {
     test_pair(trial);
   }
   test_canaries();
-  puts("GT9x16 NTT16 C0/C1/C2/C3/C4: 10003 bit-exact, alias, repeat, and canary cases passed");
+  puts("GT9x16 C0/C1/C2/C3/C4 and D-A NTT9: 10003 bit-exact, alias, repeat, and canary cases passed");
   return 0;
 }

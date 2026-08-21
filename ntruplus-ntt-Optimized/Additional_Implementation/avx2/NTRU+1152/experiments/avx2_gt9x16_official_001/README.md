@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint C4 nine-row persistent pair selected; direct-layout NTT9 reopened.**
+**Checkpoint D completed; NTT9-first adjusted-NTT16 implementation selected next.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -83,3 +83,12 @@ Checkpoint C4 completes that gate. The natural-input nine-row pair is 17.9%
 faster than two C0 islands, has zero intermediate materialization, and leaves
 all rows in persistent S/D form. NTT9 work is reopened only for a kernel that
 consumes this representation directly.
+
+Checkpoint D adds the pinned Official T0/T3x3/T2x4 stage baseline and a
+hand-written D-A NTT9 that directly consumes persistent S/D. D-A is bit-exact
+but 27.4% slower than Official's two radix-3 layers. C4 from-Z is 11.0% faster
+than Official's four radix-2 layers, while C4 natural is 32.9% slower and
+reproduces a 208-cycle orientation tax. The D-B oracle proves that moving NTT9
+first turns the shear into `rho^(-vp)` and that this phase can be absorbed into
+distance-dependent NTT16 twiddles without extra Montgomery chains. See
+`CHECKPOINT-D.md`.
