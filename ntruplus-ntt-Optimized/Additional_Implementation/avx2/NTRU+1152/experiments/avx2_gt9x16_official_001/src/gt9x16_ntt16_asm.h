@@ -96,4 +96,16 @@ void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1(
     ntruplus1152_exp001_gt_persistent_pair *output,
     const ntruplus1152_exp001_gt_persistent_pair *input);
 
+typedef struct { int16_t state[2][9][4][16]; } ntruplus1152_exp001_gt_terminal_major;
+/* One call uses a materialized R2 scratch and writes one terminal pair with a
+ * 128-byte row stride.  This keeps the D1 seam identical to the F0 control. */
+void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0(
+    ntruplus1152_exp001_gt_persistent_pair *r2_scratch,
+    const ntruplus1152_exp001_gt_persistent_pair *input,
+    int16_t *terminal_pair_output);
+void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1(
+    ntruplus1152_exp001_gt_persistent_pair *r2_scratch,
+    const ntruplus1152_exp001_gt_persistent_pair *input,
+    int16_t *terminal_pair_output);
+
 #endif

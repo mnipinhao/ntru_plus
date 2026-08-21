@@ -297,6 +297,26 @@ ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1:
   ret
 .size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1
 
+.globl ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0
+.type ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0,@function
+ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0:
+  PAPER_R2_PREFIX
+  mov rdi, rdx
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_F1_B0_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b0
+
+.globl ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1
+.type ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1,@function
+ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1:
+  PAPER_R2_PREFIX
+  mov rdi, rdx
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_F1_B1_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_f1_b1
+
 .include "generated/gt9x16-ntt16-constants.inc"
 .include "generated/gt9x16-paper-adjusted-ntt16-constants.inc"
 

@@ -69,14 +69,17 @@
       },
       "candidate": "F1-terminal-major",
       "forward_edge": {
+        "B1_minus_B0_cycles": -3.0,
         "applicability": "yes",
+        "clean_upper_bound_cycles": 60.5,
         "consumer_credit_cycles": null,
         "edge": "F1.forward-store-to-terminal-arithmetic-load",
         "known_static_debt": 144,
-        "measurement_status": "not-measured",
+        "measurement_status": "measured-repository-local-diagnostic",
+        "measurement_variant": "F1-B1-fused-terminal-major",
         "net_delta_cycles": null,
-        "note": "measure fused D1 tail",
-        "producer_debt_cycles": null
+        "note": "G1B prices the producer edge only; retain F0 until consumer credit and G2 complete paths",
+        "producer_debt_cycles": 58.5
       },
       "inverse_edge": {
         "applicability": "unknown",
@@ -237,6 +240,7 @@
   "selection_rule": "G1 records edge debt/credit and only prunes dominated views; G2 selects on complete paths",
   "source_sha256": {
     "g0_views": "f5ae091e5895afab77f048e0daf43b06f2ee40592c92a2795b565f69d3d5020d",
+    "g1b_result": "46d65f6c65f2d48896823fbb191009a1767a8ddfa929e3a40e2b1355d87b7314",
     "lifecycle_audit": "63f21134d36faa206abe31ebe238eba52d8bf27a4f6b16e9654efcaa28b09833",
     "pipeline_layout": "6154be5e7ebdc6ccec319f3faad014bc66323ea2447616336e86b1b7ea8bfa9f",
     "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"

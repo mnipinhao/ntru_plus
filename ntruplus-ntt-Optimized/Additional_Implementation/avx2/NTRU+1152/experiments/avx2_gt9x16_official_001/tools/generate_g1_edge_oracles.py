@@ -147,6 +147,7 @@ def main() -> int:
     parser.add_argument("--lifecycle-audit", type=Path, required=True)
     parser.add_argument("--scaled-oracle", type=Path, required=True)
     parser.add_argument("--g0-views", type=Path, required=True)
+    parser.add_argument("--g1b-result", type=Path, required=True)
     parser.add_argument("--oracle-output", type=Path, required=True)
     parser.add_argument("--debt-output", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
@@ -163,6 +164,7 @@ def main() -> int:
     lifecycle = documents["lifecycle_audit"]
     scaled = documents["scaled_oracle"]
     g0 = documents["g0_views"]
+    g1b = json.loads(args.g1b_result.read_text())
     if set(g0["g1_shortlist"]) != {
             "F1-terminal-major-consumer-natural",
             "F3-terminal-basis-consumer-fused",
@@ -173,6 +175,14 @@ def main() -> int:
         raise SystemExit("Official zero-conversion audit no longer holds")
     if scaled["scale_ledger"]["decapsulation_inverse_path"]["standalone_scale_pass"] is not False:
         raise SystemExit("scaled BMScale inverse path unexpectedly needs a scale pass")
+    if g1b["benchmark_class"] != "repository-local-g1b-f1-tail-paired-not-for-promotion":
+        raise SystemExit("G1B result must remain repository-local diagnostic evidence")
+    if g1b["classification"] != "high-producer-tax":
+        raise SystemExit("G1B classification changed; review the representation decision")
+    g1b_comparisons = g1b["comparisons"]
+    f1_b0_debt = g1b_comparisons["F0-to-F1-B0"]["median_right_minus_left_cycles"]
+    f1_b1_debt = g1b_comparisons["F0-to-F1-B1"]["median_right_minus_left_cycles"]
+    f1_b1_schedule_delta = g1b_comparisons["F1-B0-to-B1"]["median_right_minus_left_cycles"]
 
     p = [row["frequency_p"] for row in scaled["paper_adjusted_ntt16_rows"]]
     q = layout["physical_lane_to_mathematical_q"]
@@ -329,7 +339,15 @@ def main() -> int:
              "BMScale_edge": {"net_delta_cycles": 0, "measurement_status": "definition-baseline"},
              "BaseInv_edge": {"net_delta_cycles": 0, "measurement_status": "definition-baseline"},
              "inverse_edge": {"net_delta_cycles": 0, "measurement_status": "definition-baseline"}},
-            {"candidate": "F1-terminal-major", "forward_edge": debt(edges[0]["id"], "yes", 144, "measure fused D1 tail"),
+            {"candidate": "F1-terminal-major", "forward_edge": {
+                 **debt(edges[0]["id"], "yes", 144,
+                        "G1B prices the producer edge only; retain F0 until consumer credit and G2 complete paths"),
+                 "producer_debt_cycles": f1_b1_debt,
+                 "measurement_status": "measured-repository-local-diagnostic",
+                 "measurement_variant": "F1-B1-fused-terminal-major",
+                 "clean_upper_bound_cycles": f1_b0_debt,
+                 "B1_minus_B0_cycles": f1_b1_schedule_delta,
+             },
              "BMAdd_edge": debt(edges[0]["id"], "credit-search"), "BMScale_edge": debt(edges[0]["id"], "credit-search"),
              "BaseInv_edge": debt(edges[0]["id"], "credit-search"), "inverse_edge": debt(edges[0]["id"], "unknown")},
             {"candidate": "F3-cheap-basis", "forward_edge": debt(edges[1]["id"], "candidate-dependent"),
@@ -351,7 +369,7 @@ def main() -> int:
             "G1E F3 cheap-basis symbolic search before ASM",
         ],
         "selection_rule": "G1 records edge debt/credit and only prunes dominated views; G2 selects on complete paths",
-        "source_sha256": source_hashes,
+        "source_sha256": {**source_hashes, "g1b_result": sha256_file(args.g1b_result)},
     }
     oracle_rendered = json.dumps(oracle_document, indent=2, sort_keys=True) + "\n"
     debt_rendered = json.dumps(debt_document, indent=2, sort_keys=True) + "\n"

@@ -1,0 +1,92 @@
+{
+  "baseinv_den18_lifetime": {
+    "den_vectors": 18,
+    "failure_and_clear": "zero output on inversion failure; clear den[18] on both paths",
+    "lifetime_rule": "preserve all den[18] values and the phase boundary; no per-block early destruction",
+    "phase_1": "poly_baseinv_1 emits four adjugate vectors and one denominator vector per block",
+    "phase_2": "poly_baseinv_2 applies each inverted denominator to four vectors",
+    "phase_2_sign_pattern": [
+      1,
+      -1,
+      1,
+      -1
+    ],
+    "phase_boundary": "fqinv_batch inverts the complete den[18] array"
+  },
+  "baseinv_homogeneity": {
+    "adjugate_degree": 3,
+    "base_inverse_output_degree": -1,
+    "denominator_degree": 4,
+    "identity_component_gauge": true,
+    "inverse_denominator_degree": -4,
+    "relations": [
+      "adj(g*A)=g^3*adj(A)",
+      "den(g*A)=g^4*den(A)",
+      "BaseInv(g*A)=g^-1*BaseInv(A)"
+    ]
+  },
+  "checkpoint": "G1C0-official-sink-and-baseinv-algebraic-closure",
+  "inverse_normalization_mod_q": {
+    "BaseInv_quarter_scale_R0_input": 142,
+    "R_mod_q": 3310,
+    "inverse_288_mod_q": 3445,
+    "official_Rminus1_input": 3424,
+    "q": 3457,
+    "resident_R0_input": 1764,
+    "scalar_normalization_closed": true
+  },
+  "official_bmscale_to_inverse": {
+    "C1_store_only_credit_available_against_official": false,
+    "block_stride_bytes": 128,
+    "blocks": 18,
+    "layout": "terminal-major four degree-4 coefficient vectors per block",
+    "output_montgomery_r_exponent": -1,
+    "reason": "Official BMScale already stores exactly the layout consumed by its inverse level6 loads",
+    "standalone_converter_count": 0,
+    "store_offsets_bytes": [
+      0,
+      32,
+      64,
+      96
+    ]
+  },
+  "official_inverse_level6_head": {
+    "barrett_sum_chains": 4,
+    "difference_vectors": 4,
+    "input_offsets_bytes": [
+      0,
+      32,
+      64,
+      96,
+      128,
+      160,
+      192,
+      224
+    ],
+    "input_vectors": 8,
+    "materialized_store_before_level5": false,
+    "montgomery_difference_chains": 4,
+    "sum_vectors": 4,
+    "terminal_blocks_per_iteration": 2,
+    "word_routing_instructions": 16
+  },
+  "parameter": 1152,
+  "prototype_gate": {
+    "G1C_I": "scalar normalization and den[18] lifetime closed; adjusted inverse head remains pending",
+    "G1C_M_C0": "Official zero-conversion control",
+    "G1C_M_C1": "not-built: store-order-only has no standalone-converter credit against Official",
+    "G1C_M_C2": "pending adjusted inverse level6 component/twiddle/range oracle",
+    "asm_authorized": false,
+    "cycles": null,
+    "rule": "do not report G1C credit or add it to G1B debt before a linked tail+head prototype exists"
+  },
+  "schema": "gt-g1c-inverse-sink-audit/v1",
+  "source_sha256": {
+    "g1_edge_oracle": "d5d932e03d200290fd4c042c8b4766f37272abac9449710f5d47a25e943f7adb",
+    "official_baseinv": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+    "official_basemul": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "official_invntt": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c",
+    "official_poly": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+    "scaled_r3r3_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  }
+}

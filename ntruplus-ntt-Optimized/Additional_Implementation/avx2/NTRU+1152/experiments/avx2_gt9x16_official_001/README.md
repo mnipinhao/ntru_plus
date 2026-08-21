@@ -142,3 +142,16 @@ F1-then-F5 interpretation with orthogonal G1B/G1C experiments and a
 null-preserving edge debt/credit matrix. F3 is a closed cheap-basis family, not
 an ASM-selected basis; BaseInv→inverse normalization remains open. See
 `CHECKPOINT-G1A.md`.
+
+Checkpoint G1B prices the actual F1 producer tail. F1-B0 costs +60.5 cycles
+versus F0, while the fused F1-B1 schedule costs +58.5 cycles and saves 3 cycles
+relative to B0. Both are exact over all 1,152 cells at transform scale 4 with
+no frame or spills. This is a high producer tax, so F0 remains the control and
+F1 consumer credit/net delta remain null. See `CHECKPOINT-G1B.md`.
+
+Checkpoint G1C0 audits the actual Official inverse sink before writing a
+prototype. Official BMScale→inverse is already zero-conversion, so a
+store-order-only C1 has no baseline credit. BaseInv `den[18]` lifetime and the
+scale-1/4 R0 scalar normalization (`142 mod 3457`) are closed, but adjusted
+inverse-head component/twiddle/range oracles are still required before C2 ASM.
+See `CHECKPOINT-G1C0.md`.

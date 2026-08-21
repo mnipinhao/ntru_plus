@@ -26,9 +26,11 @@ OFFICIAL_PARTITIONS := generated/official-ntt-stage-partitions.s
 OFFICIAL_PARTITION_HEADERS := src/official_stage_partitions.h
 G0_CONTROL_RESULT := results/f-r3d-intel155h-20260821-001/paper-pipeline-paired.json
 G0_GENERATOR_ARGS := --component-oracle generated/gt9x16-component-oracle.json --pipeline-layout generated/gt9x16-pipeline-layout.json --cost-matrix generated/gt9x16-representation-cost-matrix.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --control-result $(G0_CONTROL_RESULT) --graph-output generated/g0-consumer-graph.json --views-output generated/g0-representation-views.json
-G1_GENERATOR_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g0-views generated/g0-representation-views.json --oracle-output generated/g1-edge-oracles.json --debt-output generated/g1-edge-debt-matrix.json
+G1B_RESULT := results/g1b-intel155h-20260821-001/g1b-f1-paired.json
+G1_GENERATOR_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g0-views generated/g0-representation-views.json --g1b-result $(G1B_RESULT) --oracle-output generated/g1-edge-oracles.json --debt-output generated/g1-edge-debt-matrix.json
+G1C_AUDIT_ARGS := --basemul $(UPSTREAM)/basemul.s --invntt $(UPSTREAM)/invntt.s --baseinv $(UPSTREAM)/baseinv.s --poly $(UPSTREAM)/poly.c --edge-oracle generated/g1-edge-oracles.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --output generated/g1c-inverse-sink-audit.json
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -53,6 +55,7 @@ generate:
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS)
 	$(PYTHON) tools/generate_g0_representation_views.py $(G0_GENERATOR_ARGS)
 	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS)
+	$(PYTHON) tools/audit_g1c_inverse_sink.py $(G1C_AUDIT_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -75,6 +78,7 @@ check:
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS) --check
 	$(PYTHON) tools/generate_g0_representation_views.py $(G0_GENERATOR_ARGS) --check
 	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS) --check
+	$(PYTHON) tools/audit_g1c_inverse_sink.py $(G1C_AUDIT_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
@@ -82,6 +86,7 @@ check:
 	$(PYTHON) tests/test_scaled_r3r3_oracle.py
 	$(PYTHON) tests/test_g0_representation_views.py
 	$(PYTHON) tests/test_g1_edge_oracles.py
+	$(PYTHON) tests/test_g1c_inverse_sink.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -91,6 +96,8 @@ check:
 	$(BUILD)/test-ntt9-paper
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) ref/ntt9_reference.c $(NTT16_ASM) tests/test_paper_adjusted_forward.c -o $(BUILD)/test-paper-adjusted-forward
 	$(BUILD)/test-paper-adjusted-forward
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) tests/test_g1b_f1_tail.c -o $(BUILD)/test-g1b-f1-tail
+	$(BUILD)/test-g1b-f1-tail
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -I$(UPSTREAM) tests/test_official_stage_partitions.c $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/test-official-stage-partitions
 	$(BUILD)/test-official-stage-partitions
 	$(CC) $(CFLAGS_STRICT) -O3 $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward
@@ -106,6 +113,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-ntt9-paper-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) ref/ntt9_reference.c $(NTT16_ASM) tests/test_paper_adjusted_forward.c -o $(BUILD)/test-paper-adjusted-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-paper-adjusted-forward-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) tests/test_g1b_f1_tail.c -o $(BUILD)/test-g1b-f1-tail-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1b-f1-tail-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
 
@@ -229,6 +238,16 @@ bench-f-r3d-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) bench/bench_paper_combined_paired.c -o $(BUILD)/bench-paper-pipeline-paired
 	$(PYTHON) tools/run_paper_pipeline_benchmark.py --binary $(BUILD)/bench-paper-pipeline-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --range generated/gt9x16-ntt9-paper-range.json --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/paper-pipeline-paired.json
+
+bench-g1b:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_g1b_f1_paired.c -o $(BUILD)/bench-g1b-f1-paired
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-g1b-f1-paired
+
+bench-g1b-record: audit
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/bench_g1b_f1_paired.c -o $(BUILD)/bench-g1b-f1-paired
+	$(PYTHON) tools/run_g1b_f1_benchmark.py --binary $(BUILD)/bench-g1b-f1-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --range generated/gt9x16-ntt9-paper-range.json --edge-oracle generated/g1-edge-oracles.json --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/g1b-f1-paired.json
 
 supercop-check:
 	test -n "$(SUPERCOP_ROOT)"

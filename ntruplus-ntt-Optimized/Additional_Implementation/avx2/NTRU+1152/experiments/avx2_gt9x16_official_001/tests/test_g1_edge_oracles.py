@@ -55,7 +55,13 @@ assert debt["null_policy"] == "unknown cycles are null, never zero"
 rows = {row["candidate"]: row for row in debt["rows"]}
 assert all(item["net_delta_cycles"] == 0
            for item in rows["F0-control"].values() if isinstance(item, dict))
-assert rows["F1-terminal-major"]["forward_edge"]["producer_debt_cycles"] is None
+f1_forward = rows["F1-terminal-major"]["forward_edge"]
+assert f1_forward["producer_debt_cycles"] == 58.5
+assert f1_forward["clean_upper_bound_cycles"] == 60.5
+assert f1_forward["B1_minus_B0_cycles"] == -3.0
+assert f1_forward["consumer_credit_cycles"] is None
+assert f1_forward["net_delta_cycles"] is None
+assert f1_forward["measurement_status"] == "measured-repository-local-diagnostic"
 assert rows["F5-inverse-feed"]["BMScale_edge"]["consumer_credit_cycles"] is None
 assert rows["F4-encapsulation"]["BMScale_edge"] == {"applicability": "not-applicable"}
 print("G1A edge oracles: 5 edges, 1152-cell bijections, basis inverses, scale and null-cost gates passed")

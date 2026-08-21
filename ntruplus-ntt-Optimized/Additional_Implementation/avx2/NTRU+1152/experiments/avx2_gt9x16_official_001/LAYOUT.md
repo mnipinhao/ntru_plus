@@ -136,5 +136,10 @@ because it requires a standalone full-array pass.
 G1A materializes these policies as five edge oracles in
 `generated/g1-edge-oracles.json`. F1 prices the forward producer tail; F5
 separately prices BMScale/BaseInv stores against inverse heads. They are not a
-pipeline selection. `generated/g1-edge-debt-matrix.json` keeps all unmeasured
-producer debt, consumer credit, and net deltas null.
+pipeline selection. `generated/g1-edge-debt-matrix.json` now records G1B's
+measured F1-B1 producer debt of 58.5 cycles and B0 clean upper bound of 60.5
+cycles. Consumer credit and net delta remain null. G1C0 confirms that Official
+BMScale and inverse already share a zero-conversion terminal-major boundary;
+no C1 store-order credit is available. The adjusted inverse head remains a
+generated-oracle gate, so F1 and F5 are still independent and no complete-path
+layout is selected.
