@@ -1,0 +1,26 @@
+experiment: GT32-QUARTIC-BILINEAR-TENSOR-059
+status: research-continue
+production_modified: false
+kind: exact-generator-tensor-search
+algebra: F_3457[x]/(x^4-lambda)
+families:
+  - rank7 small-point evaluation/interpolation
+  - rank8 redundant evaluation with optimized interpolation freedom
+  - asymmetric rank7 producer-row scaling
+exactness:
+  lambda_entries: 192
+  monomial_products_per_lambda: 16
+operation_class:
+  current_quartic_algebraic_variable_products: 9
+  rank7_algebraic_variable_products: 7
+  rank8_algebraic_variable_products: 8
+  current_L01_physical_Montgomery_chains: 12
+  rank7_pointwise_chains_before_W_lambda: 7
+  W_lambda_chains: unresolved
+decision: continue-to-avx2-lowering-and-range-gate
+not_a_production_claim: true
+next_gate: GT32-QUARTIC-TENSOR-LOWERING-059B
+close_only_if:
+  - every lowering restores the same effective variable-product/REDC/recombination classes
+  - no producer-native form avoids the added conversions
+artifact: generated/quartic_tensor_059.json
