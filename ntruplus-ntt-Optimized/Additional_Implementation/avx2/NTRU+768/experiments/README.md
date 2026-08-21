@@ -9,6 +9,12 @@ The production implementation remains the parent directory.  A research
 result is copied there only after whole-operation qualification; keeping an
 experiment here does not select it at build or run time.
 
+The numbered work after the original representation wave is summarized in
+[GT32_EXPERIMENT_INDEX_030_059.md](GT32_EXPERIMENT_INDEX_030_059.md).  That
+index is the decision map for experiments 030 through 059E, including
+supersession, fixed-geometry versus exact-image evidence, the formal
+Official/GT benchmark, and current reopening rules.
+
 ## Progressive M formation coverage
 
 [Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed
