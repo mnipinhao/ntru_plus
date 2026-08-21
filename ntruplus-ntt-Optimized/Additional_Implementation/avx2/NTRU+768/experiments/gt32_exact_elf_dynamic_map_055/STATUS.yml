@@ -1,0 +1,26 @@
+experiment: GT32-EXACT-ELF-DYNAMIC-MAP-055
+status: closed
+production_modified: false
+question: >-
+  Where does the frozen Clean-GT versus Official Encap loss execute when the
+  production ELFs are observed without checkpoints, clones, or relocation?
+inputs:
+  official_sha256: 1b0f1a4353415dd2abfbbe05841be8fbdd3bccf88af036b957f88d476f1f8ad4
+  gt_clean_sha256: 29bf895dbe86c11d32d6e75c75b0bba10e7cb30b1901b246ea1e56a9d0306e9a
+method:
+  - Intel LBR call/return intervals with cycle metadata
+  - exact frozen PIE images with ASLR enabled
+  - 64 balanced launch blocks on CPU 1
+  - PMU sampling with Encap-visible LBR call chains
+result:
+  whole_encap_paired_delta: 185.625
+  whole_encap_bootstrap_ci95: [162.08333333333212, 200.47916666666424]
+  mapped_direct_leaf_core_cycle_delta: 77.0
+  largest_positive_mapped_interval: rhat_serializer_plus_46_core_cycles
+  caller_glue_large_hotspot: false
+  mechanism: distributed_frontend_and_load_dependency_debt
+decision: >-
+  No single hidden leaf or caller transition owns the remaining Encap gap.
+  Preserve exact leaf debts as separate targets and stop cumulative checkpoint
+  attribution absent a new structural work-deletion premise.
+

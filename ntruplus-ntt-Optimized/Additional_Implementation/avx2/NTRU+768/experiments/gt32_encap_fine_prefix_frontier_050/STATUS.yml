@@ -1,0 +1,27 @@
+experiment: GT32-ENCAP-FINE-PREFIX-FRONTIER-050
+status: complete
+production_modified: false
+frozen_inputs:
+  - experiments/gt32_load_to_compute_production_043/build/official-measure
+  - experiments/gt32_load_to_compute_production_043/build/gt-clean-measure
+purpose:
+  - split_entry_to_A
+  - split_A_to_B
+  - split_D_to_E
+hard_stop_if:
+  - no_single_actionable_frontier_remains
+decision:
+  primary_frontier: rhat_serialization_to_hash_g
+  secondary_frontiers:
+    - hash_f_hash_h
+    - final_ciphertext_serializer
+  recovery_zones:
+    - forward_r
+    - m_forward_basemul_add
+  closed:
+    - n5_arithmetic
+    - b3_arithmetic
+    - cleanup_return_tuning
+  reopen_only_for:
+    - exact_production_rhat_pack_to_hash_g_handoff_gate
+    - fixed_geometry_hash_cluster_address_gate

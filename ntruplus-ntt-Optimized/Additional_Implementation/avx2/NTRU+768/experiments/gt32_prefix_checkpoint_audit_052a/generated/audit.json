@@ -1,0 +1,192 @@
+{
+  "schema": "gt32-prefix-checkpoint-audit-052a-v1",
+  "production_modified": false,
+  "implementations": {
+    "official": {
+      "image_sizes": {
+        "base": 355304,
+        "B2": 355304,
+        "B3": 355304
+      },
+      "base_to_B2_diff_runs": [
+        [
+          14067,
+          14068
+        ],
+        [
+          14069,
+          14076
+        ],
+        [
+          14077,
+          14078
+        ]
+      ],
+      "base_to_B3_diff_runs": [
+        [
+          14078,
+          14079
+        ],
+        [
+          14080,
+          14089
+        ]
+      ],
+      "B2_to_B3_diff_runs": [
+        [
+          14067,
+          14068
+        ],
+        [
+          14069,
+          14076
+        ],
+        [
+          14077,
+          14079
+        ],
+        [
+          14080,
+          14089
+        ]
+      ],
+      "manifest_B2_patch": {
+        "start": "0x36f3",
+        "end": "0x36fe",
+        "bytes": 11,
+        "expected": "4889de4889dfe822240000",
+        "replacement": "4c89742418e96400000090",
+        "exit": "normal"
+      },
+      "manifest_B3_patch": {
+        "start": "0x36fe",
+        "end": "0x3709",
+        "bytes": 11,
+        "expected": "4889da4c89f64c89742418",
+        "replacement": "4c89742418e95900000090",
+        "exit": "normal"
+      },
+      "selected_symbol_addresses": {
+        "base": {
+          "crypto_kem_enc_derand": 13824,
+          "hash_g": 23328,
+          "fips202avx_shake256": 29392
+        },
+        "B2": {
+          "crypto_kem_enc_derand": 13824,
+          "hash_g": 23328,
+          "fips202avx_shake256": 29392
+        },
+        "B3": {
+          "crypto_kem_enc_derand": 13824,
+          "hash_g": 23328,
+          "fips202avx_shake256": 29392
+        }
+      },
+      "selected_addresses_identical_across_variants": true,
+      "prefix_before_each_patch_is_base_exact": true,
+      "same_cleanup_target": "0x3761",
+      "same_final_return": "0x37cc",
+      "hash_page_offset": "0xb20",
+      "shake_page_offset": "0x2d0",
+      "production_hash_region_disassembly": "\n/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_load_to_compute_production_043/build/official-measure:     file format elf64-x86-64\n\n\nDisassembly of section .text:\n\n00000000000036f3 <crypto_kem_enc_derand+0xf3>:\n    36f3:\t48 89 de             \tmov    %rbx,%rsi\n    36f6:\t48 89 df             \tmov    %rbx,%rdi\n    36f9:\te8 22 24 00 00       \tcall   5b20 <hash_g>\n",
+      "checkpoint_asymmetry": {
+        "B2": "save cleanup pointer and jump before hash_g",
+        "B3": "call hash_g, return to a later save-and-jump site",
+        "matched_execution_interval": false
+      }
+    },
+    "gt": {
+      "image_sizes": {
+        "base": 337304,
+        "B2": 337304,
+        "B3": 337304
+      },
+      "base_to_B2_diff_runs": [
+        [
+          44578,
+          44587
+        ]
+      ],
+      "base_to_B3_diff_runs": [
+        [
+          44587,
+          44589
+        ],
+        [
+          44592,
+          44603
+        ]
+      ],
+      "B2_to_B3_diff_runs": [
+        [
+          44578,
+          44589
+        ],
+        [
+          44592,
+          44603
+        ]
+      ],
+      "manifest_B2_patch": {
+        "start": "0xae20",
+        "end": "0xae2b",
+        "bytes": 11,
+        "expected": "4c89e64c89e7e8d5e1ffff",
+        "replacement": "4c89742438e98700000090",
+        "exit": "normal"
+      },
+      "manifest_B3_patch": {
+        "start": "0xae2b",
+        "end": "0xae3b",
+        "bytes": 16,
+        "expected": "488b7424384c89e2488dbc2440180000",
+        "replacement": "4c89742438e97c000000909090909090",
+        "exit": "normal"
+      },
+      "selected_symbol_addresses": {
+        "base": {
+          "ntruplus768_enc_derand_impl": 44304,
+          "hash_g": 36864,
+          "fips202avx_shake256": 44928
+        },
+        "B2": {
+          "ntruplus768_enc_derand_impl": 44304,
+          "hash_g": 36864,
+          "fips202avx_shake256": 44928
+        },
+        "B3": {
+          "ntruplus768_enc_derand_impl": 44304,
+          "hash_g": 36864,
+          "fips202avx_shake256": 44928
+        }
+      },
+      "selected_addresses_identical_across_variants": true,
+      "prefix_before_each_patch_is_base_exact": true,
+      "same_cleanup_target": "0xaeb1",
+      "same_final_return": "0xaf1c",
+      "hash_page_offset": "0x0",
+      "shake_page_offset": "0xf80",
+      "production_hash_region_disassembly": "\n/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_load_to_compute_production_043/build/gt-clean-measure:     file format elf64-x86-64\n\n\nDisassembly of section .text:\n\n000000000000ae20 <ntruplus768_enc_derand_impl+0x110>:\n    ae20:\t4c 89 e6             \tmov    %r12,%rsi\n    ae23:\t4c 89 e7             \tmov    %r12,%rdi\n    ae26:\te8 d5 e1 ff ff       \tcall   9000 <hash_g>\n",
+      "checkpoint_asymmetry": {
+        "B2": "save cleanup pointer and jump before hash_g",
+        "B3": "call hash_g, return to a later save-and-jump site",
+        "matched_execution_interval": false
+      }
+    }
+  },
+  "cross_image_geometry": {
+    "hash_g_official": "0x5b20",
+    "hash_g_gt": "0x9000",
+    "hash_g_address_delta": 13536,
+    "shake_official": "0x72d0",
+    "shake_gt": "0xaf80",
+    "shake_address_delta": 15536,
+    "same_machine_code_different_address_remains_open": true
+  },
+  "decision": {
+    "variant_relocation_before_checkpoint": "rejected",
+    "B2_minus_B3_as_component_cost": "invalid",
+    "hash_code_address_effect": "open; requires fixed-slot causal gate"
+  }
+}

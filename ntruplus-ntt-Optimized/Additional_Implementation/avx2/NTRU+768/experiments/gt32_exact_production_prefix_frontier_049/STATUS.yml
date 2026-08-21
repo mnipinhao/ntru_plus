@@ -1,0 +1,27 @@
+experiment: GT32-EXACT-PRODUCTION-PREFIX-FRONTIER-049
+status: complete
+production_modified: false
+frozen_inputs:
+  - experiments/gt32_load_to_compute_production_043/build/official-measure
+  - experiments/gt32_load_to_compute_production_043/build/gt-clean-measure
+checkpoints:
+  A: decode_hashes_cbd
+  B: r_forward_pack_hash_g
+  C: sotp_m_forward
+  D: basemul_add
+  E: full_encap
+interpretation:
+  cumulative_only: true
+  adjacent_subtraction_is_component_cost: false
+decision:
+  full_encap_gt_minus_official_cycles: 190.02083333333394
+  independent_repeat_full_encap_gt_minus_official_cycles: 198.95833333333212
+  localized_frontiers:
+    - entry_through_r_pack_hash_g
+    - final_ciphertext_pack_and_normal_tail
+  not_root_cause:
+    - n5_arithmetic
+    - general_b3_arithmetic
+  reopen_only_for:
+    - finer_exact_production_prefix_split_inside_A_to_B
+    - finer_exact_production_prefix_split_inside_D_to_E

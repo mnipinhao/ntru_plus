@@ -1,0 +1,25 @@
+experiment: GT32-SERIALIZER-BOUNDARY-054
+status: closed
+production_modified: false
+question: >-
+  Is the intrinsic Clean-GT Q24 serialization boundary substantially more
+  expensive than Official poly_tobytes for the two real Encap producer outputs?
+controls:
+  - same ELF
+  - same mathematical polynomial
+  - byte-identical output
+  - same output address
+  - producer work excluded from timed interval
+  - repeated warm target
+sites:
+  - rhat
+  - ciphertext
+result:
+  rhat_gt_minus_official_tsc: 20
+  ciphertext_gt_minus_official_tsc: 20
+  rhat_gt_minus_official_core_cycles: 24.54
+  ciphertext_gt_minus_official_core_cycles: 21.77
+decision: >-
+  Real low-tens-of-cycles boundary debt, below the threshold for reopening Q24
+  architecture. Encap micro-attribution closes absent a new structural premise.
+

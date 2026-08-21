@@ -1,0 +1,36 @@
+experiment: GT32-ENCAP-CONTEXT-REENTRY-048
+status: completed_small_context_erosion_not_root_magnitude
+production_modified: false
+targets:
+  R2: Forward_r_plus_pack_rhat
+  R3: Forward_m_plus_general_b3_plus_add_plus_pack_ct
+contexts:
+  HOT: repeated_same_target
+  REAL: actual_encap_prefix_excluded_from_timing
+primary:
+  - gt_context_penalty
+  - official_context_penalty
+  - differential_context_penalty
+correctness:
+  r2_output_digest_match: pass
+  r3_output_digest_match: pass
+result_pooled_128_blocks:
+  R2:
+    gt_minus_official_hot: -12.0
+    gt_minus_official_real: -11.5
+    differential_context_penalty: 1.5
+    ci95: [0.0, 2.0]
+  R3:
+    gt_minus_official_hot: -14.0
+    gt_minus_official_real: -2.0
+    differential_context_penalty: 10.0
+    ci95: [8.0, 12.0]
+decision:
+  hypothesis: partially_true_insufficient_magnitude
+  production: unchanged
+  reason:
+    - real_prefix_erodes_r3_advantage
+    - combined_direct_reentry_penalty_is_only_about_11_to_12_cycles
+    - cannot_explain_170_to_250_cycle_full_encap_gap
+  limitation:
+    - real_instruction_history_but_not_instrumented_exact_production_elf

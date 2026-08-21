@@ -1,0 +1,19 @@
+experiment: GT32-HASH-HANDOFF-052
+status: closed
+production_modified: false
+result:
+  producer_outputs_byte_exact: true
+  same_physical_hash_g: true
+  raw_gt_minus_official_tsc: 0
+  raw_bootstrap_ci95: [0, 0]
+  mfence_differential_effect_tsc: 0
+  common_copy_differential_effect_tsc: 0
+decision:
+  hash_body_slow_after_gt_producer: rejected
+  outstanding_store_handoff_as_root_cause: rejected
+  production_mfence: rejected
+  production_common_copy: rejected
+next:
+  - reconcile the 050 B2/B3 cumulative checkpoint interval
+  - fixed-slot identical hash clones if code-address attribution is required
+  - separately gate hash_f/hash_h fixed-address data geometry if still needed
