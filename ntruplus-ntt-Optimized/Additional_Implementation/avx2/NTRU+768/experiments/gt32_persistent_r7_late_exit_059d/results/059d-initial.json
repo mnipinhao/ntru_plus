@@ -1,0 +1,65 @@
+{
+  "schema": "ntruplus768-gt32-persistent-r7-late-exit-059d-initial-v1",
+  "correctness": {
+    "deterministic_full_trials": 1000,
+    "bytes_per_trial": 1152,
+    "block0_bytes": 96,
+    "byte_exact": true
+  },
+  "tsc_multi_launch": {
+    "launches": 8,
+    "block_control": [12, 12, 12, 12, 12, 12, 12, 12],
+    "block_candidate": [37, 37, 37, 37, 37, 37, 37, 37],
+    "block_delta_median": 25,
+    "full_control": [113, 113, 118, 113, 113, 113, 113, 113],
+    "full_candidate": [441, 443, 444, 441, 442, 441, 442, 441],
+    "full_delta_median": 329
+  },
+  "pmu_raw": {
+    "block_iterations": 2000000,
+    "block_control": {
+      "core_cycles": 36618578,
+      "instructions": 142166155,
+      "port_0_uops": 25342549,
+      "port_1_uops": 34740240,
+      "port_5_11_uops": 33319558,
+      "port_2_3_10_uops": 38056158
+    },
+    "block_candidate": {
+      "core_cycles": 121842630,
+      "instructions": 339967851,
+      "port_0_uops": 95490604,
+      "port_1_uops": 99591832,
+      "port_5_11_uops": 88303726,
+      "port_2_3_10_uops": 125456829
+    },
+    "full_iterations": 250000,
+    "full_control": {"core_cycles": 47921549, "instructions": 165032216},
+    "full_candidate": {"core_cycles": 180270632, "instructions": 466500468}
+  },
+  "pmu_per_call_delta": {
+    "block_core_cycles": 42.612026,
+    "block_instructions": 98.900848,
+    "block_port_0_uops": 35.074028,
+    "block_port_1_uops": 32.425796,
+    "block_port_5_11_uops": 27.492084,
+    "block_port_2_3_10_uops": 43.700336,
+    "full_core_cycles": 529.396332,
+    "full_instructions": 1205.873008
+  },
+  "code_shape": {
+    "block_control_bytes": 333,
+    "block_candidate_bytes": 955,
+    "full_candidate_bytes": 11751,
+    "full_candidate_static_instructions": 1839,
+    "stack_references": 0,
+    "spill_free": true,
+    "output_canary_preserved": true
+  },
+  "interpretation": {
+    "late_exit_debt_is_linear_across_12_blocks": true,
+    "extra_6KiB_table_sweep_has_no_separate_cliff": true,
+    "research_decision": "continue-to-R7-B3-add-exit-island",
+    "production_promotion": false
+  }
+}

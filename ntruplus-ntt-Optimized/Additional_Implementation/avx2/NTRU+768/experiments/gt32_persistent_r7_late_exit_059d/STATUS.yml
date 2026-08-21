@@ -1,0 +1,41 @@
+experiment: GT32-PERSISTENT-R7-LATE-EXIT-059D
+status: executable-pass-continue-to-full-island
+production_modified: false
+scope:
+  block: 16_leaves_64_coefficients_4_packets
+  full: 192_leaves_48_packets
+candidate:
+  vpmaddwd_per_block: 16
+  half_REDC32_per_block: 8
+  materialized_quartic: false
+  generic_Q24_v9_reducer: false
+control:
+  representation: prepared_centered_quartic_private_SoA
+  serializer: current_Q24_packet_math
+research_gate:
+  first_version_may_be_slower: true
+  stop_only_after_upstream_credit_comparison: true
+production_promotion: false
+correctness:
+  deterministic_trials: 1000
+  byte_exact: true
+  signed_REDC32_exact_interval_artifact: generated/signed_redc32_range.json
+performance:
+  launches: 8
+  block_TSC:
+    control: 12
+    candidate: 37
+    delta: 25
+  full_TSC:
+    control: 113
+    candidate: 442
+    delta: 329
+  block_core_cycle_delta: 42.61
+  full_core_cycle_delta: 529.40
+  spill_free: true
+  output_canary_preserved: true
+decision:
+  research: continue-to-R7-B3-add-exit-island
+  reason: late_exit_debt_must_be_compared_with_upstream_operation_class_deletions
+  production: false
+artifact: results/059d-initial.json
