@@ -1,0 +1,46 @@
+experiment: GT32-DECAP-LOAD-TO-COMPUTE-044
+status: complete
+production_modified: false
+baseline: avx2-gt32-clean-20260820
+factors:
+  D: decode3_mask0123_residency
+  S: scale_b3_qinv_preload
+  G: general_b3_qinv_preload
+profiles: [A, D, S, G, DS, DG, SG, DSG]
+geometry_contract:
+  equal_function_sizes: required
+  equal_selected_symbol_addresses: required
+  padding_sweep: false
+primary_operation: decap
+controls: [keypair, encap]
+correctness:
+  canonical_kat_vectors: 100
+  profiles_passed: [A, D, S, G, DS, DG, SG, DSG]
+geometry:
+  source_rebuilt_equal_addresses: pass
+  fixed_043_equal_addresses: pass
+  fixed_043_dsg_byte_exact_to_043_db: true
+results:
+  b3_factorial_256:
+    scale_only_decap_cycles:
+      median: -11.25
+      bootstrap_95_ci: [-22.0, 3.5]
+    general_only_decap_cycles:
+      median: -28.0
+      bootstrap_95_ci: [-40.0, -19.0]
+    scale_plus_general_decap_cycles:
+      median: -26.25
+      bootstrap_95_ci: [-33.5, -17.5]
+  decode_increment_over_sg:
+    median: -4.25
+    bootstrap_95_ci: [-16.0, 4.0]
+decision:
+  decode_residency_for_decap: not_selected
+  scale_b3_preload: locally_positive_but_not_independently_significant
+  general_b3_preload: selected_for_decap_private_export_gate
+  global_db_backend: rejected
+next:
+  - instantiate a Decap-private general-B3 preload symbol
+  - keep Encap on the Clean general-B3 symbol
+  - preserve unrelated hot addresses or use a fixed cage
+  - rerun KAT and exact-image SUPERcop comparison

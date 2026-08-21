@@ -1,0 +1,75 @@
+{
+  "candidate_exchange": {
+    "b3": {
+      "added_explicit_load_instructions": 12,
+      "arithmetic_changed": false,
+      "net_dynamic_load_delta": -36,
+      "new_explicit_qinv_loads": 12,
+      "removed_memory_source_qinv_loads": 48
+    },
+    "decode": {
+      "added_explicit_load_instructions": 1,
+      "arithmetic_changed": false,
+      "net_dynamic_load_delta": -13,
+      "new_explicit_mask_loads": 1,
+      "removed_memory_source_mask_loads": 14
+    },
+    "q24": {
+      "added_explicit_load_instructions": 1,
+      "arithmetic_changed": false,
+      "net_dynamic_load_delta": -47,
+      "new_explicit_constant_loads": 1,
+      "removed_memory_source_constant_loads": 48
+    }
+  },
+  "production_dynamic_map": {
+    "b3_general_m": {
+      "finalizer_constant_memory_operands": 96,
+      "initial_qinv_memory_operands": 48,
+      "lambda_and_lambda_qinv_memory_operands": 24,
+      "note": "Dynamic counts for twelve T16 blocks; memory-source vector operations count as loads.",
+      "operand_payload_loads": 96
+    },
+    "decode_h": {
+      "decode_mask_memory_operands": 48,
+      "fixed_constant_loads": 2,
+      "note": "Four mask values; only ymm13 is free while four validity accumulators are live.",
+      "output_stores": 48,
+      "wire_payload_loads": 96
+    },
+    "q24_m_lazy10788": {
+      "input_payload_loads": 48,
+      "pack_mask_memory_operands": 48,
+      "pair_factor_memory_operands": 48,
+      "q_and_v_prologue_loads": 2
+    }
+  },
+  "schema": "gt32-load-to-compute-041-v1",
+  "symbols": {
+    "b3_candidate": {
+      "rip_memory_operands": 12,
+      "rsi_memory_operands": 4,
+      "static_instructions": 152
+    },
+    "b3_control": {
+      "rip_memory_operands": 15,
+      "rsi_memory_operands": 4,
+      "static_instructions": 154
+    },
+    "decode_h": {
+      "rip_memory_operands": 49,
+      "rsi_memory_operands": 97,
+      "static_instructions": 767
+    },
+    "q24_candidate": {
+      "rip_memory_operands": 51,
+      "rsi_memory_operands": 48,
+      "static_instructions": 1716
+    },
+    "q24_control": {
+      "rip_memory_operands": 98,
+      "rsi_memory_operands": 48,
+      "static_instructions": 1578
+    }
+  }
+}

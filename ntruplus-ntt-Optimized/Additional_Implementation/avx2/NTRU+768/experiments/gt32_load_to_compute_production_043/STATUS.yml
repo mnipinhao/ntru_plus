@@ -1,0 +1,43 @@
+experiment: GT32-LOAD-TO-COMPUTE-PRODUCTION-043
+status: closed_not_promoted_for_encap
+production_modified: false
+supercop_implementations:
+  official: avx2
+  gt_clean_control: avx2-gt32-clean-20260820
+  gt_clean_candidate: avx2-gt32-clean-db-043
+candidate_source_changes:
+  - decode_mask0123_residency
+  - b3_qinv_preload
+layout_policy:
+  deterministic_default_link: true
+  padding_sweep: false
+  reversed_is_diagnostic_not_veto: true
+requirements:
+  - canonical KAT byte exact
+  - exact ELF hash and address manifest
+  - 256 balanced three-way SUPERcop blocks
+  - candidate versus GT Clean confidence interval below zero for Encap
+results:
+  kat: pass_100_vectors_byte_exact
+  exact_image_geometry:
+    selected_symbol_addresses_equal_to_gt_clean: true
+    text_bytes_equal_to_gt_clean: true
+    rodata_bytes_equal_to_gt_clean: true
+  serious_256_block:
+    keypair_db_minus_clean:
+      paired_median_cycles: -2.75
+      bootstrap_95_ci: [-16.3021, 7.7292]
+      favorable_blocks: 129
+    encap_db_minus_clean:
+      paired_median_cycles: -12.9479
+      bootstrap_95_ci: [-29.1042, 4.1667]
+      favorable_blocks: 141
+    decap_db_minus_clean:
+      paired_median_cycles: -43.3646
+      bootstrap_95_ci: [-50.1458, -31.6771]
+      favorable_blocks: 183
+decision:
+  encap_promotion: fail_ci_crosses_zero
+  decap_exact_image_effect: qualified
+  production_clean_replacement: false
+  mechanism_placement_robust: false

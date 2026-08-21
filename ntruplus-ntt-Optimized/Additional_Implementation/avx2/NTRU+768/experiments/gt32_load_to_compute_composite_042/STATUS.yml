@@ -1,0 +1,28 @@
+experiment: GT32-LOAD-TO-COMPUTE-COMPOSITE-042
+status: closed_not_selected
+production_modified: false
+profiles: [A, D, B, DB]
+primary_metric: core_cycles
+correctness: pass
+geometry:
+  fixed_common_caller: true
+  exact_target_address_reversal: true
+  equal_target_sizes: true
+final_48_launch_result:
+  normal_db_minus_a_cycles: -35.5
+  normal_db_wins: 47/48
+  normal_db_bootstrap_95_ci: [-42.5, -29.0]
+  reversed_db_minus_a_cycles: -4.0
+  reversed_db_wins: 27/48
+  reversed_db_bootstrap_95_ci: [-14.5, 3.0]
+decision:
+  production_promote: false
+  clean_export: false
+  formal_supercop: false
+  reason: composite gain is not placement-stable
+preserve_as_local_references:
+  - decode_mask0123_residency
+  - b3_qinv_preload
+reopen_only_if:
+  - an independently justified Encap change alters the selected code shape
+  - expected operation-class deletion materially exceeds placement sensitivity

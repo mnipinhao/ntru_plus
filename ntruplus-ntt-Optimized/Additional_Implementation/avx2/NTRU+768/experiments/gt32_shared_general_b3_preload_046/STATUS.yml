@@ -1,0 +1,33 @@
+experiment: GT32-SHARED-GENERAL-B3-PRELOAD-046
+status: exact_image_conditional_not_promoted
+production_modified: false
+control: GT_Clean
+candidate: shared_general_b3_qinv_preload
+geometry:
+  new_symbols: 0
+  equal_text: required
+  equal_rodata: required
+  equal_selected_addresses: required
+promotion:
+  kat: passed_both_images
+  geometry: passed
+  keypair: failed_pooled_neutrality
+  encap: passed_pooled
+  decap: passed_pooled_but_not_repeat_stable
+decision:
+  production: not_promoted
+  mechanism: shared_body_beneficial_but_delivery_small
+  pooled_512_blocks:
+    keypair_delta: 8.75
+    keypair_ci95: [2.6041666666660603, 15.16666666666788]
+    encap_delta: -24.33333333333212
+    encap_ci95: [-35.70833333333394, -7.0625]
+    decap_delta: -9.125
+    decap_ci95: [-18.97916666666788, -3.0416666666678793]
+  reason:
+    - unrelated_keypair_regression_is_nonzero
+    - decap_second_256_block_ci_crossed_zero
+    - improvement_is_smaller_than_045_fixed_geometry_private_callsite
+reopen_only_if:
+  - a_fresh_independent_exact_image_gate_restores_keypair_neutrality
+  - decap_is_negative_in_each_independent_run

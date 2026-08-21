@@ -1,0 +1,48 @@
+experiment: GT32-LOAD-TO-COMPUTE-041
+production_modified: false
+status: complete
+primary_metric: core_cycles
+secondary_metrics:
+  - dynamic_loads
+  - retired_instructions
+candidates:
+  decode_mask0123:
+    expected_instruction_delta: 1
+    expected_load_delta: -13
+    result_cycles:
+      normal: -7
+      reversed: -6
+    decision: local_qualified
+  q24_ltc:
+    expected_instruction_delta: 1
+    expected_load_delta: -47
+    result_cycles:
+      normal: 2
+      reversed: 3
+    decision: closed
+  q24_pair_factor:
+    expected_instruction_delta: 1
+    expected_load_delta: -47
+    result_cycles:
+      normal: -1
+      reversed: -1
+    pmu_core_cycles: 1.08
+    decision: near_neutral_no_promotion
+  b3_ltc:
+    expected_instruction_delta: 12
+    expected_load_delta: -36
+    result_cycles:
+      normal: -9
+      reversed: -9
+    pmu_core_cycles_range: [-5.6, -4.7]
+    decision: local_qualified
+decode:
+  status: single_mask_executable
+  reopen_if:
+    - mask generation can coexist with four independent validity accumulators
+    - or a measured dependency trade beats the production decoder
+promotion:
+  production: false
+  reason:
+    - winners are local and below whole-image delivery noise
+    - full Encap composite gate not yet run

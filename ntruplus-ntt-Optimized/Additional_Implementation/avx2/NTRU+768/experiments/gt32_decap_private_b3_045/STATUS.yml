@@ -1,0 +1,34 @@
+experiment: GT32-DECAP-PRIVATE-GENERAL-B3-PRELOAD-045
+status: fixed_geometry_qualified_exact_image_rejected
+production_modified: false
+selected_from: GT32-DECAP-LOAD-TO-COMPUTE-044
+candidate:
+  caller: decap_general_b3
+  change: qinv_preload_once_per_t16_block
+frozen:
+  - decode
+  - scale_b3
+  - encap_general_b3
+  - keypair
+geometry_contract:
+  control_candidate_private_slot_equal_size: required
+  selected_symbol_addresses_equal: required
+promotion:
+  fixed_geometry_decap_ci_upper_below_zero: passed
+  keypair_and_encap_neutral_controls: passed
+  clean_exact_image: failed_delivery_stability
+decision:
+  mechanism: qualified
+  current_export: rejected
+  production: not_promoted
+  reason:
+    - fixed_geometry_decap_delta_cycles: -16.1875
+    - fixed_geometry_decap_ci95: [-19.33333333333576, -10.25]
+    - exact_image_encap_delta_cycles: 220.5
+    - exact_image_decap_delta_cycles: 125.916666666667
+    - keypair_changed_despite_not_calling_private_symbol
+reopen_only_if:
+  - private_symbol_is_placed_after_all_existing_hot_symbols
+  - or_an_equal_size_reserved_slot_preserves_existing_hot_symbol_addresses
+  - exact_image_keypair_and_encap_remain_neutral
+  - exact_image_decap_ci_upper_is_below_zero

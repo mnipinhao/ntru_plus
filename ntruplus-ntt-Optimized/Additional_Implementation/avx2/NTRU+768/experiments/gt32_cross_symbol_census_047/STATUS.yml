@@ -1,0 +1,35 @@
+experiment: GT32-CROSS-SYMBOL-SHARED-CODE-CENSUS-047
+status: completed_no_compelling_zero_repayment_candidate
+production_modified: false
+frozen_elf: ../gt32_shared_general_b3_preload_046/build/measure-A
+analysis:
+  - retained_symbol_inventory
+  - basic_block_exact_duplicates
+  - relocation_normalized_duplicates
+  - register_shape_candidates
+families:
+  - q24_codecs
+  - b3_scale_general
+  - keygen_pack_and_arithmetic
+continuation:
+  minimum_net_shareable_bytes: 1024
+  require_no_register_moves: true
+  require_hot_dag_unchanged: true
+result:
+  selected_text_bytes: 33836
+  exact_cross_symbol_basic_block_bytes: 0
+  relocation_normalized_basic_block_gross_bytes: 96
+  zero_repayment_candidate_over_1k: false
+decision:
+  production: unchanged
+  asm_gate: not_opened
+  reason:
+    - no_byte_identical_cross_symbol_basic_block
+    - normalized_exact_blocks_are_only_small_prologues
+    - b3_common_region_requires_per_iteration_finalizer_dispatch
+    - q24_matches_are_repeated_packet_patterns_requiring_dynamic_outlining
+    - ntt_m_p_matches_require_endpoint_contract_dispatch
+reopen_only_if:
+  - linker_or_assembler_can_fold_a_core_without_new_dynamic_control_flow
+  - a_shared_register_abi_removes_at_least_1024_net_bytes_with_zero_moves
+  - an_existing_caller_boundary_can_tail_enter_and_tail_exit_the_shared_core
