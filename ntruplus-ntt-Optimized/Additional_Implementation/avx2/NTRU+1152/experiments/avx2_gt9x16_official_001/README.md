@@ -164,3 +164,12 @@ Montgomery exponent, and fit the BMScale/BaseInv signed-i16 range contracts
 without another reduction. This authorizes the inverse distance-1 ASM only;
 the linked BMScale-tail+head C2 gate is still closed. See
 `CHECKPOINT-G1C1.md`.
+
+Checkpoint G1C2-contract resolves the real BMScale result lifetime. Official's
+`c0/c1/c2` are available together, but `c3` arrives 26 instructions later after
+`c2`'s register has been reused. A materialized persistent-pair path therefore
+needs 12 routing instructions per row plus a c2 temporary seam under the
+faithful schedule. The selected prototype instead consumes each live result
+directly with the inverse distance-1 head, using no edge loads or BMScale→inverse
+materialization. This is an ASM authorization, not a cycle result. See
+`CHECKPOINT-G1C2-CONTRACT.md`.

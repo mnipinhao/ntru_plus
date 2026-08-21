@@ -151,3 +151,10 @@ twice-pre-distance1 semantics. This is a local factorization state, not a
 universal ABI and not the textual Official level-6 layout. The generated oracle
 preserves every Official component/root identity while avoiding an entry
 conversion.
+
+G1C2-contract does not make persistent-pair a mandatory stored ABI. The actual
+BMScale live range makes c2/c3 packing non-simultaneous, so the preferred C2-L
+edge is register-resident: terminal-major result vectors are consumed directly
+by the inverse distance-1 butterfly and stored in canonical interleaved
+twice-pre-distance1 form. Persistent-pair C2-P remains a diagnostic layout with
+an explicit 12-routing-instruction-per-row price and a c2 temporary seam.

@@ -30,6 +30,7 @@ G1B_RESULT := results/g1b-intel155h-20260821-001/g1b-f1-paired.json
 G1_GENERATOR_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g0-views generated/g0-representation-views.json --g1b-result $(G1B_RESULT) --oracle-output generated/g1-edge-oracles.json --debt-output generated/g1-edge-debt-matrix.json
 G1C_AUDIT_ARGS := --basemul $(UPSTREAM)/basemul.s --invntt $(UPSTREAM)/invntt.s --baseinv $(UPSTREAM)/baseinv.s --poly $(UPSTREAM)/poly.c --edge-oracle generated/g1-edge-oracles.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --output generated/g1c-inverse-sink-audit.json
 G1C_HEAD_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g1c-audit generated/g1c-inverse-sink-audit.json --output generated/g1c-adjusted-inverse-head.json --header generated/g1c-adjusted-inverse-head.h --asm-constants generated/g1c-adjusted-inverse-head.inc
+G1C_LIVE_ARGS := --basemul-source $(UPSTREAM)/basemul.s --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --inverse-head-oracle generated/g1c-adjusted-inverse-head.json --pipeline-layout generated/gt9x16-pipeline-layout.json --output generated/g1c-bmscale-live-tail-contract.json --header generated/g1c-bmscale-live-tail.h --asm-constants generated/g1c-bmscale-live-tail.inc
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -58,6 +59,7 @@ generate:
 	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS)
 	$(PYTHON) tools/audit_g1c_inverse_sink.py $(G1C_AUDIT_ARGS)
 	$(PYTHON) tools/generate_g1c_adjusted_inverse_head.py $(G1C_HEAD_ARGS)
+	$(PYTHON) tools/generate_g1c_bmscale_live_tail_contract.py $(G1C_LIVE_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -82,6 +84,7 @@ check:
 	$(PYTHON) tools/generate_g1_edge_oracles.py $(G1_GENERATOR_ARGS) --check
 	$(PYTHON) tools/audit_g1c_inverse_sink.py $(G1C_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_g1c_adjusted_inverse_head.py $(G1C_HEAD_ARGS) --check
+	$(PYTHON) tools/generate_g1c_bmscale_live_tail_contract.py $(G1C_LIVE_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
@@ -91,6 +94,7 @@ check:
 	$(PYTHON) tests/test_g1_edge_oracles.py
 	$(PYTHON) tests/test_g1c_inverse_sink.py
 	$(PYTHON) tests/test_g1c_adjusted_inverse_head.py
+	$(PYTHON) tests/test_g1c_bmscale_live_tail_contract.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
