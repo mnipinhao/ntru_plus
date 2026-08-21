@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate conservative cut-point ranges for F-R3B and adjusted NTT16 stage 8."""
+"""Generate conservative F-R3B and full paper-adjusted NTT16 ranges/tables."""
 
 from __future__ import annotations
 
@@ -88,12 +88,26 @@ def parse_array(text: str, name: str) -> list[int]:
     return [int(value) for value in re.findall(r"-?\d+", match.group(1))]
 
 
+def emit_asm_words(label: str, values: list[int]) -> str:
+    return f".p2align 5\n{label}:\n  .word " + ", ".join(map(str, values)) + "\n"
+
+
+def expand_stage(values: list[int], distance: int) -> list[int]:
+    expanded = []
+    for value in values:
+        expanded.extend([value] * distance)
+    # The adjusted kernel packs the low/high halves of two streams into one
+    # YMM, so both 128-bit halves use the same eight per-row constants.
+    return expanded + expanded
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tables", type=Path, required=True)
     parser.add_argument("--scaled-oracle", type=Path, required=True)
     parser.add_argument("--json", type=Path, required=True)
     parser.add_argument("--header", type=Path, required=True)
+    parser.add_argument("--asm-constants", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     text = args.tables.read_text()
@@ -156,24 +170,53 @@ def main() -> int:
                                                   max(v[1] for v in final_ranges)]}
 
     adjusted_checks = []
+    asm = "/* Generated paper physical-row adjusted NTT16 constants. */\n.section .rodata\n"
     paper_rows = scaled["paper_adjusted_ntt16_rows"]
     r2_ranges = variants["R2"]["physical_output_ranges"]
     for row in paper_rows:
         physical = row["physical_row"]
         source = r2_ranges[physical]
-        zeta_mod_q = row["adjusted_ntt16_stages"]["distance8"]["mod_q"][0]
-        product = mont_range(source, montgomery_constant(zeta_mod_q))
-        plus = add(source, product)
-        minus = sub(source, product)
-        require_i16(f"adjusted-distance8-row{physical}-plus", plus)
-        require_i16(f"adjusted-distance8-row{physical}-minus", minus)
+        lanes = [source[:] for _ in range(16)]
+        stages = []
+        for stage_name, distance in (("distance8", 8), ("distance4", 4),
+                                     ("distance2", 2), ("distance1", 1)):
+            stage = row["adjusted_ntt16_stages"][stage_name]
+            next_lanes: list[list[int] | None] = [None] * 16
+            twisted = []
+            for group, zeta_mod_q in enumerate(stage["mod_q"]):
+                for lane in range(distance):
+                    left_index = group * 2 * distance + lane
+                    right_index = left_index + distance
+                    product = mont_range(lanes[right_index],
+                                         montgomery_constant(zeta_mod_q))
+                    twisted.append(product)
+                    next_lanes[left_index] = add(lanes[left_index], product)
+                    next_lanes[right_index] = sub(lanes[left_index], product)
+            lanes = [value for value in next_lanes if value is not None]
+            for lane, interval in enumerate(lanes):
+                require_i16(f"adjusted-{stage_name}-row{physical}-lane{lane}", interval)
+            stages.append({
+                "stage": stage_name,
+                "distance": distance,
+                "twisted_right_ranges": twisted,
+                "output_lane_ranges": lanes,
+                "overall_output_range": [min(v[0] for v in lanes),
+                                         max(v[1] for v in lanes)],
+            })
+            asm += emit_asm_words(
+                f".Lgt_paper_row{physical}_{stage_name}_zeta",
+                expand_stage(stage["montgomery_signed"], distance))
+            asm += emit_asm_words(
+                f".Lgt_paper_row{physical}_{stage_name}_qinv",
+                expand_stage(stage["qinv_signed"], distance))
         adjusted_checks.append({
             "physical_row": physical,
             "frequency_p": row["frequency_p"],
             "input_range": source,
-            "twisted_half_range": product,
-            "butterfly_plus_range": plus,
-            "butterfly_minus_range": minus,
+            "stages": stages,
+            "final_lane_ranges": lanes,
+            "overall_final_range": [min(v[0] for v in lanes),
+                                    max(v[1] for v in lanes)],
         })
 
     document = {
@@ -183,12 +226,13 @@ def main() -> int:
         "first_layer": {**first, "outputs_after_barrett": first_reduced},
         "inter_layer_reduction": "vpmulhrsw by 9, vpmullw by q, subtract; all nine vectors",
         "variants": variants,
-        "adjusted_ntt16_distance8": adjusted_checks,
+        "adjusted_ntt16_full": adjusted_checks,
         "proof": {
             "adapter_exhaustive_cases": 2 * 144 * 8 * 8 * 2,
             "all_recorded_intervals_fit_signed16": True,
             "r1_r2_final_fit_signed16": True,
-            "r2_adjusted_ntt16_distance8_fit_signed16": True,
+            "r2_adjusted_ntt16_all_stages_fit_signed16": True,
+            "adjusted_ntt16_extra_reductions": 0,
         },
     }
     json_text = json.dumps(document, indent=2, sort_keys=True) + "\n"
@@ -199,17 +243,29 @@ def main() -> int:
         "R2_FINAL_MIN": variants["R2"]["overall_final_range"][0],
         "R2_FINAL_MAX": variants["R2"]["overall_final_range"][1],
     }
-    header = "#ifndef NTRUPLUS1152_EXP001_NTT9_PAPER_RANGE_H\n#define NTRUPLUS1152_EXP001_NTT9_PAPER_RANGE_H\n\n"
+    header = "#ifndef NTRUPLUS1152_EXP001_NTT9_PAPER_RANGE_H\n#define NTRUPLUS1152_EXP001_NTT9_PAPER_RANGE_H\n\n#include <stdint.h>\n\n"
     header += "\n".join(f"#define NTRUPLUS1152_EXP001_PAPER_{name} ({value})"
                          for name, value in bounds.items())
+    header += "\n\n"
+    for stage_name in ("distance8", "distance4", "distance2", "distance1"):
+        count = len(paper_rows[0]["adjusted_ntt16_stages"][stage_name]["montgomery_signed"])
+        header += (f"static const int16_t ntruplus1152_exp001_paper_{stage_name}_zeta"
+                   f"[9][{count}] = {{\n")
+        for row in paper_rows:
+            values = row["adjusted_ntt16_stages"][stage_name]["montgomery_signed"]
+            header += "  {" + ", ".join(map(str, values)) + "},\n"
+        header += "};\n"
     header += "\n\n#endif\n"
     if args.check:
         if (not args.json.is_file() or args.json.read_text() != json_text or
-                not args.header.is_file() or args.header.read_text() != header):
+                not args.header.is_file() or args.header.read_text() != header or
+                not args.asm_constants.is_file() or
+                args.asm_constants.read_text() != asm):
             raise SystemExit("generated F-R3B range artifacts are stale")
         return 0
     args.json.write_text(json_text)
     args.header.write_text(header)
+    args.asm_constants.write_text(asm)
     return 0
 
 

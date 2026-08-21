@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f-r3b-r2-cached-provisional-ntt9-selected
+state: checkpoint-f-r3c-combined-correct-but-exact-official-body-ahead
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -67,6 +67,14 @@ gates:
   checkpoint_f_r3b_gate_b_memory: neutral-r2-memory-is-1.000x-r1
   checkpoint_f_r3b_gate_b_cached: passed-r2-cached-is-0.979x-r1
   checkpoint_f_r3b_benchmark: passed-repository-local-diagnostic-only
+  checkpoint_f_r3c_full_range: passed-r2-through-distance1-all-i16-no-extra-reduction
+  checkpoint_f_r3c_adjusted_correctness: passed-10003-bit-exact-alias-canary
+  checkpoint_f_r3c_combined_correctness: passed-10003-bit-exact-and-modq-scale4
+  checkpoint_f_r3c_static_audit: passed-leaf-no-frame-stack-spill-call-vzeroupper
+  checkpoint_f_r3c_isolated_adjusted_budget: missed-460-vs-452-by-8-cycles
+  checkpoint_f_r3c_isolated_sum_gate: passed-722-vs-pinned-726-by-4-cycles
+  checkpoint_f_r3c_exact_official_body: failed-candidate-722-vs-official-696
+  checkpoint_f_r3c_benchmark: passed-repository-local-diagnostic-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -89,7 +97,9 @@ checkpoint_e: ntt-domain-representation-closure-contract-complete
 checkpoint_f_r3: scaled-paper-r3r3-producer-algebra-and-scale-closure-complete
 checkpoint_f_r3b: r2-cached-selected-provisional-ntt9-only
 f_r3b_diagnostic_result: results/f-r3b-intel155h-20260821-001/ntt9-paper-paired.json
-next_step: connect-r2-cached-to-paper-row-adjusted-ntt16-all-stages-then-paired-combined-transform
+checkpoint_f_r3c: isolated-726-budget-green-but-exact-contiguous-official-body-26-cycles-ahead
+f_r3c_diagnostic_result: results/f-r3c-intel155h-20260821-001/paper-combined-paired.json
+next_step: two-row-software-pipeline-paper-adjusted-ntt16-target-422-before-abi-a-b
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

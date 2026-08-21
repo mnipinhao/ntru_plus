@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract callable T0/T3x3/T2^4 diagnostics from pinned Official ntt.s."""
+"""Extract callable T0/T3x3/T2^4 and exact combined-body Official diagnostics."""
 
 from __future__ import annotations
 
@@ -37,12 +37,14 @@ def render(source: str) -> str:
     radix3 = PROLOGUE + source[level1:level3456]
     # level 1 advances zetas by 32 bytes and level 2 by another 96 bytes.
     radix2 = PROLOGUE + "add $128, %rdx\n\n" + source[level3456:final_ret]
+    combined = PROLOGUE + source[level1:final_ret].replace("_looptop_", "_combined_looptop_")
     return (
         "/* Generated verbatim from pinned upstream ntt.s; do not hand-edit. */\n"
         ".text\n\n"
         + function("ntruplus1152_exp001_official_t0", top)
         + function("ntruplus1152_exp001_official_t3x3", radix3)
         + function("ntruplus1152_exp001_official_t2x4", radix2)
+        + function("ntruplus1152_exp001_official_t3x3_t2x4", combined)
         + '.section .note.GNU-stack,"",@progbits\n'
     )
 

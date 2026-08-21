@@ -222,6 +222,34 @@ ntruplus1152_exp001_gt9x16_ntt9_r2_cached:
   ret
 .size ntruplus1152_exp001_gt9x16_ntt9_r2_cached, .-ntruplus1152_exp001_gt9x16_ntt9_r2_cached
 
+.include "asm/gt9x16_ntt16_paper.inc"
+.globl ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16
+.type ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16,@function
+ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16:
+  PAPER_ADJUSTED_NTT16_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16, .-ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16
+
+.globl ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body
+.type ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body,@function
+ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body:
+  /* R2 stores all nine physical-p rows.  The adjusted NTT16 reloads them. */
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  vmovdqa ymm1, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm2, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  vmovdqa ymm3, YMMWORD PTR [rip + .Lgt_v]
+  vmovdqa ymm4, YMMWORD PTR [rip + .Lgt_ntt9_qinv4]
+  vmovdqa ymm5, YMMWORD PTR [rip + .Lgt_ntt9_zeta4]
+  vmovdqa ymm6, YMMWORD PTR [rip + .Lgt_paper_rhoinv_qinv]
+  vmovdqa ymm7, YMMWORD PTR [rip + .Lgt_paper_rhoinv]
+  PAPER_R2_CACHED_STREAM 0
+  PAPER_R2_CACHED_STREAM 1
+  mov rsi, rdi
+  PAPER_ADJUSTED_NTT16_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body
+
 .include "generated/gt9x16-ntt16-constants.inc"
+.include "generated/gt9x16-paper-adjusted-ntt16-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

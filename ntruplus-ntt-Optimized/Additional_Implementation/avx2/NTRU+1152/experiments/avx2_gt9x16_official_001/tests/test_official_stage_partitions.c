@@ -22,6 +22,7 @@ static int16_t random_i16(void) {
 int main(void) {
   _Alignas(32) int16_t official[NTRUPLUS1152_EXP001_OFFICIAL_N];
   _Alignas(32) int16_t partitioned[NTRUPLUS1152_EXP001_OFFICIAL_N];
+  _Alignas(32) int16_t combined[NTRUPLUS1152_EXP001_OFFICIAL_N];
   int index, trial;
   for (trial = 0; trial < TRIALS; ++trial) {
     for (index = 0; index < NTRUPLUS1152_EXP001_OFFICIAL_N; ++index) {
@@ -30,11 +31,14 @@ int main(void) {
           : random_i16();
       official[index] = value;
       partitioned[index] = value;
+      combined[index] = value;
     }
     poly_ntt(official);
     ntruplus1152_exp001_official_t0(partitioned);
     ntruplus1152_exp001_official_t3x3(partitioned);
     ntruplus1152_exp001_official_t2x4(partitioned);
+    ntruplus1152_exp001_official_t0(combined);
+    ntruplus1152_exp001_official_t3x3_t2x4(combined);
     if (memcmp(official, partitioned, sizeof official) != 0) {
       for (index = 0; index < NTRUPLUS1152_EXP001_OFFICIAL_N; ++index) {
         if (official[index] != partitioned[index]) {
@@ -45,7 +49,11 @@ int main(void) {
         }
       }
     }
+    if (memcmp(official, combined, sizeof official) != 0) {
+      fprintf(stderr, "Official combined-body mismatch trial=%d\n", trial);
+      return 1;
+    }
   }
-  puts("Official T0/T3x3/T2x4 extraction: 10003 bit-exact cases passed");
+  puts("Official T0/T3x3/T2x4 and contiguous combined extraction: 10003 bit-exact cases passed");
   return 0;
 }

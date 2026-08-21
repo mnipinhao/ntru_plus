@@ -75,5 +75,13 @@ void ntruplus1152_exp001_gt9x16_ntt9_r2_memory(
 void ntruplus1152_exp001_gt9x16_ntt9_r2_cached(
     ntruplus1152_exp001_gt_persistent_pair *output,
     const ntruplus1152_exp001_gt_persistent_pair *input);
+/* Input is R2 physical-row canonical lanes; output is terminal persistent S/D. */
+void ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *r2_input);
+/* Includes the real R2 store -> adjusted-NTT16 reload memory boundary. */
+void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
 
 #endif

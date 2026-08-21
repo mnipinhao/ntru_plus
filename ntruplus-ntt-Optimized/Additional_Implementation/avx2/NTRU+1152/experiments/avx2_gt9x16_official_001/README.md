@@ -12,7 +12,8 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint F-R3B selects R2-cached provisionally; adjusted NTT16 is next.**
+**Checkpoint F-R3C connects R2-cached to adjusted NTT16; the exact Official
+contiguous transform body remains 26 cycles faster.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -115,4 +116,7 @@ persistent-S/D ABI. R1 is 13.0% faster than R0; R2-memory is neutral relative
 to R1; R2-cached is another 2.1% faster by eliminating twist memory operands.
 All variants pass schedule-exact, modulo-q `4*R0`, alias, canary, sanitizer,
 and generated cut-point range gates. R2-cached is selected only for the next
-R2-plus-adjusted-NTT16 checkpoint. See `CHECKPOINT-F-R3B.md`.
+R2-plus-adjusted-NTT16 checkpoint. Checkpoint F-R3C completes that connection,
+proves all four radix-2 ranges, and records both the isolated 726-cycle gate
+and the stronger contiguous Official-body comparison. See
+`CHECKPOINT-F-R3B.md` and `CHECKPOINT-F-R3C.md`.
