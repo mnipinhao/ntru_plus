@@ -45,6 +45,7 @@ generate:
 	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json
 	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json
 	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json
+	$(PYTHON) tools/generate_scaled_r3r3_oracle.py --ntt9-first-oracle generated/gt9x16-ntt9-first-oracle.json --pipeline-layout generated/gt9x16-pipeline-layout.json --output generated/gt9x16-scaled-r3r3-oracle.json
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS)
 
 check:
@@ -63,11 +64,13 @@ check:
 	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json --check
 	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json --check
 	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json --check
+	$(PYTHON) tools/generate_scaled_r3r3_oracle.py --ntt9-first-oracle generated/gt9x16-ntt9-first-oracle.json --pipeline-layout generated/gt9x16-pipeline-layout.json --output generated/gt9x16-scaled-r3r3-oracle.json --check
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
 	$(PYTHON) tests/test_representation_contract.py
+	$(PYTHON) tests/test_scaled_r3r3_oracle.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear

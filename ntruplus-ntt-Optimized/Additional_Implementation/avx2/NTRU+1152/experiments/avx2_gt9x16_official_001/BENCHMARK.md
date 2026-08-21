@@ -172,3 +172,12 @@ outside timing; Official/candidate use the same compiler recipe, pinning,
 residency, and symmetric block order. No isolated routing or forward win can
 select or promote a representation. Formal promotion still requires native
 SUPERCOP KEM and fixed-ELF evidence after the complete caller path exists.
+
+## Checkpoint F-R3A benchmark status
+
+F-R3A has no executable R1/R2 kernel and therefore reports no cycles. The
+generated 18-to-10 chain count and three-to-two distinct-twiddle count are
+algebraic diagnostics only. F-R3B must compare R0/R1/R2 in one ELF with the
+same persistent-S/D input/output, compiler flags, pinning, residency, balanced
+order, and observation count; adapters may not be omitted from a full-real
+view.

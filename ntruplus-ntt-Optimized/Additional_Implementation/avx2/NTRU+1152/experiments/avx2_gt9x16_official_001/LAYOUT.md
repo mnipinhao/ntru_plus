@@ -27,6 +27,13 @@ No consumer may assume `r=p` or `l=q`. Each `(b,r,l)` maps to
 and Official positions. Replacing R3R3 with another NTT9 schedule changes
 `P[]` and generated constants, not BaseMul/BaseInv semantics.
 
+`transform_scale` is a separate contract dimension from the Montgomery
+`scale_r_exponent`. The current generic R3R3 producer has transform scale one;
+the F-R3 paper producer has transform scale four. R2 changes the private row
+map to `P = [0,3,6,1,4,7,8,2,5]`; generated consumers follow `p=P[r]` and do
+not restore the standard order at runtime. See `CHECKPOINT-F-R3.md` and
+`generated/gt9x16-scaled-r3r3-oracle.json`.
+
 ## Arithmetic-domain contracts
 
 | Boundary | Scale | Conservative range | Status |
@@ -36,6 +43,11 @@ and Official positions. Replacing R3R3 with another NTT9 schedule changes
 | regular BaseMul output | `R^0` | `[-3456,3456]` | includes the in-kernel R² post-pass |
 | BaseInv output | `R^0` | `[-3456,3456]` | after denominator batch inversion/application |
 | scaled BaseMul inverse feed | `R^-1` | `[-13824,13824]` | conservative; deliberately omits R² post-pass |
+
+The table's scale column is the Montgomery-domain exponent. For R1/R2, the
+additional arithmetic transform scale is four at forward output, 16 after two
+forward operands enter BaseMul, and `1/4` after BaseInv. This scalar ledger is
+proved modulo q; executable range bounds remain an F-R3B gate.
 
 The provisional D-B forward must retain an equivalent final reduction before
 BaseMul/BaseInv. General centered-input forward remains unqualified. Official

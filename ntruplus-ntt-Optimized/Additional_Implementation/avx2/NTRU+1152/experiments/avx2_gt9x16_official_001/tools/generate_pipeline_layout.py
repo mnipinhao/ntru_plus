@@ -139,6 +139,7 @@ def main() -> int:
     value_contracts = {
         "kem-small-forward-r0": {
             "scale_r_exponent": 0,
+            "transform_scale": 1,
             "input_contract": "coefficient inputs in [-3,4]",
             "allowed_range_i16": [-3107, 3107],
             "range_basis": "conservative symbolic stage bound <=30544 followed by Official vpmulhrsw(q=3457,v=9) reduction",
@@ -147,11 +148,13 @@ def main() -> int:
         },
         "resident-r0": {
             "scale_r_exponent": 0,
+            "transform_scale": 1,
             "allowed_range_i16": [-3456, 3456],
             "consumer": "regular BaseMul, BaseInv, or later resident NTT-domain arithmetic",
         },
         "inverse-feed-rminus1": {
             "scale_r_exponent": -1,
+            "transform_scale": 1,
             "allowed_range_i16_conservative": [-13824, 13824],
             "producer": "scaled BaseMul without the R^2 post-pass",
             "consumer": "adjusted inverse NTT16/inverse normalization matching poly_invntt_scale",
@@ -163,6 +166,12 @@ def main() -> int:
         "checkpoint_e_selection": "undecided-until-2F-plus-BM-plus-I-and-F-plus-BI-plus-I",
         "physical_row_to_mathematical_p": [0, 3, 6, 1, 4, 7, 2, 5, 8],
         "physical_lane_to_mathematical_q": [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15],
+        "transform_scale_policy": {
+            "meaning": "uniform arithmetic scale multiplying the mathematical transform; independent of Montgomery R exponent",
+            "current_r0_r3r3": 1,
+            "paper_scaled_r3r3": 4,
+            "paper_contract_source": "generated/gt9x16-scaled-r3r3-oracle.json",
+        },
         "value_contracts": value_contracts,
         "baseinv_denominator_side_layout": "den[branch*9+physical_p_row][physical_q_lane], 18 YMM total",
         "candidates": {

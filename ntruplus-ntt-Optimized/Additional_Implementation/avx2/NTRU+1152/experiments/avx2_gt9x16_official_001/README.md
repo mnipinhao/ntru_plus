@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint E representation contract completed; provisional D-B forward is next.**
+**Checkpoint F-R3A scaled paper-R3R3 closure completed; R1/R2 AVX2 is next.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -100,3 +100,12 @@ BaseInv's 18-vector denominator side state, maps all 1,152 physical terminal
 cells, and retains terminal-major, persistent-pair, and inverse-oriented
 hybrid ABIs for full-path prototypes. No layout is selected from static costs.
 See `CHECKPOINT-E.md` and `LAYOUT.md`.
+
+Checkpoint F-R3A evaluates the paper's scaled radix-3 core without conflating
+it with the rotated inter-level schedule. R0/R1/R2 pass a complete linear-basis
+oracle; R1/R2 reduce the algebraic NTT9 Montgomery-chain count from 18 to 10,
+and R2 reduces distinct inter-level twists from three to two. The factor-four
+forward scale closes through BaseMul, BaseInv `den[18]`, keypair ratios, and
+the existing inverse normalization multiplication without a standalone scale
+pass. No performance result exists until R1/R2 assembly is implemented. See
+`CHECKPOINT-F-R3.md`.

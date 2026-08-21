@@ -36,6 +36,10 @@ assert hybrid_forward == positions["gt_row_terminal_lane"]
 assert hybrid_inverse == positions["persistent_pair_sd"]
 assert contract["value_contracts"]["resident-r0"]["scale_r_exponent"] == 0
 assert contract["value_contracts"]["inverse-feed-rminus1"]["scale_r_exponent"] == -1
+assert contract["value_contracts"]["kem-small-forward-r0"]["transform_scale"] == 1
+assert contract["value_contracts"]["resident-r0"]["transform_scale"] == 1
+assert contract["value_contracts"]["inverse-feed-rminus1"]["transform_scale"] == 1
+assert contract["transform_scale_policy"]["paper_scaled_r3r3"] == 4
 assert lifecycle["boundaries"]["scaled_basemul_inverse_feed"]["output_scale_r_exponent"] == -1
 assert lifecycle["boundaries"]["inverse_load"]["expected_input_scale_r_exponent"] == -1
 assert lifecycle["audit_conclusion"]["baseinv_has_denominator_side_channel"]

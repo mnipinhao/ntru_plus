@@ -56238,6 +56238,12 @@
     5,
     8
   ],
+  "transform_scale_policy": {
+    "current_r0_r3r3": 1,
+    "meaning": "uniform arithmetic scale multiplying the mathematical transform; independent of Montgomery R exponent",
+    "paper_contract_source": "generated/gt9x16-scaled-r3r3-oracle.json",
+    "paper_scaled_r3r3": 4
+  },
   "value_contracts": {
     "inverse-feed-rminus1": {
       "allowed_range_i16_conservative": [
@@ -56246,7 +56252,8 @@
       ],
       "consumer": "adjusted inverse NTT16/inverse normalization matching poly_invntt_scale",
       "producer": "scaled BaseMul without the R^2 post-pass",
-      "scale_r_exponent": -1
+      "scale_r_exponent": -1,
+      "transform_scale": 1
     },
     "kem-small-forward-r0": {
       "allowed_range_i16": [
@@ -56257,7 +56264,8 @@
       "gt_requirement": "provisional D-B forward must include an equivalent final reduction before BaseMul/BaseInv",
       "input_contract": "coefficient inputs in [-3,4]",
       "range_basis": "conservative symbolic stage bound <=30544 followed by Official vpmulhrsw(q=3457,v=9) reduction",
-      "scale_r_exponent": 0
+      "scale_r_exponent": 0,
+      "transform_scale": 1
     },
     "resident-r0": {
       "allowed_range_i16": [
@@ -56265,7 +56273,8 @@
         3456
       ],
       "consumer": "regular BaseMul, BaseInv, or later resident NTT-domain arithmetic",
-      "scale_r_exponent": 0
+      "scale_r_exponent": 0,
+      "transform_scale": 1
     }
   }
 }
