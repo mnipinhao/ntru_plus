@@ -9,3 +9,7 @@ and both inverse-distance1 outputs bit-for-bit against an independent scalar
 oracle plus range and canary gates. `test_g1c_m2_live_basis.py` checks the
 source-locked live DAG, scoped eight-instruction lower bound, and retained
 split-after-D1 full-inverse candidate.
+
+`test_g1c_m3_inverse16_oracle.py` gates all four inverse physical-q maps, the
+C0/C1/C2 attribution contract, independent F1/F5 accounting, and the explicit
+D2 range-proof failure that currently blocks lazy M3 assembly.

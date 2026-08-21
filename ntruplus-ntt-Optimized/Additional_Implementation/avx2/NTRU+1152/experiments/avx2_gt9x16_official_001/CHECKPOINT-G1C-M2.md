@@ -65,7 +65,10 @@ carries D1 through distances 2, 4, and 8. C2-L remains the head-only control,
 and paired-row scheduling remains available if split-state register pressure
 requires it. BaseInv normalization is still open and excluded from this gate.
 
-The result does not select F1 or qualify production. The 22-cycle edge credit
-does not repay F1-B1's 58.5-cycle debt per forward, or about 117 cycles on the
-two-forward path. Official remains the zero-conversion production baseline;
-formal decisions still require the pinned SUPERCOP workflow and KEM evidence.
+The result does not select F1 or qualify production. F1-B1's 58.5-cycle debt
+per forward (117 cycles on a two-forward path) and F5's 22-cycle edge credit
+are independent prices; they must not be netted until G2 names a complete path
+that contains both. In particular, an F0-forward plus consumer-native BMScale
+plus F5-inverse path pays no F1 debt. Official remains the zero-conversion
+production baseline; formal decisions still require the pinned SUPERCOP
+workflow and KEM evidence.

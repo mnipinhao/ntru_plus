@@ -188,6 +188,14 @@ intermediates are lane-separable: none already contains the adjacent-q pairing
 needed by inverse D1. C2-L matches the scoped eight-instruction-per-vector
 head-only bound. Against an exact materialized control it removes 72 raw stores
 and 72 edge reloads, measures 588 versus 610 cycles in all nine pinned local
-launches, and authorizes a full adjusted-inverse16 split-state experiment. The
-22-cycle credit does not repay F1's roughly 117-cycle two-forward debt. See
-`CHECKPOINT-G1C-M2.md`.
+launches, and authorizes a full adjusted-inverse16 split-state experiment. F1's
+roughly 117-cycle two-forward debt and F5's 22-cycle credit remain independent
+prices; an F0 plus F5 path pays no F1 debt. See `CHECKPOINT-G1C-M2.md`.
+
+Checkpoint G1C-M3A fixes the full inverse experiment as C0/C1/C2, so C1-C0
+prices the linked head in a full caller and C2-C1 prices persistent inverse
+state. It derives D1/D2/D4/D8 from the current physical-q order. The first
+independent BMScale range envelope fails signed-i16 at D2 sum (±55,296), so
+lazy C2 assembly is not yet authorized: the next gate must bound actual
+producer-correlated register states without inserting a convenience reduction.
+See `CHECKPOINT-G1C-M3A.md`.

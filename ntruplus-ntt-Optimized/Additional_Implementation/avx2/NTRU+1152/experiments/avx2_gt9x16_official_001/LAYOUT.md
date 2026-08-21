@@ -175,3 +175,11 @@ interleaved C2-L sequence matches the scoped eight-instruction bound. For the
 full inverse only, a split-after-D1 state remains live: omit the final blend and
 let distances 2/4/8 consume the two vectors directly inside one leaf. A stored
 split boundary is not selected because it doubles stores and live vectors.
+
+G1C-M3A keeps three notions separate: forward persistent S/D, terminal basis,
+and inverse physical-q split state. Its C0/C1/C2 decomposition attributes the
+already-measured boundary link independently from D1-to-D8 persistence. The
+current leading architecture hypothesis is F0 persistent forward feeding
+consumer-native arithmetic and an F5 split inverse; it does not require F1
+terminal-major production. This remains a hypothesis until complete caller
+paths are implemented and measured.
