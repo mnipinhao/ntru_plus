@@ -1,0 +1,45 @@
+experiment: GT32-R7-CONSUMER-ISLAND-059E
+status: closed-current-E7-consumer-island
+production_modified: false
+semantic_endpoint: B3_plus_message_to_1152_wire_bytes
+profiles:
+  current: quartic_B3_add_m_H1_Q24
+  E0: R7_product_R2_H_materialize_sparse_K_Q24
+  E1: R7_product_e_minus1_dense_mixed_scale_W_REDC32_Q24
+correctness:
+  algebraic_basis_checks: 3840
+  executable_trials: 1000
+  full_wire_byte_exact: true
+  output_canaries: pass
+  lambda_contract: table_e1_times_R_inverse_to_algebraic_e0
+  unpack_low: [0, 1, 2, 3, 8, 9, 10, 11]
+  unpack_high: [4, 5, 6, 7, 12, 13, 14, 15]
+  accumulator_abs_bound: 36099066
+  signed_REDC32_output: [-2279, 2279]
+performance:
+  launches: 8
+  median_TSC: {current: 493, E0: 729, E1: 889}
+  median_delta_TSC: {E0_minus_current: 237, E1_minus_current: 398, E1_minus_E0: 161}
+  PMU_delta_per_call:
+    E0_minus_current: {core_cycles: 381.29, retired_instructions: 550.54}
+    E1_minus_current: {core_cycles: 632.47, retired_instructions: 988.66}
+  e1_block_TSC: [74, 74, 74, 74, 74, 74, 75, 74]
+  spill_free: true
+mechanism:
+  E1_deleted:
+    - seven_R2_finalizer_chains
+    - explicit_H_materialization
+    - i16_message_add
+    - quartic_B3_recombination_materialization
+    - wide_Q24_reducer
+  E1_dense_exit_per_block: {vpmaddwd: 56, vpaddd: 48, interleaves: 14}
+decision:
+  production: false
+  close: current_centered_E7_plus_current_wire_consumer_family
+  reopen_only_if:
+    - producer_native_representation_keeps_late_map_sparse
+    - consumer_output_contract_changes
+artifacts:
+  static: generated/r7_consumer_island_059e.json
+  measurements: results/059e-initial.json
+

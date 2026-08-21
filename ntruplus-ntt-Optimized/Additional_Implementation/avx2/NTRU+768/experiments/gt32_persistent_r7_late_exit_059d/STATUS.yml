@@ -19,6 +19,11 @@ production_promotion: false
 correctness:
   deterministic_trials: 1000
   byte_exact: true
+  scope: degree_three_reconstruction_only
+  product_lambda_folding: superseded_by_059E
+  correction:
+    - selected_lambda_table_is_e1_not_algebraic_e0
+    - AVX2_unpack_constant_halves_are_lane_local
   signed_REDC32_exact_interval_artifact: generated/signed_redc32_range.json
 performance:
   launches: 8

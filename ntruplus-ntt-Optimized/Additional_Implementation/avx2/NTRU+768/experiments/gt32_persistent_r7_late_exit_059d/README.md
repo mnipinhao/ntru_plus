@@ -14,7 +14,8 @@ The block gate compares 16 leaves / 64 coefficients / four real Q24 packets.
 The full gate processes all 12 blocks in production wire order
 `0,1,9,8,4,5,11,10,6,7,3,2`, scanning the complete 6 KiB constant table.
 Correctness constructs quartic and H-domain representations from the same
-polynomial and requires byte-exact output for 1,000 deterministic trials.
+degree-three polynomial and requires byte-exact output for 1,000 deterministic
+trials. This is a serializer/lowering check, not a product-folding check.
 
 This is a research continuation gate.  A slower late exit does not by itself
 reject persistent R7 because upstream R7 B3, recombination, materialization,
@@ -44,6 +45,16 @@ message addition, and the deleted quartic recombination/materialization.
 The final measurements use 128-bit low stores and a safe 8+4-byte final high
 store.  Output canaries are preserved; an earlier YMM-width low-store draft
 was rejected before these results were recorded.
+
+## 059E correction
+
+The subsequent genuine product gate found that the selected lambda table is
+`lambda*R` (e=1), while 059C/059D treated it as algebraic lambda, and that the
+late constant halves must follow AVX2 lane-local unpack indices. Degree-three
+reconstruction cannot expose either lambda-folding error. The timing and
+signed-REDC measurement above remain valid, but the product-path correctness
+claim is superseded by `gt32_r7_consumer_island_059e`, which uses corrected
+logical lambdas and passes 1,000 complete product-plus-message cases.
 
 ## Run
 

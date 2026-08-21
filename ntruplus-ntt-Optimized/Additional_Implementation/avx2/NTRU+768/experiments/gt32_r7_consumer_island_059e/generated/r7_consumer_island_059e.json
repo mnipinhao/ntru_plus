@@ -1,0 +1,86 @@
+{
+  "schema": "ntruplus768-gt32-r7-consumer-island-059e-v1",
+  "status": "static-qualified-executable-closed-in-results",
+  "production_modified": false,
+  "contracts": {
+    "h_and_r": "seven centered raw E7 planes, e=0",
+    "point_product": "signed Montgomery result, e=-1",
+    "message": "seven centered raw E7 planes, e=0",
+    "exit": "mixed [product,message] pair dot with [W*R^2,W*R], one signed REDC32, Q24",
+    "lambda": "selected table is lambda*R (e=1); W uses table*R^-1 (e=0)"
+  },
+  "exactness": {
+    "lambdas": 192,
+    "basis_checks": 3840,
+    "identity": "REDC(sum W*R^2*Mont(h,r)+W*R*m)=h*r+m"
+  },
+  "lane_lowering": {
+    "unpack_lanes": {
+      "lo": [
+        0,
+        1,
+        2,
+        3,
+        8,
+        9,
+        10,
+        11
+      ],
+      "hi": [
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    "reason": "vpunpcklwd/hwd are 128-bit-lane local"
+  },
+  "bounds": {
+    "centered_eval_abs": 1728,
+    "point_product_abs_conservative": 1775,
+    "largest_product_constant_e2_abs": 1728,
+    "largest_message_constant_e1_abs": 1728,
+    "largest_i32_accumulator_abs": 36099066,
+    "signed_redc32_exact_output_interval": [
+      -2279,
+      2279
+    ],
+    "one_sign_correction_sufficient": true
+  },
+  "E1_per_16_leaves": {
+    "pointwise_Montgomery_chains": 7,
+    "R2_finalizer_chains": 0,
+    "explicit_H_add_sub": 0,
+    "explicit_i16_message_add": 0,
+    "product_message_interleaves": 14,
+    "vpmaddwd": 56,
+    "vpaddd": 48,
+    "signed_half_REDC32": 8,
+    "Q24_packets": 4
+  },
+  "deleted_operation_classes": [
+    "seven R2 product finalizers",
+    "explicit H materialization",
+    "seven-plane i16 message add",
+    "quartic B3 recombination/materialization",
+    "standalone poly_add materialization",
+    "wide Q24 v9 reducer"
+  ],
+  "constant_table": {
+    "bytes": 21504,
+    "vectors": 672,
+    "artifact": "r7_consumer_island_constants.inc",
+    "E0_H_bytes": 6144,
+    "E0_H_artifact": "r7_consumer_e0_h_constants.inc"
+  },
+  "decision": {
+    "continue": false,
+    "instruction_count_is_not_a_stop_gate": true,
+    "reason": "executable E0 and E1 both lose; see results/059e-initial.json",
+    "reopen_only_if": "producer keeps a sparse late map or output contract changes"
+  }
+}

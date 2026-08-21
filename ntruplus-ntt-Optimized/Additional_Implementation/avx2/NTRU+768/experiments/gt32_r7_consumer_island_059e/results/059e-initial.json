@@ -1,0 +1,30 @@
+{
+  "schema": "ntruplus768-gt32-r7-consumer-island-059e-result-v1",
+  "correctness_trials": 1000,
+  "launches": 8,
+  "tsc": {
+    "current": [491, 493, 493, 491, 493, 493, 493, 491],
+    "E0": [729, 729, 729, 729, 730, 730, 729, 760],
+    "E1": [889, 918, 888, 889, 888, 890, 901, 889],
+    "E0_minus_current": [238, 236, 236, 238, 237, 237, 236, 269],
+    "E1_minus_current": [398, 425, 395, 398, 395, 397, 408, 398],
+    "median": {"current": 493, "E0": 729, "E1": 889,
+               "E0_minus_current": 237, "E1_minus_current": 398}
+  },
+  "pmu_iterations": 250000,
+  "pmu_raw": {
+    "current": {"core_cycles": 199877564, "core_instructions": 625470742},
+    "E0": {"core_cycles": 295200753, "core_instructions": 763104741},
+    "E1": {"core_cycles": 357994324, "core_instructions": 872635857}
+  },
+  "pmu_delta_per_call": {
+    "E0_minus_current": {"core_cycles": 381.292756, "instructions": 550.536},
+    "E1_minus_current": {"core_cycles": 632.46704, "instructions": 988.66046}
+  },
+  "text_bytes": {"current_wrapper": 41, "E0_prepare": 8040,
+                 "E0_late": 11943, "E0_wrapper": 38,
+                 "E1_full": 22897, "E1_block": 1860},
+  "constant_bytes": {"E0_H": 6144, "E1_mixed_W": 21504},
+  "decision": "close-current-centered-E7-consumer-island"
+}
+
