@@ -8,7 +8,7 @@
  * is stored only after that butterfly.
  */
 
-.macro G1C_DIRECT_D1_STORE result,row,offset
+.macro G1C_DIRECT_D1 result,row
   vpshufb ymm8, ymm\result, YMMWORD PTR [rip + .Lgt_g1c_bmscale_adjacent_word_swap]
   vpaddw ymm9, ymm\result, ymm8
   vpsubw ymm8, ymm\result, ymm8
@@ -17,6 +17,10 @@
   vpmulhw ymm10, ymm10, ymm0
   vpsubw ymm8, ymm8, ymm10
   vpblendw ymm\result, ymm9, ymm8, 0xaa
+.endm
+
+.macro G1C_DIRECT_D1_STORE result,row,offset
+  G1C_DIRECT_D1 \result,\row
   vmovdqa YMMWORD PTR [rdi + \offset], ymm\result
 .endm
 
@@ -170,6 +174,22 @@
   .endr
 .endm
 
+.macro G1C_MATERIALIZED_D1_VECTOR row,offset
+  vmovdqa ymm5, YMMWORD PTR [rdi + \offset]
+  G1C_DIRECT_D1 5,\row
+  vmovdqa YMMWORD PTR [rdi + \offset], ymm5
+.endm
+
+.macro G1C_MATERIALIZED_D1_ALL
+  .irp branch,0,1
+    .irp row,0,1,2,3,4,5,6,7,8
+      .irp coefficient,0,1,2,3
+        G1C_MATERIALIZED_D1_VECTOR \row,((\branch)*1152+(\row)*128+(\coefficient)*32)
+      .endr
+    .endr
+  .endr
+.endm
+
 .globl ntruplus1152_exp001_gt9x16_bmscale_raw
 .type ntruplus1152_exp001_gt9x16_bmscale_raw,@function
 ntruplus1152_exp001_gt9x16_bmscale_raw:
@@ -178,6 +198,16 @@ ntruplus1152_exp001_gt9x16_bmscale_raw:
   G1C_ALL_BLOCKS raw
   ret
 .size ntruplus1152_exp001_gt9x16_bmscale_raw, .-ntruplus1152_exp001_gt9x16_bmscale_raw
+
+.globl ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized
+.type ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized,@function
+ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized:
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_g1c_bmscale_q]
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_g1c_bmscale_qinv]
+  G1C_ALL_BLOCKS raw
+  G1C_MATERIALIZED_D1_ALL
+  ret
+.size ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized, .-ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized
 
 .globl ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l
 .type ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l,@function

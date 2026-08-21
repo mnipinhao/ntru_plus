@@ -182,3 +182,12 @@ eight-instruction direct D1 sequence. The linked audit corrects the provisional
 cost to 32 D1 instructions per row and the peak to 16 live YMM, still
 spill-free. Cycles remain null pending a paired materialized-control benchmark.
 See `CHECKPOINT-G1C3-LINKED.md`.
+
+Checkpoint G1C-M2 audits the complete live BMScale tail and proves that its
+intermediates are lane-separable: none already contains the adjacent-q pairing
+needed by inverse D1. C2-L matches the scoped eight-instruction-per-vector
+head-only bound. Against an exact materialized control it removes 72 raw stores
+and 72 edge reloads, measures 588 versus 610 cycles in all nine pinned local
+launches, and authorizes a full adjusted-inverse16 split-state experiment. The
+22-cycle credit does not repay F1's roughly 117-cycle two-forward debt. See
+`CHECKPOINT-G1C-M2.md`.

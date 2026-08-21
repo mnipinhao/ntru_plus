@@ -8,6 +8,12 @@ void ntruplus1152_exp001_gt9x16_bmscale_raw(
     const ntruplus1152_exp001_gt_terminal_major *a,
     const ntruplus1152_exp001_gt_terminal_major *b);
 
+/* Exact inlined current-boundary control: raw stores, D1 reloads, post-D1 stores. */
+void ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized(
+    ntruplus1152_exp001_gt_terminal_major *output,
+    const ntruplus1152_exp001_gt_terminal_major *a,
+    const ntruplus1152_exp001_gt_terminal_major *b);
+
 void ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l(
     ntruplus1152_exp001_gt_terminal_major *output,
     const ntruplus1152_exp001_gt_terminal_major *a,

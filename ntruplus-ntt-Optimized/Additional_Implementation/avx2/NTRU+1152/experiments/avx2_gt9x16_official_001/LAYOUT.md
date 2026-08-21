@@ -166,3 +166,12 @@ The physical output remains terminal-major in `(branch,row,j,lane)` addressing,
 but each vector's adjacent lanes now mean `(S+D,z^-1(S-D))`. This is a local
 inverse-progress state, not a canonical NTT-domain ABI. The full BMScale core
 uses all 16 YMM registers at peak without spilling.
+
+G1C-M2 closes the head-only representation search. The actual BMScale live DAG
+is lane-separable, while D1 pairs adjacent physical q lanes inside each
+terminal vector; terminal coefficient pairs are not inverse pairs. No earlier
+partial product therefore eliminates the required lane mix. The current
+interleaved C2-L sequence matches the scoped eight-instruction bound. For the
+full inverse only, a split-after-D1 state remains live: omit the final blend and
+let distances 2/4/8 consume the two vectors directly inside one leaf. A stored
+split boundary is not selected because it doubles stores and live vectors.

@@ -1,0 +1,92 @@
+{
+  "audit_sha256": "7993eaa4b70df5edb6810874136d9bd627d03677adb1d9304992ab7078328eb1",
+  "benchmark_class": "repository-local-g1c-m2-boundary-paired-not-for-promotion",
+  "binary_sha256": "93e570c3e75222b8bef9053fbf851a6ce0fa227589c50278dbeb95ccf7dedc3f",
+  "blocks_per_launch": 16,
+  "candidate": {
+    "cycles_by_launch": [
+      1126.0,
+      564.0,
+      588.0,
+      588.0,
+      588.0,
+      588.0,
+      588.0,
+      588.0,
+      588.0
+    ],
+    "median_cycles": 588.0,
+    "name": "C2-L-linked"
+  },
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "classification": "strong-edge-success",
+  "compiler": "cc",
+  "control": {
+    "cycles_by_launch": [
+      1168.0,
+      584.0,
+      610.0,
+      610.0,
+      610.0,
+      610.0,
+      610.0,
+      610.0,
+      610.0
+    ],
+    "median_cycles": 610.0,
+    "name": "M2-materialized-control"
+  },
+  "correctness": {
+    "cells_per_case": 1152,
+    "materialized_and_linked_bit_exact": true,
+    "producer_real_cases": 1003
+  },
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-21T09:43:40.227075+00:00",
+  "decision": "authorize full adjusted inverse16 while retaining C2-L as the head-only control",
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "live_basis_sha256": "c57e4fc3b4b561983986d9620626d94836b78a59744f00dac47cca10e69271ac",
+  "observations_per_slot": 96,
+  "paired": {
+    "candidate_faster_launches": 9,
+    "candidate_minus_control_by_launch": [
+      -42.0,
+      -20.0,
+      -22.0,
+      -22.0,
+      -22.0,
+      -22.0,
+      -22.0,
+      -22.0,
+      -22.0
+    ],
+    "candidate_over_control": 0.9639344262295082,
+    "median_candidate_minus_control_cycles": -22.0,
+    "same_direction_launches": 9
+  },
+  "promotion_eligible": false,
+  "same_output_address_and_input_residency": true,
+  "static_boundary": {
+    "all_72_stores_follow_direct_inverse_d1": true,
+    "call_frame_spill_vzeroupper_free": true,
+    "candidate_avoided_boundary_memory_instructions": 144,
+    "candidate_bmscale_inverse_edge_loads": 0,
+    "constant_time_static": true,
+    "control_bmscale_inverse_edge_loads": 72,
+    "control_extra_output_stores": 72,
+    "cycles": null,
+    "lane_factor_rekey_only": true,
+    "official_bmscale_arithmetic_instruction_counts_locked": true
+  },
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  }
+}

@@ -45,6 +45,46 @@
       "vpsubw": 486,
       "vzeroupper": 0
     },
+    "ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized": {
+      "backward_dataflow_peak_live_ymm": 16,
+      "calls": 0,
+      "conditional_branches": 0,
+      "direct_d1_instruction_count_per_vector": 8,
+      "direct_d1_sequences_immediately_before_store": 72,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "forbidden_instructions": [],
+      "frame_instructions": 0,
+      "input_operand_loads": 252,
+      "loads_from_output": 72,
+      "post_result_stores": 144,
+      "stack_references": 0,
+      "static_instruction_count": 2775,
+      "vector_stack_spills": 0,
+      "vpaddw": 288,
+      "vpblendw": 72,
+      "vpmulhw": 828,
+      "vpmullw": 558,
+      "vpshufb": 72,
+      "vpsubw": 486,
+      "vzeroupper": 0
+    },
     "ntruplus1152_exp001_gt9x16_bmscale_raw": {
       "backward_dataflow_peak_live_ymm": 16,
       "calls": 0,
@@ -89,15 +129,18 @@
   "linked_gate": {
     "all_72_stores_follow_direct_inverse_d1": true,
     "call_frame_spill_vzeroupper_free": true,
+    "candidate_avoided_boundary_memory_instructions": 144,
+    "candidate_bmscale_inverse_edge_loads": 0,
     "constant_time_static": true,
+    "control_bmscale_inverse_edge_loads": 72,
+    "control_extra_output_stores": 72,
     "cycles": null,
     "lane_factor_rekey_only": true,
-    "materialized_bmscale_inverse_edge_loads": 0,
     "official_bmscale_arithmetic_instruction_counts_locked": true
   },
   "object": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/build/g1c/g1c-bmscale-inverse-d1.o",
-  "object_sha256": "192e4d1e00db23a79b997c452dcc377ac5536495d2570122dfa9707be00738f2",
+  "object_sha256": "8a7e2daebab9e8870b5e9a3e4c202588858f96893975f0ee8197c224a70e2903",
   "schema": "gt-g1c-linked-bmscale-inverse-d1-audit/v1",
   "source": "asm/g1c_bmscale_inverse_d1.S",
-  "source_sha256": "295ec5e5b0e759125bc97fcc2ebed20b0b070909011d91f382d4c5d50f802d38"
+  "source_sha256": "9c65b144bba2848a968bd4735d8a4543444861728ac26aa9e3a6e7d99d65806f"
 }

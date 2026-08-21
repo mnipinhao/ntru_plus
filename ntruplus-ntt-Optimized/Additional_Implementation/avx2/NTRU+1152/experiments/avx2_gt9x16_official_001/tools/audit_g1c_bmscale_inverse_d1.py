@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 
 RAW = "ntruplus1152_exp001_gt9x16_bmscale_raw"
+MATERIALIZED = "ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized"
 LINKED = "ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l"
 DIRECT_D1_SEQUENCE = [
     "vpshufb", "vpaddw", "vpsubw", "vpmullw",
@@ -54,7 +55,7 @@ def ymm_liveness(lines: list[str]) -> tuple[int, list[int]]:
     return peak, sorted(touched)
 
 
-def audit_function(lines: list[str], linked: bool) -> dict:
+def audit_function(lines: list[str], mode: str) -> dict:
     mnemonics = [mnemonic(line) for line in lines]
     body = "\n".join(lines)
     output_positions = [index for index, line in enumerate(lines)
@@ -95,17 +96,18 @@ def audit_function(lines: list[str], linked: bool) -> dict:
         "backward_dataflow_peak_live_ymm": peak,
         "distinct_ymm_registers": touched,
     }
+    has_d1 = mode != "raw"
     expected = {
         "input_operand_loads": 252,
-        "post_result_stores": 72,
-        "loads_from_output": 0,
-        "vpmullw": 558 if linked else 486,
-        "vpmulhw": 828 if linked else 684,
-        "vpaddw": 288 if linked else 216,
-        "vpsubw": 486 if linked else 342,
-        "vpshufb": 72 if linked else 0,
-        "vpblendw": 72 if linked else 0,
-        "direct_d1_sequences_immediately_before_store": 72 if linked else 0,
+        "post_result_stores": 144 if mode == "materialized" else 72,
+        "loads_from_output": 72 if mode == "materialized" else 0,
+        "vpmullw": 558 if has_d1 else 486,
+        "vpmulhw": 828 if has_d1 else 684,
+        "vpaddw": 288 if has_d1 else 216,
+        "vpsubw": 486 if has_d1 else 342,
+        "vpshufb": 72 if has_d1 else 0,
+        "vpblendw": 72 if has_d1 else 0,
+        "direct_d1_sequences_immediately_before_store": 72 if has_d1 else 0,
     }
     for key, value in expected.items():
         if entry[key] != value:
@@ -132,8 +134,10 @@ def main() -> int:
         ["objdump", "-d", "--no-show-raw-insn", "-M", "intel", str(args.object)],
         check=True, text=True, stdout=subprocess.PIPE).stdout
     contract = json.loads(args.contract.read_text())
-    raw = audit_function(function_lines(disassembly, RAW), linked=False)
-    linked = audit_function(function_lines(disassembly, LINKED), linked=True)
+    raw = audit_function(function_lines(disassembly, RAW), mode="raw")
+    materialized = audit_function(
+        function_lines(disassembly, MATERIALIZED), mode="materialized")
+    linked = audit_function(function_lines(disassembly, LINKED), mode="linked")
     if linked["backward_dataflow_peak_live_ymm"] != 16:
         raise SystemExit(
             "G1C linked liveness changed from the audited 16-YMM cutpoint: "
@@ -154,11 +158,17 @@ def main() -> int:
             [args.compiler, "--version"], check=True, text=True,
             stdout=subprocess.PIPE).stdout.splitlines()[0],
         "cflags": args.cflags,
-        "functions": {RAW: raw, LINKED: linked},
+        "functions": {RAW: raw, MATERIALIZED: materialized, LINKED: linked},
         "linked_gate": {
             "official_bmscale_arithmetic_instruction_counts_locked": True,
             "lane_factor_rekey_only": True,
-            "materialized_bmscale_inverse_edge_loads": linked["loads_from_output"],
+            "candidate_bmscale_inverse_edge_loads": linked["loads_from_output"],
+            "control_bmscale_inverse_edge_loads": materialized["loads_from_output"],
+            "control_extra_output_stores": (
+                materialized["post_result_stores"] - linked["post_result_stores"]),
+            "candidate_avoided_boundary_memory_instructions": (
+                materialized["loads_from_output"] +
+                materialized["post_result_stores"] - linked["post_result_stores"]),
             "all_72_stores_follow_direct_inverse_d1": True,
             "call_frame_spill_vzeroupper_free": True,
             "constant_time_static": True,

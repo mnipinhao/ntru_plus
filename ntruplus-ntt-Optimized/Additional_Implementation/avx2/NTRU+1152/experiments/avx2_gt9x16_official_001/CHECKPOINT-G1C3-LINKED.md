@@ -47,6 +47,6 @@ Montgomery multiply/reduction requires four instructions.
 
 G1C-M/C2-L is correctness- and structure-qualified for a paired diagnostic.
 It is not performance-qualified, KEM-integrated, or production-qualified.
-The next checkpoint must compare this fixed linked leaf against an exact
-materialized GT BMScale-plus-D1 control before extending the remaining inverse
-or drawing any Official/SUPERCOP conclusion.
+G1C-M2 subsequently completed this comparison. See `CHECKPOINT-G1C-M2.md` for
+the materialized control, live-basis audit, and paired result. This historical
+checkpoint alone makes no Official/SUPERCOP conclusion.

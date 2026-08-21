@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c3-linked-bmscale-inverse-d1-correctness-complete
+state: checkpoint-g1c-m2-live-basis-and-boundary-credit-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -143,6 +143,17 @@ gates:
   checkpoint_g1c3_static_audit: passed-no-call-branch-frame-stack-spill-vzeroupper
   checkpoint_g1c3_peak_ymm: corrected-16-backward-dataflow-spill-free
   checkpoint_g1c3_cycles: null-correctness-before-timing
+  checkpoint_g1c_m2_live_dag: passed-lane-separable-no-earlier-adjacent-q-intermediate
+  checkpoint_g1c_m2_inverse_pairing: passed-adjacent-q-not-terminal-c-pairs
+  checkpoint_g1c_m2_scoped_lower_bound: passed-8-per-vector-32-per-row-c2l-matches
+  checkpoint_g1c_m2_materialized_control: passed-72-raw-stores-72-edge-loads-72-post-stores
+  checkpoint_g1c_m2_linked_credit_static: passed-avoids-144-boundary-memory-instructions
+  checkpoint_g1c_m2_differential: passed-1003x1152-materialized-linked-bit-exact
+  checkpoint_g1c_m2_paired: passed-linked588-vs-control610-minus22-9of9
+  checkpoint_g1c_m2_benchmark: repository-local-diagnostic-only
+  checkpoint_g1c_m2_split_state: retained-for-full-adjusted-inverse16
+  checkpoint_g1c_m2_baseinv_normalization: open-excluded
+  checkpoint_g1c_m2_f1_debt: not-repaid-22-credit-vs-117-two-forward-debt
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -173,11 +184,13 @@ checkpoint_g0: consumer-edge-graph-static-pruning-and-four-view-g1-shortlist-com
 checkpoint_g1a: five-edge-component-basis-gauge-scale-and-absorption-oracles-complete
 checkpoint_g1b: f1-b1-priced-plus58.5-cycles-f0-remains-control
 g1b_diagnostic_result: results/g1b-intel155h-20260821-001/g1b-f1-paired.json
+g1c_m2_diagnostic_result: results/g1c-m2-intel155h-20260821-001/g1c-m2-paired.json
 checkpoint_g1c0: official-zero-conversion-and-baseinv-scalar-lifetime-audited
 checkpoint_g1c1: adjusted-inverse-distance1-component-twiddle-scale-range-oracle-complete
 checkpoint_g1c2_contract: bmscale-live-tail-selects-c2l-zero-materialized-edge
 checkpoint_g1c3: linked-c2l-bmscale-plus-inverse-distance1-correctness-and-static-audit-complete
-next_step: paired-g1c-c2l-linked-vs-exact-materialized-gt-bmscale-plus-distance1-control
+checkpoint_g1c_m2: live-basis-scoped-bound-and-linked-boundary-credit-complete
+next_step: implement-g1c-m3-full-adjusted-inverse16-interleaved-control-vs-split-fused-d2-d4-d8
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

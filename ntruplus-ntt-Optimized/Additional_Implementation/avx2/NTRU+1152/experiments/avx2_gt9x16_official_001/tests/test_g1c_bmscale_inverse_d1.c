@@ -196,23 +196,29 @@ static void test_canary(void) {
     uint64_t before[4];
     terminal_major value;
     uint64_t after[4];
-  } __attribute__((aligned(32))) raw, linked;
+  } __attribute__((aligned(32))) raw, materialized, linked;
   terminal_major a __attribute__((aligned(32)));
   terminal_major b __attribute__((aligned(32)));
   int index;
   fill_case(&a, &b, 17);
   for (index = 0; index < 4; ++index) {
-    raw.before[index] = linked.before[index] = UINT64_C(0x0123456789abcdef) ^ (uint64_t)index;
-    raw.after[index] = linked.after[index] = UINT64_C(0xfedcba9876543210) ^ (uint64_t)index;
+    raw.before[index] = materialized.before[index] = linked.before[index] =
+        UINT64_C(0x0123456789abcdef) ^ (uint64_t)index;
+    raw.after[index] = materialized.after[index] = linked.after[index] =
+        UINT64_C(0xfedcba9876543210) ^ (uint64_t)index;
   }
   ntruplus1152_exp001_gt9x16_bmscale_raw(&raw.value, &a, &b);
+  ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized(
+      &materialized.value, &a, &b);
   ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l(&linked.value, &a, &b);
   for (index = 0; index < 4; ++index)
     if (raw.before[index] != (UINT64_C(0x0123456789abcdef) ^ (uint64_t)index) ||
         raw.after[index] != (UINT64_C(0xfedcba9876543210) ^ (uint64_t)index) ||
+        materialized.before[index] != (UINT64_C(0x0123456789abcdef) ^ (uint64_t)index) ||
+        materialized.after[index] != (UINT64_C(0xfedcba9876543210) ^ (uint64_t)index) ||
         linked.before[index] != (UINT64_C(0x0123456789abcdef) ^ (uint64_t)index) ||
         linked.after[index] != (UINT64_C(0xfedcba9876543210) ^ (uint64_t)index)) {
-      fputs("G1C-M/C2-L canary corruption\n", stderr);
+      fputs("G1C-M2 materialized/C2-L canary corruption\n", stderr);
       exit(1);
     }
 }
@@ -225,6 +231,7 @@ int main(void) {
   terminal_major expected_raw __attribute__((aligned(32)));
   terminal_major expected_linked __attribute__((aligned(32)));
   terminal_major actual_raw __attribute__((aligned(32)));
+  terminal_major actual_materialized __attribute__((aligned(32)));
   terminal_major actual_linked __attribute__((aligned(32)));
   int maximum_raw = 0, maximum_sum = 0, trial;
 
@@ -235,8 +242,12 @@ int main(void) {
     scalar_reference(&expected_raw, &expected_linked, &a, &b,
                      &maximum_raw, &maximum_sum);
     ntruplus1152_exp001_gt9x16_bmscale_raw(&actual_raw, &a, &b);
+    ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_materialized(
+        &actual_materialized, &a, &b);
     ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l(&actual_linked, &a, &b);
     compare("BMScale", trial, &expected_raw, &actual_raw);
+    compare("BMScale+materialized-inverse-d1", trial,
+            &expected_linked, &actual_materialized);
     compare("BMScale+inverse-d1", trial, &expected_linked, &actual_linked);
     if (memcmp(&a, &a_copy, sizeof a) != 0 || memcmp(&b, &b_copy, sizeof b) != 0) {
       fprintf(stderr, "G1C input mutation trial=%d\n", trial);
@@ -248,7 +259,7 @@ int main(void) {
     fprintf(stderr, "G1C range failure raw=%d sum=%d\n", maximum_raw, maximum_sum);
     return 1;
   }
-  printf("G1C-M/C2-L: %d cases x 1152 cells bit-exact, raw<=%d sum<=%d, canary passed\n",
+  printf("G1C-M2 materialized/C2-L: %d cases x 1152 cells bit-exact, raw<=%d sum<=%d, canary passed\n",
          TRIALS, maximum_raw, maximum_sum);
   return 0;
 }

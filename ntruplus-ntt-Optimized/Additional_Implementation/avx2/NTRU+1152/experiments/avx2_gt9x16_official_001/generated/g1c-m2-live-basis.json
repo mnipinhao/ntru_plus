@@ -1,0 +1,114 @@
+{
+  "alternatives": {
+    "M2-earlier-partial-products": {
+      "reason": "no live intermediate crosses q lanes; distributing D1 over multiple final summands duplicates shuffles/add-sub/Montgomery chains",
+      "status": "rejected-for-head-only"
+    },
+    "M2-final-interleaved": {
+      "full_transform_stores": 72,
+      "instructions_per_c_vector": 8,
+      "status": "selected-current-C2-L",
+      "stores_per_row": 4
+    },
+    "M2-split-after-D1": {
+      "condition_for_credit": "the next inverse stage must consume split sum/twisted-difference in the same leaf or absorb packing",
+      "instructions_per_c_vector_before_storage": 7,
+      "live_vectors_per_c": 2,
+      "omitted_operation": "final vpblendw",
+      "status": "retain-for-full-inverse16",
+      "unpacked_stores_per_row": 8
+    }
+  },
+  "checkpoint": "G1C-M2-live-BMScale-to-inverse-head",
+  "decision": {
+    "baseinv_normalization": "open and intentionally excluded",
+    "cycles": null,
+    "full_inverse16_split_state_remains_open": true,
+    "head_only_arithmetic_credit_available_before_final_c": false,
+    "linked_memory_boundary_credit_available": true
+  },
+  "live_graph": {
+    "early_cutpoint": {
+      "cheap_nonfinal_intermediates": [],
+      "reason": "ymm8..ymm14 have been consumed or are scratch; none mixes adjacent q lanes",
+      "results": {
+        "ymm5": "c0",
+        "ymm6": "c1",
+        "ymm7": "c2"
+      },
+      "still_live_for_c3": {
+        "ymm1": "a0",
+        "ymm2": "a1",
+        "ymm3": "b0",
+        "ymm4": "b1"
+      }
+    },
+    "final_values": {
+      "c0": "factor*(p13+p31+p22)+p00",
+      "c1": "factor*(p23+p32)+p01+p10",
+      "c2": "factor*p33+p02+p20+p11",
+      "c3": "(p03+p12)+(p21+p30)"
+    },
+    "lane_dependency": {
+      "all_bmscale_tail_operations": "identity lane map; each lane depends only on the same physical q lane",
+      "inverse_distance1": "each butterfly depends on adjacent physical q lanes (2k,2k+1)",
+      "terminal_coefficient_pairing": "not the inverse-head relation; c0/c1 and c2/c3 are independent j values"
+    },
+    "late_c3_cutpoint": {
+      "pre_final_adds": {
+        "ymm1": "p03+p12",
+        "ymm11": "p21",
+        "ymm12": "p30",
+        "ymm13": "p03",
+        "ymm14": "p12",
+        "ymm2": "p21+p30"
+      },
+      "result": {
+        "ymm1": "c3"
+      },
+      "reuse_decision": "forming inverse D1 on the two partial sums separately duplicates lane mixing and Montgomery work"
+    }
+  },
+  "materialized_control": {
+    "extra_memory_instructions_vs_C2_L": 144,
+    "layout_conversion": false,
+    "path": "BMScale arithmetic -> 72 raw stores -> 72 D1 loads -> D1 -> 72 post-D1 stores",
+    "role": "exact zero-conversion current-boundary control"
+  },
+  "mechanical_solve": {
+    "claim_boundary": "mechanical lower bound only for the stated primitive set and interleaved output ABI",
+    "current_c2_l_realizes_bound": true,
+    "minimum_instructions_per_c_vector": 8,
+    "minimum_instructions_per_row": 32,
+    "required_operations": [
+      {
+        "class": "adjacent-lane-mixing",
+        "minimum": 1,
+        "witness": "vpshufb adjacent-word swap"
+      },
+      {
+        "class": "independent-linear-forms",
+        "minimum": 2,
+        "witness": "vpaddw sum plus vpsubw difference"
+      },
+      {
+        "class": "Montgomery-twist",
+        "minimum": 4,
+        "witness": "vpmullw, vpmulhw(z), vpmulhw(q), vpsubw"
+      },
+      {
+        "class": "single-vector-interleaving",
+        "minimum": 1,
+        "witness": "vpblendw even sum with odd twisted difference"
+      }
+    ],
+    "scope": "AVX2, one canonical c_j vector to one interleaved post-D1 vector, current Montgomery representation"
+  },
+  "parameter": 1152,
+  "schema": "gt-g1c-m2-live-basis/v1",
+  "source_sha256": {
+    "inverse_head": "6dbc2393057f4e1dc9c1764d46e161511e5fc0c2b3b11d7c81e3749fb37537f7",
+    "linked_asm": "9c65b144bba2848a968bd4735d8a4543444861728ac26aa9e3a6e7d99d65806f",
+    "live_tail_contract": "0378fe9bd3819e0586b825b1cc0ea4761b59fd35d4cbdf93b8cecef0e8836ee3"
+  }
+}
