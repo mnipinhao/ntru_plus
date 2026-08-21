@@ -37,7 +37,13 @@ generate:
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --asm-constants generated/gt9x16-ntt16-constants.inc
-	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json
+	mkdir -p $(BUILD)/structure
+	$(CC) -mavx2 -c $(UPSTREAM)/ntt.s -o $(BUILD)/structure/official-ntt.o
+	$(CC) -mavx2 -c $(UPSTREAM)/basemul.s -o $(BUILD)/structure/official-basemul.o
+	$(CC) -mavx2 -c $(UPSTREAM)/baseinv.s -o $(BUILD)/structure/official-baseinv.o
+	$(CC) -mavx2 -c $(UPSTREAM)/invntt.s -o $(BUILD)/structure/official-invntt.o
+	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json
+	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json
 	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS)
 
@@ -49,12 +55,19 @@ check:
 	$(PYTHON) $(COMMON_GENERATOR) --parameter $(PARAMETER) --output generated/gt9x16-model.json --check
 	$(PYTHON) tools/generate_stage8_tables.py --json generated/gt9x16-stage8-tables.json --header generated/gt9x16-stage8-tables.h --check
 	$(PYTHON) tools/generate_full_forward_tables.py --json generated/gt9x16-component-oracle.json --header generated/gt9x16-full-forward-tables.h --asm-constants generated/gt9x16-ntt16-constants.inc --check
-	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-pipeline-layout.json --check
+	mkdir -p $(BUILD)/structure
+	$(CC) -mavx2 -c $(UPSTREAM)/ntt.s -o $(BUILD)/structure/official-ntt.o
+	$(CC) -mavx2 -c $(UPSTREAM)/basemul.s -o $(BUILD)/structure/official-basemul.o
+	$(CC) -mavx2 -c $(UPSTREAM)/baseinv.s -o $(BUILD)/structure/official-baseinv.o
+	$(CC) -mavx2 -c $(UPSTREAM)/invntt.s -o $(BUILD)/structure/official-invntt.o
+	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json --check
+	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json --check
 	$(PYTHON) tools/generate_ntt9_first_oracle.py --component-oracle generated/gt9x16-component-oracle.json --output generated/gt9x16-ntt9-first-oracle.json --check
 	$(PYTHON) tools/generate_official_stage_partitions.py --source $(UPSTREAM)/ntt.s --output $(OFFICIAL_PARTITIONS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
+	$(PYTHON) tests/test_representation_contract.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -90,6 +103,8 @@ audit:
 	$(CC) -mavx2 -c $(UPSTREAM)/basemul.s -o $(BUILD)/structure/official-basemul.o
 	$(CC) -mavx2 -c $(UPSTREAM)/baseinv.s -o $(BUILD)/structure/official-baseinv.o
 	$(CC) -mavx2 -c $(UPSTREAM)/invntt.s -o $(BUILD)/structure/official-invntt.o
+	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json
+	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json --check
 	$(PYTHON) tools/audit_pipeline_structure.py --candidate-elf $(BUILD)/structure/gt-pipeline --official-object $(BUILD)/structure/official-ntt.o --official-object $(BUILD)/structure/official-basemul.o --official-object $(BUILD)/structure/official-baseinv.o --official-object $(BUILD)/structure/official-invntt.o --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output generated/gt9x16-pipeline-structure-audit.json
 
 bench-local:

@@ -12,7 +12,7 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint D completed; NTT9-first adjusted-NTT16 implementation selected next.**
+**Checkpoint E representation contract completed; provisional D-B forward is next.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -92,3 +92,11 @@ reproduces a 208-cycle orientation tax. The D-B oracle proves that moving NTT9
 first turns the shear into `rho^(-vp)` and that this phase can be absorbed into
 distance-dependent NTT16 twiddles without extra Montgomery chains. See
 `CHECKPOINT-D.md`.
+
+Checkpoint E pauses assembly to close the complete NTT-domain representation
+contract. It audits the pinned Official forward/BaseMul/BaseInv/inverse
+lifecycle, distinguishes resident `R^0` from inverse-feed `R^-1`, records
+BaseInv's 18-vector denominator side state, maps all 1,152 physical terminal
+cells, and retains terminal-major, persistent-pair, and inverse-oriented
+hybrid ABIs for full-path prototypes. No layout is selected from static costs.
+See `CHECKPOINT-E.md` and `LAYOUT.md`.

@@ -36,6 +36,15 @@ NTT16→NTT9 boundaries, then ends with 1,152 position-addressed scalar stores
 into Official layout. Those conversions stay inside full-real timing until a
 native-layout producer/consumer actually removes them.
 
+## Checkpoint E lifecycle extension
+
+`generated/ntt-domain-lifecycle-audit.json` extends this structural snapshot
+to the actual cross-kernel value contract. It records the regular BaseMul R²
+post-pass, the distinct R^-1 scaled-BaseMul→inverse edge, BaseInv's 18-YMM
+denominator side state, and the exact forward/inverse terminal block loads and
+stores. `LAYOUT.md` uses that evidence; the earlier Checkpoint-C layout choice
+is no longer treated as a complete-pipeline selection.
+
 Official forward contains 279 vector instructions, 61 vector-memory
 instructions, no call, no frame, and no vector stack reference across the
 whole transform. Official BaseMul and inverse have the same leaf/no-frame/no-

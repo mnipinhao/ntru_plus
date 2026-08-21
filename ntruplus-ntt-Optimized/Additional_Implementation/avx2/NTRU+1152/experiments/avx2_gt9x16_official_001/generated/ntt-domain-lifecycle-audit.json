@@ -1,0 +1,289 @@
+{
+  "audit_conclusion": {
+    "all_hot_assembly_leaves_use_all_16_ymm": true,
+    "baseinv_has_denominator_side_channel": true,
+    "inverse_feed_is_distinct_scale_contract": true,
+    "official_resident_layout": "18 contiguous terminal-major blocks; four YMM coefficients x 16 factors",
+    "standalone_full_layout_passes": 0
+  },
+  "boundaries": {
+    "baseinv": {
+      "final_output_scale_r_exponent": 0,
+      "phase1_input_vector_offsets_bytes": [
+        0,
+        32,
+        64,
+        96
+      ],
+      "phase1_input_vectors_per_terminal_block": 4,
+      "phase1_output_layout": "same four-vector terminal-major block shape",
+      "phase1_side_output": "18 denominator YMM vectors",
+      "phase2": "batch-invert denominators then multiply four output vectors per terminal block",
+      "standalone_layout_conversion": false,
+      "wrapper_stack_object": "den[18], 576 bytes before compiler alignment/other state"
+    },
+    "forward_terminal_store": {
+      "bytes": 2304,
+      "bytes_per_outer_block": 256,
+      "outer_blocks": 9,
+      "scale_r_exponent": 0,
+      "standalone_permutation_after_store": false,
+      "terminal_blocks_per_outer_block": 2,
+      "terminal_coefficient_order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "vector_offsets_bytes": [
+        0,
+        32,
+        64,
+        96
+      ],
+      "vectors_per_terminal_block": 4
+    },
+    "inverse_load": {
+      "bytes": 2304,
+      "bytes_per_outer_block": 256,
+      "expected_input_scale_r_exponent": -1,
+      "normalization": "inverse constants include the scale expected from poly_basemul_scale",
+      "outer_blocks": 9,
+      "scale_proof": {
+        "equals_inverse_288_times_r_squared_mod_q": 3424,
+        "interpretation": "one extra R versus an R^0 inverse normalization compensates the R^-1 input",
+        "ninv_scale_mod_q": 3424,
+        "ninv_scale_signed": -33
+      },
+      "standalone_permutation_before_load": false,
+      "vector_offsets_bytes": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160,
+        192,
+        224
+      ],
+      "vectors_loaded_per_outer_block": 8
+    },
+    "regular_basemul": {
+      "factor_constants": "lane-wise zeta*qinv and zeta; one 64-byte pair per two terminal blocks",
+      "input_terminal_blocks": 18,
+      "input_vector_offsets_bytes": [
+        0,
+        32,
+        64,
+        96
+      ],
+      "input_vectors_per_operand_per_block": 4,
+      "output_layout": "same four-vector terminal-major block shape",
+      "output_scale_r_exponent": 0,
+      "post_arithmetic_pass": "in-kernel full-array R^2 Montgomery pass",
+      "standalone_layout_conversion": false
+    },
+    "scaled_basemul_inverse_feed": {
+      "input_layout": "same as regular BaseMul",
+      "observed_caller_edge": "poly_basemul_scale -> poly_invntt_scale",
+      "output_layout": "same four-vector terminal-major block shape",
+      "output_scale_r_exponent": -1,
+      "post_arithmetic_pass": "none; deliberately omits regular BaseMul R^2 pass",
+      "standalone_layout_conversion": false
+    }
+  },
+  "functions": {
+    "poly_baseinv_1": {
+      "calls": 0,
+      "conservative_peak_live_ymm": 16,
+      "distinct_ymm_count": 16,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_instructions": 0,
+      "object": "official-baseinv.o",
+      "object_sha256": "ac8709e0d22e0c9126bdfacb9c4ae04adabd2793a9918a505dfd517e1f4f2a22",
+      "stack_references": 0,
+      "static_instruction_count": 251,
+      "vector_load_instruction_count": 14,
+      "vector_store_instruction_count": 10,
+      "vzeroupper": 0
+    },
+    "poly_basemul": {
+      "calls": 0,
+      "conservative_peak_live_ymm": 16,
+      "distinct_ymm_count": 16,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_instructions": 0,
+      "object": "official-basemul.o",
+      "object_sha256": "5ed8ff9c76ec5b0d2697870d5c83e0ed0e595719fb5313dd47f1b9920a5aab2c",
+      "stack_references": 0,
+      "static_instruction_count": 290,
+      "vector_load_instruction_count": 40,
+      "vector_store_instruction_count": 12,
+      "vzeroupper": 0
+    },
+    "poly_basemul_scale": {
+      "calls": 0,
+      "conservative_peak_live_ymm": 16,
+      "distinct_ymm_count": 16,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_instructions": 0,
+      "object": "official-basemul.o",
+      "object_sha256": "5ed8ff9c76ec5b0d2697870d5c83e0ed0e595719fb5313dd47f1b9920a5aab2c",
+      "stack_references": 0,
+      "static_instruction_count": 249,
+      "vector_load_instruction_count": 34,
+      "vector_store_instruction_count": 8,
+      "vzeroupper": 0
+    },
+    "poly_invntt_scale": {
+      "calls": 0,
+      "conservative_peak_live_ymm": 16,
+      "distinct_ymm_count": 16,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_instructions": 0,
+      "object": "official-invntt.o",
+      "object_sha256": "9bb533fb1dfe03aa15eed224f841243f56ebe6b210491ce34f2f0d48c655162d",
+      "stack_references": 0,
+      "static_instruction_count": 417,
+      "vector_load_instruction_count": 36,
+      "vector_store_instruction_count": 20,
+      "vzeroupper": 0
+    },
+    "poly_ntt": {
+      "calls": 0,
+      "conservative_peak_live_ymm": 16,
+      "distinct_ymm_count": 16,
+      "distinct_ymm_registers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_instructions": 0,
+      "object": "official-ntt.o",
+      "object_sha256": "d986b6c618c3dd9f8d46bd1887c0f0ed2f69da3849f18b6e6d870e7d6164b0b0",
+      "stack_references": 0,
+      "static_instruction_count": 362,
+      "vector_load_instruction_count": 33,
+      "vector_store_instruction_count": 20,
+      "vzeroupper": 0
+    }
+  },
+  "lifecycle_edges": [
+    {
+      "consumer": "poly_basemul/poly_baseinv",
+      "conversion": "none",
+      "producer": "poly_ntt",
+      "scale": "R^0"
+    },
+    {
+      "consumer": "later NTT-domain arithmetic/storage",
+      "conversion": "none",
+      "producer": "poly_basemul",
+      "scale": "R^0"
+    },
+    {
+      "consumer": "poly_basemul",
+      "conversion": "none",
+      "producer": "poly_baseinv",
+      "scale": "R^0"
+    },
+    {
+      "consumer": "poly_invntt_scale",
+      "conversion": "none",
+      "producer": "poly_basemul_scale",
+      "scale": "R^-1"
+    }
+  ],
+  "parameter": 1152,
+  "source": "pinned SUPERCOP NTRU+1152 AVX2",
+  "source_hashes": {
+    "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+    "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "invntt.s": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c",
+    "kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705"
+  }
+}

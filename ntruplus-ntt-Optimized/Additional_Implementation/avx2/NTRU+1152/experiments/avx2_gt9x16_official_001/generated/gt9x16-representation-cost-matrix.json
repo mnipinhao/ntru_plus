@@ -1,0 +1,58 @@
+{
+  "candidates": {
+    "A_terminal_major": {
+      "arithmetic_input_abi": "gt_row_terminal_lane",
+      "arithmetic_output_abi": "gt_row_terminal_lane",
+      "baseinv_boundary_routing_per_row": 0,
+      "basemul_boundary_routing_per_row": 0,
+      "forward_final_routing_per_row": 0,
+      "forward_output_abi": "gt_row_terminal_lane",
+      "inverse_entry_routing_per_row": 0,
+      "inverse_input_abi": "gt_row_terminal_lane",
+      "open_question": "independent inverse NTT16 misses any terminal-pair arithmetic sharing"
+    },
+    "B_persistent_pair": {
+      "arithmetic_input_abi": "persistent_pair_sd",
+      "arithmetic_output_abi": "persistent_pair_sd",
+      "baseinv_boundary_routing_full_transform": 288,
+      "baseinv_boundary_routing_per_row": 16,
+      "baseinv_load_routing_per_row": 8,
+      "baseinv_store_routing_per_row": 8,
+      "basemul_boundary_routing_full_transform": 432,
+      "basemul_boundary_routing_per_row": 24,
+      "basemul_load_routing_per_operand_per_row": 8,
+      "basemul_store_routing_per_row": 8,
+      "forward_final_routing_per_row": 0,
+      "forward_output_abi": "persistent_pair_sd",
+      "inverse_entry_routing_per_row": 0,
+      "inverse_input_abi": "persistent_pair_sd",
+      "open_question": "paired forward/inverse kernels must prove zero boundary routing and shared-chain benefit"
+    },
+    "C_terminal_to_inverse_pair_hybrid": {
+      "arithmetic_input_abi": "gt_row_terminal_lane",
+      "arithmetic_output_abi": "persistent_pair_sd",
+      "baseinv_boundary_routing_full_transform": 144,
+      "baseinv_boundary_routing_per_row": 8,
+      "baseinv_load_routing_per_row": 0,
+      "baseinv_store_routing_per_row": 8,
+      "basemul_boundary_routing_full_transform": 144,
+      "basemul_boundary_routing_per_row": 8,
+      "basemul_load_routing_per_row": 0,
+      "basemul_store_routing_per_row": 8,
+      "forward_final_routing_per_row": 0,
+      "forward_output_abi": "gt_row_terminal_lane",
+      "inverse_entry_routing_per_row": 0,
+      "inverse_input_abi": "persistent_pair_sd",
+      "open_question": "store-side repack must fit BaseMul/BaseInv register pressure; paired inverse remains unimplemented"
+    }
+  },
+  "full_rows": 18,
+  "metric": "static routing-instruction estimates for the current explicit AVX2 pack/unpack schedule at real kernel boundaries; not proved lower bounds; cycles pending prototypes",
+  "parameter": 1152,
+  "selection_benchmarks": [
+    "2F+BaseMul_scale+adjusted_inverse",
+    "F+BaseInv+scale-correct-adjusted-inverse"
+  ],
+  "selection_rule": "no candidate selected from forward-only or static-routing evidence",
+  "standalone_full_layout_pass_allowed": false
+}

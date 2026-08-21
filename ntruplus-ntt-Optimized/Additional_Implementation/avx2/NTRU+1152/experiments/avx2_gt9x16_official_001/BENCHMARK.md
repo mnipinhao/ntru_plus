@@ -151,5 +151,24 @@ original function. Input reset is outside timing.
 
 The `630 - 422 = 208` cycle gap isolates the natural GT producer tax and is
 consistent with the earlier 210.136-cycle estimate.
-D-B is selected next because its exact basis oracle absorbs the shear phase
-into p-dependent NTT16 twiddles while retaining bit/trit-reversed orders.
+D-B remains the selected transform order because its exact basis oracle absorbs
+the shear phase into p-dependent NTT16 twiddles. Checkpoint E leaves its
+terminal ABI deliberately undecided.
+
+## Checkpoint E benchmark policy
+
+Forward remains a reported component metric, but it no longer selects the
+NTT-domain ABI. After provisional A/B/C kernels exist, the primary paired
+diagnostics are complete arithmetic paths:
+
+```text
+2F + BaseMul_scale + scale-correct adjusted inverse
+F + BaseInv + scale-correct adjusted inverse
+```
+
+Every candidate includes forward stores, BaseMul/BaseInv load-side unpack,
+arithmetic store-side repack, inverse loads, and normalization. Input reset is
+outside timing; Official/candidate use the same compiler recipe, pinning,
+residency, and symmetric block order. No isolated routing or forward win can
+select or promote a representation. Formal promotion still requires native
+SUPERCOP KEM and fixed-ELF evidence after the complete caller path exists.

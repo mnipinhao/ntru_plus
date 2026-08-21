@@ -1,50 +1,106 @@
-# GT forward/BaseMul/inverse physical-layout checkpoint
+# NTT-domain representation contract
 
-This checkpoint chooses an interface for the next hot-kernel prototype; it
-does not freeze a production ABI. The machine-readable map is
-`generated/gt9x16-pipeline-layout.json`.
+This checkpoint does not select a production ABI. It normalizes mathematical
+component identity, physical position, Montgomery scale, range, terminal
+factor, and consumer boundary so the complete forward/arithmetic/inverse path
+can select one.
 
-## Existing Official contract
+The machine-readable sources of truth are:
 
-Official forward stores one 16-factor block as four adjacent YMM vectors:
+- `generated/ntt-domain-lifecycle-audit.json`;
+- `generated/gt9x16-pipeline-layout.json`;
+- `generated/gt9x16-representation-cost-matrix.json`.
 
-```text
-[terminal 0 lanes 0..15]
-[terminal 1 lanes 0..15]
-[terminal 2 lanes 0..15]
-[terminal 3 lanes 0..15]
-```
+## Component identity
 
-`poly_basemul` consumes exactly that 128-byte block, and `poly_invntt_scale`
-consumes the resulting packed layout directly. The root ordering is private to
-Official; no natural-order conversion exists between these operations.
-
-## Selected Checkpoint-C layout
-
-The leading GT candidate is:
+Every terminal scalar is identified by `(b,p,q,j)`: top branch, NTT9
+frequency, NTT16 frequency, and degree-4 terminal coefficient. Physical rows
+and lanes are deliberately private orders:
 
 ```text
-T[branch][physical_trit_reversed_row][terminal_coefficient]
-  = one YMM containing 16 physical_bit_reversed_q lanes
+p = P[r], P = [0,3,6,1,4,7,2,5,8]
+q = Q[l], Q = [0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15]
 ```
 
-This deliberately preserves both digit-reversed transform orders. A vector
-NTT9 can store its nine row outputs directly. BaseMul sees the same useful
-shape as Official—four adjacent terminal vectors describing 16 independent
-degree-4 rings—while a GT inverse can begin with inverse NTT9 without an input
-permutation. Each row/lane has a generated Montgomery factor for BaseMul and
-BaseInv.
+No consumer may assume `r=p` or `l=q`. Each `(b,r,l)` maps to
+`X^4-factor`, its Montgomery factor/qinv pair, all four terminal coefficients,
+and Official positions. Replacing R3R3 with another NTT9 schedule changes
+`P[]` and generated constants, not BaseMul/BaseInv semantics.
 
-## Alternatives
+## Arithmetic-domain contracts
 
-| Layout | Forward final conversion | BaseMul access | GT inverse entry | Decision |
-| --- | --- | --- | --- | --- |
-| Official packed roots | current 1152-scalar scatter | ideal | requires full remap | comparison ABI only |
-| GT row/terminal/lane | none | four adjacent YMM | direct | selected |
-| GT terminal/row/lane | none | four streams 288 bytes apart | direct | retain as locality control |
-| q-major padded-16 | 9×16 transpose | seven dead lanes | specialized | reject for density |
+| Boundary | Scale | Conservative range | Status |
+| --- | ---: | ---: | --- |
+| KEM-small forward output | `R^0` | `[-3107,3107]` | proved from small-input stage bound plus Official final reduction |
+| resident BaseMul/BaseInv value | `R^0` | `[-3456,3456]` | Montgomery-output contract |
+| regular BaseMul output | `R^0` | `[-3456,3456]` | includes the in-kernel R² post-pass |
+| BaseInv output | `R^0` | `[-3456,3456]` | after denominator batch inversion/application |
+| scaled BaseMul inverse feed | `R^-1` | `[-13824,13824]` | conservative; deliberately omits R² post-pass |
 
-The selected layout removes *logical* adapter/scatter boundaries only when the
-producer and consumers are implemented in that layout. Until then, every real
-conversion remains part of full-path timing. Microbenchmarks may identify its
-cost but may not subtract it from an end-to-end result.
+The provisional D-B forward must retain an equivalent final reduction before
+BaseMul/BaseInv. General centered-input forward remains unqualified. Official
+`poly_invntt_scale` consumes the `R^-1` scaled-BaseMul result; a diagnostic
+`F+BaseInv+I` path needs either R0-specific inverse normalization constants or
+a fused BaseInv output scale. It must not silently reuse the R^-1 contract.
+
+## Official lifecycle
+
+Official keeps 18 contiguous 128-byte terminal-major blocks. Each block is
+four adjacent YMM vectors, one per `j`, with 16 independent factors in lanes.
+
+- Forward stores two terminal blocks per 256-byte radix-2 block.
+- Regular BaseMul consumes two operands in that shape and performs an R²
+  post-pass without changing layout.
+- Scaled BaseMul keeps the same layout but omits the post-pass for inverse.
+- BaseInv phase 1 consumes four vectors and emits four vectors plus one
+  denominator vector per terminal block; `den[18]` is batch-inverted and phase
+  2 multiplies it back.
+- Inverse loads eight vectors per 256-byte block directly. There is no
+  standalone permutation on any Official edge.
+
+All five audited assembly leaves are call-free, frame-free, stack-reference-
+free, contain no `vzeroupper`, and use all 16 YMM registers. BaseInv's C wrapper
+still owns the separate 18-YMM denominator array; that is arithmetic state,
+not a layout pass.
+
+## Candidate closure ABIs
+
+### A. Terminal-major
+
+```text
+T[branch][physical_p_row][terminal_j][physical_q_lane]
+```
+
+Forward, BaseMul/BaseInv loads and stores, and an independent adjusted inverse
+NTT16 need no boundary routing. The open cost is that it may give up the
+terminal-pair Montgomery-chain sharing suggested by C4.
+
+### B. Persistent pair S/D
+
+```text
+P[branch][physical_p_row][terminal_pair][S_or_D][packed_lane]
+```
+
+For terminal pair `k`, lower lanes hold `j=2k`, upper lanes `j=2k+1`; S/D
+selects even/odd physical q lanes. A paired forward and paired inverse can
+potentially keep this form without reconstruction. The current explicit AVX2
+unpack schedule uses eight routing instructions per operand/row. Including
+two BaseMul inputs and persistent output gives 24 per row, 432 over 18 rows.
+BaseInv uses one input and one output pack: 16 per row, 288 total.
+
+### C. Terminal-to-inverse-pair hybrid
+
+Forward and arithmetic inputs use A; BaseMul/BaseInv store directly as B for a
+paired inverse. Only the arithmetic store side routes: eight per row, 144 over
+the full transform. This is a boundary policy, not a standalone conversion.
+
+The counts for B/C are explicit-schedule estimates, not proved lower bounds or
+cycle predictions. A, B, and C remain alive until native implementations are
+measured as `2F+BaseMul_scale+I` and scale-correct `F+BaseInv+I` paths.
+
+## Closure rule
+
+No candidate may insert a full-array transpose, gather, scatter, or cosmetic
+natural-order pass. Load-side unpack and store-side repack are allowed only
+inside the real producer/consumer arithmetic kernel and stay in full-path
+timing.
