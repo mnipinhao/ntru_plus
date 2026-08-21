@@ -143,3 +143,11 @@ BMScale and inverse already share a zero-conversion terminal-major boundary;
 no C1 store-order credit is available. The adjusted inverse head remains a
 generated-oracle gate, so F1 and F5 are still independent and no complete-path
 layout is selected.
+
+G1C1 gives `persistent_pair_sd` its first proved inverse consumer. Each row's
+two distance-1 output vectors are consumed in place as `(S,D)` and become
+`(S+D,z^-1(S-D))`, with the same two-vector physical footprint and new
+twice-pre-distance1 semantics. This is a local factorization state, not a
+universal ABI and not the textual Official level-6 layout. The generated oracle
+preserves every Official component/root identity while avoiding an entry
+conversion.

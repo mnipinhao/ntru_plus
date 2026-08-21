@@ -155,3 +155,12 @@ store-order-only C1 has no baseline credit. BaseInv `den[18]` lifetime and the
 scale-1/4 R0 scalar normalization (`142 mod 3457`) are closed, but adjusted
 inverse-head component/twiddle/range oracles are still required before C2 ASM.
 See `CHECKPOINT-G1C0.md`.
+
+Checkpoint G1C1 closes the adjusted inverse first layer as the inverse of GT's
+distance-1 butterfly, rather than copying Official's source-stage order. Its
+576 butterflies cover all 1,152 persistent-pair cells, retain Official
+factor/root identities, prove the local `2I` inverse relation, preserve the
+Montgomery exponent, and fit the BMScale/BaseInv signed-i16 range contracts
+without another reduction. This authorizes the inverse distance-1 ASM only;
+the linked BMScale-tail+head C2 gate is still closed. See
+`CHECKPOINT-G1C1.md`.
