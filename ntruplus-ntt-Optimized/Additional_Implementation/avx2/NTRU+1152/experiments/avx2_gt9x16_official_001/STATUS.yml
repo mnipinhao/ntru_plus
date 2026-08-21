@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f-r3d-d1-provisional-forward-body-selected
+state: checkpoint-g0-consumer-edge-representation-shortlist-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -85,6 +85,14 @@ gates:
   checkpoint_f_r3d_strong_gate: passed-adjusted-421-below-434
   checkpoint_f_r3d_stretch_gate: passed-adjusted-421-below-422
   checkpoint_f_r3d_benchmark: passed-repository-local-diagnostic-only
+  checkpoint_g0_official_audit_reuse: passed-zero-standalone-layout-pass-and-den18
+  checkpoint_g0_representation_schema: passed-p-q-b-g-s-o
+  checkpoint_g0_consumer_graph: passed-three-complete-paths
+  checkpoint_g0_mechanical_cost_schema: passed-unknowns-preserved-not-zero
+  checkpoint_g0_paid_standalone_pruning: passed-universal-canonical-abi-rejected
+  checkpoint_g0_p_neg_p_audit: deferred-three-of-four-nonzero-pairs-nonadjacent
+  checkpoint_g0_shortlist: passed-four-new-g1-views
+  checkpoint_g0_benchmark: not-run-design-checkpoint-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -111,11 +119,20 @@ checkpoint_f_r3c: isolated-726-budget-green-but-exact-contiguous-official-body-2
 f_r3c_diagnostic_result: results/f-r3c-intel155h-20260821-001/paper-combined-paired.json
 checkpoint_f_r3d: d0-cleanup-and-d1-two-row-pipeline-complete-d2-not-required
 f_r3d_diagnostic_result: results/f-r3d-intel155h-20260821-001/paper-pipeline-paired.json
-next_step: abi-a-final-reconstruction-vs-abi-b-persistent-pair-paired-with-basemul-baseinv-routing-debt
+checkpoint_g0: consumer-edge-graph-static-pruning-and-four-view-g1-shortlist-complete
+next_step: g1-oracles-then-f1-producer-reconstruction-and-f5-consumer-store-prototypes
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
+  - g0-x0-universal-canonical-abi-paid-standalone-full-array-pass
+deferred_candidates:
+  - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
 selected_candidates:
   - c3-official-routing-row-pair-is-0.694x-c2-row-pair
   - c4-natural-nine-row-pair-is-0.821x-c0-pair
   - f-r3d1-adjusted-ntt16-421-cycles-combined-683.5-vs-official-696
+shortlisted_candidates:
+  - g0-f1-terminal-major-consumer-natural-shortlist
+  - g0-f3-terminal-basis-consumer-fused-shortlist
+  - g0-f4-encapsulation-terminal-stream-shortlist
+  - g0-f5-inverse-feed-hybrid-shortlist

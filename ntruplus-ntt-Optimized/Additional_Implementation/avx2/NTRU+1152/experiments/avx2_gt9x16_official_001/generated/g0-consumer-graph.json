@@ -1,0 +1,132 @@
+{
+  "checkpoint": "G0-algorithmic-representation-design-space",
+  "complete_path_benchmarks": [
+    "F_E+BMAdd+actual-encapsulation-downstream",
+    "2F_M+BMScale+I_M",
+    "F_I+BaseInv+I_I"
+  ],
+  "edges": [
+    {
+      "from": "F_E",
+      "official_conversion": "none",
+      "required_scale": "R^0",
+      "to": "BMAdd"
+    },
+    {
+      "benchmark_must_include": true,
+      "from": "BMAdd",
+      "to": "encapsulation_downstream"
+    },
+    {
+      "from": "F_M_left",
+      "official_conversion": "none",
+      "required_scale": "R^0",
+      "to": "BMScale"
+    },
+    {
+      "from": "F_M_right",
+      "official_conversion": "none",
+      "required_scale": "R^0",
+      "to": "BMScale"
+    },
+    {
+      "from": "BMScale",
+      "official_conversion": "none",
+      "required_scale": "R^-1",
+      "to": "I_M"
+    },
+    {
+      "from": "F_I",
+      "official_conversion": "none",
+      "required_scale": "R^0",
+      "to": "BaseInv"
+    },
+    {
+      "from": "BaseInv",
+      "role": "degree-4 denominator batch inversion side state",
+      "to": "den18"
+    },
+    {
+      "from": "BaseInv",
+      "official_conversion": "research path; scale-correct inverse required",
+      "required_scale": "paper BaseInv output transform scale 1/4",
+      "to": "I_I"
+    }
+  ],
+  "evidence_policy": {
+    "classes": [
+      "official-audited",
+      "experiment-measured",
+      "generated-algebraic",
+      "new-hypothesis"
+    ],
+    "official_is_production_baseline": true,
+    "rule": "unknown costs remain null; static counts are not cycle predictions"
+  },
+  "nodes": [
+    {
+      "id": "F_E",
+      "kind": "forward-view",
+      "path": "encapsulation"
+    },
+    {
+      "id": "BMAdd",
+      "kind": "terminal-arithmetic",
+      "path": "encapsulation"
+    },
+    {
+      "id": "encapsulation_downstream",
+      "kind": "real-consumer",
+      "path": "encapsulation"
+    },
+    {
+      "id": "F_M_left",
+      "kind": "forward-view",
+      "path": "scaled-multiply-inverse"
+    },
+    {
+      "id": "F_M_right",
+      "kind": "forward-view",
+      "path": "scaled-multiply-inverse"
+    },
+    {
+      "id": "BMScale",
+      "kind": "terminal-arithmetic",
+      "path": "scaled-multiply-inverse"
+    },
+    {
+      "id": "I_M",
+      "kind": "inverse-view",
+      "path": "scaled-multiply-inverse"
+    },
+    {
+      "id": "F_I",
+      "kind": "forward-view",
+      "path": "base-inversion"
+    },
+    {
+      "id": "BaseInv",
+      "kind": "terminal-arithmetic",
+      "path": "base-inversion"
+    },
+    {
+      "id": "den18",
+      "kind": "side-state",
+      "shape": "18 YMM"
+    },
+    {
+      "id": "I_I",
+      "kind": "inverse-view",
+      "path": "base-inversion"
+    }
+  ],
+  "parameter": 1152,
+  "source_sha256": {
+    "component_oracle": "4106ff97f2a68720d696a96b5e8c8a6a53a9048c2ea4df28cc4c9061697b8eca",
+    "control_result": "e6accc4c8fdcb17f431d575dd3a8d5390eeb7b36c16efc943abbbfd6c5919f81",
+    "cost_matrix": "b035f051eb5031343c8714e6dc412da03d17d1c7808fc920ce422d4a10f54d9a",
+    "lifecycle_audit": "63f21134d36faa206abe31ebe238eba52d8bf27a4f6b16e9654efcaa28b09833",
+    "pipeline_layout": "6154be5e7ebdc6ccec319f3faad014bc66323ea2447616336e86b1b7ea8bfa9f",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  }
+}

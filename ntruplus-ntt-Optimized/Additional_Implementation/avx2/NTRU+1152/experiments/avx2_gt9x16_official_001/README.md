@@ -12,9 +12,9 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint F-R3D selects the D1 two-row adjusted-NTT16 pipeline
-provisionally: its 683.5-cycle combined body beats the 696-cycle exact
-Official contiguous body.**
+**Checkpoint G0 freezes a consumer-edge representation design space and a
+four-view G1 shortlist without adding assembly or treating unknown costs as
+zero. F-R3D D1 remains the measured forward control.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -126,3 +126,11 @@ Checkpoint F-R3D separates direct half-pack/resident-`q` cleanup (D0) from a
 physical-adjacent two-row Montgomery pipeline (D1). D1 reaches 421 cycles for
 adjusted NTT16 and 683.5 cycles combined, so the aggressive D2 schedule is not
 needed. See `CHECKPOINT-F-R3D.md`.
+
+Checkpoint G0 then moves the decision boundary from a universal NTT ABI to
+consumer edges. `generated/g0-consumer-graph.json` names the encapsulation,
+scaled-multiply/inverse, and BaseInv/inverse paths;
+`generated/g0-representation-views.json` applies the `R=(P,Q,B,g,s,O)` schema,
+separates measured/generated/hypothesis evidence, rejects standalone full-array
+canonicalization, defers the nonlocal `p,-p` row pairing, and shortlists F1,
+F3, F4, and F5 for G1. See `CHECKPOINT-G0.md`.

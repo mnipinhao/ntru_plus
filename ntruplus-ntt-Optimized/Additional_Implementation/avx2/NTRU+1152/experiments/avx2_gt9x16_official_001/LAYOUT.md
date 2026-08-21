@@ -116,3 +116,19 @@ No candidate may insert a full-array transpose, gather, scatter, or cosmetic
 natural-order pass. Load-side unpack and store-side repack are allowed only
 inside the real producer/consumer arithmetic kernel and stay in full-path
 timing.
+
+## G0 consumer-edge refinement
+
+Checkpoint G0 does not replace this contract with one universal ABI. It treats
+the A/B/C controls as views in a larger `R=(P,Q,B,g,s,O)` space and permits
+different source-resolved layouts for encapsulation, scaled-multiply/inverse,
+and BaseInv/inverse paths. The authoritative generated inventory is
+`generated/g0-representation-views.json`; its consumer graph is
+`generated/g0-consumer-graph.json`.
+
+The G1 shortlist is F1 terminal-major, F3 consumer-fused terminal basis, F4
+encapsulation terminal streams, and F5 inverse-feed hybrid. F0 D1 persistent
+S/D remains the measured control. F2 `p,-p` is deferred because the current R2
+row order makes three of four nonzero pairs nonadjacent and no cheap factor
+identity has been proved. A universal natural-order boundary is rejected
+because it requires a standalone full-array pass.
