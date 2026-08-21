@@ -1,0 +1,53 @@
+experiment: GT32-COMPACT-Q24-037R
+status: complete_not_promoted
+production_modified: false
+scope:
+  - isolate_compact_q24_intrinsic_cost
+  - isolate_footprint_release_and_relocation
+frozen:
+  - q24_packet_math
+  - q24_034_vpaddw_vpminuw_canonicalizer
+  - linker_order
+  - function_boundary_policy
+variants:
+  A:
+    body: unrolled_034
+    selected_lazy_section_bytes: 5120
+    text_bytes: 62935
+    sha256: b9dbd37f22382675aad4047814c50f9ab02dbe29e1f4e1bca069536815ca325c
+  B:
+    body: compact_037_dead_padded
+    selected_lazy_section_bytes: 5120
+    text_bytes: 62935
+    sha256: 4843f0faa53136e3db29dee32e96af7297c838c54275f4c941f0ec69fa41fd19
+  C:
+    body: compact_037_released
+    selected_lazy_section_bytes: 1806
+    text_bytes: 59607
+    sha256: 60e35d38dd228645ac1e2fa50ffe06f81cca12f529ceca8f2cc09234f42dbaba
+geometry:
+  a_b_hot_symbol_addresses_identical: true
+  a_b_text_rodata_identical: true
+  c_text_delta_bytes: -3328
+  c_later_hot_symbol_shift: -3296
+correctness:
+  supercop_try: pass_all_variants
+  canonical_kat_100_vectors: pass_all_variants
+local_intrinsic:
+  one_compact_lazy_q24_core_cycles: approximately_11_5_more
+  one_compact_lazy_q24_retired_instructions: 48_more
+  two_call_microharness_core_cycles: approximately_14_more
+formal_block_median_cycles:
+  B_minus_A:
+    aslr_on: {keypair: 55.750, encap: 43.750, decap: 29.750}
+    aslr_off: {keypair: 4.125, encap: -3.000, decap: -26.250}
+  C_minus_B:
+    aslr_on: {keypair: 2.000, encap: 136.125, decap: 149.875}
+    aslr_off: {keypair: -0.375, encap: 172.250, decap: 135.875}
+decision:
+  compact_q24_promoted: false
+  footprint_release_has_causal_effect: true
+  selected_release_geometry: harmful
+  experimental_baseline: GT32-COMPACT-FRONTEND-036
+  next: GT32-HOT-CODE-PARETO-AUDIT-038
+  vzeroupper_audit_039: deferred

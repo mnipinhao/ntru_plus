@@ -1,0 +1,58 @@
+experiment: GT32-HOT-CODE-PARETO-AUDIT-038
+status: complete_no_equal_address_performance_winner
+production_modified: false
+baseline: production_shaped_GT_reference_with_Q24_034
+fixed_elf: ../gt32_compact_q24_037/build/037r-a-gc-measure
+closed_or_frozen:
+  - frontend_036_active_schedule_intrinsic_neutral
+  - ntt_p
+  - ntt_m
+  - decode_compact_shape_prior_coverage
+  - baseinv_arithmetic
+  - basemul_arithmetic
+  - inverse_core
+active_pareto_worklist:
+  - none
+method:
+  local_first: equal_size_cage
+  release_second: isolated_footprint_release
+  metrics: [static_bytes, core_cycles, retired_instructions, branches, loads, stores]
+  no_multi_body_stack: true
+vzeroupper_039: next_fixed_size_phase
+causal_correction_036r:
+  active_body_b_minus_a: intrinsic_neutral
+  footprint_release_c_minus_b: image_specific_delivery_effect
+  consequence:
+    - do_not_credit_static_byte_reduction_as_local_speedup
+    - require_equal_size_cage_before_any_release_test
+    - do_not_search_magic_padding
+artifacts:
+  - generated/hot_symbol_inventory.json
+  - generated/repeated_shape_classification.json
+  - generated/pareto_results.json
+  - tools/audit_hot_symbols.py
+  - tools/classify_repeated_shapes.py
+  - tools/materialize_m_q24_midpoints.py
+  - tools/materialize_inverse_tail_u3.py
+results_038b:
+  m_q24:
+    control: {active_bytes: 4303, reserved_bytes: 5120, static_instructions: 725}
+    share_a: {active_bytes: 3082, dynamic_instruction_delta: 23, core_on: 9.793, core_off: 9.862}
+    share_ad: {active_bytes: 2444, dynamic_instruction_delta: 32, core_on: 9.415, core_off: 9.420}
+    share_adb: {active_bytes: 2125, dynamic_instruction_delta: 38, core_on: 10.325, core_off: 11.114}
+    decision: closed_no_intrinsic_winner
+  inverse_tail:
+    control: {active_bytes: 5578, reserved_bytes: 5578, static_instructions: 1006}
+    u3_x2_plus_u2: {active_bytes: 3463, reserved_bytes: 5578, static_instructions: 652, dynamic_instruction_delta: 35, core_on: 2.865, core_off: 6.614}
+    negative_launches: {aslr_on: 0/8, aslr_off: 0/8}
+    decision: code_size_pareto_only_not_performance_selected
+  p_sp1:
+    fixed_period: false
+    prior_compact_dispatch_core_delta: {normal: 52.330, reversed: 62.058}
+    decision: no_new_eligible_midpoint_mechanism
+decision:
+  selected_active_body_candidates: []
+  release_padding: false
+  whole_kem_promotion_run: false
+  production_modified: false
+  next: GT32_INTERNAL_ABI_VZEROUPPER_039_fixed_size_first

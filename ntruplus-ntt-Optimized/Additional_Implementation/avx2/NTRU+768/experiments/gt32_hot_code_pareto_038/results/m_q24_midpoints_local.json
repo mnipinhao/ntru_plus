@@ -1,0 +1,2819 @@
+{
+  "schema": "gt32-m-q24-midpoint-local-v1",
+  "cpu": 1,
+  "launches": 8,
+  "iterations": 4000,
+  "variants": {
+    "share_a": {
+      "binary": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_hot_code_pareto_038/build/bench_m_q24_share_a",
+      "settings": {
+        "aslr_on": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 5.9415,
+              "negative_launches": 1,
+              "deltas": [
+                5.807,
+                6.138,
+                4.512,
+                6.106,
+                6.076,
+                5.361,
+                -9.825,
+                6.238
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 9.7925,
+              "negative_launches": 0,
+              "deltas": [
+                9.764,
+                9.838,
+                9.821,
+                9.638,
+                9.696,
+                9.841,
+                9.689,
+                9.889
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 23.0,
+              "negative_launches": 0,
+              "deltas": [
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 6.885,
+              "negative_launches": 0,
+              "deltas": [
+                6.736,
+                6.864,
+                6.999,
+                6.906,
+                6.496,
+                6.917,
+                6.804,
+                6.962
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 11.0835,
+              "negative_launches": 0,
+              "deltas": [
+                10.846,
+                11.016,
+                11.261,
+                10.873,
+                11.082,
+                11.085,
+                11.95,
+                11.09
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 46.0,
+              "negative_launches": 0,
+              "deltas": [
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.184,
+                  "candidate": 144.917,
+                  "delta": 5.807,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.729,
+                  "candidate": 231.526,
+                  "delta": 9.764,
+                  "wins": 4,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.597,
+                  "candidate": 289.552,
+                  "delta": 6.736,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.681,
+                  "candidate": 462.559,
+                  "delta": 10.846,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.184 candidate=144.917 delta=5.807 wins=2/20\nregion=one_q24 metric=core_cycles control=221.729 candidate=231.526 delta=9.764 wins=4/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.597 candidate=289.552 delta=6.736 wins=0/20\nregion=two_q24 metric=core_cycles control=451.681 candidate=462.559 delta=10.846 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.572,
+                  "candidate": 144.727,
+                  "delta": 6.138,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.682,
+                  "candidate": 231.515,
+                  "delta": 9.838,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 283.051,
+                  "candidate": 289.595,
+                  "delta": 6.864,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.661,
+                  "candidate": 462.7,
+                  "delta": 11.016,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.572 candidate=144.727 delta=6.138 wins=0/20\nregion=one_q24 metric=core_cycles control=221.682 candidate=231.515 delta=9.838 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=283.051 candidate=289.595 delta=6.864 wins=0/20\nregion=two_q24 metric=core_cycles control=451.661 candidate=462.700 delta=11.016 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 147.198,
+                  "candidate": 145.512,
+                  "delta": 4.512,
+                  "wins": 8,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.732,
+                  "candidate": 231.556,
+                  "delta": 9.821,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.399,
+                  "candidate": 289.39,
+                  "delta": 6.999,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.626,
+                  "candidate": 462.919,
+                  "delta": 11.261,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=147.198 candidate=145.512 delta=4.512 wins=8/20\nregion=one_q24 metric=core_cycles control=221.732 candidate=231.556 delta=9.821 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.399 candidate=289.390 delta=6.999 wins=0/20\nregion=two_q24 metric=core_cycles control=451.626 candidate=462.919 delta=11.261 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.611,
+                  "candidate": 144.707,
+                  "delta": 6.106,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.77,
+                  "candidate": 231.456,
+                  "delta": 9.638,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.359,
+                  "candidate": 289.538,
+                  "delta": 6.906,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.699,
+                  "candidate": 462.643,
+                  "delta": 10.873,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.611 candidate=144.707 delta=6.106 wins=0/20\nregion=one_q24 metric=core_cycles control=221.770 candidate=231.456 delta=9.638 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.359 candidate=289.538 delta=6.906 wins=0/20\nregion=two_q24 metric=core_cycles control=451.699 candidate=462.643 delta=10.873 wins=1/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.579,
+                  "candidate": 144.698,
+                  "delta": 6.076,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.762,
+                  "candidate": 231.502,
+                  "delta": 9.696,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 283.027,
+                  "candidate": 289.981,
+                  "delta": 6.496,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.622,
+                  "candidate": 462.7,
+                  "delta": 11.082,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.579 candidate=144.698 delta=6.076 wins=0/20\nregion=one_q24 metric=core_cycles control=221.762 candidate=231.502 delta=9.696 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=283.027 candidate=289.981 delta=6.496 wins=0/20\nregion=two_q24 metric=core_cycles control=451.622 candidate=462.700 delta=11.082 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.397,
+                  "candidate": 144.735,
+                  "delta": 5.361,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.696,
+                  "candidate": 231.563,
+                  "delta": 9.841,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.367,
+                  "candidate": 289.308,
+                  "delta": 6.917,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.6,
+                  "candidate": 462.806,
+                  "delta": 11.085,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.397 candidate=144.735 delta=5.361 wins=0/20\nregion=one_q24 metric=core_cycles control=221.696 candidate=231.563 delta=9.841 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.367 candidate=289.308 delta=6.917 wins=0/20\nregion=two_q24 metric=core_cycles control=451.600 candidate=462.806 delta=11.085 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 160.798,
+                  "candidate": 147.974,
+                  "delta": -9.825,
+                  "wins": 15,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.758,
+                  "candidate": 231.463,
+                  "delta": 9.689,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.395,
+                  "candidate": 289.226,
+                  "delta": 6.804,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.625,
+                  "candidate": 463.471,
+                  "delta": 11.95,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=160.798 candidate=147.974 delta=-9.825 wins=15/20\nregion=one_q24 metric=core_cycles control=221.758 candidate=231.463 delta=9.689 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.395 candidate=289.226 delta=6.804 wins=0/20\nregion=two_q24 metric=core_cycles control=451.625 candidate=463.471 delta=11.950 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.572,
+                  "candidate": 144.798,
+                  "delta": 6.238,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.667,
+                  "candidate": 231.588,
+                  "delta": 9.889,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.404,
+                  "candidate": 290.047,
+                  "delta": 6.962,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.646,
+                  "candidate": 462.759,
+                  "delta": 11.09,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.572 candidate=144.798 delta=6.238 wins=0/20\nregion=one_q24 metric=core_cycles control=221.667 candidate=231.588 delta=9.889 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.404 candidate=290.047 delta=6.962 wins=0/20\nregion=two_q24 metric=core_cycles control=451.646 candidate=462.759 delta=11.090 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        },
+        "aslr_off": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 6.167,
+              "negative_launches": 0,
+              "deltas": [
+                6.167,
+                6.196,
+                6.097,
+                6.167,
+                6.22,
+                6.163,
+                6.174,
+                6.092
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 9.8615,
+              "negative_launches": 0,
+              "deltas": [
+                9.842,
+                9.798,
+                9.894,
+                9.858,
+                9.836,
+                9.902,
+                9.865,
+                9.898
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 23.0,
+              "negative_launches": 0,
+              "deltas": [
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0,
+                23.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 6.944,
+              "negative_launches": 1,
+              "deltas": [
+                6.203,
+                7.03,
+                7.002,
+                -2.052,
+                6.999,
+                6.889,
+                7.035,
+                6.574
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 11.060500000000001,
+              "negative_launches": 0,
+              "deltas": [
+                11.099,
+                10.995,
+                11.11,
+                11.014,
+                11.022,
+                11.265,
+                10.963,
+                11.136
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 46.0,
+              "negative_launches": 0,
+              "deltas": [
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0,
+                46.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.584,
+                  "candidate": 144.739,
+                  "delta": 6.167,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.673,
+                  "candidate": 231.525,
+                  "delta": 9.842,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 283.056,
+                  "candidate": 290.007,
+                  "delta": 6.203,
+                  "wins": 7,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.778,
+                  "candidate": 462.879,
+                  "delta": 11.099,
+                  "wins": 3,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.584 candidate=144.739 delta=6.167 wins=0/20\nregion=one_q24 metric=core_cycles control=221.673 candidate=231.525 delta=9.842 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=283.056 candidate=290.007 delta=6.203 wins=7/20\nregion=two_q24 metric=core_cycles control=451.778 candidate=462.879 delta=11.099 wins=3/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.578,
+                  "candidate": 144.768,
+                  "delta": 6.196,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.715,
+                  "candidate": 231.568,
+                  "delta": 9.798,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 284.418,
+                  "candidate": 291.6,
+                  "delta": 7.03,
+                  "wins": 4,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.664,
+                  "candidate": 462.723,
+                  "delta": 10.995,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.578 candidate=144.768 delta=6.196 wins=0/20\nregion=one_q24 metric=core_cycles control=221.715 candidate=231.568 delta=9.798 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=284.418 candidate=291.600 delta=7.030 wins=4/20\nregion=two_q24 metric=core_cycles control=451.664 candidate=462.723 delta=10.995 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.578,
+                  "candidate": 144.776,
+                  "delta": 6.097,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.677,
+                  "candidate": 231.577,
+                  "delta": 9.894,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.392,
+                  "candidate": 289.388,
+                  "delta": 7.002,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.615,
+                  "candidate": 462.695,
+                  "delta": 11.11,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.578 candidate=144.776 delta=6.097 wins=0/20\nregion=one_q24 metric=core_cycles control=221.677 candidate=231.577 delta=9.894 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.392 candidate=289.388 delta=7.002 wins=0/20\nregion=two_q24 metric=core_cycles control=451.615 candidate=462.695 delta=11.110 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.572,
+                  "candidate": 144.748,
+                  "delta": 6.167,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.689,
+                  "candidate": 231.515,
+                  "delta": 9.858,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 295.913,
+                  "candidate": 293.004,
+                  "delta": -2.052,
+                  "wins": 12,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.623,
+                  "candidate": 462.8,
+                  "delta": 11.014,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.572 candidate=144.748 delta=6.167 wins=0/20\nregion=one_q24 metric=core_cycles control=221.689 candidate=231.515 delta=9.858 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=295.913 candidate=293.004 delta=-2.052 wins=12/20\nregion=two_q24 metric=core_cycles control=451.623 candidate=462.800 delta=11.014 wins=1/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.564,
+                  "candidate": 144.763,
+                  "delta": 6.22,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.719,
+                  "candidate": 231.566,
+                  "delta": 9.836,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.379,
+                  "candidate": 289.292,
+                  "delta": 6.999,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.654,
+                  "candidate": 462.719,
+                  "delta": 11.022,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.564 candidate=144.763 delta=6.220 wins=0/20\nregion=one_q24 metric=core_cycles control=221.719 candidate=231.566 delta=9.836 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.379 candidate=289.292 delta=6.999 wins=0/20\nregion=two_q24 metric=core_cycles control=451.654 candidate=462.719 delta=11.022 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.575,
+                  "candidate": 144.757,
+                  "delta": 6.163,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.706,
+                  "candidate": 231.595,
+                  "delta": 9.902,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.662,
+                  "candidate": 289.32,
+                  "delta": 6.889,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.602,
+                  "candidate": 462.783,
+                  "delta": 11.265,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.575 candidate=144.757 delta=6.163 wins=1/20\nregion=one_q24 metric=core_cycles control=221.706 candidate=231.595 delta=9.902 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.662 candidate=289.320 delta=6.889 wins=0/20\nregion=two_q24 metric=core_cycles control=451.602 candidate=462.783 delta=11.265 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.597,
+                  "candidate": 144.773,
+                  "delta": 6.174,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.714,
+                  "candidate": 231.558,
+                  "delta": 9.865,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.38,
+                  "candidate": 289.669,
+                  "delta": 7.035,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.695,
+                  "candidate": 462.737,
+                  "delta": 10.963,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.597 candidate=144.773 delta=6.174 wins=1/20\nregion=one_q24 metric=core_cycles control=221.714 candidate=231.558 delta=9.865 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=282.380 candidate=289.669 delta=7.035 wins=0/20\nregion=two_q24 metric=core_cycles control=451.695 candidate=462.737 delta=10.963 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.65,
+                  "candidate": 144.741,
+                  "delta": 6.092,
+                  "wins": 4,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.682,
+                  "candidate": 231.583,
+                  "delta": 9.898,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 761.509,
+                  "delta": 23.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 283.361,
+                  "candidate": 289.772,
+                  "delta": 6.574,
+                  "wins": 3,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.624,
+                  "candidate": 462.779,
+                  "delta": 11.136,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1516.509,
+                  "delta": 46.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.650 candidate=144.741 delta=6.092 wins=4/20\nregion=one_q24 metric=core_cycles control=221.682 candidate=231.583 delta=9.898 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=761.509 delta=23.000 wins=0/20\nregion=two_q24 metric=tsc control=283.361 candidate=289.772 delta=6.574 wins=3/20\nregion=two_q24 metric=core_cycles control=451.624 candidate=462.779 delta=11.136 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1516.509 delta=46.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        }
+      }
+    },
+    "share_ad": {
+      "binary": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_hot_code_pareto_038/build/bench_m_q24_share_ad",
+      "settings": {
+        "aslr_on": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 5.917,
+              "negative_launches": 0,
+              "deltas": [
+                5.801,
+                5.92,
+                5.98,
+                5.925,
+                5.857,
+                5.889,
+                5.978,
+                5.914
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 9.4145,
+              "negative_launches": 0,
+              "deltas": [
+                9.236,
+                9.532,
+                9.525,
+                8.741,
+                9.369,
+                9.388,
+                9.591,
+                9.441
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 32.0,
+              "negative_launches": 0,
+              "deltas": [
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 6.6739999999999995,
+              "negative_launches": 1,
+              "deltas": [
+                6.249,
+                6.808,
+                6.769,
+                -4.656,
+                6.845,
+                7.167,
+                6.579,
+                0.792
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 10.906500000000001,
+              "negative_launches": 0,
+              "deltas": [
+                10.542,
+                10.981,
+                10.912,
+                10.974,
+                11.012,
+                10.777,
+                10.855,
+                10.901
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 64.0,
+              "negative_launches": 0,
+              "deltas": [
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.666,
+                  "candidate": 144.46,
+                  "delta": 5.801,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.83,
+                  "candidate": 231.091,
+                  "delta": 9.236,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.822,
+                  "candidate": 289.106,
+                  "delta": 6.249,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.81,
+                  "candidate": 462.397,
+                  "delta": 10.542,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.666 candidate=144.460 delta=5.801 wins=0/20\nregion=one_q24 metric=core_cycles control=221.830 candidate=231.091 delta=9.236 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.822 candidate=289.106 delta=6.249 wins=1/20\nregion=two_q24 metric=core_cycles control=451.810 candidate=462.397 delta=10.542 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.591,
+                  "candidate": 144.543,
+                  "delta": 5.92,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.725,
+                  "candidate": 231.227,
+                  "delta": 9.532,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.427,
+                  "candidate": 289.522,
+                  "delta": 6.808,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.589,
+                  "candidate": 462.54,
+                  "delta": 10.981,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.591 candidate=144.543 delta=5.920 wins=0/20\nregion=one_q24 metric=core_cycles control=221.725 candidate=231.227 delta=9.532 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.427 candidate=289.522 delta=6.808 wins=0/20\nregion=two_q24 metric=core_cycles control=451.589 candidate=462.540 delta=10.981 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.579,
+                  "candidate": 144.549,
+                  "delta": 5.98,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.672,
+                  "candidate": 231.194,
+                  "delta": 9.525,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.397,
+                  "candidate": 289.184,
+                  "delta": 6.769,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.619,
+                  "candidate": 462.555,
+                  "delta": 10.912,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.579 candidate=144.549 delta=5.980 wins=0/20\nregion=one_q24 metric=core_cycles control=221.672 candidate=231.194 delta=9.525 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.397 candidate=289.184 delta=6.769 wins=0/20\nregion=two_q24 metric=core_cycles control=451.619 candidate=462.555 delta=10.912 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.62,
+                  "candidate": 144.541,
+                  "delta": 5.925,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 222.531,
+                  "candidate": 231.226,
+                  "delta": 8.741,
+                  "wins": 3,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 311.01,
+                  "candidate": 306.615,
+                  "delta": -4.656,
+                  "wins": 12,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.605,
+                  "candidate": 462.554,
+                  "delta": 10.974,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.620 candidate=144.541 delta=5.925 wins=2/20\nregion=one_q24 metric=core_cycles control=222.531 candidate=231.226 delta=8.741 wins=3/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=311.010 candidate=306.615 delta=-4.656 wins=12/20\nregion=two_q24 metric=core_cycles control=451.605 candidate=462.554 delta=10.974 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.619,
+                  "candidate": 144.462,
+                  "delta": 5.857,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.726,
+                  "candidate": 231.112,
+                  "delta": 9.369,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.724,
+                  "candidate": 289.929,
+                  "delta": 6.845,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.712,
+                  "candidate": 462.719,
+                  "delta": 11.012,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.619 candidate=144.462 delta=5.857 wins=0/20\nregion=one_q24 metric=core_cycles control=221.726 candidate=231.112 delta=9.369 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.724 candidate=289.929 delta=6.845 wins=0/20\nregion=two_q24 metric=core_cycles control=451.712 candidate=462.719 delta=11.012 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.594,
+                  "candidate": 144.511,
+                  "delta": 5.889,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.683,
+                  "candidate": 231.108,
+                  "delta": 9.388,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.322,
+                  "candidate": 289.503,
+                  "delta": 7.167,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.741,
+                  "candidate": 462.492,
+                  "delta": 10.777,
+                  "wins": 3,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.594 candidate=144.511 delta=5.889 wins=0/20\nregion=one_q24 metric=core_cycles control=221.683 candidate=231.108 delta=9.388 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.322 candidate=289.503 delta=7.167 wins=0/20\nregion=two_q24 metric=core_cycles control=451.741 candidate=462.492 delta=10.777 wins=3/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.619,
+                  "candidate": 144.584,
+                  "delta": 5.978,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.676,
+                  "candidate": 231.25,
+                  "delta": 9.591,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.826,
+                  "candidate": 289.231,
+                  "delta": 6.579,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.73,
+                  "candidate": 462.628,
+                  "delta": 10.855,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.619 candidate=144.584 delta=5.978 wins=0/20\nregion=one_q24 metric=core_cycles control=221.676 candidate=231.250 delta=9.591 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.826 candidate=289.231 delta=6.579 wins=0/20\nregion=two_q24 metric=core_cycles control=451.730 candidate=462.628 delta=10.855 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.901,
+                  "candidate": 144.536,
+                  "delta": 5.914,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.748,
+                  "candidate": 231.178,
+                  "delta": 9.441,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 308.093,
+                  "candidate": 300.844,
+                  "delta": 0.792,
+                  "wins": 9,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.665,
+                  "candidate": 462.539,
+                  "delta": 10.901,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.901 candidate=144.536 delta=5.914 wins=2/20\nregion=one_q24 metric=core_cycles control=221.748 candidate=231.178 delta=9.441 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=308.093 candidate=300.844 delta=0.792 wins=9/20\nregion=two_q24 metric=core_cycles control=451.665 candidate=462.539 delta=10.901 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        },
+        "aslr_off": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 5.9415,
+              "negative_launches": 0,
+              "deltas": [
+                5.981,
+                5.9,
+                5.933,
+                5.953,
+                5.932,
+                5.968,
+                5.95,
+                5.917
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 9.4195,
+              "negative_launches": 0,
+              "deltas": [
+                9.406,
+                9.392,
+                9.492,
+                9.488,
+                9.379,
+                9.518,
+                9.311,
+                9.433
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 32.0,
+              "negative_launches": 0,
+              "deltas": [
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0,
+                32.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 6.801,
+              "negative_launches": 0,
+              "deltas": [
+                6.815,
+                6.849,
+                4.712,
+                7.16,
+                6.904,
+                6.787,
+                6.671,
+                6.775
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 10.850999999999999,
+              "negative_launches": 0,
+              "deltas": [
+                10.831,
+                10.845,
+                10.804,
+                10.966,
+                10.741,
+                10.906,
+                10.914,
+                10.857
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 64.0,
+              "negative_launches": 0,
+              "deltas": [
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0,
+                64.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.577,
+                  "candidate": 144.56,
+                  "delta": 5.981,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.746,
+                  "candidate": 231.252,
+                  "delta": 9.406,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.688,
+                  "candidate": 289.201,
+                  "delta": 6.815,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.687,
+                  "candidate": 462.526,
+                  "delta": 10.831,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.577 candidate=144.560 delta=5.981 wins=1/20\nregion=one_q24 metric=core_cycles control=221.746 candidate=231.252 delta=9.406 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.688 candidate=289.201 delta=6.815 wins=0/20\nregion=two_q24 metric=core_cycles control=451.687 candidate=462.526 delta=10.831 wins=1/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.57,
+                  "candidate": 144.51,
+                  "delta": 5.9,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.697,
+                  "candidate": 231.218,
+                  "delta": 9.392,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.368,
+                  "candidate": 289.166,
+                  "delta": 6.849,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.681,
+                  "candidate": 462.516,
+                  "delta": 10.845,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.570 candidate=144.510 delta=5.900 wins=0/20\nregion=one_q24 metric=core_cycles control=221.697 candidate=231.218 delta=9.392 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.368 candidate=289.166 delta=6.849 wins=0/20\nregion=two_q24 metric=core_cycles control=451.681 candidate=462.516 delta=10.845 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.585,
+                  "candidate": 144.545,
+                  "delta": 5.933,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.685,
+                  "candidate": 231.177,
+                  "delta": 9.492,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 289.479,
+                  "candidate": 291.106,
+                  "delta": 4.712,
+                  "wins": 6,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.656,
+                  "candidate": 462.505,
+                  "delta": 10.804,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.585 candidate=144.545 delta=5.933 wins=2/20\nregion=one_q24 metric=core_cycles control=221.685 candidate=231.177 delta=9.492 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=289.479 candidate=291.106 delta=4.712 wins=6/20\nregion=two_q24 metric=core_cycles control=451.656 candidate=462.505 delta=10.804 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.703,
+                  "candidate": 144.566,
+                  "delta": 5.953,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.678,
+                  "candidate": 231.199,
+                  "delta": 9.488,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.396,
+                  "candidate": 289.81,
+                  "delta": 7.16,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.605,
+                  "candidate": 462.512,
+                  "delta": 10.966,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.703 candidate=144.566 delta=5.953 wins=1/20\nregion=one_q24 metric=core_cycles control=221.678 candidate=231.199 delta=9.488 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.396 candidate=289.810 delta=7.160 wins=0/20\nregion=two_q24 metric=core_cycles control=451.605 candidate=462.512 delta=10.966 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.602,
+                  "candidate": 144.522,
+                  "delta": 5.932,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.756,
+                  "candidate": 231.192,
+                  "delta": 9.379,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.618,
+                  "candidate": 289.447,
+                  "delta": 6.904,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.785,
+                  "candidate": 464.147,
+                  "delta": 10.741,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.602 candidate=144.522 delta=5.932 wins=0/20\nregion=one_q24 metric=core_cycles control=221.756 candidate=231.192 delta=9.379 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.618 candidate=289.447 delta=6.904 wins=2/20\nregion=two_q24 metric=core_cycles control=451.785 candidate=464.147 delta=10.741 wins=2/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.625,
+                  "candidate": 144.6,
+                  "delta": 5.968,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.701,
+                  "candidate": 231.185,
+                  "delta": 9.518,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.901,
+                  "candidate": 289.185,
+                  "delta": 6.787,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.636,
+                  "candidate": 462.543,
+                  "delta": 10.906,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.625 candidate=144.600 delta=5.968 wins=1/20\nregion=one_q24 metric=core_cycles control=221.701 candidate=231.185 delta=9.518 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.901 candidate=289.185 delta=6.787 wins=0/20\nregion=two_q24 metric=core_cycles control=451.636 candidate=462.543 delta=10.906 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.049,
+                  "candidate": 144.589,
+                  "delta": 5.95,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.939,
+                  "candidate": 231.236,
+                  "delta": 9.311,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.967,
+                  "candidate": 289.19,
+                  "delta": 6.671,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.602,
+                  "candidate": 462.543,
+                  "delta": 10.914,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.049 candidate=144.589 delta=5.950 wins=0/20\nregion=one_q24 metric=core_cycles control=221.939 candidate=231.236 delta=9.311 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.967 candidate=289.190 delta=6.671 wins=0/20\nregion=two_q24 metric=core_cycles control=451.602 candidate=462.543 delta=10.914 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.586,
+                  "candidate": 144.516,
+                  "delta": 5.917,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.771,
+                  "candidate": 231.242,
+                  "delta": 9.433,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 770.509,
+                  "delta": 32.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.378,
+                  "candidate": 289.186,
+                  "delta": 6.775,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.639,
+                  "candidate": 462.493,
+                  "delta": 10.857,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1534.509,
+                  "delta": 64.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.586 candidate=144.516 delta=5.917 wins=0/20\nregion=one_q24 metric=core_cycles control=221.771 candidate=231.242 delta=9.433 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=770.509 delta=32.000 wins=0/20\nregion=two_q24 metric=tsc control=282.378 candidate=289.186 delta=6.775 wins=0/20\nregion=two_q24 metric=core_cycles control=451.639 candidate=462.493 delta=10.857 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1534.509 delta=64.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        }
+      }
+    },
+    "share_adb": {
+      "binary": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_hot_code_pareto_038/build/bench_m_q24_share_adb",
+      "settings": {
+        "aslr_on": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 6.5525,
+              "negative_launches": 0,
+              "deltas": [
+                6.695,
+                5.995,
+                6.74,
+                7.038,
+                6.245,
+                6.738,
+                5.782,
+                6.41
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 10.3245,
+              "negative_launches": 0,
+              "deltas": [
+                10.312,
+                10.74,
+                10.722,
+                9.845,
+                10.337,
+                10.201,
+                5.164,
+                10.657
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 38.0,
+              "negative_launches": 0,
+              "deltas": [
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 7.8825,
+              "negative_launches": 0,
+              "deltas": [
+                8.248,
+                7.919,
+                7.668,
+                8.174,
+                7.846,
+                7.835,
+                7.458,
+                8.26
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 12.548,
+              "negative_launches": 0,
+              "deltas": [
+                11.862,
+                12.535,
+                12.509,
+                13.101,
+                12.561,
+                12.146,
+                13.36,
+                12.897
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 76.0,
+              "negative_launches": 0,
+              "deltas": [
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.596,
+                  "candidate": 145.323,
+                  "delta": 6.695,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 222.406,
+                  "candidate": 232.496,
+                  "delta": 10.312,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.328,
+                  "candidate": 290.543,
+                  "delta": 8.248,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 455.152,
+                  "candidate": 464.258,
+                  "delta": 11.862,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.596 candidate=145.323 delta=6.695 wins=1/20\nregion=one_q24 metric=core_cycles control=222.406 candidate=232.496 delta=10.312 wins=1/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.328 candidate=290.543 delta=8.248 wins=0/20\nregion=two_q24 metric=core_cycles control=455.152 candidate=464.258 delta=11.862 wins=2/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.72,
+                  "candidate": 145.429,
+                  "delta": 5.995,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.755,
+                  "candidate": 232.527,
+                  "delta": 10.74,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.966,
+                  "candidate": 290.545,
+                  "delta": 7.919,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.687,
+                  "candidate": 464.34,
+                  "delta": 12.535,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.720 candidate=145.429 delta=5.995 wins=0/20\nregion=one_q24 metric=core_cycles control=221.755 candidate=232.527 delta=10.740 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.966 candidate=290.545 delta=7.919 wins=0/20\nregion=two_q24 metric=core_cycles control=451.687 candidate=464.340 delta=12.535 wins=1/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.601,
+                  "candidate": 145.354,
+                  "delta": 6.74,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.8,
+                  "candidate": 232.501,
+                  "delta": 10.722,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.988,
+                  "candidate": 290.852,
+                  "delta": 7.668,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 453.158,
+                  "candidate": 466.577,
+                  "delta": 12.509,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.601 candidate=145.354 delta=6.740 wins=0/20\nregion=one_q24 metric=core_cycles control=221.800 candidate=232.501 delta=10.722 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.988 candidate=290.852 delta=7.668 wins=2/20\nregion=two_q24 metric=core_cycles control=453.158 candidate=466.577 delta=12.509 wins=2/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.153,
+                  "candidate": 146.063,
+                  "delta": 7.038,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 223.225,
+                  "candidate": 233.07,
+                  "delta": 9.845,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.41,
+                  "candidate": 290.623,
+                  "delta": 8.174,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.694,
+                  "candidate": 464.79,
+                  "delta": 13.101,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.153 candidate=146.063 delta=7.038 wins=1/20\nregion=one_q24 metric=core_cycles control=223.225 candidate=233.070 delta=9.845 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.410 candidate=290.623 delta=8.174 wins=0/20\nregion=two_q24 metric=core_cycles control=451.694 candidate=464.790 delta=13.101 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.725,
+                  "candidate": 146.236,
+                  "delta": 6.245,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 222.665,
+                  "candidate": 232.635,
+                  "delta": 10.337,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.392,
+                  "candidate": 290.244,
+                  "delta": 7.846,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.735,
+                  "candidate": 464.281,
+                  "delta": 12.561,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.725 candidate=146.236 delta=6.245 wins=2/20\nregion=one_q24 metric=core_cycles control=222.665 candidate=232.635 delta=10.337 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.392 candidate=290.244 delta=7.846 wins=0/20\nregion=two_q24 metric=core_cycles control=451.735 candidate=464.281 delta=12.561 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.604,
+                  "candidate": 145.336,
+                  "delta": 6.738,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 222.257,
+                  "candidate": 232.469,
+                  "delta": 10.201,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.385,
+                  "candidate": 290.173,
+                  "delta": 7.835,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.823,
+                  "candidate": 464.187,
+                  "delta": 12.146,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.604 candidate=145.336 delta=6.738 wins=1/20\nregion=one_q24 metric=core_cycles control=222.257 candidate=232.469 delta=10.201 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.385 candidate=290.173 delta=7.835 wins=0/20\nregion=two_q24 metric=core_cycles control=451.823 candidate=464.187 delta=12.146 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.807,
+                  "candidate": 145.629,
+                  "delta": 5.782,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 252.76,
+                  "candidate": 241.493,
+                  "delta": 5.164,
+                  "wins": 9,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 283.433,
+                  "candidate": 291.159,
+                  "delta": 7.458,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.654,
+                  "candidate": 464.943,
+                  "delta": 13.36,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.807 candidate=145.629 delta=5.782 wins=1/20\nregion=one_q24 metric=core_cycles control=252.760 candidate=241.493 delta=5.164 wins=9/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=283.433 candidate=291.159 delta=7.458 wins=0/20\nregion=two_q24 metric=core_cycles control=451.654 candidate=464.943 delta=13.360 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 139.385,
+                  "candidate": 145.315,
+                  "delta": 6.41,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.793,
+                  "candidate": 232.445,
+                  "delta": 10.657,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.371,
+                  "candidate": 290.817,
+                  "delta": 8.26,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.64,
+                  "candidate": 464.538,
+                  "delta": 12.897,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=139.385 candidate=145.315 delta=6.410 wins=0/20\nregion=one_q24 metric=core_cycles control=221.793 candidate=232.445 delta=10.657 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.371 candidate=290.817 delta=8.260 wins=0/20\nregion=two_q24 metric=core_cycles control=451.640 candidate=464.538 delta=12.897 wins=2/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        },
+        "aslr_off": {
+          "summary": {
+            "one_q24.tsc": {
+              "launch_median_delta": 7.056,
+              "negative_launches": 0,
+              "deltas": [
+                5.06,
+                7.108,
+                7.007,
+                7.105,
+                7.11,
+                5.553,
+                7.127,
+                4.609
+              ]
+            },
+            "one_q24.core_cycles": {
+              "launch_median_delta": 11.113499999999998,
+              "negative_launches": 0,
+              "deltas": [
+                6.162,
+                11.296,
+                11.354,
+                10.95,
+                11.353,
+                4.788,
+                11.277,
+                7.768
+              ]
+            },
+            "one_q24.instructions": {
+              "launch_median_delta": 38.0,
+              "negative_launches": 0,
+              "deltas": [
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0,
+                38.0
+              ]
+            },
+            "two_q24.tsc": {
+              "launch_median_delta": 8.154,
+              "negative_launches": 0,
+              "deltas": [
+                8.202,
+                8.198,
+                8.211,
+                8.139,
+                7.113,
+                8.169,
+                8.11,
+                8.106
+              ]
+            },
+            "two_q24.core_cycles": {
+              "launch_median_delta": 13.038,
+              "negative_launches": 0,
+              "deltas": [
+                13.063,
+                12.928,
+                13.013,
+                12.864,
+                13.212,
+                13.163,
+                14.407,
+                12.904
+              ]
+            },
+            "two_q24.instructions": {
+              "launch_median_delta": 76.0,
+              "negative_launches": 0,
+              "deltas": [
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0,
+                76.0
+              ]
+            }
+          },
+          "launches": [
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 141.396,
+                  "candidate": 145.975,
+                  "delta": 5.06,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 229.811,
+                  "candidate": 234.516,
+                  "delta": 6.162,
+                  "wins": 4,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.492,
+                  "candidate": 290.815,
+                  "delta": 8.202,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.857,
+                  "candidate": 464.972,
+                  "delta": 13.063,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=141.396 candidate=145.975 delta=5.060 wins=1/20\nregion=one_q24 metric=core_cycles control=229.811 candidate=234.516 delta=6.162 wins=4/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.492 candidate=290.815 delta=8.202 wins=0/20\nregion=two_q24 metric=core_cycles control=451.857 candidate=464.972 delta=13.063 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.62,
+                  "candidate": 145.734,
+                  "delta": 7.108,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.766,
+                  "candidate": 233.02,
+                  "delta": 11.296,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.368,
+                  "candidate": 290.599,
+                  "delta": 8.198,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.696,
+                  "candidate": 464.671,
+                  "delta": 12.928,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.620 candidate=145.734 delta=7.108 wins=0/20\nregion=one_q24 metric=core_cycles control=221.766 candidate=233.020 delta=11.296 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.368 candidate=290.599 delta=8.198 wins=0/20\nregion=two_q24 metric=core_cycles control=451.696 candidate=464.671 delta=12.928 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.583,
+                  "candidate": 145.635,
+                  "delta": 7.007,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.714,
+                  "candidate": 232.999,
+                  "delta": 11.354,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.374,
+                  "candidate": 290.837,
+                  "delta": 8.211,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.7,
+                  "candidate": 464.732,
+                  "delta": 13.013,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.583 candidate=145.635 delta=7.007 wins=2/20\nregion=one_q24 metric=core_cycles control=221.714 candidate=232.999 delta=11.354 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.374 candidate=290.837 delta=8.211 wins=0/20\nregion=two_q24 metric=core_cycles control=451.700 candidate=464.732 delta=13.013 wins=1/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.587,
+                  "candidate": 145.788,
+                  "delta": 7.105,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 222.579,
+                  "candidate": 233.024,
+                  "delta": 10.95,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.933,
+                  "candidate": 290.554,
+                  "delta": 8.139,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 453.17,
+                  "candidate": 464.804,
+                  "delta": 12.864,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.587 candidate=145.788 delta=7.105 wins=1/20\nregion=one_q24 metric=core_cycles control=222.579 candidate=233.024 delta=10.950 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.933 candidate=290.554 delta=8.139 wins=0/20\nregion=two_q24 metric=core_cycles control=453.170 candidate=464.804 delta=12.864 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.58,
+                  "candidate": 145.676,
+                  "delta": 7.11,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.683,
+                  "candidate": 233.01,
+                  "delta": 11.353,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 285.765,
+                  "candidate": 291.355,
+                  "delta": 7.113,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 453.185,
+                  "candidate": 466.315,
+                  "delta": 13.212,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.580 candidate=145.676 delta=7.110 wins=1/20\nregion=one_q24 metric=core_cycles control=221.683 candidate=233.010 delta=11.353 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=285.765 candidate=291.355 delta=7.113 wins=2/20\nregion=two_q24 metric=core_cycles control=453.185 candidate=466.315 delta=13.212 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 140.105,
+                  "candidate": 146.333,
+                  "delta": 5.553,
+                  "wins": 4,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 229.255,
+                  "candidate": 235.69,
+                  "delta": 4.788,
+                  "wins": 6,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.423,
+                  "candidate": 290.82,
+                  "delta": 8.169,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.581,
+                  "candidate": 464.705,
+                  "delta": 13.163,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=140.105 candidate=146.333 delta=5.553 wins=4/20\nregion=one_q24 metric=core_cycles control=229.255 candidate=235.690 delta=4.788 wins=6/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.423 candidate=290.820 delta=8.169 wins=2/20\nregion=two_q24 metric=core_cycles control=451.581 candidate=464.705 delta=13.163 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 138.579,
+                  "candidate": 145.682,
+                  "delta": 7.127,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 221.746,
+                  "candidate": 233.031,
+                  "delta": 11.277,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.377,
+                  "candidate": 290.498,
+                  "delta": 8.11,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.641,
+                  "candidate": 466.128,
+                  "delta": 14.407,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=138.579 candidate=145.682 delta=7.127 wins=1/20\nregion=one_q24 metric=core_cycles control=221.746 candidate=233.031 delta=11.277 wins=0/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.377 candidate=290.498 delta=8.110 wins=0/20\nregion=two_q24 metric=core_cycles control=451.641 candidate=466.128 delta=14.407 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            },
+            {
+              "metrics": {
+                "one_q24.tsc": {
+                  "control": 141.692,
+                  "candidate": 146.755,
+                  "delta": 4.609,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "one_q24.core_cycles": {
+                  "control": 226.01,
+                  "candidate": 233.924,
+                  "delta": 7.768,
+                  "wins": 1,
+                  "samples": 20
+                },
+                "one_q24.instructions": {
+                  "control": 738.509,
+                  "candidate": 776.509,
+                  "delta": 38.0,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.tsc": {
+                  "control": 282.996,
+                  "candidate": 290.904,
+                  "delta": 8.106,
+                  "wins": 2,
+                  "samples": 20
+                },
+                "two_q24.core_cycles": {
+                  "control": 451.732,
+                  "candidate": 464.721,
+                  "delta": 12.904,
+                  "wins": 0,
+                  "samples": 20
+                },
+                "two_q24.instructions": {
+                  "control": 1470.509,
+                  "candidate": 1546.509,
+                  "delta": 76.0,
+                  "wins": 0,
+                  "samples": 20
+                }
+              },
+              "raw": "iterations=4000 cpu=1 correctness=pass\nregion=one_q24 metric=tsc control=141.692 candidate=146.755 delta=4.609 wins=0/20\nregion=one_q24 metric=core_cycles control=226.010 candidate=233.924 delta=7.768 wins=1/20\nregion=one_q24 metric=instructions control=738.509 candidate=776.509 delta=38.000 wins=0/20\nregion=two_q24 metric=tsc control=282.996 candidate=290.904 delta=8.106 wins=2/20\nregion=two_q24 metric=core_cycles control=451.732 candidate=464.721 delta=12.904 wins=0/20\nregion=two_q24 metric=instructions control=1470.509 candidate=1546.509 delta=76.000 wins=0/20\nsink=227569400\n"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "experiment": "GT32-COMPACT-Q24-037",
+  "baseline": "GT32-COMPACT-FRONTEND-036 plus Q24 canonicalizer 034",
+  "groups": 12,
+  "serialized_route_sequence": ["A", "A", "B", "C", "D", "D", "E", "D", "A", "A", "B", "C_tail"],
+  "minimum_global_period": null,
+  "exact_periods_tested": [2, 3, 4],
+  "route_classes": {
+    "A": {"count": 4, "perms": [177, 75, 75, 75]},
+    "B": {"count": 2, "perms": [228, 228, 228, 228]},
+    "C": {"count": 2, "perms": [228, 228, 228, 30]},
+    "D": {"count": 3, "perms": [30, 177, 30, 177]},
+    "E": {"count": 1, "perms": [30, 30, 30, 177]}
+  },
+  "prior_c1": {
+    "schedule": "descriptor-driven class-major loops",
+    "problem": "out-of-order routing forces safe tails and adds scalar descriptor dependencies",
+    "two_pack_core_cycle_delta": 70.43
+  },
+  "selected_037a": {
+    "schedule": "serialized-order direct dispatch to five fixed-immediate helpers",
+    "descriptor_loads": 0,
+    "variable_permutes": 0,
+    "safe_tail_policy": "shared C helper only",
+    "control_symbol_bytes": 5120,
+    "candidate_symbol_bytes": 1806,
+    "active_byte_delta": -3314
+  }
+}

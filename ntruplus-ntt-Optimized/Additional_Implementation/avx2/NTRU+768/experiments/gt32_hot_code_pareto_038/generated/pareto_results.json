@@ -1,0 +1,57 @@
+{
+  "schema": "gt32-hot-code-pareto-results-v1",
+  "baseline_policy": "production-shaped GT reference; equal-size cages; no relocation credit",
+  "m_q24": {
+    "control": {"active_bytes": 4303, "reserved_bytes": 5120, "static_instructions": 725},
+    "candidates": {
+      "share_a": {
+        "active_bytes": 3082,
+        "reserved_bytes": 5120,
+        "static_instructions": 565,
+        "dynamic_instruction_delta": 23,
+        "one_call_core_cycle_delta": {"aslr_on": 9.793, "aslr_off": 9.862},
+        "one_call_tsc_delta": {"aslr_on": 5.942, "aslr_off": 6.167}
+      },
+      "share_ad": {
+        "active_bytes": 2444,
+        "reserved_bytes": 5120,
+        "static_instructions": 452,
+        "dynamic_instruction_delta": 32,
+        "one_call_core_cycle_delta": {"aslr_on": 9.415, "aslr_off": 9.420},
+        "one_call_tsc_delta": {"aslr_on": 5.917, "aslr_off": 5.942}
+      },
+      "share_adb": {
+        "active_bytes": 2125,
+        "reserved_bytes": 5120,
+        "static_instructions": 397,
+        "dynamic_instruction_delta": 38,
+        "one_call_core_cycle_delta": {"aslr_on": 10.325, "aslr_off": 11.114},
+        "one_call_tsc_delta": {"aslr_on": 6.553, "aslr_off": 7.056}
+      }
+    },
+    "correctness": "exhaustive uniform [-12699,12699], mapping/reference and protected-tail pass",
+    "decision": "no intrinsic winner; close M-Q24 midpoint shape search"
+  },
+  "inverse_tail": {
+    "control": {"active_bytes": 5578, "reserved_bytes": 5578, "static_instructions": 1006},
+    "u3_x2_plus_u2": {
+      "active_bytes": 3463,
+      "reserved_bytes": 5578,
+      "static_instructions": 652,
+      "dynamic_instruction_delta": 35,
+      "core_cycle_delta": {"aslr_on": 2.865, "aslr_off": 6.614},
+      "tsc_delta": {"aslr_on": 2.376, "aslr_off": 2.067},
+      "negative_launches": {"aslr_on": "0/8", "aslr_off": "0/8"}
+    },
+    "correctness": "1000 random exact output trials pass",
+    "decision": "valid size Pareto point but not an intrinsic performance winner"
+  },
+  "p_sp1": {
+    "class_sequence": ["A", "A", "B", "C", "D", "D", "E", "D", "A", "A", "B", "F"],
+    "fixed_period": false,
+    "sp1_constraint": "each group preloads the next physical input group",
+    "prior_compact_dispatch_delta_core_cycles": {"normal": 52.330, "reversed": 62.058},
+    "decision": "no new eligible midpoint mechanism; retain current SP1 body"
+  },
+  "overall_decision": "no 038 active-body candidate survives the equal-address performance gate"
+}

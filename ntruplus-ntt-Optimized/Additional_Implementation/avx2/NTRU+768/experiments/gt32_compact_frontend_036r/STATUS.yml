@@ -1,0 +1,61 @@
+experiment: GT32-COMPACT-FRONTEND-036R
+status: complete_causal_reclassification
+production_modified: false
+frozen:
+  - q24_034_canonicalizer
+  - ntt_arithmetic_layout_range_and_twiddles
+  - all_non_frontend_components
+variants:
+  a:
+    executed: wide_frontend
+    reserved_bytes: 3917
+    text_bytes: 64087
+  b:
+    executed: compact_u3x2_u2_frontend
+    active_bytes: 2472
+    reserved_bytes: 3917
+    text_bytes: 64087
+    later_addresses_equal_a: true
+  c:
+    executed: compact_u3x2_u2_frontend
+    active_bytes: 2472
+    reserved_bytes: 2472
+    text_bytes: 62679
+    later_symbol_shift_bytes: -1440
+kat:
+  vectors: 100
+  variants_passed: [a, b, c]
+  request_byte_exact: true
+  response_byte_exact: true
+  request_sha256: 36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa
+  response_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+benchmark:
+  cpu: 1
+  blocks: 16
+  launches_per_setting: 64
+  order: odd_ABBA_even_BAAB
+  b_minus_a_block_median_cycles:
+    aslr_on: {keypair: 8.250, encap: 4.250, decap: 8.625}
+    aslr_off: {keypair: 15.375, encap: 12.375, decap: -6.750}
+  c_minus_b_block_median_cycles:
+    aslr_on: {keypair: 17.250, encap: -97.000, decap: -141.250}
+    aslr_off: {keypair: -11.125, encap: -196.500, decap: -165.250}
+decision:
+  active_compact_schedule: intrinsic_neutral
+  footprint_release: real_but_image_specific_delivery_effect
+  reclassify_036_as:
+    - executable_delivery_reference
+    - exact_image_encap_candidate
+  not_an_intrinsic_frontend_champion: true
+  no_padding_search: true
+  next:
+    - resume_038_with_equal_size_local_cages
+    - release_footprint_only_after_intrinsic_gate
+artifacts:
+  - tools/materialize_036r.py
+  - tools/run_kat.sh
+  - generated/ntt_a.s
+  - generated/ntt_b.s
+  - generated/ntt_c.s
+  - results/formal-036r-a-vs-b/manifest.json
+  - results/formal-036r-b-vs-c/manifest.json

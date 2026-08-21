@@ -1,0 +1,50 @@
+experiment: GT32-INTERNAL-ABI-VZEROUPPER-039
+status: complete_no_private_abi_promotion
+production_modified: false
+scope:
+  included:
+    - internal_avx2_to_avx2_leaf_edges
+    - fixed_size_vzeroupper_epilogue_removal
+  excluded:
+    - public_api_boundaries
+    - q24_to_shake
+    - avx2_to_unknown_generic_c
+method:
+  executable: non_pie_fixed_address
+  geometry:
+    elf_size_identical: true
+    changed_bytes_per_candidate: 4
+    symbol_size_identical: true
+    downstream_addresses_identical: true
+  launches: 12
+  launch_order: paired_alternating
+  tsc_samples_per_process: 31
+  pmu_samples_per_process: 15
+  cpu_affinity: fixed
+correctness:
+  existing_gt_clean_test_each_patched_leaf: pass
+results:
+  frontend_to_ntt_m: {tsc: -0.175, core: -0.416, instructions: -1, negative_core: 8/12}
+  frontend_to_ntt_p: {tsc: 1.914, core: -2.281, instructions: -1, negative_core: 8/12}
+  ntt_m_to_q24: {tsc: 2.985, core: 2.831, instructions: -1, negative_core: 4/12}
+  ntt_m_to_b3: {tsc: -7.534, core: -2.137, instructions: -1, negative_core: 7/12}
+  b3_scale_to_inverse: {tsc: -6.675, core: -3.176, instructions: -1, negative_core: 10/12}
+  b3_general_to_add: {tsc: -0.719, core: 0.414, instructions: -1, negative_core: 3/12}
+  inverse_core_to_tail: {tsc: -0.588, core: -1.277, instructions: -1, negative_core: 8/12}
+  inverse_tail_to_crep: {tsc: -0.575, core: 5.847, instructions: -1, negative_core: 4/12}
+decision:
+  private_avx2_island: rejected_insufficient_cycle_evidence
+  blanket_vzeroupper_removal: false
+  whole_kem_promotion_run: false
+  close:
+    - hot_loop_compaction_as_speed_mechanism
+    - frontend_code_shape_micro_tuning
+    - internal_vzeroupper_micro_tuning
+  next:
+    - SOTP_TO_FRONTEND_LANDING_STRUCTURAL_GATE_040
+    - CBD_TO_FRONTEND_LANDING_STRUCTURAL_GATE_041
+reopen_only_if:
+  - consumer_uses_a_materially_different_transition_contract
+  - several_edges_gain_stable_multi_cycle_savings_in_fixed_address_gates
+  - target_microarchitecture_changes
+

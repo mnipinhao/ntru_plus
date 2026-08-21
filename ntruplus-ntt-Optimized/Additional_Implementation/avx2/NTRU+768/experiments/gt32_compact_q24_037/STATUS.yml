@@ -1,0 +1,66 @@
+experiment: GT32-COMPACT-Q24-037
+status: closed_not_promoted
+production_modified: false
+baseline: GT32-COMPACT-FRONTEND-036
+frozen:
+  - Q24 packet mathematics
+  - Q24 semantic mapping
+  - Q24 transpose
+  - Q24 v9 reducer
+  - Q24 034 vpaddw-vpminuw canonicalizer
+  - M representation
+shape_audit:
+  sequence: [A, A, B, C, D, D, E, D, A, A, B, C_tail]
+  exact_global_period_2_3_4: false
+  prior_C1_coverage: descriptor_driven_class_major_loops
+  selected_schedule: serialized_order_five_fixed_immediate_helpers
+candidate_037a:
+  descriptor_loads: 0
+  variable_permutes: 0
+  control_symbol_bytes: 5120
+  active_symbol_bytes: 1806
+  active_byte_delta: -3314
+correctness:
+  exhaustive_minus12699_to_12699: pass
+  guard_page_tail: pass
+  supercop_try_profiles: [O3, Os, O2, O]
+  kat_100_vectors_byte_exact: pass
+  kat_req_sha256: 36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa
+  kat_rsp_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+local_gate:
+  launches_per_placement: 4
+  normal:
+    one_q24: {tsc: 7.318, core_cycles: 11.743, instructions: 48}
+    two_q24: {tsc: 9.039, core_cycles: 14.575, instructions: 96}
+  reversed:
+    one_q24: {tsc: 7.077, core_cycles: 11.280, instructions: 48}
+    two_q24: {tsc: 8.439, core_cycles: 13.434, instructions: 96}
+decision:
+  matched_local_gate: pass_with_measured_entry_fee
+  release_padding_whole_kem_gate: fail_no_stable_causal_encap_gain
+  experimental_baseline: GT32-COMPACT-FRONTEND-036
+  candidate_037: closed_negative_control
+  global_production_promoted: false
+formal_fixed_elf:
+  cpu: 1
+  blocks: 16
+  launches_per_aslr_setting: 64
+  order: odd_ABBA_even_BAAB
+  text_bytes: 59351
+  baseline_036_text_bytes: 62935
+  text_delta_bytes: -3584
+  causal_037_minus_036_block_median_cycles:
+    aslr_on: {keypair: -179.500, encap: -179.625, decap: -45.375}
+    aslr_off: {keypair: -48.125, encap: -12.500, decap: -17.125}
+  official_037_block_median_cycles:
+    aslr_on: {keypair: -345.750, encap: 307.625, decap: -23.750}
+    aslr_off: {keypair: -256.375, encap: 289.125, decap: -1.500}
+artifacts:
+  - generated/shape_audit.json
+  - generated/pack_037.s
+  - results/local_gate.json
+  - results/kat/PQCkemKAT_2336.req
+  - results/kat/PQCkemKAT_2336.rsp
+  - results/formal-036-vs-037/manifest.json
+  - results/formal-official-vs-037-v2/manifest.json
+  - /home/nuc/src/exports/crypto_kem/ntruplus768/avx2-gt32-clean-compact-q24-037

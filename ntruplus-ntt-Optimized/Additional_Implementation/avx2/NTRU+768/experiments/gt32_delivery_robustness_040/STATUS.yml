@@ -1,0 +1,52 @@
+experiment: GT32-DELIVERY-ROBUSTNESS-040
+status: closed
+production_changed: false
+
+decisions:
+  benchmark_attribution:
+    status: qualified
+    method: equal-size fixed-address cage
+  official_uniquely_layout_stable:
+    status: rejected
+  single_gt_hot_cluster_root_cause:
+    status: not_found
+  production_layout_robustness:
+    status: quantified_not_solved
+  magic_offset_selection:
+    status: prohibited
+  stable_hot_slot_architecture_041:
+    status: not_opened
+
+broad_aslr_off_range_cycles:
+  official:
+    keypair: 149.75
+    encap: 257.00
+    decap: 229.00
+  gt_clean:
+    keypair: 68.25
+    encap: 317.75
+    decap: 233.75
+
+localized_effects:
+  - cluster: frontend_n5
+    offset: 0x400
+    encap_median_cycles: [-27.75, -23.50]
+    reproduced_by_byte_identical_builds: true
+  - cluster: general_b3_q24
+    offset: 0x400
+    encap_median_cycles: -37.50
+    decap_median_cycles: [-23.50, -36.25]
+  - cluster: b3scale_inverse
+    offset: 0x400
+    decap_median_cycles: -18.00
+
+pmu:
+  whole_supercop_process: inconclusive
+  reason: process-level retired work variance exceeds localized signal
+  reopen_only_with: region-scoped repeated caller harness
+
+next:
+  - stop delivery and code-shape micro-tuning
+  - use cages for future intrinsic candidate measurements
+  - prioritize structural producer-consumer work deletion
+

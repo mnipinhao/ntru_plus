@@ -1,0 +1,19 @@
+{
+  "correctness": "exhaustive-[-12699,12699]-and-guard-page-pass-each-launch",
+  "launches_per_placement": 4,
+  "samples_per_launch": 20,
+  "iterations": 4000,
+  "cpu": 1,
+  "candidate_minus_control_launch_median": {
+    "normal": {
+      "one_q24": {"tsc": 7.318, "core_cycles": 11.743, "instructions": 48},
+      "two_q24": {"tsc": 9.039, "core_cycles": 14.575, "instructions": 96}
+    },
+    "reversed": {
+      "one_q24": {"tsc": 7.077, "core_cycles": 11.280, "instructions": 48},
+      "two_q24": {"tsc": 8.439, "core_cycles": 13.434, "instructions": 96}
+    }
+  },
+  "decision": "continue-to-release-padding-whole-kem-gate",
+  "reason": "3.3-KiB contraction with two-pack local cost far below prior C1 and below the whole-Encap delivery effect demonstrated by 036"
+}

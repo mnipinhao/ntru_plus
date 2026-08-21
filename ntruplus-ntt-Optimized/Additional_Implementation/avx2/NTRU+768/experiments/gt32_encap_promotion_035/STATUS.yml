@@ -1,0 +1,49 @@
+experiment: GT32-ENCAP-PROMOTION-035
+status: closed_no_promotion
+production_modified: false
+candidate_export: /home/nuc/src/exports/crypto_kem/ntruplus768/avx2-gt32-clean-033b-transform
+components: [gt_clean_tablegc, encap_031, q24_034, transform_island_033b]
+kat:
+  functional_test: pass
+  request_sha256: 36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa
+  response_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+benchmark:
+  status: complete
+  method:
+    cpu: 1
+    blocks: 16
+    observations_per_operation_per_block: 96
+    ordering: palindromic_abba_baab
+    fixed_elf: true
+  versus_official:
+    aslr_off:
+      keypair_delta_cycles: -306.771
+      encap_delta_cycles: 189.135
+      decap_delta_cycles: -72.406
+    aslr_on:
+      keypair_delta_cycles: -281.813
+      encap_delta_cycles: 180.458
+      decap_delta_cycles: -157.938
+  versus_fresh_gt_clean:
+    aslr_off:
+      keypair_delta_cycles: -0.479
+      encap_delta_cycles: 93.833
+      decap_delta_cycles: 131.000
+    aslr_on:
+      keypair_delta_cycles: -10.719
+      encap_delta_cycles: 34.198
+      decap_delta_cycles: 93.729
+decision:
+  promote: false
+  production_selection: gt_clean_tablegc
+  reason:
+    - local transform-island saving did not survive independent export
+    - no statistically closed Encap win versus fresh GT Clean
+    - source-identical Decap regressed in both ASLR modes
+    - whole-image delivery effect exceeds local saving
+  hard_stop:
+    - linker padding sweep
+    - address sweep
+    - further hot-order tuning for 033B
+  retain_as:
+    - local scheduling reference

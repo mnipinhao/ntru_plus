@@ -1,0 +1,227 @@
+{
+  "schema": "gt32-hot-code-pareto-inventory-v1",
+  "elf": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/gt32_compact_q24_037/build/037r-a-gc-measure",
+  "symbols": {
+    "frontend": {
+      "symbol": "ntruplus768_ntt_frontend_avx2",
+      "address": 14560,
+      "static_bytes": 2472,
+      "static_instructions_excluding_nop": 434,
+      "static_branches": 2,
+      "static_vector_instructions": 412,
+      "memory_operand_instructions": 156,
+      "likely_loads": 126,
+      "likely_stores": 30,
+      "calls": {
+        "keypair": 2,
+        "encap": 2,
+        "decap": 2
+      },
+      "shape": "compact_U3_loop; freeze_036"
+    },
+    "ntt_p": {
+      "symbol": "ntruplus768_ntt_p_avx2",
+      "address": 17056,
+      "static_bytes": 1046,
+      "static_instructions_excluding_nop": 192,
+      "static_branches": 2,
+      "static_vector_instructions": 185,
+      "memory_operand_instructions": 53,
+      "likely_loads": 45,
+      "likely_stores": 8,
+      "calls": {
+        "keypair": 2,
+        "encap": 0,
+        "decap": 0
+      },
+      "shape": "small repeated SIMD loop; freeze"
+    },
+    "ntt_m": {
+      "symbol": "ntruplus768_ntt_m_avx2",
+      "address": 50464,
+      "static_bytes": 1056,
+      "static_instructions_excluding_nop": 194,
+      "static_branches": 2,
+      "static_vector_instructions": 187,
+      "memory_operand_instructions": 51,
+      "likely_loads": 43,
+      "likely_stores": 8,
+      "calls": {
+        "keypair": 0,
+        "encap": 2,
+        "decap": 2
+      },
+      "shape": "small repeated SIMD loop; freeze"
+    },
+    "decode_m_body": {
+      "symbol": "ntruplus768_unpack_m_body_avx2",
+      "address": 18112,
+      "static_bytes": 3470,
+      "static_instructions_excluding_nop": 588,
+      "static_branches": 1,
+      "static_vector_instructions": 586,
+      "memory_operand_instructions": 194,
+      "likely_loads": 146,
+      "likely_stores": 48,
+      "calls": {
+        "keypair": 0,
+        "encap": 1,
+        "decap": 3
+      },
+      "shape": "large packet routing body; classify before search"
+    },
+    "pack_m_centered": {
+      "symbol": "ntruplus768_pack_m_centered_avx2",
+      "address": 21728,
+      "static_bytes": 3815,
+      "static_instructions_excluding_nop": 580,
+      "static_branches": 1,
+      "static_vector_instructions": 579,
+      "memory_operand_instructions": 242,
+      "likely_loads": 145,
+      "likely_stores": 97,
+      "calls": {
+        "keypair": 0,
+        "encap": 1,
+        "decap": 1
+      },
+      "shape": "fully expanded packet serializer; Pareto candidate"
+    },
+    "pack_m_lazy10788": {
+      "symbol": "ntruplus768_pack_m_lazy10788_avx2",
+      "address": 25696,
+      "static_bytes": 5120,
+      "static_instructions_excluding_nop": 725,
+      "static_branches": 1,
+      "static_vector_instructions": 724,
+      "memory_operand_instructions": 243,
+      "likely_loads": 146,
+      "likely_stores": 97,
+      "calls": {
+        "keypair": 0,
+        "encap": 1,
+        "decap": 0
+      },
+      "shape": "5120-byte padded fully expanded serializer; Pareto candidate"
+    },
+    "pack_p": {
+      "symbol": "ntruplus768_pack_p_sp1_lazy10788_avx2",
+      "address": 30816,
+      "static_bytes": 4364,
+      "static_instructions_excluding_nop": 738,
+      "static_branches": 1,
+      "static_vector_instructions": 737,
+      "memory_operand_instructions": 256,
+      "likely_loads": 159,
+      "likely_stores": 97,
+      "calls": {
+        "keypair": 3,
+        "encap": 0,
+        "decap": 0
+      },
+      "shape": "large P-specific serializer; Keypair Pareto candidate"
+    },
+    "baseinv_leaf": {
+      "symbol": "ntruplus768_baseinv_j1_avx2",
+      "address": 36208,
+      "static_bytes": 923,
+      "static_instructions_excluding_nop": 199,
+      "static_branches": 9,
+      "static_vector_instructions": 149,
+      "memory_operand_instructions": 30,
+      "likely_loads": 20,
+      "likely_stores": 10,
+      "calls": {
+        "keypair": 2,
+        "encap": 0,
+        "decap": 0
+      },
+      "shape": "compact leaf loop; freeze pending register/DAG change"
+    },
+    "baseinv_batch": {
+      "symbol": "ntruplus768_baseinv_batch_tree_avx2",
+      "address": 39008,
+      "static_bytes": 1787,
+      "static_instructions_excluding_nop": 347,
+      "static_branches": 3,
+      "static_vector_instructions": 339,
+      "memory_operand_instructions": 84,
+      "likely_loads": 52,
+      "likely_stores": 32,
+      "calls": {
+        "keypair": 2,
+        "encap": 0,
+        "decap": 0
+      },
+      "shape": "specialized batch inversion; outside code-shape gate"
+    },
+    "basemul_scale_m": {
+      "symbol": "ntruplus768_basemul_scale_m_avx2",
+      "address": 37152,
+      "static_bytes": 573,
+      "static_instructions_excluding_nop": 120,
+      "static_branches": 2,
+      "static_vector_instructions": 109,
+      "memory_operand_instructions": 24,
+      "likely_loads": 20,
+      "likely_stores": 4,
+      "calls": {
+        "keypair": 0,
+        "encap": 0,
+        "decap": 1
+      },
+      "shape": "compact loop; freeze"
+    },
+    "basemul_general_m": {
+      "symbol": "ntruplus768_basemul_general_m_avx2",
+      "address": 37728,
+      "static_bytes": 684,
+      "static_instructions_excluding_nop": 140,
+      "static_branches": 2,
+      "static_vector_instructions": 129,
+      "memory_operand_instructions": 37,
+      "likely_loads": 30,
+      "likely_stores": 7,
+      "calls": {
+        "keypair": 0,
+        "encap": 1,
+        "decap": 1
+      },
+      "shape": "compact loop; freeze"
+    },
+    "invntt_m": {
+      "symbol": "ntruplus768_invntt_m_avx2",
+      "address": 43904,
+      "static_bytes": 948,
+      "static_instructions_excluding_nop": 169,
+      "static_branches": 2,
+      "static_vector_instructions": 162,
+      "memory_operand_instructions": 50,
+      "likely_loads": 42,
+      "likely_stores": 8,
+      "calls": {
+        "keypair": 0,
+        "encap": 0,
+        "decap": 1
+      },
+      "shape": "compact inverse core loop; freeze"
+    },
+    "invntt_tail": {
+      "symbol": "ntruplus768_invntt_tail_avx2",
+      "address": 44864,
+      "static_bytes": 5578,
+      "static_instructions_excluding_nop": 1006,
+      "static_branches": 1,
+      "static_vector_instructions": 1005,
+      "memory_operand_instructions": 252,
+      "likely_loads": 204,
+      "likely_stores": 48,
+      "calls": {
+        "keypair": 0,
+        "encap": 0,
+        "decap": 1
+      },
+      "shape": "large expanded terminal; Decap Pareto candidate"
+    }
+  }
+}

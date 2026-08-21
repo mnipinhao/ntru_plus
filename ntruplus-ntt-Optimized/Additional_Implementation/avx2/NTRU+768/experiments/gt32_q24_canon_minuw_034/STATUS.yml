@@ -1,0 +1,52 @@
+experiment: GT32-Q24-CANON-MINUW-034
+status: qualified_for_033b_not_production_promoted
+production_modified: false
+control:
+  canonical_tail: [vpsraw, vpand, vpaddw]
+candidate:
+  canonical_tail: [vpaddw, vpminuw]
+static_expectation:
+  instructions_per_q24: -48
+  symbol_size_bytes: 5120
+correctness:
+  signed_int16_scalar_domain: pass_65536_values_x_768_slots
+  heterogeneous_trials: pass_10000
+  full_encap_differential: pass_1000
+performance:
+  fixed_address:
+    symbol_address: 0x401760
+    elf_bytes: 100064
+    launches: 48
+    single_q24_core_cycles: -20.645833333333343
+    single_q24_wins: 48/48
+    double_q24_core_cycles: -38.56249999999994
+    double_q24_wins: 48/48
+  same_elf_normal:
+    single_q24_core_cycles: -26.50000000000003
+    double_q24_core_cycles: -45.95833333333326
+    wins: 48/48
+  same_elf_reversed:
+    single_q24_core_cycles: -16.291666666666686
+    double_q24_core_cycles: -37.08333333333337
+    wins: 48/48
+  full_encap:
+    normal_core_cycles: -14.58333333333394
+    normal_wins: 30/48
+    normal_ci_crosses_zero: true
+    reversed_core_cycles: -72.29166666666424
+    reversed_wins: 36/48
+    reversed_ci_crosses_zero: false
+  pmu_full_encap_candidate_minus_control:
+    core_cycles: -65.64500000000044
+    retired_instructions: -95.99755000000005
+    retired_loads: 0.0005499999997482519
+    retired_stores: 0.00010000000020227162
+decision:
+  local_mechanism: qualified
+  next_consumer: 033b_hot_section_ordering
+  gt_clean_modified: false
+  production_promotion: deferred
+continuation:
+  require_clean_in_place_export: true
+  require_kat: true
+  require_formal_full_caller_benchmark: true

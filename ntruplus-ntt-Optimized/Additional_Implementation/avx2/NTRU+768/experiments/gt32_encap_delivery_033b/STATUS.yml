@@ -1,0 +1,53 @@
+experiment: GT32-ENCAP-DELIVERY-033B
+status: selected_experimental_order
+production_modified: false
+arithmetic_image:
+  caller: 031
+  q24_candidate: 034
+  basemul: current
+  basemul_add_m_032: excluded_from_selected_image
+orders: [current, transform_island, q24_centered, arithmetic_first]
+correctness:
+  deterministic_ciphertext_and_shared_secret: pass_all_pairs
+geometry:
+  common_symbols_per_pair: 101
+  moved_common_symbols: 0
+  current_elf_bytes: 134640
+  explicit_order_elf_bytes: 134720
+  intended_order_assertion: pass
+  invalid_pre_correction_measurements: discarded
+benchmark:
+  launches_per_order: 48
+  cycle_backend: default-perfevent
+  current: {core_cycles: -55.375, wins: 30/48, ci95: [-128.45833333333212, 6.208333333335759]}
+  transform_island: {core_cycles: -35.29166666666606, wins: 36/48, ci95: [-52.0, -29.08333333333212]}
+  q24_centered: {core_cycles: -14.72916666666606, wins: 30/48, ci95: [-46.08333333333212, 16.52083333333394]}
+  arithmetic_first: {core_cycles: -1.375, wins: 26/48, ci95: [-18.83333333333394, 27.04166666666788]}
+pmu_24_launch:
+  retired_instructions_all_orders: -96
+  transform_core_cycles: -60.882299999999304
+  transform_idq_uops_not_delivered: 17.143800000000283
+factorial:
+  selected_b_minus_a:
+    core_cycles: -34.91666666666788
+    wins: 39/48
+    ci95: [-56.66666666666788, -26.04166666666788]
+    pmu_core_cycles: -76.89290000000074
+    pmu_instructions: -96.00010000000475
+  c_minus_b_separate_elf:
+    status: rejected_as_geometry_attribution
+    apparent_core_cycles: -342.08333333333394
+    hot_island_shift_bytes: -32
+    pmu_idq_uops_not_delivered: -1109.9942499999997
+  add_m_032_same_elf_recheck:
+    normal: {local_cycles: -15.8125, local_wins: 32/32, full_cycles: -11.14583333333394, full_wins: 17/32, full_ci95: [-40.02083333333394, 16.875]}
+    reversed: {local_cycles: -15.937499999999943, local_wins: 32/32, full_cycles: -12.35416666666606, full_wins: 17/32, full_ci95: [-66.43750000000182, 30.75000000000182]}
+decision:
+  selected_order: transform_island
+  selected_image: 031_plus_034
+  search_additional_orders: false
+  promote_032: false
+  q24_034_status: qualified_experimental_hot_body
+  gt_clean_modified: false
+next:
+  - explicit production-export decision for 031_plus_034_transform

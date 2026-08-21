@@ -1,0 +1,969 @@
+{
+  "schema": "gt32-hot-code-repeated-shapes-v1",
+  "sources": {
+    "pack": {
+      "path": "/home/nuc/src/exports/crypto_kem/ntruplus768/avx2-gt32-clean-033b-transform/pack.s",
+      "sha256": "e19f368b56543c62fb9320f58d713b0415143b234c1aa01cac9353b7c4604b71"
+    },
+    "inverse": {
+      "path": "/home/nuc/src/exports/crypto_kem/ntruplus768/avx2-gt32-clean-033b-transform/invntt.s",
+      "sha256": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa"
+    }
+  },
+  "m_q24": {
+    "group_count": 12,
+    "groups": [
+      {
+        "input_offsets": [
+          0,
+          32,
+          64,
+          96
+        ],
+        "output_offsets": [
+          0,
+          24,
+          48,
+          72
+        ],
+        "routing_signature": [
+          "ymm7:177:0",
+          "ymm6:75:0",
+          "ymm4:75:0",
+          "ymm5:75:0"
+        ],
+        "class": "A"
+      },
+      {
+        "input_offsets": [
+          128,
+          160,
+          192,
+          224
+        ],
+        "output_offsets": [
+          96,
+          120,
+          144,
+          168
+        ],
+        "routing_signature": [
+          "ymm7:177:0",
+          "ymm6:75:0",
+          "ymm4:75:0",
+          "ymm5:75:0"
+        ],
+        "class": "A"
+      },
+      {
+        "input_offsets": [
+          1152,
+          1184,
+          1216,
+          1248
+        ],
+        "output_offsets": [
+          192,
+          216,
+          240,
+          264
+        ],
+        "routing_signature": [
+          "ymm4:228:0",
+          "ymm5:228:0",
+          "ymm6:228:0",
+          "ymm7:228:0"
+        ],
+        "class": "B"
+      },
+      {
+        "input_offsets": [
+          1024,
+          1056,
+          1088,
+          1120
+        ],
+        "output_offsets": [
+          288,
+          312,
+          336,
+          360
+        ],
+        "routing_signature": [
+          "ymm6:228:0",
+          "ymm7:228:0",
+          "ymm5:228:0",
+          "ymm4:30:0"
+        ],
+        "class": "C"
+      },
+      {
+        "input_offsets": [
+          512,
+          544,
+          576,
+          608
+        ],
+        "output_offsets": [
+          384,
+          408,
+          432,
+          456
+        ],
+        "routing_signature": [
+          "ymm5:30:0",
+          "ymm4:177:0",
+          "ymm7:30:0",
+          "ymm6:177:0"
+        ],
+        "class": "D"
+      },
+      {
+        "input_offsets": [
+          640,
+          672,
+          704,
+          736
+        ],
+        "output_offsets": [
+          480,
+          504,
+          528,
+          552
+        ],
+        "routing_signature": [
+          "ymm5:30:0",
+          "ymm4:177:0",
+          "ymm7:30:0",
+          "ymm6:177:0"
+        ],
+        "class": "D"
+      },
+      {
+        "input_offsets": [
+          1408,
+          1440,
+          1472,
+          1504
+        ],
+        "output_offsets": [
+          576,
+          600,
+          624,
+          648
+        ],
+        "routing_signature": [
+          "ymm6:30:0",
+          "ymm7:30:0",
+          "ymm5:30:0",
+          "ymm4:177:0"
+        ],
+        "class": "E"
+      },
+      {
+        "input_offsets": [
+          1280,
+          1312,
+          1344,
+          1376
+        ],
+        "output_offsets": [
+          672,
+          696,
+          720,
+          744
+        ],
+        "routing_signature": [
+          "ymm5:30:0",
+          "ymm4:177:0",
+          "ymm7:30:0",
+          "ymm6:177:0"
+        ],
+        "class": "D"
+      },
+      {
+        "input_offsets": [
+          768,
+          800,
+          832,
+          864
+        ],
+        "output_offsets": [
+          768,
+          792,
+          816,
+          840
+        ],
+        "routing_signature": [
+          "ymm7:177:0",
+          "ymm6:75:0",
+          "ymm4:75:0",
+          "ymm5:75:0"
+        ],
+        "class": "A"
+      },
+      {
+        "input_offsets": [
+          896,
+          928,
+          960,
+          992
+        ],
+        "output_offsets": [
+          864,
+          888,
+          912,
+          936
+        ],
+        "routing_signature": [
+          "ymm7:177:0",
+          "ymm6:75:0",
+          "ymm4:75:0",
+          "ymm5:75:0"
+        ],
+        "class": "A"
+      },
+      {
+        "input_offsets": [
+          384,
+          416,
+          448,
+          480
+        ],
+        "output_offsets": [
+          960,
+          984,
+          1008,
+          1032
+        ],
+        "routing_signature": [
+          "ymm4:228:0",
+          "ymm5:228:0",
+          "ymm6:228:0",
+          "ymm7:228:0"
+        ],
+        "class": "B"
+      },
+      {
+        "input_offsets": [
+          256,
+          288,
+          320,
+          352
+        ],
+        "output_offsets": [
+          1056,
+          1080,
+          1104,
+          1128
+        ],
+        "routing_signature": [
+          "ymm6:228:0",
+          "ymm7:228:0",
+          "ymm5:228:0",
+          "ymm4:30:1"
+        ],
+        "class": "F"
+      }
+    ],
+    "class_sequence": [
+      "A",
+      "A",
+      "B",
+      "C",
+      "D",
+      "D",
+      "E",
+      "D",
+      "A",
+      "A",
+      "B",
+      "F"
+    ],
+    "class_definitions": {
+      "A": {
+        "count": 4,
+        "signature": [
+          "ymm7:177:0",
+          "ymm6:75:0",
+          "ymm4:75:0",
+          "ymm5:75:0"
+        ]
+      },
+      "B": {
+        "count": 2,
+        "signature": [
+          "ymm4:228:0",
+          "ymm5:228:0",
+          "ymm6:228:0",
+          "ymm7:228:0"
+        ]
+      },
+      "C": {
+        "count": 1,
+        "signature": [
+          "ymm6:228:0",
+          "ymm7:228:0",
+          "ymm5:228:0",
+          "ymm4:30:0"
+        ]
+      },
+      "D": {
+        "count": 3,
+        "signature": [
+          "ymm5:30:0",
+          "ymm4:177:0",
+          "ymm7:30:0",
+          "ymm6:177:0"
+        ]
+      },
+      "E": {
+        "count": 1,
+        "signature": [
+          "ymm6:30:0",
+          "ymm7:30:0",
+          "ymm5:30:0",
+          "ymm4:177:0"
+        ]
+      },
+      "F": {
+        "count": 1,
+        "signature": [
+          "ymm6:228:0",
+          "ymm7:228:0",
+          "ymm5:228:0",
+          "ymm4:30:1"
+        ]
+      }
+    },
+    "contiguous_runs": [
+      {
+        "class": "A",
+        "count": 2
+      },
+      {
+        "class": "B",
+        "count": 1
+      },
+      {
+        "class": "C",
+        "count": 1
+      },
+      {
+        "class": "D",
+        "count": 2
+      },
+      {
+        "class": "E",
+        "count": 1
+      },
+      {
+        "class": "D",
+        "count": 1
+      },
+      {
+        "class": "A",
+        "count": 2
+      },
+      {
+        "class": "B",
+        "count": 1
+      },
+      {
+        "class": "F",
+        "count": 1
+      }
+    ],
+    "minimum_prefix_period": 12,
+    "candidate_shapes": [
+      {
+        "name": "repeat_classes_A_D_B_only",
+        "mechanism": "descriptor loops only for classes occurring 4, 3, and 2 times; inline all singleton classes",
+        "purpose": "midpoint between 5.1-KiB unrolled and 1.8-KiB all-descriptor compact"
+      },
+      {
+        "name": "repeat_classes_A_D_only",
+        "mechanism": "descriptor loops only for the two highest-frequency routing classes",
+        "purpose": "lower dynamic loop fee, smaller static reduction"
+      }
+    ]
+  },
+  "inverse_tail": {
+    "group_count": 8,
+    "groups": [
+      {
+        "group": 0,
+        "register_rotation": [
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2"
+        ],
+        "class": "A"
+      },
+      {
+        "group": 1,
+        "register_rotation": [
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1"
+        ],
+        "class": "B"
+      },
+      {
+        "group": 2,
+        "register_rotation": [
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0"
+        ],
+        "class": "C"
+      },
+      {
+        "group": 3,
+        "register_rotation": [
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2"
+        ],
+        "class": "A"
+      },
+      {
+        "group": 4,
+        "register_rotation": [
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1"
+        ],
+        "class": "B"
+      },
+      {
+        "group": 5,
+        "register_rotation": [
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0"
+        ],
+        "class": "C"
+      },
+      {
+        "group": 6,
+        "register_rotation": [
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2"
+        ],
+        "class": "A"
+      },
+      {
+        "group": 7,
+        "register_rotation": [
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1"
+        ],
+        "class": "B"
+      }
+    ],
+    "class_sequence": [
+      "A",
+      "B",
+      "C",
+      "A",
+      "B",
+      "C",
+      "A",
+      "B"
+    ],
+    "class_definitions": {
+      "A": {
+        "count": 3,
+        "signature": [
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2"
+        ]
+      },
+      "B": {
+        "count": 3,
+        "signature": [
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0",
+          "%ymm4",
+          "%ymm1"
+        ]
+      },
+      "C": {
+        "count": 2,
+        "signature": [
+          "%ymm4",
+          "%ymm1",
+          "%ymm5",
+          "%ymm2",
+          "%ymm3",
+          "%ymm0"
+        ]
+      }
+    },
+    "minimum_prefix_period": 3,
+    "affine_group_operands": {
+      "input_stride_bytes": 32,
+      "matrix_stride_bytes": 288,
+      "output_stride_bytes": 32
+    },
+    "candidate_shapes": [
+      {
+        "name": "U3_x2_plus_U2",
+        "mechanism": "three exact register rotations in a two-iteration loop plus a two-group tail",
+        "requirements": [
+          "pointerize affine group offsets",
+          "no new YMM live range",
+          "equal-size 5578-byte cage",
+          "preserve T8 arithmetic verbatim"
+        ]
+      }
+    ]
+  },
+  "p_sp1": {
+    "initial_load_instructions": 4,
+    "group_count": 12,
+    "groups": [
+      {
+        "transpose_flags": [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        "masks": [
+          "01:ymm6"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          128,
+          160,
+          192,
+          224
+        ],
+        "shape_signature": [
+          "T:0,1,0,1",
+          "M:01:ymm6",
+          "R:SP1",
+          "S:ymm6:1:ymm7:1:0|ymm7:0:ymm6:0:0|ymm5:0:ymm4:0:0|ymm5:1:ymm4:1:0"
+        ],
+        "class": "A"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        "masks": [
+          "01:ymm6"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          1152,
+          1184,
+          1216,
+          1248
+        ],
+        "shape_signature": [
+          "T:0,1,0,1",
+          "M:01:ymm6",
+          "R:SP1",
+          "S:ymm6:1:ymm7:1:0|ymm7:0:ymm6:0:0|ymm5:0:ymm4:0:0|ymm5:1:ymm4:1:0"
+        ],
+        "class": "A"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "masks": [],
+        "reducer": "SP1",
+        "preload_offsets": [
+          1024,
+          1056,
+          1088,
+          1120
+        ],
+        "shape_signature": [
+          "T:0,0,0,0",
+          "M:",
+          "R:SP1",
+          "S:ymm4:0:ymm5:0:0|ymm4:1:ymm5:1:0|ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0"
+        ],
+        "class": "B"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "masks": [
+          "10:ymm4"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          512,
+          544,
+          576,
+          608
+        ],
+        "shape_signature": [
+          "T:0,0,0,0",
+          "M:10:ymm4",
+          "R:SP1",
+          "S:ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0|ymm4:1:ymm5:1:0|ymm5:0:ymm4:0:0"
+        ],
+        "class": "C"
+      },
+      {
+        "transpose_flags": [
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        "masks": [
+          "10:ymm5",
+          "10:ymm7"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          640,
+          672,
+          704,
+          736
+        ],
+        "shape_signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5,10:ymm7",
+          "R:SP1",
+          "S:ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0|ymm7:1:ymm6:1:0|ymm6:0:ymm7:0:0"
+        ],
+        "class": "D"
+      },
+      {
+        "transpose_flags": [
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        "masks": [
+          "10:ymm5",
+          "10:ymm7"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          1408,
+          1440,
+          1472,
+          1504
+        ],
+        "shape_signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5,10:ymm7",
+          "R:SP1",
+          "S:ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0|ymm7:1:ymm6:1:0|ymm6:0:ymm7:0:0"
+        ],
+        "class": "D"
+      },
+      {
+        "transpose_flags": [
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        "masks": [
+          "10:ymm5"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          1280,
+          1312,
+          1344,
+          1376
+        ],
+        "shape_signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5",
+          "R:SP1",
+          "S:ymm7:0:ymm6:0:0|ymm7:1:ymm6:1:0|ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0"
+        ],
+        "class": "E"
+      },
+      {
+        "transpose_flags": [
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        "masks": [
+          "10:ymm5",
+          "10:ymm7"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          768,
+          800,
+          832,
+          864
+        ],
+        "shape_signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5,10:ymm7",
+          "R:SP1",
+          "S:ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0|ymm7:1:ymm6:1:0|ymm6:0:ymm7:0:0"
+        ],
+        "class": "D"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        "masks": [
+          "01:ymm6"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          896,
+          928,
+          960,
+          992
+        ],
+        "shape_signature": [
+          "T:0,1,0,1",
+          "M:01:ymm6",
+          "R:SP1",
+          "S:ymm6:1:ymm7:1:0|ymm7:0:ymm6:0:0|ymm5:0:ymm4:0:0|ymm5:1:ymm4:1:0"
+        ],
+        "class": "A"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        "masks": [
+          "01:ymm6"
+        ],
+        "reducer": "SP1",
+        "preload_offsets": [
+          384,
+          416,
+          448,
+          480
+        ],
+        "shape_signature": [
+          "T:0,1,0,1",
+          "M:01:ymm6",
+          "R:SP1",
+          "S:ymm6:1:ymm7:1:0|ymm7:0:ymm6:0:0|ymm5:0:ymm4:0:0|ymm5:1:ymm4:1:0"
+        ],
+        "class": "A"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "masks": [],
+        "reducer": "SP1",
+        "preload_offsets": [
+          256,
+          288,
+          320,
+          352
+        ],
+        "shape_signature": [
+          "T:0,0,0,0",
+          "M:",
+          "R:SP1",
+          "S:ymm4:0:ymm5:0:0|ymm4:1:ymm5:1:0|ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0"
+        ],
+        "class": "B"
+      },
+      {
+        "transpose_flags": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "masks": [
+          "10:ymm4"
+        ],
+        "reducer": "FINAL",
+        "preload_offsets": [],
+        "shape_signature": [
+          "T:0,0,0,0",
+          "M:10:ymm4",
+          "R:FINAL",
+          "S:ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0|ymm4:1:ymm5:1:0|ymm5:0:ymm4:0:1"
+        ],
+        "class": "F"
+      }
+    ],
+    "class_sequence": [
+      "A",
+      "A",
+      "B",
+      "C",
+      "D",
+      "D",
+      "E",
+      "D",
+      "A",
+      "A",
+      "B",
+      "F"
+    ],
+    "class_definitions": {
+      "A": {
+        "count": 4,
+        "signature": [
+          "T:0,1,0,1",
+          "M:01:ymm6",
+          "R:SP1",
+          "S:ymm6:1:ymm7:1:0|ymm7:0:ymm6:0:0|ymm5:0:ymm4:0:0|ymm5:1:ymm4:1:0"
+        ]
+      },
+      "B": {
+        "count": 2,
+        "signature": [
+          "T:0,0,0,0",
+          "M:",
+          "R:SP1",
+          "S:ymm4:0:ymm5:0:0|ymm4:1:ymm5:1:0|ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0"
+        ]
+      },
+      "C": {
+        "count": 1,
+        "signature": [
+          "T:0,0,0,0",
+          "M:10:ymm4",
+          "R:SP1",
+          "S:ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0|ymm4:1:ymm5:1:0|ymm5:0:ymm4:0:0"
+        ]
+      },
+      "D": {
+        "count": 3,
+        "signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5,10:ymm7",
+          "R:SP1",
+          "S:ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0|ymm7:1:ymm6:1:0|ymm6:0:ymm7:0:0"
+        ]
+      },
+      "E": {
+        "count": 1,
+        "signature": [
+          "T:1,0,1,0",
+          "M:10:ymm5",
+          "R:SP1",
+          "S:ymm7:0:ymm6:0:0|ymm7:1:ymm6:1:0|ymm5:1:ymm4:1:0|ymm4:0:ymm5:0:0"
+        ]
+      },
+      "F": {
+        "count": 1,
+        "signature": [
+          "T:0,0,0,0",
+          "M:10:ymm4",
+          "R:FINAL",
+          "S:ymm6:0:ymm7:0:0|ymm6:1:ymm7:1:0|ymm4:1:ymm5:1:0|ymm5:0:ymm4:0:1"
+        ]
+      }
+    },
+    "contiguous_runs": [
+      {
+        "class": "A",
+        "count": 2
+      },
+      {
+        "class": "B",
+        "count": 1
+      },
+      {
+        "class": "C",
+        "count": 1
+      },
+      {
+        "class": "D",
+        "count": 2
+      },
+      {
+        "class": "E",
+        "count": 1
+      },
+      {
+        "class": "D",
+        "count": 1
+      },
+      {
+        "class": "A",
+        "count": 2
+      },
+      {
+        "class": "B",
+        "count": 1
+      },
+      {
+        "class": "F",
+        "count": 1
+      }
+    ],
+    "minimum_prefix_period": 12,
+    "candidate_assessment": {
+      "fixed_period_loop": false,
+      "reason": "routing classes are heterogeneous and SP1 preloads the next physical input group",
+      "next_gate": "only emit a caged midpoint if a helper/class-loop preserves SP1 and avoids table-driving every group"
+    }
+  }
+}

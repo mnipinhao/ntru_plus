@@ -1,0 +1,58 @@
+experiment: GT32-COMPACT-FRONTEND-036
+superseded_attribution:
+  by: GT32-COMPACT-FRONTEND-036R
+  active_schedule: intrinsic_neutral
+  whole_image_effect: footprint_release_and_later_symbol_relocation
+  historical_exact_image_results_remain_valid: true
+status: selected_experimental_encap_baseline
+production_modified: false
+frozen:
+  - wide frontend arithmetic
+  - input and output layouts
+  - range and Montgomery contracts
+  - twiddle streams
+  - eight logical packet iterations
+shape_audit:
+  sequence: [0, 1, 2, 0, 1, 2, 0, 1]
+  minimum_period: 3
+  selected_schedule: U3_x2_plus_U2_tail
+candidate:
+  matched_cage_bytes: 3917
+  active_bytes: 2472
+  active_byte_delta: -1445
+  production_text_bytes:
+    control: 64343
+    candidate: 62935
+  spills: 0
+benchmark:
+  status: complete
+  local_core_cycle_delta:
+    normal: {frontend: -0.431, forward: 0.267, two_forward: 0.647}
+    reversed: {frontend: -0.486, forward: 0.292, two_forward: 0.356}
+  whole_candidate_minus_clean:
+    aslr_off: {keypair: 65.469, encap: -132.167, decap: 86.833}
+    aslr_on: {keypair: 82.823, encap: -94.948, decap: 12.979}
+  whole_candidate_minus_official:
+    aslr_off: {keypair: -255.281, encap: 26.833, decap: -150.240}
+    aslr_on: {keypair: -267.063, encap: 57.219, decap: -266.438}
+kat:
+  vectors: 100
+  request_byte_exact: pass
+  response_byte_exact: pass
+  request_sha256: 36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa
+  response_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+decision:
+  mechanism: compact_hot_footprint_confirmed
+  experimental_architecture_promoted: true
+  global_production_promoted: false
+  retain_as:
+    - baseline_for_GT32_COMPACT_Q24_037
+    - encap_oriented_candidate
+    - footprint_attribution_reference
+  reason:
+    - local_forward_effect_is_neutral
+    - encap_delivery_improves
+    - keypair_delivery_regresses
+    - no_robust_aggregate_backend_win
+  next:
+    - GT32_COMPACT_Q24_037_shape_class_and_compact_loop_gate
