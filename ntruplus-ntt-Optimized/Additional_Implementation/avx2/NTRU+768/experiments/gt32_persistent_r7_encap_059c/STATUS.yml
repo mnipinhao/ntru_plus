@@ -1,0 +1,45 @@
+experiment: GT32-PERSISTENT-R7-LATE-RECOMBINATION-059C
+status: research-continue
+production_modified: false
+representation:
+  input: seven_symmetric_evaluations
+  terminal: P0_S1_D1_S2_D2_S4_D4
+  words: 1344
+  bytes: 2688
+exactness:
+  product_basis_checks: 3072
+  message_basis_checks: 768
+operation_classes_deleted:
+  - two_algebraic_variable_products
+  - B3_local_W_lambda_recombination
+  - quartic_B3_output_materialization
+  - standalone_quartic_add_m
+operation_classes_added:
+  - three_redundant_planes
+  - product_sum_difference_formation
+  - seven_plane_message_add
+  - late_K_lambda_Q24_exit
+decision: continue-to-059C-AVX2-late-exit-lowering
+production_promotion: false
+artifact: generated/persistent_r7_encap_059c.json
+late_exit_lowering:
+  status: research-continue-to-asm-schedule
+  support_groups:
+    even: [[P0, S1], [S2, S4]]
+    odd: [[D1, D2], [D4, zero]]
+  per_16_leaves:
+    source_interleaves: 8
+    vpmaddwd: 16
+    vpaddd: 8
+    half_REDC32: 8
+    Q24_wide_reducer_instructions_deleted: 12
+  largest_i32_accumulator_abs: 36844554
+  peak_YMM_conservative: 12
+  spill_free_feasible: true
+  constant_table:
+    vectors: 192
+    bytes: 6144
+    artifact: generated/persistent_r7_late_exit_constants.inc
+  q24_packet_routes: 48
+  next: matched-block-ASM-K-lambda-plus-Q24
+  artifact: generated/persistent_r7_late_exit_lowering.json

@@ -1,0 +1,159 @@
+{
+  "schema": "ntruplus768-gt32-persistent-r7-encap-059c-v1",
+  "experiment": "GT32-PERSISTENT-R7-LATE-RECOMBINATION-059C",
+  "status": "research-continue",
+  "production_modified": false,
+  "source_hashes": {
+    "quartic_tensor_lowering_059b.json": "1be52af74f5962a5e31742d6f1b4c0f6a4e1765f0acf2f69d271069c3bfed8f6",
+    "tile4_basemul_constants.inc": "87ddaaad9308087e43ca8beb363cd9169d7a06ad0852dde3d5b3a8f6f6c2f53f"
+  },
+  "abi": {
+    "input_operands": "raw E7 evaluations P(0),P(+/-1),P(+/-2),P(+/-4)",
+    "terminal_product": "unnormalised P0,S1,D1,S2,D2,S4,D4",
+    "message": "same H*E7 representation",
+    "late_exit": "K_lambda followed directly by canonical reduction and Q24 routing",
+    "scale_exponent": "must be selected jointly with pointwise Montgomery and late REDC"
+  },
+  "exactness": {
+    "lambda_entries": 192,
+    "product_basis_checks": 3072,
+    "message_basis_checks": 768,
+    "total": 3840,
+    "identity": "K_lambda*(H*(E(a)*E(b)) + H*E(m)) = a*b mod (x^4-lambda) + m"
+  },
+  "producer": {
+    "E_matrix_balanced": [
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        -1,
+        1,
+        -1
+      ],
+      [
+        1,
+        2,
+        4,
+        8
+      ],
+      [
+        1,
+        -2,
+        4,
+        -8
+      ],
+      [
+        1,
+        4,
+        16,
+        64
+      ],
+      [
+        1,
+        -4,
+        16,
+        -64
+      ]
+    ],
+    "form_supports": [
+      1,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "shared_AVX2_DAG": {
+      "source_planes": 4,
+      "output_evaluation_planes": 7,
+      "t_values": [
+        1,
+        2,
+        4
+      ],
+      "vector_add_sub": 12,
+      "power_of_two_vector_shifts": 6,
+      "general_constant_Montgomery": 0,
+      "blocks_per_polynomial": 12,
+      "instructions_per_polynomial_lowering_proxy": 216,
+      "note": "Forward-native formation may absorb part of this DAG; no credit is assumed here"
+    },
+    "representation_words": 1344,
+    "representation_bytes": 2688,
+    "current_quartic_bytes": 1536,
+    "expansion_bytes": 1152
+  },
+  "B3_and_add": {
+    "pointwise_variable_product_chains_per_16_leaves": 7,
+    "current_algebraic_variable_products": 9,
+    "product_to_terminal_add_sub_per_16_leaves": 6,
+    "message_adds_per_16_leaves": 7,
+    "quartic_recombination_inside_B3": 0,
+    "quartic_output_materialization": 0,
+    "standalone_quartic_poly_add": 0,
+    "terminal_planes": 7
+  },
+  "late_K_Q24": {
+    "K_lambda_nonzero_mean": 14.0,
+    "K_lambda_nonzero_min": 14,
+    "K_lambda_nonzero_max": 14,
+    "K_lambda_general_constants_mean": 14.0,
+    "K_lambda_supports_first_lambda": [
+      4,
+      3,
+      4,
+      3
+    ],
+    "pair_dot_lower_bound_first_lambda": 8,
+    "candidate_lowering": "pair-pack the seven terminal channels and use vpmaddwd/i32 accumulators so interpolation and canonical reduction share one REDC32 exit",
+    "current_Q24_reducer_absorption": "open and required for executable credit"
+  },
+  "liveness_and_materialization": {
+    "producer_native_E7_persistent_planes": 7,
+    "B3_stream_inputs_at_once": 2,
+    "pointwise_product_temp": 1,
+    "late_terminal_store_planes": 7,
+    "estimated_B3_stream_peak_YMM": 11,
+    "spill_free_B3_feasible": true,
+    "late_K_Q24_peak": "unproved; four i32 accumulators plus pair-packed sources",
+    "mandatory_new_materialization": "seven planes unless B3+late-exit streaming is later selected"
+  },
+  "operation_class_changes": {
+    "deleted": [
+      "two quartic algebraic variable products",
+      "B3-local W_lambda quartic recombination",
+      "quartic B3 output materialization",
+      "standalone four-plane add(m) pass"
+    ],
+    "added": [
+      "three redundant producer planes",
+      "six product sum/difference operations",
+      "seven-plane message add",
+      "late K_lambda/Q24 dot-product exit"
+    ]
+  },
+  "research_decision": {
+    "decision": "continue-to-059C-AVX2-late-exit-lowering",
+    "reason": "the exact late-domain identity deletes quartic recombination/materialization and standalone add as operation classes; producer and late-exit costs remain open",
+    "production_promotion": false,
+    "no_cycle_threshold": true
+  },
+  "next": [
+    "construct pair-packed K_lambda+Q24 REDC32 DAG",
+    "prove bounds for pointwise products plus E(m)",
+    "prove late-exit peak YMM and spill behavior",
+    "test whether Forward terminal can emit E7 with less than the standalone 12-add/6-shift DAG"
+  ]
+}
