@@ -158,3 +158,11 @@ edge is register-resident: terminal-major result vectors are consumed directly
 by the inverse distance-1 butterfly and stored in canonical interleaved
 twice-pre-distance1 form. Persistent-pair C2-P remains a diagnostic layout with
 an explicit 12-routing-instruction-per-row price and a c2 temporary seam.
+
+G1C3 realizes the register-resident edge as
+`ntruplus1152_exp001_gt9x16_bmscale_inverse_d1_c2l`. Its only output stores are
+the 72 post-distance1 vectors; the linked object never reloads an output edge.
+The physical output remains terminal-major in `(branch,row,j,lane)` addressing,
+but each vector's adjacent lanes now mean `(S+D,z^-1(S-D))`. This is a local
+inverse-progress state, not a canonical NTT-domain ABI. The full BMScale core
+uses all 16 YMM registers at peak without spilling.

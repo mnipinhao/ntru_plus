@@ -173,3 +173,12 @@ faithful schedule. The selected prototype instead consumes each live result
 directly with the inverse distance-1 head, using no edge loads or BMScale→inverse
 materialization. This is an ASM authorization, not a cycle result. See
 `CHECKPOINT-G1C2-CONTRACT.md`.
+
+Checkpoint G1C3 implements that linked C2-L leaf. A producer-real differential
+is bit-exact for raw BMScale and BMScale plus inverse distance-1 over 1,003
+cases and all 1,152 cells. The object has zero edge reloads, calls, branches,
+frames, spills, and `vzeroupper`; all 72 stores immediately follow an
+eight-instruction direct D1 sequence. The linked audit corrects the provisional
+cost to 32 D1 instructions per row and the peak to 16 live YMM, still
+spill-free. Cycles remain null pending a paired materialized-control benchmark.
+See `CHECKPOINT-G1C3-LINKED.md`.

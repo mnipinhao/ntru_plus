@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c2-bmscale-live-tail-contract-complete
+state: checkpoint-g1c3-linked-bmscale-inverse-d1-correctness-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -122,7 +122,7 @@ gates:
   checkpoint_g1c1_range: passed-bmscale-and-baseinv-all-i16-no-extra-reduction
   checkpoint_g1c1_differential: passed-720576-independent-roundtrip-checks
   checkpoint_g1c1_inverse_d1_asm: authorized
-  checkpoint_g1c1_linked_c2_asm: pending-bmscale-live-tail-register-contract
+  checkpoint_g1c1_linked_c2_asm: completed-by-g1c3-linked-c2l
   checkpoint_g1c1_cycles: null-oracle-only
   checkpoint_g1c2_official_cutpoints: passed-c0-c1-c2-early-c3-late-26-instruction-gap
   checkpoint_g1c2_gt_bmscale_factors: passed-18-row-lane-factor-rekey-contract
@@ -131,9 +131,18 @@ gates:
   checkpoint_g1c2_c2p: retained-diagnostic-not-zero-seam
   checkpoint_g1c2_c2l: selected-live-direct-inverse-distance1-prototype
   checkpoint_g1c2_c2l_edge_loads: zero-by-live-register-contract
-  checkpoint_g1c2_c2l_peak_ymm: estimated-13-linked-object-audit-required
+  checkpoint_g1c2_c2l_peak_ymm: superseded-estimate-13-corrected-to-16-by-g1c3
   checkpoint_g1c2_contract_differential: passed-1440432-lane-checks
   checkpoint_g1c2_cycles: null-contract-only
+  checkpoint_g1c3_bmscale_raw: passed-1003-producer-real-cases-times-1152-cells-bit-exact
+  checkpoint_g1c3_linked_differential: passed-bmscale-plus-inverse-distance1-bit-exact
+  checkpoint_g1c3_boundary_canary: passed-alternating-random-input-immutable-output-canary
+  checkpoint_g1c3_range: passed-observed-raw7876-sum13864-within-generated-bounds
+  checkpoint_g1c3_direct_d1_cost: corrected-8-instructions-per-vector-32-per-row
+  checkpoint_g1c3_edge_materialization: passed-zero-output-edge-loads-72-post-d1-stores
+  checkpoint_g1c3_static_audit: passed-no-call-branch-frame-stack-spill-vzeroupper
+  checkpoint_g1c3_peak_ymm: corrected-16-backward-dataflow-spill-free
+  checkpoint_g1c3_cycles: null-correctness-before-timing
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -167,7 +176,8 @@ g1b_diagnostic_result: results/g1b-intel155h-20260821-001/g1b-f1-paired.json
 checkpoint_g1c0: official-zero-conversion-and-baseinv-scalar-lifetime-audited
 checkpoint_g1c1: adjusted-inverse-distance1-component-twiddle-scale-range-oracle-complete
 checkpoint_g1c2_contract: bmscale-live-tail-selects-c2l-zero-materialized-edge
-next_step: implement-linked-g1c-m-c2l-bmscale-plus-inverse-distance1-asm-and-differential-before-timing
+checkpoint_g1c3: linked-c2l-bmscale-plus-inverse-distance1-correctness-and-static-audit-complete
+next_step: paired-g1c-c2l-linked-vs-exact-materialized-gt-bmscale-plus-distance1-control
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

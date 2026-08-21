@@ -31,6 +31,8 @@ G1_GENERATOR_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --l
 G1C_AUDIT_ARGS := --basemul $(UPSTREAM)/basemul.s --invntt $(UPSTREAM)/invntt.s --baseinv $(UPSTREAM)/baseinv.s --poly $(UPSTREAM)/poly.c --edge-oracle generated/g1-edge-oracles.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --output generated/g1c-inverse-sink-audit.json
 G1C_HEAD_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --g1c-audit generated/g1c-inverse-sink-audit.json --output generated/g1c-adjusted-inverse-head.json --header generated/g1c-adjusted-inverse-head.h --asm-constants generated/g1c-adjusted-inverse-head.inc
 G1C_LIVE_ARGS := --basemul-source $(UPSTREAM)/basemul.s --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --inverse-head-oracle generated/g1c-adjusted-inverse-head.json --pipeline-layout generated/gt9x16-pipeline-layout.json --output generated/g1c-bmscale-live-tail-contract.json --header generated/g1c-bmscale-live-tail.h --asm-constants generated/g1c-bmscale-live-tail.inc
+G1C_LINKED_ASM := asm/g1c_bmscale_inverse_d1.S
+G1C_LINKED_AUDIT_ARGS := --object $(BUILD)/g1c/g1c-bmscale-inverse-d1.o --source $(G1C_LINKED_ASM) --contract generated/g1c-bmscale-live-tail-contract.json --output generated/g1c-linked-bmscale-inverse-d1-audit.json --compiler $(CC) --cflags=-mavx2
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -85,6 +87,9 @@ check:
 	$(PYTHON) tools/audit_g1c_inverse_sink.py $(G1C_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_g1c_adjusted_inverse_head.py $(G1C_HEAD_ARGS) --check
 	$(PYTHON) tools/generate_g1c_bmscale_live_tail_contract.py $(G1C_LIVE_ARGS) --check
+	mkdir -p $(BUILD)/g1c
+	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
+	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
@@ -106,6 +111,8 @@ check:
 	$(BUILD)/test-paper-adjusted-forward
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) tests/test_g1b_f1_tail.c -o $(BUILD)/test-g1b-f1-tail
 	$(BUILD)/test-g1b-f1-tail
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_bmscale_inverse_d1.c -o $(BUILD)/test-g1c-bmscale-inverse-d1
+	$(BUILD)/test-g1c-bmscale-inverse-d1
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -I$(UPSTREAM) tests/test_official_stage_partitions.c $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/test-official-stage-partitions
 	$(BUILD)/test-official-stage-partitions
 	$(CC) $(CFLAGS_STRICT) -O3 $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward
@@ -123,6 +130,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-paper-adjusted-forward-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) tests/test_g1b_f1_tail.c -o $(BUILD)/test-g1b-f1-tail-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1b-f1-tail-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_bmscale_inverse_d1.c -o $(BUILD)/test-g1c-bmscale-inverse-d1-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-bmscale-inverse-d1-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
 
@@ -146,6 +155,9 @@ audit:
 	$(PYTHON) tools/audit_ntt_domain_lifecycle.py --ntt-object $(BUILD)/structure/official-ntt.o --basemul-object $(BUILD)/structure/official-basemul.o --baseinv-object $(BUILD)/structure/official-baseinv.o --invntt-object $(BUILD)/structure/official-invntt.o --upstream $(UPSTREAM) --output generated/ntt-domain-lifecycle-audit.json
 	$(PYTHON) tools/generate_pipeline_layout.py --component-oracle generated/gt9x16-component-oracle.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --output generated/gt9x16-pipeline-layout.json --cost-output generated/gt9x16-representation-cost-matrix.json --check
 	$(PYTHON) tools/audit_pipeline_structure.py --candidate-elf $(BUILD)/structure/gt-pipeline --official-object $(BUILD)/structure/official-ntt.o --official-object $(BUILD)/structure/official-basemul.o --official-object $(BUILD)/structure/official-baseinv.o --official-object $(BUILD)/structure/official-invntt.o --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output generated/gt9x16-pipeline-structure-audit.json
+	mkdir -p $(BUILD)/g1c
+	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
+	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)

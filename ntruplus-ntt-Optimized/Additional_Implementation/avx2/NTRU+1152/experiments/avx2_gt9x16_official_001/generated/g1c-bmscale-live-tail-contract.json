@@ -2042,24 +2042,25 @@
     "terminal_polynomial": "degree-4 product modulo X^4-factor(branch,p,q)"
   },
   "live_direct_inverse_path": {
-    "designed_peak_live_ymm_upper_bound": 13,
+    "designed_peak_live_ymm_upper_bound": 16,
     "disposition": "selected-for-linked-ASM-prototype",
     "early_cutpoint": "consume c0,c1,c2 sequentially while preserving a0,a1,b0,b1",
     "edge_input_loads": 0,
     "id": "C2-L",
-    "instructions_per_row": 28,
-    "instructions_per_terminal_coefficient": 7,
+    "instructions_per_row": 32,
+    "instructions_per_terminal_coefficient": 8,
     "late_cutpoint": "consume c3 after its final add chain",
     "materialized_BMScale_to_inverse_seam": false,
     "output_layout": "canonical interleaved twice-pre-distance1 lanes per terminal coefficient",
-    "peak_bound_status": "schedule estimate; linked object audit required",
+    "peak_bound_status": "must be certified by linked-object backward dataflow audit",
     "post_inverse_d1_stores_per_row": 4,
+    "prior_peak_13_estimate": "superseded: omitted BMScale-core liveness before the early cutpoint",
     "scale_and_range_source": "generated/g1c-adjusted-inverse-head.json",
     "schedule_per_terminal_coefficient": [
       "vpshufb adjacent-word swap",
       "vpaddw original,swapped -> duplicated S+D",
       "vpsubw original,swapped -> [S-D,D-S]",
-      "three-instruction Montgomery multiply by alternating [z^-1,-z^-1]",
+      "four-instruction Montgomery reduce/multiply by alternating [z^-1,-z^-1]",
       "vpblendw even sums with odd twisted differences"
     ],
     "terminal_coefficients_per_row": 4
@@ -2134,7 +2135,7 @@
       "no call, frame, vector spill, or materialized edge load/store audit"
     ]
   },
-  "schema": "gt-g1c-bmscale-live-tail/v1",
+  "schema": "gt-g1c-bmscale-live-tail/v2",
   "selection": {
     "C2_P_rejected": false,
     "C2_P_role": "retain as a materialized diagnostic if linked C2-L needs isolation",

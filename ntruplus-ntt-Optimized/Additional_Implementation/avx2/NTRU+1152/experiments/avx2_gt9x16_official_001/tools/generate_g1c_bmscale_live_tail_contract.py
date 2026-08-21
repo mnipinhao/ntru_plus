@@ -42,6 +42,10 @@ def emit_words(label: str, values: list[int]) -> str:
     return f".p2align 5\n{label}:\n  .word " + ", ".join(map(str, values)) + "\n"
 
 
+def emit_bytes(label: str, values: list[int]) -> str:
+    return f".p2align 5\n{label}:\n  .byte " + ", ".join(map(str, values)) + "\n"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--basemul-source", type=Path, required=True)
@@ -82,6 +86,13 @@ def main() -> int:
     direct_rows = []
     header_rows = []
     asm = "/* Generated G1C BMScale-live direct inverse distance-1 constants. */\n.section .rodata\n"
+    asm += emit_words(".Lgt_g1c_bmscale_q", [Q] * 16)
+    asm += emit_words(".Lgt_g1c_bmscale_qinv", [QINV] * 16)
+    asm += emit_bytes(
+        ".Lgt_g1c_bmscale_adjacent_word_swap",
+        [byte for lane in range(2) for word in range(8)
+         for byte in (lane * 16 + 2 * (word ^ 1), lane * 16 + 2 * (word ^ 1) + 1)],
+    )
     for row in inverse["rows"]:
         inverse_mod = row["inverse_distance1_twiddle_mod_q"]
         alternating_mod = []
@@ -126,6 +137,12 @@ def main() -> int:
                                                   for cell in cells],
                 "input_terminal_vectors": [0, 1, 2, 3],
             })
+            asm += emit_words(
+                f".Lgt_g1c_bmscale_branch{branch}_row{row}_factor_zeta",
+                arithmetic_rows[-1]["factor_montgomery_signed_by_lane"])
+            asm += emit_words(
+                f".Lgt_g1c_bmscale_branch{branch}_row{row}_factor_qinv",
+                arithmetic_rows[-1]["factor_qinv_signed16_by_lane"])
 
     materialized_pair_schedule = [
         "vperm2i128 low halves of cj,cj+1",
@@ -138,11 +155,11 @@ def main() -> int:
         "vpshufb adjacent-word swap",
         "vpaddw original,swapped -> duplicated S+D",
         "vpsubw original,swapped -> [S-D,D-S]",
-        "three-instruction Montgomery multiply by alternating [z^-1,-z^-1]",
+        "four-instruction Montgomery reduce/multiply by alternating [z^-1,-z^-1]",
         "vpblendw even sums with odd twisted differences",
     ]
     document = {
-        "schema": "gt-g1c-bmscale-live-tail/v1",
+        "schema": "gt-g1c-bmscale-live-tail/v2",
         "checkpoint": "G1C2-contract-BMScale-live-tail",
         "parameter": 1152,
         "official_live_result_cutpoints": {
@@ -191,8 +208,8 @@ def main() -> int:
             "id": "C2-L",
             "disposition": "selected-for-linked-ASM-prototype",
             "schedule_per_terminal_coefficient": direct_schedule,
-            "instructions_per_terminal_coefficient": 7,
-            "instructions_per_row": 28,
+            "instructions_per_terminal_coefficient": 8,
+            "instructions_per_row": 32,
             "terminal_coefficients_per_row": 4,
             "edge_input_loads": 0,
             "post_inverse_d1_stores_per_row": 4,
@@ -200,8 +217,9 @@ def main() -> int:
             "early_cutpoint": "consume c0,c1,c2 sequentially while preserving a0,a1,b0,b1",
             "late_cutpoint": "consume c3 after its final add chain",
             "output_layout": "canonical interleaved twice-pre-distance1 lanes per terminal coefficient",
-            "designed_peak_live_ymm_upper_bound": 13,
-            "peak_bound_status": "schedule estimate; linked object audit required",
+            "designed_peak_live_ymm_upper_bound": 16,
+            "prior_peak_13_estimate": "superseded: omitted BMScale-core liveness before the early cutpoint",
+            "peak_bound_status": "must be certified by linked-object backward dataflow audit",
             "scale_and_range_source": "generated/g1c-adjusted-inverse-head.json",
         },
         "direct_inverse_rows": direct_rows,
@@ -245,6 +263,14 @@ def main() -> int:
     header += "};\n\nstatic const int16_t ntruplus1152_exp001_g1c_bmscale_direct_d1_qinv[9][16] = {\n"
     for _, values in header_rows:
         header += "  {" + ", ".join(map(str, values)) + "},\n"
+    header += "};\n\n"
+    header += "static const int16_t ntruplus1152_exp001_g1c_bmscale_factor_mod_q[2][9][16] = {\n"
+    for branch in range(2):
+        header += "  {\n"
+        for row in range(9):
+            values = arithmetic_rows[branch * 9 + row]["factor_mod_q_by_lane"]
+            header += "    {" + ", ".join(map(str, values)) + "},\n"
+        header += "  },\n"
     header += "};\n\n#endif\n"
 
     if args.check:

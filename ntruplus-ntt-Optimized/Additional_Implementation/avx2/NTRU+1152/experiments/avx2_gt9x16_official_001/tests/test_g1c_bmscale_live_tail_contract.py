@@ -25,7 +25,7 @@ def montgomery_reduce(value):
     return (value - low * Q) >> 16
 
 
-assert contract["schema"] == "gt-g1c-bmscale-live-tail/v1"
+assert contract["schema"] == "gt-g1c-bmscale-live-tail/v2"
 cutpoints = contract["official_live_result_cutpoints"]
 assert cutpoints["early"]["results"] == {"c0": "ymm5", "c1": "ymm6", "c2": "ymm7"}
 assert cutpoints["late"]["results"] == {"c3": "ymm1"}
@@ -63,7 +63,10 @@ live = contract["live_direct_inverse_path"]
 assert live["edge_input_loads"] == 0
 assert live["post_inverse_d1_stores_per_row"] == 4
 assert live["materialized_BMScale_to_inverse_seam"] is False
-assert live["designed_peak_live_ymm_upper_bound"] == 13
+assert live["designed_peak_live_ymm_upper_bound"] == 16
+assert "superseded" in live["prior_peak_13_estimate"]
+assert live["instructions_per_terminal_coefficient"] == 8
+assert live["instructions_per_row"] == 32
 assert contract["selection"]["selected"] == "C2-L"
 
 rng = random.Random(0xC2B1152)

@@ -52,10 +52,11 @@ blend even sums with odd twisted differences
 ```
 
 The odd multiplier is negative because the swapped odd lane holds `D-S`.
-This is seven instructions per terminal coefficient, 28 per row, followed by
+This is eight instructions per terminal coefficient, 32 per row, followed by
 four post-distance1 stores. There are no BMScale-edge input loads and no
-materialized BMScale→inverse seam. The estimated peak is 13 YMM registers,
-but only the linked-object audit may certify that number.
+materialized BMScale→inverse seam. G1C3's linked-object audit supersedes the
+provisional 13-YMM estimate: the complete Official-derived BMScale core reaches
+16 live YMM before the early cutpoint, while the direct seam adds no spill.
 
 Generated constants cover all 18 `(branch,row)` BMScale factor vectors and all
 nine row-specific inverse distance-1 vectors. The contract test performs
@@ -68,4 +69,3 @@ materialized diagnostic. Before timing, the linked function must pass BMScale
 and inverse-distance1 differentials, both range cutpoints, and an audit proving
 no call, frame, vector spill, or materialized edge load/store. Cycles remain
 null.
-
