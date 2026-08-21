@@ -25,7 +25,7 @@ NTT16_HEADERS := src/gt9x16_ntt16_asm.h generated/gt9x16-ntt16-constants.inc gen
 OFFICIAL_PARTITIONS := generated/official-ntt-stage-partitions.s
 OFFICIAL_PARTITION_HEADERS := src/official_stage_partitions.h
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -107,6 +107,7 @@ audit:
 	$(PYTHON) tools/audit_gt9x16_shear.py --object $(BUILD)/gt9x16-shear.o --assembly generated/gt9x16-shear.s --compiler $(CC) --cflags "$(CFLAGS_STRICT) -O3 -fno-inline" --output generated/gt9x16-shear-audit.json
 	$(CC) -mavx2 -I. -c $(NTT16_ASM) -o $(BUILD)/gt9x16-ntt16.o
 	$(PYTHON) tools/audit_gt9x16_ntt16_asm.py --object $(BUILD)/gt9x16-ntt16.o --source $(NTT16_ASM) --macro-source asm/gt9x16_ntt16.inc --extra-macro-source asm/gt9x16_ntt16_c2.inc --extra-macro-source asm/gt9x16_ntt16_c4.inc --extra-macro-source asm/gt9x16_ntt9.inc --extra-macro-source asm/gt9x16_ntt9_paper.inc --extra-macro-source asm/gt9x16_ntt16_paper.inc --compiler $(CC) --cflags=-mavx2 --output generated/gt9x16-ntt16-audit.json
+	$(PYTHON) tools/audit_paper_combined_boundary.py --object $(BUILD)/gt9x16-ntt16.o --output generated/gt9x16-paper-boundary-audit.json
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
@@ -209,6 +210,16 @@ bench-f-r3c-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) bench/bench_paper_combined_paired.c -o $(BUILD)/bench-paper-combined-paired
 	$(PYTHON) tools/run_paper_combined_benchmark.py --binary $(BUILD)/bench-paper-combined-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --range generated/gt9x16-ntt9-paper-range.json --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/paper-combined-paired.json
+
+bench-f-r3d:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) bench/bench_paper_combined_paired.c -o $(BUILD)/bench-paper-pipeline-paired
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-paper-pipeline-paired
+
+bench-f-r3d-record: audit
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) -I. $(FULL_CPPFLAGS) $(NTT16_ASM) $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) bench/bench_paper_combined_paired.c -o $(BUILD)/bench-paper-pipeline-paired
+	$(PYTHON) tools/run_paper_pipeline_benchmark.py --binary $(BUILD)/bench-paper-pipeline-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/gt9x16-ntt16-audit.json --range generated/gt9x16-ntt9-paper-range.json --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/paper-pipeline-paired.json
 
 supercop-check:
 	test -n "$(SUPERCOP_ROOT)"

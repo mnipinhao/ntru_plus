@@ -83,5 +83,17 @@ void ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16(
 void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(
     ntruplus1152_exp001_gt_persistent_pair *output,
     const ntruplus1152_exp001_gt_persistent_pair *input);
+void ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *r2_input);
+void ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *r2_input);
+void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
+void ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1(
+    ntruplus1152_exp001_gt_persistent_pair *output,
+    const ntruplus1152_exp001_gt_persistent_pair *input);
 
 #endif

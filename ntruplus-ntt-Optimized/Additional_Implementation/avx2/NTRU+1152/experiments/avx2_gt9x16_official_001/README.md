@@ -12,8 +12,9 @@ are diagnostic only. See the repository workflow document for formal gates.
 
 ## Active milestone
 
-**Checkpoint F-R3C connects R2-cached to adjusted NTT16; the exact Official
-contiguous transform body remains 26 cycles faster.**
+**Checkpoint F-R3D selects the D1 two-row adjusted-NTT16 pipeline
+provisionally: its 683.5-cycle combined body beats the 696-cycle exact
+Official contiguous body.**
 
 The checkpoint following that named milestone now also contains the first
 correctness-first full-forward path and its diagnostic competitiveness test.
@@ -120,3 +121,8 @@ R2-plus-adjusted-NTT16 checkpoint. Checkpoint F-R3C completes that connection,
 proves all four radix-2 ranges, and records both the isolated 726-cycle gate
 and the stronger contiguous Official-body comparison. See
 `CHECKPOINT-F-R3B.md` and `CHECKPOINT-F-R3C.md`.
+
+Checkpoint F-R3D separates direct half-pack/resident-`q` cleanup (D0) from a
+physical-adjacent two-row Montgomery pipeline (D1). D1 reaches 421 cycles for
+adjusted NTT16 and 683.5 cycles combined, so the aggressive D2 schedule is not
+needed. See `CHECKPOINT-F-R3D.md`.

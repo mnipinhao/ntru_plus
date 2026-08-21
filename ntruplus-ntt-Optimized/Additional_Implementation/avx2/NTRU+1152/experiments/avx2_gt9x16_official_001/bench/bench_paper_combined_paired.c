@@ -58,10 +58,34 @@ static void adjusted_only(void) {
     ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16(&output[pair], &after_r2[pair]);
 }
 
+static void adjusted_d0(void) {
+  int pair;
+  for (pair = 0; pair < TERMINAL_PAIRS; ++pair)
+    ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0(&output[pair], &after_r2[pair]);
+}
+
+static void adjusted_d1(void) {
+  int pair;
+  for (pair = 0; pair < TERMINAL_PAIRS; ++pair)
+    ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1(&output[pair], &after_r2[pair]);
+}
+
 static void combined(void) {
   int pair;
   for (pair = 0; pair < TERMINAL_PAIRS; ++pair)
     ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(&output[pair], &input[pair]);
+}
+
+static void combined_d0(void) {
+  int pair;
+  for (pair = 0; pair < TERMINAL_PAIRS; ++pair)
+    ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0(&output[pair], &input[pair]);
+}
+
+static void combined_d1(void) {
+  int pair;
+  for (pair = 0; pair < TERMINAL_PAIRS; ++pair)
+    ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1(&output[pair], &input[pair]);
 }
 
 static void prepare_official(void) { memcpy(official_work, official_input, sizeof official_work); }
@@ -128,6 +152,16 @@ int main(void) {
             "adjusted-NTT16", adjusted_only, prepare_none);
   emit_pair("transform-body", "Official-T3x3+T2x4", official_body, prepare_official,
             "R2+adjusted-NTT16", combined, prepare_none);
+  emit_pair("adjusted-C-to-D0", "adjusted-C", adjusted_only, prepare_none,
+            "adjusted-D0", adjusted_d0, prepare_none);
+  emit_pair("adjusted-D0-to-D1", "adjusted-D0", adjusted_d0, prepare_none,
+            "adjusted-D1", adjusted_d1, prepare_none);
+  emit_pair("combined-C-to-D0", "combined-C", combined, prepare_none,
+            "combined-D0", combined_d0, prepare_none);
+  emit_pair("combined-D0-to-D1", "combined-D0", combined_d0, prepare_none,
+            "combined-D1", combined_d1, prepare_none);
+  emit_pair("official-to-D1", "Official-T3x3+T2x4", official_body, prepare_official,
+            "combined-D1", combined_d1, prepare_none);
   printf("{\"comparison\":\"sink\",\"block\":0,\"slot\":0,"
          "\"implementation\":\"none\",\"median_cycles\":%" PRId16 "}]}\n", sink);
   return 0;

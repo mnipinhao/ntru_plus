@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f-r3c-combined-correct-but-exact-official-body-ahead
+state: checkpoint-f-r3d-d1-provisional-forward-body-selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -75,6 +75,16 @@ gates:
   checkpoint_f_r3c_isolated_sum_gate: passed-722-vs-pinned-726-by-4-cycles
   checkpoint_f_r3c_exact_official_body: failed-candidate-722-vs-official-696
   checkpoint_f_r3c_benchmark: passed-repository-local-diagnostic-only
+  checkpoint_f_r3d_d0_correctness: passed-bit-exact-modq-scale4-alias-canary
+  checkpoint_f_r3d_d0_cleanup: passed-direct-half-pack-and-resident-q
+  checkpoint_f_r3d_d1_correctness: passed-bit-exact-modq-scale4-alias-canary
+  checkpoint_f_r3d_d1_two_row_pipeline: passed-physical-adjacent-four-pairs-plus-tail
+  checkpoint_f_r3d_boundary_audit: passed-one-q-load-direct-packing-no-row-or-scale-pass
+  checkpoint_f_r3d_static_audit: passed-no-call-frame-stack-spill-vzeroupper
+  checkpoint_f_r3d_minimum_gate: passed-combined-683.5-vs-official-696
+  checkpoint_f_r3d_strong_gate: passed-adjusted-421-below-434
+  checkpoint_f_r3d_stretch_gate: passed-adjusted-421-below-422
+  checkpoint_f_r3d_benchmark: passed-repository-local-diagnostic-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -85,8 +95,8 @@ c2_diagnostic_result: results/c2-intel155h-20260820-001/c2-diagnostic.json
 c3_diagnostic_result: results/c3-intel155h-20260820-001/c3-diagnostic.json
 c4_diagnostic_result: results/c4-intel155h-20260820-001/c4-diagnostic.json
 official_stage_diagnostic_result: results/official-stages-intel155h-20260821-001/official-stage-paired.json
-milestone_completed: "GT permutation hypothesis validated; transform competitiveness not yet tested"
-checkpoint: full-forward-correctness-and-apples-to-apples-official-transform-benchmark-complete
+milestone_completed: "F-R3D1 combined transform beats exact contiguous Official body"
+checkpoint: adjusted-ntt16-two-row-pipeline-and-contiguous-transform-gate-complete
 pipeline_checkpoint: structural-audit-and-layout-codesign-complete
 checkpoint_c: c0-selected-c1-rejected
 checkpoint_c2: pair-packed-distance8-marginal-full-ntt16-rejected
@@ -99,10 +109,13 @@ checkpoint_f_r3b: r2-cached-selected-provisional-ntt9-only
 f_r3b_diagnostic_result: results/f-r3b-intel155h-20260821-001/ntt9-paper-paired.json
 checkpoint_f_r3c: isolated-726-budget-green-but-exact-contiguous-official-body-26-cycles-ahead
 f_r3c_diagnostic_result: results/f-r3c-intel155h-20260821-001/paper-combined-paired.json
-next_step: two-row-software-pipeline-paper-adjusted-ntt16-target-422-before-abi-a-b
+checkpoint_f_r3d: d0-cleanup-and-d1-two-row-pipeline-complete-d2-not-required
+f_r3d_diagnostic_result: results/f-r3d-intel155h-20260821-001/paper-pipeline-paired.json
+next_step: abi-a-final-reconstruction-vs-abi-b-persistent-pair-paired-with-basemul-baseinv-routing-debt
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
 selected_candidates:
   - c3-official-routing-row-pair-is-0.694x-c2-row-pair
   - c4-natural-nine-row-pair-is-0.821x-c0-pair
+  - f-r3d1-adjusted-ntt16-421-cycles-combined-683.5-vs-official-696

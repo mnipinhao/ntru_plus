@@ -135,19 +135,28 @@ static void compare_scaled(int trial,
 static void test_canary(void) {
   struct guarded { uint64_t before[4]; ntruplus1152_exp001_gt_persistent_pair value; uint64_t after[4]; } output;
   ntruplus1152_exp001_gt_persistent_pair input;
+  typedef void (*function)(ntruplus1152_exp001_gt_persistent_pair *,
+                           const ntruplus1152_exp001_gt_persistent_pair *);
+  const function functions[] = {
+      ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body,
+      ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0,
+      ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1};
   int index;
+  size_t selected;
   fill_case(&input, 19);
-  for (index = 0; index < 4; ++index) {
-    output.before[index] = UINT64_C(0x0123456789abcdef) ^ (uint64_t)index;
-    output.after[index] = UINT64_C(0xfedcba9876543210) ^ (uint64_t)index;
-  }
-  ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(&output.value, &input);
-  for (index = 0; index < 4; ++index)
-    if (output.before[index] != (UINT64_C(0x0123456789abcdef) ^ (uint64_t)index) ||
-        output.after[index] != (UINT64_C(0xfedcba9876543210) ^ (uint64_t)index)) {
-      fputs("F-R3C combined output canary corruption\n", stderr);
-      exit(1);
+  for (selected = 0; selected < sizeof functions / sizeof functions[0]; ++selected) {
+    for (index = 0; index < 4; ++index) {
+      output.before[index] = UINT64_C(0x0123456789abcdef) ^ (uint64_t)index;
+      output.after[index] = UINT64_C(0xfedcba9876543210) ^ (uint64_t)index;
     }
+    functions[selected](&output.value, &input);
+    for (index = 0; index < 4; ++index)
+      if (output.before[index] != (UINT64_C(0x0123456789abcdef) ^ (uint64_t)index) ||
+          output.after[index] != (UINT64_C(0xfedcba9876543210) ^ (uint64_t)index)) {
+        fprintf(stderr, "F-R3C/D canary corruption function=%zu\n", selected);
+        exit(1);
+      }
+  }
 }
 
 int main(void) {
@@ -161,8 +170,16 @@ int main(void) {
     adjusted_reference(&expected, &r2, identity);
     ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16(&actual, &r2);
     compare_exact("adjusted-only", trial, &expected, &actual);
+    ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0(&actual, &r2);
+    compare_exact("adjusted-d0", trial, &expected, &actual);
+    ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1(&actual, &r2);
+    compare_exact("adjusted-d1", trial, &expected, &actual);
     ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(&actual, &input);
     compare_exact("combined", trial, &expected, &actual);
+    ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0(&actual, &input);
+    compare_exact("combined-d0", trial, &expected, &actual);
+    ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1(&actual, &input);
+    compare_exact("combined-d1", trial, &expected, &actual);
     ntt9_pair(&r0, &input, 0);
     adjusted_reference(&unscaled, &r0, r2_to_r0);
     compare_scaled(trial, &unscaled, &actual);
@@ -170,12 +187,24 @@ int main(void) {
       alias = r2;
       ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16(&alias, &alias);
       compare_exact("adjusted-only-alias", trial, &expected, &alias);
+      alias = r2;
+      ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0(&alias, &alias);
+      compare_exact("adjusted-d0-alias", trial, &expected, &alias);
+      alias = r2;
+      ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1(&alias, &alias);
+      compare_exact("adjusted-d1-alias", trial, &expected, &alias);
       alias = input;
       ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body(&alias, &alias);
       compare_exact("combined-alias", trial, &expected, &alias);
+      alias = input;
+      ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0(&alias, &alias);
+      compare_exact("combined-d0-alias", trial, &expected, &alias);
+      alias = input;
+      ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1(&alias, &alias);
+      compare_exact("combined-d1-alias", trial, &expected, &alias);
     }
   }
   test_canary();
-  printf("F-R3C adjusted NTT16 and combined body: %d exact and modulo-q 4x-unscaled cases passed\n", TRIALS);
+  printf("F-R3C/D0/D1 adjusted NTT16 and combined bodies: %d exact and modulo-q 4x-unscaled cases passed\n", TRIALS);
   return 0;
 }

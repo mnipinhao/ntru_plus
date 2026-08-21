@@ -249,6 +249,54 @@ ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body:
   ret
 .size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body
 
+.globl ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0
+.type ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0,@function
+ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0:
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_D0_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0, .-ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0
+
+.globl ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1
+.type ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1,@function
+ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1:
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_D1_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1, .-ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1
+
+.macro PAPER_R2_PREFIX
+  vmovdqa ymm0, YMMWORD PTR [rip + .Lgt_q]
+  vmovdqa ymm1, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm2, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  vmovdqa ymm3, YMMWORD PTR [rip + .Lgt_v]
+  vmovdqa ymm4, YMMWORD PTR [rip + .Lgt_ntt9_qinv4]
+  vmovdqa ymm5, YMMWORD PTR [rip + .Lgt_ntt9_zeta4]
+  vmovdqa ymm6, YMMWORD PTR [rip + .Lgt_paper_rhoinv_qinv]
+  vmovdqa ymm7, YMMWORD PTR [rip + .Lgt_paper_rhoinv]
+  PAPER_R2_CACHED_STREAM 0
+  PAPER_R2_CACHED_STREAM 1
+  mov rsi, rdi
+.endm
+
+.globl ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0
+.type ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0,@function
+ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0:
+  PAPER_R2_PREFIX
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_D0_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0
+
+.globl ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1
+.type ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1,@function
+ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1:
+  PAPER_R2_PREFIX
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PAPER_D1_BODY
+  ret
+.size ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1, .-ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1
+
 .include "generated/gt9x16-ntt16-constants.inc"
 .include "generated/gt9x16-paper-adjusted-ntt16-constants.inc"
 

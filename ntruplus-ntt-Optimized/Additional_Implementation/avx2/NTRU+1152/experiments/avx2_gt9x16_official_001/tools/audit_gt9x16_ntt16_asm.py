@@ -89,6 +89,30 @@ FUNCTIONS = {
         "montgomery_chains": 56, "barrett_vectors": 18,
         "constant_explicit_loads": 8, "constant_memory_operands": 108,
     },
+    "ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d0": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 36,
+        "input_loads": 18, "output_stores": 18, "peak_live_ymm": 11,
+        "montgomery_chains": 36, "barrett_vectors": 0,
+        "constant_explicit_loads": 1, "constant_memory_operands": 72,
+    },
+    "ntruplus1152_exp001_gt9x16_paper_adjusted_ntt16_d1": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 36,
+        "input_loads": 18, "output_stores": 18, "peak_live_ymm": 11,
+        "montgomery_chains": 36, "barrett_vectors": 0,
+        "constant_explicit_loads": 1, "constant_memory_operands": 72,
+    },
+    "ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d0": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 74,
+        "input_loads": 36, "output_stores": 54, "peak_live_ymm": 15,
+        "montgomery_chains": 56, "barrett_vectors": 18,
+        "constant_explicit_loads": 9, "constant_memory_operands": 72,
+    },
+    "ntruplus1152_exp001_gt9x16_r2_adjusted_forward_body_d1": {
+        "vpblendw": 18, "vpblendd": 18, "vpmullw": 74,
+        "input_loads": 36, "output_stores": 54, "peak_live_ymm": 15,
+        "montgomery_chains": 56, "barrett_vectors": 18,
+        "constant_explicit_loads": 9, "constant_memory_operands": 72,
+    },
 }
 
 
