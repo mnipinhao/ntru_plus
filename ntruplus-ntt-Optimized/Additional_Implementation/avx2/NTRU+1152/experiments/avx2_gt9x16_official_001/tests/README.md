@@ -13,3 +13,7 @@ split-after-D1 full-inverse candidate.
 `test_g1c_m3_inverse16_oracle.py` gates all four inverse physical-q maps, the
 C0/C1/C2 attribution contract, independent F1/F5 accounting, and the explicit
 D2 range-proof failure that currently blocks lazy M3 assembly.
+
+`test_g1c_m3b_provenance.py` gates the D2 source classes and fixed D8
+counterexample. The underlying 10,003-case probe is counterexample evidence,
+not a replacement for symbolic or localized exact range proof.

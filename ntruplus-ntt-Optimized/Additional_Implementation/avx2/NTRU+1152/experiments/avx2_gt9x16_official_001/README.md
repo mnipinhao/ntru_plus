@@ -199,3 +199,11 @@ independent BMScale range envelope fails signed-i16 at D2 sum (±55,296), so
 lazy C2 assembly is not yet authorized: the next gate must bound actual
 producer-correlated register states without inserting a convenience reduction.
 See `CHECKPOINT-G1C-M3A.md`.
+
+Checkpoint G1C-M3B traces D2 provenance and runs 10,003 deterministic cases
+through real F1-B1 production and exact BMScale/inverse semantics. D2 and D4
+show no corpus overflow, but remain proof-open. Current-orientation D8 has 187
+unsafe sums and 11 unsafe differences; the first concrete sum is -36,284.
+Zero-repair C2 is therefore rejected, while full reduction is not authorized.
+M3C now searches D8 orientation and minimum one-sided/selective repair. See
+`CHECKPOINT-G1C-M3B.md`.

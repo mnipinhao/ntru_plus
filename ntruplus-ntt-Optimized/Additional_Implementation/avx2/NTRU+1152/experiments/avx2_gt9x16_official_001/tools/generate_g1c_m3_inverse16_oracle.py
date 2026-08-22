@@ -138,6 +138,7 @@ def main() -> int:
     parser.add_argument("--scaled-oracle", type=Path, required=True)
     parser.add_argument("--m2-result", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--header", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
@@ -148,17 +149,21 @@ def main() -> int:
 
     rows = []
     all_pairs = {}
+    inverse_constants = []
     for row in scaled["paper_adjusted_ntt16_rows"]:
         row_index = row["physical_row"]
         stage_records = []
+        row_constants = []
         for distance in (1, 2, 4, 8):
             forward = row["adjusted_ntt16_stages"][f"distance{distance}"]["mod_q"]
             inverse = [pow(value, -1, Q) for value in forward]
+            expanded_inverse_mont = []
             pairs = []
             for block, base in enumerate(range(0, 16, 2 * distance)):
                 for lane_in_half in range(distance):
                     left, right = base + lane_in_half, base + lane_in_half + distance
                     zeta, zeta_inverse = forward[block], inverse[block]
+                    expanded_inverse_mont.append(centered(zeta_inverse * R))
                     product = [
                         [(1 + zeta_inverse * zeta) % Q,
                          (zeta - zeta) % Q],
@@ -177,6 +182,7 @@ def main() -> int:
             if sorted(lane for pair in pairs for lane in pair["physical_lanes"]) != list(range(16)):
                 raise SystemExit(f"distance {distance} does not cover 16 lanes")
             stage_records.append({"distance": distance, "pairs": pairs})
+            row_constants.append(expanded_inverse_mont)
             all_pairs.setdefault(str(distance), pairs)
         rows.append({
             "physical_row": row_index,
@@ -187,6 +193,7 @@ def main() -> int:
                 "BaseInv_R0_quarter_scale": propagate_range(row, [-3456, 3456]),
             },
         })
+        inverse_constants.append(row_constants)
 
     document = {
         "schema": "gt-g1c-m3-inverse16-contract/v1",
@@ -248,12 +255,28 @@ def main() -> int:
         },
     }
     rendered = json.dumps(document, indent=2, sort_keys=True) + "\n"
+    header_lines = [
+        "#ifndef NTRUPLUS1152_EXP001_G1C_M3_INVERSE16_H",
+        "#define NTRUPLUS1152_EXP001_G1C_M3_INVERSE16_H",
+        "#include <stdint.h>",
+        "static const int ntruplus1152_exp001_g1c_m3_distances[4] = {1, 2, 4, 8};",
+        "static const int16_t ntruplus1152_exp001_g1c_m3_inverse_mont[9][4][8] = {",
+    ]
+    for row_constants in inverse_constants:
+        header_lines.append("  {")
+        for constants in row_constants:
+            header_lines.append("    {" + ", ".join(map(str, constants)) + "},")
+        header_lines.append("  },")
+    header_lines.extend(["};", "#endif", ""])
+    header = "\n".join(header_lines)
     if args.check:
-        if not args.output.is_file() or args.output.read_text() != rendered:
+        if (not args.output.is_file() or args.output.read_text() != rendered or
+                not args.header.is_file() or args.header.read_text() != header):
             raise SystemExit("generated G1C-M3 inverse16 oracle is stale")
         return 0
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(rendered)
+    args.header.write_text(header)
     return 0
 
 

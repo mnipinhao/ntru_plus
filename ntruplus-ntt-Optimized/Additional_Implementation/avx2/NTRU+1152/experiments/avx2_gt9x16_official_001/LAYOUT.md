@@ -183,3 +183,11 @@ current leading architecture hypothesis is F0 persistent forward feeding
 consumer-native arithmetic and an F5 split inverse; it does not require F1
 terminal-major production. This remains a hypothesis until complete caller
 paths are implemented and measured.
+
+M3B shows why inverse split-state orientation is not merely routing. D1's even
+physical lanes carry large sum branches and odd lanes carry post-Mont reduced
+branches; D2 pairs like parity, producing four large+large and four
+reduced+reduced butterflies per row. The current factorization remains within
+i16 in the fixed corpus through D4 but has concrete D8 overflow. M3C may change
+the D8 gauge/orientation or repair selected branches, but it must retain the
+same inverse map and account for repair in full-path cost.

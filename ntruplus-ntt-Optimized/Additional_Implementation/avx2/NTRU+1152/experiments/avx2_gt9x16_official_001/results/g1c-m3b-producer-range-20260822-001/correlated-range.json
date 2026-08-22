@@ -1,0 +1,80 @@
+{
+  "benchmark_class": "repository-local-deterministic-range-counterexample-search-not-performance",
+  "binary_sha256": "e8d76845c89b064483a98f841ff18e352881ebfdde3ff7e7b25f059c4d4a8301",
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "compiler": "cc",
+  "conclusions": {
+    "D1": "no counterexample in fixed producer-real corpus; previously proved safe",
+    "D2": "no counterexample in fixed producer-real corpus; proof remains open",
+    "D4": "no counterexample in fixed producer-real corpus; proof remains open",
+    "D8": "current orientation has concrete signed-i16 counterexamples",
+    "full_reduction": "not-authorized; search orientation and minimum repair",
+    "zero_repair_current_orientation": "rejected-by-counterexample"
+  },
+  "created_at": "2026-08-22T02:55:41.866531+00:00",
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-30-generic",
+  "m3_oracle_sha256": "86c7d86d4f2c8b0f90da292444e9c2a177df08b2ccba47ba62e111706182eee4",
+  "probe": {
+    "cells_per_trial": 1152,
+    "first_unsafe": {
+      "branch": 0,
+      "coefficient": 3,
+      "distance": 8,
+      "left": -19648,
+      "operation": "sum",
+      "physical_lanes": [
+        0,
+        8
+      ],
+      "right": -16636,
+      "row": 3,
+      "trial": 3,
+      "value": -36284
+    },
+    "maximum_raw": 8888,
+    "proof_status": "empirical-counterexample-search-not-a-proof-of-safety",
+    "stages": [
+      {
+        "distance": 1,
+        "maximum_difference": 13480,
+        "maximum_input": 8888,
+        "maximum_sum": 13864,
+        "maximum_twisted": 1976,
+        "unsafe_difference_count": 0,
+        "unsafe_sum_count": 0
+      },
+      {
+        "distance": 2,
+        "maximum_difference": 19733,
+        "maximum_input": 13864,
+        "maximum_sum": 21367,
+        "maximum_twisted": 2086,
+        "unsafe_difference_count": 0,
+        "unsafe_sum_count": 0
+      },
+      {
+        "distance": 4,
+        "maximum_difference": 28207,
+        "maximum_input": 21367,
+        "maximum_sum": 31373,
+        "maximum_twisted": 2191,
+        "unsafe_difference_count": 0,
+        "unsafe_sum_count": 0
+      },
+      {
+        "distance": 8,
+        "maximum_difference": 38455,
+        "maximum_input": 31373,
+        "maximum_sum": 45358,
+        "maximum_twisted": 2324,
+        "unsafe_difference_count": 11,
+        "unsafe_sum_count": 187
+      }
+    ],
+    "trials": 10003
+  },
+  "promotion_eligible": false,
+  "schema": "gt-g1c-m3b-producer-correlated-range-observation/v1",
+  "source_sha256": "d60741f8e319314f982bf417a57916a8353808d4bf98a8acce73c1511fcfeaf8"
+}
