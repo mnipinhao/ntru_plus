@@ -200,3 +200,11 @@ rekeying cannot repair that splice. Zero-route XOR relabels preserve the same
 constraint, and signs cannot reduce the permanent D8 pair's
 `max(abs(u+v),abs(u-v))`. The fixed layout therefore needs a minimum repair
 contract before persistent inverse16 assembly.
+
+M3C2 localizes every fixed-corpus D8 overflow to pair 0 `(q0,q8)`. The logical
+minimum repairs one side of 37 nodes. In the AVX2 projection, each affected
+node is in a different terminal vector; physical-adjacent row half packing can
+cover them with 15 packed reductions plus 7 full-vector reductions. This is a
+candidate layout only: the unreduced side still needs a producer-correlated
+proof, and the abstract repair chain has not selected Barrett versus
+Montgomery-by-identity.

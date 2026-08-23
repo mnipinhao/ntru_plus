@@ -215,3 +215,11 @@ gauges cannot repair the permanent D8 counterexample, and a root-power gauge on
 its all-L path would require new arithmetic. M3C0 therefore closes without a
 zero-cost candidate; M3C1 is skipped and M3C2 minimum repair is next. See
 `CHECKPOINT-G1C-M3C0.md`.
+
+Checkpoint G1C-M3C2 evaluates none/left/right/both repair at all 576 D8 nodes
+on the fixed real-producer corpus. Only 37 nodes fail without repair, all at
+pair 0, and every one accepts either one-sided repair. The scalar minimum is
+37 reductions; an adjacent-row half-vector set cover projects this to 22
+abstract vector repair chains and 30 routes, versus 37 selective full-vector
+chains or 72 full-D4 control chains. Exact producer-domain safety remains open,
+so no ASM or timing is authorized. See `CHECKPOINT-G1C-M3C2.md`.

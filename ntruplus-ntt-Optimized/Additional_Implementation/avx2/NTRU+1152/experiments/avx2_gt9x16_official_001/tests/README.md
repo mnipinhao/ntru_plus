@@ -22,3 +22,8 @@ not a replacement for symbolic or localized exact range proof.
 swap search at all three boundaries, the zero-route physical-q relabel domain,
 and all sign variants of the permanent D8 counterexample. It requires M3C0 to
 close without a factor-equivalent all-L/R-edge candidate before repair search.
+
+`test_g1c_m3c2_repair_plan.py` locks the 576-node fixed-corpus action matrix,
+the 37 pair-0 logical repairs, and the 22-chain/30-route adjacent-row half
+set-cover result. It also requires the result to remain explicitly proof-open
+and assembly-blocking.
