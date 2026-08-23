@@ -25,6 +25,14 @@ fully-inline mutation removes the dispatch but becomes a 12-KiB MITE-heavy
 body and also loses.  The typed ABI remains mathematically viable, but both
 tested executable shapes are rejected and no full Encap gate is opened.
 
+[Experiment 069](gt32_encap_consumer_abi_069/) tests the remaining bounded-
+specialization premise.  Cluster sizes 2/3/4/6 are generated; the 3- and
+4-block middle points are executed.  They recover only 2--4 core cycles of
+DSB/MITE delivery versus fully inline and remain 21--24 core cycles behind
+032.  Simple partitioning does not reduce the total unique 12-KiB path, so the
+consumer-native campaign is paused pending a genuinely reusable compact
+microkernel rather than another clustering or scheduling mutation.
+
 ## Progressive M formation coverage
 
 [Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed

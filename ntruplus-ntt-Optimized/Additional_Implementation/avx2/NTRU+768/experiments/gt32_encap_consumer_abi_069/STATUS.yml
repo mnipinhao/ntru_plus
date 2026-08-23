@@ -1,0 +1,98 @@
+experiment: GT32-ENCAP-CONSUMER-ABI-069
+title: Clustered bounded-specialization code-shape gate
+production_modified: false
+full_encap_run: false
+full_encap_reason: both executable clusters failed the island gate against 032
+
+status:
+  typed_abi_correctness: PASS_FROM_068_AND_REVALIDATED
+  ordinary_M_materialization_removed: PASS
+  static_cluster_sweep: COMPLETE
+  cluster3: REJECTED_FOR_SCOPE
+  cluster4: REJECTED_FOR_SCOPE
+  search_class: EXHAUSTED_FOR_SCOPE
+  consumer_abi_campaign: PAUSED
+  promotion: NOT_SELECTED
+
+fixed_contract:
+  ring: Z_3457[x]/(x^768-x^384+1)
+  representation: B3 general R2-finalized e=0 plus message Forward e=0
+  scale: e=0
+  bound_per_degree: [20215, 20250, 20285, 20296]
+  maximum_abs_bound: 20296
+  consumer: canonical 48-packet Q24 byte stream
+  complete_ordinary_M_sum_materialized: false
+
+static_sweep:
+  purpose: selection only, not a cycle veto
+  cluster_sizes: [2, 3, 4, 6]
+  selected_for_executable: [3, 4]
+  constant_footprint_bytes: 992
+  rows:
+    - {cluster_size: 2, transitions: 6, total_text_bytes: 12317, max_cluster_bytes: 2053, instructions: 2362}
+    - {cluster_size: 3, transitions: 4, total_text_bytes: 12167, max_cluster_bytes: 3042, instructions: 2339}
+    - {cluster_size: 4, transitions: 3, total_text_bytes: 12177, max_cluster_bytes: 4059, instructions: 2336}
+    - {cluster_size: 6, transitions: 2, total_text_bytes: 12101, max_cluster_bytes: 6051, instructions: 2324}
+
+correctness:
+  real_encap_operand_trials: 1000
+  cluster_sizes_2_3_4_6_normal: PASS
+  cluster3_4_reversed: PASS
+  canonical_1152_byte_exact: PASS
+  generator_freshness: PASS
+  complete_M_store_count: 0
+
+benchmark:
+  cpu: 1
+  launches_per_placement: 16
+  normal:
+    reference_032_minus_current_tsc: -32.50
+    inline_068_minus_032_tsc: 43.00
+    cluster3_minus_032_tsc: 50.00
+    cluster3_ci95: [48.25, 51.0]
+    cluster4_minus_032_tsc: 51.75
+    cluster4_ci95: [49.5, 53.5]
+  reversed:
+    reference_032_minus_current_tsc: -17.75
+    inline_068_minus_032_tsc: 29.75
+    cluster3_minus_032_tsc: 40.75
+    cluster3_ci95: [38.0, 42.0]
+    cluster4_minus_032_tsc: 37.00
+    cluster4_ci95: [35.75, 38.5]
+
+pmu_delta_vs_032:
+  cluster3:
+    core_cycles: 24.19
+    instructions: -146.34
+    l1d_loads: -37.96
+    l1d_stores: -48.70
+    idq_uops_not_delivered: 111.07
+    dsb_uops: -1726.23
+    mite_uops: 1537.39
+    port_5_11_uops: -35.07
+  cluster4:
+    core_cycles: 21.43
+    instructions: -153.74
+    l1d_loads: -39.99
+    l1d_stores: -49.74
+    idq_uops_not_delivered: 113.40
+    dsb_uops: -1798.78
+    mite_uops: 1639.90
+    port_5_11_uops: -35.23
+
+mechanism:
+  intended_effect: clusters recover some DSB delivery and reduce MITE fallback
+  observed_limit: full invocation still executes roughly 12 KiB of unique text
+  repayment: only 2 to 4 core cycles versus fully inline
+  gap_to_032: 21 to 24 core cycles
+
+do_not_continue_with:
+  - cluster size 2 or 6 within the same copied-block design
+  - alignment or padding sweep
+  - fully-inline rescheduling
+  - full Encap without an island win
+
+reopen_only_if:
+  - a new mechanism reduces total unique executed text
+  - it retains the no-complete-M typed ABI
+  - it beats 032 by at least 5 to 10 TSC in the island

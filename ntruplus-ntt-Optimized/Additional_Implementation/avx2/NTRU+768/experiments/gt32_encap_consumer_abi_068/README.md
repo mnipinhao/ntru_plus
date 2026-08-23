@@ -176,6 +176,12 @@ block body without twelve long-range transitions and without materializing a
 complete M polynomial.  Alignment, padding, register-allocation, or another
 equivalent scheduling sweep is not a sufficient new premise.
 
+Experiment 069 subsequently tests the bounded 3/4-block clustering premise.
+It recovers only 2--4 core cycles of frontend delivery versus fully inline and
+remains 21--24 core cycles slower than 032.  The shared/full-inline search
+class described here is therefore exhausted; use 069 for the campaign-level
+pause and reopening rule.
+
 ## Reproduction
 
 ```sh
