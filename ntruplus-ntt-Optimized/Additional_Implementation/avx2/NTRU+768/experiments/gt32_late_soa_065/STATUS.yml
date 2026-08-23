@@ -1,0 +1,106 @@
+experiment: GT32-LATE-SOA-065
+status: FULL_ARITHMETIC_CHAIN_PASS
+production_changed: false
+kem_integration: false
+scope:
+  input: two_coefficient_order_small_polynomials
+  output: coefficient_order_polynomial_result
+  region: current_frontend_plus_2F_plus_B_plus_I_plus_current_inverse_tail
+  included:
+    - current_N5_frontend
+    - top_split_twist_DFT3
+    - complete_six_tile_NTT32_arithmetic
+    - inverse_DFT3_untwist_top_merge_normalization
+  excluded:
+    - crepmod3
+    - serialization
+    - hash
+    - KEM_callers
+profiles:
+  C0: current_TILE4_complete_polynomial_chain
+  C1: current_TILE4_2F_AoS_B3_I01_fused_common_remainder_and_tail
+  L0: Late_SoA_2F_SoA_B3_I01_fused_common_remainder_and_tail
+contracts:
+  input: {layout: coefficient_order, exponent: 0, range: '[-3,4]'}
+  frontend: selected_raw_N5_unchanged
+  late_entry: exact_063_064_post_S3_seam
+  late_exit: current_TILE4_post_I1
+  inverse_tail_input: current_AoS_e_minus_1
+  output: {layout: coefficient_order, exponent: 0, semantics: exact_mod_q}
+  extra_reductions: 0
+correctness:
+  passed: true
+  trials: 1776
+  impulses: 768
+  structured: 8
+  random_small: 1000
+  exact_complete_coefficient_output: true
+  alias_trials_per_mode: 136
+  aliases:
+    out_eq_a: supported
+    out_eq_b: supported
+    scratch_alias: forbidden
+  observed_abs_output: 1816
+  observed_values_are_not_widened_contracts: true
+resources:
+  scratch_bytes_all_profiles: 7680
+  wrapper_bytes_each: 137
+  wrapper_local_frame_bytes: 0
+  wrapper_abi_save_restore_instructions_each: 10
+  late_bridge_stack_references: 0
+  late_bridge_stack_spills: 0
+benchmark:
+  same_ELF_per_placement: true
+  placements: [normal, reversed]
+  wrapper_addresses_identical_between_placements: true
+  hot_ASM_object_order_reversed: true
+  paired_alternating_order: true
+  launches_per_placement: 8
+  samples_per_launch: 41
+  delta_definition: candidate_minus_C0
+  median_delta_TSC:
+    normal:
+      C1: {arithmetic: -2.06, full: 2.83, integration_closure: 4.88}
+      L0: {arithmetic: -72.26, full: -66.25, integration_closure: 6.01}
+    reversed:
+      C1: {arithmetic: -2.19, full: -2.01, integration_closure: 0.18}
+      L0: {arithmetic: -73.07, full: -67.43, integration_closure: 5.64}
+  negative_full_launches:
+    normal: {L0: 8, total: 8}
+    reversed: {L0: 8, total: 8}
+  PMU_delta_L0_vs_C0:
+    normal:
+      arithmetic: {core_cycles: -114.86, retired_instructions: -153.94}
+      full:
+        core_cycles: -114.17
+        retired_instructions: -159.23
+        retired_loads: 1.19
+        retired_stores: -0.20
+        retired_branches: -6.04
+      integration_closure_core_cycles: 0.69
+    reversed:
+      arithmetic: {core_cycles: -121.15, retired_instructions: -165.25}
+      full:
+        core_cycles: -117.64
+        retired_instructions: -155.75
+        retired_loads: 1.94
+        retired_stores: -0.02
+        retired_branches: -6.02
+      integration_closure_core_cycles: 3.50
+decision:
+  full_GT32_arithmetic_chain: PASSED
+  classification: FULL_ARITHMETIC_CHAIN_PASS
+  C1_output_fusion_only: NOT_SELECTED
+  mechanism:
+    - 064_arithmetic_win_survives_current_frontend
+    - 064_arithmetic_win_survives_current_coefficient_output_tail
+    - complete_DAG_retires_fewer_instructions
+    - complete_load_store_counts_are_effectively_unchanged
+  next_eligible_gate: LATE_SOA_CALLER_CLOSURE
+  campaign: PAUSED_BEFORE_CREP_OR_KEM
+explicitly_not_done:
+  - crepmod3
+  - Encap_integration
+  - Decap_integration
+  - Keygen_integration
+  - GT_Clean_promotion
