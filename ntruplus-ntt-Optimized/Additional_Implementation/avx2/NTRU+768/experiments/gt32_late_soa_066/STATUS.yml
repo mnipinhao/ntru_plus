@@ -1,0 +1,62 @@
+experiment: GT32-LATE-SOA-066
+title: LATE_SOA_DECAP_FIRST_PRODUCT_CLOSURE
+status: AFFECTED_CALLER_PASS
+production_changed: false
+
+superseded_proposal:
+  caller: Encap
+  status: NOT_RUN
+  reason: caller graph incompatible with the 065 B3-to-inverse seam
+
+scope:
+  control: current M scale-B3 followed by current M inverse
+  candidate: Late-SoA scale-B3 fused through inverse I0/I1, then common remainder
+  charged_entry_conversion: zero
+  common:
+    - Q24 decode and canonical checking
+    - M input representation
+    - inverse tail and crepmod3
+    - recovered-r path
+    - Hash and SOTP
+    - final native-domain verification
+    - cleanup and public KEM behavior
+
+correctness:
+  valid_cases: 256
+  invalid_or_malformed_cases: 69
+  post_i1: exact
+  crepmod3: exact
+  recovered_message: exact
+  recovered_r: exact
+  full_decap: byte_exact
+  kat:
+    bytes: 948402
+    sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+
+primary_tsc:
+  normal:
+    post_i1: 6.306
+    crepmod3: -23.592
+    full_decap: -9.8945
+    negative_launches: 14/16
+    bootstrap_95_ci: [-18.131, -6.1255]
+  reversed:
+    post_i1: 5.8365
+    crepmod3: -22.1095
+    full_decap: -11.36
+    negative_launches: 12/16
+    bootstrap_95_ci: [-24.32, -1.743]
+
+pmu_interpretation:
+  b3_to_crepmod3_core_cycles:
+    normal: -41.936
+    reversed: -35.711
+  full_core_cycles: inconclusive_and_geometry_sensitive
+  full_17_pair_ci_crosses_zero: true
+  first_integration_reversal: recovered_r_to_hash_sotp_trace
+
+decision:
+  affected_caller: Decap
+  promote_to_gt_clean: false
+  reason: lean same-ELF TSC gate passes both placements; core-cycle delivery remains inconclusive
+  stop_after_this_gate: true
