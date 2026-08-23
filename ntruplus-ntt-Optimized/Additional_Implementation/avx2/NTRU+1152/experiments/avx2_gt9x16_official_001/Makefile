@@ -38,6 +38,7 @@ G1C_M2_RESULT := results/g1c-m2-intel155h-20260821-001/g1c-m2-paired.json
 G1C_M3_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --m2-result $(G1C_M2_RESULT) --output generated/g1c-m3-inverse16-oracle.json --header generated/g1c-m3-inverse16.h
 G1C_M3B_RESULT := results/g1c-m3b-producer-range-20260822-001/correlated-range.json
 G1C_M3B_ARGS := --m3-oracle generated/g1c-m3-inverse16-oracle.json --observation $(G1C_M3B_RESULT) --output generated/g1c-m3b-provenance.json
+G1C_M3C0_ARGS := --m3-oracle generated/g1c-m3-inverse16-oracle.json --m3b-observation $(G1C_M3B_RESULT) --output generated/g1c-m3c0-orientation-search.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -70,6 +71,7 @@ generate:
 	$(PYTHON) tools/generate_g1c_m2_live_basis.py $(G1C_M2_ARGS)
 	$(PYTHON) tools/generate_g1c_m3_inverse16_oracle.py $(G1C_M3_ARGS)
 	$(PYTHON) tools/generate_g1c_m3b_provenance.py $(G1C_M3B_ARGS)
+	$(PYTHON) tools/generate_g1c_m3c0_orientation_search.py $(G1C_M3C0_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -98,6 +100,7 @@ check:
 	$(PYTHON) tools/generate_g1c_m2_live_basis.py $(G1C_M2_ARGS) --check
 	$(PYTHON) tools/generate_g1c_m3_inverse16_oracle.py $(G1C_M3_ARGS) --check
 	$(PYTHON) tools/generate_g1c_m3b_provenance.py $(G1C_M3B_ARGS) --check
+	$(PYTHON) tools/generate_g1c_m3c0_orientation_search.py $(G1C_M3C0_ARGS) --check
 	mkdir -p $(BUILD)/g1c
 	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
 	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS) --check
@@ -114,6 +117,7 @@ check:
 	$(PYTHON) tests/test_g1c_m2_live_basis.py
 	$(PYTHON) tests/test_g1c_m3_inverse16_oracle.py
 	$(PYTHON) tests/test_g1c_m3b_provenance.py
+	$(PYTHON) tests/test_g1c_m3c0_orientation_search.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear

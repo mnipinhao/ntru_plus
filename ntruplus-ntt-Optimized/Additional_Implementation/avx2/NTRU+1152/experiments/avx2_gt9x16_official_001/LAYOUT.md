@@ -191,3 +191,12 @@ reduced+reduced butterflies per row. The current factorization remains within
 i16 in the fixed corpus through D4 but has concrete D8 overflow. M3C may change
 the D8 gauge/orientation or repair selected branches, but it must retain the
 same inverse map and account for repair in full-path cost.
+
+M3C0 exhaustively separates a cosmetic output orientation from a valid inverse
+factor relabel. At every boundary, equal producer orientations preserve one
+complete next-stage factor but yield only L/L or R/R edges; opposite
+orientations yield L/R edges but splice two different factors. Root-table
+rekeying cannot repair that splice. Zero-route XOR relabels preserve the same
+constraint, and signs cannot reduce the permanent D8 pair's
+`max(abs(u+v),abs(u-v))`. The fixed layout therefore needs a minimum repair
+contract before persistent inverse16 assembly.

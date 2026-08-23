@@ -17,3 +17,8 @@ D2 range-proof failure that currently blocks lazy M3 assembly.
 `test_g1c_m3b_provenance.py` gates the D2 source classes and fixed D8
 counterexample. The underlying 10,003-case probe is counterexample evidence,
 not a replacement for symbolic or localized exact range proof.
+
+`test_g1c_m3c0_orientation_search.py` gates the exhaustive zero-cost output
+swap search at all three boundaries, the zero-route physical-q relabel domain,
+and all sign variants of the permanent D8 counterexample. It requires M3C0 to
+close without a factor-equivalent all-L/R-edge candidate before repair search.

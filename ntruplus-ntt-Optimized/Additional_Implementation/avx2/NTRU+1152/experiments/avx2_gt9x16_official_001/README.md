@@ -207,3 +207,11 @@ unsafe sums and 11 unsafe differences; the first concrete sum is -36,284.
 Zero-repair C2 is therefore rejected, while full reduction is not authorized.
 M3C now searches D8 orientation and minimum one-sided/selective repair. See
 `CHECKPOINT-G1C-M3B.md`.
+
+Checkpoint G1C-M3C0 exhausts all 256 local output-swap masks at each of the
+three inverse16 boundaries. Factor-partition-preserving masks and all-L/R-edge
+masks are disjoint, including every zero-route `q -> q xor c` relabel. Sign
+gauges cannot repair the permanent D8 counterexample, and a root-power gauge on
+its all-L path would require new arithmetic. M3C0 therefore closes without a
+zero-cost candidate; M3C1 is skipped and M3C2 minimum repair is next. See
+`CHECKPOINT-G1C-M3C0.md`.

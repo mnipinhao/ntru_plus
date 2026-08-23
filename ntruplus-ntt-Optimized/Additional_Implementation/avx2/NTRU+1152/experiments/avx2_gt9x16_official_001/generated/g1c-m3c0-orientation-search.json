@@ -1,0 +1,418 @@
+{
+  "benchmark_policy": "no timing: deterministic algebra/range gate only",
+  "boundaries": [
+    {
+      "all_large_reduced_mask_hex": [
+        "0x55",
+        "0x56",
+        "0x59",
+        "0x5a",
+        "0x65",
+        "0x66",
+        "0x69",
+        "0x6a",
+        "0x95",
+        "0x96",
+        "0x99",
+        "0x9a",
+        "0xa5",
+        "0xa6",
+        "0xa9",
+        "0xaa"
+      ],
+      "all_large_reduced_masks": 16,
+      "best_admissible_edge_classes": [
+        [
+          [
+            "LL",
+            4
+          ],
+          [
+            "LR",
+            0
+          ],
+          [
+            "RL",
+            0
+          ],
+          [
+            "RR",
+            4
+          ]
+        ]
+      ],
+      "best_admissible_non_mixed_edge_count": 8,
+      "conclusion": "A mixed L/R next edge requires opposite orientations for its two producer butterflies. Preserving the original inverse factor pair requires equal orientations, so root-table rekeying alone cannot realize the mixed edge.",
+      "consumer_distance": 2,
+      "factor_partition_preserving_mask_hex": [
+        "0x00",
+        "0x03",
+        "0x0c",
+        "0x0f",
+        "0x30",
+        "0x33",
+        "0x3c",
+        "0x3f",
+        "0xc0",
+        "0xc3",
+        "0xcc",
+        "0xcf",
+        "0xf0",
+        "0xf3",
+        "0xfc",
+        "0xff"
+      ],
+      "factor_partition_preserving_masks": 16,
+      "intersection_count": 0,
+      "producer_distance": 1,
+      "searched_output_swap_masks": 256
+    },
+    {
+      "all_large_reduced_mask_hex": [
+        "0x33",
+        "0x36",
+        "0x39",
+        "0x3c",
+        "0x63",
+        "0x66",
+        "0x69",
+        "0x6c",
+        "0x93",
+        "0x96",
+        "0x99",
+        "0x9c",
+        "0xc3",
+        "0xc6",
+        "0xc9",
+        "0xcc"
+      ],
+      "all_large_reduced_masks": 16,
+      "best_admissible_edge_classes": [
+        [
+          [
+            "LL",
+            4
+          ],
+          [
+            "LR",
+            0
+          ],
+          [
+            "RL",
+            0
+          ],
+          [
+            "RR",
+            4
+          ]
+        ]
+      ],
+      "best_admissible_non_mixed_edge_count": 8,
+      "conclusion": "A mixed L/R next edge requires opposite orientations for its two producer butterflies. Preserving the original inverse factor pair requires equal orientations, so root-table rekeying alone cannot realize the mixed edge.",
+      "consumer_distance": 4,
+      "factor_partition_preserving_mask_hex": [
+        "0x00",
+        "0x05",
+        "0x0a",
+        "0x0f",
+        "0x50",
+        "0x55",
+        "0x5a",
+        "0x5f",
+        "0xa0",
+        "0xa5",
+        "0xaa",
+        "0xaf",
+        "0xf0",
+        "0xf5",
+        "0xfa",
+        "0xff"
+      ],
+      "factor_partition_preserving_masks": 16,
+      "intersection_count": 0,
+      "producer_distance": 2,
+      "searched_output_swap_masks": 256
+    },
+    {
+      "all_large_reduced_mask_hex": [
+        "0x0f",
+        "0x1e",
+        "0x2d",
+        "0x3c",
+        "0x4b",
+        "0x5a",
+        "0x69",
+        "0x78",
+        "0x87",
+        "0x96",
+        "0xa5",
+        "0xb4",
+        "0xc3",
+        "0xd2",
+        "0xe1",
+        "0xf0"
+      ],
+      "all_large_reduced_masks": 16,
+      "best_admissible_edge_classes": [
+        [
+          [
+            "LL",
+            4
+          ],
+          [
+            "LR",
+            0
+          ],
+          [
+            "RL",
+            0
+          ],
+          [
+            "RR",
+            4
+          ]
+        ]
+      ],
+      "best_admissible_non_mixed_edge_count": 8,
+      "conclusion": "A mixed L/R next edge requires opposite orientations for its two producer butterflies. Preserving the original inverse factor pair requires equal orientations, so root-table rekeying alone cannot realize the mixed edge.",
+      "consumer_distance": 8,
+      "factor_partition_preserving_mask_hex": [
+        "0x00",
+        "0x11",
+        "0x22",
+        "0x33",
+        "0x44",
+        "0x55",
+        "0x66",
+        "0x77",
+        "0x88",
+        "0x99",
+        "0xaa",
+        "0xbb",
+        "0xcc",
+        "0xdd",
+        "0xee",
+        "0xff"
+      ],
+      "factor_partition_preserving_masks": 16,
+      "intersection_count": 0,
+      "producer_distance": 4,
+      "searched_output_swap_masks": 256
+    }
+  ],
+  "checkpoint": "G1C-M3C0-zero-cost-orientation-and-gauge-search",
+  "decision": {
+    "M3C0": "closed-no-candidate",
+    "M3C1": "not-entered-because-M3C0-selected-no-orientation",
+    "M3_assembly": "forbidden-until-M3C2-and-M3C3-fix-the-repair-contract",
+    "full_reduction": "control-only-deferred-to-M3C3",
+    "next_checkpoint": "M3C2 logical-minimum then AVX2-set-cover repair search",
+    "zero_cost_safe_candidate": null
+  },
+  "factor_equivalence_contract": {
+    "rule": "After a local output swap, every physical next-stage pair must map to one complete original next-stage factor pair. Twiddle, sign, and root-power rekeying may change gauges but cannot join halves from two different factors.",
+    "why_this_is_required": "Joining different factor halves changes the inverse linear map; repairing it needs a runtime route or a different factorization."
+  },
+  "objective_order": [
+    "zero new Montgomery chains",
+    "zero new runtime routing",
+    "zero standalone scale correction",
+    "minimize large-large and reduced-reduced next-stage edges",
+    "preserve an absorbable final component permutation"
+  ],
+  "parameter": 1152,
+  "permanent_D8_regression": {
+    "absolute_operand_sum": 36284,
+    "all_sign_gauges_rejected": true,
+    "identity": "max(abs(u+v),abs(u-v)) = abs(u)+abs(v)",
+    "operand_lineage": {
+      "0": [
+        {
+          "branch": "L",
+          "producer_distance": 1
+        },
+        {
+          "branch": "L",
+          "producer_distance": 2
+        },
+        {
+          "branch": "L",
+          "producer_distance": 4
+        }
+      ],
+      "8": [
+        {
+          "branch": "L",
+          "producer_distance": 1
+        },
+        {
+          "branch": "L",
+          "producer_distance": 2
+        },
+        {
+          "branch": "L",
+          "producer_distance": 4
+        }
+      ]
+    },
+    "signed_variants": [
+      {
+        "both_fit_signed_i16": false,
+        "difference": 3012,
+        "left_sign": -1,
+        "maximum_absolute_pre_montgomery": 36284,
+        "right_sign": -1,
+        "sum": 36284
+      },
+      {
+        "both_fit_signed_i16": false,
+        "difference": 36284,
+        "left_sign": -1,
+        "maximum_absolute_pre_montgomery": 36284,
+        "right_sign": 1,
+        "sum": 3012
+      },
+      {
+        "both_fit_signed_i16": false,
+        "difference": -36284,
+        "left_sign": 1,
+        "maximum_absolute_pre_montgomery": 36284,
+        "right_sign": -1,
+        "sum": -3012
+      },
+      {
+        "both_fit_signed_i16": false,
+        "difference": -3012,
+        "left_sign": 1,
+        "maximum_absolute_pre_montgomery": 36284,
+        "right_sign": 1,
+        "sum": -36284
+      }
+    ],
+    "source": {
+      "branch": 0,
+      "coefficient": 3,
+      "distance": 8,
+      "left": -19648,
+      "operation": "sum",
+      "physical_lanes": [
+        0,
+        8
+      ],
+      "right": -16636,
+      "row": 3,
+      "trial": 3,
+      "value": -36284
+    }
+  },
+  "range_evidence": {
+    "D8_maximum_difference": 38455,
+    "D8_maximum_sum": 45358,
+    "invariance": "Every factor-partition-preserving swap/relabel only relocates or signs an original factor pair. It cannot remove the recorded abs(u)+abs(v)=36284 pre-Montgomery requirement.",
+    "source": "fixed M3B producer-real corpus",
+    "unsafe_difference_count": 11,
+    "unsafe_sum_count": 187
+  },
+  "schema": "gt-g1c-m3c0-zero-cost-orientation-search/v1",
+  "search_domain": {
+    "output_swap": "all 256 local butterfly masks at D1, D2, and D4",
+    "physical_q_relabel": {
+      "excluded_bit_axis_permutations": 24,
+      "exclusion_reason": "Permuting q-bit axes changes the fixed D1/D2/D4/D8 route sequence and the linked-D1 contract; it is not a zero-new-routing M3C0 relabel.",
+      "exhaustiveness_argument": "A zero-route relabel must satisfy pi(q xor 2^s) = pi(q) xor 2^s for all four fixed stage axes. Therefore pi(q) = q xor pi(0), giving exactly these 16 translations.",
+      "searched_zero_route_relabels": [
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 0
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 1
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 2
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 3
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 4
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 5
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 6
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 7
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 8
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 9
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 10
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 11
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 12
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 13
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 14
+        },
+        {
+          "preserves_every_stage_matching": true,
+          "xor_offset": 15
+        }
+      ]
+    },
+    "root_power_gauge": {
+      "absorption_contract": "A nontrivial root gauge is free only on an existing Montgomery-reduced R output. The all-L path has no such slot; scaling it needs a new multiply or an upstream arithmetic change and is outside M3C0.",
+      "powers_mod_q": [
+        1,
+        3413,
+        1936,
+        1241,
+        708,
+        3418,
+        1716,
+        550,
+        3456,
+        44,
+        1521,
+        2216,
+        2749,
+        39,
+        1741,
+        2907
+      ],
+      "primitive_16th_root_mod_q": 3413
+    },
+    "sign_gauge": "both signs on both operands of the permanent D8 regression"
+  },
+  "source_sha256": {
+    "m3_oracle": "86c7d86d4f2c8b0f90da292444e9c2a177df08b2ccba47ba62e111706182eee4",
+    "m3b_observation": "0932afedc177b452e96140f0ea4d9f34cd474819ecd07f6ffa291c0b4ef199a3"
+  }
+}
