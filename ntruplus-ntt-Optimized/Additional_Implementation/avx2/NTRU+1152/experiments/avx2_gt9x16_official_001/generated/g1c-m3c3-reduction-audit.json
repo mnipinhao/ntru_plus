@@ -1,0 +1,63 @@
+{
+  "cflags": "-mavx2",
+  "checkpoint": "G1C-M3C3-full-reduction-controls",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "functions": {
+    "Montgomery-identity": {
+      "calls": 0,
+      "fixed_public_loop_branches": 1,
+      "forbidden_variable_arithmetic": [],
+      "frame_or_stack_references": 0,
+      "mnemonics": {
+        "add": 1,
+        "cmp": 1,
+        "jne": 1,
+        "ret": 1,
+        "vmovdqa": 3,
+        "vmovdqu": 2,
+        "vpmulhw": 2,
+        "vpmullw": 1,
+        "vpsubw": 1,
+        "xor": 1
+      },
+      "static_instruction_count": 14,
+      "vector_loads_in_loop_body": 1,
+      "vector_stores_in_loop_body": 1,
+      "vzeroupper": 0
+    },
+    "signed-Barrett": {
+      "calls": 0,
+      "fixed_public_loop_branches": 1,
+      "forbidden_variable_arithmetic": [],
+      "frame_or_stack_references": 0,
+      "mnemonics": {
+        "add": 1,
+        "cmp": 1,
+        "jne": 1,
+        "ret": 1,
+        "vmovdqa": 4,
+        "vmovdqu": 2,
+        "vpaddw": 1,
+        "vpand": 2,
+        "vpcmpgtw": 2,
+        "vpmulhrsw": 1,
+        "vpmullw": 1,
+        "vpsubw": 2,
+        "xor": 1
+      },
+      "static_instruction_count": 20,
+      "vector_loads_in_loop_body": 1,
+      "vector_stores_in_loop_body": 1,
+      "vzeroupper": 0
+    }
+  },
+  "gate": {
+    "call_frame_stack_vzeroupper_free": true,
+    "fixed_72_vector_loop": true,
+    "secret_independent_control_and_index": true
+  },
+  "object_sha256": "f8abd1cd10d36fe940995fe61c55ab94c7266200d98749a654441b1f923a5ddf",
+  "proof_sha256": "f63a1a30ac8e0aebbf787a521a4adbadb6ec8bce3921b99e1703991a07ad5e43",
+  "schema": "gt-g1c-m3c3-reduction-audit/v1",
+  "source_sha256": "fd104ab3fb281430d8201a150b6e2f63a94bd1a1370f84a4ec0b9dc4e31aa017"
+}

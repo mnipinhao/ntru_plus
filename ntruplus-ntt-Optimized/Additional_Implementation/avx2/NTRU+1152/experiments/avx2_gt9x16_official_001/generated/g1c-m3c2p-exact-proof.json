@@ -1,0 +1,95 @@
+{
+  "checkpoint": "G1C-M3C2-P-localized-D8-proof",
+  "decision": {
+    "M3C2_P": "complete-selected-cover-rejected",
+    "M3C3_full_reduction_control": "authorized-for-isolated-implementation-and-pricing",
+    "full_inverse16_assembly": "still blocked by producer-correlated D2/D4 proof and full-caller correctness"
+  },
+  "lemma": {
+    "actions": {
+      "none": {
+        "operand_absolute_bounds": [
+          32768,
+          32768
+        ],
+        "safe_signed_i16": false,
+        "witness": {
+          "left": -32768,
+          "operation": "sum",
+          "right": -32768,
+          "value": -65536
+        },
+        "worst_pre_montgomery_absolute": 65536
+      },
+      "reduce_both": {
+        "operand_absolute_bounds": [
+          1728,
+          1728
+        ],
+        "safe_signed_i16": true,
+        "worst_pre_montgomery_absolute": 3456
+      },
+      "reduce_left": {
+        "operand_absolute_bounds": [
+          1728,
+          32768
+        ],
+        "safe_signed_i16": false,
+        "witness": {
+          "left_after_repair": -1728,
+          "operation": "sum",
+          "right": -32768,
+          "value": -34496
+        },
+        "worst_pre_montgomery_absolute": 34496
+      },
+      "reduce_right": {
+        "operand_absolute_bounds": [
+          32768,
+          1728
+        ],
+        "safe_signed_i16": false,
+        "witness": {
+          "left": -32768,
+          "operation": "sum",
+          "right_after_repair": -1728,
+          "value": -34496
+        },
+        "worst_pre_montgomery_absolute": 34496
+      }
+    },
+    "centered_mod_q_range_exhaustive_over_65536_i16_inputs": [
+      -1728,
+      1728
+    ],
+    "centered_reduction_preserves_mod_q": true,
+    "identity": "max(abs(u+v), abs(u-v)) = abs(u)+abs(v)"
+  },
+  "minimum_proved_cover": {
+    "D4_values_repaired": 1152,
+    "D8_nodes": 576,
+    "action_per_D8_node": "reduce_both",
+    "minimality": "Under independent signed-i16 D4 operands, none and either one-sided action have explicit witnesses; both is the only universally safe action for each node.",
+    "post_repair_D8_sum_difference_range": [
+      -3456,
+      3456
+    ],
+    "terminal_YMM_vectors_repaired": 72
+  },
+  "proof_scope": {
+    "not_proved": "producer-correlated D2/D4 safety before the D8 boundary",
+    "precondition": "both D8 inputs exist as signed-i16 D4 register values",
+    "proved": "which repair actions make both D8 sum and difference fit signed i16 for every value satisfying that precondition"
+  },
+  "schema": "gt-g1c-m3c2p-localized-exact-proof/v1",
+  "selected_cover_audit": {
+    "corpus_selected_logical_repairs": 37,
+    "corpus_selected_vector_chains": 22,
+    "reason": "one-sided repair leaves an operand with absolute bound 32768; 32768+1728=34496 exceeds signed i16. Unrepaired nodes fail even more directly. Corpus maxima cannot replace this bound.",
+    "result": "rejected-by-exact-signed-i16-contract"
+  },
+  "source_sha256": {
+    "m3_oracle": "86c7d86d4f2c8b0f90da292444e9c2a177df08b2ccba47ba62e111706182eee4",
+    "repair_plan": "b56bd3cfb4db769da6f88d685fa64ea0579d247ccb6e510d07a21218fdd9182b"
+  }
+}

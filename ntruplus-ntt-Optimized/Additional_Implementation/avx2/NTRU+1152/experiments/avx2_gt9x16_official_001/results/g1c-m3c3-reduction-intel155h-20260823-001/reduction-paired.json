@@ -1,0 +1,156 @@
+{
+  "barrett": {
+    "cycles_by_launch": [
+      165.0,
+      162.5,
+      165.0,
+      165.0,
+      165.0,
+      165.0,
+      165.0,
+      160.0,
+      160.0
+    ],
+    "median_cycles": 165.0,
+    "name": "signed-Barrett",
+    "proved_output_range": [
+      -1728,
+      1728
+    ]
+  },
+  "benchmark_class": "repository-local-g1c-m3c3-reduction-paired-not-for-promotion",
+  "binary_sha256": "e03718b3be868e789b4aa38c9eb89517aa2f20e2cc2ad38c8e025dbda83588dd",
+  "blocks_per_launch": 16,
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "compiler": "cc",
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-23T06:17:33.374217+00:00",
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "inner_calls_per_observation": 64,
+  "interpretation": "isolated full-array control price only; a fused D4 tail has different load/store and scheduling costs",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "localized_proof_decision": {
+    "M3C2_P": "complete-selected-cover-rejected",
+    "M3C3_full_reduction_control": "authorized-for-isolated-implementation-and-pricing",
+    "full_inverse16_assembly": "still blocked by producer-correlated D2/D4 proof and full-caller correctness"
+  },
+  "montgomery_identity": {
+    "cycles_by_launch": [
+      95.0,
+      93.0,
+      93.0,
+      93.0,
+      93.0,
+      93.0,
+      93.0,
+      93.0,
+      93.0
+    ],
+    "median_cycles": 93.0,
+    "name": "Montgomery-identity",
+    "proved_output_range": [
+      -1794,
+      1802
+    ]
+  },
+  "observations_per_slot": 96,
+  "paired": {
+    "median_montgomery_minus_barrett_cycles": -72.0,
+    "montgomery_faster_launches": 9,
+    "montgomery_minus_barrett_by_launch": [
+      -70.0,
+      -69.5,
+      -72.0,
+      -72.0,
+      -72.0,
+      -72.0,
+      -72.0,
+      -67.0,
+      -67.0
+    ],
+    "montgomery_over_barrett": 0.5636363636363636
+  },
+  "promotion_eligible": false,
+  "same_input_residency_and_output_address": true,
+  "schema": "gt-g1c-m3c3-reduction-paired/v1",
+  "source_sha256": {
+    "asm": "fd104ab3fb281430d8201a150b6e2f63a94bd1a1370f84a4ec0b9dc4e31aa017",
+    "audit": "e5eab4d949ae59469a7e23410a1e1fa6f9030d95013d9a96a6f22ebb44426f53",
+    "bench": "6114e33cbff9955daafdc85c1f4078dec1ece6c52987a0f4747d7d19a1184e10",
+    "proof": "f63a1a30ac8e0aebbf787a521a4adbadb6ec8bce3921b99e1703991a07ad5e43"
+  },
+  "static_audit": {
+    "cflags": "-mavx2",
+    "checkpoint": "G1C-M3C3-full-reduction-controls",
+    "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+    "functions": {
+      "Montgomery-identity": {
+        "calls": 0,
+        "fixed_public_loop_branches": 1,
+        "forbidden_variable_arithmetic": [],
+        "frame_or_stack_references": 0,
+        "mnemonics": {
+          "add": 1,
+          "cmp": 1,
+          "jne": 1,
+          "ret": 1,
+          "vmovdqa": 3,
+          "vmovdqu": 2,
+          "vpmulhw": 2,
+          "vpmullw": 1,
+          "vpsubw": 1,
+          "xor": 1
+        },
+        "static_instruction_count": 14,
+        "vector_loads_in_loop_body": 1,
+        "vector_stores_in_loop_body": 1,
+        "vzeroupper": 0
+      },
+      "signed-Barrett": {
+        "calls": 0,
+        "fixed_public_loop_branches": 1,
+        "forbidden_variable_arithmetic": [],
+        "frame_or_stack_references": 0,
+        "mnemonics": {
+          "add": 1,
+          "cmp": 1,
+          "jne": 1,
+          "ret": 1,
+          "vmovdqa": 4,
+          "vmovdqu": 2,
+          "vpaddw": 1,
+          "vpand": 2,
+          "vpcmpgtw": 2,
+          "vpmulhrsw": 1,
+          "vpmullw": 1,
+          "vpsubw": 2,
+          "xor": 1
+        },
+        "static_instruction_count": 20,
+        "vector_loads_in_loop_body": 1,
+        "vector_stores_in_loop_body": 1,
+        "vzeroupper": 0
+      }
+    },
+    "gate": {
+      "call_frame_stack_vzeroupper_free": true,
+      "fixed_72_vector_loop": true,
+      "secret_independent_control_and_index": true
+    },
+    "object_sha256": "f8abd1cd10d36fe940995fe61c55ab94c7266200d98749a654441b1f923a5ddf",
+    "proof_sha256": "f63a1a30ac8e0aebbf787a521a4adbadb6ec8bce3921b99e1703991a07ad5e43",
+    "schema": "gt-g1c-m3c3-reduction-audit/v1",
+    "source_sha256": "fd104ab3fb281430d8201a150b6e2f63a94bd1a1370f84a4ec0b9dc4e31aa017"
+  },
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  },
+  "winner": "Montgomery-identity"
+}

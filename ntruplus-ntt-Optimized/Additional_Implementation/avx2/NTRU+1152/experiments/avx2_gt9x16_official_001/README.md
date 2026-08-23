@@ -223,3 +223,12 @@ pair 0, and every one accepts either one-sided repair. The scalar minimum is
 abstract vector repair chains and 30 routes, versus 37 selective full-vector
 chains or 72 full-D4 control chains. Exact producer-domain safety remains open,
 so no ASM or timing is authorized. See `CHECKPOINT-G1C-M3C2.md`.
+
+Checkpoint G1C-M3C2-P proves that the corpus-selected one-sided cover is not
+safe under the general signed-i16 D4 register contract: its exact bound is
+34,496. Both operands at all 576 D8 nodes are required conditionally, yielding
+the 72-vector M3C3 control. Two full-array AVX2 reducers pass exhaustive i16
+correctness and static gates. Paired local pricing is 165 cycles for signed
+Barrett versus 93 for Montgomery-by-identity, with Montgomery winning 9/9
+launches. This is isolated control pricing; D2/D4 proof remains open. See
+`CHECKPOINT-G1C-M3C2P-M3C3.md`.

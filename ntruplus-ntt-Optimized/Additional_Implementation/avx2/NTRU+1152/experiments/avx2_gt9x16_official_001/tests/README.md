@@ -27,3 +27,10 @@ close without a factor-equivalent all-L/R-edge candidate before repair search.
 the 37 pair-0 logical repairs, and the 22-chain/30-route adjacent-row half
 set-cover result. It also requires the result to remain explicitly proof-open
 and assembly-blocking.
+
+`test_g1c_m3c2p_exact_proof.py` gates the conditional signed-i16 D8 theorem,
+the rejection of one-sided repair, and the 72-vector minimum proved control.
+`test_g1c_m3c3_reduction.c` exhausts all 65,536 signed-i16 inputs for both AVX2
+reducers, including alias, congruence, range, and canaries.
+`test_g1c_m3c3_reduction_evidence.py` locks their static leaf/constant-time
+audit and the fixed nine-launch paired primitive price.

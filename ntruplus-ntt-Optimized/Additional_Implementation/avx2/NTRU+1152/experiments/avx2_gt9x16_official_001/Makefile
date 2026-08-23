@@ -41,8 +41,12 @@ G1C_M3B_ARGS := --m3-oracle generated/g1c-m3-inverse16-oracle.json --observation
 G1C_M3C0_ARGS := --m3-oracle generated/g1c-m3-inverse16-oracle.json --m3b-observation $(G1C_M3B_RESULT) --output generated/g1c-m3c0-orientation-search.json
 G1C_M3C2_RESULT := results/g1c-m3c2-repair-20260823-001/repair-observation.json
 G1C_M3C2_ARGS := --observation $(G1C_M3C2_RESULT) --m3c0-oracle generated/g1c-m3c0-orientation-search.json --output generated/g1c-m3c2-repair-plan.json
+G1C_M3C2P_ARGS := --repair-plan generated/g1c-m3c2-repair-plan.json --m3-oracle generated/g1c-m3-inverse16-oracle.json --output generated/g1c-m3c2p-exact-proof.json
+G1C_M3C3_ASM := asm/g1c_m3c3_reduction.S
+G1C_M3C3_AUDIT_ARGS := --object $(BUILD)/g1c/g1c-m3c3-reduction.o --source $(G1C_M3C3_ASM) --proof generated/g1c-m3c2p-exact-proof.json --output generated/g1c-m3c3-reduction-audit.json --compiler $(CC) --cflags=-mavx2
+G1C_M3C3_RESULT := results/g1c-m3c3-reduction-intel155h-20260823-001/reduction-paired.json
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -75,6 +79,7 @@ generate:
 	$(PYTHON) tools/generate_g1c_m3b_provenance.py $(G1C_M3B_ARGS)
 	$(PYTHON) tools/generate_g1c_m3c0_orientation_search.py $(G1C_M3C0_ARGS)
 	$(PYTHON) tools/generate_g1c_m3c2_repair_plan.py $(G1C_M3C2_ARGS)
+	$(PYTHON) tools/generate_g1c_m3c2p_exact_proof.py $(G1C_M3C2P_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -105,9 +110,12 @@ check:
 	$(PYTHON) tools/generate_g1c_m3b_provenance.py $(G1C_M3B_ARGS) --check
 	$(PYTHON) tools/generate_g1c_m3c0_orientation_search.py $(G1C_M3C0_ARGS) --check
 	$(PYTHON) tools/generate_g1c_m3c2_repair_plan.py $(G1C_M3C2_ARGS) --check
+	$(PYTHON) tools/generate_g1c_m3c2p_exact_proof.py $(G1C_M3C2P_ARGS) --check
 	mkdir -p $(BUILD)/g1c
 	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
 	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS) --check
+	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
+	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
 	$(PYTHON) tests/test_gt9x16_oracle.py
 	$(PYTHON) tests/test_ntt9_first_oracle.py
@@ -123,6 +131,8 @@ check:
 	$(PYTHON) tests/test_g1c_m3b_provenance.py
 	$(PYTHON) tests/test_g1c_m3c0_orientation_search.py
 	$(PYTHON) tests/test_g1c_m3c2_repair_plan.py
+	$(PYTHON) tests/test_g1c_m3c2p_exact_proof.py
+	$(PYTHON) tests/test_g1c_m3c3_reduction_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -136,6 +146,8 @@ check:
 	$(BUILD)/test-g1b-f1-tail
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_bmscale_inverse_d1.c -o $(BUILD)/test-g1c-bmscale-inverse-d1
 	$(BUILD)/test-g1c-bmscale-inverse-d1
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc $(G1C_M3C3_ASM) tests/test_g1c_m3c3_reduction.c -o $(BUILD)/test-g1c-m3c3-reduction
+	$(BUILD)/test-g1c-m3c3-reduction
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -I$(UPSTREAM) tests/test_official_stage_partitions.c $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/test-official-stage-partitions
 	$(BUILD)/test-official-stage-partitions
 	$(CC) $(CFLAGS_STRICT) -O3 $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward
@@ -159,6 +171,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3c2-repair-sanitize > /dev/null
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc $(G1C_M3C3_ASM) tests/test_g1c_m3c3_reduction.c -o $(BUILD)/test-g1c-m3c3-reduction-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-m3c3-reduction-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
 
@@ -185,6 +199,8 @@ audit:
 	mkdir -p $(BUILD)/g1c
 	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
 	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS)
+	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
+	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)
@@ -325,6 +341,16 @@ bench-g1c-m3c2-repair-record: check
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair
 	$(PYTHON) tools/run_g1c_m3c2_repair.py --binary $(BUILD)/probe-g1c-m3c2-repair --source bench/probe_g1c_m3c2_repair.c --common-header bench/g1c_m3_producer_common.h --m3-oracle generated/g1c-m3-inverse16-oracle.json --m3c0-oracle generated/g1c-m3c0-orientation-search.json --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/repair-observation.json
+
+bench-g1c-m3c3-reduction:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) -Isrc $(G1C_M3C3_ASM) bench/bench_g1c_m3c3_reduction_paired.c -o $(BUILD)/bench-g1c-m3c3-reduction-paired
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-g1c-m3c3-reduction-paired
+
+bench-g1c-m3c3-reduction-record: audit
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) -Isrc $(G1C_M3C3_ASM) bench/bench_g1c_m3c3_reduction_paired.c -o $(BUILD)/bench-g1c-m3c3-reduction-paired
+	$(PYTHON) tools/run_g1c_m3c3_reduction_benchmark.py --binary $(BUILD)/bench-g1c-m3c3-reduction-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/g1c-m3c3-reduction-audit.json --proof generated/g1c-m3c2p-exact-proof.json --asm-source $(G1C_M3C3_ASM) --bench-source bench/bench_g1c_m3c3_reduction_paired.c --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/reduction-paired.json
 
 supercop-check:
 	test -n "$(SUPERCOP_ROOT)"

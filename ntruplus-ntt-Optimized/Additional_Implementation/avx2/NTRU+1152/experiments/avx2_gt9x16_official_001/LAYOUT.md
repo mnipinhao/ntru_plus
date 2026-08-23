@@ -208,3 +208,10 @@ cover them with 15 packed reductions plus 7 full-vector reductions. This is a
 candidate layout only: the unreduced side still needs a producer-correlated
 proof, and the abstract repair chain has not selected Barrett versus
 Montgomery-by-identity.
+
+M3C2-P rejects that selective layout under the only exact local contract
+currently available. One repaired D8 operand still permits a 34,496
+pre-Montgomery value; both inputs of every node must be bounded. M3C3 therefore
+uses a 72-YMM full-D4 control. Its selected Montgomery-identity representative
+range is `[-1794,1802]`, so a D8 pair is bounded by 3,604 without requiring a
+perfectly centered ABI.

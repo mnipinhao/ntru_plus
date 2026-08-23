@@ -18,3 +18,8 @@ orientation.
 producer corpus through D4 and records per-D8-node safety for none, left-only,
 right-only, and both-input centered repair. Its clean one-sided actions select
 a proof target; they do not close the producer-domain range proof.
+
+`bench_g1c_m3c3_reduction_paired.c` prices the two 72-vector standalone full-D4
+controls with identical input residency and output address. It uses balanced
+ABBA/BAAB blocks and fresh pinned launches. It does not predict the cost of a
+future reducer fused into the D4 producer tail and is not promotion evidence.
