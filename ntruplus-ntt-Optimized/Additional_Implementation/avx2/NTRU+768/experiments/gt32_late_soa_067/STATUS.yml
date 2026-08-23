@@ -1,0 +1,77 @@
+experiment: GT32-LATE-SOA-067
+title: DECAP_PRODUCTION_IMAGE_PROMOTION
+status: PRODUCTION_PROMOTION_REJECTED
+production_changed: false
+
+arithmetic_changed: false
+source_of_candidate_seam: GT32-LATE-SOA-066
+
+superseded_proposal:
+  caller: Encap
+  status: NOT_RUN
+  reason: caller graph incompatible with the 065 B3-to-inverse seam
+
+promotion_requirements:
+  correctness_and_kat: passed
+  normal_tsc_ci_upper_below_zero: failed
+  reversed_tsc_ci_upper_below_zero: failed
+  near_all_launch_target: 28/32
+  no_large_conflicting_pmu_regression: failed_normal
+
+evidence_ladder:
+  late_soa_065_full_polynomial_chain_tsc: approximately_-67
+  late_soa_066_lean_full_decap_tsc: approximately_-10
+  late_soa_067_production_image_tsc:
+    normal: 57.7145
+    reversed: 11.0855
+
+correctness:
+  valid_cases: 256
+  invalid_or_malformed_cases: 69
+  full_decap_status_and_shared_secret: exact
+  kat:
+    bytes: 948402
+    sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+
+static_audit:
+  caller_code_bytes_each: 808
+  pre_relocation_machine_bytes: exact
+  normalized_text_relocations: exact
+  allowed_target_changes: 2
+
+primary_tsc:
+  launches_per_placement: 32
+  normal:
+    median_delta: 57.7145
+    favorable_launches: 0/32
+    bootstrap_95_ci: [53.014, 66.817]
+  reversed:
+    median_delta: 11.0855
+    favorable_launches: 10/32
+    bootstrap_95_ci: [0.229, 19.966]
+
+pmu:
+  normal:
+    core_cycles: 145.8285
+    instructions: 132.0002
+    loads: 36.0001
+    stores: 36.0000
+    idq_not_delivered: 708.7385
+  reversed:
+    core_cycles: -10.9211
+    core_cycles_ci_crosses_zero: true
+    instructions: 132.0003
+    loads: 36.0001
+    stores: 36.0000
+    idq_not_delivered: -285.7262
+
+decision:
+  promote_to_gt_clean: false
+  current_production_pairing: CLOSED_FOR_SCOPE
+  retain_065_full_arithmetic_chain_pass: true
+  retain_066_affected_caller_pass: true
+  reopen_arithmetic: false
+  reason:
+    - both production-shaped paired TSC confidence intervals are above zero
+    - neither placement meets the near-all-launch target
+    - Normal has a large core-cycle and IDQ delivery regression
