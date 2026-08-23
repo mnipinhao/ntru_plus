@@ -1,0 +1,104 @@
+experiment: GT32-HWA16-ISLAND-061
+status: PAUSED_AT_INTERNAL_ISLAND
+candidate_viability: VIABLE
+campaign: PAUSED_AT_INTERNAL_ISLAND
+best_realization: V2_natural_Q
+scope:
+  branch: 0
+  k3: 0
+  leaves: 32
+  region: 2_forward_plus_basemul_plus_inverse
+representation:
+  mapping: H[c][g][lane] = A[branch][k3][16*g+lane][c]
+  persistent: true
+  v3_physical_q_search:
+    mappings_enumerated: 120
+    static_route_instructions_per_transform: 72
+    static_route_count_tied_for_all_mappings: true
+    executable:
+      m40a: {ymm: q0, half: q3, qword: q2, dword: q1, word: q4}
+      m40b: {ymm: q0, half: q1, qword: q2, dword: q3, word: q4}
+      m40c: {ymm: q0, half: q2, qword: q3, dword: q1, word: q4}
+contracts:
+  algebra_changed: false
+  extra_reductions: 0
+  forward_alias: out_may_equal_in
+  inverse_alias: out_may_equal_in
+  basemul_alias: output_must_be_disjoint
+correctness:
+  passed: true
+  trials: 1336
+  impulses: 128
+  random_centered: 1000
+  random_mod_q: 200
+  observed_abs:
+    forward: 11952
+    basemul: 7478
+    inverse: 13716
+  v3:
+    passed: true
+    mappings: 3
+    trials_per_mapping: 1336
+    impulses: 128
+    structured: 8
+    random_centered: 1000
+    random_mod_q: 200
+    forward_inverse_aliases: true
+benchmark:
+  same_elf: true
+  alternating_paired_order: true
+  launches: 8
+  samples_per_launch: 41
+  median_delta_tsc:
+    v1: {forward: 38, basemul: -22, inverse: 36, island: 68}
+    v2: {forward: 19, basemul: -22, inverse: 15, island: 7}
+    v3_m40a: {forward: 13, basemul: -27, inverse: 20, island: 18}
+    v3_m40b: {forward: 13, basemul: -27, inverse: 20, island: 22}
+    v3_m40c: {forward: 14, basemul: -27, inverse: 21, island: 21}
+  v2_delta_core_cycles:
+    forward: 27.36
+    basemul: -36.24
+    inverse: 21.64
+    island: 12.29
+  v2_delta_retired_instructions:
+    forward: 55.62
+    basemul: -96.66
+    inverse: 39.50
+    island: 55.96
+  v3_delta_core_cycles:
+    m40a: {forward: 20.45, basemul: -36.36, inverse: 30.41, island: 28.98}
+    m40b: {forward: 19.32, basemul: -36.57, inverse: 30.41, island: 28.44}
+    m40c: {forward: 21.13, basemul: -36.51, inverse: 32.20, island: 30.42}
+  v3_delta_retired_instructions_island:
+    m40a: 44.10
+    m40b: 44.28
+    m40c: 43.71
+resources:
+  stack_spills: 0
+  differential_scratch_bytes: 0
+  unique_code_bytes:
+    tile4_island: 2598
+    hwa16_v1_island: 5037
+    hwa16_v2_island: 3613
+    v3_forward_each: 1218
+    v3_inverse_each: 1322
+    v3_basemul_common: 1059
+    v3_basemul_typed_entry_each: 16
+decision:
+  first_implementation: loses
+  mutation: pair-packed distance-8/4/2 routing
+  mutation_result: competitive
+  v3_physical_q_mapping:
+    result: SEARCH_CLASS_EXHAUSTED
+    exhausted_scope: bit_to_machine_ownership_permutations
+    champion: natural_q_v2
+    best_v3: m40a
+    best_v3_island_delta_tsc: 18
+    best_v3_island_delta_core_cycles: 28.98
+    interpretation: endpoint reassignment shifts cost from Forward to Inverse; middle-bit order is nearly neutral
+  closed_for_scope: false
+  stop_reason: competitive_or_win_requires_report_before_producer_landing
+explicitly_not_done:
+  - DFT3_to_HWA16_producer_landing
+  - full_polynomial_backend
+  - KEM_integration
