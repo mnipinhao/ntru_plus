@@ -133,7 +133,8 @@ the parity threshold is about 9.20 TSC or 14.43 core cycles per Forward.
 ```text
 P1 explicit landing: rejected
 P2 fused post-S1 landing: rejected
-HWA16 fixed-island campaign: CLOSED_FOR_FIXED_ISLAND_SCOPE
+persistent natural-Q HWA16: CLOSED_FOR_SCOPE (MEASURED_FOR_SCOPE)
+Hwa-inspired coefficient-plane family: OPEN
 ```
 
 This is stronger than an implementation-count rejection.  P1 tests the
@@ -145,12 +146,13 @@ coefficient-plane formation: the 24-instruction transposes and 32-instruction
 naturalization route.
 
 Closure is intentionally narrow.  It applies to NTRU+768, q=3457, the current
-GT32 algebra, natural-Q HWA16 V2, this AVX2 target, and the fixed-island
-standard polymul scope.  It is not a theorem against a producer that is born
-in coefficient planes before the current packetized DFT3 boundary, a changed
-algebra, a different ISA, or a caller that eliminates another complete
-operation class.  No full backend or KEM integration is warranted by this
-gate.
+GT32 algebra, persistent natural-Q HWA16 V2, this AVX2 target, and the
+fixed-island standard polymul scope.  It is not a theorem against the broader
+Hwa-inspired coefficient-plane family, including a representation that exists
+only around BaseMul rather than through all NTT32 stages.  It is also not a
+theorem against a changed algebra, a different ISA, or a caller that eliminates
+another complete operation class.  No full backend or KEM integration is
+warranted by this gate.
 
 ## Reproduce
 

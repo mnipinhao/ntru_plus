@@ -1,0 +1,70 @@
+experiment: GT32-LATE-SOA-063
+status: ARCHITECTURE_CRITICAL_PASS
+production_changed: false
+kem_integration: false
+scope:
+  branch: 0
+  k3: 0
+  input: TILE4_post_forward_S3
+  output: TILE4_post_inverse_I1
+  leaves: 32
+  algebra: current_GT32
+paths:
+  C0: AoS_S45_to_materialized_B3_to_standalone_I01
+  C1: AoS_S45_to_B3_redeposit_fused_I01
+  L0: Late_SoA_S45_to_SoA_B3_redeposit_fused_I01
+coverage_note:
+  forward_to_soa_previously_measured: true
+  bm_redeposit_to_inverse_previously_measured: true
+  exact_composition_previously_measured: false
+correctness:
+  passed: true
+  trials: 1336
+  impulses: 128
+  structured: 8
+  random_centered: 1200
+  exact_post_I1: true
+  aliases:
+    suffix_out_eq_in: supported
+    basemul_out_eq_a: supported
+  observed_abs:
+    suffix: 6174
+    post_I1: 11679
+resources:
+  stack_references: 0
+  stack_spills: 0
+  static_audit: results/static.json
+benchmark:
+  same_ELF: true
+  paired_alternating_order: true
+  launches: 8
+  samples_per_launch: 41
+  median_delta_TSC_vs_C0:
+    C1: {suffix2: 0.0, bmi2: -1.0, complete: -0.5}
+    L0: {suffix2: 8.0, bmi2: -25.0, complete: -10.0}
+  PMU_delta_vs_C0:
+    C1:
+      suffix2: {core_cycles: -0.49, retired_instructions: -1.48}
+      bmi2: {core_cycles: -4.69, retired_instructions: -40.24}
+      complete: {core_cycles: -1.64, retired_instructions: -41.07}
+    L0:
+      suffix2: {core_cycles: 19.33, retired_instructions: 41.60}
+      bmi2: {core_cycles: -42.53, retired_instructions: -87.84}
+      complete: {core_cycles: -18.27, retired_instructions: -43.56}
+decision:
+  late_soa_composition: PASSED
+  output_inverse_fusion_alone: NEAR_NEUTRAL
+  measured_mechanism:
+    - pay_for_two_forward_terminal_plane_formations
+    - delete_two_BM_input_transposes
+    - fuse_BM_output_redeposit_with_inverse_I0_I1
+  interpretation:
+    - exact_composition_is_faster_than_current_fixed_island
+    - benefit_is_not_a_sum_of_old_isolated_measurements
+    - first_implementation_already_wins_so_mutation_search_stops
+  campaign: PAUSED_BEFORE_PRODUCER_OR_KEM_INTEGRATION
+explicitly_not_done:
+  - DFT3_to_Late_SoA_landing
+  - six_tile_backend
+  - full_inverse
+  - KEM_integration
