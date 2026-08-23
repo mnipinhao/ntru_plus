@@ -1,0 +1,103 @@
+experiment: GT32-ENCAP-CONSUMER-ABI-068
+title: B3 terminal accumulator to Q24 consumer-native packet state
+production_modified: false
+full_encap_run: false
+full_encap_reason: island continuation gate failed against 032
+
+status:
+  mapping_and_typed_abi: PASS
+  shared_core_direct_retirement: REJECTED
+  fully_inline_direct_retirement: REJECTED
+  architecture_family: OPEN_WITH_NEW_PREMISE
+  promotion: NOT_SELECTED
+
+references:
+  current: general B3_M + poly_add + current Q24
+  reference_032: B3 final-store add_m + current Q24
+  range_032r: selected reducer valid for full signed-int16 input
+
+contract:
+  ring: Z_3457[x]/(x^768-x^384+1)
+  representation: B3 general R2-finalized e=0 plus message Forward e=0
+  layout: four M degree-plane YMMs for one 16-leaf block at retirement
+  scale: e=0
+  bound_per_degree: [20215, 20250, 20285, 20296]
+  maximum_abs_bound: 20296
+  consumer: exact canonical 48-packet Q24 reducer and packetizer
+
+mapping:
+  bijective_source_words: 768
+  bijective_output_slots: 768
+  q24_packets: 48
+  groups: 12
+  group_block_order: [0, 1, 9, 8, 4, 5, 11, 10, 6, 7, 3, 2]
+
+candidate_invariants:
+  complete_ordinary_M_sum_materialized: false
+  internal_raw_B3_scratch_bytes: 96
+  deleted_vs_032:
+    ymm_stores: 48
+    ymm_loads: 48
+    vector_bytes: 3072
+  retained:
+    message_vector_loads: 48
+    message_adds: 48
+    four_plane_transpose_instructions: 144
+    q24_reduction_and_pack: unchanged
+
+correctness:
+  deterministic_real_encap_operand_trials: 1000
+  normal_reversed: PASS
+  control_032_v1_v2_byte_exact: PASS
+  complete_1152_byte_output: PASS
+  generator_freshness: PASS
+  mapping_bijection: PASS
+
+benchmark:
+  cpu: 1
+  launches_per_placement: 16
+  paired_order: alternating
+  normal:
+    reference_032_minus_current_tsc: -19.75
+    reference_032_minus_current_ci95: [-24.0, -17.5]
+    shared_v1_minus_032_tsc: 48.50
+    shared_v1_minus_032_ci95: [47.5, 51.0]
+    inline_v2_minus_032_tsc: 27.50
+    inline_v2_minus_032_ci95: [26.5, 30.0]
+  reversed:
+    reference_032_minus_current_tsc: -22.25
+    reference_032_minus_current_ci95: [-24.0, -19.0]
+    shared_v1_minus_032_tsc: 49.25
+    shared_v1_minus_032_ci95: [47.0, 51.5]
+    inline_v2_minus_032_tsc: 30.50
+    inline_v2_minus_032_ci95: [27.5, 33.5]
+
+pmu_delta_vs_032:
+  shared_v1:
+    core_cycles: 20.18
+    instructions: -125.67
+    l1d_loads: -30.53
+    l1d_stores: -39.73
+    idq_uops_not_delivered: 81.03
+    dsb_uops: -66.38
+    mite_uops: -48.68
+    port_5_11_uops: -22.94
+  inline_v2:
+    core_cycles: 5.21
+    instructions: -150.04
+    l1d_loads: -42.61
+    l1d_stores: -51.88
+    idq_uops_not_delivered: 117.06
+    dsb_uops: -2138.39
+    mite_uops: 1971.71
+    port_5_11_uops: -38.41
+
+mechanism:
+  shared_v1: twelve shared-core transitions create frontend starvation
+  inline_v2: 12034-byte active body shifts delivery from DSB to MITE
+  conclusion: work deletion is real but current executable shapes lose to compact 032
+
+reopen_only_if:
+  - a compact uniform packet consumer breaks the dispatch versus footprint tradeoff
+  - the new shape avoids complete M materialization
+  - the premise is not merely alignment padding or equivalent rescheduling

@@ -15,6 +15,16 @@ index is the decision map for experiments 030 through 059E, including
 supersession, fixed-geometry versus exact-image evidence, the formal
 Official/GT benchmark, and current reopening rules.
 
+## Encap consumer-native retirement
+
+[Experiment 068](gt32_encap_consumer_abi_068/) derives the exact checked
+mapping from B3 terminal accumulators to all Q24 packet slots, then tests two
+implementations that never materialize a complete ordinary M-domain sum.  The
+shared-core shape loses to 032 through repeated frontend transitions; the
+fully-inline mutation removes the dispatch but becomes a 12-KiB MITE-heavy
+body and also loses.  The typed ABI remains mathematically viable, but both
+tested executable shapes are rejected and no full Encap gate is opened.
+
 ## Progressive M formation coverage
 
 [Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed

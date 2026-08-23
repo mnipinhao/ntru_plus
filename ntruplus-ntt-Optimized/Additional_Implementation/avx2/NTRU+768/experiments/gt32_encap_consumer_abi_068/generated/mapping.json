@@ -1,0 +1,524 @@
+{
+  "contracts": {
+    "bound": {
+      "maximum": 20296,
+      "per_degree_conservative": [
+        20215,
+        20250,
+        20285,
+        20296
+      ],
+      "reducer": "selected v=9 reducer, proven over all signed int16 inputs by 032R",
+      "source": "032 selected-executable DAG proof"
+    },
+    "consumer": "canonical 48-packet Q24 byte stream",
+    "layout_at_retirement": "four M degree-plane YMMs for one 16-leaf block",
+    "representation": "B3 general R2-finalized e=0 plus message Forward e=0",
+    "ring": "Z_3457[x]/(x^768-x^384+1)",
+    "scale": "e=0"
+  },
+  "derived_from": "selected Q24_ENCODE_SOA_BODY in GT Clean pack.s",
+  "experiment": "GT32-ENCAP-CONSUMER-ABI-068",
+  "formation_candidate": {
+    "algorithm": [
+      "retire c0/c1/c2 through the existing 96-byte B3 internal scratch",
+      "R2-finalize c0..c3 and add the matching message planes",
+      "apply the selected 4x16 M-to-packet transpose",
+      "reduce and pack four packets directly to their canonical byte offsets"
+    ],
+    "complete_M_reload_count": 0,
+    "complete_M_store_count": 0,
+    "dynamic_work_retained": {
+      "Q24_reduction_and_pack_math": "unchanged",
+      "four_plane_transpose_instructions": 144,
+      "message_adds": 48,
+      "message_vector_loads": 48
+    },
+    "implementation_specific_costs_to_measure": [
+      "twelve direct call/return pairs to a shared B3 block core",
+      "per-block source/lambda offset formation",
+      "eleven additional v=9 vector loads versus a standalone Q24 body"
+    ],
+    "internal_raw_B3_scratch_bytes": 96,
+    "minimum_deleted_vs_032": {
+      "Q24_input_vector_loads": 48,
+      "final_sum_vector_stores": 48,
+      "vector_bytes": 3072
+    },
+    "name": "retire-block-direct-Q24"
+  },
+  "groups": [
+    {
+      "block": 0,
+      "branch": 0,
+      "execution_group": 0,
+      "k3": 0,
+      "packets": [
+        {
+          "byte_offset": 0,
+          "packet": 0,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 24,
+          "packet": 1,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 48,
+          "packet": 2,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 72,
+          "packet": 3,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 75
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 0,
+      "tile": 0
+    },
+    {
+      "block": 1,
+      "branch": 0,
+      "execution_group": 1,
+      "k3": 0,
+      "packets": [
+        {
+          "byte_offset": 96,
+          "packet": 4,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 120,
+          "packet": 5,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 144,
+          "packet": 6,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 168,
+          "packet": 7,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 75
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 4,
+      "tile": 0
+    },
+    {
+      "block": 9,
+      "branch": 0,
+      "execution_group": 2,
+      "k3": 2,
+      "packets": [
+        {
+          "byte_offset": 192,
+          "packet": 8,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 216,
+          "packet": 9,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 240,
+          "packet": 10,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 264,
+          "packet": 11,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 228
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 36,
+      "tile": 4
+    },
+    {
+      "block": 8,
+      "branch": 0,
+      "execution_group": 3,
+      "k3": 2,
+      "packets": [
+        {
+          "byte_offset": 288,
+          "packet": 12,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 312,
+          "packet": 13,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 336,
+          "packet": 14,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 360,
+          "packet": 15,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 30
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 32,
+      "tile": 4
+    },
+    {
+      "block": 4,
+      "branch": 0,
+      "execution_group": 4,
+      "k3": 1,
+      "packets": [
+        {
+          "byte_offset": 384,
+          "packet": 16,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 408,
+          "packet": 17,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 432,
+          "packet": 18,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 456,
+          "packet": 19,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 177
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 16,
+      "tile": 2
+    },
+    {
+      "block": 5,
+      "branch": 0,
+      "execution_group": 5,
+      "k3": 1,
+      "packets": [
+        {
+          "byte_offset": 480,
+          "packet": 20,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 504,
+          "packet": 21,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 528,
+          "packet": 22,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 552,
+          "packet": 23,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 177
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 20,
+      "tile": 2
+    },
+    {
+      "block": 11,
+      "branch": 1,
+      "execution_group": 6,
+      "k3": 2,
+      "packets": [
+        {
+          "byte_offset": 576,
+          "packet": 24,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 600,
+          "packet": 25,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 624,
+          "packet": 26,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 648,
+          "packet": 27,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 177
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 44,
+      "tile": 5
+    },
+    {
+      "block": 10,
+      "branch": 1,
+      "execution_group": 7,
+      "k3": 2,
+      "packets": [
+        {
+          "byte_offset": 672,
+          "packet": 28,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 696,
+          "packet": 29,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 720,
+          "packet": 30,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 30
+        },
+        {
+          "byte_offset": 744,
+          "packet": 31,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 177
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 40,
+      "tile": 5
+    },
+    {
+      "block": 6,
+      "branch": 1,
+      "execution_group": 8,
+      "k3": 1,
+      "packets": [
+        {
+          "byte_offset": 768,
+          "packet": 32,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 792,
+          "packet": 33,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 816,
+          "packet": 34,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 840,
+          "packet": 35,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 75
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 24,
+      "tile": 3
+    },
+    {
+      "block": 7,
+      "branch": 1,
+      "execution_group": 9,
+      "k3": 1,
+      "packets": [
+        {
+          "byte_offset": 864,
+          "packet": 36,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 177
+        },
+        {
+          "byte_offset": 888,
+          "packet": 37,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 912,
+          "packet": 38,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 75
+        },
+        {
+          "byte_offset": 936,
+          "packet": 39,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 75
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 28,
+      "tile": 3
+    },
+    {
+      "block": 3,
+      "branch": 1,
+      "execution_group": 10,
+      "k3": 0,
+      "packets": [
+        {
+          "byte_offset": 960,
+          "packet": 40,
+          "safe_store": false,
+          "transpose_output": 0,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 984,
+          "packet": 41,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 1008,
+          "packet": 42,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 1032,
+          "packet": 43,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 228
+        }
+      ],
+      "q4": 1,
+      "source_vector_start": 12,
+      "tile": 1
+    },
+    {
+      "block": 2,
+      "branch": 1,
+      "execution_group": 11,
+      "k3": 0,
+      "packets": [
+        {
+          "byte_offset": 1056,
+          "packet": 44,
+          "safe_store": false,
+          "transpose_output": 2,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 1080,
+          "packet": 45,
+          "safe_store": false,
+          "transpose_output": 3,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 1104,
+          "packet": 46,
+          "safe_store": false,
+          "transpose_output": 1,
+          "vpermq_imm": 228
+        },
+        {
+          "byte_offset": 1128,
+          "packet": 47,
+          "safe_store": true,
+          "transpose_output": 0,
+          "vpermq_imm": 30
+        }
+      ],
+      "q4": 0,
+      "source_vector_start": 8,
+      "tile": 1
+    }
+  ],
+  "mapping_bijective": true,
+  "mapping_rows": 768,
+  "ordinary_complete_M_sum_materialized": false,
+  "schema": "ntruplus768-gt32-encap-consumer-abi-068-mapping-v1"
+}
