@@ -1,0 +1,87 @@
+experiment: GT32-HWA16-PRODUCER-062
+status: CLOSED_FOR_FIXED_ISLAND_SCOPE
+production_changed: false
+kem_integration: false
+scope:
+  branch: 0
+  k3: 0
+  producer_outputs: selected_tile_only
+  full_six_tile_sharing_modeled: false
+  algebra: current_GT32
+  representation: natural_Q_HWA16_V2
+  target: current_AVX2_CPU
+candidates:
+  P0: selected_producer_to_TILE4_to_raw_S1
+  P1: selected_producer_to_explicit_natural_Q_HWA16_to_raw_S1
+  P2: selected_producer_to_direct_post_S1_natural_Q_HWA16
+contracts:
+  arithmetic_changed: false
+  roots_twiddles_changed: false
+  extra_reductions: 0
+  aliases: disallowed
+correctness:
+  passed: true
+  trials: 1776
+  impulses: 768
+  structured: 8
+  random_centered: 1000
+  exact_representatives: true
+  observed_post_S1_abs: 10827
+  observed_value_is_not_a_widened_contract: true
+resources:
+  stack_references: 0
+  stack_spills: 0
+  P2_peak_YMM: 16
+  static:
+    P0: {bytes: 1774, instructions: 311, vector_loads: 129, vector_stores: 16}
+    P1: {bytes: 2086, instructions: 375, vector_loads: 130, vector_stores: 16}
+    P2: {bytes: 1980, instructions: 356, vector_loads: 122, vector_stores: 8}
+  P2_minus_P0:
+    bytes: 206
+    instructions: 45
+    vector_loads: -7
+    vector_stores: -8
+    routing:
+      vpunpck: 32
+      vperm2i128: 16
+      vpshufb: 8
+benchmark:
+  same_ELF: true
+  paired_alternating_order: true
+  launches: 8
+  samples_per_launch: 41
+  median_delta_TSC:
+    P1: {aggregate: 9.12, normal: 9.12, reversed: 9.19}
+    P2: {aggregate: 5.70, normal: 5.70, reversed: 5.73}
+  PMU_median:
+    P0: {core_cycles: 110.27, retired_instructions: 324.31}
+    P1: {core_cycles: 123.70, retired_instructions: 387.54}
+    P2: {core_cycles: 118.55, retired_instructions: 371.49}
+  P2_minus_P0: {core_cycles: 8.28, retired_instructions: 47.18}
+repayment:
+  required_per_Forward: {TSC_less_than: -3.5, core_cycles_less_than: -6.145}
+  measured_P2_minus_P0: {TSC: 5.70, core_cycles: 8.28}
+  threshold_miss: {TSC: 9.20, core_cycles: 14.43}
+  predicted_complete_island:
+    TSC: 18.39
+    core_cycles: 28.85
+decision:
+  P1: rejected
+  P2: rejected
+  P2_materialization_fusion_is_effective: true
+  P2_fusion_saving_vs_P1: {TSC: 3.42, core_cycles: 5.15}
+  mode_preserving_mask_residency_mutation_tested: true
+  architectural_loss_owner:
+    - TILE4_packet_to_coefficient_plane_transpose
+    - qword_major_to_natural_Q_route
+  campaign: CLOSED_FOR_FIXED_ISLAND_SCOPE
+  hwa16_full_global_scope_theorem: false
+reopen_only_if:
+  - producer_is_born_in_coefficient_planes_before_current_packetized_DFT3_boundary
+  - algebra_or_reduction_contract_changes
+  - target_ISA_or_microarchitecture_changes
+  - caller_eliminates_another_complete_operation_class
+explicitly_not_done:
+  - full_six_tile_HWA16_frontend
+  - full_polynomial_backend
+  - KEM_integration
