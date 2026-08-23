@@ -1,0 +1,1925 @@
+{
+  "authorization": {
+    "D4_tail_identity_fusion": false,
+    "M3_C0_C1_C2_full_path_benchmark": false,
+    "next_required": "implement and price the proved D1-large identity placement; do not fuse at D4"
+  },
+  "checkpoint": "G1C-M3C1-full-path-repair-placement-proof",
+  "contract": {
+    "each_raw_BMScale_lane": [
+      -13824,
+      13824
+    ],
+    "lane_independence": true,
+    "signed_machine_arithmetic": "every vpaddw/vpsubw input result must fit signed i16 before execution"
+  },
+  "method": "Sound interval propagation for independent BMScale lanes; every Montgomery node is enumerated over every integer in its input interval, not approximated by a floating-point bound.",
+  "prior_local_D8_proof": {
+    "scope": "conditional on already-valid signed-i16 D4 operands",
+    "status": "complete-selected-cover-rejected"
+  },
+  "proved_conservative_alternative": {
+    "maximum_absolute_pre_montgomery_by_stage": {
+      "1": 27648,
+      "2": 4779,
+      "4": 9090,
+      "8": 17377
+    },
+    "placement": "Montgomery-by-identity on the D1 large/sum stream before D2",
+    "rows": [
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2286,
+              2286
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4324,
+              4324
+            ],
+            "register_state_overall": [
+              -4324,
+              4324
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8454,
+              8454
+            ],
+            "register_state_overall": [
+              -8454,
+              8454
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -16068,
+              16068
+            ],
+            "register_state_overall": [
+              -16068,
+              16068
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2383,
+              2383
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4485,
+              4485
+            ],
+            "register_state_overall": [
+              -4485,
+              4485
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8490,
+              8490
+            ],
+            "register_state_overall": [
+              -8487,
+              8490
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -15939,
+              15942
+            ],
+            "register_state_overall": [
+              -15938,
+              15942
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2441,
+              2441
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4514,
+              4514
+            ],
+            "register_state_overall": [
+              -4514,
+              4514
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -9017,
+              9017
+            ],
+            "register_state_overall": [
+              -9017,
+              9017
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -17377,
+              17377
+            ],
+            "register_state_overall": [
+              -17377,
+              17377
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2288,
+              2288
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4503,
+              4503
+            ],
+            "register_state_overall": [
+              -4503,
+              4503
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8451,
+              8451
+            ],
+            "register_state_overall": [
+              -8451,
+              8451
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -16267,
+              16267
+            ],
+            "register_state_overall": [
+              -16267,
+              16267
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2433,
+              2433
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4779,
+              4779
+            ],
+            "register_state_overall": [
+              -4779,
+              4779
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8528,
+              8528
+            ],
+            "register_state_overall": [
+              -8528,
+              8528
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -16219,
+              16219
+            ],
+            "register_state_overall": [
+              -16219,
+              16219
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2383,
+              2383
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4150,
+              4150
+            ],
+            "register_state_overall": [
+              -4150,
+              4150
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8118,
+              8118
+            ],
+            "register_state_overall": [
+              -8118,
+              8118
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -15735,
+              15735
+            ],
+            "register_state_overall": [
+              -15735,
+              15735
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2428,
+              2428
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4410,
+              4410
+            ],
+            "register_state_overall": [
+              -4410,
+              4410
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8774,
+              8774
+            ],
+            "register_state_overall": [
+              -8774,
+              8774
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -17194,
+              17194
+            ],
+            "register_state_overall": [
+              -17194,
+              17194
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2346,
+              2346
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4182,
+              4182
+            ],
+            "register_state_overall": [
+              -4168,
+              4182
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -8276,
+              8276
+            ],
+            "register_state_overall": [
+              -8262,
+              8276
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -16236,
+              16250
+            ],
+            "register_state_overall": [
+              -16236,
+              16250
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": null,
+        "signed_i16_proved": true,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -2386,
+              2386
+            ],
+            "repair": {
+              "after": [
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ],
+                [
+                  -1786,
+                  1786
+                ]
+              ],
+              "before": [
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ],
+                [
+                  -27648,
+                  27648
+                ]
+              ],
+              "identity": "Mont(x,R mod q) = x mod q; the Montgomery exponent is preserved",
+              "physical_lanes": [
+                0,
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14
+              ],
+              "semantic_stream": "D1 large/sum outputs"
+            }
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -4644,
+              4644
+            ],
+            "register_state_overall": [
+              -4644,
+              4644
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -9090,
+              9090
+            ],
+            "register_state_overall": [
+              -9090,
+              9090
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -16792,
+              16792
+            ],
+            "register_state_overall": [
+              -16792,
+              16792
+            ],
+            "repair": null
+          }
+        ]
+      }
+    ],
+    "scale_identity": "Mont(x,R mod q) = x mod q",
+    "status": "range-and-scale-proved"
+  },
+  "schema": "gt-g1c-m3-full-path-proof/v1",
+  "selected_D4_tail_plan": {
+    "first_failure_all_rows": {
+      "distance": 2,
+      "interval": [
+        -55296,
+        55296
+      ],
+      "operation": "sum"
+    },
+    "reason": "The path can overflow at D2 before reaching the selected D4 repair boundary.",
+    "rows": [
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      },
+      {
+        "first_failure": {
+          "distance": 2,
+          "interval": [
+            -55296,
+            55296
+          ],
+          "operation": "sum",
+          "physical_lanes": [
+            0,
+            2
+          ]
+        },
+        "signed_i16_proved": false,
+        "stages": [
+          {
+            "all_pre_montgomery_fit_i16": true,
+            "distance": 1,
+            "pre_montgomery_overall": [
+              -27648,
+              27648
+            ],
+            "register_state_overall": [
+              -27648,
+              27648
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 2,
+            "pre_montgomery_overall": [
+              -55296,
+              55296
+            ],
+            "register_state_overall": [
+              -55296,
+              55296
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 4,
+            "pre_montgomery_overall": [
+              -110592,
+              110592
+            ],
+            "register_state_overall": [
+              -110592,
+              110592
+            ],
+            "repair": null
+          },
+          {
+            "all_pre_montgomery_fit_i16": false,
+            "distance": 8,
+            "pre_montgomery_overall": [
+              -221184,
+              221184
+            ],
+            "register_state_overall": [
+              -221184,
+              221184
+            ],
+            "repair": null
+          }
+        ]
+      }
+    ],
+    "status": "rejected-before-fusion"
+  },
+  "source_sha256": {
+    "m3c2p_proof": "f63a1a30ac8e0aebbf787a521a4adbadb6ec8bce3921b99e1703991a07ad5e43",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  }
+}

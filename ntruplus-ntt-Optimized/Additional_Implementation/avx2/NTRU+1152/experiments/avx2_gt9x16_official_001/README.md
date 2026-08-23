@@ -232,3 +232,11 @@ correctness and static gates. Paired local pricing is 165 cycles for signed
 Barrett versus 93 for Montgomery-by-identity, with Montgomery winning 9/9
 launches. This is isolated control pricing; D2/D4 proof remains open. See
 `CHECKPOINT-G1C-M3C2P-M3C3.md`.
+
+The subsequent full-path proof rejects placing that selected identity repair
+only at the D4 tail: under the declared independent BMScale lane contract, D2
+can already require `[-55296,55296]`. It also proves a safe replacement:
+Montgomery-by-identity on the D1 large/sum stream preserves the Montgomery
+scale and bounds every later D2/D4/D8 pre-Montgomery operation by 17,377.
+Therefore D4-tail fusion and full M3 timing remain forbidden; see
+`CHECKPOINT-G1C-M3-FULL-PATH-PROOF.md`.
