@@ -1,0 +1,79 @@
+experiment: GT32-LATE-SOA-064
+status: REPRESENTATIVE_ISLAND_PASS
+production_changed: false
+kem_integration: false
+scope:
+  tiles: 6
+  inputs: two_preformed_TILE4_frontend_states
+  output: current_inverse_core_output
+  region: 2F_plus_B_plus_I
+  excluded:
+    - top_split
+    - DFT3
+    - frontend
+    - inverse_tail
+    - crepmod3
+    - KEM_callers
+profiles:
+  C0: selected_TILE4_2F_materialized_B3_selected_inverse
+  C1: selected_TILE4_2F_AoS_B3_I01_fused_common_inverse_remainder
+  L0: Late_SoA_2F_SoA_B3_I01_fused_common_inverse_remainder
+correctness:
+  passed: true
+  trials: 1776
+  impulses: 768
+  structured: 8
+  random_centered: 1000
+  exact_post_I1: true
+  exact_complete_inverse_core: true
+  extra_reductions: 0
+  observed_abs:
+    Forward: 14117
+    post_I1: 12061
+    complete_inverse_core: 15183
+  observed_values_are_not_widened_contracts: true
+resources:
+  new_bridge:
+    code_bytes: 1538
+    static_symbol_instructions: 336
+    stack_references: 0
+    stack_spills: 0
+    loop_tiles: 6
+benchmark:
+  same_ELF: true
+  paired_alternating_order: true
+  launches: 8
+  samples_per_launch: 41
+  negative_complete_launches: 8
+  median_delta_TSC_vs_C0:
+    C1: {Forward2: 0.5, B3_I01: 29.5, remaining_inverse: 0.0, complete: 2.0}
+    L0: {Forward2: 66.5, B3_I01: -118.5, remaining_inverse: 0.0, complete: -68.0}
+  PMU_delta_vs_C0:
+    L0:
+      Forward2: {core_cycles: 93.52, retired_instructions: 240.63}
+      B3_I01: {core_cycles: -182.00, retired_instructions: -523.22}
+      remaining_inverse: {core_cycles: -1.71, retired_instructions: -0.44}
+      complete:
+        core_cycles: -130.48
+        retired_instructions: -153.55
+        retired_loads: 2.19
+        retired_stores: 0.05
+        retired_branches: -5.01
+        L1D_pending: 0.01
+        IDQ_not_delivered: -25.96
+decision:
+  six_tile_closure: PASSED
+  classification: REPRESENTATIVE_ISLAND_PASS
+  mechanism:
+    - Late_SoA_terminal_cost_is_repaid_by_two_deleted_BM_input_transposes
+    - SoA_B3_output_redeposit_is_absorbed_into_inverse_I0_I1
+    - complete_DAG_retires_fewer_instructions_and_has_lower_frontend_nondelivery
+    - complete_load_store_counts_are_effectively_unchanged
+  C1_output_fusion_only: NOT_SELECTED
+  next_eligible_gate: GT32_LATE_SOA_065_FULL_ARITHMETIC_CHAIN
+  campaign: PAUSED_BEFORE_065
+explicitly_not_done:
+  - full_frontend_and_DFT3_chain
+  - inverse_tail
+  - crepmod3
+  - KEM_integration
