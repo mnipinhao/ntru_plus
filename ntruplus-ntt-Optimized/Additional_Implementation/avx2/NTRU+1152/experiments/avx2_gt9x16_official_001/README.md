@@ -295,3 +295,11 @@ margin.  Its unique minimum inter-stage Barrett set is `{0,3,6}`, proving the
 existing reductions on wires 1 and 2 are removable while all input and final
 normalization steps remain required.  The narrow B1 ASM deletion is now
 authorized; see `CHECKPOINT-G1C-ITAIL-B1R.md`.
+
+Checkpoint G1C-ITAIL-ASM-B1 implements exactly that deletion. It removes 48
+linked instructions over the eight inverse9 bodies while retaining all 80
+Montgomery chains and the 15-YMM spill-free leaf. A pinned SUPERCOP-derived
+serious run measures B1 at StQ2 890.0000 cycles versus B0 at 902.7917; the
+per-launch delta is negative in 9/9 launches with median -12.9792 cycles. B1
+is selected as the materialized inverse9 control, but is not KEM- or
+production-qualified. See `CHECKPOINT-G1C-ITAIL-ASM-B1.md`.

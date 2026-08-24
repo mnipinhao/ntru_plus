@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-itail-b1r-range-reduction-normalization-complete
+state: checkpoint-g1c-itail-asm-b1-supercop-derived-price-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -225,6 +225,11 @@ gates:
   checkpoint_g1c_itail_b1r_removed_reductions: authorized-wires1-2-six-instructions-per-vector
   checkpoint_g1c_itail_b1r_normalization: passed-exact-witnesses-final-barrett-and-center-all-nine
   checkpoint_g1c_itail_b1r_benchmark: not-run-proof-checkpoint
+  checkpoint_g1c_itail_asm_b1_correctness: passed-1003-arbitrary-257-c2-9-basis-b0-matrix-alias-canary
+  checkpoint_g1c_itail_asm_b1_static: passed-exact-minus48-instructions-80-mont-chains-peak15ymm-no-spill
+  checkpoint_g1c_itail_asm_b1_supercop_derived: passed-b1890.0000-vs-b0902.7917-minus12.7917-pooled
+  checkpoint_g1c_itail_asm_b1_paired_launches: passed-median-minus12.9792-9of9
+  checkpoint_g1c_itail_asm_b1_benchmark_class: supercop-derived-itail-not-native-kem
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -289,7 +294,9 @@ checkpoint_g1c_itail_b1p: identity-forward-gauge-and-729-orientation-lower-bound
 g1c_itail_b1p_oracle: generated/g1c-inverse-ntt9-b1p.json
 checkpoint_g1c_itail_b1r: b0-orientation-selected-and-two-interstage-barrett-deletions-authorized
 g1c_itail_b1r_proof: generated/g1c-inverse-ntt9-b1r.json
-next_step: implement-itail-asm-b1-narrow-two-reducer-deletion-then-supercop-derived-paired-price
+checkpoint_g1c_itail_asm_b1: exact-two-reducer-deletion-correct-and-supercop-derived-win
+g1c_itail_asm_b1_result: results/itail-asm-b1-supercop-derived-intel155h-20260824-003/supercop-itail-serious/stq-summary.json
+next_step: prove-live-d8-to-inverse9-register-handoff-before-linked-b1-implementation
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -303,6 +310,7 @@ selected_candidates:
   - f-r3d1-adjusted-ntt16-421-cycles-combined-683.5-vs-official-696
   - g1c-m3c3-montgomery-identity-full-reduction-control-93-vs-barrett-165-cycles
   - g1c-m3c4-c2-repaired-persistent-tail-1099-vs-c0-1136-minus37.5-cycles
+  - g1c-itail-asm-b1-supercop-derived-890.0000-vs-b0-902.7917-9of9
 shortlisted_candidates:
   - g0-f1-terminal-major-consumer-natural-shortlist
   - g0-f3-terminal-basis-consumer-fused-shortlist

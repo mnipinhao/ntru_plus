@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run native-KEM or SUPERCOP-derived polynomial measurement in a campaign."""
+"""Run native-KEM or SUPERCOP-derived primitive measurement in a campaign."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import platform
 import re
 import shutil
 import stat
+import statistics
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -106,7 +107,7 @@ def main() -> int:
     parser.add_argument("--parameter", choices=("864", "1152"), required=True)
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--cpu", type=int, required=True)
-    parser.add_argument("--mode", choices=("native-kem", "derived-poly"), required=True)
+    parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail"), required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
                         help="force one common SUPERCOP okc recipe (campaign only)")
@@ -115,6 +116,8 @@ def main() -> int:
     parser.add_argument("--require-frequency-control", action="store_true",
                         help="require performance governor and disabled turbo/boost")
     args = parser.parse_args()
+    if args.mode == "derived-itail" and args.parameter != "1152":
+        raise SystemExit("the current derived-itail measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
     marker = root / ".ntruplus-campaign.json"
@@ -161,13 +164,16 @@ def main() -> int:
         for path in implementations:
             path.chmod(original_modes[path] | stat.S_ISVTX)
         selected.chmod(original_modes[selected] & ~stat.S_ISVTX)
-        if args.mode == "derived-poly":
-            replacement = REPO_ROOT / "bench" / "supercop" / "poly_measure.c"
+        if args.mode in ("derived-poly", "derived-itail"):
+            replacement_name = ("poly_measure.c" if args.mode == "derived-poly"
+                                else "itail_measure.c")
+            replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
-            for name in ("ntruplus_bench.c", "ntruplus_bench.h"):
-                destination = selected / name
-                adapter_backups[destination] = destination.read_bytes() if destination.exists() else None
-                shutil.copy2(REPO_ROOT / "bench" / "supercop" / name, destination)
+            if args.mode == "derived-poly":
+                for name in ("ntruplus_bench.c", "ntruplus_bench.h"):
+                    destination = selected / name
+                    adapter_backups[destination] = destination.read_bytes() if destination.exists() else None
+                    shutil.copy2(REPO_ROOT / "bench" / "supercop" / name, destination)
         if args.compiler_wrapper:
             wrappers = list((root / "bench").glob("*/bin/okc-amd64"))
             if len(wrappers) != 1:
@@ -212,13 +218,15 @@ def main() -> int:
         raise SystemExit(f"SUPERCOP do-part exited {completed.returncode}; see run.out")
     if "tryfails" in run_text.lower() or "measurefails" in run_text.lower():
         raise SystemExit("SUPERCOP reported tryfails or measurefails")
-    required = (
-        ("keypair_cycles", "enc_cycles", "dec_cycles")
-        if args.mode == "native-kem"
-        else ("forward_small_cycles", "forward_general_cycles", "basemul_cycles",
-              "inverse_cycles", "baseinv_cycles", "poly_mul_small_cycles",
-              "poly_mul_general_cycles")
-    )
+    if args.mode == "native-kem":
+        required = ("keypair_cycles", "enc_cycles", "dec_cycles")
+    elif args.mode == "derived-poly":
+        required = ("forward_small_cycles", "forward_general_cycles", "basemul_cycles",
+                    "inverse_cycles", "baseinv_cycles", "poly_mul_small_cycles",
+                    "poly_mul_general_cycles")
+    else:
+        required = ("inverse_ntt9_b0_first_cycles", "inverse_ntt9_b1_second_cycles",
+                    "inverse_ntt9_b1_first_cycles", "inverse_ntt9_b0_second_cycles")
     missing = [name for name in required if f" {name} " not in data_text]
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
@@ -232,6 +240,7 @@ def main() -> int:
     launch_dir.mkdir()
     pooled = {name: [] for name in required}
     identities = []
+    launch_observations = []
     for launch_number in range(1, args.fresh_launches + 1):
         replay = subprocess.run(
             ["taskset", "-c", str(args.cpu), str(saved_elf.resolve())],
@@ -241,12 +250,15 @@ def main() -> int:
         if replay.returncode:
             raise SystemExit(f"fresh SUPERCOP measure launch {launch_number} failed")
         identities.append(measure_identity(replay.stdout))
+        current_launch = {}
         for name in required:
             observed = decode_observations(replay.stdout, name)
             if len(observed) != 96:
                 raise SystemExit(
                     f"fresh launch {launch_number} has {len(observed)} {name} observations; expected 96")
             pooled[name].extend(observed)
+            current_launch[name] = observed
+        launch_observations.append(current_launch)
     if any(identity != identities[0] for identity in identities[1:]):
         raise SystemExit("SUPERCOP measure identity changed between fresh launches")
     required_identity = ("implementation", "cpuid", "cpucycles_persecond",
@@ -273,15 +285,61 @@ def main() -> int:
             for name, values in pooled.items()
         },
     }
+    if args.mode == "derived-itail":
+        combined = {
+            "inverse_ntt9_b0_cycles": (
+                pooled["inverse_ntt9_b0_first_cycles"] +
+                pooled["inverse_ntt9_b0_second_cycles"]),
+            "inverse_ntt9_b1_cycles": (
+                pooled["inverse_ntt9_b1_first_cycles"] +
+                pooled["inverse_ntt9_b1_second_cycles"]),
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            b0_values = (observed["inverse_ntt9_b0_first_cycles"] +
+                         observed["inverse_ntt9_b0_second_cycles"])
+            b1_values = (observed["inverse_ntt9_b1_first_cycles"] +
+                         observed["inverse_ntt9_b1_second_cycles"])
+            b0_stq2 = stabilized_quartiles(b0_values)[1]
+            b1_stq2 = stabilized_quartiles(b1_values)[1]
+            paired_launches.append({
+                "launch": launch_number,
+                "inverse_ntt9_b0_stq2": b0_stq2,
+                "inverse_ntt9_b1_stq2": b1_stq2,
+                "b1_minus_b0_cycles": b1_stq2 - b0_stq2,
+            })
+        deltas = [entry["b1_minus_b0_cycles"] for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "b1_faster_launches": sum(delta < 0 for delta in deltas),
+            "b1_slower_launches": sum(delta > 0 for delta in deltas),
+            "tied_launches": sum(delta == 0 for delta in deltas),
+            "median_b1_minus_b0_cycles": statistics.median(deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     lock = read_lock()
     metadata = {
         **lock,
-        "benchmark_class": "supercop-native-kem" if args.mode == "native-kem" else "supercop-derived-poly",
+        "benchmark_class": ("supercop-native-kem" if args.mode == "native-kem"
+                            else "supercop-derived-poly" if args.mode == "derived-poly"
+                            else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
+        "candidate_source_manifest_sha256": (
+            sha256_file(selected / "SOURCE-MANIFEST.json")
+            if (selected / "SOURCE-MANIFEST.json").is_file() else None),
+        "candidate_sha256s_sha256": (
+            sha256_file(selected / "SHA256SUMS")
+            if (selected / "SHA256SUMS").is_file() else None),
         "compiler_policy": "fixed-common" if args.compiler_wrapper else "native-supercop-selection",
         "compiler_wrapper": str(args.compiler_wrapper.resolve()) if args.compiler_wrapper else None,
         "compiler_wrapper_sha256": sha256_file(args.compiler_wrapper) if args.compiler_wrapper else None,
@@ -299,7 +357,8 @@ def main() -> int:
         "stq_summary_sha256": sha256_file(args.result_dir / "stq-summary.json"),
         "measure_source_sha256": sha256_file(
             root / "crypto_kem" / "measure.c" if args.mode == "native-kem"
-            else REPO_ROOT / "bench" / "supercop" / "poly_measure.c"
+            else REPO_ROOT / "bench" / "supercop" /
+            ("poly_measure.c" if args.mode == "derived-poly" else "itail_measure.c")
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

@@ -8,6 +8,7 @@
 #include "g1c_bmscale_inverse_d1_asm.h"
 #include "inverse_ntt9_reference.h"
 #include "inverse_ntt9_b0_asm.h"
+#include "inverse_ntt9_b1_asm.h"
 
 #define ARBITRARY_TRIALS 1003
 #define PRODUCER_TRIALS 257
@@ -151,6 +152,7 @@ int main(void) {
   ntruplus1152_exp001_gt_terminal_major expected __attribute__((aligned(32)));
   ntruplus1152_exp001_gt_terminal_major direct __attribute__((aligned(32)));
   ntruplus1152_exp001_gt_terminal_major b0 __attribute__((aligned(32)));
+  ntruplus1152_exp001_gt_terminal_major b1 __attribute__((aligned(32)));
   ntruplus1152_exp001_gt_terminal_major canonical_output __attribute__((aligned(32)));
   ntruplus1152_exp001_inverse9_canonical_p canonical __attribute__((aligned(32)));
   ntruplus1152_exp001_inverse9_vector_canonical_p vector_canonical
@@ -175,6 +177,9 @@ int main(void) {
     compare("direct-vs-matrix", &expected, &direct, trial);
     ntruplus1152_exp001_inverse_ntt9_b0(&b0, &input);
     compare("b0-vs-matrix", &expected, &b0, trial);
+    ntruplus1152_exp001_inverse_ntt9_b1(&b1, &input);
+    compare("b1-vs-matrix", &expected, &b1, trial);
+    compare("b1-vs-b0", &b0, &b1, trial);
     ntruplus1152_exp001_inverse9_b0_repack_vector_canonical_p(
         &vector_canonical, &input);
     ntruplus1152_exp001_inverse_ntt9_b0_from_vector_canonical_p(
@@ -194,6 +199,9 @@ int main(void) {
     b0 = input;
     ntruplus1152_exp001_inverse_ntt9_b0(&b0, &b0);
     compare("b0-in-place", &expected, &b0, trial);
+    b1 = input;
+    ntruplus1152_exp001_inverse_ntt9_b1(&b1, &b1);
+    compare("b1-in-place", &expected, &b1, trial);
   }
 
   for (trial = 0; trial < PRODUCER_TRIALS; ++trial) {
@@ -204,6 +212,8 @@ int main(void) {
     compare("producer-C2-direct", &expected, &direct, trial);
     ntruplus1152_exp001_inverse_ntt9_b0(&b0, &input);
     compare("producer-C2-b0", &expected, &b0, trial);
+    ntruplus1152_exp001_inverse_ntt9_b1(&b1, &input);
+    compare("producer-C2-b1", &expected, &b1, trial);
   }
 
   fill_transform_case(&input, 19);
@@ -218,14 +228,21 @@ int main(void) {
   compare("b0-canary-output", &expected, &guarded.value, 19);
   check_canary(&guarded);
 
+  fill_canary(&guarded);
+  ntruplus1152_exp001_inverse_ntt9_b1(&guarded.value, &input);
+  compare("b1-canary-output", &expected, &guarded.value, 19);
+  check_canary(&guarded);
+
   for (trial = 0; trial < 9; ++trial) {
     memset(&input, 0, sizeof input);
     input.state[0][trial][0][0] = 1;
     matrix_oracle(&expected, &input);
     ntruplus1152_exp001_inverse_ntt9_b0(&b0, &input);
     compare("b0-physical-p-basis", &expected, &b0, trial);
+    ntruplus1152_exp001_inverse_ntt9_b1(&b1, &input);
+    compare("b1-physical-p-basis", &expected, &b1, trial);
   }
 
-  puts("inverse NTT9 R2 direct/B0: 1003 arbitrary, 257 C2-producer, 9 basis, matrix, canonical control, alias, range, and canary passed");
+  puts("inverse NTT9 R2 direct/B0/B1: 1003 arbitrary, 257 C2-producer, 9 basis, matrix, canonical control, alias, range, and canary passed");
   return 0;
 }

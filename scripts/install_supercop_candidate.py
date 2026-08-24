@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,13 +54,36 @@ def main() -> int:
     shutil.copytree(source, target, symlinks=False)
 
     installed_from: dict[str, str] = {}
-    for area in ("src", "asm", "generated"):
+    for area in ("src", "asm", "generated", "ref"):
         for candidate in candidate_files(experiment / area) or ():
             destination = target / candidate.name
             if destination.name in installed_from:
                 raise SystemExit(f"duplicate flat candidate filename: {destination.name}")
             shutil.copy2(candidate, destination)
             installed_from[destination.name] = str(candidate.relative_to(experiment))
+
+    # The installed implementation is intentionally flat.  Rewrite only local
+    # quoted include paths whose flattened basename was installed; never alter
+    # system includes or references outside the experiment overlay.
+    flattened_includes = {}
+    include_pattern = re.compile(r'(["\'])(?:src|asm|generated|ref)/([^"\']+)\1')
+    for destination_name in installed_from:
+        destination = target / destination_name
+        if destination.suffix not in SOURCE_SUFFIXES:
+            continue
+        original = destination.read_text(encoding="utf-8")
+
+        def flatten(match: re.Match[str]) -> str:
+            basename = Path(match.group(2)).name
+            if basename not in installed_from:
+                raise SystemExit(
+                    f"cannot flatten missing include {match.group(2)} in {destination.name}")
+            flattened_includes.setdefault(destination.name, []).append(match.group(2))
+            return f'{match.group(1)}{basename}{match.group(1)}'
+
+        rewritten = include_pattern.sub(flatten, original)
+        if rewritten != original:
+            destination.write_text(rewritten, encoding="utf-8")
     bench_source = LOCK_PATH.parent / "supercop" / "ntruplus_bench.c"
     bench_header = LOCK_PATH.parent / "supercop" / "ntruplus_bench.h"
     shutil.copy2(bench_source, target / bench_source.name)
@@ -82,6 +106,7 @@ def main() -> int:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "implementation": args.implementation,
         "installed_overlays": installed_from,
+        "flattened_local_includes": flattened_includes,
         "parameter": args.parameter,
         "source_tree_sha256": lock[f"ntruplus{args.parameter}_avx2_tree_sha256"],
         "supercop_version": lock["version"],

@@ -4,9 +4,10 @@ Formal performance comes from the release pinned in `../supercop.lock` and a
 disposable campaign tree. Native KEM runs keep SUPERCOP's
 `crypto_kem/measure.c` unchanged. Derived polynomial runs temporarily install
 `poly_measure.c` in the campaign and are always labelled
-`supercop-derived-poly`.
+`supercop-derived-poly`. Inverse-tail kernel comparisons temporarily install
+`itail_measure.c` and are labelled `supercop-derived-itail`.
 
-Both measures use 32 successive `cpucycles()` deltas. SUPERCOP compiles the
+All measures use 32 successive `cpucycles()` deltas. SUPERCOP compiles the
 measure with `LOOPS=3`, so each fresh process emits 96 observations per
 operation. A serious run launches the exact SUPERCOP-built measure ELF 9 times,
 pools 864 observations, and reports StQ1/StQ2/StQ3 using the pinned release's
@@ -23,7 +24,13 @@ make supercop-kem-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-kem-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-poly-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-poly-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
+make supercop-itail-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
+make supercop-itail-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 ```
+
+The inverse-tail measure balances code placement in every loop by running
+B0-first/B1-second and B1-first/B0-second. Its report contains pooled StQ
+values plus a paired StQ2 delta for every fresh launch.
 
 Each result retains `run.out`, SUPERCOP `data`, `metadata.json`, the exact
 `measure` ELF, `fresh-launches/*.out`, `stq-summary.json`, and the lock file.

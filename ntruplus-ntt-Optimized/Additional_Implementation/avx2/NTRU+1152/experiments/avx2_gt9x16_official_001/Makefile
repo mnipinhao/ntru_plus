@@ -60,11 +60,14 @@ INVERSE_NTT9_B0_GENERATOR_ARGS := --output generated/g1c-inverse-ntt9-b0-range.j
 INVERSE_NTT9_B0_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-ntt9-b0.o --source $(INVERSE_NTT9_B0_ASM) --proof generated/g1c-inverse-ntt9-b0-range.json --output generated/g1c-inverse-ntt9-b0-audit.json --compiler $(CC) --cflags=-mavx2
 INVERSE_NTT9_B1P_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --tail-map generated/g1c-inverse-tail-consumer-map.json --output generated/g1c-inverse-ntt9-b1p.json
 INVERSE_NTT9_B1R_ARGS := --b1p generated/g1c-inverse-ntt9-b1p.json --b0-proof generated/g1c-inverse-ntt9-b0-range.json --output generated/g1c-inverse-ntt9-b1r.json
+INVERSE_NTT9_B1_ASM := asm/inverse_ntt9_b1.S
+INVERSE_NTT9_B1_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-ntt9-b1.o --source $(INVERSE_NTT9_B1_ASM) --proof generated/g1c-inverse-ntt9-b1r.json --b0-audit generated/g1c-inverse-ntt9-b0-audit.json --output generated/g1c-inverse-ntt9-b1-audit.json --compiler $(CC) --cflags=-mavx2
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
- supercop-poly-serious supercop-paired-serious supercop-promotion-report
+ supercop-poly-serious supercop-itail-short supercop-itail-serious \
+ supercop-paired-serious supercop-promotion-report
 
 generate:
 	mkdir -p $(BUILD)
@@ -144,6 +147,8 @@ check:
 	$(PYTHON) tools/generate_inverse_ntt9_b1r.py $(INVERSE_NTT9_B1R_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
+	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
+	$(PYTHON) tools/audit_inverse_ntt9_b1.py $(INVERSE_NTT9_B1_AUDIT_ARGS) --check
 	$(CC) $(PAIRED_CFLAGS) -Isrc -Iref -Igenerated -c $(INVERSE_NTT9_REF) -o $(BUILD)/g1c/inverse-ntt9-reference.o
 	$(PYTHON) tools/audit_inverse_ntt9_reference.py $(INVERSE_NTT9_AUDIT_ARGS) --output generated/g1c-inverse-ntt9-reference-audit.json --check
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
@@ -172,6 +177,7 @@ check:
 	$(PYTHON) tests/test_inverse_ntt9_b0_evidence.py
 	$(PYTHON) tests/test_inverse_ntt9_b1p.py
 	$(PYTHON) tests/test_inverse_ntt9_b1r.py
+	$(PYTHON) tests/test_inverse_ntt9_b1_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -187,7 +193,7 @@ check:
 	$(BUILD)/test-g1c-bmscale-inverse-d1
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_m3_full_inverse16.c -o $(BUILD)/test-g1c-m3-full-inverse16
 	$(BUILD)/test-g1c-m3-full-inverse16
-	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) $(INVERSE_NTT9_B0_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) $(INVERSE_NTT9_B0_ASM) $(INVERSE_NTT9_B1_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference
 	$(BUILD)/test-inverse-ntt9-reference
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc $(G1C_M3C3_ASM) tests/test_g1c_m3c3_reduction.c -o $(BUILD)/test-g1c-m3c3-reduction
 	$(BUILD)/test-g1c-m3c3-reduction
@@ -212,7 +218,7 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-bmscale-inverse-d1-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_m3_full_inverse16.c -o $(BUILD)/test-g1c-m3-full-inverse16-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-m3-full-inverse16-sanitize
-	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) $(INVERSE_NTT9_B0_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) $(INVERSE_NTT9_B0_ASM) $(INVERSE_NTT9_B1_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-inverse-ntt9-reference-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
@@ -251,6 +257,8 @@ audit:
 	$(PYTHON) tools/audit_inverse_ntt9_reference.py $(INVERSE_NTT9_AUDIT_ARGS) --output generated/g1c-inverse-ntt9-reference-audit.json
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS)
+	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
+	$(PYTHON) tools/audit_inverse_ntt9_b1.py $(INVERSE_NTT9_B1_AUDIT_ARGS)
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
 	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS)
 
@@ -457,6 +465,14 @@ supercop-poly-short:
 supercop-poly-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-poly --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-itail-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-itail --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-itail-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-itail --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

@@ -1,0 +1,49 @@
+{
+  "b0_audit_sha256": "e03edc1402e906e8d1a632eb70eeea033d2d1de6d46d6918079d9fa3d885ac4f",
+  "cflags": "-mavx2",
+  "checkpoint": "ITAIL-ASM-B1",
+  "compiler": "cc",
+  "delta_vs_B0": {
+    "vpmulhrsw": -16,
+    "vpmullw": -16,
+    "vpsubw": -16
+  },
+  "expected_linked_instruction_count": 1803,
+  "gates": {
+    "exact_authorized_instruction_delta": true,
+    "instruction_count_minus_48": true,
+    "leaf_no_call_or_branch": true,
+    "no_frame_or_stack_reference": true,
+    "no_lane_permutation": true,
+    "no_vzeroupper": true,
+    "range_proof_complete": true
+  },
+  "linked_counts": {
+    "ret": 1,
+    "vmovdqa": 18,
+    "vmovdqu": 144,
+    "vpaddw": 312,
+    "vpand": 144,
+    "vpcmpgtw": 144,
+    "vpmulhrsw": 168,
+    "vpmulhw": 160,
+    "vpmullw": 248,
+    "vpsubw": 464
+  },
+  "linked_instruction_count": 1803,
+  "liveness": {
+    "peak_live_ymm": 15,
+    "stack_spills": 0,
+    "unchanged_vs_B0": true
+  },
+  "montgomery_chain_count": {
+    "eight_vector_inverse9_body": 80,
+    "per_vector_inverse9": 10,
+    "unchanged_vs_B0": true
+  },
+  "object_sha256": "3f5f920e9fa72bce089d1137efe807a52aba5e772b3be1927cab920ddae12b4c",
+  "promotion_eligible": false,
+  "proof_sha256": "951ee03f079b6c88c4da0bc4e05ee9748fc1311f25d1ea3bff78c2ba63720925",
+  "source_sha256": "234357bfc10b6a7f0a539e15e90ceb51f590ad6a756e3545683b6027e32b3975",
+  "symbol": "ntruplus1152_exp001_inverse_ntt9_b1"
+}
