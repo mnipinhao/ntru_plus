@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-m3-full-path-repair-placement-proof-complete
+state: checkpoint-hwa-a0-post-m3-representation-audit-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -176,7 +176,19 @@ gates:
   checkpoint_g1c_m3_full_path_d4_only: rejected-exact-d2-pre-repair-overflow-plusminus55296
   checkpoint_g1c_m3_full_path_d1_large_range: passed-all-rows-identity-preserves-scale
   checkpoint_g1c_m3_d4_tail_fusion: not-authorized-by-full-path-proof
-  checkpoint_g1c_m3_full_benchmark: not-authorized-invalid-path-must-not-be-timed
+  checkpoint_g1c_m3_d4_only_full_benchmark: not-authorized-invalid-path-must-not-be-timed
+  checkpoint_g1c_m3c4_differential: passed-1003-producer-real-cases-all-1152-cells-bit-exact
+  checkpoint_g1c_m3c4_repair: passed-d1-large-montgomery-identity-scale-preserving
+  checkpoint_g1c_m3c4_c0: passed-1136-cycles-full-materialized-control
+  checkpoint_g1c_m3c4_c1: passed-1108-cycles-minus28-vs-c0-9of9
+  checkpoint_g1c_m3c4_c2: passed-1099-cycles-minus9.5-vs-c1-minus37.5-vs-c0-9of9
+  checkpoint_g1c_m3c4_boundary: passed-c2-removes-288-memory-instructions-vs-c1
+  checkpoint_g1c_m3c4_static: passed-call-frame-stack-branch-vzeroupper-free-peak16ymm
+  checkpoint_g1c_m3c4_sanitizer: passed-asan-ubsan-input-immutable-output-canary
+  checkpoint_hwa_a0_semantic_plane: passed-1152-cells-v-b-row-j-lane-equals-a-b-p-q-j
+  checkpoint_hwa_a0_f0_f1_distinction: passed-f0-persistent-not-terminal-plane-m3-uses-f1-b1
+  checkpoint_hwa_a0_new_fork: rejected-current-architecture-already-semantic-plane-compatible
+  checkpoint_hwa_a0_inverse_ntt9_interface: open-must-derive-direct-c2-consumer-before-asm
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -227,7 +239,11 @@ checkpoint_g1c_m3c3: full-reduction-controls-priced-montgomery-identity-selected
 g1c_m3c3_result: results/g1c-m3c3-reduction-intel155h-20260823-001/reduction-paired.json
 checkpoint_g1c_m3_full_path_proof: d4-only-rejected-at-d2-d1-large-identity-range-and-scale-proved
 g1c_m3_full_path_proof: generated/g1c-m3-full-path-proof.json
-next_step: implement-and-price-proved-d1-large-identity-repair-not-d4-tail
+checkpoint_g1c_m3c4: repaired-c0-c1-c2-full-inverse16-priced-c2-minus37.5-vs-c0
+g1c_m3_full_result: results/g1c-m3-full-intel155h-20260824-001/full-paired.json
+checkpoint_hwa_a0: semantic-plane-frozen-complete-physical-abi-open
+hwa_a0_audit: generated/hwa-compatibility-audit.json
+next_step: derive-direct-inverse16-to-inverse-ntt9-consumer-map-before-inverse-ntt9-asm
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -240,6 +256,7 @@ selected_candidates:
   - c4-natural-nine-row-pair-is-0.821x-c0-pair
   - f-r3d1-adjusted-ntt16-421-cycles-combined-683.5-vs-official-696
   - g1c-m3c3-montgomery-identity-full-reduction-control-93-vs-barrett-165-cycles
+  - g1c-m3c4-c2-repaired-persistent-tail-1099-vs-c0-1136-minus37.5-cycles
 shortlisted_candidates:
   - g0-f1-terminal-major-consumer-natural-shortlist
   - g0-f3-terminal-basis-consumer-fused-shortlist

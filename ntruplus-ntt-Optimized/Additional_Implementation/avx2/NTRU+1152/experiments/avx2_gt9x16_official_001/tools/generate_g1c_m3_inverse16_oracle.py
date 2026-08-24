@@ -139,6 +139,7 @@ def main() -> int:
     parser.add_argument("--m2-result", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--header", type=Path, required=True)
+    parser.add_argument("--asm-constants", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
@@ -269,14 +270,50 @@ def main() -> int:
         header_lines.append("  },")
     header_lines.extend(["};", "#endif", ""])
     header = "\n".join(header_lines)
+    asm_lines = [
+        "/* Generated M3 inverse16 shuffles, identity, and stage constants. */",
+        ".section .rodata",
+        ".p2align 5",
+        ".Lgt_g1c_m3_swap_d2:",
+        "  .byte 4,5,6,7,0,1,2,3,12,13,14,15,8,9,10,11,20,21,22,23,16,17,18,19,28,29,30,31,24,25,26,27",
+        ".p2align 5",
+        ".Lgt_g1c_m3_swap_d4:",
+        "  .byte 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7,24,25,26,27,28,29,30,31,16,17,18,19,20,21,22,23",
+        ".p2align 5",
+        ".Lgt_g1c_m3_identity:",
+        "  .rept 16", "  .short -147", "  .endr",
+        ".Lgt_g1c_m3_identity_qinv:",
+        "  .rept 16", "  .short -19", "  .endr",
+    ]
+    for row_index, row_constants in enumerate(inverse_constants):
+        for stage_index, distance in enumerate((1, 2, 4, 8)):
+            zeta_lanes = [0] * 16
+            for pair_index, (left, right) in enumerate(
+                    (tuple(item["physical_lanes"])
+                     for item in rows[row_index]["inverse_stages"][stage_index]["pairs"])):
+                constant = row_constants[stage_index][pair_index]
+                zeta_lanes[left] = constant
+                zeta_lanes[right] = -constant
+            qinv_lanes = [signed16(value * QINV) for value in zeta_lanes]
+            asm_lines.extend([
+                ".p2align 5",
+                f".Lgt_g1c_m3_row{row_index}_d{distance}_zeta:",
+                "  .short " + ", ".join(map(str, zeta_lanes)),
+                f".Lgt_g1c_m3_row{row_index}_d{distance}_qinv:",
+                "  .short " + ", ".join(map(str, qinv_lanes)),
+            ])
+    asm_constants = "\n".join(asm_lines) + "\n"
     if args.check:
         if (not args.output.is_file() or args.output.read_text() != rendered or
-                not args.header.is_file() or args.header.read_text() != header):
+                not args.header.is_file() or args.header.read_text() != header or
+                not args.asm_constants.is_file() or
+                args.asm_constants.read_text() != asm_constants):
             raise SystemExit("generated G1C-M3 inverse16 oracle is stale")
         return 0
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(rendered)
     args.header.write_text(header)
+    args.asm_constants.write_text(asm_constants)
     return 0
 
 

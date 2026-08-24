@@ -1,0 +1,126 @@
+{
+  "attribution": {
+    "C1_minus_C0": "linked BMScale-to-D1 edge in the complete repaired inverse16",
+    "C2_minus_C0": "total diagnostic delta",
+    "C2_minus_C1": "register-persistent D2/D4/D8 credit after one identical repaired-D1 boundary"
+  },
+  "audit_sha256": "a805a393afb30f91d086cac26b7614f514830d55efc9e6667dd162031d162456",
+  "benchmark_class": "repository-local-g1c-m3-full-paired-not-for-promotion",
+  "binary_sha256": "eace3d4026f869015c8b0f4baeed78aa5a508b5a6a14c577dfd76075c213e1d5",
+  "blocks_per_launch": 16,
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "compiler": "cc",
+  "correctness": {
+    "all_variants_bit_exact": true,
+    "cells_per_case": 1152,
+    "producer_real_cases": 1003,
+    "range_and_scale_proof": "generated/g1c-m3-full-path-proof.json"
+  },
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-24T03:40:41.576162+00:00",
+  "cycles_by_launch": {
+    "M3-C0-materialized": [
+      1136.0,
+      1136.0,
+      1136.0,
+      1136.0,
+      1136.0,
+      1136.0,
+      1136.0,
+      1138.0,
+      1136.0
+    ],
+    "M3-C1-linked-D1": [
+      1108.0,
+      1110.0,
+      1108.0,
+      1108.0,
+      1108.0,
+      1108.0,
+      1108.0,
+      1108.0,
+      1108.0
+    ],
+    "M3-C2-persistent": [
+      1100.0,
+      1099.0,
+      1098.5,
+      1098.5,
+      1100.0,
+      1098.5,
+      1098.5,
+      1100.0,
+      1099.5
+    ]
+  },
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "median_cycles": {
+    "M3-C0-materialized": 1136.0,
+    "M3-C1-linked-D1": 1108.0,
+    "M3-C2-persistent": 1099.0
+  },
+  "observations_per_slot": 96,
+  "paired": {
+    "C1_minus_C0": {
+      "by_launch": [
+        -28.0,
+        -26.0,
+        -28.0,
+        -28.0,
+        -28.0,
+        -28.0,
+        -28.0,
+        -30.0,
+        -28.0
+      ],
+      "median_cycles": -28.0,
+      "right_faster_launches": 9,
+      "right_over_left": 0.9753521126760564
+    },
+    "C2_minus_C0": {
+      "by_launch": [
+        -36.0,
+        -37.0,
+        -37.5,
+        -37.5,
+        -36.0,
+        -37.5,
+        -37.5,
+        -38.0,
+        -36.5
+      ],
+      "median_cycles": -37.5,
+      "right_faster_launches": 9,
+      "right_over_left": 0.9674295774647887
+    },
+    "C2_minus_C1": {
+      "by_launch": [
+        -8.0,
+        -11.0,
+        -9.5,
+        -9.5,
+        -8.0,
+        -9.5,
+        -9.5,
+        -8.0,
+        -8.5
+      ],
+      "median_cycles": -9.5,
+      "right_faster_launches": 9,
+      "right_over_left": 0.9918772563176895
+    }
+  },
+  "promotion_eligible": false,
+  "proof_sha256": "0eafc6340e0b45c8b9d32490765976d38f9987e91b1e7926cfae5deeeba7141f",
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  }
+}

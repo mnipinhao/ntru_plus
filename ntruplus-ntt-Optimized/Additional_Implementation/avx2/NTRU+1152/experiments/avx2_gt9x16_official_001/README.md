@@ -240,3 +240,16 @@ Montgomery-by-identity on the D1 large/sum stream preserves the Montgomery
 scale and bounds every later D2/D4/D8 pre-Montgomery operation by 17,377.
 Therefore D4-tail fusion and full M3 timing remain forbidden; see
 `CHECKPOINT-G1C-M3-FULL-PATH-PROOF.md`.
+
+Checkpoint G1C-M3C4 implements the safe repaired full path. C0/C1/C2 measure
+1136/1108/1099 cycles; the linked edge contributes -28 cycles and persistent
+D2/D4/D8 contributes another -9.5 cycles, both in 9/9 launches. C2 retains one
+post-D1 boundary and removes 288 later boundary memory instructions. See
+`CHECKPOINT-G1C-M3C4.md`.
+
+The post-price HWA-A0 audit confirms that terminal-major
+`V[b,row,j][lane]=A[b,P[row],Q[lane],j]` is Hwa-style coefficient-plane SIMD,
+but also records that the M3 harness obtains it from F1-B1, not the faster F0
+persistent S/D producer. No separate Hwa candidate is forked. The next gate is
+the direct C2 inverse16-to-inverse-NTT9 consumer map; see
+`CHECKPOINT-HWA-A0.md`.
