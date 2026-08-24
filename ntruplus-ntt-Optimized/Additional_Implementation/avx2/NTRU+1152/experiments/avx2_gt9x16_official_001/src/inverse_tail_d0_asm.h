@@ -10,5 +10,8 @@ void ntruplus1152_exp001_inverse_tail_d0_m0(
 void ntruplus1152_exp001_inverse_tail_d0_m1(
     ntruplus1152_exp001_gt_terminal_major *output,
     const ntruplus1152_exp001_gt_terminal_major *repaired_d1);
+void ntruplus1152_exp001_inverse_tail_d0_m2(
+    ntruplus1152_exp001_gt_terminal_major *output,
+    const ntruplus1152_exp001_gt_terminal_major *repaired_d1);
 
 #endif

@@ -2,9 +2,10 @@
 
 ## Result
 
-The phase/orientation search is complete without changing the physical B ABI
-or writing candidate assembly.  Exact 9x9 basis extraction shows that Forward
-R2 is
+The phase/orientation search is complete within the current physical B ABI,
+two-radix3 butterfly family, and scale/output contract, without writing
+candidate assembly.  This is a scoped lower bound, not a global inverse9
+lower bound.  Exact 9x9 basis extraction shows that Forward R2 is
 
 ```text
 R2[physical-row(p)] = 4 * DFT9[p]
@@ -13,8 +14,10 @@ R2[physical-row(p)] = 4 * DFT9[p]
 for every source basis vector.  Its apparent `[8,2,5]` rotation is already
 compensated by the adjusted inter-level twiddles.  Consequently `D_F` is the
 identity for all nine `p`, is independent of `q` and terminal `j`, and remains
-the identity after BaseMul squaring.  There is no hidden `D_F^2` phase debt for
-BMScale or the inverse tail to absorb.
+the identity after BaseMul squaring.  This means R2 has internalized the phase
+freedom into the transform convention by this boundary; it does not mean that
+phase/orientation choices were irrelevant.  There is no additional hidden
+`D_F^2` phase debt for BMScale or the inverse tail to absorb.
 
 ## Exhaustive search
 
@@ -35,6 +38,11 @@ Thus the B0 schedule is already Pareto-optimal within this family: zero
 permutation, 10 Montgomery chains, and two distinct nontrivial inter-stage
 constants.  Carrying phase into an unimplemented top split would add a new
 contract without removing a chain, so it is not selected.
+
+Different butterfly families, a changed upstream BaseMul representation,
+fused radix-9/Winograd-like circuits, or a residual phase deliberately carried
+through the top split remain outside this proof.  They are deferred until the
+current full caller path is integrated, rather than claimed closed.
 
 ## B1R shortlist
 

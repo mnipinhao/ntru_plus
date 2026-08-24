@@ -13,7 +13,7 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build_schedule() -> list[dict[str, object]]:
+def build_schedule(schedule: str = "immediate") -> list[dict[str, object]]:
     insns: list[dict[str, object]] = []
 
     def emit(phase: str, operation: str, defs=(), uses=()) -> None:
@@ -65,8 +65,15 @@ def build_schedule() -> list[dict[str, object]]:
             emit(phase, "load-repaired-d1", (reg,), ())
             for distance in (2, 4, 8):
                 inverse_stage(reg, distance, phase)
-            reduce(reg, phase + ".input-reduce")
-        radix3(*registers, phase=f"triad{triad_index}.layer1-radix3")
+            if schedule == "immediate":
+                reduce(reg, phase + ".input-reduce")
+        if schedule == "immediate":
+            radix3(*registers, phase=f"triad{triad_index}.layer1-radix3")
+    if schedule == "late":
+        for reg in range(9):
+            reduce(reg, "late.input-reduce")
+        for triad_index, registers in enumerate(triads):
+            radix3(*registers, phase=f"late.triad{triad_index}.layer1-radix3")
 
     for reg in (0, 3, 6):
         reduce(reg, "interstage-reduction")
@@ -107,6 +114,8 @@ def main() -> int:
     parser.add_argument("--m3-proof", type=Path, required=True)
     parser.add_argument("--b1r-proof", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--schedule", choices=("immediate", "late"),
+                        default="immediate")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     m3 = json.loads(args.m3_proof.read_text())
@@ -119,7 +128,7 @@ def main() -> int:
     d8_max = max(value[1] for value in d8_ranges)
     input_range = b1r["input_contract"]["range"]
     ranked = b1r["variants_ranked_by_range"][0]
-    insns, peak = annotate_liveness(build_schedule())
+    insns, peak = annotate_liveness(build_schedule(args.schedule))
     phases: dict[str, int] = {}
     for instruction in insns:
         phases[instruction["phase"]] = max(
@@ -128,17 +137,24 @@ def main() -> int:
 
     report = {
         "schema": "gt-g1c-itail-d0-proof/v1",
-        "checkpoint": "G1C-ITAIL-D0",
+        "checkpoint": ("G1C-ITAIL-D0" if args.schedule == "immediate"
+                       else "G1C-ITAIL-D0-M2"),
         "decision": {
             "proof_passed": peak <= 16 and [d8_min, d8_max] == input_range,
             "linked_asm_authorized": peak <= 16 and [d8_min, d8_max] == input_range,
-            "required_control": "same repaired-D1 input; M0 materializes D8 then B1; M1 keeps one (branch,j) wavefront live",
+            "required_control": (
+                "same repaired-D1 input; M0 materializes D8 then B1; M1 keeps one (branch,j) wavefront live"
+                if args.schedule == "immediate" else
+                "same repaired-D1 input; M2 retains all nine D8 outputs then executes B1 layer 1 in original order"),
         },
         "wavefront": {
             "unit": "fixed (branch,j), 16 natural inverse16 time lanes per YMM",
             "physical_p_triads": [[0, 3, 6], [1, 4, 7], [8, 2, 5]],
             "physical_row_index_triads": [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-            "policy": "produce one D8 vector in-place; reduce it; execute layer-1 radix3 immediately after each native triad",
+            "policy": (
+                "produce one D8 vector in-place; reduce it; execute layer-1 radix3 immediately after each native triad"
+                if args.schedule == "immediate" else
+                "produce and retain all nine D8 vectors; then execute all input reductions and layer-1 radix3 in original B1 order"),
             "same_arithmetic_dag": True,
             "removed_boundary_if_linked": {"d8_stores": 72, "b1_reloads": 72},
         },

@@ -158,6 +158,31 @@
   D0_FINISH_BLOCK \branch,\j,\destination
 .endm
 
+.macro D0_LATE_BLOCK branch,j,source,destination
+  D0_PRODUCE 0,\branch,0,\j,\source
+  D0_PRODUCE 1,\branch,1,\j,\source
+  D0_PRODUCE 2,\branch,2,\j,\source
+  D0_PRODUCE 3,\branch,3,\j,\source
+  D0_PRODUCE 4,\branch,4,\j,\source
+  D0_PRODUCE 5,\branch,5,\j,\source
+  D0_PRODUCE 6,\branch,6,\j,\source
+  D0_PRODUCE 7,\branch,7,\j,\source
+  D0_PRODUCE 8,\branch,8,\j,\source
+  D0_REDUCE 0
+  D0_REDUCE 1
+  D0_REDUCE 2
+  D0_REDUCE 3
+  D0_REDUCE 4
+  D0_REDUCE 5
+  D0_REDUCE 6
+  D0_REDUCE 7
+  D0_REDUCE 8
+  D0_R3 0,1,2
+  D0_R3 3,4,5
+  D0_R3 6,7,8
+  D0_FINISH_BLOCK \branch,\j,\destination
+.endm
+
 .macro D0_MATERIALIZE_ALL source,destination
   .irp branch,0,1
     .irp row,0,1,2,3,4,5,6,7,8
@@ -196,6 +221,19 @@ ntruplus1152_exp001_inverse_tail_d0_m1:
   .endr
   ret
 .size ntruplus1152_exp001_inverse_tail_d0_m1, .-ntruplus1152_exp001_inverse_tail_d0_m1
+
+.globl ntruplus1152_exp001_inverse_tail_d0_m2
+.type ntruplus1152_exp001_inverse_tail_d0_m2,@function
+ntruplus1152_exp001_inverse_tail_d0_m2:
+  vmovdqa ymm15, YMMWORD PTR [rip + .Litail_b0_q]
+  vmovdqa ymm14, YMMWORD PTR [rip + .Litail_b0_barrett]
+  .irp branch,0,1
+    .irp j,0,1,2,3
+      D0_LATE_BLOCK \branch,\j,rsi,rdi
+    .endr
+  .endr
+  ret
+.size ntruplus1152_exp001_inverse_tail_d0_m2, .-ntruplus1152_exp001_inverse_tail_d0_m2
 
 .include "generated/g1c-m3-inverse16.inc"
 .include "generated/g1c-inverse-ntt9-b0-constants.inc"

@@ -64,13 +64,15 @@ INVERSE_NTT9_B1_ASM := asm/inverse_ntt9_b1.S
 INVERSE_NTT9_B1_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-ntt9-b1.o --source $(INVERSE_NTT9_B1_ASM) --proof generated/g1c-inverse-ntt9-b1r.json --b0-audit generated/g1c-inverse-ntt9-b0-audit.json --output generated/g1c-inverse-ntt9-b1-audit.json --compiler $(CC) --cflags=-mavx2
 INVERSE_TAIL_D0_ASM := asm/inverse_tail_d0.S
 INVERSE_TAIL_D0_PROOF_ARGS := --m3-proof generated/g1c-m3-full-path-proof.json --b1r-proof generated/g1c-inverse-ntt9-b1r.json --output generated/g1c-inverse-tail-d0-proof.json
-INVERSE_TAIL_D0_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-tail-d0.o --source $(INVERSE_TAIL_D0_ASM) --proof generated/g1c-inverse-tail-d0-proof.json --output generated/g1c-inverse-tail-d0-audit.json --compiler $(CC) --cflags=-mavx2
+INVERSE_TAIL_D0_M2_PROOF_ARGS := --m3-proof generated/g1c-m3-full-path-proof.json --b1r-proof generated/g1c-inverse-ntt9-b1r.json --schedule late --output generated/g1c-inverse-tail-d0-m2-proof.json
+INVERSE_TAIL_D0_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-tail-d0.o --source $(INVERSE_TAIL_D0_ASM) --proof generated/g1c-inverse-tail-d0-proof.json --m2-proof generated/g1c-inverse-tail-d0-m2-proof.json --output generated/g1c-inverse-tail-d0-audit.json --compiler $(CC) --cflags=-mavx2
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-itail-short supercop-itail-serious \
  supercop-itail-d0-short supercop-itail-d0-serious \
+ supercop-itail-d0-m2-short supercop-itail-d0-m2-serious \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -154,6 +156,7 @@ check:
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
 	$(PYTHON) tools/audit_inverse_ntt9_b1.py $(INVERSE_NTT9_B1_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_inverse_tail_d0.py $(INVERSE_TAIL_D0_PROOF_ARGS) --check
+	$(PYTHON) tools/generate_inverse_tail_d0.py $(INVERSE_TAIL_D0_M2_PROOF_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_TAIL_D0_ASM) -o $(BUILD)/g1c/inverse-tail-d0.o
 	$(PYTHON) tools/audit_inverse_tail_d0.py $(INVERSE_TAIL_D0_AUDIT_ARGS) --check
 	$(CC) $(PAIRED_CFLAGS) -Isrc -Iref -Igenerated -c $(INVERSE_NTT9_REF) -o $(BUILD)/g1c/inverse-ntt9-reference.o
@@ -186,7 +189,9 @@ check:
 	$(PYTHON) tests/test_inverse_ntt9_b1r.py
 	$(PYTHON) tests/test_inverse_ntt9_b1_evidence.py
 	$(PYTHON) tests/test_inverse_tail_d0_proof.py
+	$(PYTHON) tests/test_inverse_tail_d0_m2_proof.py
 	$(PYTHON) tests/test_inverse_tail_d0_evidence.py
+	$(PYTHON) tests/test_inverse_tail_d0_m2_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -273,6 +278,7 @@ audit:
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
 	$(PYTHON) tools/audit_inverse_ntt9_b1.py $(INVERSE_NTT9_B1_AUDIT_ARGS)
 	$(PYTHON) tools/generate_inverse_tail_d0.py $(INVERSE_TAIL_D0_PROOF_ARGS) --check
+	$(PYTHON) tools/generate_inverse_tail_d0.py $(INVERSE_TAIL_D0_M2_PROOF_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_TAIL_D0_ASM) -o $(BUILD)/g1c/inverse-tail-d0.o
 	$(PYTHON) tools/audit_inverse_tail_d0.py $(INVERSE_TAIL_D0_AUDIT_ARGS)
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
@@ -497,6 +503,14 @@ supercop-itail-d0-short:
 supercop-itail-d0-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-itail-d0 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-itail-d0-m2-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-itail-d0-m2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-itail-d0-m2-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-itail-d0-m2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

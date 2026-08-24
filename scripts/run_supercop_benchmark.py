@@ -108,7 +108,8 @@ def main() -> int:
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--cpu", type=int, required=True)
     parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail",
-                                           "derived-itail-d0"), required=True)
+                                           "derived-itail-d0", "derived-itail-d0-m2"),
+                        required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
                         help="force one common SUPERCOP okc recipe (campaign only)")
@@ -117,7 +118,7 @@ def main() -> int:
     parser.add_argument("--require-frequency-control", action="store_true",
                         help="require performance governor and disabled turbo/boost")
     args = parser.parse_args()
-    if args.mode in ("derived-itail", "derived-itail-d0") and args.parameter != "1152":
+    if args.mode in ("derived-itail", "derived-itail-d0", "derived-itail-d0-m2") and args.parameter != "1152":
         raise SystemExit("the current derived-itail measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -165,11 +166,13 @@ def main() -> int:
         for path in implementations:
             path.chmod(original_modes[path] | stat.S_ISVTX)
         selected.chmod(original_modes[selected] & ~stat.S_ISVTX)
-        if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0"):
+        if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0",
+                         "derived-itail-d0-m2"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
                 "derived-itail-d0": "itail_d0_measure.c",
+                "derived-itail-d0-m2": "itail_d0_m2_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -231,9 +234,16 @@ def main() -> int:
     elif args.mode == "derived-itail":
         required = ("inverse_ntt9_b0_first_cycles", "inverse_ntt9_b1_second_cycles",
                     "inverse_ntt9_b1_first_cycles", "inverse_ntt9_b0_second_cycles")
-    else:
+    elif args.mode == "derived-itail-d0":
         required = ("inverse_tail_d0_m0_first_cycles", "inverse_tail_d0_m1_second_cycles",
                     "inverse_tail_d0_m1_first_cycles", "inverse_tail_d0_m0_second_cycles")
+    else:
+        required = tuple(
+            f"inverse_tail_d0_{variant}_{position}_cycles"
+            for variant, position in (
+                ("m0", "first"), ("m1", "second"), ("m2", "third"),
+                ("m2", "first"), ("m0", "second"), ("m1", "third"),
+                ("m1", "first"), ("m2", "second"), ("m0", "third")))
     missing = [name for name in required if f" {name} " not in data_text]
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
@@ -368,6 +378,49 @@ def main() -> int:
             "tied_launches": sum(delta == 0 for delta in deltas),
             "median_m1_minus_m0_cycles": statistics.median(deltas),
         }
+    if args.mode == "derived-itail-d0-m2":
+        combined = {
+            f"inverse_tail_d0_{variant}_cycles": sum(
+                (pooled[f"inverse_tail_d0_{variant}_{position}_cycles"]
+                 for position in ("first", "second", "third")), [])
+            for variant in ("m0", "m1", "m2")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            stq2 = {
+                variant: stabilized_quartiles(sum(
+                    (observed[f"inverse_tail_d0_{variant}_{position}_cycles"]
+                     for position in ("first", "second", "third")), []))[1]
+                for variant in ("m0", "m1", "m2")
+            }
+            paired_launches.append({
+                "launch": launch_number,
+                **{f"inverse_tail_d0_{variant}_stq2": value
+                   for variant, value in stq2.items()},
+                "m1_minus_m0_cycles": stq2["m1"] - stq2["m0"],
+                "m2_minus_m0_cycles": stq2["m2"] - stq2["m0"],
+                "m2_minus_m1_cycles": stq2["m2"] - stq2["m1"],
+            })
+        m2_m0 = [entry["m2_minus_m0_cycles"] for entry in paired_launches]
+        m2_m1 = [entry["m2_minus_m1_cycles"] for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "m2_faster_than_m0_launches": sum(delta < 0 for delta in m2_m0),
+            "m2_slower_than_m0_launches": sum(delta > 0 for delta in m2_m0),
+            "m2_tied_with_m0_launches": sum(delta == 0 for delta in m2_m0),
+            "median_m2_minus_m0_cycles": statistics.median(m2_m0),
+            "m2_faster_than_m1_launches": sum(delta < 0 for delta in m2_m1),
+            "m2_slower_than_m1_launches": sum(delta > 0 for delta in m2_m1),
+            "m2_tied_with_m1_launches": sum(delta == 0 for delta in m2_m1),
+            "median_m2_minus_m1_cycles": statistics.median(m2_m1),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -377,6 +430,7 @@ def main() -> int:
         "benchmark_class": ("supercop-native-kem" if args.mode == "native-kem"
                             else "supercop-derived-poly" if args.mode == "derived-poly"
                             else "supercop-derived-itail-d0" if args.mode == "derived-itail-d0"
+                            else "supercop-derived-itail-d0-m2" if args.mode == "derived-itail-d0-m2"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -406,7 +460,8 @@ def main() -> int:
             else REPO_ROOT / "bench" / "supercop" /
             ({"derived-poly": "poly_measure.c",
               "derived-itail": "itail_measure.c",
-              "derived-itail-d0": "itail_d0_measure.c"}[args.mode])
+              "derived-itail-d0": "itail_d0_measure.c",
+              "derived-itail-d0-m2": "itail_d0_m2_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

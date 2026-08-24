@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-itail-d0-immediate-triad-linked-rejected
+state: checkpoint-g1c-itail-d0-m2-parent-fusion-class-closed
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -215,7 +215,7 @@ gates:
   checkpoint_g1c_itail_b1p_basemul_gauge: passed-df-squared-identity-no-phase-debt
   checkpoint_g1c_itail_b1p_search: passed-all-729-cyclic-orientations
   checkpoint_g1c_itail_b1p_exact_output: passed-27-feasible-orientations
-  checkpoint_g1c_itail_b1p_lower_bound: passed-four-interstage-plus-six-kappa-ten-total-chains
+  checkpoint_g1c_itail_b1p_lower_bound: passed-scoped-current-b-abi-two-radix3-scale-output-contract-ten-chains
   checkpoint_g1c_itail_b1p_absorption: bmscale-and-top-split-do-not-lower-four-chain-bound
   checkpoint_g1c_itail_b1p_selection: three-tied-zero-permutation-orientations-to-b1r
   checkpoint_g1c_itail_b1p_benchmark: not-run-symbolic-design-checkpoint
@@ -235,6 +235,13 @@ gates:
   checkpoint_g1c_itail_d0_static: passed-minus72-stores-minus72-reloads-minus144-instructions
   checkpoint_g1c_itail_d0_supercop_derived: rejected-m12007.6944-vs-m01642.3241-plus365.3704
   checkpoint_g1c_itail_d0_paired_launches: rejected-median-plus365.2917-m1-loses-9of9
+  checkpoint_g1c_itail_d0_m2_proof: passed-same-dag-range-chain-peak14-of16-ymm
+  checkpoint_g1c_itail_d0_m2_correctness: passed-1003-producer-real-alias-immutability-canary-sanitizers
+  checkpoint_g1c_itail_d0_m2_static: passed-same-minus144-boundary-memory-instructions-and-arithmetic-multiset
+  checkpoint_g1c_itail_d0_m2_supercop_derived: rejected-m21789.2855-vs-m01636.6698-plus152.6157-pooled
+  checkpoint_g1c_itail_d0_m2_paired_launches: rejected-median-plus152.9722-m2-loses-to-m0-9of9
+  checkpoint_g1c_itail_d0_m2_attribution: passed-m2-beats-m1-median-minus215.1528-9of9-immediate-schedule-was-major-debt
+  checkpoint_g1c_itail_d0_parent_fusion: closed-current-d8-to-inverse9-contract
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -303,13 +310,17 @@ checkpoint_g1c_itail_asm_b1: exact-two-reducer-deletion-correct-and-supercop-der
 g1c_itail_asm_b1_result: results/itail-asm-b1-supercop-derived-intel155h-20260824-003/supercop-itail-serious/stq-summary.json
 checkpoint_g1c_itail_d0: register-feasible-but-immediate-triad-wavefront-rejected-performance
 g1c_itail_d0_result: results/itail-d0-supercop-derived-intel155h-20260824-001/supercop-itail-d0-serious/stq-summary.json
-next_step: price-d0-m2-retain-nine-d8-outputs-then-original-order-b1-layer1
+checkpoint_g1c_itail_d0_m2: late-layer-attribution-complete-current-parent-fusion-class-closed
+g1c_itail_d0_m2_result: results/itail-d0-m2-supercop-derived-intel155h-20260824-001/supercop-itail-d0-m2-serious/stq-summary.json
+research_phase: local-architecture-convergence
+next_step: adapt-f0-persistent-forward-to-consumer-native-quartic-basemul-then-integrate-2f-plus-b-plus-i
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
   - g0-x0-universal-canonical-abi-paid-standalone-full-array-pass
   - g1c-m3c2-37-node-one-sided-cover-fails-exact-signed-i16-contract-at-34496
   - g1c-itail-d0-m1-immediate-triad-plus365.3704-cycles-loses-9of9-despite-minus144-memory-instructions
+  - g1c-itail-d0-m2-retained-nine-plus152.9722-median-cycles-loses-to-m0-9of9-current-parent-fusion-closed
 deferred_candidates:
   - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
 selected_candidates:

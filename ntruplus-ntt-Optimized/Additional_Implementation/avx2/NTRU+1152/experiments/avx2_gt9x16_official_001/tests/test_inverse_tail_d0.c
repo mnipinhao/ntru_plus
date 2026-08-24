@@ -81,6 +81,7 @@ int main(void) {
   g1c_m3_terminal_major expected __attribute__((aligned(32)));
   g1c_m3_terminal_major m0 __attribute__((aligned(32)));
   g1c_m3_terminal_major m1 __attribute__((aligned(32)));
+  g1c_m3_terminal_major m2 __attribute__((aligned(32)));
   g1c_m3_terminal_major alias __attribute__((aligned(32)));
   struct guarded_state guarded __attribute__((aligned(32)));
   int trial;
@@ -98,9 +99,13 @@ int main(void) {
     ntruplus1152_exp001_inverse_ntt9_b1(&expected, &inverse16);
     ntruplus1152_exp001_inverse_tail_d0_m0(&m0, &repaired_d1);
     ntruplus1152_exp001_inverse_tail_d0_m1(&m1, &repaired_d1);
+    ntruplus1152_exp001_inverse_tail_d0_m2(&m2, &repaired_d1);
     compare("M0-control", &expected, &m0, trial);
     compare("M1-linked", &expected, &m1, trial);
     compare("M1-vs-M0", &m0, &m1, trial);
+    compare("M2-late-layer", &expected, &m2, trial);
+    compare("M2-vs-M0", &m0, &m2, trial);
+    compare("M2-vs-M1", &m1, &m2, trial);
     compare("input-immutable", &saved_d1, &repaired_d1, trial);
 
     alias = repaired_d1;
@@ -109,6 +114,9 @@ int main(void) {
     alias = repaired_d1;
     ntruplus1152_exp001_inverse_tail_d0_m1(&alias, &alias);
     compare("M1-in-place", &expected, &alias, trial);
+    alias = repaired_d1;
+    ntruplus1152_exp001_inverse_tail_d0_m2(&alias, &alias);
+    compare("M2-in-place", &expected, &alias, trial);
   }
 
   g1c_m3_fill_case(&a, &b, 23);
@@ -117,10 +125,10 @@ int main(void) {
       &inverse16, &a, &b);
   ntruplus1152_exp001_inverse_ntt9_b1(&expected, &inverse16);
   fill_canary(&guarded);
-  ntruplus1152_exp001_inverse_tail_d0_m1(&guarded.value, &repaired_d1);
-  compare("M1-canary-output", &expected, &guarded.value, 23);
+  ntruplus1152_exp001_inverse_tail_d0_m2(&guarded.value, &repaired_d1);
+  compare("M2-canary-output", &expected, &guarded.value, 23);
   check_canary(&guarded);
 
-  puts("ITAIL-D0 M0/M1: 1003 producer-real cases, exact C2+B1 DAG, alias, immutability, range, and canary passed");
+  puts("ITAIL-D0 M0/M1/M2: 1003 producer-real cases, exact C2+B1 DAG, alias, immutability, range, and canary passed");
   return 0;
 }

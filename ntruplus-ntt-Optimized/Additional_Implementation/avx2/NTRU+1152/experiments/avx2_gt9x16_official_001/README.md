@@ -280,12 +280,15 @@ all eight inverse9 bodies, peaks at 15 YMM with zero spill/routing, and measures
 9 launches. Reduction and centered-output debt, rather than arithmetic-chain
 inflation, is now the next target; see `CHECKPOINT-G1C-ITAIL-ASM-B0.md`.
 
-Checkpoint G1C-ITAIL-B1P exhausts all 729 two-radix3 cyclic orientations.  It
+Checkpoint G1C-ITAIL-B1P exhausts all 729 cyclic orientations within the
+current physical B ABI, two-radix3 family, and scale/output contract.  It
 proves that Forward R2's apparent paper rotation retains no residual phase:
 `D_F` and therefore `D_F^2` are identity.  BMScale, inverse-interstage, and
 residual top-split gauge placement cannot beat B0's four nontrivial
 inter-stage chains, 10 total Montgomery chains, two constants, and zero
-permutation.  Three arithmetic ties proceed to exact B1R range/normalization
+permutation.  This is not a global inverse9 lower bound; R2 has internalized
+the phase convention by the observed boundary rather than made orientation
+irrelevant.  Three arithmetic ties proceed to exact B1R range/normalization
 analysis; no B1 assembly is authorized yet.  See
 `CHECKPOINT-G1C-ITAIL-B1P.md`.
 
@@ -310,3 +313,13 @@ removes 72 D8 stores and 72 B1 reloads, but its immediate-triad schedule costs
 StQ2 2007.6944 versus M0 at 1642.3241: +365.3704 cycles, losing all 9 serious
 launches. The schedule is rejected; one late-layer1 M2 attribution control is
 the final boundary-fusion gate. See `CHECKPOINT-G1C-ITAIL-D0.md`.
+
+Checkpoint G1C-ITAIL-D0-M2 retains all nine D8 outputs before executing B1's
+original layer order. Exact proof and object audit remain at 14/16 YMM, remove
+the same 144 boundary memory instructions as M1, and preserve the arithmetic
+DAG. In the balanced SUPERCOP-derived serious run M2 is 1789.2855 cycles,
+faster than M1 by a per-launch median 215.1528 cycles but slower than M0 by
+152.9722 cycles in all 9 launches. This closes the current D8-to-inverse9
+fusion class. The next gate is F0 persistent forward to consumer-native
+BaseMul, followed by one integrated `2F+B+I` island. See
+`CHECKPOINT-G1C-ITAIL-D0-M2.md`.

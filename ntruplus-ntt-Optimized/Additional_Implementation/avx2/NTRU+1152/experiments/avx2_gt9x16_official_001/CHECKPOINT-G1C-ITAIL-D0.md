@@ -57,8 +57,8 @@ materialization costs.
 
 ## Next gate
 
-Try one final attribution control, D0-M2: retain all nine D8 outputs, then run
+D0-M2 is the final attribution control: retain all nine D8 outputs, then run
 B1 layer 1 in the original order instead of inserting a dependency barrier
-after each triad.  Its proof must remain at most 16 YMM with the same arithmetic
-DAG.  If M2 does not recover the M0 ordering advantage, freeze D8-to-inverse9
-fusion as rejected and return to inverse9 phase/radix arithmetic search.
+after each triad.  M1 rejects only the immediate-triad schedule, not the parent
+D8-to-inverse9 fusion hypothesis.  The parent decision is recorded separately
+in `CHECKPOINT-G1C-ITAIL-D0-M2.md`.

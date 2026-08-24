@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit ITAIL-D0 M0/M1 linked objects and exact materialization delta."""
+"""Audit ITAIL-D0 M0/M1/M2 objects and exact materialization deltas."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from pathlib import Path
 SYMBOLS = {
     "M0": "ntruplus1152_exp001_inverse_tail_d0_m0",
     "M1": "ntruplus1152_exp001_inverse_tail_d0_m1",
+    "M2": "ntruplus1152_exp001_inverse_tail_d0_m2",
 }
 
 
@@ -69,36 +70,49 @@ def main() -> int:
     parser.add_argument("--object", type=Path, required=True)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--proof", type=Path, required=True)
+    parser.add_argument("--m2-proof", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compiler", required=True)
     parser.add_argument("--cflags", required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     proof = json.loads(args.proof.read_text())
+    m2_proof = json.loads(args.m2_proof.read_text())
     if not proof["decision"]["linked_asm_authorized"]:
         raise SystemExit("ITAIL-D0 proof does not authorize linked ASM")
+    if not m2_proof["decision"]["linked_asm_authorized"]:
+        raise SystemExit("ITAIL-D0-M2 proof does not authorize linked ASM")
     disassembly = subprocess.run(
         ["objdump", "-d", "--no-show-raw-insn", "-M", "intel", str(args.object)],
         check=True, text=True, stdout=subprocess.PIPE).stdout
     functions = {name: audit(function_lines(disassembly, symbol))
                  for name, symbol in SYMBOLS.items()}
-    m0, m1 = functions["M0"], functions["M1"]
+    m0, m1, m2 = functions["M0"], functions["M1"], functions["M2"]
     mov_names = {"vmovdqu", "vmovdqa"}
     arithmetic_m0 = {name: count for name, count in m0["instruction_counts"].items()
                      if name not in mov_names}
     arithmetic_m1 = {name: count for name, count in m1["instruction_counts"].items()
                      if name not in mov_names}
+    arithmetic_m2 = {name: count for name, count in m2["instruction_counts"].items()
+                     if name not in mov_names}
     gates = {
         "same_arithmetic_instruction_multiset": arithmetic_m0 == arithmetic_m1,
+        "m2_same_arithmetic_instruction_multiset": arithmetic_m0 == arithmetic_m2,
         "m0_exact_memory_control": (m0["input_d1_loads"] == 72 and
                                     m0["boundary_reloads"] == 72 and
                                     m0["output_stores"] == 144),
         "m1_zero_boundary_materialization": (m1["input_d1_loads"] == 72 and
                                               m1["boundary_reloads"] == 0 and
                                               m1["output_stores"] == 72),
+        "m2_zero_boundary_materialization": (m2["input_d1_loads"] == 72 and
+                                              m2["boundary_reloads"] == 0 and
+                                              m2["output_stores"] == 72),
         "exact_minus_144_instructions": (
             m1["static_instructions"] == m0["static_instructions"] - 144),
+        "m2_exact_minus_144_instructions": (
+            m2["static_instructions"] == m0["static_instructions"] - 144),
         "m1_peak_at_most_16": m1["backward_dataflow_peak_live_ymm"] <= 16,
+        "m2_peak_at_most_16": m2["backward_dataflow_peak_live_ymm"] <= 16,
         "leaf_constant_time": all(
             not value for metrics in functions.values()
             for value in (metrics["calls"], metrics["conditional_branches"],
@@ -108,18 +122,24 @@ def main() -> int:
     if not all(gates.values()):
         raise SystemExit(f"ITAIL-D0 audit failed: {gates}")
     report = {
-        "schema": "gt-g1c-itail-d0-audit/v1",
-        "checkpoint": "G1C-ITAIL-D0",
+        "schema": "gt-g1c-itail-d0-audit/v2",
+        "checkpoint": "G1C-ITAIL-D0-M2",
         "functions": functions,
         "delta_M1_minus_M0": {
             "static_instructions": m1["static_instructions"] - m0["static_instructions"],
             "boundary_reloads": m1["boundary_reloads"] - m0["boundary_reloads"],
             "output_stores": m1["output_stores"] - m0["output_stores"],
         },
+        "delta_M2_minus_M0": {
+            "static_instructions": m2["static_instructions"] - m0["static_instructions"],
+            "boundary_reloads": m2["boundary_reloads"] - m0["boundary_reloads"],
+            "output_stores": m2["output_stores"] - m0["output_stores"],
+        },
         "gates": gates,
         "object_sha256": hashlib.sha256(args.object.read_bytes()).hexdigest(),
         "source_sha256": hashlib.sha256(args.source.read_bytes()).hexdigest(),
         "proof_sha256": hashlib.sha256(args.proof.read_bytes()).hexdigest(),
+        "m2_proof_sha256": hashlib.sha256(args.m2_proof.read_bytes()).hexdigest(),
         "compiler": args.compiler,
         "cflags": args.cflags,
         "promotion_eligible": False,
