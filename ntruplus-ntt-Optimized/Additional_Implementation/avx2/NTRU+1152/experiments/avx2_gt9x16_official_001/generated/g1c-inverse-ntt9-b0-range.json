@@ -1,0 +1,584 @@
+{
+  "checkpoint": "ITAIL-ASM-B0",
+  "constants": {
+    "barrett_reciprocal": 9,
+    "half_q": 1728,
+    "kappa_inv": {
+      "montgomery": -1538,
+      "qinv": -27394,
+      "standard": 1445
+    },
+    "negative_half_q": -1728,
+    "q": 3457,
+    "rho": {
+      "montgomery": -460,
+      "qinv": 16436,
+      "standard": -867
+    },
+    "rho_inv": {
+      "montgomery": 682,
+      "qinv": -29782,
+      "standard": 1571
+    }
+  },
+  "final_after_barrett_before_center_correction": [
+    [
+      -2372,
+      2372
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ]
+  ],
+  "final_centered_ranges": [
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ],
+    [
+      -1728,
+      1728
+    ]
+  ],
+  "input_after_barrett": [
+    -2556,
+    2555
+  ],
+  "input_contract": {
+    "layout": "B physical P [0,3,6,1,4,7,8,2,5]",
+    "range": [
+      -17377,
+      17377
+    ],
+    "scale": "R^-1"
+  },
+  "inter_layer_inputs": [
+    [
+      -2372,
+      2372
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2188,
+      2188
+    ],
+    [
+      -2372,
+      2372
+    ],
+    [
+      -1845,
+      1845
+    ],
+    [
+      -1810,
+      1810
+    ],
+    [
+      -2372,
+      2372
+    ],
+    [
+      -1810,
+      1810
+    ],
+    [
+      -1845,
+      1845
+    ]
+  ],
+  "layer1_outputs": [
+    [
+      -15336,
+      15330
+    ],
+    [
+      -12057,
+      12057
+    ],
+    [
+      -12057,
+      12057
+    ],
+    [
+      -15336,
+      15330
+    ],
+    [
+      -12057,
+      12057
+    ],
+    [
+      -12057,
+      12057
+    ],
+    [
+      -15336,
+      15330
+    ],
+    [
+      -12057,
+      12057
+    ],
+    [
+      -12057,
+      12057
+    ]
+  ],
+  "layer2_outputs": [
+    [
+      [
+        -14232,
+        14232
+      ],
+      [
+        -11323,
+        11323
+      ],
+      [
+        -11323,
+        11323
+      ]
+    ],
+    [
+      [
+        -11686,
+        11686
+      ],
+      [
+        -9840,
+        9840
+      ],
+      [
+        -9840,
+        9840
+      ]
+    ],
+    [
+      [
+        -11686,
+        11686
+      ],
+      [
+        -9840,
+        9840
+      ],
+      [
+        -9840,
+        9840
+      ]
+    ]
+  ],
+  "pre_operation_checks": [
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpaddw(b,c)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpsubw(b,c)",
+      "range": [
+        -5111,
+        5111
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpaddw(a,a)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpsubw(twice_a,sum)",
+      "range": [
+        -10222,
+        10222
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpaddw(out0_partial,sum)",
+      "range": [
+        -15336,
+        15330
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpaddw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group0.vpsubw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpaddw(b,c)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpsubw(b,c)",
+      "range": [
+        -5111,
+        5111
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpaddw(a,a)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpsubw(twice_a,sum)",
+      "range": [
+        -10222,
+        10222
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpaddw(out0_partial,sum)",
+      "range": [
+        -15336,
+        15330
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpaddw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group1.vpsubw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpaddw(b,c)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpsubw(b,c)",
+      "range": [
+        -5111,
+        5111
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpaddw(a,a)",
+      "range": [
+        -5112,
+        5110
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpsubw(twice_a,sum)",
+      "range": [
+        -10222,
+        10222
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpaddw(out0_partial,sum)",
+      "range": [
+        -15336,
+        15330
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpaddw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer1.group2.vpsubw(base,product)",
+      "range": [
+        -12057,
+        12057
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpaddw(b,c)",
+      "range": [
+        -4744,
+        4744
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpsubw(b,c)",
+      "range": [
+        -4744,
+        4744
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpaddw(a,a)",
+      "range": [
+        -4744,
+        4744
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpsubw(twice_a,sum)",
+      "range": [
+        -9488,
+        9488
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpaddw(out0_partial,sum)",
+      "range": [
+        -14232,
+        14232
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpaddw(base,product)",
+      "range": [
+        -11323,
+        11323
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group0.vpsubw(base,product)",
+      "range": [
+        -11323,
+        11323
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpaddw(b,c)",
+      "range": [
+        -3655,
+        3655
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpsubw(b,c)",
+      "range": [
+        -3655,
+        3655
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpaddw(a,a)",
+      "range": [
+        -4376,
+        4376
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpsubw(twice_a,sum)",
+      "range": [
+        -8031,
+        8031
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpaddw(out0_partial,sum)",
+      "range": [
+        -11686,
+        11686
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpaddw(base,product)",
+      "range": [
+        -9840,
+        9840
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group1.vpsubw(base,product)",
+      "range": [
+        -9840,
+        9840
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpaddw(b,c)",
+      "range": [
+        -3655,
+        3655
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpsubw(b,c)",
+      "range": [
+        -3655,
+        3655
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpaddw(a,a)",
+      "range": [
+        -4376,
+        4376
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpsubw(twice_a,sum)",
+      "range": [
+        -8031,
+        8031
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpaddw(out0_partial,sum)",
+      "range": [
+        -11686,
+        11686
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpaddw(base,product)",
+      "range": [
+        -9840,
+        9840
+      ]
+    },
+    {
+      "fits_signed_i16": true,
+      "pre_operation": "layer2.group2.vpsubw(base,product)",
+      "range": [
+        -9840,
+        9840
+      ]
+    }
+  ],
+  "proof": {
+    "all_pre_operations_fit_signed_i16": true,
+    "arithmetic_scale_change": "none beyond verified inverse paper-R2",
+    "final_outputs_centered": true
+  },
+  "schedule": "straight-line two inverse paper-R2 radix-3 layers",
+  "static_counts_per_vector_inverse9": {
+    "final_barrett_and_center_corrections": 9,
+    "input_barrett_reductions": 9,
+    "inter_layer_barrett_reductions": 5,
+    "lane_permutations": 0,
+    "montgomery_chains": 10,
+    "paper_radix3": 6
+  }
+}

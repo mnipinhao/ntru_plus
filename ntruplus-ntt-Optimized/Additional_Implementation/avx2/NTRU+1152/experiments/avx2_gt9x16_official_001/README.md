@@ -271,3 +271,11 @@ B is 26,555.5 cycles versus canonical A at 27,218.5, a -667.5-cycle win in all
 9 launches. Absolute cycles are scalar-reference diagnostics; the result only
 prices representation debt. A straight-line AVX2 two-radix3 B baseline is now
 authorized; see `CHECKPOINT-G1C-ITAIL-REF.md`.
+
+Checkpoint G1C-ITAIL-ASM-B0 implements that baseline directly over physical P.
+It passes the full reference gate, uses the expected 80 Montgomery chains for
+all eight inverse9 bodies, peaks at 15 YMM with zero spill/routing, and measures
+490 cycles for the pure body. In the complete C2-store boundary, optimized B is
+1532 cycles versus optimized vector-canonical A at 1548, a -16-cycle win in all
+9 launches. Reduction and centered-output debt, rather than arithmetic-chain
+inflation, is now the next target; see `CHECKPOINT-G1C-ITAIL-ASM-B0.md`.

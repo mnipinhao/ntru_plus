@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-itail-reference-direct-boundary-correctness-and-price-complete
+state: checkpoint-g1c-itail-asm-b0-correctness-range-and-optimized-boundary-price-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -203,6 +203,14 @@ gates:
   checkpoint_g1c_itail_reference_paired: passed-b26555.5-vs-a27218.5-minus667.5-9of9
   checkpoint_g1c_itail_reference_benchmark: repository-local-scalar-reference-representation-price-only
   checkpoint_g1c_itail_inverse_ntt9_asm: authorized-straight-line-two-radix3-b-direct-load-baseline
+  checkpoint_g1c_itail_b0_correctness: passed-1003-arbitrary-257-c2-9-basis-all-1152-cells
+  checkpoint_g1c_itail_b0_range: passed-every-signed-i16-preoperation-and-centered-output
+  checkpoint_g1c_itail_b0_scale: passed-rminus1-input-verified-paper-r2-natural-s-output
+  checkpoint_g1c_itail_b0_montgomery: passed-10-chains-per-inverse9-80-total
+  checkpoint_g1c_itail_b0_static: passed-leaf-no-call-branch-frame-stack-spill-route-vzeroupper-peak15
+  checkpoint_g1c_itail_b0_pure: measured-490-cycles-eight-vector-inverse9
+  checkpoint_g1c_itail_b0_optimized_ab: passed-b1532-vs-a1548-minus16-9of9
+  checkpoint_g1c_itail_b0_benchmark: repository-local-diagnostic-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -261,7 +269,9 @@ checkpoint_g1c_itail_map: c2-natural-time-lanes-direct-paper-p-loads-and-shared-
 g1c_itail_map: generated/g1c-inverse-tail-consumer-map.json
 checkpoint_g1c_itail_reference: direct-two-radix3-reference-correct-and-canonical-repack-debt-priced
 g1c_itail_reference_result: results/inverse-tail-reference-intel155h-20260824-001/paired.json
-next_step: implement-straight-line-avx2-two-radix3-inverse-ntt9-baseline-on-b-direct-loads
+checkpoint_g1c_itail_asm_b0: direct-physical-p-avx2-baseline-correct-and-priced
+g1c_itail_asm_b0_result: results/itail-asm-b0-intel155h-20260824-001/paired.json
+next_step: itail-asm-b1-price-and-minimize-range-reductions-before-live-d-handoff
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

@@ -1,0 +1,98 @@
+{
+  "audit_sha256": "e03edc1402e906e8d1a632eb70eeea033d2d1de6d46d6918079d9fa3d885ac4f",
+  "bench_source_sha256": "67a7233c030134c53e146106868ab30b5f7eea315dd535a0fabe6e5a453f9042",
+  "benchmark_class": "repository-local-itail-asm-b0-not-for-promotion",
+  "binary_sha256": "ea6e9c440c3266eb8e854f94174512d0bca8f163d1b2ff533aa3816004b0a876",
+  "blocks_per_launch": 16,
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "compiler": "cc",
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-24T05:00:07.929256+00:00",
+  "full_C2_store_to_inverse9": {
+    "A_contract": "C2 stores, explicit 72-load+72-store vector natural-P repack, same B0 arithmetic macro",
+    "B_contract": "C2 stores, direct physical-P loads, same B0 arithmetic macro",
+    "cycles_by_launch": {
+      "A-vector-canonical-repack-plus-B0": [
+        1902.0,
+        1614.0,
+        1614.0,
+        1548.5,
+        1548.0,
+        1548.0,
+        1548.0,
+        1548.0,
+        1548.0
+      ],
+      "B-direct-physical-P-B0": [
+        1884.0,
+        1598.0,
+        1598.0,
+        1532.0,
+        1532.0,
+        1532.0,
+        1532.0,
+        1532.0,
+        1532.0
+      ]
+    },
+    "median_cycles": {
+      "A-vector-canonical-repack-plus-B0": 1548.0,
+      "B-direct-physical-P-B0": 1532.0
+    },
+    "paired_B_minus_A": {
+      "B_faster_launches": 9,
+      "B_over_A": 0.9896640826873385,
+      "by_launch": [
+        -18.0,
+        -16.0,
+        -16.0,
+        -16.5,
+        -16.0,
+        -16.0,
+        -16.0,
+        -16.0,
+        -16.0
+      ],
+      "median_cycles": -16.0
+    }
+  },
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "interpretation": "optimized representation-edge price; repository-local diagnostic only",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "observations_per_slot": 96,
+  "promotion_eligible": false,
+  "proof_sha256": "79fad621a33a309f678b0cbe3d8177e94454d3d4ad4c329a8a87cee8a953f2e5",
+  "pure_8x_vector_inverse9": {
+    "cycles_by_launch": [
+      5659,
+      470,
+      491,
+      490,
+      490,
+      490,
+      474,
+      490,
+      492
+    ],
+    "includes": "72 B loads, six radix3 per (branch,j), final 72 stores",
+    "input_residency": "precomputed C2 output resident in benchmark storage",
+    "median_cycles": 490
+  },
+  "source_sha256": "fed5bd0facbf7b32afddbb5268959ca04dd5660d25fb0a9440412a1ec3750a79",
+  "static": {
+    "montgomery_chains_per_inverse9": 10,
+    "montgomery_chains_total": 80,
+    "peak_live_ymm": 15,
+    "stack_spills": 0
+  },
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  }
+}

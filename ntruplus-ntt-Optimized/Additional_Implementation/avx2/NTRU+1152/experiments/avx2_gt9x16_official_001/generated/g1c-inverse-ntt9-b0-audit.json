@@ -1,0 +1,45 @@
+{
+  "cflags": "-mavx2",
+  "checkpoint": "ITAIL-ASM-B0",
+  "compiler": "cc",
+  "gates": {
+    "centered_output_proved": true,
+    "leaf_no_call_or_branch": true,
+    "no_frame_or_stack_reference": true,
+    "no_lane_permutation": true,
+    "no_vzeroupper": true,
+    "range_proof_complete": true
+  },
+  "linked_counts": {
+    "ret": 1,
+    "vmovdqa": 18,
+    "vmovdqu": 144,
+    "vpaddw": 312,
+    "vpand": 144,
+    "vpcmpgtw": 144,
+    "vpmulhrsw": 184,
+    "vpmulhw": 160,
+    "vpmullw": 264,
+    "vpsubw": 480
+  },
+  "linked_instruction_count": 1851,
+  "liveness": {
+    "data_registers": "ymm0..ymm8 (nine physical-P rows)",
+    "overwrite_policy": "triad outputs replace dead triad inputs",
+    "peak_live_ymm": 15,
+    "radix_scratch": "ymm9..ymm12",
+    "reduction_scratch": "ymm13",
+    "resident_constants": "ymm14 reciprocal, ymm15 q",
+    "stack_spills": 0
+  },
+  "montgomery_chain_count": {
+    "eight_vector_inverse9_body": 80,
+    "matches_verified_paper_r2_family": true,
+    "per_vector_inverse9": 10
+  },
+  "object_sha256": "f8c0418c72f3b8b2b7e3b8990d65355db451476e09c53976dd27e34eb21f4b3c",
+  "promotion_eligible": false,
+  "proof_sha256": "79fad621a33a309f678b0cbe3d8177e94454d3d4ad4c329a8a87cee8a953f2e5",
+  "source_sha256": "fed5bd0facbf7b32afddbb5268959ca04dd5660d25fb0a9440412a1ec3750a79",
+  "symbol": "ntruplus1152_exp001_inverse_ntt9_b0"
+}
