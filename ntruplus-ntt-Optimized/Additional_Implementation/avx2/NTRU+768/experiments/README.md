@@ -42,6 +42,16 @@ at 96 extra vector operations per Forward polynomial. Since this fails the
 zero-extra producer premise, no ASM gate is opened. The result is scoped to
 the searched uniform microkernel and current Forward terminal families.
 
+[Experiment 071](gt32_encap_mprime_terminal_071/) fixes that M-prime and
+searches the remaining S4/S5 producer premise. It grants every block all
+322,560 affine four-bit output gauges independently—more freedom than the
+shared production loop—and freely relabels the current deposit masks. The same
+eight blocks remain nonzero because their target permutations are nonlinear.
+The optimistic one-destination-per-degree lower bound is therefore 32 extra
+vector operations per Forward, above the 16-operation ASM eligibility limit.
+No 072 executable gate is opened; only a genuinely non-affine terminal network
+that replaces existing movement can reopen this scope.
+
 ## Progressive M formation coverage
 
 [Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed

@@ -1,0 +1,60 @@
+experiment: GT32-ENCAP-MPRIME-TERMINAL-071
+title: Fixed M-prime S4/S5 terminal synthesis gate
+production_modified: false
+asm_written: false
+
+status:
+  q24_consumer_geometry: FIXED_FROM_070
+  b3_terminal_ordering: FIXED_FROM_070
+  selected_terminal_source_audit: PASS
+  affine_output_gauge_search: COMPLETE
+  eligibility: T2_EXPENSIVE
+  next_asm_gate_072: NOT_OPENED
+  decision: CLOSED_FOR_CURRENT_TERMINAL_TOPOLOGY
+
+fixed_target:
+  block_order_old_indices: [0, 1, 9, 8, 4, 5, 11, 10, 6, 7, 3, 2]
+  q24_transpose_output_order: [2, 3, 0, 1]
+  q24_vpermq_immediates: [177, 75, 75, 75]
+  b3_change: lambda_and_lambda_qinv_table_relabel_only
+
+search:
+  affine_family: AGL_4_2
+  gauges_per_block: 322560
+  gauges_granted_independently: true
+  actual_shared_loop_is_more_restricted: true
+  deposit_masks_freely_relabelled: true
+  deposit_unpack_topology: current
+
+permutation_classes:
+  raw_distinct: 5
+  affine_blocks: 4
+  nonlinear_blocks: 8
+  algebraic_profiles:
+    - {degrees: [1, 1, 1, 1], blocks: 4}
+    - {degrees: [1, 1, 2, 1], blocks: 3}
+    - {degrees: [1, 1, 3, 2], blocks: 5}
+
+cost:
+  optimistic_lower_bound_vector_ops_per_forward: 32
+  modeled_route_score_per_forward: 52
+  modeled_route_score_is_executable_network: false
+  near_free_threshold: 16
+  tier: T2_EXPENSIVE
+
+decision_basis:
+  - all legal current pair-packed unpack/rejoin output gauges are contained in the searched affine superset
+  - eight target blocks remain nonzero even when every block selects its gauge independently
+  - four independent degree-plane outputs require at least four movement destinations per nonzero block
+  - the optimistic lower bound already exceeds the ASM eligibility threshold
+  - no cycle claim is inferred from the modeled 52-op route
+
+closed:
+  - another S4/S5 affine output-gauge enumeration
+  - another Q24 template search for fixed 070 M-prime
+  - B3 arithmetic changes for this ABI
+  - standalone post-Forward M-to-M-prime conversion
+
+reopen_only_if:
+  - a concrete non-affine terminal network replaces existing mode-critical movement rather than adding a repair
+  - that network lowers the total delta to at most 16 vector ops per Forward
