@@ -253,3 +253,12 @@ but also records that the M3 harness obtains it from F1-B1, not the faster F0
 persistent S/D producer. No separate Hwa candidate is forked. The next gate is
 the direct C2 inverse16-to-inverse-NTT9 consumer map; see
 `CHECKPOINT-HWA-A0.md`.
+
+Checkpoint G1C-ITAIL-MAP proves that C2's final lanes are natural inverse16
+time coordinates, not residual S/D state, with 2,304 linear-basis component
+checks. The current paper p order is already the inverse-NTT9 radix-3 grouping,
+so 72 strided YMM loads consume the existing stores without a repack or lane
+route. The shared map also gives a 54-vector `d=3` NTRU+864 topology projection,
+while leaving its range and repair policy unclaimed. The next probe is a
+correctness-first reference inverse NTT9 on this direct-load boundary; see
+`CHECKPOINT-G1C-ITAIL-MAP.md`.

@@ -49,6 +49,7 @@ G1C_M3_FULL_PROOF_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.js
 G1C_M3_FULL_AUDIT_ARGS := --object $(BUILD)/g1c/g1c-bmscale-inverse-d1.o --source $(G1C_LINKED_ASM) --proof generated/g1c-m3-full-path-proof.json --output generated/g1c-m3-full-inverse16-audit.json --compiler $(CC) --cflags=-mavx2
 G1C_M3_FULL_RESULT := results/g1c-m3-full-intel155h-20260824-001/full-paired.json
 HWA_A0_ARGS := --layout generated/gt9x16-pipeline-layout.json --views generated/g0-representation-views.json --g1b-result $(G1B_RESULT) --m3-result $(G1C_M3_FULL_RESULT) --m3-audit generated/g1c-m3-full-inverse16-audit.json --producer-source bench/g1c_m3_producer_common.h --output generated/hwa-compatibility-audit.json
+INVERSE_TAIL_MAP_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --ntt9-oracle generated/gt9x16-ntt9-first-oracle.json --full-proof generated/g1c-m3-full-path-proof.json --m3-audit generated/g1c-m3-full-inverse16-audit.json --asm-source $(G1C_LINKED_ASM) --output generated/g1c-inverse-tail-consumer-map.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -86,6 +87,7 @@ generate:
 	$(PYTHON) tools/generate_g1c_m3c2p_exact_proof.py $(G1C_M3C2P_ARGS)
 	$(PYTHON) tools/generate_g1c_m3_full_path_proof.py $(G1C_M3_FULL_PROOF_ARGS)
 	$(PYTHON) tools/generate_hwa_compatibility_audit.py $(HWA_A0_ARGS)
+	$(PYTHON) tools/generate_inverse_tail_consumer_map.py $(INVERSE_TAIL_MAP_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -123,6 +125,7 @@ check:
 	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS) --check
 	$(PYTHON) tools/audit_g1c_m3_full_inverse16.py $(G1C_M3_FULL_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_hwa_compatibility_audit.py $(HWA_A0_ARGS) --check
+	$(PYTHON) tools/generate_inverse_tail_consumer_map.py $(INVERSE_TAIL_MAP_ARGS) --check
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
 	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
@@ -144,6 +147,7 @@ check:
 	$(PYTHON) tests/test_g1c_m3c3_reduction_evidence.py
 	$(PYTHON) tests/test_g1c_m3_full_path_proof.py
 	$(PYTHON) tests/test_hwa_compatibility_audit.py
+	$(PYTHON) tests/test_inverse_tail_consumer_map.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
