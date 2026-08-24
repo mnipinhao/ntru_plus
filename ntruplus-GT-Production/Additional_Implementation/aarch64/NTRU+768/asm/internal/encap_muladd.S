@@ -121,134 +121,123 @@ Lpoly_basemul_add_loop:
  // live-out: advanced x0-x4 and iteration-N+1 Q31 accumulators/c vectors
  // coefficient range: identical to the audited production Q31 byte contract
  // reserved physical registers: x7-x30 and sp; physical vector allocation fixed
-        saddw v31.4S, v31.4S, v19.4H
-        saddw2 v9.4S, v9.4S, v20.8H
-        saddw2 v10.4S, v10.4S, v19.8H
-        saddw v4.4S, v4.4S, v20.4H
-        sqrdmulh v19.4S, v31.4S, v11.S[2]
-        sqrdmulh v20.4S, v4.4S, v11.S[2]
-        mls v31.4S, v19.4S, v11.S[0]
-        xtn v19.4H, v31.4S
-        sqrdmulh v31.4S, v10.4S, v11.S[2]
-        mls v4.4S, v20.4S, v11.S[0]
-        saddw v6.4S, v6.4S, v21.4H
-        saddw2 v3.4S, v3.4S, v21.8H
-        mls v10.4S, v31.4S, v11.S[0]
-        xtn v20.4H, v4.4S
-        sqrdmulh v4.4S, v9.4S, v11.S[2]
-        xtn2 v19.8H, v10.4S
-        sqrdmulh v21.4S, v6.4S, v11.S[2]
-        mls v9.4S, v4.4S, v11.S[0]
-        mls v6.4S, v21.4S, v11.S[0]
-        saddw v13.4S, v13.4S, v22.4H
-        saddw2 v14.4S, v14.4S, v22.8H
-        xtn2 v20.8H, v9.4S
-        sqrdmulh v22.4S, v13.4S, v11.S[2]
-        xtn v21.4H, v6.4S
-        sqrdmulh v6.4S, v3.4S, v11.S[2]
-        mls v13.4S, v22.4S, v11.S[0]
-        mls v3.4S, v6.4S, v11.S[0]
-        xtn v22.4H, v13.4S
-        sqrdmulh v13.4S, v14.4S, v11.S[2]
-        ld4 {v24.8H, v25.8H, v26.8H, v27.8H}, [x1], #64
-        ld4 {v28.8H, v29.8H, v30.8H, v31.8H}, [x2], #64
-        xtn2 v21.8H, v3.4S
-        mls v14.4S, v13.4S, v11.S[0]
-        xtn2 v22.8H, v14.4S
-        smull v1.4S, v27.4H, v31.4H
-        ldr q16, [x4], #16
-        st4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x0], #64
-        smull2 v6.4S, v27.8H, v31.8H
-        smull2 v23.4S, v25.8H, v31.8H
-        ld4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x3], #64
-        smull v15.4S, v25.4H, v31.4H
-        smlal2 v23.4S, v26.8H, v30.8H
-        smull v17.4S, v26.4H, v31.4H
-        smlal v15.4S, v26.4H, v30.4H
-        uzp1 v4.8H, v1.8H, v6.8H
-        smlal2 v23.4S, v27.8H, v29.8H
-        smlal v17.4S, v27.4H, v30.4H
-        smlal v15.4S, v27.4H, v29.4H
-        smull2 v14.4S, v27.8H, v28.8H
-        smull2 v10.4S, v26.8H, v31.8H
-        smull v13.4S, v27.4H, v28.4H
-        smlal2 v10.4S, v27.8H, v30.8H
-        uzp1 v12.8H, v15.8H, v23.8H
-        smlal2 v14.4S, v24.8H, v31.8H
-        mul v2.8H, v4.8H, v11.H[2]
-        smlal v13.4S, v24.4H, v31.4H
-        uzp1 v31.8H, v17.8H, v10.8H
-        smlal v13.4S, v25.4H, v30.4H
-        smlal2 v14.4S, v25.8H, v30.8H
-        smlal2 v6.4S, v2.8H, v11.H[0]
-        smlal v1.4S, v2.4H, v11.H[0]
-        smlal2 v14.4S, v26.8H, v29.8H
-        smlal v13.4S, v26.4H, v29.4H
-        uzp2 v27.8H, v1.8H, v6.8H
-        mul v5.8H, v31.8H, v11.H[2]
-        smull v6.4S, v27.4H, v16.4H
-        smull2 v3.4S, v27.8H, v16.8H
-        smlal2 v3.4S, v24.8H, v30.8H
-        smlal v17.4S, v5.4H, v11.H[0]
-        smlal2 v10.4S, v5.8H, v11.H[0]
-        smlal v6.4S, v24.4H, v30.4H
-        smlal v6.4S, v25.4H, v29.4H
-        smlal2 v3.4S, v25.8H, v29.8H
-        uzp2 v1.8H, v17.8H, v10.8H
-        smlal v6.4S, v26.4H, v28.4H
-        mul v27.8H, v12.8H, v11.H[2]
-        smlal2 v3.4S, v26.8H, v28.8H
-        smull2 v9.4S, v1.8H, v16.8H
-        smull v4.4S, v1.4H, v16.4H
-        smlal2 v23.4S, v27.8H, v11.H[0]
-        smlal v15.4S, v27.4H, v11.H[0]
-        smlal2 v9.4S, v24.8H, v29.8H
-        uzp2 v5.8H, v15.8H, v23.8H
-        smlal v4.4S, v24.4H, v29.4H
-        smlal2 v9.4S, v25.8H, v28.8H
-        smlal v4.4S, v25.4H, v28.4H
-        smull v31.4S, v5.4H, v16.4H
-        smlal v31.4S, v24.4H, v28.4H
-        smull2 v10.4S, v5.8H, v16.8H
-        smlal2 v10.4S, v24.8H, v28.8H
-
- // live-in: x0, v11, and iteration-N+1 accumulators/c vectors
- // live-out: two stored Q31 byte-contract groups and advanced x0
- // coefficient range: identical to the audited production Q31 byte contract
- // reserved physical registers: x7-x30 and sp; physical vector allocation fixed
-        saddw v31.4S, v31.4S, v19.4H
-        saddw2 v10.4S, v10.4S, v19.8H
-        sqrdmulh v19.4S, v31.4S, v11.S[2]
-        mls v31.4S, v19.4S, v11.S[0]
-        xtn v19.4H, v31.4S
-        sqrdmulh v31.4S, v10.4S, v11.S[2]
-        mls v10.4S, v31.4S, v11.S[0]
-        saddw2 v9.4S, v9.4S, v20.8H
-        saddw v4.4S, v4.4S, v20.4H
-        xtn2 v19.8H, v10.4S
-        sqrdmulh v20.4S, v4.4S, v11.S[2]
-        mls v4.4S, v20.4S, v11.S[0]
-        xtn v20.4H, v4.4S
-        saddw v6.4S, v6.4S, v21.4H
-        sqrdmulh v4.4S, v9.4S, v11.S[2]
-        mls v9.4S, v4.4S, v11.S[0]
-        saddw2 v3.4S, v3.4S, v21.8H
-        sqrdmulh v21.4S, v6.4S, v11.S[2]
-        xtn2 v20.8H, v9.4S
-        mls v6.4S, v21.4S, v11.S[0]
-        xtn v21.4H, v6.4S
-        sqrdmulh v6.4S, v3.4S, v11.S[2]
-        mls v3.4S, v6.4S, v11.S[0]
-        saddw v13.4S, v13.4S, v22.4H
-        saddw2 v14.4S, v14.4S, v22.8H
-        xtn2 v21.8H, v3.4S
-        sqrdmulh v22.4S, v13.4S, v11.S[2]
-        mls v13.4S, v22.4S, v11.S[0]
-        xtn v22.4H, v13.4S
-        sqrdmulh v13.4S, v14.4S, v11.S[2]
-        mls v14.4S, v13.4S, v11.S[0]
-        xtn2 v22.8H, v14.4S
-        st4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x0], #64
+ // Packed-16 Barrett finalizer: preserve x low16, pack Q31 quotients, then
+ // apply one eight-lane halfword correction.  The region is Slothy scheduled.
+ saddw2 v10.4S, v10.4S, v19.8H
+ saddw v31.4S, v31.4S, v19.4H
+ saddw v4.4S, v4.4S, v20.4H
+ saddw2 v9.4S, v9.4S, v20.8H
+ uzp1 v19.8H, v31.8H, v10.8H
+ sqrdmulh v10.4S, v10.4S, v11.S[2]
+ saddw v6.4S, v6.4S, v21.4H
+ saddw2 v3.4S, v3.4S, v21.8H
+ sqrdmulh v31.4S, v31.4S, v11.S[2]
+ uzp1 v20.8H, v4.8H, v9.8H
+ sqrdmulh v4.4S, v4.4S, v11.S[2]
+ saddw2 v14.4S, v14.4S, v22.8H
+ uzp1 v31.8H, v31.8H, v10.8H
+ sqrdmulh v9.4S, v9.4S, v11.S[2]
+ saddw v13.4S, v13.4S, v22.4H
+ mls v19.8H, v31.8H, v11.H[0]
+ uzp1 v21.8H, v6.8H, v3.8H
+ uzp1 v22.8H, v13.8H, v14.8H
+ sqrdmulh v6.4S, v6.4S, v11.S[2]
+ uzp1 v4.8H, v4.8H, v9.8H
+ ld4 {v28.8H, v29.8H, v30.8H, v31.8H}, [x2], #64
+ sqrdmulh v3.4S, v3.4S, v11.S[2]
+ ld4 {v24.8H, v25.8H, v26.8H, v27.8H}, [x1], #64
+ sqrdmulh v14.4S, v14.4S, v11.S[2]
+ sqrdmulh v13.4S, v13.4S, v11.S[2]
+ uzp1 v6.8H, v6.8H, v3.8H
+ uzp1 v13.8H, v13.8H, v14.8H
+ mls v20.8H, v4.8H, v11.H[0]
+ ldr q16, [x4], #16
+ mls v21.8H, v6.8H, v11.H[0]
+ mls v22.8H, v13.8H, v11.H[0]
+ smull v1.4S, v27.4H, v31.4H
+ smull2 v23.4S, v25.8H, v31.8H
+ smull2 v6.4S, v27.8H, v31.8H
+ st4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x0], #64
+ smlal2 v23.4S, v26.8H, v30.8H
+ smlal2 v23.4S, v27.8H, v29.8H
+ ld4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x3], #64
+ smull v15.4S, v25.4H, v31.4H
+ smlal v15.4S, v26.4H, v30.4H
+ smull v17.4S, v26.4H, v31.4H
+ smlal v17.4S, v27.4H, v30.4H
+ uzp1 v4.8H, v1.8H, v6.8H
+ smlal v15.4S, v27.4H, v29.4H
+ smull2 v10.4S, v26.8H, v31.8H
+ smlal2 v10.4S, v27.8H, v30.8H
+ smull2 v14.4S, v27.8H, v28.8H
+ uzp1 v12.8H, v15.8H, v23.8H
+ smull v13.4S, v27.4H, v28.4H
+ smlal2 v14.4S, v24.8H, v31.8H
+ smlal v13.4S, v24.4H, v31.4H
+ smlal v13.4S, v25.4H, v30.4H
+ uzp1 v31.8H, v17.8H, v10.8H
+ mul v2.8H, v4.8H, v11.H[2]
+ smlal2 v14.4S, v25.8H, v30.8H
+ smlal v13.4S, v26.4H, v29.4H
+ smlal2 v14.4S, v26.8H, v29.8H
+ smlal v1.4S, v2.4H, v11.H[0]
+ smlal2 v6.4S, v2.8H, v11.H[0]
+ mul v5.8H, v31.8H, v11.H[2]
+ uzp2 v27.8H, v1.8H, v6.8H
+ smlal2 v10.4S, v5.8H, v11.H[0]
+ smlal v17.4S, v5.4H, v11.H[0]
+ smull v6.4S, v27.4H, v16.4H
+ smull2 v3.4S, v27.8H, v16.8H
+ smlal v6.4S, v24.4H, v30.4H
+ uzp2 v1.8H, v17.8H, v10.8H
+ smlal2 v3.4S, v24.8H, v30.8H
+ smlal v6.4S, v25.4H, v29.4H
+ mul v27.8H, v12.8H, v11.H[2]
+ smlal2 v3.4S, v25.8H, v29.8H
+ smlal v6.4S, v26.4H, v28.4H
+ smull v4.4S, v1.4H, v16.4H
+ smlal2 v23.4S, v27.8H, v11.H[0]
+ smlal v15.4S, v27.4H, v11.H[0]
+ smull2 v9.4S, v1.8H, v16.8H
+ smlal2 v3.4S, v26.8H, v28.8H
+ smlal v4.4S, v24.4H, v29.4H
+ smlal2 v9.4S, v24.8H, v29.8H
+ smlal v4.4S, v25.4H, v28.4H
+ uzp2 v5.8H, v15.8H, v23.8H
+ smlal2 v9.4S, v25.8H, v28.8H
+ smull v31.4S, v5.4H, v16.4H
+ smlal v31.4S, v24.4H, v28.4H
+ smull2 v10.4S, v5.8H, v16.8H
+ smlal2 v10.4S, v24.8H, v28.8H
+ saddw v31.4S, v31.4S, v19.4H
+ saddw2 v10.4S, v10.4S, v19.8H
+ uzp1 v19.8H, v31.8H, v10.8H
+ saddw v4.4S, v4.4S, v20.4H
+ sqrdmulh v31.4S, v31.4S, v11.S[2]
+ saddw2 v9.4S, v9.4S, v20.8H
+ sqrdmulh v10.4S, v10.4S, v11.S[2]
+ uzp1 v31.8H, v31.8H, v10.8H
+ mls v19.8H, v31.8H, v11.H[0]
+ saddw v6.4S, v6.4S, v21.4H
+ uzp1 v20.8H, v4.8H, v9.8H
+ sqrdmulh v4.4S, v4.4S, v11.S[2]
+ sqrdmulh v9.4S, v9.4S, v11.S[2]
+ saddw2 v3.4S, v3.4S, v21.8H
+ uzp1 v4.8H, v4.8H, v9.8H
+ uzp1 v21.8H, v6.8H, v3.8H
+ sqrdmulh v6.4S, v6.4S, v11.S[2]
+ saddw2 v14.4S, v14.4S, v22.8H
+ mls v20.8H, v4.8H, v11.H[0]
+ saddw v13.4S, v13.4S, v22.4H
+ sqrdmulh v3.4S, v3.4S, v11.S[2]
+ uzp1 v22.8H, v13.8H, v14.8H
+ uzp1 v6.8H, v6.8H, v3.8H
+ sqrdmulh v14.4S, v14.4S, v11.S[2]
+ sqrdmulh v13.4S, v13.4S, v11.S[2]
+ mls v21.8H, v6.8H, v11.H[0]
+ uzp1 v13.8H, v13.8H, v14.8H
+ mls v22.8H, v13.8H, v11.H[0]
+ st4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x0], #64
 
  subs x6, x6, #2
  b.ne Lpoly_basemul_add_loop
