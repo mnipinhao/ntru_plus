@@ -279,3 +279,12 @@ all eight inverse9 bodies, peaks at 15 YMM with zero spill/routing, and measures
 1532 cycles versus optimized vector-canonical A at 1548, a -16-cycle win in all
 9 launches. Reduction and centered-output debt, rather than arithmetic-chain
 inflation, is now the next target; see `CHECKPOINT-G1C-ITAIL-ASM-B0.md`.
+
+Checkpoint G1C-ITAIL-B1P exhausts all 729 two-radix3 cyclic orientations.  It
+proves that Forward R2's apparent paper rotation retains no residual phase:
+`D_F` and therefore `D_F^2` are identity.  BMScale, inverse-interstage, and
+residual top-split gauge placement cannot beat B0's four nontrivial
+inter-stage chains, 10 total Montgomery chains, two constants, and zero
+permutation.  Three arithmetic ties proceed to exact B1R range/normalization
+analysis; no B1 assembly is authorized yet.  See
+`CHECKPOINT-G1C-ITAIL-B1P.md`.

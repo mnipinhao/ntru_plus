@@ -34,3 +34,8 @@ the rejection of one-sided repair, and the 72-vector minimum proved control.
 reducers, including alias, congruence, range, and canaries.
 `test_g1c_m3c3_reduction_evidence.py` locks their static leaf/constant-time
 audit and the fixed nine-launch paired primitive price.
+
+`test_inverse_ntt9_b1p.py` gates the exact Forward-R2 gauge extraction, all
+729 two-radix3 cyclic orientations, the BMScale/inverse/top-split phase
+placement lower bound, and the three-way B1R range shortlist.  B1P is a
+symbolic design checkpoint and contains no performance claim.
