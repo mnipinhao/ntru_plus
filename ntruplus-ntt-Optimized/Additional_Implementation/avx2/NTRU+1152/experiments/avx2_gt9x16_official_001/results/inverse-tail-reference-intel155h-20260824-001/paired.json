@@ -1,0 +1,86 @@
+{
+  "audit_sha256": "92ef0ac3ef331d97eb67542827dcfaca6e542b386a63187b4c56968899238883",
+  "bench_source_sha256": "e0c3502651181a38a8b2d625d67404cd26be08523587c339e7a4c9c6abcb6a99",
+  "benchmark_class": "repository-local-inverse-tail-reference-paired-not-for-promotion",
+  "binary_sha256": "f929fb071a46b622ac4300532e4d80828b83934c6fa496d7e0edb70b1677df4a",
+  "blocks_per_launch": 16,
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "compiler": "cc",
+  "correctness": {
+    "C2_producer_cases": 257,
+    "arbitrary_transform_cases": 1003,
+    "canonical_and_direct_bit_exact": true,
+    "cells_per_case": 1152,
+    "independent_matrix_oracle": true
+  },
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "created_at": "2026-08-24T04:38:49.043679+00:00",
+  "cycles_by_launch": {
+    "A-canonical-repack-reference-inverse9": [
+      27253.0,
+      27201.5,
+      27215.5,
+      27210.0,
+      27243.0,
+      28191.5,
+      27197.5,
+      28088.0,
+      27218.5
+    ],
+    "B-direct-paper-p-reference-inverse9": [
+      26577.5,
+      26550.5,
+      26546.0,
+      26542.5,
+      26584.5,
+      27399.0,
+      26541.0,
+      27402.5,
+      26555.5
+    ]
+  },
+  "hostname": "nuc-PRO-MTL-H-Cubi-NUC-AI-1UM-MS-B209",
+  "kernel": "7.0.0-30-generic",
+  "launches": 9,
+  "map_checkpoint": "G1C-ITAIL-MAP-C2-to-inverse-NTT9",
+  "map_sha256": "751dc3bc0566547dc7112181fb2c849a400bfc8bf8a37667ac58ce8bd8ff0edd",
+  "median_cycles": {
+    "A-canonical-repack-reference-inverse9": 27218.5,
+    "B-direct-paper-p-reference-inverse9": 26555.5
+  },
+  "observations_per_slot": 96,
+  "paired": {
+    "B_minus_A": {
+      "B_faster_launches": 9,
+      "B_over_A": 0.9756415673163473,
+      "by_launch": [
+        -675.5,
+        -651.0,
+        -669.5,
+        -667.5,
+        -658.5,
+        -792.5,
+        -656.5,
+        -685.5,
+        -663.0
+      ],
+      "median_cycles": -667.5
+    }
+  },
+  "promotion_eligible": false,
+  "reference_source_sha256": "b44d20d4f40e34e3db7206bfdcc9cbc3aff0d705d56de42e67754370a5ebb790",
+  "scope": {
+    "excluded": "F1-B1 forward producer debt and final inverse normalization/top merge",
+    "included": "selected C2 BMScale+inverse16, boundary realization, complete correctness-first two-radix3 inverse NTT9",
+    "interpretation": "prices full canonical repack under the reference consumer; does not predict optimized inverse-NTT9 ASM cycles"
+  },
+  "upstream": {
+    "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+    "imported_at": "2026-08-20T01:10:09.909596+00:00",
+    "source_path": "crypto_kem/ntruplus1152/avx2",
+    "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "supercop_url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+    "supercop_version": "20260627"
+  }
+}

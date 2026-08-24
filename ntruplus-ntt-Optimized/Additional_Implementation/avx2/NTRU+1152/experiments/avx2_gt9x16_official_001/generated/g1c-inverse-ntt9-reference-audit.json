@@ -1,0 +1,47 @@
+{
+  "cflags": "-std=c11 -mavx2 -Wall -Wextra -Wpedantic -Werror -O3",
+  "classification": "correctness-first-fixed-loop-reference-not-production-ASM",
+  "compiler": "cc",
+  "constant_time_scope": {
+    "inlined_radix3_lane_core_conditional_branches": 0,
+    "inlined_radix3_lane_core_variable_divisions": 0,
+    "input_dependent_table_indices": false,
+    "wrapper_branches": "public fixed-count b/j/t/row loops only"
+  },
+  "functions": {
+    "inverse_lane": {
+      "calls": 0,
+      "conditional_branches": 0,
+      "divisions": 0,
+      "instructions": 1031
+    },
+    "ntruplus1152_exp001_inverse9_repack_canonical_p": {
+      "calls": 0,
+      "conditional_branches": 2,
+      "divisions": 0,
+      "instructions": 163
+    },
+    "ntruplus1152_exp001_inverse_ntt9_r2_direct": {
+      "calls": 2,
+      "conditional_branches": 3,
+      "divisions": 0,
+      "instructions": 90
+    },
+    "ntruplus1152_exp001_inverse_ntt9_r2_from_canonical_p": {
+      "calls": 2,
+      "conditional_branches": 3,
+      "divisions": 0,
+      "instructions": 87
+    }
+  },
+  "limitations": [
+    "scalar centered reductions are deliberately retained",
+    "calls/frames/stack in this reference do not define the future ASM ABI",
+    "benchmark cycles price representation only and are not an optimized inverse9 forecast"
+  ],
+  "map_checkpoint": "G1C-ITAIL-MAP-C2-to-inverse-NTT9",
+  "map_sha256": "751dc3bc0566547dc7112181fb2c849a400bfc8bf8a37667ac58ce8bd8ff0edd",
+  "object_sha256": "e153eb60bb052ed9afeec651d1cb0a33c095e6e8270f18ac7274c66c494da0eb",
+  "schema": "gt9x16-inverse-ntt9-reference-audit/v1",
+  "source_sha256": "b44d20d4f40e34e3db7206bfdcc9cbc3aff0d705d56de42e67754370a5ebb790"
+}

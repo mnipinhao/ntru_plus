@@ -215,6 +215,7 @@ def main() -> int:
     parser.add_argument("--m3-audit", type=Path, required=True)
     parser.add_argument("--asm-source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--header", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
@@ -239,7 +240,8 @@ def main() -> int:
             raise SystemExit(f"C2 source no longer contains {fragment}")
 
     inverse16_checks = prove_inverse16(rows)
-    inverse9_checks = prove_inverse9_inputs(ntt9["ntt9_root_mod_q"])
+    rho = ntt9["ntt9_root_mod_q"]
+    inverse9_checks = prove_inverse9_inputs(rho)
     ranges = [selected_output_ranges(row) for row in rows]
     plane1152 = plane(1152, 4, ranges)
     plane864 = plane(864, 3, None)
@@ -342,12 +344,29 @@ def main() -> int:
         },
     }
     rendered = json.dumps(document, indent=2, sort_keys=True) + "\n"
+    omega = pow(rho, 3, Q)
+    inverse_kappa = centered(pow(omega, 2, Q) - omega)
+    header = """/* Generated inverse-tail physical order and reference constants. */
+#ifndef NTRUPLUS1152_EXP001_INVERSE_TAIL_MAP_H
+#define NTRUPLUS1152_EXP001_INVERSE_TAIL_MAP_H
+#include <stdint.h>
+#define NTRUPLUS1152_EXP001_INVERSE_TAIL_Q 3457
+#define NTRUPLUS1152_EXP001_INVERSE_TAIL_RHO %d
+#define NTRUPLUS1152_EXP001_INVERSE_TAIL_RHOINV %d
+#define NTRUPLUS1152_EXP001_INVERSE_TAIL_KAPPA_INV %d
+static const int16_t ntruplus1152_exp001_inverse_tail_p[9] = {%s};
+#endif
+""" % (centered(rho), centered(pow(rho, -1, Q)), inverse_kappa,
+       ", ".join(str(value) for value in PAPER_P))
     if args.check:
-        if not args.output.is_file() or args.output.read_text() != rendered:
+        if (not args.output.is_file() or args.output.read_text() != rendered or
+                not args.header.is_file() or args.header.read_text() != header):
             raise SystemExit("generated inverse-tail consumer map is stale")
     else:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered)
+        args.header.parent.mkdir(parents=True, exist_ok=True)
+        args.header.write_text(header)
     return 0
 
 

@@ -262,3 +262,12 @@ route. The shared map also gives a 54-vector `d=3` NTRU+864 topology projection,
 while leaving its range and repair policy unclaimed. The next probe is a
 correctness-first reference inverse NTT9 on this direct-load boundary; see
 `CHECKPOINT-G1C-ITAIL-MAP.md`.
+
+Checkpoint G1C-ITAIL-REF implements that two-layer inverse paper-R2 reference.
+It passes an independent inverse-DFT matrix oracle on 1,003 arbitrary transform
+cases, 257 real C2 producer cases, canonical-control equivalence, alias, range,
+canary, and sanitizers. In the complete C2-to-reference-inverse9 region, direct
+B is 26,555.5 cycles versus canonical A at 27,218.5, a -667.5-cycle win in all
+9 launches. Absolute cycles are scalar-reference diagnostics; the result only
+prices representation debt. A straight-line AVX2 two-radix3 B baseline is now
+authorized; see `CHECKPOINT-G1C-ITAIL-REF.md`.

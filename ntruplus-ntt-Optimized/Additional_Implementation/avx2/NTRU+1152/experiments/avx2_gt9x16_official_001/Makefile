@@ -49,9 +49,12 @@ G1C_M3_FULL_PROOF_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.js
 G1C_M3_FULL_AUDIT_ARGS := --object $(BUILD)/g1c/g1c-bmscale-inverse-d1.o --source $(G1C_LINKED_ASM) --proof generated/g1c-m3-full-path-proof.json --output generated/g1c-m3-full-inverse16-audit.json --compiler $(CC) --cflags=-mavx2
 G1C_M3_FULL_RESULT := results/g1c-m3-full-intel155h-20260824-001/full-paired.json
 HWA_A0_ARGS := --layout generated/gt9x16-pipeline-layout.json --views generated/g0-representation-views.json --g1b-result $(G1B_RESULT) --m3-result $(G1C_M3_FULL_RESULT) --m3-audit generated/g1c-m3-full-inverse16-audit.json --producer-source bench/g1c_m3_producer_common.h --output generated/hwa-compatibility-audit.json
-INVERSE_TAIL_MAP_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --ntt9-oracle generated/gt9x16-ntt9-first-oracle.json --full-proof generated/g1c-m3-full-path-proof.json --m3-audit generated/g1c-m3-full-inverse16-audit.json --asm-source $(G1C_LINKED_ASM) --output generated/g1c-inverse-tail-consumer-map.json
+INVERSE_TAIL_MAP_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --ntt9-oracle generated/gt9x16-ntt9-first-oracle.json --full-proof generated/g1c-m3-full-path-proof.json --m3-audit generated/g1c-m3-full-inverse16-audit.json --asm-source $(G1C_LINKED_ASM) --output generated/g1c-inverse-tail-consumer-map.json --header generated/g1c-inverse-tail-map.h
+INVERSE_NTT9_REF := ref/inverse_ntt9_reference.c
+INVERSE_NTT9_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-ntt9-reference.o --source $(INVERSE_NTT9_REF) --map generated/g1c-inverse-tail-consumer-map.json --compiler $(CC) --cflags="$(PAIRED_CFLAGS)"
+INVERSE_TAIL_RESULT := results/inverse-tail-reference-intel155h-20260824-001/paired.json
 
-.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record \
+.PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \
  supercop-poly-serious supercop-paired-serious supercop-promotion-report
@@ -126,6 +129,8 @@ check:
 	$(PYTHON) tools/audit_g1c_m3_full_inverse16.py $(G1C_M3_FULL_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_hwa_compatibility_audit.py $(HWA_A0_ARGS) --check
 	$(PYTHON) tools/generate_inverse_tail_consumer_map.py $(INVERSE_TAIL_MAP_ARGS) --check
+	$(CC) $(PAIRED_CFLAGS) -Isrc -Iref -Igenerated -c $(INVERSE_NTT9_REF) -o $(BUILD)/g1c/inverse-ntt9-reference.o
+	$(PYTHON) tools/audit_inverse_ntt9_reference.py $(INVERSE_NTT9_AUDIT_ARGS) --output generated/g1c-inverse-ntt9-reference-audit.json --check
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
 	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS) --check
 	$(PYTHON) $(REPO_ROOT)/scripts/check_supercop_experiment.py --experiment $(EXPERIMENT) --parameter $(PARAMETER)
@@ -148,6 +153,7 @@ check:
 	$(PYTHON) tests/test_g1c_m3_full_path_proof.py
 	$(PYTHON) tests/test_hwa_compatibility_audit.py
 	$(PYTHON) tests/test_inverse_tail_consumer_map.py
+	$(PYTHON) tests/test_inverse_tail_reference_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -163,6 +169,8 @@ check:
 	$(BUILD)/test-g1c-bmscale-inverse-d1
 	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_m3_full_inverse16.c -o $(BUILD)/test-g1c-m3-full-inverse16
 	$(BUILD)/test-g1c-m3-full-inverse16
+	$(CC) $(CFLAGS_STRICT) -O3 -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference
+	$(BUILD)/test-inverse-ntt9-reference
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc $(G1C_M3C3_ASM) tests/test_g1c_m3c3_reduction.c -o $(BUILD)/test-g1c-m3c3-reduction
 	$(BUILD)/test-g1c-m3c3-reduction
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -I$(UPSTREAM) tests/test_official_stage_partitions.c $(OFFICIAL_PARTITIONS) $(OFFICIAL_FORWARD) -o $(BUILD)/test-official-stage-partitions
@@ -186,6 +194,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-bmscale-inverse-d1-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_g1c_m3_full_inverse16.c -o $(BUILD)/test-g1c-m3-full-inverse16-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-m3-full-inverse16-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) tests/test_inverse_ntt9_reference.c -o $(BUILD)/test-inverse-ntt9-reference-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-inverse-ntt9-reference-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -219,6 +229,8 @@ audit:
 	$(CC) -mavx2 -I. -c $(G1C_LINKED_ASM) -o $(BUILD)/g1c/g1c-bmscale-inverse-d1.o
 	$(PYTHON) tools/audit_g1c_bmscale_inverse_d1.py $(G1C_LINKED_AUDIT_ARGS)
 	$(PYTHON) tools/audit_g1c_m3_full_inverse16.py $(G1C_M3_FULL_AUDIT_ARGS)
+	$(CC) $(PAIRED_CFLAGS) -Isrc -Iref -Igenerated -c $(INVERSE_NTT9_REF) -o $(BUILD)/g1c/inverse-ntt9-reference.o
+	$(PYTHON) tools/audit_inverse_ntt9_reference.py $(INVERSE_NTT9_AUDIT_ARGS) --output generated/g1c-inverse-ntt9-reference-audit.json
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
 	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS)
 
@@ -381,6 +393,16 @@ bench-g1c-m3-full-record: audit
 	mkdir -p $(BUILD) results/$(RESULT_TAG)
 	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) bench/bench_g1c_m3_full_paired.c -o $(BUILD)/bench-g1c-m3-full-paired
 	$(PYTHON) tools/run_g1c_m3_full_benchmark.py --binary $(BUILD)/bench-g1c-m3-full-paired --cpu $(BENCH_CPU) --launches 9 --audit generated/g1c-m3-full-inverse16-audit.json --proof generated/g1c-m3-full-path-proof.json --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/full-paired.json
+
+bench-inverse-tail:
+	mkdir -p $(BUILD)
+	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) bench/bench_inverse_tail_paired.c -o $(BUILD)/bench-inverse-tail-paired
+	taskset -c $(BENCH_CPU) $(BUILD)/bench-inverse-tail-paired
+
+bench-inverse-tail-record: audit
+	mkdir -p $(BUILD) results/$(RESULT_TAG)
+	$(CC) $(PAIRED_CFLAGS) -I. $(CPPFLAGS_LOCAL) $(INVERSE_NTT9_REF) $(NTT16_ASM) $(G1C_LINKED_ASM) bench/bench_inverse_tail_paired.c -o $(BUILD)/bench-inverse-tail-paired
+	$(PYTHON) tools/run_inverse_tail_benchmark.py --binary $(BUILD)/bench-inverse-tail-paired --cpu $(BENCH_CPU) --launches 9 --map generated/g1c-inverse-tail-consumer-map.json --audit generated/g1c-inverse-ntt9-reference-audit.json --reference-source $(INVERSE_NTT9_REF) --bench-source bench/bench_inverse_tail_paired.c --upstream upstream --compiler $(CC) --cflags "$(PAIRED_CFLAGS)" --output results/$(RESULT_TAG)/paired.json
 
 supercop-check:
 	test -n "$(SUPERCOP_ROOT)"
