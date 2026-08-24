@@ -1,0 +1,43 @@
+experiment: GT32-LATE-D2-INVERSE64-081
+date: 2026-08-24
+gt_clean_modified: false
+oracle:
+  status: PASS
+  tiles: 6
+  coefficient_identities: 153600
+  physical_axis_source: production_inverse_impulse_response
+correctness:
+  status: PASS
+  executable_trials: 2136
+  explicit_qbm_crt_bridge: PASS
+  naturalization: PASS
+  common_endpoint: PASS
+implementations:
+  v1_generic_routing:
+    full_low_regime_tsc: 479.5
+  v2_specialized_4x4_routing:
+    status: SELECTED_FOR_ADJUDICATION
+    full_low_regime_tsc: 464.5
+control:
+  full_low_regime_tsc: 261_to_262
+attribution_tsc:
+  control_b3_post_i1: 157.25
+  candidate_d2_qbm: 159.5
+  control_inverse32_normalize: 88.0
+  candidate_route_inverse64_convert: 318.5
+  candidate_naturalize: 51.0
+  candidate_inverse64_core: 223.5
+  candidate_hwa_to_tile4: 18.5
+static_shape:
+  control_instructions: 557
+  candidate_instructions: 1017
+  control_movement: 122
+  candidate_movement: 340
+  control_text_bytes: 2428
+  candidate_text_bytes: 4435
+  spills_both: 0
+decision:
+  status: CLOSED_FOR_SCOPE
+  reason: mode-critical inverse64 and physical routing cost; QBM is only parity
+  kem_integration: NOT_RUN
+  reopen: requires a different downstream contract that deletes routing/output repayment
