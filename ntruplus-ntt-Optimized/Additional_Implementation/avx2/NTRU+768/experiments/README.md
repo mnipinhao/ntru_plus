@@ -33,6 +33,15 @@ DSB/MITE delivery versus fully inline and remain 21--24 core cycles behind
 consumer-native campaign is paused pending a genuinely reusable compact
 microkernel rather than another clustering or scheduling mutation.
 
+[Experiment 070](gt32_encap_mprime_layout_070/) performs the pure-generator
+search for an Encap-specific M-prime leaf order. It finds a correct layout in
+which B3 needs only lambda-table relabeling and Q24 becomes one uniform loop,
+but only 4 of 12 blocks can be formed by relabeling the current shared Forward
+deposit masks. The other eight require block-dependent lane routing, modeled
+at 96 extra vector operations per Forward polynomial. Since this fails the
+zero-extra producer premise, no ASM gate is opened. The result is scoped to
+the searched uniform microkernel and current Forward terminal families.
+
 ## Progressive M formation coverage
 
 [Experiment 030](gt32_n5_progressive_soa_030/) audits the proposed

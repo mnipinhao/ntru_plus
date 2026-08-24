@@ -1,0 +1,57 @@
+experiment: GT32-ENCAP-MPRIME-LAYOUT-070
+title: Encap-specific M-prime leaf-order generator gate
+production_modified: false
+asm_written: false
+
+status:
+  uniform_q24_layout: FOUND
+  b3_table_relabel_only: PASS
+  block_store_relabel_only: PASS
+  current_forward_zero_extra_landing: FAIL_IN_SEARCHED_FAMILY
+  executable_gate: NOT_OPENED
+  decision: NO_ASM_CONTINUATION
+
+fixed_contract:
+  representation: four coefficient planes, 16 quartic leaves per block
+  blocks: 12
+  scale_and_range: unchanged from current M
+  b3_arithmetic: unchanged
+  q24_output: exact canonical 48-packet stream
+
+search:
+  uniform_template_family: current 4x16 transpose plus output permutation plus four vpermq permutations
+  nominal_parameter_space: 191102976
+  method: 12 production seeds plus 512 deterministic coordinate-descent starts
+  exhaustive: false
+  static_score_is_cycle_veto: false
+  distinct_local_minima: 54
+
+best_candidate:
+  block_order_old_indices: [0, 1, 9, 8, 4, 5, 11, 10, 6, 7, 3, 2]
+  distinct_lane_permutations: 5
+  mask_relabel_blocks: 4
+  non_absorbable_blocks: 8
+  modeled_route_ops_per_degree_plane_sum: 24
+  modeled_route_ops_per_forward: 96
+  modeled_route_ops_for_two_encap_forwards: 192
+
+correctness:
+  block_bijection: PASS
+  lane_bijection: PASS
+  lambda_source_bijection: PASS
+  q24_mapping_source: experiment_068_checked_mapping
+
+interpretation:
+  - a uniform-Q24 M-prime representation is mathematically available
+  - B3 can consume it through lambda-table relabeling only
+  - the current shared Forward deposit cannot produce all blocks for free
+  - no executable candidate is justified under this gate's premise
+
+scope_limitations:
+  - the 24^5 template family is searched heuristically, not exhaustively
+  - route class 3 is not a universal AVX2 permutation lower bound
+  - no cycle claim is made
+
+reopen_only_if:
+  - a jointly redesigned S4/S5 terminal absorbs the required block-dependent lane routes into existing movement
+  - or a different compact uniform serializer family changes the producer-cost premise
