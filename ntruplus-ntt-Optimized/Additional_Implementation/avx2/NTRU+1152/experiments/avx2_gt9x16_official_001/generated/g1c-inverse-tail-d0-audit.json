@@ -1,0 +1,79 @@
+{
+  "cflags": "-mavx2",
+  "checkpoint": "G1C-ITAIL-D0",
+  "compiler": "cc",
+  "delta_M1_minus_M0": {
+    "boundary_reloads": -72,
+    "output_stores": -72,
+    "static_instructions": -144
+  },
+  "functions": {
+    "M0": {
+      "backward_dataflow_peak_live_ymm": 14,
+      "boundary_reloads": 72,
+      "calls": 0,
+      "conditional_branches": 0,
+      "forbidden": [],
+      "frame_or_stack": 0,
+      "input_d1_loads": 72,
+      "instruction_counts": {
+        "ret": 1,
+        "vmovdqa": 18,
+        "vmovdqu": 288,
+        "vpaddw": 528,
+        "vpand": 144,
+        "vpblendw": 144,
+        "vpcmpgtw": 144,
+        "vperm2i128": 144,
+        "vpmulhrsw": 168,
+        "vpmulhw": 592,
+        "vpmullw": 464,
+        "vpshufb": 144,
+        "vpsubw": 896
+      },
+      "output_stores": 144,
+      "static_instructions": 3675,
+      "vzeroupper": 0
+    },
+    "M1": {
+      "backward_dataflow_peak_live_ymm": 14,
+      "boundary_reloads": 0,
+      "calls": 0,
+      "conditional_branches": 0,
+      "forbidden": [],
+      "frame_or_stack": 0,
+      "input_d1_loads": 72,
+      "instruction_counts": {
+        "ret": 1,
+        "vmovdqa": 18,
+        "vmovdqu": 144,
+        "vpaddw": 528,
+        "vpand": 144,
+        "vpblendw": 144,
+        "vpcmpgtw": 144,
+        "vperm2i128": 144,
+        "vpmulhrsw": 168,
+        "vpmulhw": 592,
+        "vpmullw": 464,
+        "vpshufb": 144,
+        "vpsubw": 896
+      },
+      "output_stores": 72,
+      "static_instructions": 3531,
+      "vzeroupper": 0
+    }
+  },
+  "gates": {
+    "exact_minus_144_instructions": true,
+    "leaf_constant_time": true,
+    "m0_exact_memory_control": true,
+    "m1_peak_at_most_16": true,
+    "m1_zero_boundary_materialization": true,
+    "same_arithmetic_instruction_multiset": true
+  },
+  "object_sha256": "0cdcdf6b3d3849fcee7860392b842bc4780525987b86769f940c37994c07ffe5",
+  "promotion_eligible": false,
+  "proof_sha256": "99ef41f22337b17d12f3c5d70aa3715f8a3e8da46b390c810878c603fef9ad2c",
+  "schema": "gt-g1c-itail-d0-audit/v1",
+  "source_sha256": "09706aa27212840e85aa70db55c85f341daa88f53d1bb6c340d0824de235a113"
+}

@@ -26,11 +26,16 @@ make supercop-poly-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-poly-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-itail-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 make supercop-itail-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
+make supercop-itail-d0-short SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
+make supercop-itail-d0-serious SUPERCOP_CAMPAIGN_ROOT=/path/to/campaign
 ```
 
 The inverse-tail measure balances code placement in every loop by running
 B0-first/B1-second and B1-first/B0-second. Its report contains pooled StQ
 values plus a paired StQ2 delta for every fresh launch.
+The D0 measure applies the same balanced ordering to the materialized and
+register-live D8-to-inverse9 schedules and is labelled
+`supercop-derived-itail-d0`.
 
 Each result retains `run.out`, SUPERCOP `data`, `metadata.json`, the exact
 `measure` ELF, `fresh-launches/*.out`, `stq-summary.json`, and the lock file.

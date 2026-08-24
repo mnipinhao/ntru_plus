@@ -303,3 +303,10 @@ serious run measures B1 at StQ2 890.0000 cycles versus B0 at 902.7917; the
 per-launch delta is negative in 9/9 launches with median -12.9792 cycles. B1
 is selected as the materialized inverse9 control, but is not KEM- or
 production-qualified. See `CHECKPOINT-G1C-ITAIL-ASM-B1.md`.
+
+Checkpoint G1C-ITAIL-D0 proves a register-live D8-to-B1 wavefront at 14/16 YMM
+and implements the exact same arithmetic DAG as the materialized control. M1
+removes 72 D8 stores and 72 B1 reloads, but its immediate-triad schedule costs
+StQ2 2007.6944 versus M0 at 1642.3241: +365.3704 cycles, losing all 9 serious
+launches. The schedule is rejected; one late-layer1 M2 attribution control is
+the final boundary-fusion gate. See `CHECKPOINT-G1C-ITAIL-D0.md`.

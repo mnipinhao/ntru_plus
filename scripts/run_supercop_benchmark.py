@@ -107,7 +107,8 @@ def main() -> int:
     parser.add_argument("--parameter", choices=("864", "1152"), required=True)
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--cpu", type=int, required=True)
-    parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail"), required=True)
+    parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail",
+                                           "derived-itail-d0"), required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
                         help="force one common SUPERCOP okc recipe (campaign only)")
@@ -116,7 +117,7 @@ def main() -> int:
     parser.add_argument("--require-frequency-control", action="store_true",
                         help="require performance governor and disabled turbo/boost")
     args = parser.parse_args()
-    if args.mode == "derived-itail" and args.parameter != "1152":
+    if args.mode in ("derived-itail", "derived-itail-d0") and args.parameter != "1152":
         raise SystemExit("the current derived-itail measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -164,9 +165,12 @@ def main() -> int:
         for path in implementations:
             path.chmod(original_modes[path] | stat.S_ISVTX)
         selected.chmod(original_modes[selected] & ~stat.S_ISVTX)
-        if args.mode in ("derived-poly", "derived-itail"):
-            replacement_name = ("poly_measure.c" if args.mode == "derived-poly"
-                                else "itail_measure.c")
+        if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0"):
+            replacement_name = {
+                "derived-poly": "poly_measure.c",
+                "derived-itail": "itail_measure.c",
+                "derived-itail-d0": "itail_d0_measure.c",
+            }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
             if args.mode == "derived-poly":
@@ -224,9 +228,12 @@ def main() -> int:
         required = ("forward_small_cycles", "forward_general_cycles", "basemul_cycles",
                     "inverse_cycles", "baseinv_cycles", "poly_mul_small_cycles",
                     "poly_mul_general_cycles")
-    else:
+    elif args.mode == "derived-itail":
         required = ("inverse_ntt9_b0_first_cycles", "inverse_ntt9_b1_second_cycles",
                     "inverse_ntt9_b1_first_cycles", "inverse_ntt9_b0_second_cycles")
+    else:
+        required = ("inverse_tail_d0_m0_first_cycles", "inverse_tail_d0_m1_second_cycles",
+                    "inverse_tail_d0_m1_first_cycles", "inverse_tail_d0_m0_second_cycles")
     missing = [name for name in required if f" {name} " not in data_text]
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
@@ -323,6 +330,44 @@ def main() -> int:
             "tied_launches": sum(delta == 0 for delta in deltas),
             "median_b1_minus_b0_cycles": statistics.median(deltas),
         }
+    if args.mode == "derived-itail-d0":
+        combined = {
+            "inverse_tail_d0_m0_cycles": (
+                pooled["inverse_tail_d0_m0_first_cycles"] +
+                pooled["inverse_tail_d0_m0_second_cycles"]),
+            "inverse_tail_d0_m1_cycles": (
+                pooled["inverse_tail_d0_m1_first_cycles"] +
+                pooled["inverse_tail_d0_m1_second_cycles"]),
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            m0_values = (observed["inverse_tail_d0_m0_first_cycles"] +
+                         observed["inverse_tail_d0_m0_second_cycles"])
+            m1_values = (observed["inverse_tail_d0_m1_first_cycles"] +
+                         observed["inverse_tail_d0_m1_second_cycles"])
+            m0_stq2 = stabilized_quartiles(m0_values)[1]
+            m1_stq2 = stabilized_quartiles(m1_values)[1]
+            paired_launches.append({
+                "launch": launch_number,
+                "inverse_tail_d0_m0_stq2": m0_stq2,
+                "inverse_tail_d0_m1_stq2": m1_stq2,
+                "m1_minus_m0_cycles": m1_stq2 - m0_stq2,
+            })
+        deltas = [entry["m1_minus_m0_cycles"] for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "m1_faster_launches": sum(delta < 0 for delta in deltas),
+            "m1_slower_launches": sum(delta > 0 for delta in deltas),
+            "tied_launches": sum(delta == 0 for delta in deltas),
+            "median_m1_minus_m0_cycles": statistics.median(deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -331,6 +376,7 @@ def main() -> int:
         **lock,
         "benchmark_class": ("supercop-native-kem" if args.mode == "native-kem"
                             else "supercop-derived-poly" if args.mode == "derived-poly"
+                            else "supercop-derived-itail-d0" if args.mode == "derived-itail-d0"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -358,7 +404,9 @@ def main() -> int:
         "measure_source_sha256": sha256_file(
             root / "crypto_kem" / "measure.c" if args.mode == "native-kem"
             else REPO_ROOT / "bench" / "supercop" /
-            ("poly_measure.c" if args.mode == "derived-poly" else "itail_measure.c")
+            ({"derived-poly": "poly_measure.c",
+              "derived-itail": "itail_measure.c",
+              "derived-itail-d0": "itail_d0_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

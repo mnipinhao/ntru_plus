@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-itail-asm-b1-supercop-derived-price-complete
+state: checkpoint-g1c-itail-d0-immediate-triad-linked-rejected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -230,6 +230,11 @@ gates:
   checkpoint_g1c_itail_asm_b1_supercop_derived: passed-b1890.0000-vs-b0902.7917-minus12.7917-pooled
   checkpoint_g1c_itail_asm_b1_paired_launches: passed-median-minus12.9792-9of9
   checkpoint_g1c_itail_asm_b1_benchmark_class: supercop-derived-itail-not-native-kem
+  checkpoint_g1c_itail_d0_proof: passed-same-dag-range-chain-peak14-of16-ymm
+  checkpoint_g1c_itail_d0_correctness: passed-1003-producer-real-alias-immutability-canary-sanitizers
+  checkpoint_g1c_itail_d0_static: passed-minus72-stores-minus72-reloads-minus144-instructions
+  checkpoint_g1c_itail_d0_supercop_derived: rejected-m12007.6944-vs-m01642.3241-plus365.3704
+  checkpoint_g1c_itail_d0_paired_launches: rejected-median-plus365.2917-m1-loses-9of9
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -296,12 +301,15 @@ checkpoint_g1c_itail_b1r: b0-orientation-selected-and-two-interstage-barrett-del
 g1c_itail_b1r_proof: generated/g1c-inverse-ntt9-b1r.json
 checkpoint_g1c_itail_asm_b1: exact-two-reducer-deletion-correct-and-supercop-derived-win
 g1c_itail_asm_b1_result: results/itail-asm-b1-supercop-derived-intel155h-20260824-003/supercop-itail-serious/stq-summary.json
-next_step: prove-live-d8-to-inverse9-register-handoff-before-linked-b1-implementation
+checkpoint_g1c_itail_d0: register-feasible-but-immediate-triad-wavefront-rejected-performance
+g1c_itail_d0_result: results/itail-d0-supercop-derived-intel155h-20260824-001/supercop-itail-d0-serious/stq-summary.json
+next_step: price-d0-m2-retain-nine-d8-outputs-then-original-order-b1-layer1
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
   - g0-x0-universal-canonical-abi-paid-standalone-full-array-pass
   - g1c-m3c2-37-node-one-sided-cover-fails-exact-signed-i16-contract-at-34496
+  - g1c-itail-d0-m1-immediate-triad-plus365.3704-cycles-loses-9of9-despite-minus144-memory-instructions
 deferred_candidates:
   - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
 selected_candidates:
