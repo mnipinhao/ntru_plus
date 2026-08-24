@@ -288,3 +288,10 @@ inter-stage chains, 10 total Montgomery chains, two constants, and zero
 permutation.  Three arithmetic ties proceed to exact B1R range/normalization
 analysis; no B1 assembly is authorized yet.  See
 `CHECKPOINT-G1C-ITAIL-B1P.md`.
+
+Checkpoint G1C-ITAIL-B1R exhausts all input and inter-stage reduction policies
+for the three B1P ties.  The B0 `rho^(+/-1)` orientation has the best i16
+margin.  Its unique minimum inter-stage Barrett set is `{0,3,6}`, proving the
+existing reductions on wires 1 and 2 are removable while all input and final
+normalization steps remain required.  The narrow B1 ASM deletion is now
+authorized; see `CHECKPOINT-G1C-ITAIL-B1R.md`.

@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-g1c-itail-b1p-phase-orientation-search-complete
+state: checkpoint-g1c-itail-b1r-range-reduction-normalization-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -219,6 +219,12 @@ gates:
   checkpoint_g1c_itail_b1p_absorption: bmscale-and-top-split-do-not-lower-four-chain-bound
   checkpoint_g1c_itail_b1p_selection: three-tied-zero-permutation-orientations-to-b1r
   checkpoint_g1c_itail_b1p_benchmark: not-run-symbolic-design-checkpoint
+  checkpoint_g1c_itail_b1r_input_policy: passed-all-512-only-all-nine-reductions-safe
+  checkpoint_g1c_itail_b1r_interstage_policy: passed-32-per-variant-unique-minimum-wires-0-3-6
+  checkpoint_g1c_itail_b1r_range_rank: selected-b0-rho-plusminus1-31424-best-margin
+  checkpoint_g1c_itail_b1r_removed_reductions: authorized-wires1-2-six-instructions-per-vector
+  checkpoint_g1c_itail_b1r_normalization: passed-exact-witnesses-final-barrett-and-center-all-nine
+  checkpoint_g1c_itail_b1r_benchmark: not-run-proof-checkpoint
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -281,7 +287,9 @@ checkpoint_g1c_itail_asm_b0: direct-physical-p-avx2-baseline-correct-and-priced
 g1c_itail_asm_b0_result: results/itail-asm-b0-intel155h-20260824-001/paired.json
 checkpoint_g1c_itail_b1p: identity-forward-gauge-and-729-orientation-lower-bound-complete
 g1c_itail_b1p_oracle: generated/g1c-inverse-ntt9-b1p.json
-next_step: itail-b1r-exact-range-reduction-and-normalization-price-for-three-tied-orientations
+checkpoint_g1c_itail_b1r: b0-orientation-selected-and-two-interstage-barrett-deletions-authorized
+g1c_itail_b1r_proof: generated/g1c-inverse-ntt9-b1r.json
+next_step: implement-itail-asm-b1-narrow-two-reducer-deletion-then-supercop-derived-paired-price
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

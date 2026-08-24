@@ -39,3 +39,8 @@ audit and the fixed nine-launch paired primitive price.
 729 two-radix3 cyclic orientations, the BMScale/inverse/top-split phase
 placement lower bound, and the three-way B1R range shortlist.  B1P is a
 symbolic design checkpoint and contains no performance claim.
+
+`test_inverse_ntt9_b1r.py` gates the exhaustive 512 input and 32-per-variant
+inter-stage reduction policies, ranks the three B1P ties by exact i16 envelope,
+and requires concrete in-contract witnesses for every final Barrett and center
+correction before authorizing the narrow B1 ASM deletion.
