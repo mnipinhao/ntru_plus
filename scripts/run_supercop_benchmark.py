@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -15,6 +15,89 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from supercop_workflow import LOCK_PATH, REPO_ROOT, read_lock, sha256_file
+
+
+def read_text(path: Path) -> str | None:
+    return path.read_text(encoding="utf-8").strip() if path.is_file() else None
+
+
+def frequency_state(cpu: int, cpu_model: str) -> dict[str, object]:
+    cpufreq = Path(f"/sys/devices/system/cpu/cpu{cpu}/cpufreq")
+    topology = Path(f"/sys/devices/system/cpu/cpu{cpu}/topology")
+    state: dict[str, object] = {
+        "scaling_governor": read_text(cpufreq / "scaling_governor"),
+        "scaling_min_freq": read_text(cpufreq / "scaling_min_freq"),
+        "scaling_max_freq": read_text(cpufreq / "scaling_max_freq"),
+        "base_frequency": read_text(cpufreq / "base_frequency"),
+        "cpuinfo_max_freq": read_text(cpufreq / "cpuinfo_max_freq"),
+        "thread_siblings_list": read_text(topology / "thread_siblings_list"),
+        "core_type": read_text(topology / "core_type"),
+        "intel_no_turbo": read_text(Path("/sys/devices/system/cpu/intel_pstate/no_turbo")),
+        "amd_boost": read_text(cpufreq / "boost") or
+                     read_text(Path("/sys/devices/system/cpu/cpufreq/boost")),
+    }
+    available_maxima = []
+    for candidate in Path("/sys/devices/system/cpu").glob("cpu[0-9]*/cpufreq/cpuinfo_max_freq"):
+        value = read_text(candidate)
+        if value and value.isdigit():
+            available_maxima.append(int(value))
+    selected_max = state["cpuinfo_max_freq"]
+    if selected_max and str(selected_max).isdigit() and available_maxima:
+        state["inferred_core_class"] = (
+            "performance" if int(str(selected_max)) == max(available_maxima) else "efficiency")
+        state["system_max_cpuinfo_freq"] = str(max(available_maxima))
+    else:
+        state["inferred_core_class"] = "unknown"
+        state["system_max_cpuinfo_freq"] = None
+
+    failures = []
+    if state["scaling_governor"] != "performance":
+        failures.append("scaling governor is not performance")
+    if "Intel" in cpu_model and state["intel_no_turbo"] != "1":
+        failures.append("Intel turbo is not disabled")
+    if "AMD" in cpu_model and state["amd_boost"] != "0":
+        failures.append("AMD boost is not disabled")
+    if state["inferred_core_class"] != "performance":
+        failures.append("selected CPU is not identified as a physical P-core")
+    state["formal_policy_passed"] = not failures
+    state["formal_policy_failures"] = failures
+    return state
+
+
+def decode_observations(text: str, operation: str) -> list[int]:
+    values: list[int] = []
+    for line in text.splitlines():
+        words = line.split()
+        if not words or words[0] != operation or len(words) < 3:
+            continue
+        center = int(words[2] if words[1] == "-" else words[1])
+        encoded = "".join(words[3:] if words[1] == "-" else words[2:])
+        # printentry emits the StQ2 center as a separate word followed by one
+        # concatenated +/- delta word. With mbytes=-1, words are op, '-', center,
+        # deltas; tolerate the no-placeholder shape for replay portability.
+        for match in re.finditer(r"([+-])(\d+)", encoded):
+            delta = int(match.group(2))
+            values.append(center + delta if match.group(1) == "+" else center - delta)
+    return values
+
+
+def stabilized_quartiles(values: list[int]) -> list[float]:
+    if not values:
+        raise ValueError("cannot compute stabilized quartiles of no observations")
+    expanded = sorted(value for value in values for _ in range(8))
+    count = len(values)
+    return [sum(expanded[(1 + 2 * index) * count:(3 + 2 * index) * count]) /
+            (2 * count) for index in range(3)]
+
+
+def measure_identity(text: str) -> dict[str, str]:
+    identity = {}
+    for line in text.splitlines():
+        words = line.split()
+        if words and words[0] in ("implementation", "cpuid", "cpucycles_persecond",
+                                  "cpucycles_implementation", "compiler"):
+            identity[words[0]] = " ".join(words[1:])
+    return identity
 
 
 def main() -> int:
@@ -27,6 +110,10 @@ def main() -> int:
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
                         help="force one common SUPERCOP okc recipe (campaign only)")
+    parser.add_argument("--fresh-launches", type=int, default=3,
+                        help="fresh measure-ELF processes used for pooled StQ1/2/3")
+    parser.add_argument("--require-frequency-control", action="store_true",
+                        help="require performance governor and disabled turbo/boost")
     args = parser.parse_args()
 
     root = args.campaign_root.resolve()
@@ -48,6 +135,18 @@ def main() -> int:
         raise SystemExit(f"missing implementation: {selected}")
     if args.result_dir.exists():
         raise SystemExit(f"refusing to overwrite result directory: {args.result_dir}")
+    if args.fresh_launches < 1:
+        raise SystemExit("--fresh-launches must be positive")
+
+    cpu_model = "unknown"
+    for line in Path("/proc/cpuinfo").read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.lower().startswith("model name"):
+            cpu_model = line.split(":", 1)[1].strip()
+            break
+    frequency = frequency_state(args.cpu, cpu_model)
+    if args.require_frequency_control and not frequency["formal_policy_passed"]:
+        raise SystemExit("formal SUPERCOP frequency preflight failed: " +
+                         "; ".join(frequency["formal_policy_failures"]))
     args.result_dir.mkdir(parents=True)
 
     implementations = sorted(path for path in primitive_dir.iterdir() if path.is_dir())
@@ -124,13 +223,60 @@ def main() -> int:
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
 
+    measure_elf = data_files[0].parent / "work" / "compile" / "measure"
+    if not measure_elf.is_file():
+        raise SystemExit(f"missing SUPERCOP-built measure ELF: {measure_elf}")
+    saved_elf = args.result_dir / "measure"
+    shutil.copy2(measure_elf, saved_elf)
+    launch_dir = args.result_dir / "fresh-launches"
+    launch_dir.mkdir()
+    pooled = {name: [] for name in required}
+    identities = []
+    for launch_number in range(1, args.fresh_launches + 1):
+        replay = subprocess.run(
+            ["taskset", "-c", str(args.cpu), str(saved_elf.resolve())],
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        output_path = launch_dir / f"launch-{launch_number:02d}.out"
+        output_path.write_text(replay.stdout, encoding="utf-8")
+        if replay.returncode:
+            raise SystemExit(f"fresh SUPERCOP measure launch {launch_number} failed")
+        identities.append(measure_identity(replay.stdout))
+        for name in required:
+            observed = decode_observations(replay.stdout, name)
+            if len(observed) != 96:
+                raise SystemExit(
+                    f"fresh launch {launch_number} has {len(observed)} {name} observations; expected 96")
+            pooled[name].extend(observed)
+    if any(identity != identities[0] for identity in identities[1:]):
+        raise SystemExit("SUPERCOP measure identity changed between fresh launches")
+    required_identity = ("implementation", "cpuid", "cpucycles_persecond",
+                         "cpucycles_implementation", "compiler")
+    missing_identity = [name for name in required_identity if name not in identities[0]]
+    if missing_identity:
+        raise SystemExit("SUPERCOP measure identity lacks " + ", ".join(missing_identity))
+    expected_identity = f"crypto_kem/{primitive}/{args.implementation}"
+    if expected_identity not in identities[0]["implementation"]:
+        raise SystemExit(
+            f"SUPERCOP measured {identities[0]['implementation']}, expected {expected_identity}")
+    summary = {
+        "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+        "fresh_process_launches": args.fresh_launches,
+        "observations_per_operation_per_launch": 96,
+        "measure_loops": 3,
+        "timings_per_loop": 32,
+        "measure_identity": identities[0],
+        "operations": {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in pooled.items()
+        },
+    }
+    (args.result_dir / "stq-summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
     lock = read_lock()
-    cpu_model = "unknown"
-    for line in Path("/proc/cpuinfo").read_text(encoding="utf-8", errors="replace").splitlines():
-        if line.lower().startswith("model name"):
-            cpu_model = line.split(":", 1)[1].strip()
-            break
-    governor_path = Path(f"/sys/devices/system/cpu/cpu{args.cpu}/cpufreq/scaling_governor")
     metadata = {
         **lock,
         "benchmark_class": "supercop-native-kem" if args.mode == "native-kem" else "supercop-derived-poly",
@@ -146,7 +292,11 @@ def main() -> int:
         "implementation": args.implementation,
         "kernel": platform.release(),
         "machine": platform.machine(),
-        "scaling_governor": governor_path.read_text().strip() if governor_path.is_file() else "unavailable",
+        "frequency_control": frequency,
+        "frequency_policy": "required" if args.require_frequency_control else "record-only",
+        "fresh_process_launches": args.fresh_launches,
+        "measure_elf_sha256": sha256_file(saved_elf),
+        "stq_summary_sha256": sha256_file(args.result_dir / "stq-summary.json"),
         "measure_source_sha256": sha256_file(
             root / "crypto_kem" / "measure.c" if args.mode == "native-kem"
             else REPO_ROOT / "bench" / "supercop" / "poly_measure.c"

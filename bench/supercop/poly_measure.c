@@ -12,7 +12,6 @@ const long long sizes[] = { crypto_kem_PUBLICKEYBYTES, crypto_kem_SECRETKEYBYTES
 
 static poly *small_a, *small_b, *general_a, *general_b, *transformed_a;
 static poly *transformed_b, *output;
-static volatile int16_t sink;
 
 void preallocate(void) {}
 
@@ -35,14 +34,13 @@ void allocate(void) {
   ntruplus_bench_forward(transformed_b, general_b);
 }
 
-#define TIMINGS 96
+#define TIMINGS 32
 static long long cycles[TIMINGS + 1];
 
 #define MEASURE_ENTRY(label, statement) do {                       \
   for (i = 0; i <= TIMINGS; ++i) {                                 \
     cycles[i] = cpucycles();                                       \
     statement;                                                     \
-    sink ^= output->coeffs[(unsigned)i % NTRUPLUS_N];              \
   }                                                               \
   for (i = 0; i < TIMINGS; ++i) cycles[i] = cycles[i + 1] - cycles[i]; \
   printentry(-1, label, cycles, TIMINGS);                           \

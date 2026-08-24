@@ -55,9 +55,10 @@ Barrett-plus-center corrections; its Montgomery count is already the expected
 
 ## Next gate
 
-Keep B as the selected physical ABI. Before D live handoff, build
-`ITAIL-ASM-B1` as a same-arithmetic reduction-placement experiment. Use real
-C2 per-row provenance to test which reductions can be removed or folded while
-retaining a separately safe general entry when required, and price centered
-output correction independently. D stays deferred until the arithmetic floor
-and avoidable reduction debt are known.
+Keep B as the selected physical ABI. Before reduction shaving or D live
+handoff, run `ITAIL-B1P`: extract the exact Forward-R2 gauge, prove its
+component dependence, enumerate the 729 two-radix3 cyclic orientations, and
+compare phase absorption in BMScale, inverse inter-stage constants, and the
+inverse top split. Only the selected B1P candidates enter B1R range and
+normalization work. Any future performance headline uses the pinned SUPERCOP
+methodology; this checkpoint's repository-local medians stay diagnostic.

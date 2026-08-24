@@ -34,6 +34,13 @@ def bootstrap_ci(samples: list[float], iterations: int = 20000) -> tuple[float, 
     return means[int(iterations * 0.025)], means[int(iterations * 0.975)]
 
 
+def stq2(samples: list[int]) -> float:
+    expanded = sorted(value for value in samples for _ in range(8))
+    count = len(samples)
+    middle = expanded[3 * count:5 * count]
+    return statistics.fmean(middle)
+
+
 def setting_stats(root: Path, launches: list[dict], operation: str) -> dict[str, object]:
     by_block: dict[int, dict[str, list[float]]] = {}
     for launch in launches:
@@ -41,7 +48,7 @@ def setting_stats(root: Path, launches: list[dict], operation: str) -> dict[str,
         if len(values) < 96:
             raise ValueError(f"{launch['file']} has only {len(values)} {operation} observations")
         block = by_block.setdefault(launch["block"], {"official": [], "candidate": []})
-        block[launch["implementation"]].append(statistics.median(values))
+        block[launch["implementation"]].append(stq2(values))
     differences = []
     for block_number in sorted(by_block):
         block = by_block[block_number]
@@ -51,15 +58,24 @@ def setting_stats(root: Path, launches: list[dict], operation: str) -> dict[str,
             "bootstrap_95_ci_cycles": [low, high], "candidate_faster": high < 0}
 
 
-def native_medians(directory: Path) -> dict[str, float]:
-    text = (directory / "data").read_text(encoding="utf-8", errors="replace")
-    result = {}
-    for operation in OPERATIONS:
-        values = decoded(text, operation)
-        if not values:
-            raise ValueError(f"{directory}/data lacks {operation}")
-        result[operation] = statistics.median(values)
-    return result
+def formal_summary(directory: Path, benchmark_class: str,
+                   operations: tuple[str, ...]) -> dict[str, object]:
+    metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+    summary = json.loads((directory / "stq-summary.json").read_text(encoding="utf-8"))
+    if metadata.get("benchmark_class") != benchmark_class:
+        raise ValueError(f"{directory} is not {benchmark_class}")
+    if metadata.get("frequency_policy") != "required":
+        raise ValueError(f"{directory} is not a serious frequency-controlled run")
+    if not metadata.get("frequency_control", {}).get("formal_policy_passed"):
+        raise ValueError(f"{directory} failed formal frequency controls")
+    if summary.get("estimator") != "SUPERCOP-20260627-stabilized-quartiles":
+        raise ValueError(f"{directory} uses the wrong estimator")
+    if summary.get("fresh_process_launches", 0) < 9:
+        raise ValueError(f"{directory} has fewer than 9 fresh measure processes")
+    missing = [name for name in operations if name not in summary.get("operations", {})]
+    if missing:
+        raise ValueError(f"{directory} summary lacks {', '.join(missing)}")
+    return summary
 
 
 def main() -> int:
@@ -72,10 +88,21 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     manifest = json.loads((args.paired / "manifest.json").read_text(encoding="utf-8"))
-    native_official = native_medians(args.native_official)
-    native_candidate = native_medians(args.native_candidate)
+    native_official_summary = formal_summary(
+        args.native_official, "supercop-native-kem", OPERATIONS)
+    native_candidate_summary = formal_summary(
+        args.native_candidate, "supercop-native-kem", OPERATIONS)
+    native_official = {operation: native_official_summary["operations"][operation]["stq2"]
+                       for operation in OPERATIONS}
+    native_candidate = {operation: native_candidate_summary["operations"][operation]["stq2"]
+                        for operation in OPERATIONS}
     native_regressions = {operation: native_candidate[operation] > native_official[operation]
                           for operation in OPERATIONS}
+    poly_operations = ("forward_small_cycles", "forward_general_cycles", "basemul_cycles",
+                       "inverse_cycles", "baseinv_cycles", "poly_mul_small_cycles",
+                       "poly_mul_general_cycles")
+    poly_official = formal_summary(args.poly_official, "supercop-derived-poly", poly_operations)
+    poly_candidate = formal_summary(args.poly_candidate, "supercop-derived-poly", poly_operations)
     paired = {}
     settings = sorted({launch["setting"] for launch in manifest["launches"]})
     for setting in settings:
@@ -95,12 +122,15 @@ def main() -> int:
         "pinned_supercop": {key: manifest[key] for key in (
             "version", "url", "archive_sha256", "ntruplus864_avx2_tree_sha256",
             "ntruplus1152_avx2_tree_sha256")},
-        "native": {"official_median": native_official, "candidate_median": native_candidate,
+        "native": {"estimator": "StQ2", "official_stq2": native_official,
+                   "candidate_stq2": native_candidate,
                    "candidate_slower": native_regressions},
         "paired": paired,
         "direction_consistent": direction_consistent,
         "aslr_off_ci_below_zero": aslr_off_ci,
-        "poly_artifacts": {"official": str(args.poly_official), "candidate": str(args.poly_candidate)},
+        "poly": {"estimator": "StQ1/StQ2/StQ3",
+                 "official": poly_official["operations"],
+                 "candidate": poly_candidate["operations"]},
         "automatic_statistical_gate": all(direction_consistent.values()) and all(aslr_off_ci.values()),
         "manual_gates_required": ["correctness/KAT/range/ABI/constant-time",
                                   "native regression explanation", "caller-path attribution"],

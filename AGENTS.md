@@ -46,6 +46,15 @@ before making changes.
 - Use unmodified SUPERCOP `crypto_kem/measure.c` for formal KEM measurements.
 - Label custom primitive measurements as `supercop-derived-poly`, never as
   native SUPERCOP results.
+- Formal headlines must use the pinned SUPERCOP `cpucycles()` backend and its
+  stabilized-quartile estimator. Preserve the selected compiler,
+  `cpucycles_implementation`, `cpucycles_persecond`, raw fresh-process output,
+  CPU topology, governor, and turbo/boost state.
+- Serious SUPERCOP runs require a pinned physical P-core, performance governor,
+  and disabled turbo/boost. Do not silently change system frequency controls;
+  stop and report a failed preflight instead.
+- Repository-local `rdtscp` medians remain diagnostic. Do not relabel them as
+  SUPERCOP results or use them as the performance headline.
 - Do not promote from repository-local timing or an isolated-kernel win.
 - Formal promotion requires native SUPERCOP measurement and fixed-ELF paired
   evidence using the policy in the workflow.

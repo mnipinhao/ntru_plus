@@ -5,6 +5,8 @@ PYTHON ?= python3
 BENCH_CPU ?= 1
 SUPERCOP_IMPLEMENTATION ?= avx2-gt9x16-exp001
 RESULT_TAG ?= $(shell date +%Y%m%d-%H%M%S)
+SUPERCOP_FRESH_LAUNCHES_SHORT ?= 3
+SUPERCOP_FRESH_LAUNCHES_SERIOUS ?= 9
 RESULTS := $(EXPERIMENT)/results/$(RESULT_TAG)
 COMMON_GENERATOR := $(REPO_ROOT)/ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/gt9x16/generate_gt9x16.py
 COMPILER_ARG := $(if $(SUPERCOP_COMPILER_WRAPPER),--compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER),)
@@ -32,13 +34,21 @@ supercop-install-candidate:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	tools/install-supercop-candidate.sh "$(SUPERCOP_CAMPAIGN_ROOT)"
 
-supercop-kem-short supercop-kem-serious:
+supercop-kem-short:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
-	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode native-kem --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode native-kem --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
-supercop-poly-short supercop-poly-serious:
+supercop-kem-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
-	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-poly --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode native-kem --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-poly-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-poly --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-poly-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-poly --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

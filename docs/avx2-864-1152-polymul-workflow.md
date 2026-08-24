@@ -170,6 +170,13 @@ implementation at a time and the unmodified `crypto_kem/measure.c`. Preserve
 data, run log, and SUPERCOP data file. Label these results
 `supercop-native-kem`.
 
+For this pinned 20260627 release, native `crypto_kem/measure.c` uses 32
+successive timings and SUPERCOP builds it with `LOOPS=3`, producing 96 raw
+observations per operation and process. Serious campaigns replay the exact
+SUPERCOP-built measure ELF in 9 fresh pinned processes and pool 864
+observations per operation. Report StQ1/StQ2/StQ3 using the release's
+`include/stq.h` algorithm; StQ2 is the headline, not a repository median.
+
 ### SUPERCOP-derived polynomial
 
 Native KEM measure does not expose polynomial primitives. A disposable
@@ -178,6 +185,27 @@ campaign may substitute `bench/supercop/poly_measure.c`, which uses SUPERCOP's
 small/general forward, BaseMul, inverse, BaseInv, and complete small/general
 multiplication. Label the output `supercop-derived-poly`; it is not a public
 native SUPERCOP result.
+
+The derived measure mirrors the native timing geometry: 32 successive
+`cpucycles()` deltas with the SUPERCOP-supplied `LOOPS=3`. It must not add a
+sink or bookkeeping operation inside the measured interval. Serious derived
+campaigns use the same 9-fresh-process and stabilized-quartile policy as native
+KEM measurement.
+
+### Host controls and provenance
+
+Short SUPERCOP runs may record an uncontrolled host for debugging, but are not
+formal evidence. Serious native and derived runs fail before compilation unless
+the selected CPU uses the performance governor and turbo/boost is disabled.
+Pin one known physical P-core and record its SMT siblings, core type when the
+kernel exposes it, base/min/max frequencies, CPU model, and kernel. Never
+silently write sysfs controls from a benchmark script.
+
+Every fresh process must report one stable SUPERCOP identity: implementation,
+compiler recipe, CPUID, `cpucycles_implementation`, and
+`cpucycles_persecond`. Preserve the raw process outputs, the exact measure ELF
+and SHA-256, pooled stabilized-quartile summary, SUPERCOP data file, run log,
+lock file, and source hashes.
 
 ### Fixed-ELF paired replay
 
@@ -192,7 +220,7 @@ even: Candidate Official Official Candidate
 
 Pin one physical P-core. Run PIE/ASLR-on and controlled `setarch -R` campaigns,
 plus reversed link order or an equivalent placement control. Analyze paired
-deltas and bootstrap confidence intervals. PMU counters explain results but
+deltas from each launch's StQ2 and bootstrap confidence intervals. PMU counters explain results but
 do not replace paired timing.
 
 ### Compiler policy
@@ -221,7 +249,8 @@ make supercop-promotion-report
 ```
 
 The main knobs are `SUPERCOP_ROOT`, `SUPERCOP_CAMPAIGN_ROOT`, `BENCH_CPU`,
-`SUPERCOP_IMPLEMENTATION`, and `RESULT_TAG`. Scripts derive repository paths
+`SUPERCOP_IMPLEMENTATION`, `RESULT_TAG`, `SUPERCOP_FRESH_LAUNCHES_SHORT`, and
+`SUPERCOP_FRESH_LAUNCHES_SERIOUS`. Scripts derive repository paths
 and never embed a user's home directory.
 
 Omit `SUPERCOP_COMPILER_WRAPPER` for native SUPERCOP selection. Set it to
