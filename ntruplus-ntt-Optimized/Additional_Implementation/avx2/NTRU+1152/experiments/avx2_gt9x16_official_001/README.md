@@ -332,3 +332,11 @@ bijection, including the paper-adjusted final-row order `8,2,5`. MA0--MA3 are
 symbolically exact and remain alive; no assembly or benchmark is authorized
 until resident-`h`, range, register, inverse-four, and serializer schedules are
 proved. See `CHECKPOINT-F0-MA-MAP.md`.
+
+Checkpoint F0-MA-SCHED proves the nine exact two-tile Official `h`/serializer
+chunks, role-aware inverse-four placement, signed-i16 schedules, and spill-free
+MA1/MA3 liveness. MA2 and MA3 share a 432-route external geometry, but MA3 has
+13 versus 19 Montgomery chains per tile at peak 15 YMM; MA1 remains the direct
+F0-native research prototype at peak 14 YMM. MA1 and MA3 ASM are authorized in
+that order with mandatory 32-byte entry/constant alignment audit. No assembly
+or performance result exists yet. See `CHECKPOINT-F0-MA-SCHED.md`.

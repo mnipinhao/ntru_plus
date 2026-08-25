@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-ma-map-and-symbolic-synthesis-complete
+state: checkpoint-f0-ma-schedule-proof-complete-ma1-ma3-asm-authorized
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -252,6 +252,15 @@ gates:
   checkpoint_f0_ma_asm: not-authorized-range-h-projection-register-and-serializer-schedules-open
   checkpoint_f0_ma_alignment: pending-p2align5-entry-constants-pointer-contract-and-linked-elf-mod32-mod64-audit
   checkpoint_f0_ma_benchmark: not-run-symbolic-proof-checkpoint
+  checkpoint_f0_ma_sched_chunk_pairing: passed-nine-official-chunks-two-semantic-tiles-each
+  checkpoint_f0_ma_sched_ownership: passed-1152-f0-h-serializer-lanes
+  checkpoint_f0_ma_sched_scale: selected-s0-output-finalizer-72-chains-vs-s1-s2-144
+  checkpoint_f0_ma_sched_range: passed-all-ma1-ma2-ma3-preoperations-signed-i16
+  checkpoint_f0_ma_sched_ma1: authorized-20-chains-792-routes-peak14ymm
+  checkpoint_f0_ma_sched_ma2: deferred-19-chains-432-routes-peak13ymm
+  checkpoint_f0_ma_sched_ma3: authorized-13-chains-432-routes-streaming-peak15ymm
+  checkpoint_f0_ma_sched_alignment: passed-source-contract-p2align5-required-linked-elf-audit-at-asm
+  checkpoint_f0_ma_sched_benchmark: not-run-proof-and-prototype-selection-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -325,8 +334,10 @@ g1c_itail_d0_m2_result: results/itail-d0-m2-supercop-derived-intel155h-20260824-
 checkpoint_f0_ma_map: exact-encapsulation-caller-map-scale-ledger-and-ma0-ma1-ma2-ma3-symbolic-synthesis-complete
 f0_ma_consumer_map: generated/f0-ma-consumer-map.json
 f0_ma_symbolic_synthesis: generated/f0-ma-symbolic-synthesis.json
+checkpoint_f0_ma_sched: nine-chunk-h-serializer-scale-range-liveness-and-ma1-ma3-prototype-selection-complete
+f0_ma_schedule: generated/f0-ma-schedule.json
 research_phase: local-architecture-convergence
-next_step: derive-f0-ma-resident-h-role-scale-range-register-alignment-and-serializer-schedules-before-narrow-asm
+next_step: implement-aligned-ma1-correctness-first-island-then-ma3-with-complete-encap-boundary
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
