@@ -82,8 +82,13 @@ priced.  Static elimination of MA0--MA3 is therefore forbidden.
 
 1. the exact resident-`h` projection schedule;
 2. the exact output-to-ciphertext-serializer schedule, including inverse-four;
-3. signed-i16 ranges at every pre-operation point; and
-4. a linked peak-YMM/register-spill plan.
+3. role-specific scale placement for F0(`r`), F0(`m`), resident `h`, and the
+   serializer, counting absorption as free only at an existing multiplication;
+4. signed-i16 ranges at every pre-operation point;
+5. a linked peak-YMM/register-spill plan, with MA3 rank products streamed into
+   output accumulators rather than kept live together; and
+6. an assembly alignment plan: 32-byte entry/constants by default, proved
+   caller-data alignment, and linked-ELF modulo-32/64 placement audit.
 
 Only after those proofs may a narrow assembly island be built.  Its primary
 benchmark boundary is the complete caller segment:
@@ -95,6 +100,12 @@ F0(r) + F0(m) + resident h -> MulAdd -> ciphertext serialization
 A BaseMul-only timing cannot select the production candidate.  Formal
 promotion still requires the pinned SUPERCOP native KEM and fixed-ELF paired
 gates described by the branch workflow.
+
+Any resulting assembly uses `.p2align 5` for its entry and YMM constant tables.
+A 64-byte entry is a separately priced placement variant. Aligned data
+instructions are forbidden unless every actual caller pointer and offset is
+proved 32-byte aligned; serializer-facing buffers must not inherit an assumed
+alignment contract.
 
 ## Reproducible artifacts
 

@@ -93,7 +93,30 @@ before making changes.
   from end-to-end timing.
 - Proceed in order: structural audit, pipeline-layout contract, single-block
   explicit AVX2 NTT16, Official-derived vector NTT9 baseline, fused-radix9
-  research, then the complete forward/BaseMul/inverse arithmetic island.
+  research, then caller-complete Encap, Keygen, and Decap arithmetic islands.
+
+## AVX2 assembly alignment rules
+
+- Spell alignment with `.p2align`, not ambiguous bare `.align` directives.
+- Align AVX2 public/internal leaf-function entries and YMM constant tables to
+  at least 32 bytes (`.p2align 5`). Keep vector constants in an explicitly
+  aligned read-only section.
+- Treat 64-byte function or hot-block alignment as a measured code-placement
+  variant, not an unconditional improvement. Record padding and code-size
+  changes.
+- Do not infer an aligned input/output-pointer contract from aligned code or
+  constants. Use aligned vector memory operations only after the actual caller
+  allocation and offset are proved aligned for every invocation; otherwise use
+  unaligned operations.
+- Avoid internal fall-through padding unless the aligned label is a real loop
+  or branch target and the placement variant is measured. Straight-line leaf
+  blocks normally need only an aligned entry.
+- Audit the linked object and installed SUPERCOP ELF with `readelf`/`objdump`.
+  Record section alignment and hot-symbol address modulo 32 and 64 alongside
+  the source/ELF hashes. Re-run reversed-placement controls before attributing
+  a win to arithmetic.
+- If stack vector storage becomes unavoidable, prove the stack-alignment and
+  unwind/ABI contract explicitly. Alignment is not permission to hide spills.
 
 The detailed workflow document is authoritative for paths, commands,
 measurement labels, gates, and release requirements.

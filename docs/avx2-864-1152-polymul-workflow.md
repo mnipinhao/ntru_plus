@@ -78,13 +78,17 @@ coefficient a,b -> forward(a), forward(b) -> BaseMul -> inverse
 
 `poly_mul_small` uses the KEM input envelope and may use proved lazy
 reductions. `poly_mul_general` accepts arbitrary centered mod-q coefficients.
-KEM integration should preserve private NTT layouts across callers rather than
-forcing every path through the complete wrapper.
+KEM integration preserves private NTT layouts across callers rather than
+forcing every path through the complete wrapper. The shared contract is the
+semantic `(branch,p,q,terminal-coefficient)` owner, terminal factor, scale,
+range, and physical P/Q identities. YMM packing, retained split state,
+materialization, and consumer epilogues may be caller-private.
 
-Development proceeds through primitive differential tests, a complete
-`2F+B+I` island, a keygen/encap/decap polynomial island, a namespaced candidate
-KEM, and finally a flat SUPERCOP implementation. Isolated wins do not skip
-these steps.
+Development proceeds through primitive differential tests, caller-complete
+keygen/encapsulation/decapsulation polynomial islands, a namespaced candidate
+KEM, and finally a flat SUPERCOP implementation. A generic `2F+B+I` island is
+still a useful polynomial-multiplication gate, but it is not the universal KEM
+integration milestone. Isolated wins do not skip these steps.
 
 ### GT pipeline checkpoint order
 
@@ -103,8 +107,9 @@ order:
 4. Adapt Official's AVX2 radix-3 Montgomery schedule into one straight-line
    two-layer NTT9 baseline. It is a baseline; the next research step examines a
    fused radix-9 schedule and delayed/precombined reductions.
-5. Build the native-layout top-split→forward→BaseMul/BaseInv→inverse island and
-   qualify polynomial multiplication before any production claim.
+5. Build caller-native islands: Encap through MulAdd and serialization, Keygen
+   through BaseInv and its tail, and Decap through BaseMul/BMScale and inverse.
+   Qualify complete caller boundaries before any production claim.
 
 For the 1152 experiment, Checkpoint C records both a faithful structural C0
 and a split-representation C1 in `CHECKPOINT-C.md`. C0 is selected; C1 remains
@@ -133,6 +138,30 @@ Official AVX2 leaves YMM registers caller-clobbered and returns without
 boundaries, not insert cleanup instructions. `vzeroupper` is considered only
 for a measured outer AVX-to-legacy-SSE transition.
 
+### Assembly alignment contract
+
+Handwritten AVX2 source uses explicit power-of-two alignment. Function entries
+and YMM constant tables default to `.p2align 5` (32 bytes). Constants live in
+an aligned read-only section. Bare `.align` is forbidden because its meaning is
+toolchain-dependent. A 64-byte entry (`.p2align 6`) or an aligned internal hot
+target is a code-placement experiment: retain it only with recorded padding,
+code size, symbol addresses, and paired evidence. Do not insert padding into a
+straight-line fall-through path merely to make the source look aligned.
+
+Code/constant alignment does not strengthen the public pointer ABI. Before
+using `vmovdqa` or any other alignment-requiring memory operand on caller data,
+prove the allocation and every byte offset for all native KEM invocations.
+Otherwise use unaligned loads/stores. If a candidate creates vector stack
+storage, separately prove stack alignment, ABI/unwind correctness, and that the
+storage is not an avoidable spill.
+
+The static audit records object/ELF section alignment, entry and hot-symbol
+addresses modulo 32 and 64, constant-table alignment, padding, and code size.
+Repeat that audit after flattening the candidate into a disposable SUPERCOP
+implementation because link placement may change. Alignment variants remain
+subject to reversed-link-order and ASLR-on/off fixed-ELF controls; a favorable
+address is not an arithmetic credit.
+
 Two timing views are retained. `full-real` includes all adapters, transposes,
 and scatters that still execute. Component timings locate hotspots but never
 exclude a real conversion from end-to-end comparison. A conversion reaches zero
@@ -148,7 +177,7 @@ Run gates in this order and stop at the first failure:
 3. Forward, BaseMul, inverse, round-trip, and BaseInv differential tests.
 4. Full small/general multiplication differentials.
 5. Zero, impulse, monomial, alternating-bound, random, alias, and canary tests.
-6. ASan/UBSan, strict warnings, assembly ABI/stack/spill audit.
+6. ASan/UBSan, strict warnings, assembly ABI/stack/spill/alignment audit.
 7. Range, scale, constant-branch, and constant-index checks.
 8. KAT byte-for-byte comparison.
 9. Directional benchmark.
@@ -210,8 +239,9 @@ lock file, and source hashes.
 ### Fixed-ELF paired replay
 
 Save the SUPERCOP-built Official and candidate measure ELFs and record SHA-256,
-compiler flags, section sizes, symbol addresses, release identity, and source
-tree hashes. Run 16 balanced blocks and 64 launches:
+compiler flags, section sizes and alignment, symbol addresses modulo 32/64,
+release identity, and source tree hashes. Run 16 balanced blocks and 64
+launches:
 
 ```text
 odd:  Official Candidate Candidate Official
