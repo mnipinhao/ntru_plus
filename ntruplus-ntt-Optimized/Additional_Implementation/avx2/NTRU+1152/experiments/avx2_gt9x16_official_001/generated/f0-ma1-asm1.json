@@ -1,0 +1,65 @@
+{
+  "abi": {
+    "inputs": "three non-aliasing 32-byte-aligned 1152xi16 arrays",
+    "output": "1728 unconstrained-alignment ciphertext bytes",
+    "scratch": "256xi16 (512-byte) 32-byte-aligned per-chunk workspace",
+    "symbols": [
+      "ntruplus1152_exp001_f0_ma1_asm1_c0",
+      "ntruplus1152_exp001_f0_ma1_asm1_c1"
+    ]
+  },
+  "alignment": {
+    "ciphertext": "unaligned vmovdqu stores",
+    "entry_and_constants": 32,
+    "poly_and_scratch": 32
+  },
+  "benchmark_authorized_after_correctness": true,
+  "boundary": "nine serializer chunks; two semantic tiles per chunk; no full normalized polynomial ABI",
+  "checkpoint": "F0-MA1-ASM1",
+  "liveness": {
+    "C0_peak_ymm": 13,
+    "C1_critical_phase": {
+      "ymm0_3": "A/B resident r pair vectors",
+      "ymm10_11": "A/B formed r operands",
+      "ymm12_13": "A/B Montgomery results",
+      "ymm14_15": "A/B Montgomery temporaries",
+      "ymm4_7": "A/B plain and wrapped accumulators",
+      "ymm8_9": "A/B h operands or split temporaries"
+    },
+    "C1_peak_ymm": 16,
+    "spills_allowed": false
+  },
+  "montgomery_ledger": {
+    "core_product_chains_full": 360,
+    "core_product_chains_per_tile": 20,
+    "h_projection_lift_chains_full": 72,
+    "h_projection_lift_chains_per_tile": 4,
+    "output_r_exponent": 0,
+    "output_scale_chains_full": 72,
+    "output_scale_chains_per_tile": 4,
+    "output_transform_scale": 1,
+    "tiles": 18,
+    "total_chains_full": 504,
+    "total_chains_per_tile": 28
+  },
+  "range_proof": {
+    "all_preoperations_signed_i16": true,
+    "h_is_centered_before_every_r2_lift": true,
+    "r_and_m_are_centered_on_consumption": true,
+    "schedule_reassociation": false,
+    "source": "generated/f0-ma-schedule.json closed interval proof"
+  },
+  "routing": {
+    "classification": "machine counts supplied by linked-object audit",
+    "old_792": "semantic route slots only",
+    "shared_projection_pack_between_C0_C1": true
+  },
+  "schedules": {
+    "C0": "tile A complete; tile B complete; inverse project and serialize",
+    "C1": "A/B h lifts and every corresponding Montgomery product chain interleaved; inverse project and serialize"
+  },
+  "schema": "gt-f0-ma1-asm1/v1",
+  "source_sha256": {
+    "schedule": "51dc389364bda38ebed92b594a4ec346211bbbd3c088764dc64af7f9fa8608bb"
+  }
+}

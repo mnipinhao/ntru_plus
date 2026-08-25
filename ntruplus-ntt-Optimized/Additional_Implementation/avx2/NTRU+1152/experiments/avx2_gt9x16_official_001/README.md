@@ -349,3 +349,12 @@ R-lift explicit. The former 792-route value is now correctly labeled semantic
 route slots; this object executes 48 R2 routing instructions. No timing was
 run. The next gate is the nine-serializer-chunk caller-shaped ASM1; see
 `CHECKPOINT-F0-MA1-ASM0.md`.
+
+Checkpoint F0-MA1-ASM1 expands that island to the complete nine-chunk
+serializer-facing caller. C1's two-tile interleaving beats sequential C0 by a
+median 273.0625 cycles in all nine serious SUPERCOP-derived launches, despite
+216 extra correctness-first moves. The complete byte-exact MA0 control still
+beats selected C1 by a median 1039.4167 cycles in all nine launches. MA1 is
+therefore frozen as the weighted-schoolbook architecture control; MA3 is the
+next implementation. These are derived primitive results, not native KEM or
+production evidence. See `CHECKPOINT-F0-MA1-ASM1.md`.
