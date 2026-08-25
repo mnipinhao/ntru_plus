@@ -424,3 +424,14 @@ no helper frame, spill, nested call, or `vzeroupper`. Exact attribution records
 the machine-geometry correctness question but does not yet claim speed. Only a
 producer-only paired comparison is authorized next. See
 `CHECKPOINT-F0-PROD1-ASM.md`.
+
+Checkpoint F0-PROD1-PRICE compares that producer with the exact legacy
+`poly_ntt -> scale4/F0 adapter` contract in the same SUPERCOP-derived measure
+ELF. P1-H is slower in all 9 serious launches: the per-launch median regression
+is +158.7083 cycles for one forward and +259.1875 cycles for two back-to-back
+forwards. Diagnostic counters show approximately 110 fewer instructions and
+65 fewer stores, but 168 additional retired loads per forward. The generic F0
+producer boundary is therefore rejected for MA2 caller integration. The next
+gate is only a movement-graph study for an `F0-PROD2-MA2` specialized epilogue;
+top-split fusion and routing micro-superoptimization remain unauthorized. See
+`CHECKPOINT-F0-PROD1-PRICE.md`.

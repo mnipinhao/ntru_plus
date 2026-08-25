@@ -98,8 +98,8 @@ F0_PROD0_AUDIT_ARGS := --object $(BUILD)/f0prod0/f0-forward-for-ma2.o --source s
 F0_PROD0_TEST_SOURCES := src/f0_forward_for_ma2.c src/top_split_adapter.c $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod0.c
 F0_PROD1_SCHED_ARGS := --tables generated/gt9x16-full-forward-tables.h --map generated/f0-ma-consumer-map.json --prod0-contract generated/f0-prod0-contract.json --paper-range generated/gt9x16-ntt9-paper-range.json --ma2-range generated/f0-ma2-range.json --ntt9-macro asm/gt9x16_ntt9_paper.inc --ntt16-macro asm/gt9x16_ntt16_paper.inc --output generated/f0-prod1-schedule.json --asm-constants generated/f0-prod1-constants.inc
 F0_PROD1_ASM := asm/f0_prod1_p1h.S
-F0_PROD1_TEST_SOURCES := src/f0_forward_for_ma2.c src/f0_prod1_p1h.c src/top_split_adapter.c $(F0_PROD1_ASM) $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod1_p1h.c
-F0_PROD1_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o --helper-object $(BUILD)/f0prod1/f0-prod1-p1h.o --wrapper-source src/f0_prod1_p1h.c --helper-source $(F0_PROD1_ASM) --schedule generated/f0-prod1-schedule.json --output generated/f0-prod1-p1h-audit.json
+F0_PROD1_TEST_SOURCES := src/f0_forward_for_ma2.c src/f0_prod1_wrapper.c src/top_split_adapter.c $(F0_PROD1_ASM) $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod1_p1h.c
+F0_PROD1_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o --helper-object $(BUILD)/f0prod1/f0-prod1-p1h.o --wrapper-source src/f0_prod1_wrapper.c --helper-source $(F0_PROD1_ASM) --schedule generated/f0-prod1-schedule.json --output generated/f0-prod1-p1h-audit.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -112,6 +112,7 @@ F0_PROD1_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o 
  supercop-f0-ma3-short supercop-f0-ma3-serious \
  supercop-f0-ma2-chunk-short supercop-f0-ma2-chunk-serious \
  supercop-f0-ma2-short supercop-f0-ma2-serious \
+ supercop-f0-prod1-short supercop-f0-prod1-serious \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -187,7 +188,7 @@ generate:
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD0_TEST_SOURCES) -o $(BUILD)/f0prod0/test-f0-prod0
 	$(BUILD)/f0prod0/test-f0-prod0
 	mkdir -p $(BUILD)/f0prod1
-	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_p1h.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_wrapper.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
 	$(CC) -mavx2 -I. -c $(F0_PROD1_ASM) -o $(BUILD)/f0prod1/f0-prod1-p1h.o
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD1_TEST_SOURCES) -o $(BUILD)/f0prod1/test-f0-prod1-p1h
@@ -275,7 +276,7 @@ check:
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD0_TEST_SOURCES) -o $(BUILD)/f0prod0/test-f0-prod0
 	$(BUILD)/f0prod0/test-f0-prod0
 	mkdir -p $(BUILD)/f0prod1
-	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_p1h.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_wrapper.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
 	$(CC) -mavx2 -I. -c $(F0_PROD1_ASM) -o $(BUILD)/f0prod1/f0-prod1-p1h.o
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD1_TEST_SOURCES) -o $(BUILD)/f0prod1/test-f0-prod1-p1h
@@ -332,6 +333,7 @@ check:
 	$(PYTHON) tests/test_f0_ma2_kem_evidence.py
 	$(PYTHON) tests/test_f0_prod1_schedule.py
 	$(PYTHON) tests/test_f0_prod1_p1h_evidence.py
+	$(PYTHON) tests/test_f0_prod1_price_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -458,7 +460,7 @@ audit:
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
 	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS)
 	mkdir -p $(BUILD)/f0prod1
-	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_p1h.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_wrapper.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
 	$(CC) -mavx2 -I. -c $(F0_PROD1_ASM) -o $(BUILD)/f0prod1/f0-prod1-p1h.o
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS)
 
@@ -729,6 +731,14 @@ supercop-f0-ma2-short:
 supercop-f0-ma2-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-prod1-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod1 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-prod1-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod1 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import re
 import shutil
@@ -101,6 +102,108 @@ def measure_identity(text: str) -> dict[str, str]:
     return identity
 
 
+def elf_layout(path: Path, symbols: tuple[str, ...]) -> dict[str, object]:
+    """Record placement and sizes from the exact replay ELF."""
+    nm = subprocess.run(["nm", "-n", "-S", "--defined-only", str(path)], text=True,
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    wanted = set(symbols)
+    entries = []
+    for line in nm.stdout.splitlines():
+        words = line.split()
+        if len(words) == 4:
+            entries.append((int(words[0], 16), int(words[1], 16), words[2], words[3]))
+        elif len(words) == 3:
+            entries.append((int(words[0], 16), None, words[1], words[2]))
+    symbol_layout = {}
+    for index, (address, size_value, symbol_type, name) in enumerate(entries):
+        if name not in wanted:
+            continue
+        size_source = "elf-symbol-size"
+        if size_value is None:
+            next_global = next((other_address for other_address, _, other_type, _
+                                in entries[index + 1:]
+                                if other_address > address and other_type.isupper()), None)
+            size_value = next_global - address if next_global is not None else None
+            size_source = "inferred-to-next-global-symbol"
+        symbol_layout[name] = {
+            "address": address, "address_mod32": address % 32,
+            "address_mod64": address % 64, "size": size_value,
+            "size_source": size_source,
+        }
+    size = subprocess.run(["size", "-A", str(path)], text=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    sections = {}
+    for line in size.stdout.splitlines():
+        words = line.split()
+        if len(words) >= 2 and words[0] in (".text", ".rodata") and words[1].isdigit():
+            sections[words[0]] = int(words[1])
+    return {"symbols": symbol_layout, "sections": sections}
+
+
+def perf_diagnostics(path: Path, cpu: int, result_dir: Path) -> dict[str, object]:
+    """Collect non-headline retired-op attribution with reset-only subtraction."""
+    modes = ("baseline1x", "legacy1x", "p1h1x",
+             "baseline2x", "legacy2x", "p1h2x")
+    events = ("instructions:u", "mem_inst_retired.all_loads:u",
+              "mem_inst_retired.all_stores:u")
+    repetitions = 3
+    raw_dir = result_dir / "perf-diagnostics"
+    raw_dir.mkdir()
+    totals: dict[str, dict[str, list[int]]] = {
+        mode: {event: [] for event in events} for mode in modes}
+    for mode in modes:
+        for run_number in range(1, repetitions + 1):
+            environment = os.environ.copy()
+            environment["NTRUPLUS_F0_PROD1_PERF"] = mode
+            command = ["taskset", "-c", str(cpu), "perf", "stat", "-x", ";",
+                       "-e", ",".join(events), str(path.resolve())]
+            completed = subprocess.run(command, text=True, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE, env=environment, check=False)
+            stem = raw_dir / f"{mode}-run-{run_number:02d}"
+            stem.with_suffix(".out").write_text(completed.stdout, encoding="utf-8")
+            stem.with_suffix(".err").write_text(completed.stderr, encoding="utf-8")
+            if completed.returncode:
+                raise SystemExit(f"perf diagnostic {mode} run {run_number} failed")
+            found = {}
+            for line in completed.stderr.splitlines():
+                fields = line.split(";")
+                if len(fields) < 3:
+                    continue
+                reported_event = fields[2].strip()
+                event = next((candidate for candidate in events
+                              if candidate.split(":", 1)[0] in reported_event), None)
+                if event and fields[0].strip().isdigit():
+                    # Hybrid Intel PMUs emit an uncounted cpu_atom row and a
+                    # counted cpu_core row for the same requested event.
+                    found[event] = found.get(event, 0) + int(fields[0].strip())
+            missing = [event for event in events if event not in found]
+            if missing:
+                raise SystemExit(f"perf diagnostic lacks {', '.join(missing)}; see {stem}.err")
+            for event, value in found.items():
+                totals[mode][event].append(value)
+    medians = {
+        mode: {event: statistics.median(values) for event, values in by_event.items()}
+        for mode, by_event in totals.items()
+    }
+    adjusted = {}
+    for width in ("1x", "2x"):
+        baseline = medians[f"baseline{width}"]
+        for variant in ("legacy", "p1h"):
+            label = f"{variant}{width}"
+            adjusted[label] = {
+                event: (medians[label][event] - baseline[event]) / 4096
+                for event in events
+            }
+    return {
+        "role": "diagnostic-attribution-not-cycle-headline",
+        "fresh_processes_per_mode": repetitions,
+        "operations_per_process": 4096,
+        "events": list(events),
+        "median_raw_process_counts": medians,
+        "baseline_adjusted_counts_per_operation": adjusted,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign-root", type=Path, required=True)
@@ -111,7 +214,7 @@ def main() -> int:
                                            "derived-itail-d0", "derived-itail-d0-m2",
                                            "derived-f0-ma1", "derived-f0-ma1-ma0",
                                            "derived-f0-ma3", "derived-f0-ma2-chunk",
-                                           "derived-f0-ma2"),
+                                           "derived-f0-ma2", "derived-f0-prod1"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -124,7 +227,7 @@ def main() -> int:
     if args.mode in ("derived-itail", "derived-itail-d0", "derived-itail-d0-m2",
                      "derived-f0-ma1", "derived-f0-ma1-ma0",
                      "derived-f0-ma3", "derived-f0-ma2-chunk",
-                     "derived-f0-ma2") and args.parameter != "1152":
+                     "derived-f0-ma2", "derived-f0-prod1") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -175,7 +278,8 @@ def main() -> int:
         if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0",
                          "derived-itail-d0-m2", "derived-f0-ma1",
                          "derived-f0-ma1-ma0", "derived-f0-ma3",
-                         "derived-f0-ma2-chunk", "derived-f0-ma2"):
+                         "derived-f0-ma2-chunk", "derived-f0-ma2",
+                         "derived-f0-prod1"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -186,6 +290,7 @@ def main() -> int:
                 "derived-f0-ma3": "f0_ma3_measure.c",
                 "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
                 "derived-f0-ma2": "f0_ma2_measure.c",
+                "derived-f0-prod1": "f0_prod1_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -275,6 +380,12 @@ def main() -> int:
     elif args.mode == "derived-f0-ma2-chunk":
         required = ("f0_ma0_first_cycles", "f0_ma2_repeat_second_cycles",
                     "f0_ma2_repeat_first_cycles", "f0_ma0_second_cycles")
+    elif args.mode == "derived-f0-prod1":
+        required = tuple(
+            f"f0_prod1_{width}_{variant}_{position}_cycles"
+            for width in ("1x", "2x")
+            for variant, position in (("legacy", "first"), ("p1h", "second"),
+                                      ("p1h", "first"), ("legacy", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -632,6 +743,91 @@ def main() -> int:
             "ma2_tied_with_ma0_launches": sum(x == 0 for x in deltas),
             "median_ma2_minus_ma0_cycles": statistics.median(deltas),
         }
+    if args.mode == "derived-f0-prod1":
+        combined = {
+            f"f0_prod1_{width}_{variant}_cycles": (
+                pooled[f"f0_prod1_{width}_{variant}_first_cycles"] +
+                pooled[f"f0_prod1_{width}_{variant}_second_cycles"])
+            for width in ("1x", "2x") for variant in ("legacy", "p1h")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            entry: dict[str, object] = {"launch": launch_number}
+            for width in ("1x", "2x"):
+                legacy = stabilized_quartiles(
+                    observed[f"f0_prod1_{width}_legacy_first_cycles"] +
+                    observed[f"f0_prod1_{width}_legacy_second_cycles"])[1]
+                p1h = stabilized_quartiles(
+                    observed[f"f0_prod1_{width}_p1h_first_cycles"] +
+                    observed[f"f0_prod1_{width}_p1h_second_cycles"])[1]
+                entry.update({
+                    f"{width}_legacy_stq2": legacy,
+                    f"{width}_p1h_stq2": p1h,
+                    f"{width}_p1h_minus_legacy_cycles": p1h - legacy,
+                    f"{width}_p1h_over_legacy_ratio": p1h / legacy,
+                })
+            paired_launches.append(entry)
+        one_deltas = [float(entry["1x_p1h_minus_legacy_cycles"])
+                      for entry in paired_launches]
+        two_deltas = [float(entry["2x_p1h_minus_legacy_cycles"])
+                      for entry in paired_launches]
+        two_credit = -statistics.median(two_deltas)
+        if two_credit < 300:
+            screen = "poor-or-insufficient-for-current-ma2-gap"
+        elif two_credit < 800:
+            screen = "likely-insufficient-for-current-ma2-gap"
+        elif two_credit < 1300:
+            screen = "caller-attribution-worthy"
+        else:
+            screen = "strong-caller-integration-signal"
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "p1h_1x_faster_launches": sum(x < 0 for x in one_deltas),
+            "p1h_1x_slower_launches": sum(x > 0 for x in one_deltas),
+            "median_1x_p1h_minus_legacy_cycles": statistics.median(one_deltas),
+            "p1h_2x_faster_launches": sum(x < 0 for x in two_deltas),
+            "p1h_2x_slower_launches": sum(x > 0 for x in two_deltas),
+            "median_2x_p1h_minus_legacy_cycles": statistics.median(two_deltas),
+        }
+        summary["producer_credit_screen"] = {
+            "two_forward_credit_cycles": two_credit,
+            "comparison_gap_cycles_approximate": 1312,
+            "classification": screen,
+            "note": "screening signal only; not a KEM promotion result",
+        }
+
+        relevant_symbols = (
+            "poly_ntt", "ntruplus1152_exp001_official_to_f0",
+            "ntruplus1152_exp001_f0_forward_for_ma2_p1h",
+            "ntruplus1152_exp001_f0_prod1_p1h_pair",
+            "ntruplus1152_exp001_f0_prod1_legacy_1x",
+            "ntruplus1152_exp001_f0_prod1_p1h_1x",
+            "ntruplus1152_exp001_f0_prod1_legacy_2x",
+            "ntruplus1152_exp001_f0_prod1_p1h_2x",
+        )
+        summary["elf_layout"] = elf_layout(saved_elf, relevant_symbols)
+        summary["static_call_attribution_per_forward"] = {
+            "legacy": {"poly_ntt": 1, "official_to_f0": 1, "total": 2},
+            "p1h": {"top_split": 1, "p1h_pair_helper": 4, "total": 5},
+        }
+        summary["perf_diagnostics"] = perf_diagnostics(
+            saved_elf, args.cpu, args.result_dir)
+        audit_paths = list(REPO_ROOT.glob(
+            "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/"
+            "experiments/*/generated/f0-prod1-p1h-audit.json"))
+        if len(audit_paths) != 1:
+            raise SystemExit(f"expected one P1-H audit, found {len(audit_paths)}")
+        summary["p1h_static_instruction_attribution"] = json.loads(
+            audit_paths[0].read_text(encoding="utf-8"))[
+                "dynamic_instruction_attribution_per_forward"]
+        shutil.copy2(audit_paths[0], args.result_dir / "f0-prod1-p1h-audit.json")
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -647,6 +843,7 @@ def main() -> int:
                             else "supercop-derived-poly-f0-ma3" if args.mode == "derived-f0-ma3"
                             else "supercop-derived-poly-f0-ma2-chunk-diagnostic" if args.mode == "derived-f0-ma2-chunk"
                             else "supercop-derived-poly-f0-ma2" if args.mode == "derived-f0-ma2"
+                            else "supercop-derived-poly-f0-prod1" if args.mode == "derived-f0-prod1"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -682,7 +879,8 @@ def main() -> int:
               "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c",
               "derived-f0-ma3": "f0_ma3_measure.c",
               "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
-              "derived-f0-ma2": "f0_ma2_measure.c"}[args.mode])
+              "derived-f0-ma2": "f0_ma2_measure.c",
+              "derived-f0-prod1": "f0_prod1_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

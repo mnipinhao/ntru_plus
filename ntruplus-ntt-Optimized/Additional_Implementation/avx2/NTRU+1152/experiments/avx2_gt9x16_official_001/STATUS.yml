@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-prod1-asm-p1h-correctness-and-structure-complete
+state: checkpoint-f0-prod1-price-generic-f0-producer-rejected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -372,7 +372,10 @@ checkpoint_f0_prod1_p1h_correctness: passed-raw-exact-prod0-canonical-official-t
 checkpoint_f0_prod1_p1h_sanitizer: passed-asan-ubsan
 checkpoint_f0_prod1_p1h_structure: passed-frame2336-zero-staging-helper-leaf-no-spill-call-vzeroupper
 checkpoint_f0_prod1_p1h_routing: exact-576-direct-formation-instructions-per-forward
-checkpoint_f0_prod1_p1h_benchmark: not-run-producer-only-paired-now-authorized
+  checkpoint_f0_prod1_p1h_benchmark: rejected-p1h-plus158.7083-one-forward-plus259.1875-two-forward-loses-9of9
+  checkpoint_f0_prod1_p1h_benchmark_class: supercop-derived-poly-f0-prod1-not-native-kem
+  checkpoint_f0_prod1_p1h_perf: diagnostic-minus110-instructions-plus168-loads-minus65-stores-per-forward
+  checkpoint_f0_prod1_flat_packaging: passed-distinct-wrapper-and-assembly-object-basenames
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
 f0_ma3_result: results/f0-ma3-supercop-derived-intel155h-20260825-001/supercop-f0-ma3-serious/stq-summary.json
@@ -385,7 +388,9 @@ f0_prod0_contract: generated/f0-prod0-contract.json
 f0_prod0_audit: generated/f0-prod0-audit.json
 f0_prod1_schedule: generated/f0-prod1-schedule.json
 f0_prod1_p1h_audit: generated/f0-prod1-p1h-audit.json
-next_step: producer-only-official-adapter-vs-p1h-supercop-style-paired-pricing
+f0_prod1_price_result: results/f0-prod1-price-supercop-derived-intel155h-20260825-002/supercop-f0-prod1-serious/stq-summary.json
+checkpoint_f0_prod1_price: generic-f0-p1h-rejected-specialized-ma2-epilogue-movement-graph-next
+next_step: f0-prod2-ma2-specialized-epilogue-movement-graph-no-asm-yet
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -396,6 +401,7 @@ rejected_candidates:
   - f0-ma1-c1-plus1039.4167-cycles-vs-ma0-loses-9of9-schoolbook-architecture-frozen
   - f0-ma3-plus1868.6042-median-cycles-vs-ma0-loses-9of9-low-rank-architecture-frozen
   - f0-ma2-real-caller-plus1312.0787-native-enc-and-positive-fixed-elf-ci-all-four-settings
+  - f0-prod1-p1h-generic-f0-plus259.1875-two-forward-cycles-loses-9of9
 deferred_candidates:
   - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
 selected_candidates:
