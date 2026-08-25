@@ -1,0 +1,203 @@
+{
+  "checkpoint": "F0-PROD0",
+  "current_debt": {
+    "coefficient_adapter_bytes": 288,
+    "pair_input_bytes": 576,
+    "pair_output_bytes": 576,
+    "performance_status": "unpriced-correctness-first",
+    "split_bytes": 2304,
+    "zero_copy_required": false
+  },
+  "entry": "ntruplus1152_exp001_f0_forward_for_ma2",
+  "forbidden_boundaries": [
+    "Official poly_ntt",
+    "Official-to-F0 adapter"
+  ],
+  "input_abi": {
+    "actual_caller_alignment_bytes": 32,
+    "alias": "output-equals-input-supported",
+    "length_i16": 1152
+  },
+  "input_roles": {
+    "F0_M": {
+      "coefficient_range": [
+        -1,
+        1
+      ],
+      "producer": "poly_sotp_encode"
+    },
+    "F0_R": {
+      "coefficient_range": [
+        -1,
+        1
+      ],
+      "producer": "poly_cbd1"
+    }
+  },
+  "output_abi": {
+    "consumer": "F0-MA2",
+    "global_range_i16": [
+      -20751,
+      20753
+    ],
+    "montgomery_r_exponent": 0,
+    "owner": "(branch,p,q,terminal_coefficient)",
+    "per_cell_ranges_in_header": "generated/f0-prod0-ranges.h",
+    "physical_p_order": [
+      0,
+      3,
+      6,
+      1,
+      4,
+      7,
+      8,
+      2,
+      5
+    ],
+    "physical_q_order": [
+      0,
+      8,
+      4,
+      12,
+      2,
+      10,
+      6,
+      14,
+      1,
+      9,
+      5,
+      13,
+      3,
+      11,
+      7,
+      15
+    ],
+    "scale": 4
+  },
+  "parameter": 1152,
+  "pipeline": [
+    "existing top split arithmetic",
+    "GT adapter/pre-twist",
+    "paper R2 NTT9",
+    "persistent D1 NTT16",
+    "materialized F0 ABI"
+  ],
+  "range_proof_summary": [
+    {
+      "frequency_p": 0,
+      "input_range": [
+        -13128,
+        13128
+      ],
+      "overall_final_range": [
+        -20751,
+        20753
+      ],
+      "physical_row": 0
+    },
+    {
+      "frequency_p": 3,
+      "input_range": [
+        -10574,
+        10574
+      ],
+      "overall_final_range": [
+        -18568,
+        18568
+      ],
+      "physical_row": 1
+    },
+    {
+      "frequency_p": 6,
+      "input_range": [
+        -10574,
+        10574
+      ],
+      "overall_final_range": [
+        -18537,
+        18537
+      ],
+      "physical_row": 2
+    },
+    {
+      "frequency_p": 1,
+      "input_range": [
+        -11016,
+        11016
+      ],
+      "overall_final_range": [
+        -18843,
+        18843
+      ],
+      "physical_row": 3
+    },
+    {
+      "frequency_p": 4,
+      "input_range": [
+        -9336,
+        9336
+      ],
+      "overall_final_range": [
+        -17043,
+        17043
+      ],
+      "physical_row": 4
+    },
+    {
+      "frequency_p": 7,
+      "input_range": [
+        -9336,
+        9336
+      ],
+      "overall_final_range": [
+        -17001,
+        17001
+      ],
+      "physical_row": 5
+    },
+    {
+      "frequency_p": 8,
+      "input_range": [
+        -11016,
+        11016
+      ],
+      "overall_final_range": [
+        -18619,
+        18619
+      ],
+      "physical_row": 6
+    },
+    {
+      "frequency_p": 2,
+      "input_range": [
+        -9336,
+        9336
+      ],
+      "overall_final_range": [
+        -17208,
+        17208
+      ],
+      "physical_row": 7
+    },
+    {
+      "frequency_p": 5,
+      "input_range": [
+        -9336,
+        9336
+      ],
+      "overall_final_range": [
+        -17166,
+        17166
+      ],
+      "physical_row": 8
+    }
+  ],
+  "shared_core_authorized": true,
+  "source_sha256": {
+    "cbd": "1040e0fece515c0419851d1700c699db01ee865879cb27d99d711437c1ad0be6",
+    "kem": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "map": "20bd834ce6e7614ccfc36638a23f1fb4094ca4ad2c9a18f8b9008d8038326438",
+    "producer": "32d0b02790cc573bc4b0920c1667b4455156676bfb48e3d3c7f2d68ee8a82dd3",
+    "range_proof": "b44cff81370587c2e830cdda4097ec39d2566adccdf050f96e73c568023289ac"
+  }
+}

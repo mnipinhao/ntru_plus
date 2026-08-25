@@ -393,3 +393,12 @@ canonical KAT vectors, but native SUPERCOP encapsulation regresses from
 fixed-ELF campaigns all put the 95% CI entirely above zero. This complete
 caller is frozen as a performance rejection; MA2 can reopen only after the
 adapters are removed by producer integration. See `CHECKPOINT-F0-MA2-KEM.md`.
+
+Checkpoint F0-PROD0 now provides a complete coefficient-domain-to-MA2-F0
+producer without forming Official NTT output or calling the Official-to-F0
+adapter.  It preserves physical P/Q, scale four, and the exact per-cell range
+contract; 2,304 signed impulses, 1,003 random KEM-small inputs, alias, canary,
+and sanitizer gates pass.  The correctness-first O3 object still reserves
+3,872 stack bytes and executes eight scalar GT adapters plus four R2+D1 calls,
+so it is not a performance candidate.  F0-PROD1-MA2 must remove that producer
+debt before the four-way caller attribution. See `CHECKPOINT-F0-PROD0.md`.

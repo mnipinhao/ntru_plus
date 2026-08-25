@@ -93,6 +93,9 @@ F0_MA2_TEST_SOURCES := $(F0_MA2_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s tes
 F0_MA2_KEM_ADAPTER := asm/f0_official_to_f0.S
 F0_MA2_KEM_ADAPTER_ARGS := --schedule generated/f0-ma-schedule.json --asm $(F0_MA2_KEM_ADAPTER) --constants generated/f0-official-to-f0-constants.inc --header generated/f0-official-to-f0.h --contract generated/f0-official-to-f0.json
 F0_MA2_KEM_ARGS := --upstream $(UPSTREAM)/kem.c --output src/kem.c
+F0_PROD0_CONTRACT_ARGS := --map generated/f0-ma-consumer-map.json --range-proof generated/gt9x16-ntt9-paper-range.json --kem-source $(UPSTREAM)/kem.c --cbd-source $(UPSTREAM)/cbd.s --producer-source src/f0_forward_for_ma2.c --json generated/f0-prod0-contract.json --header generated/f0-prod0-ranges.h
+F0_PROD0_AUDIT_ARGS := --object $(BUILD)/f0prod0/f0-forward-for-ma2.o --source src/f0_forward_for_ma2.c --contract generated/f0-prod0-contract.json --output generated/f0-prod0-audit.json
+F0_PROD0_TEST_SOURCES := src/f0_forward_for_ma2.c src/top_split_adapter.c $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod0.c
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -172,6 +175,12 @@ generate:
 	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS)
 	$(PYTHON) tools/generate_f0_official_to_f0.py $(F0_MA2_KEM_ADAPTER_ARGS)
 	$(PYTHON) tools/generate_f0_ma2_kem.py $(F0_MA2_KEM_ARGS)
+	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS)
+	mkdir -p $(BUILD)/f0prod0
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
+	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS)
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD0_TEST_SOURCES) -o $(BUILD)/f0prod0/test-f0-prod0
+	$(BUILD)/f0prod0/test-f0-prod0
 
 check:
 	mkdir -p $(BUILD)
@@ -247,6 +256,12 @@ check:
 	$(PYTHON) tools/generate_f0_ma2_kem.py $(F0_MA2_KEM_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(F0_MA2_KEM_ADAPTER) $(F0_MA0_ADAPTER) tests/test_f0_official_to_f0.c -o $(BUILD)/f0ma1/test-f0-official-to-f0
 	$(BUILD)/f0ma1/test-f0-official-to-f0
+	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS) --check
+	mkdir -p $(BUILD)/f0prod0
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
+	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD0_TEST_SOURCES) -o $(BUILD)/f0prod0/test-f0-prod0
+	$(BUILD)/f0prod0/test-f0-prod0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -359,6 +374,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-g1c-m3c3-reduction-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined $(FULL_CPPFLAGS) $(FULL_SOURCES) $(OFFICIAL_FORWARD) tests/test_full_forward.c -o $(BUILD)/test-full-forward-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-full-forward-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD0_TEST_SOURCES) -o $(BUILD)/test-f0-prod0-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-prod0-sanitize
 
 audit:
 	mkdir -p $(BUILD) $(BUILD)/full-audit $(BUILD)/structure generated
@@ -415,6 +432,9 @@ audit:
 	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0ma1/f0-ma2.o
 	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
 	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS)
+	mkdir -p $(BUILD)/f0prod0
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
+	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)
