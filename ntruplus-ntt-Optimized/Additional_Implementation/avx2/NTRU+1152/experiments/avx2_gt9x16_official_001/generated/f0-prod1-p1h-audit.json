@@ -1,0 +1,160 @@
+{
+  "checkpoint": "F0-PROD1-ASM-P1-H",
+  "decision": {
+    "correctness_gate": "enforced-by-test-f0-prod1-p1h",
+    "kem_benchmark_authorized": false,
+    "producer_benchmark_authorized": true,
+    "structural_gate": "passed"
+  },
+  "dynamic_instruction_attribution_per_forward": {
+    "boundary": {
+      "helper_calls": 4,
+      "internal_helper_calls": 0,
+      "internal_vzeroupper": 0,
+      "top_split_calls": 1
+    },
+    "d1": {
+      "instructions": 1480,
+      "loads_and_stores": 144,
+      "region_executions": 4
+    },
+    "formation": {
+      "aligned_split_loads": 144,
+      "maps": 36,
+      "routing": {
+        "vperm2i128": 72,
+        "vpermq": 216,
+        "vpshufb": 72,
+        "vpshufd": 144,
+        "vpunpckhqdq": 36,
+        "vpunpcklqdq": 36
+      },
+      "routing_total": 576,
+      "twist_montgomery_chains": 72,
+      "twist_montgomery_instructions": 288
+    },
+    "r2_first": {
+      "radix3_bodies": 24,
+      "reductions": 72,
+      "transient_f0_stores": 72
+    },
+    "r2_second": {
+      "instructions": 592,
+      "loads_and_stores": 144,
+      "region_executions": 4
+    }
+  },
+  "helper": {
+    "calls": 0,
+    "constant_time_control": "branches depend only on fixed public terminal-pair selector",
+    "entry_mod32": 0,
+    "entry_mod64": 0,
+    "official_representation_calls": [],
+    "regions": {
+      "d1": {
+        "bytes": 2082,
+        "instructions": 370,
+        "opcodes": {
+          "vmovdqa": 46,
+          "vpaddw": 36,
+          "vpblendd": 18,
+          "vpblendw": 18,
+          "vperm2i128": 18,
+          "vpmulhw": 72,
+          "vpmullw": 36,
+          "vpsllq": 18,
+          "vpsrlq": 18,
+          "vpsubw": 72,
+          "vpunpckhqdq": 9,
+          "vpunpcklqdq": 9
+        }
+      },
+      "formation_pair0": {
+        "bytes": 2318,
+        "instructions": 405,
+        "opcodes": {
+          "vmovdqa": 63,
+          "vpaddw": 30,
+          "vperm2i128": 18,
+          "vpermq": 54,
+          "vpmulhrsw": 18,
+          "vpmulhw": 48,
+          "vpmullw": 42,
+          "vpshufb": 18,
+          "vpshufd": 36,
+          "vpsubw": 60,
+          "vpunpckhqdq": 9,
+          "vpunpcklqdq": 9
+        }
+      },
+      "formation_pair1": {
+        "bytes": 2318,
+        "instructions": 405,
+        "opcodes": {
+          "vmovdqa": 63,
+          "vpaddw": 30,
+          "vperm2i128": 18,
+          "vpermq": 54,
+          "vpmulhrsw": 18,
+          "vpmulhw": 48,
+          "vpmullw": 42,
+          "vpshufb": 18,
+          "vpshufd": 36,
+          "vpsubw": 60,
+          "vpunpckhqdq": 9,
+          "vpunpcklqdq": 9
+        }
+      },
+      "r2_second": {
+        "bytes": 816,
+        "instructions": 148,
+        "opcodes": {
+          "vmovdqa": 44,
+          "vpaddw": 30,
+          "vpmulhw": 28,
+          "vpmullw": 14,
+          "vpsubw": 32
+        }
+      }
+    },
+    "rodata_alignment_bytes": 32,
+    "stack_frame_bytes": 0,
+    "symbol": "ntruplus1152_exp001_f0_prod1_p1h_pair",
+    "text_alignment_bytes": 32,
+    "text_bytes": 7635,
+    "vector_stack_accesses": 0,
+    "vzeroupper_static": 0
+  },
+  "removed_staging": {
+    "coefficient_bytes": 0,
+    "pair_input_bytes": 0,
+    "pair_output_bytes": 0,
+    "scalar_gt_adapter_calls": 0
+  },
+  "retained": {
+    "top_split_arithmetic": "unchanged",
+    "top_split_materialization_bytes": 2304
+  },
+  "sha256": {
+    "helper_object": "0a029ca3094e18c32bb797a475d189ddbfd2e3206f4174d021406653be1865ad",
+    "helper_source": "4fa4b9640d4359dcb3f8b15fc5e42793cebe6055e9c584863c6ecca16be0987b",
+    "schedule": "33c81a6a7ebe7bf0b52d1e14456bfa29dae95c89d3b95e30507289dd2b5c013a",
+    "wrapper_object": "a885d3ace8e8dfca53da24404026306ceb00c5a0b623d2cfdd37dda668d56810",
+    "wrapper_source": "9f6a24c52a99dff0b919caf0c5812529fb9e260492d41e544df1ce20cab23753"
+  },
+  "wrapper": {
+    "dynamic_calls_per_forward": {
+      "p1h_pair_helper": 4,
+      "top_split": 1
+    },
+    "stack_reservation_bytes": 2336,
+    "static_call_targets": [
+      "__stack_chk_fail",
+      "ntruplus1152_exp001_f0_prod1_p1h_pair",
+      "ntruplus1152_exp001_top_split_small"
+    ],
+    "symbol": "ntruplus1152_exp001_f0_forward_for_ma2_p1h",
+    "text_bytes": 135,
+    "vzeroupper_static": 0
+  }
+}

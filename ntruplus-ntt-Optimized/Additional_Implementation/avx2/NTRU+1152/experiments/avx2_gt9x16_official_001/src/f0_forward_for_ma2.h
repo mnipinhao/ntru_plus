@@ -14,4 +14,9 @@ void ntruplus1152_exp001_f0_forward_for_ma2(
     int16_t output[NTRUPLUS1152_EXP001_F0_N],
     const int16_t input[NTRUPLUS1152_EXP001_F0_N]);
 
+/* F0-PROD1 P1-H: same contract, materialized split plus AVX2 pair helper. */
+void ntruplus1152_exp001_f0_forward_for_ma2_p1h(
+    int16_t output[NTRUPLUS1152_EXP001_F0_N],
+    const int16_t input[NTRUPLUS1152_EXP001_F0_N]);
+
 #endif

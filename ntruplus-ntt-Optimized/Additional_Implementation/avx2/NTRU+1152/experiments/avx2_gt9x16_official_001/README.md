@@ -413,3 +413,14 @@ register-liveness, stack, and 32-byte alignment gates authorize only the P1-H
 producer assembly checkpoint. KEM benchmarking remains blocked until that
 assembly passes differential and linked-shape audits. See
 `CHECKPOINT-F0-PROD1-SCHED.md`.
+
+Checkpoint F0-PROD1-ASM implements the authorized P1-H helper-shaped producer.
+It is raw-representative exact to PROD0 and canonicalized exact to Official
+times four over the full impulse/random/boundary suite, including alias,
+canary, generated ranges, and sanitizer. The wrapper retains only the
+2,304-byte split in a 2,336-byte frame; its four dynamic AVX2 helper calls have
+no helper frame, spill, nested call, or `vzeroupper`. Exact attribution records
+576 direct-formation routing instructions per complete forward. This closes
+the machine-geometry correctness question but does not yet claim speed. Only a
+producer-only paired comparison is authorized next. See
+`CHECKPOINT-F0-PROD1-ASM.md`.

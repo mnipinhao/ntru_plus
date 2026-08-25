@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-prod1-schedule-complete-asm-p1h-authorized
+state: checkpoint-f0-prod1-asm-p1h-correctness-and-structure-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -368,6 +368,11 @@ checkpoint_f0_ma2: full-coefficient-plane-caller-path-selected-vs-ma0
 checkpoint_f0_ma2_kem: correctness-qualified-native-and-fixed-elf-performance-rejected
 checkpoint_f0_prod0: coefficient-domain-to-scale4-f0-correctness-range-sanitize-qualified
 checkpoint_f0_prod1_sched: direct-load-transient-f0-range-register-stack-and-alignment-plan-complete
+checkpoint_f0_prod1_p1h_correctness: passed-raw-exact-prod0-canonical-official-times4-impulse-random-alias-canary
+checkpoint_f0_prod1_p1h_sanitizer: passed-asan-ubsan
+checkpoint_f0_prod1_p1h_structure: passed-frame2336-zero-staging-helper-leaf-no-spill-call-vzeroupper
+checkpoint_f0_prod1_p1h_routing: exact-576-direct-formation-instructions-per-forward
+checkpoint_f0_prod1_p1h_benchmark: not-run-producer-only-paired-now-authorized
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
 f0_ma3_result: results/f0-ma3-supercop-derived-intel155h-20260825-001/supercop-f0-ma3-serious/stq-summary.json
@@ -379,7 +384,8 @@ research_phase: local-architecture-convergence
 f0_prod0_contract: generated/f0-prod0-contract.json
 f0_prod0_audit: generated/f0-prod0-audit.json
 f0_prod1_schedule: generated/f0-prod1-schedule.json
-next_step: implement-f0-prod1-asm-p1h-then-four-way-prod1-ma2-caller-attribution
+f0_prod1_p1h_audit: generated/f0-prod1-p1h-audit.json
+next_step: producer-only-official-adapter-vs-p1h-supercop-style-paired-pricing
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
