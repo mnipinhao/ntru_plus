@@ -1,0 +1,308 @@
+{
+  "global_post_inv4": [
+    -2133,
+    2133
+  ],
+  "global_pre_inv4": [
+    -29899,
+    29901
+  ],
+  "reduction_policy": {
+    "f0_m_center": "range-reset only; removed by this proof",
+    "f0_r_center": "range-reset only; removed by this proof",
+    "post_inv4_barrett": "redundant because output is in (-q,q); removed",
+    "post_inv4_sign_add_q": "mandatory for unsigned 12-bit serialization",
+    "resident_h_center_before_r2": "cosmetic; removed",
+    "wrapped_sum_center": "range-reset only; removed by this proof"
+  },
+  "schema": "gt-f0-ma2-audit/v1",
+  "sections": {
+    "elf_rodata": 32,
+    "elf_text": 32,
+    "object_rodata": 32,
+    "object_text": 32
+  },
+  "sha256": {
+    "contract": "9242bee6fbb41b1ab644bff19750401fa40ae679ab93fd077872d7f27e7a0f0b",
+    "elf": "42ec742a0e0d3358b871a1dca8452895b5ff43484e7de86f1d36d6480796898b",
+    "object": "2d42aadee22ace8d965395304ae4d44ca370595a922bb0308ecb2d9a5c95bae1",
+    "range_proof": "54638e7b2102d856120505f97725dd538709d8a634a71d3e0d7ad593b704815a",
+    "source": "5dda6937cf14102e88e6413f5d13712ac9b23f6ce6ecf143487e0ca686eebe9f"
+  },
+  "variants": {
+    "ASM0": {
+      "abi": {
+        "branches": 0,
+        "calls": 0,
+        "distinct_ymm": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "peak_ymm": 13,
+        "spills": 0,
+        "stack_references": 0,
+        "vzeroupper": 0
+      },
+      "alignment": {
+        "elf_address": 10816,
+        "elf_mod32": 0,
+        "elf_mod64": 0,
+        "object_address": 0,
+        "object_mod32": 0,
+        "symbol_size": 1194
+      },
+      "instruction_count": 196,
+      "instruction_counts": {
+        "ret": 1,
+        "vmovdqa": 31,
+        "vpaddw": 16,
+        "vpblendw": 4,
+        "vperm2i128": 16,
+        "vpmulhw": 54,
+        "vpmullw": 43,
+        "vpshufb": 4,
+        "vpsubw": 27
+      },
+      "montgomery_chains": 27,
+      "movement": {
+        "byte_pack": {},
+        "core_arithmetic": {},
+        "f0_m_formation": {
+          "vperm2i128": 4
+        },
+        "f0_r_formation": {
+          "vperm2i128": 4
+        },
+        "output_formation": {},
+        "resident_h_formation": {
+          "vpblendw": 4,
+          "vperm2i128": 8,
+          "vpshufb": 4
+        }
+      },
+      "movement_mnemonics": [
+        "vperm2i128",
+        "vpshufb",
+        "vpblendw"
+      ],
+      "scratch": {
+        "reloads": 0,
+        "stores": 0
+      },
+      "symbol": "ntruplus1152_exp001_f0_ma2_asm0_b0p0"
+    },
+    "CHUNK0": {
+      "abi": {
+        "branches": 0,
+        "calls": 0,
+        "distinct_ymm": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "peak_ymm": 14,
+        "spills": 0,
+        "stack_references": 0,
+        "vzeroupper": 0
+      },
+      "alignment": {
+        "elf_address": 12032,
+        "elf_mod32": 0,
+        "elf_mod64": 0,
+        "object_address": 1216,
+        "object_mod32": 0,
+        "symbol_size": 3281
+      },
+      "instruction_count": 521,
+      "instruction_counts": {
+        "ret": 1,
+        "vmovdqa": 70,
+        "vmovdqu": 6,
+        "vpaddw": 40,
+        "vpand": 8,
+        "vpblendd": 6,
+        "vpblendw": 14,
+        "vperm2i128": 54,
+        "vpmulhw": 108,
+        "vpmullw": 86,
+        "vpor": 8,
+        "vpshufb": 24,
+        "vpslld": 3,
+        "vpsllq": 3,
+        "vpsllw": 6,
+        "vpsraw": 8,
+        "vpsrlq": 6,
+        "vpsrlw": 4,
+        "vpsubw": 54,
+        "vpunpckhqdq": 3,
+        "vpunpcklqdq": 3,
+        "vpxor": 6
+      },
+      "montgomery_chains": 54,
+      "movement": {
+        "byte_pack": {
+          "vpblendd": 6,
+          "vpblendw": 6,
+          "vperm2i128": 6,
+          "vpunpckhqdq": 3,
+          "vpunpcklqdq": 3
+        },
+        "core_arithmetic": {},
+        "f0_m_formation": {
+          "vperm2i128": 8
+        },
+        "f0_r_formation": {
+          "vperm2i128": 8
+        },
+        "output_formation": {
+          "vperm2i128": 16,
+          "vpor": 8,
+          "vpshufb": 16
+        },
+        "resident_h_formation": {
+          "vpblendw": 8,
+          "vperm2i128": 16,
+          "vpshufb": 8
+        }
+      },
+      "movement_mnemonics": [
+        "vperm2i128",
+        "vpshufb",
+        "vpblendw",
+        "vpor",
+        "vpblendd",
+        "vpunpcklqdq",
+        "vpunpckhqdq"
+      ],
+      "scratch": {
+        "reloads": 8,
+        "role": "semantic coefficient-plane outputs only",
+        "stores": 8
+      },
+      "symbol": "ntruplus1152_exp001_f0_ma2_chunk0"
+    },
+    "FULL": {
+      "abi": {
+        "branches": 0,
+        "calls": 0,
+        "distinct_ymm": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "peak_ymm": 14,
+        "spills": 0,
+        "stack_references": 0,
+        "vzeroupper": 0
+      },
+      "alignment": {
+        "elf_address": 15328,
+        "elf_mod32": 0,
+        "elf_mod64": 32,
+        "object_address": 4512,
+        "object_mod32": 0,
+        "symbol_size": 29781
+      },
+      "instruction_count": 4681,
+      "instruction_counts": {
+        "ret": 1,
+        "vmovdqa": 630,
+        "vmovdqu": 54,
+        "vpaddw": 360,
+        "vpand": 72,
+        "vpblendd": 54,
+        "vpblendw": 126,
+        "vperm2i128": 486,
+        "vpmulhw": 972,
+        "vpmullw": 774,
+        "vpor": 72,
+        "vpshufb": 216,
+        "vpslld": 27,
+        "vpsllq": 27,
+        "vpsllw": 54,
+        "vpsraw": 72,
+        "vpsrlq": 54,
+        "vpsrlw": 36,
+        "vpsubw": 486,
+        "vpunpckhqdq": 27,
+        "vpunpcklqdq": 27,
+        "vpxor": 54
+      },
+      "montgomery_chains": 486,
+      "movement": {
+        "byte_pack": {
+          "vpblendd": 54,
+          "vpblendw": 54,
+          "vperm2i128": 54,
+          "vpunpckhqdq": 27,
+          "vpunpcklqdq": 27
+        },
+        "core_arithmetic": {},
+        "f0_m_formation": {
+          "vperm2i128": 72
+        },
+        "f0_r_formation": {
+          "vperm2i128": 72
+        },
+        "output_formation": {
+          "vperm2i128": 144,
+          "vpor": 72,
+          "vpshufb": 144
+        },
+        "resident_h_formation": {
+          "vpblendw": 72,
+          "vperm2i128": 144,
+          "vpshufb": 72
+        }
+      },
+      "movement_mnemonics": [
+        "vperm2i128",
+        "vpshufb",
+        "vpblendw",
+        "vpor",
+        "vpblendd",
+        "vpunpcklqdq",
+        "vpunpckhqdq"
+      ],
+      "scratch": {
+        "reloads": 72,
+        "role": "semantic coefficient-plane outputs only",
+        "stores": 72
+      },
+      "symbol": "ntruplus1152_exp001_f0_ma2_full"
+    }
+  }
+}

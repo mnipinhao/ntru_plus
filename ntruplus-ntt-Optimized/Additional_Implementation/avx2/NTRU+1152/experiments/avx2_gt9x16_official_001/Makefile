@@ -85,6 +85,11 @@ F0_MA3_GENERATOR_ARGS := --schedule generated/f0-ma-schedule.json --asm $(F0_MA3
 F0_MA3_RANGE_ARGS := --schedule generated/f0-ma-schedule.json --output generated/f0-ma3-final-range.json
 F0_MA3_AUDIT_ARGS := --object $(BUILD)/f0ma1/f0-ma3.o --elf $(BUILD)/f0ma1/test-f0-ma3 --source $(F0_MA3_ASM) --contract generated/f0-ma3-asm.json --range-proof generated/f0-ma3-final-range.json --output generated/f0-ma3-audit.json
 F0_MA3_TEST_SOURCES := $(F0_MA0_SOURCES) $(F0_MA1_ASM1) $(F0_MA3_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s tests/test_f0_ma1_asm1.c
+F0_MA2_ASM := asm/f0_ma2.S
+F0_MA2_GENERATOR_ARGS := --schedule generated/f0-ma-schedule.json --range-proof generated/f0-ma2-range.json --asm $(F0_MA2_ASM) --constants generated/f0-ma2-constants.inc --header generated/f0-ma2-asm.h --contract generated/f0-ma2-asm.json
+F0_MA2_RANGE_ARGS := --schedule generated/f0-ma-schedule.json --output generated/f0-ma2-range.json
+F0_MA2_AUDIT_ARGS := --object $(BUILD)/f0ma1/f0-ma2.o --elf $(BUILD)/f0ma1/test-f0-ma2 --source $(F0_MA2_ASM) --contract generated/f0-ma2-asm.json --range-proof generated/f0-ma2-range.json --output generated/f0-ma2-audit.json
+F0_MA2_TEST_SOURCES := $(F0_MA2_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s tests/test_f0_ma2.c
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -95,6 +100,8 @@ F0_MA3_TEST_SOURCES := $(F0_MA0_SOURCES) $(F0_MA1_ASM1) $(F0_MA3_ASM) $(UPSTREAM
  supercop-f0-ma1-short supercop-f0-ma1-serious \
  supercop-f0-ma1-ma0-short supercop-f0-ma1-ma0-serious \
  supercop-f0-ma3-short supercop-f0-ma3-serious \
+ supercop-f0-ma2-chunk-short supercop-f0-ma2-chunk-serious \
+ supercop-f0-ma2-short supercop-f0-ma2-serious \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -154,6 +161,12 @@ generate:
 	$(CC) $(CFLAGS_STRICT) -O3 -DTEST_F0_MA3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -Isrc -I$(UPSTREAM) -I. $(F0_MA3_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma3
 	$(BUILD)/f0ma1/test-f0-ma3
 	$(PYTHON) tools/audit_f0_ma3.py $(F0_MA3_AUDIT_ARGS)
+	$(PYTHON) tools/prove_f0_ma2_range.py $(F0_MA2_RANGE_ARGS)
+	$(PYTHON) tools/generate_f0_ma2_asm.py $(F0_MA2_GENERATOR_ARGS)
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0ma1/f0-ma2.o
+	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
+	$(BUILD)/f0ma1/test-f0-ma2
+	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -219,6 +232,12 @@ check:
 	$(CC) $(CFLAGS_STRICT) -O3 -DTEST_F0_MA3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -Isrc -I$(UPSTREAM) -I. $(F0_MA3_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma3
 	$(BUILD)/f0ma1/test-f0-ma3
 	$(PYTHON) tools/audit_f0_ma3.py $(F0_MA3_AUDIT_ARGS) --check
+	$(PYTHON) tools/prove_f0_ma2_range.py $(F0_MA2_RANGE_ARGS) --check
+	$(PYTHON) tools/generate_f0_ma2_asm.py $(F0_MA2_GENERATOR_ARGS) --check
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0ma1/f0-ma2.o
+	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
+	$(BUILD)/f0ma1/test-f0-ma2
+	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -267,6 +286,7 @@ check:
 	$(PYTHON) tests/test_f0_ma1_asm1_evidence.py
 	$(PYTHON) tests/test_f0_ma1_asm1_benchmark.py
 	$(PYTHON) tests/test_f0_ma3_evidence.py
+	$(PYTHON) tests/test_f0_ma2_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -319,6 +339,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma1-asm1-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -DTEST_F0_MA3 -fno-omit-frame-pointer -fsanitize=address,undefined -Igenerated -Isrc -I$(UPSTREAM) -I. $(F0_MA3_TEST_SOURCES) -o $(BUILD)/test-f0-ma3-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma3-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/test-f0-ma2-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma2-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -378,6 +400,11 @@ audit:
 	$(CC) -mavx2 -I. -c $(F0_MA3_ASM) -o $(BUILD)/f0ma1/f0-ma3.o
 	$(CC) $(CFLAGS_STRICT) -O3 -DTEST_F0_MA3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -Isrc -I$(UPSTREAM) -I. $(F0_MA3_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma3
 	$(PYTHON) tools/audit_f0_ma3.py $(F0_MA3_AUDIT_ARGS)
+	$(PYTHON) tools/prove_f0_ma2_range.py $(F0_MA2_RANGE_ARGS) --check
+	$(PYTHON) tools/generate_f0_ma2_asm.py $(F0_MA2_GENERATOR_ARGS) --check
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0ma1/f0-ma2.o
+	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
+	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)
@@ -630,6 +657,22 @@ supercop-f0-ma3-short:
 supercop-f0-ma3-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma3 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-ma2-chunk-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma2-chunk --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-ma2-chunk-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma2-chunk --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-ma2-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-ma2-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-ma2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

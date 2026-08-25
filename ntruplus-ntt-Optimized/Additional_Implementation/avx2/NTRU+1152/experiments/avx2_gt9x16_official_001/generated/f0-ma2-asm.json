@@ -1,0 +1,47 @@
+{
+  "alignment": {
+    "bytes": "unaligned",
+    "constants": 32,
+    "entries": 32,
+    "polys_and_scratch": 32
+  },
+  "arithmetic": {
+    "chunk0_total": 54,
+    "core_chains_per_tile": 19,
+    "h_lifts_per_tile": 4,
+    "inv4_per_tile": 4,
+    "total_per_tile": 27
+  },
+  "asm0": {
+    "peak_ymm": 13,
+    "scratch_bytes": 0,
+    "tile": "b0p0"
+  },
+  "checkpoint": "F0-MA2-ASM0/CHUNK0",
+  "chunk0": {
+    "official_vector_intermediate": false,
+    "pack_barrett": false,
+    "peak_ymm": 14,
+    "scratch_i16": 128,
+    "scratch_role": "eight semantic output planes only",
+    "tiles": [
+      "b0p4",
+      "b0p7"
+    ]
+  },
+  "full": {
+    "chunks": 9,
+    "official_vector_intermediate": false,
+    "pack_barrett": false,
+    "peak_ymm": 14,
+    "scratch_i16": 128,
+    "scratch_role": "reused eight semantic output planes",
+    "tiles": 18,
+    "total_montgomery_chains": 486
+  },
+  "range_proof_sha256": "54638e7b2102d856120505f97725dd538709d8a634a71d3e0d7ad593b704815a",
+  "representation": "fixed coefficient, 16 physical-q leaves per YMM",
+  "schedule": "retain four h and four r planes; stream one m/output accumulator",
+  "schedule_sha256": "51dc389364bda38ebed92b594a4ec346211bbbd3c088764dc64af7f9fa8608bb",
+  "schema": "gt-f0-ma2-asm/v1"
+}

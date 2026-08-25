@@ -110,7 +110,8 @@ def main() -> int:
     parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail",
                                            "derived-itail-d0", "derived-itail-d0-m2",
                                            "derived-f0-ma1", "derived-f0-ma1-ma0",
-                                           "derived-f0-ma3"),
+                                           "derived-f0-ma3", "derived-f0-ma2-chunk",
+                                           "derived-f0-ma2"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -122,7 +123,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.mode in ("derived-itail", "derived-itail-d0", "derived-itail-d0-m2",
                      "derived-f0-ma1", "derived-f0-ma1-ma0",
-                     "derived-f0-ma3") and args.parameter != "1152":
+                     "derived-f0-ma3", "derived-f0-ma2-chunk",
+                     "derived-f0-ma2") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -172,7 +174,8 @@ def main() -> int:
         selected.chmod(original_modes[selected] & ~stat.S_ISVTX)
         if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0",
                          "derived-itail-d0-m2", "derived-f0-ma1",
-                         "derived-f0-ma1-ma0", "derived-f0-ma3"):
+                         "derived-f0-ma1-ma0", "derived-f0-ma3",
+                         "derived-f0-ma2-chunk", "derived-f0-ma2"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -181,6 +184,8 @@ def main() -> int:
                 "derived-f0-ma1": "f0_ma1_measure.c",
                 "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c",
                 "derived-f0-ma3": "f0_ma3_measure.c",
+                "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
+                "derived-f0-ma2": "f0_ma2_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -264,9 +269,15 @@ def main() -> int:
                 ("f0_ma1_c0", "second"), ("f0_ma1_c1", "third"),
                 ("f0_ma1_c1", "first"), ("f0_ma0", "second"),
                 ("f0_ma1_c0", "third")))
-    else:
+    elif args.mode == "derived-f0-ma3":
         required = ("f0_ma0_first_cycles", "f0_ma3_second_cycles",
                     "f0_ma3_first_cycles", "f0_ma0_second_cycles")
+    elif args.mode == "derived-f0-ma2-chunk":
+        required = ("f0_ma0_first_cycles", "f0_ma2_repeat_second_cycles",
+                    "f0_ma2_repeat_first_cycles", "f0_ma0_second_cycles")
+    else:
+        required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
+                    "f0_ma2_first_cycles", "f0_ma0_second_cycles")
     missing = [name for name in required if f" {name} " not in data_text]
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
@@ -554,6 +565,73 @@ def main() -> int:
             "ma3_tied_with_ma0_launches": sum(x == 0 for x in deltas),
             "median_ma3_minus_ma0_cycles": statistics.median(deltas),
         }
+    if args.mode == "derived-f0-ma2-chunk":
+        combined = {
+            "f0_ma0_cycles": (pooled["f0_ma0_first_cycles"] +
+                              pooled["f0_ma0_second_cycles"]),
+            "f0_ma2_repeat_cycles": (pooled["f0_ma2_repeat_first_cycles"] +
+                                     pooled["f0_ma2_repeat_second_cycles"]),
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            ma0 = stabilized_quartiles(
+                observed["f0_ma0_first_cycles"] +
+                observed["f0_ma0_second_cycles"])[1]
+            ma2 = stabilized_quartiles(
+                observed["f0_ma2_repeat_first_cycles"] +
+                observed["f0_ma2_repeat_second_cycles"])[1]
+            paired_launches.append({
+                "launch": launch_number,
+                "f0_ma0_stq2": ma0,
+                "f0_ma2_repeat_stq2": ma2,
+                "ma2_repeat_minus_ma0_cycles": ma2 - ma0,
+                "ma2_repeat_over_ma0_ratio": ma2 / ma0,
+            })
+        deltas = [entry["ma2_repeat_minus_ma0_cycles"]
+                  for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "ma2_repeat_faster_than_ma0_launches": sum(x < 0 for x in deltas),
+            "ma2_repeat_slower_than_ma0_launches": sum(x > 0 for x in deltas),
+            "ma2_repeat_tied_with_ma0_launches": sum(x == 0 for x in deltas),
+            "median_ma2_repeat_minus_ma0_cycles": statistics.median(deltas),
+        }
+    if args.mode == "derived-f0-ma2":
+        combined = {
+            "f0_ma0_cycles": pooled["f0_ma0_first_cycles"] + pooled["f0_ma0_second_cycles"],
+            "f0_ma2_cycles": pooled["f0_ma2_first_cycles"] + pooled["f0_ma2_second_cycles"],
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values), "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            ma0 = stabilized_quartiles(observed["f0_ma0_first_cycles"] +
+                                       observed["f0_ma0_second_cycles"])[1]
+            ma2 = stabilized_quartiles(observed["f0_ma2_first_cycles"] +
+                                       observed["f0_ma2_second_cycles"])[1]
+            paired_launches.append({"launch": launch_number,
+                                    "f0_ma0_stq2": ma0, "f0_ma2_stq2": ma2,
+                                    "ma2_minus_ma0_cycles": ma2 - ma0,
+                                    "ma2_over_ma0_ratio": ma2 / ma0})
+        deltas = [entry["ma2_minus_ma0_cycles"] for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "ma2_faster_than_ma0_launches": sum(x < 0 for x in deltas),
+            "ma2_slower_than_ma0_launches": sum(x > 0 for x in deltas),
+            "ma2_tied_with_ma0_launches": sum(x == 0 for x in deltas),
+            "median_ma2_minus_ma0_cycles": statistics.median(deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -567,6 +645,8 @@ def main() -> int:
                             else "supercop-derived-poly-f0-ma1" if args.mode == "derived-f0-ma1"
                             else "supercop-derived-poly-f0-ma1-ma0" if args.mode == "derived-f0-ma1-ma0"
                             else "supercop-derived-poly-f0-ma3" if args.mode == "derived-f0-ma3"
+                            else "supercop-derived-poly-f0-ma2-chunk-diagnostic" if args.mode == "derived-f0-ma2-chunk"
+                            else "supercop-derived-poly-f0-ma2" if args.mode == "derived-f0-ma2"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -600,7 +680,9 @@ def main() -> int:
               "derived-itail-d0-m2": "itail_d0_m2_measure.c",
               "derived-f0-ma1": "f0_ma1_measure.c",
               "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c",
-              "derived-f0-ma3": "f0_ma3_measure.c"}[args.mode])
+              "derived-f0-ma3": "f0_ma3_measure.c",
+              "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
+              "derived-f0-ma2": "f0_ma2_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

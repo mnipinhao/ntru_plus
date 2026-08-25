@@ -369,3 +369,16 @@ pinned SUPERCOP-derived serious result is MA3 4689.2870 versus MA0 2817.3750
 cycles; MA3 loses all 9 launches by a median +1868.6042 cycles. MA3 is frozen
 as attribution evidence and the MA2 coefficient-plane geometry is reopened.
 See `CHECKPOINT-F0-MA3.md`.
+
+Checkpoint F0-MA2 implements the Hwa-style coefficient-plane hypothesis as a
+real complete nine-chunk AVX2 MulAdd-to-serializer path. It streams raw F0 and
+resident-h planes through 19-chain quartic schoolbook arithmetic, uses only
+semantic-plane scratch, omits a proved-redundant final Barrett pass, and never
+reconstructs an Official-vector intermediate. ASM0, CHUNK0, and the complete
+path pass 1,003 byte-exact random/boundary cases; the full 4,681-instruction
+leaf peaks at 14 YMM with no calls, branches, spills, stack use, or
+`vzeroupper`, and preserves 32-byte entry/constant alignment. The pinned
+SUPERCOP-derived serious run measures MA2 at 2072.1435 cycles versus MA0 at
+2826.4907, winning 9/9 launches with a median -753.8333-cycle delta. MA2 is
+selected for real encapsulation caller integration, but is not yet native-KEM
+or production qualified. See `CHECKPOINT-F0-MA2.md`.
