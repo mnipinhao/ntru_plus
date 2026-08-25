@@ -100,6 +100,13 @@ Pi 5 cycle and PMU work stays under:
 ntruplus-ntt-Optimized/aarch64-bench/
 ```
 
+NTRU+864/1152 Neon Production stays in the existing parameter directories;
+unpromoted candidates stay under `Additional_Implementation/aarch64/Experiment/`.
+Their promotion benchmark is SUPERCOP, packaged through
+`bench/supercop/package_impl.py`. See
+`Additional_Implementation/aarch64/NEON_864_1152_WORKFLOW.md` for the lane and
+promotion contract.
+
 Before timing, verify the exact linked source set, hash policy, parameter set,
 correctness result, and baseline/candidate labels. Do not compare timing across
 different hosts or counter backends as if they were equivalent.

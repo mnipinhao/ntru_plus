@@ -25,7 +25,7 @@ COMPARE_ARGS = --impl-a "$(IMPL_A)" --impl-b "$(IMPL_B)" --run-tag "$(RUN_TAG)" 
 	$(if $(LABEL_B),--label-b "$(LABEL_B)")
 
 .PHONY: all setup validate compare-kat cycles-compare compare impl-compare impl-compare-kat \
-	clean clean-results help run
+	supercop-package clean clean-results help run
 
 all: validate
 
@@ -41,6 +41,17 @@ cycles-compare compare impl-compare: setup
 	@python3 $(BENCH_DRIVER) compare $(COMPARE_ARGS)
 
 run: compare
+
+supercop-package:
+	@test -n "$(IMPL)" || (echo "IMPL is required" >&2; exit 2)
+	@test -n "$(SUPERCOP_ROOT)" || (echo "SUPERCOP_ROOT is required" >&2; exit 2)
+	@test -n "$(SUPERCOP_SCHEME)" || (echo "SUPERCOP_SCHEME is required" >&2; exit 2)
+	@test -n "$(SUPERCOP_IMPL)" || (echo "SUPERCOP_IMPL is required" >&2; exit 2)
+	@python3 supercop/package_impl.py \
+		--impl "$(IMPL)" \
+		--supercop-root "$(SUPERCOP_ROOT)" \
+		--scheme "$(SUPERCOP_SCHEME)" \
+		--implementation "$(SUPERCOP_IMPL)"
 
 clean:
 	rm -rf $(BUILD_DIR)/*
@@ -65,3 +76,6 @@ help:
 	@echo "  RUN_TAG=<label>                            # result directory suffix"
 	@echo "  CYCLE_ITERATIONS=<n>                       # default 1000"
 	@echo "  CYCLE_WARMUP=<n>                           # default 100"
+	@echo ""
+	@echo "SUPERCOP packaging:"
+	@echo "  make supercop-package IMPL=<path> SUPERCOP_ROOT=<path> SUPERCOP_SCHEME=ntruplus864 SUPERCOP_IMPL=neon-production"

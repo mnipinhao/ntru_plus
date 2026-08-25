@@ -108,7 +108,9 @@ def make_dry_run_compile(impl_dir: Path, target: str) -> list[str]:
             f"stderr:\n{result.stderr}"
         )
 
-    lines = [line.strip() for line in (result.stdout + "\n" + result.stderr).splitlines() if line.strip()]
+    dry_run = result.stdout + "\n" + result.stderr
+    dry_run = re.sub(r"\\\s*\n\s*", " ", dry_run)
+    lines = [line.strip() for line in dry_run.splitlines() if line.strip()]
     for line in reversed(lines):
         try:
             tokens = shlex.split(line)

@@ -10,7 +10,7 @@ RM ?= /bin/rm -f
 
 BUILD_DIR ?= build
 
-SOURCES = kem.c symmetric.c poly.c \
+SOURCES = ../common/kem.c symmetric.c poly.c \
   asm/add.s asm/ntt.s asm/base.s asm/crepmod3.s asm/pack.s asm/cbd.s
 HEADERS = api.h params.h poly.h symmetric.h
 
@@ -25,17 +25,20 @@ SOURCES += NO_CE/fips202.c
 HEADERS += NO_CE/fips202.h
 endif
 
-.PHONY: all PQCgenKAT_kem test run-test check clean
+.PHONY: all PQCgenKAT_kem test run-test check check-production-boundary clean
 
 all: test PQCgenKAT_kem
 
-PQCgenKAT_kem: $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) \
+check-production-boundary:
+	python3 ../scripts/check_neon_lanes.py --production .
+
+PQCgenKAT_kem: check-production-boundary $(HEADERS) kat/aes.h kat/rng.h $(SOURCES) \
   kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(NISTFLAGS) -I. -o $(BUILD_DIR)/PQCgenKAT_kem \
 	  kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c $(SOURCES)
 
-test: $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
+test: check-production-boundary $(HEADERS) randombytes.h $(SOURCES) randombytes.c test/test.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o $(BUILD_DIR)/test \
 	  randombytes.c test/test.c $(SOURCES)

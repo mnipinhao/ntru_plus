@@ -11,6 +11,11 @@ historical reports live under
 [`aarch64/gt-production/`](aarch64/gt-production/). Keeping them here leaves
 the publishable implementation tree source-only.
 
+NTRU+864/1152 Neon promotion measurements use SUPERCOP itself through the
+packaging lane in [`supercop/`](supercop/README.md). The portable cycle harness
+below remains available for historical and cross-platform comparisons, but it
+is not the promotion benchmark for those Neon lanes.
+
 The complete Official main / KPQC Final / GT Production study starts at
 [`aarch64/gt-production/reports/official-main-study/README.md`](aarch64/gt-production/reports/official-main-study/README.md).
 
