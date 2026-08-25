@@ -97,6 +97,22 @@ proved.
 | MA2 | 19 | 432 | 13 | deferred |
 | MA3 | 13 | 432 | 15 | coefficient-plane challenger |
 
+Post-ASM0 correction: the `792` and `432` entries above are semantic route-slot
+estimates from the schedule generator, not counts of executed shuffle
+instructions. The fixed B0/P0 MA1 object classifies actual movement as R0
+(address choice), R1 (register reuse), and R2 (executed routing), and contains
+48 R2 instructions. The machine count cannot be extrapolated to the
+nine-chunk caller schedule until ASM1 is synthesized. The ASM0 audit is the
+authoritative interpretation; the table remains useful only as pre-ASM
+semantic geometry.
+
+The ASM implementation also makes an implicit common cost explicit. MA1's 20
+chains are its core quartic arithmetic, but an R^0 resident `h` operand first
+needs four Montgomery-by-R2 chains per tile. With four S0 `inv4` finalizers,
+the fixed-tile total is 28 chains. This does not change MA1 versus MA3's
+seven-chain core difference, but future full-path ledgers must include the
+common lift.
+
 MA1 remains necessary even though its explicit pair-operand routing is larger:
 it directly prices whether persistent F0-basis arithmetic has scheduling
 credit not visible in the static route count.

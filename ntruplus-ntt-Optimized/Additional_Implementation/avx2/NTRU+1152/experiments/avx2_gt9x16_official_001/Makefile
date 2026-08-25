@@ -68,6 +68,9 @@ INVERSE_TAIL_D0_M2_PROOF_ARGS := --m3-proof generated/g1c-m3-full-path-proof.jso
 INVERSE_TAIL_D0_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-tail-d0.o --source $(INVERSE_TAIL_D0_ASM) --proof generated/g1c-inverse-tail-d0-proof.json --m2-proof generated/g1c-inverse-tail-d0-m2-proof.json --output generated/g1c-inverse-tail-d0-audit.json --compiler $(CC) --cflags=-mavx2
 F0_MA_MAP_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --range-proof generated/gt9x16-ntt9-paper-range.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --kem-source $(UPSTREAM)/kem.c --basemul-source $(UPSTREAM)/basemul.s --add-source $(UPSTREAM)/add.s --pack-source $(UPSTREAM)/pack.s --map-output generated/f0-ma-consumer-map.json --synthesis-output generated/f0-ma-symbolic-synthesis.json
 F0_MA_SCHED_ARGS := --consumer-map generated/f0-ma-consumer-map.json --synthesis generated/f0-ma-symbolic-synthesis.json --poly-header $(UPSTREAM)/poly.h --pack-source $(UPSTREAM)/pack.s --basemul-source $(UPSTREAM)/basemul.s --output generated/f0-ma-schedule.json
+F0_MA1_ASM := asm/f0_ma1_asm0.S
+F0_MA1_GENERATOR_ARGS := --schedule generated/f0-ma-schedule.json --json generated/f0-ma1-asm0.json --asm-constants generated/f0-ma1-asm0-constants.inc --header generated/f0-ma1-asm0.h
+F0_MA1_AUDIT_ARGS := --object $(BUILD)/f0ma1/f0-ma1-asm0.o --elf $(BUILD)/f0ma1/test-f0-ma1-asm0 --source $(F0_MA1_ASM) --contract generated/f0-ma1-asm0.json --output generated/f0-ma1-asm0-audit.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -114,6 +117,11 @@ generate:
 	$(PYTHON) tools/generate_inverse_ntt9_b1r.py $(INVERSE_NTT9_B1R_ARGS)
 	$(PYTHON) tools/generate_f0_ma_map.py $(F0_MA_MAP_ARGS)
 	$(PYTHON) tools/generate_f0_ma_schedule.py $(F0_MA_SCHED_ARGS)
+	$(PYTHON) tools/generate_f0_ma1_asm0.py $(F0_MA1_GENERATOR_ARGS)
+	mkdir -p $(BUILD)/f0ma1
+	$(CC) -mavx2 -I. -c $(F0_MA1_ASM) -o $(BUILD)/f0ma1/f0-ma1-asm0.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(F0_MA1_ASM) tests/test_f0_ma1_asm0.c -o $(BUILD)/f0ma1/test-f0-ma1-asm0
+	$(PYTHON) tools/audit_f0_ma1_asm0.py $(F0_MA1_AUDIT_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -157,6 +165,12 @@ check:
 	$(PYTHON) tools/generate_inverse_ntt9_b1r.py $(INVERSE_NTT9_B1R_ARGS) --check
 	$(PYTHON) tools/generate_f0_ma_map.py $(F0_MA_MAP_ARGS) --check
 	$(PYTHON) tools/generate_f0_ma_schedule.py $(F0_MA_SCHED_ARGS) --check
+	$(PYTHON) tools/generate_f0_ma1_asm0.py $(F0_MA1_GENERATOR_ARGS) --check
+	mkdir -p $(BUILD)/f0ma1
+	$(CC) -mavx2 -I. -c $(F0_MA1_ASM) -o $(BUILD)/f0ma1/f0-ma1-asm0.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(F0_MA1_ASM) tests/test_f0_ma1_asm0.c -o $(BUILD)/f0ma1/test-f0-ma1-asm0
+	$(BUILD)/f0ma1/test-f0-ma1-asm0
+	$(PYTHON) tools/audit_f0_ma1_asm0.py $(F0_MA1_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -201,6 +215,7 @@ check:
 	$(PYTHON) tests/test_f0_ma_consumer_map.py
 	$(PYTHON) tests/test_f0_ma_symbolic_synthesis.py
 	$(PYTHON) tests/test_f0_ma_schedule.py
+	$(PYTHON) tests/test_f0_ma1_asm0_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -247,6 +262,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-inverse-ntt9-reference-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) $(G1C_LINKED_ASM) $(INVERSE_NTT9_B1_ASM) $(INVERSE_TAIL_D0_ASM) tests/test_inverse_tail_d0.c -o $(BUILD)/test-inverse-tail-d0-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-inverse-tail-d0-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Igenerated -I. $(F0_MA1_ASM) tests/test_f0_ma1_asm0.c -o $(BUILD)/test-f0-ma1-asm0-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma1-asm0-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -292,6 +309,10 @@ audit:
 	$(PYTHON) tools/audit_inverse_tail_d0.py $(INVERSE_TAIL_D0_AUDIT_ARGS)
 	$(CC) -mavx2 -Isrc -c $(G1C_M3C3_ASM) -o $(BUILD)/g1c/g1c-m3c3-reduction.o
 	$(PYTHON) tools/audit_g1c_m3c3_reduction.py $(G1C_M3C3_AUDIT_ARGS)
+	mkdir -p $(BUILD)/f0ma1
+	$(CC) -mavx2 -I. -c $(F0_MA1_ASM) -o $(BUILD)/f0ma1/f0-ma1-asm0.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(F0_MA1_ASM) tests/test_f0_ma1_asm0.c -o $(BUILD)/f0ma1/test-f0-ma1-asm0
+	$(PYTHON) tools/audit_f0_ma1_asm0.py $(F0_MA1_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)

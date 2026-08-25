@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-ma-schedule-proof-complete-ma1-ma3-asm-authorized
+state: checkpoint-f0-ma1-asm0-one-tile-correctness-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -249,18 +249,27 @@ gates:
   checkpoint_f0_ma_scale: passed-h1-r4-m4-output4-inv4-2593-required-at-finalizer-or-serializer
   checkpoint_f0_ma_candidates: retained-ma0-ma1-ma2-ma3-no-static-kill
   checkpoint_f0_ma_ma3_proof: passed-288-lambda-factors-4608-random-equivalence-checks
-  checkpoint_f0_ma_asm: not-authorized-range-h-projection-register-and-serializer-schedules-open
-  checkpoint_f0_ma_alignment: pending-p2align5-entry-constants-pointer-contract-and-linked-elf-mod32-mod64-audit
+  checkpoint_f0_ma_asm: ma1-asm0-one-tile-complete-ma1-asm1-caller-shaped-open
+  checkpoint_f0_ma_alignment: passed-ma1-asm0-p2align5-entry-constants-aligned-offsets-linked-mod32-zero
   checkpoint_f0_ma_benchmark: not-run-symbolic-proof-checkpoint
   checkpoint_f0_ma_sched_chunk_pairing: passed-nine-official-chunks-two-semantic-tiles-each
   checkpoint_f0_ma_sched_ownership: passed-1152-f0-h-serializer-lanes
   checkpoint_f0_ma_sched_scale: selected-s0-output-finalizer-72-chains-vs-s1-s2-144
   checkpoint_f0_ma_sched_range: passed-all-ma1-ma2-ma3-preoperations-signed-i16
-  checkpoint_f0_ma_sched_ma1: authorized-20-chains-792-routes-peak14ymm
+  checkpoint_f0_ma_sched_ma1: superseded-core20-semantic-route-slots-not-executed-instructions
   checkpoint_f0_ma_sched_ma2: deferred-19-chains-432-routes-peak13ymm
   checkpoint_f0_ma_sched_ma3: authorized-13-chains-432-routes-streaming-peak15ymm
   checkpoint_f0_ma_sched_alignment: passed-source-contract-p2align5-required-linked-elf-audit-at-asm
   checkpoint_f0_ma_sched_benchmark: not-run-proof-and-prototype-selection-only
+  checkpoint_f0_ma1_asm0_projection: passed-exact-b0p0-resident-h-including-lane7-cross-half-exchange
+  checkpoint_f0_ma1_asm0_differential: passed-1003-random-boundary-cases-bit-exact
+  checkpoint_f0_ma1_asm0_scale: passed-r0-output-transform-scale1-total28-chains
+  checkpoint_f0_ma1_asm0_range: passed-proved-signed-i16-preoperation-contract
+  checkpoint_f0_ma1_asm0_alias: passed-nonalias-api-input-immutability-output-canary
+  checkpoint_f0_ma1_asm0_static: passed-no-call-branch-frame-stack-spill-vzeroupper-peak13ymm
+  checkpoint_f0_ma1_asm0_routing: passed-r0-r1-free-r2-48-old792-semantic-slots-only
+  checkpoint_f0_ma1_asm0_alignment: passed-entry-constants-object-linked-mod32-zero-caller-and-table-distance-recorded
+  checkpoint_f0_ma1_asm0_benchmark: not-run-correctness-island-only
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -335,9 +344,10 @@ checkpoint_f0_ma_map: exact-encapsulation-caller-map-scale-ledger-and-ma0-ma1-ma
 f0_ma_consumer_map: generated/f0-ma-consumer-map.json
 f0_ma_symbolic_synthesis: generated/f0-ma-symbolic-synthesis.json
 checkpoint_f0_ma_sched: nine-chunk-h-serializer-scale-range-liveness-and-ma1-ma3-prototype-selection-complete
+checkpoint_f0_ma1_asm0: fixed-b0p0-correctness-scale-range-abi-routing-and-alignment-complete
 f0_ma_schedule: generated/f0-ma-schedule.json
 research_phase: local-architecture-convergence
-next_step: implement-aligned-ma1-correctness-first-island-then-ma3-with-complete-encap-boundary
+next_step: implement-ma1-asm1-nine-serializer-chunk-caller-shaped-correctness-then-supercop-derived
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

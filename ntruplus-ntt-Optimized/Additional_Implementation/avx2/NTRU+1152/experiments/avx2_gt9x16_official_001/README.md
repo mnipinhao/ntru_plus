@@ -340,3 +340,12 @@ MA1/MA3 liveness. MA2 and MA3 share a 432-route external geometry, but MA3 has
 F0-native research prototype at peak 14 YMM. MA1 and MA3 ASM are authorized in
 that order with mandatory 32-byte entry/constant alignment audit. No assembly
 or performance result exists yet. See `CHECKPOINT-F0-MA-SCHED.md`.
+
+Checkpoint F0-MA1-ASM0 implements the fixed B0/P0 correctness island. It
+passes 1,003 exact random/boundary cases and the range, scale, non-alias,
+canary, sanitizer, ABI, and 32-byte linked-alignment gates. The exact one-tile
+ledger is 28 Montgomery chains after making the common four-chain resident-`h`
+R-lift explicit. The former 792-route value is now correctly labeled semantic
+route slots; this object executes 48 R2 routing instructions. No timing was
+run. The next gate is the nine-serializer-chunk caller-shaped ASM1; see
+`CHECKPOINT-F0-MA1-ASM0.md`.

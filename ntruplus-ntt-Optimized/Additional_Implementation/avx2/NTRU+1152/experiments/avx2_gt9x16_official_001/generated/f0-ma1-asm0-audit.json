@@ -1,0 +1,156 @@
+{
+  "abi": {
+    "alias_contract": "output must not alias r, m, or h",
+    "branches": 0,
+    "calls": 0,
+    "distinct_ymm": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "frame_instructions": 0,
+    "peak_ymm_upper_bound": 13,
+    "pointer_offsets": {
+      "rcx": [
+        256,
+        384,
+        288,
+        416,
+        320,
+        448,
+        352,
+        480
+      ],
+      "rdi": [
+        0,
+        32,
+        64,
+        96,
+        0,
+        64,
+        0,
+        64,
+        32,
+        96,
+        32,
+        96,
+        0,
+        32,
+        0,
+        32,
+        64,
+        96,
+        64,
+        96
+      ],
+      "rdx": [
+        0,
+        64,
+        32,
+        96
+      ],
+      "rsi": [
+        0,
+        64,
+        32,
+        96
+      ]
+    },
+    "stack_references": 0,
+    "vzeroupper": 0
+  },
+  "alignment": {
+    "linked_caller_address": 4288,
+    "linked_distance_from_caller": 4384,
+    "linked_rodata_alignment": 32,
+    "linked_rodata_distance_from_symbol": 3616,
+    "linked_symbol_address": 8672,
+    "linked_symbol_mod32": 0,
+    "linked_symbol_mod64": 32,
+    "linked_text_alignment": 64,
+    "object_rodata_alignment": 32,
+    "object_rodata_size": 480,
+    "object_symbol_address": 0,
+    "object_symbol_mod32": 0,
+    "object_symbol_mod64": 0,
+    "object_text_alignment": 32,
+    "object_text_size": 2462,
+    "symbol_size": 2462
+  },
+  "arithmetic": {
+    "bilinear_chains": 16,
+    "center_operations": 16,
+    "h_r_lift_chains": 4,
+    "instruction_counts": {
+      "ret": 1,
+      "vmovdqa": 38,
+      "vpaddw": 40,
+      "vpand": 36,
+      "vpandn": 4,
+      "vpblendw": 4,
+      "vpcmpgtw": 32,
+      "vperm2i128": 40,
+      "vpmulhrsw": 16,
+      "vpmulhw": 56,
+      "vpmullw": 60,
+      "vpshufb": 4,
+      "vpsubw": 60,
+      "vpxor": 4
+    },
+    "inv4_chains": 4,
+    "lambda_chains": 4,
+    "total_montgomery_chains": 28
+  },
+  "route_attribution": {
+    "R0_load_address_only": {
+      "instructions": 0,
+      "m_loads": 4,
+      "r_loads": 4,
+      "resident_h_loads": 8
+    },
+    "R1_register_reuse": {
+      "instructions": 0,
+      "native_r_pair_uses": 8
+    },
+    "R2_bilinear_operand_formation": {
+      "h_broadcast_vperm2i128": 16,
+      "r_pair_vperm2i128": 8,
+      "total": 24
+    },
+    "R2_resident_h_projection": {
+      "total": 20,
+      "vpblendw": 4,
+      "vperm2i128": 12,
+      "vpshufb": 4
+    },
+    "R2_semantic_output_formation": {
+      "total": 4,
+      "vperm2i128": 4
+    },
+    "R2_total": 48,
+    "classification": "executed instructions, not semantic route slots",
+    "correctness_first_materialization": {
+      "reloads": 4,
+      "stores": 4
+    },
+    "old_792_interpretation": "semantic route-slot estimate; must not be reported as executed shuffle count"
+  },
+  "schema": "gt-f0-ma1-asm0-audit/v1",
+  "sha256": {
+    "contract": "06081a91da957c6c9f5732ba7b166cd7e664604dbef50b22153630b6fc570a31",
+    "elf": "87cbfca2db1fc5e07be7d9656864859b16f71b6cbf9293aceb3270c03e07e4f5",
+    "object": "fcf0609b68a4784e0f79b372ad0899765aee8180be8883b45dba91a21f8a2ea4",
+    "source": "21adbd8831dc5dcdffa13b65fd387198e1e640882bd3a8865dfb4e1bd71d6ff7"
+  },
+  "symbol": "ntruplus1152_exp001_f0_ma1_asm0_b0p0"
+}
