@@ -278,6 +278,15 @@ gates:
   checkpoint_f0_ma0_control: passed-complete-two-adapters-official-basemul-add-inv4-serializer-byte-exact
   checkpoint_f0_ma1_asm1_vs_ma0: rejected-c1-plus1039.4167-cycles-loses-9of9
   checkpoint_f0_ma1_benchmark_class: supercop-derived-poly-f0-ma1-not-native-kem
+  checkpoint_f0_ma3_asm0: passed-exact-single-tile-ee-oo-tt-21-chains-1003-cases
+  checkpoint_f0_ma3_final_range: passed-exhaustive-inv4-to-pack-center-redundant
+  checkpoint_f0_ma3_finalizer_saving: passed-minus72-vector-centers-minus720-instructions
+  checkpoint_f0_ma3_asm1: passed-nine-chunk-two-tile-ilp-378-chains-byte-exact
+  checkpoint_f0_ma3_static: passed-10891-instructions-16ymm-no-call-branch-stack-spill-vzeroupper
+  checkpoint_f0_ma3_alignment: passed-p2align5-object-and-linked-mod32-zero
+  checkpoint_f0_ma3_supercop_derived: rejected-ma34689.2870-vs-ma02817.3750-plus1871.9120
+  checkpoint_f0_ma3_paired_launches: rejected-median-plus1868.6042-ma3-loses-9of9
+  checkpoint_f0_ma3_benchmark_class: supercop-derived-poly-f0-ma3-not-native-kem
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
@@ -354,11 +363,13 @@ f0_ma_symbolic_synthesis: generated/f0-ma-symbolic-synthesis.json
 checkpoint_f0_ma_sched: nine-chunk-h-serializer-scale-range-liveness-and-ma1-ma3-prototype-selection-complete
 checkpoint_f0_ma1_asm0: fixed-b0p0-correctness-scale-range-abi-routing-and-alignment-complete
 checkpoint_f0_ma1_asm1: full-nine-chunk-c1-selected-within-ma1-ma1-rejected-vs-ma0
+checkpoint_f0_ma3: exact-low-rank-caller-complete-rejected-vs-ma0-ma2-reopened
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
+f0_ma3_result: results/f0-ma3-supercop-derived-intel155h-20260825-001/supercop-f0-ma3-serious/stq-summary.json
 f0_ma_schedule: generated/f0-ma-schedule.json
 research_phase: local-architecture-convergence
-next_step: implement-ma3-on-the-qualified-ma1-caller-and-supercop-derived-harness
+next_step: reopen-ma2-coefficient-plane-asm0-and-price-real-routing-geometry-before-full-caller
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -367,8 +378,10 @@ rejected_candidates:
   - g1c-itail-d0-m1-immediate-triad-plus365.3704-cycles-loses-9of9-despite-minus144-memory-instructions
   - g1c-itail-d0-m2-retained-nine-plus152.9722-median-cycles-loses-to-m0-9of9-current-parent-fusion-closed
   - f0-ma1-c1-plus1039.4167-cycles-vs-ma0-loses-9of9-schoolbook-architecture-frozen
+  - f0-ma3-plus1868.6042-median-cycles-vs-ma0-loses-9of9-low-rank-architecture-frozen
 deferred_candidates:
   - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
+  - f0-ma2-reopened-coefficient-plane-19-core-chains-geometry-first
 selected_candidates:
   - c3-official-routing-row-pair-is-0.694x-c2-row-pair
   - c4-natural-nine-row-pair-is-0.821x-c0-pair

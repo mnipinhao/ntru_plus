@@ -1,0 +1,94 @@
+{
+  "checkpoint": "MA3-FINAL-RANGE",
+  "constants": {
+    "inv4_montgomery": -901,
+    "inv4_qinv_signed16": 16379,
+    "q": 3457,
+    "qinv": 12929,
+    "r": 65536
+  },
+  "method": "exhaustive signed-AVX2-instruction model over every integer in each proved input interval",
+  "proofs": [
+    {
+      "coefficient": 0,
+      "enumerated_inputs": 10461,
+      "explicit_center_before_pack_required": false,
+      "pack_matches_mod_q_for_every_input": true,
+      "pack_output_inclusive": [
+        0,
+        3456
+      ],
+      "post_inv4_inclusive": [
+        -1773,
+        1773
+      ],
+      "pre_inv4_inclusive": [
+        -5230,
+        5230
+      ]
+    },
+    {
+      "coefficient": 1,
+      "enumerated_inputs": 6913,
+      "explicit_center_before_pack_required": false,
+      "pack_matches_mod_q_for_every_input": true,
+      "pack_output_inclusive": [
+        0,
+        3456
+      ],
+      "post_inv4_inclusive": [
+        -1773,
+        1773
+      ],
+      "pre_inv4_inclusive": [
+        -3456,
+        3456
+      ]
+    },
+    {
+      "coefficient": 2,
+      "enumerated_inputs": 10369,
+      "explicit_center_before_pack_required": false,
+      "pack_matches_mod_q_for_every_input": true,
+      "pack_output_inclusive": [
+        0,
+        3456
+      ],
+      "post_inv4_inclusive": [
+        -1773,
+        1773
+      ],
+      "pre_inv4_inclusive": [
+        -5184,
+        5184
+      ]
+    },
+    {
+      "coefficient": 3,
+      "enumerated_inputs": 6913,
+      "explicit_center_before_pack_required": false,
+      "pack_matches_mod_q_for_every_input": true,
+      "pack_output_inclusive": [
+        0,
+        3456
+      ],
+      "post_inv4_inclusive": [
+        -1773,
+        1773
+      ],
+      "pre_inv4_inclusive": [
+        -3456,
+        3456
+      ]
+    }
+  ],
+  "rejected_redundant_primitive": "MA1_CENTER2 after inv4",
+  "schedule_sha256": "51dc389364bda38ebed92b594a4ec346211bbbd3c088764dc64af7f9fa8608bb",
+  "schema": "gt-f0-ma3-final-range/v1",
+  "selected_finalizer": "inv4 Montgomery output directly into MA1_PACK_CHUNK",
+  "static_saving_full_path": {
+    "centered_vectors_removed": 72,
+    "instructions_removed": 720,
+    "note": "four two-vector MA1_CENTER2 expansions per chunk, nine chunks, twenty instructions each"
+  }
+}

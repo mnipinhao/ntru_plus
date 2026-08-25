@@ -358,3 +358,14 @@ beats selected C1 by a median 1039.4167 cycles in all nine launches. MA1 is
 therefore frozen as the weighted-schoolbook architecture control; MA3 is the
 next implementation. These are derived primitive results, not native KEM or
 production evidence. See `CHECKPOINT-F0-MA1-ASM1.md`.
+
+Checkpoint F0-MA3 implements the low-rank EE/OO/TT challenger as an exact
+21-chain single-tile proof kernel and a 378-chain full nine-chunk caller. The
+full path retains C1-style two-tile ILP, has no canonical intermediate ABI,
+and passes byte-exact, range, sanitizer, constant-time ABI, and 32-byte
+alignment gates. An exhaustive final-range proof removes the redundant
+post-`inv4` center, deleting 720 expanded instructions. Despite that, the
+pinned SUPERCOP-derived serious result is MA3 4689.2870 versus MA0 2817.3750
+cycles; MA3 loses all 9 launches by a median +1868.6042 cycles. MA3 is frozen
+as attribution evidence and the MA2 coefficient-plane geometry is reopened.
+See `CHECKPOINT-F0-MA3.md`.

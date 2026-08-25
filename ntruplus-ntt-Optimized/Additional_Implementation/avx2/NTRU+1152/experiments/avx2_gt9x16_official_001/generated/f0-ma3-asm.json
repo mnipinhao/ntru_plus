@@ -1,0 +1,43 @@
+{
+  "alignment": {
+    "ciphertext": "unaligned",
+    "constants": 32,
+    "entries": 32,
+    "inputs_and_scratch": 32
+  },
+  "asm0": {
+    "montgomery_chains": 21,
+    "scope": "exact B0/P0 single-tile proof kernel",
+    "scratch_i16": 640
+  },
+  "asm1": {
+    "chunks": 9,
+    "final_range_proof": "generated/f0-ma3-final-range.json",
+    "intermediate_canonical_abi": false,
+    "peak_ymm": 16,
+    "post_inv4_center": false,
+    "scratch_i16": 640,
+    "spills_allowed": false,
+    "tiles": 18,
+    "two_tile_ilp": true
+  },
+  "checkpoint": "F0-MA3-ASM0/ASM1",
+  "dag": [
+    "EE",
+    "OO",
+    "TT",
+    "CROSS",
+    "inv4",
+    "serializer"
+  ],
+  "ledger": {
+    "core_per_tile": 13,
+    "full_total": 378,
+    "h_lift_per_tile": 4,
+    "inv4_per_tile": 4,
+    "total_per_tile": 21
+  },
+  "range_source": "generated/f0-ma-schedule.json",
+  "schedule_sha256": "51dc389364bda38ebed92b594a4ec346211bbbd3c088764dc64af7f9fa8608bb",
+  "schema": "gt-f0-ma3-asm/v1"
+}

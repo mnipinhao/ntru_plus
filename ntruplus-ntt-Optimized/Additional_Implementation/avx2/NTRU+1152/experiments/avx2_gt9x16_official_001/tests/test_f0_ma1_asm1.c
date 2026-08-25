@@ -6,6 +6,9 @@
 #include "f0-ma1-asm1.h"
 #include "f0-ma1-asm1-oracle.h"
 #include "f0_ma0_control.h"
+#ifdef TEST_F0_MA3
+#include "f0-ma3-asm.h"
+#endif
 
 #define Q 3457
 #define N 1152
@@ -132,12 +135,24 @@ int main(void) {
   _Alignas(32) int16_t scratch_ma0[3456 + 2 * GUARD];
   struct guarded_bytes output0, output1;
   struct guarded_bytes output2;
+#ifdef TEST_F0_MA3
+  _Alignas(32) int16_t scratch_ma3[640 + 2 * GUARD];
+  _Alignas(32) int16_t output_ma3_asm0[64 + 2 * GUARD];
+  _Alignas(32) int16_t scratch_ma3_asm0[640 + 2 * GUARD];
+  struct guarded_bytes output3;
+#endif
   int trial, index;
 
   if (((uintptr_t)r | (uintptr_t)m | (uintptr_t)h |
        (uintptr_t)scratch0.value | (uintptr_t)scratch1.value |
        (uintptr_t)(scratch_ma0 + GUARD)) & 31U)
     fail("test-alignment", -1, -1, 0, 1);
+#ifdef TEST_F0_MA3
+  if (((uintptr_t)(scratch_ma3 + GUARD) |
+       (uintptr_t)(output_ma3_asm0 + GUARD) |
+       (uintptr_t)(scratch_ma3_asm0 + GUARD)) & 31U)
+    fail("test-alignment", -1, -1, 0, 1);
+#endif
 
   for (trial = 0; trial < TRIALS; ++trial) {
     fill_case(r, m, h, trial);
@@ -150,11 +165,27 @@ int main(void) {
     set_guards(&output1, &scratch1, 7);
     memset(&output2, 0xa5, sizeof output2);
     memset(scratch_ma0, 0x5a, sizeof scratch_ma0);
+#ifdef TEST_F0_MA3
+    memset(&output3, 0xa5, sizeof output3);
+    memset(scratch_ma3, 0x5a, sizeof scratch_ma3);
+    memset(output_ma3_asm0, 0xa5, sizeof output_ma3_asm0);
+    memset(scratch_ma3_asm0, 0x5a, sizeof scratch_ma3_asm0);
+#endif
     for (index = 0; index < GUARD; ++index) {
       output2.before[index] = (uint8_t)(0x41 + index);
       output2.after[index] = (uint8_t)(0x69 + index);
       scratch_ma0[index] = (int16_t)(0x2230 + index);
       scratch_ma0[GUARD + 3456 + index] = (int16_t)(0x5560 + index);
+#ifdef TEST_F0_MA3
+      output3.before[index] = (uint8_t)(0x51 + index);
+      output3.after[index] = (uint8_t)(0x79 + index);
+      scratch_ma3[index] = (int16_t)(0x3230 + index);
+      scratch_ma3[GUARD + 640 + index] = (int16_t)(0x6560 + index);
+      output_ma3_asm0[index] = (int16_t)(0x4230 + index);
+      output_ma3_asm0[GUARD + 64 + index] = (int16_t)(0x7560 + index);
+      scratch_ma3_asm0[index] = (int16_t)(0x5230 + index);
+      scratch_ma3_asm0[GUARD + 640 + index] = (int16_t)(0x8560 + index);
+#endif
     }
     ntruplus1152_exp001_f0_ma1_asm1_c0(output0.value, r, m, h,
                                         scratch0.value);
@@ -162,6 +193,22 @@ int main(void) {
                                         scratch1.value);
     ntruplus1152_exp001_f0_ma0_control(output2.value, r, m, h,
                                        scratch_ma0 + GUARD);
+#ifdef TEST_F0_MA3
+    ntruplus1152_exp001_f0_ma3_asm1_c1(output3.value, r, m, h,
+                                       scratch_ma3 + GUARD);
+    ntruplus1152_exp001_f0_ma3_asm0_b0p0(
+        output_ma3_asm0 + GUARD, r, m, h, scratch_ma3_asm0 + GUARD);
+    for (index = 0; index < 64; ++index) {
+      int coefficient = index / 16;
+      int lane = index % 16;
+      int expected_index = f0_ma1_tiles[0].h[coefficient][lane];
+      if (centered(output_ma3_asm0[GUARD + index]) !=
+          centered(expected_official[expected_index]))
+        fail("MA3-ASM0-differential", trial, index,
+             centered(expected_official[expected_index]),
+             centered(output_ma3_asm0[GUARD + index]));
+    }
+#endif
     for (index = 0; index < 128; ++index) {
       if (centered(scratch0.value[128 + index]) !=
           centered(expected_official[1024 + index]))
@@ -184,6 +231,11 @@ int main(void) {
       if (output2.value[index] != expected[index])
         fail("MA0-differential", trial, index, expected[index],
              output2.value[index]);
+#ifdef TEST_F0_MA3
+      if (output3.value[index] != expected[index])
+        fail("MA3-differential", trial, index, expected[index],
+             output3.value[index]);
+#endif
     }
     if (memcmp(output0.value, output1.value, BYTES))
       fail("C0-C1", trial, -1, 0, 1);
@@ -198,9 +250,27 @@ int main(void) {
           scratch_ma0[index] != (int16_t)(0x2230 + index) ||
           scratch_ma0[GUARD + 3456 + index] != (int16_t)(0x5560 + index))
         fail("MA0-canary", trial, index, 0, 1);
+#ifdef TEST_F0_MA3
+      if (output3.before[index] != (uint8_t)(0x51 + index) ||
+          output3.after[index] != (uint8_t)(0x79 + index) ||
+          scratch_ma3[index] != (int16_t)(0x3230 + index) ||
+          scratch_ma3[GUARD + 640 + index] != (int16_t)(0x6560 + index))
+        fail("MA3-canary", trial, index, 0, 1);
+      if (output_ma3_asm0[index] != (int16_t)(0x4230 + index) ||
+          output_ma3_asm0[GUARD + 64 + index] !=
+              (int16_t)(0x7560 + index) ||
+          scratch_ma3_asm0[index] != (int16_t)(0x5230 + index) ||
+          scratch_ma3_asm0[GUARD + 640 + index] !=
+              (int16_t)(0x8560 + index))
+        fail("MA3-ASM0-canary", trial, index, 0, 1);
+#endif
     }
   }
 
+#ifdef TEST_F0_MA3
+  puts("F0 MA0/MA1/MA3: 1003 full random/boundary byte-exact cases; MA3 ASM0 single-tile differential; input immutability, alignment, and canaries passed");
+#else
   puts("F0-MA1-ASM1 C0/C1/MA0: 1003 full random/boundary byte-exact cases, input immutability, alignment, and canaries passed");
+#endif
   return 0;
 }

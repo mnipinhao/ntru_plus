@@ -109,7 +109,8 @@ def main() -> int:
     parser.add_argument("--cpu", type=int, required=True)
     parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail",
                                            "derived-itail-d0", "derived-itail-d0-m2",
-                                           "derived-f0-ma1", "derived-f0-ma1-ma0"),
+                                           "derived-f0-ma1", "derived-f0-ma1-ma0",
+                                           "derived-f0-ma3"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -120,7 +121,8 @@ def main() -> int:
                         help="require performance governor and disabled turbo/boost")
     args = parser.parse_args()
     if args.mode in ("derived-itail", "derived-itail-d0", "derived-itail-d0-m2",
-                     "derived-f0-ma1", "derived-f0-ma1-ma0") and args.parameter != "1152":
+                     "derived-f0-ma1", "derived-f0-ma1-ma0",
+                     "derived-f0-ma3") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -170,7 +172,7 @@ def main() -> int:
         selected.chmod(original_modes[selected] & ~stat.S_ISVTX)
         if args.mode in ("derived-poly", "derived-itail", "derived-itail-d0",
                          "derived-itail-d0-m2", "derived-f0-ma1",
-                         "derived-f0-ma1-ma0"):
+                         "derived-f0-ma1-ma0", "derived-f0-ma3"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -178,6 +180,7 @@ def main() -> int:
                 "derived-itail-d0-m2": "itail_d0_m2_measure.c",
                 "derived-f0-ma1": "f0_ma1_measure.c",
                 "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c",
+                "derived-f0-ma3": "f0_ma3_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -252,7 +255,7 @@ def main() -> int:
     elif args.mode == "derived-f0-ma1":
         required = ("f0_ma1_c0_first_cycles", "f0_ma1_c1_second_cycles",
                     "f0_ma1_c1_first_cycles", "f0_ma1_c0_second_cycles")
-    else:
+    elif args.mode == "derived-f0-ma1-ma0":
         required = tuple(
             f"{variant}_{position}_cycles"
             for variant, position in (
@@ -261,6 +264,9 @@ def main() -> int:
                 ("f0_ma1_c0", "second"), ("f0_ma1_c1", "third"),
                 ("f0_ma1_c1", "first"), ("f0_ma0", "second"),
                 ("f0_ma1_c0", "third")))
+    else:
+        required = ("f0_ma0_first_cycles", "f0_ma3_second_cycles",
+                    "f0_ma3_first_cycles", "f0_ma0_second_cycles")
     missing = [name for name in required if f" {name} " not in data_text]
     if missing:
         raise SystemExit(f"benchmark data lacks {', '.join(missing)}")
@@ -512,6 +518,42 @@ def main() -> int:
             "c1_faster_than_c0_launches": sum(delta < 0 for delta in c1_c0),
             "median_c1_minus_c0_cycles": statistics.median(c1_c0),
         }
+    if args.mode == "derived-f0-ma3":
+        combined = {
+            "f0_ma0_cycles": (pooled["f0_ma0_first_cycles"] +
+                              pooled["f0_ma0_second_cycles"]),
+            "f0_ma3_cycles": (pooled["f0_ma3_first_cycles"] +
+                              pooled["f0_ma3_second_cycles"]),
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            ma0 = stabilized_quartiles(
+                observed["f0_ma0_first_cycles"] +
+                observed["f0_ma0_second_cycles"])[1]
+            ma3 = stabilized_quartiles(
+                observed["f0_ma3_first_cycles"] +
+                observed["f0_ma3_second_cycles"])[1]
+            paired_launches.append({
+                "launch": launch_number,
+                "f0_ma0_stq2": ma0,
+                "f0_ma3_stq2": ma3,
+                "ma3_minus_ma0_cycles": ma3 - ma0,
+            })
+        deltas = [entry["ma3_minus_ma0_cycles"] for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "ma3_faster_than_ma0_launches": sum(x < 0 for x in deltas),
+            "ma3_slower_than_ma0_launches": sum(x > 0 for x in deltas),
+            "ma3_tied_with_ma0_launches": sum(x == 0 for x in deltas),
+            "median_ma3_minus_ma0_cycles": statistics.median(deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -524,6 +566,7 @@ def main() -> int:
                             else "supercop-derived-itail-d0-m2" if args.mode == "derived-itail-d0-m2"
                             else "supercop-derived-poly-f0-ma1" if args.mode == "derived-f0-ma1"
                             else "supercop-derived-poly-f0-ma1-ma0" if args.mode == "derived-f0-ma1-ma0"
+                            else "supercop-derived-poly-f0-ma3" if args.mode == "derived-f0-ma3"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -556,7 +599,8 @@ def main() -> int:
               "derived-itail-d0": "itail_d0_measure.c",
               "derived-itail-d0-m2": "itail_d0_m2_measure.c",
               "derived-f0-ma1": "f0_ma1_measure.c",
-              "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c"}[args.mode])
+              "derived-f0-ma1-ma0": "f0_ma1_ma0_measure.c",
+              "derived-f0-ma3": "f0_ma3_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),
