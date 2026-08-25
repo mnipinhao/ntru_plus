@@ -402,3 +402,14 @@ and sanitizer gates pass.  The correctness-first O3 object still reserves
 3,872 stack bytes and executes eight scalar GT adapters plus four R2+D1 calls,
 so it is not a performance candidate.  F0-PROD1-MA2 must remove that producer
 debt before the four-way caller attribution. See `CHECKPOINT-F0-PROD0.md`.
+
+Checkpoint F0-PROD1-SCHED turns that producer into a mechanically checked
+assembly plan without changing top-split or R2/D1 arithmetic. Thirty-six
+direct split-load maps form two streams apiece, and the R2 first layer uses all
+72 final-F0 vector slots as transient storage before in-place R2/D1 overwrite.
+Only the 2,304-byte split array remains; scalar adapter and pair staging are
+absent from the planned boundary. Generated label-routing, range-subset,
+register-liveness, stack, and 32-byte alignment gates authorize only the P1-H
+producer assembly checkpoint. KEM benchmarking remains blocked until that
+assembly passes differential and linked-shape audits. See
+`CHECKPOINT-F0-PROD1-SCHED.md`.

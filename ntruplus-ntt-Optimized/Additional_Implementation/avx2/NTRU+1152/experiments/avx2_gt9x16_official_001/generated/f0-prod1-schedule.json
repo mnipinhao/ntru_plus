@@ -1,0 +1,1403 @@
+{
+  "arithmetic_schedule": {
+    "d1": {
+      "adjacent_physical_row_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "tail_row": 8
+    },
+    "final_materialized_vectors": 72,
+    "r2_first": [
+      {
+        "input_rows": [
+          0,
+          3,
+          6
+        ],
+        "output_rows": [
+          0,
+          3,
+          6
+        ]
+      },
+      {
+        "input_rows": [
+          1,
+          4,
+          7
+        ],
+        "output_rows": [
+          1,
+          4,
+          7
+        ]
+      },
+      {
+        "input_rows": [
+          8,
+          2,
+          5
+        ],
+        "output_rows": [
+          2,
+          5,
+          8
+        ]
+      }
+    ],
+    "r2_first_writes_transient_f0": true,
+    "r2_second": [
+      {
+        "pre_twists": [
+          "one",
+          "one"
+        ],
+        "rows": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "pre_twists": [
+          "rho",
+          "rhoinv"
+        ],
+        "rows": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "pre_twists": [
+          "rhoinv",
+          "rho"
+        ],
+        "rows": [
+          6,
+          7,
+          8
+        ]
+      }
+    ],
+    "r2_second_and_d1_overwrite_in_place": true,
+    "reuse": "exact F-R3D1 PAPER_R2_CACHED_STREAM plus PAPER_D1_BODY arithmetic/order"
+  },
+  "boundary": {
+    "actual_input_alignment_bytes": 32,
+    "coefficient_adapter_bytes": 0,
+    "internal_vzeroupper": 0,
+    "official_abi_crossings": 0,
+    "pair_input_bytes": 0,
+    "pair_output_bytes": 0,
+    "scalar_adapter_calls": 0,
+    "split_row_alignment_bytes": 32,
+    "top_split_arithmetic": "unchanged existing small-input split",
+    "top_split_materialization_bytes": 2304
+  },
+  "checkpoint": "F0-PROD1-SCHED",
+  "decision": {
+    "assembly_implemented": false,
+    "authorized_next": "F0-PROD1-ASM P1-H",
+    "kem_benchmark_authorized": false,
+    "reason": "producer assembly must pass differential, ABI, range, and structural audit first",
+    "schedule_complete": true
+  },
+  "direct_load_route": {
+    "instructions_per_map": {
+      "routing_total": 16,
+      "vperm2i128": 2,
+      "vpermq": 6,
+      "vpshufb": 2,
+      "vpshufd": 4,
+      "vpunpckhqdq": 1,
+      "vpunpcklqdq": 1
+    },
+    "load_map_count": 36,
+    "load_maps": [
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 0,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r0_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r0_twist"
+        },
+        "r2_first_destination_row": 0,
+        "source_h_row": 0,
+        "split_base_i16": 0,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          0,
+          32
+        ],
+        "transient_f0_vectors": [
+          0,
+          1
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 1,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r1_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r1_twist"
+        },
+        "r2_first_destination_row": 1,
+        "source_h_row": 5,
+        "split_base_i16": 320,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          128,
+          160
+        ],
+        "transient_f0_vectors": [
+          4,
+          5
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 2,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r2_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r2_twist"
+        },
+        "r2_first_destination_row": 5,
+        "source_h_row": 1,
+        "split_base_i16": 64,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          640,
+          672
+        ],
+        "transient_f0_vectors": [
+          20,
+          21
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 3,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r3_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r3_twist"
+        },
+        "r2_first_destination_row": 3,
+        "source_h_row": 6,
+        "split_base_i16": 384,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          384,
+          416
+        ],
+        "transient_f0_vectors": [
+          12,
+          13
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 4,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r4_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r4_twist"
+        },
+        "r2_first_destination_row": 4,
+        "source_h_row": 2,
+        "split_base_i16": 128,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          512,
+          544
+        ],
+        "transient_f0_vectors": [
+          16,
+          17
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 5,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r5_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r5_twist"
+        },
+        "r2_first_destination_row": 8,
+        "source_h_row": 7,
+        "split_base_i16": 448,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1024,
+          1056
+        ],
+        "transient_f0_vectors": [
+          32,
+          33
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 6,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r6_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r6_twist"
+        },
+        "r2_first_destination_row": 6,
+        "source_h_row": 3,
+        "split_base_i16": 192,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          768,
+          800
+        ],
+        "transient_f0_vectors": [
+          24,
+          25
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 7,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r7_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r7_twist"
+        },
+        "r2_first_destination_row": 7,
+        "source_h_row": 8,
+        "split_base_i16": 512,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          896,
+          928
+        ],
+        "transient_f0_vectors": [
+          28,
+          29
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 8,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r8_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r8_twist"
+        },
+        "r2_first_destination_row": 2,
+        "source_h_row": 4,
+        "split_base_i16": 256,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          256,
+          288
+        ],
+        "transient_f0_vectors": [
+          8,
+          9
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 0,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r0_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r0_twist"
+        },
+        "r2_first_destination_row": 0,
+        "source_h_row": 0,
+        "split_base_i16": 0,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          64,
+          96
+        ],
+        "transient_f0_vectors": [
+          2,
+          3
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 1,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r1_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r1_twist"
+        },
+        "r2_first_destination_row": 1,
+        "source_h_row": 5,
+        "split_base_i16": 320,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          192,
+          224
+        ],
+        "transient_f0_vectors": [
+          6,
+          7
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 2,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r2_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r2_twist"
+        },
+        "r2_first_destination_row": 5,
+        "source_h_row": 1,
+        "split_base_i16": 64,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          704,
+          736
+        ],
+        "transient_f0_vectors": [
+          22,
+          23
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 3,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r3_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r3_twist"
+        },
+        "r2_first_destination_row": 3,
+        "source_h_row": 6,
+        "split_base_i16": 384,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          448,
+          480
+        ],
+        "transient_f0_vectors": [
+          14,
+          15
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 4,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r4_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r4_twist"
+        },
+        "r2_first_destination_row": 4,
+        "source_h_row": 2,
+        "split_base_i16": 128,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          576,
+          608
+        ],
+        "transient_f0_vectors": [
+          18,
+          19
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 5,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r5_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r5_twist"
+        },
+        "r2_first_destination_row": 8,
+        "source_h_row": 7,
+        "split_base_i16": 448,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1088,
+          1120
+        ],
+        "transient_f0_vectors": [
+          34,
+          35
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 6,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r6_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r6_twist"
+        },
+        "r2_first_destination_row": 6,
+        "source_h_row": 3,
+        "split_base_i16": 192,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          832,
+          864
+        ],
+        "transient_f0_vectors": [
+          26,
+          27
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 7,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r7_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r7_twist"
+        },
+        "r2_first_destination_row": 7,
+        "source_h_row": 8,
+        "split_base_i16": 512,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          960,
+          992
+        ],
+        "transient_f0_vectors": [
+          30,
+          31
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 0,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 8,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b0_r8_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b0_r8_twist"
+        },
+        "r2_first_destination_row": 2,
+        "source_h_row": 4,
+        "split_base_i16": 256,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          320,
+          352
+        ],
+        "transient_f0_vectors": [
+          10,
+          11
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 0,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r0_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r0_twist"
+        },
+        "r2_first_destination_row": 0,
+        "source_h_row": 0,
+        "split_base_i16": 576,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1152,
+          1184
+        ],
+        "transient_f0_vectors": [
+          36,
+          37
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 1,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r1_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r1_twist"
+        },
+        "r2_first_destination_row": 1,
+        "source_h_row": 5,
+        "split_base_i16": 896,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1280,
+          1312
+        ],
+        "transient_f0_vectors": [
+          40,
+          41
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 2,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r2_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r2_twist"
+        },
+        "r2_first_destination_row": 5,
+        "source_h_row": 1,
+        "split_base_i16": 640,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1792,
+          1824
+        ],
+        "transient_f0_vectors": [
+          56,
+          57
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 3,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r3_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r3_twist"
+        },
+        "r2_first_destination_row": 3,
+        "source_h_row": 6,
+        "split_base_i16": 960,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1536,
+          1568
+        ],
+        "transient_f0_vectors": [
+          48,
+          49
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 4,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r4_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r4_twist"
+        },
+        "r2_first_destination_row": 4,
+        "source_h_row": 2,
+        "split_base_i16": 704,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1664,
+          1696
+        ],
+        "transient_f0_vectors": [
+          52,
+          53
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 5,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r5_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r5_twist"
+        },
+        "r2_first_destination_row": 8,
+        "source_h_row": 7,
+        "split_base_i16": 1024,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          2176,
+          2208
+        ],
+        "transient_f0_vectors": [
+          68,
+          69
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 6,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r6_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r6_twist"
+        },
+        "r2_first_destination_row": 6,
+        "source_h_row": 3,
+        "split_base_i16": 768,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1920,
+          1952
+        ],
+        "transient_f0_vectors": [
+          60,
+          61
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 7,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r7_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r7_twist"
+        },
+        "r2_first_destination_row": 7,
+        "source_h_row": 8,
+        "split_base_i16": 1088,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          2048,
+          2080
+        ],
+        "transient_f0_vectors": [
+          64,
+          65
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          0,
+          1
+        ],
+        "input_gt_row": 8,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r8_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r8_twist"
+        },
+        "r2_first_destination_row": 2,
+        "source_h_row": 4,
+        "split_base_i16": 832,
+        "terminal_pair": 0,
+        "transient_f0_byte_offsets": [
+          1408,
+          1440
+        ],
+        "transient_f0_vectors": [
+          44,
+          45
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 0,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r0_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r0_twist"
+        },
+        "r2_first_destination_row": 0,
+        "source_h_row": 0,
+        "split_base_i16": 576,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1216,
+          1248
+        ],
+        "transient_f0_vectors": [
+          38,
+          39
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 1,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r1_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r1_twist"
+        },
+        "r2_first_destination_row": 1,
+        "source_h_row": 5,
+        "split_base_i16": 896,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1344,
+          1376
+        ],
+        "transient_f0_vectors": [
+          42,
+          43
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 2,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r2_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r2_twist"
+        },
+        "r2_first_destination_row": 5,
+        "source_h_row": 1,
+        "split_base_i16": 640,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1856,
+          1888
+        ],
+        "transient_f0_vectors": [
+          58,
+          59
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 3,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r3_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r3_twist"
+        },
+        "r2_first_destination_row": 3,
+        "source_h_row": 6,
+        "split_base_i16": 960,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1600,
+          1632
+        ],
+        "transient_f0_vectors": [
+          50,
+          51
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 4,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r4_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r4_twist"
+        },
+        "r2_first_destination_row": 4,
+        "source_h_row": 2,
+        "split_base_i16": 704,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1728,
+          1760
+        ],
+        "transient_f0_vectors": [
+          54,
+          55
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 5,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r5_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r5_twist"
+        },
+        "r2_first_destination_row": 8,
+        "source_h_row": 7,
+        "split_base_i16": 1024,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          2240,
+          2272
+        ],
+        "transient_f0_vectors": [
+          70,
+          71
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 6,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r6_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r6_twist"
+        },
+        "r2_first_destination_row": 6,
+        "source_h_row": 3,
+        "split_base_i16": 768,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1984,
+          2016
+        ],
+        "transient_f0_vectors": [
+          62,
+          63
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 7,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r7_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r7_twist"
+        },
+        "r2_first_destination_row": 7,
+        "source_h_row": 8,
+        "split_base_i16": 1088,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          2112,
+          2144
+        ],
+        "transient_f0_vectors": [
+          66,
+          67
+        ]
+      },
+      {
+        "aligned_load_offsets_i16": [
+          0,
+          16,
+          32,
+          48
+        ],
+        "branch": 1,
+        "coefficient_streams": [
+          2,
+          3
+        ],
+        "input_gt_row": 8,
+        "pre_twist": {
+          "qinv_label": ".Lf0_prod1_b1_r8_twist_qinv",
+          "zeta_label": ".Lf0_prod1_b1_r8_twist"
+        },
+        "r2_first_destination_row": 2,
+        "source_h_row": 4,
+        "split_base_i16": 832,
+        "terminal_pair": 1,
+        "transient_f0_byte_offsets": [
+          1472,
+          1504
+        ],
+        "transient_f0_vectors": [
+          46,
+          47
+        ]
+      }
+    ],
+    "load_opcode": "vmovdqa",
+    "loads_per_map": 4,
+    "route_mask": [
+      0,
+      1,
+      4,
+      5,
+      8,
+      9,
+      12,
+      13,
+      2,
+      3,
+      6,
+      7,
+      10,
+      11,
+      14,
+      15
+    ],
+    "route_proofs": [
+      {
+        "expected_exact": true,
+        "stream0": [
+          "component0.coefficient0",
+          "component1.coefficient0",
+          "component2.coefficient0",
+          "component3.coefficient0",
+          "component4.coefficient0",
+          "component5.coefficient0",
+          "component6.coefficient0",
+          "component7.coefficient0",
+          "component8.coefficient0",
+          "component9.coefficient0",
+          "component10.coefficient0",
+          "component11.coefficient0",
+          "component12.coefficient0",
+          "component13.coefficient0",
+          "component14.coefficient0",
+          "component15.coefficient0"
+        ],
+        "stream1": [
+          "component0.coefficient1",
+          "component1.coefficient1",
+          "component2.coefficient1",
+          "component3.coefficient1",
+          "component4.coefficient1",
+          "component5.coefficient1",
+          "component6.coefficient1",
+          "component7.coefficient1",
+          "component8.coefficient1",
+          "component9.coefficient1",
+          "component10.coefficient1",
+          "component11.coefficient1",
+          "component12.coefficient1",
+          "component13.coefficient1",
+          "component14.coefficient1",
+          "component15.coefficient1"
+        ],
+        "terminal_pair": 0,
+        "vpshufd_imm": "0x88"
+      },
+      {
+        "expected_exact": true,
+        "stream0": [
+          "component0.coefficient2",
+          "component1.coefficient2",
+          "component2.coefficient2",
+          "component3.coefficient2",
+          "component4.coefficient2",
+          "component5.coefficient2",
+          "component6.coefficient2",
+          "component7.coefficient2",
+          "component8.coefficient2",
+          "component9.coefficient2",
+          "component10.coefficient2",
+          "component11.coefficient2",
+          "component12.coefficient2",
+          "component13.coefficient2",
+          "component14.coefficient2",
+          "component15.coefficient2"
+        ],
+        "stream1": [
+          "component0.coefficient3",
+          "component1.coefficient3",
+          "component2.coefficient3",
+          "component3.coefficient3",
+          "component4.coefficient3",
+          "component5.coefficient3",
+          "component6.coefficient3",
+          "component7.coefficient3",
+          "component8.coefficient3",
+          "component9.coefficient3",
+          "component10.coefficient3",
+          "component11.coefficient3",
+          "component12.coefficient3",
+          "component13.coefficient3",
+          "component14.coefficient3",
+          "component15.coefficient3"
+        ],
+        "terminal_pair": 1,
+        "vpshufd_imm": "0xdd"
+      }
+    ]
+  },
+  "frozen_contract": {
+    "montgomery_r_exponent": 0,
+    "physical_p_order": [
+      0,
+      3,
+      6,
+      1,
+      4,
+      7,
+      8,
+      2,
+      5
+    ],
+    "physical_q_order": [
+      0,
+      8,
+      4,
+      12,
+      2,
+      10,
+      6,
+      14,
+      1,
+      9,
+      5,
+      13,
+      3,
+      11,
+      7,
+      15
+    ],
+    "standalone_scale_pass": false,
+    "transform_scale": 4
+  },
+  "parameter": 1152,
+  "range_proof": {
+    "actual_coefficient_domain": [
+      -1,
+      1
+    ],
+    "all_intermediate_ranges_signed_i16": true,
+    "domain_subset": true,
+    "existing_pre_twist_bound": [
+      -1795,
+      1780
+    ],
+    "existing_proven_domain": [
+      -3,
+      4
+    ],
+    "extra_reductions": 0,
+    "ma2_all_preoperations_signed_i16": true,
+    "unchanged_arithmetic_schedule": true
+  },
+  "register_and_stack_plan": {
+    "callee_saved_gpr_plan": [
+      "rbx",
+      "r12",
+      "r13",
+      "r14",
+      "r15"
+    ],
+    "constant_alignment_bytes": 32,
+    "d1_peak_ymm": 11,
+    "formation_peak_ymm": 13,
+    "leaf_entry_alignment_bytes": 32,
+    "only_live_array": "top_split",
+    "producer_realization": "P1-H leaf helpers first; P1-I full inline retained as placement variant",
+    "r2_cached_peak_ymm": 15,
+    "required_stack_bytes": 2304,
+    "spill_target": 0,
+    "stack_frame_target_max_bytes": 2432
+  },
+  "schema": "gt-f0-prod1-schedule/v1",
+  "source_sha256": {
+    "ma2_range": "54638e7b2102d856120505f97725dd538709d8a634a71d3e0d7ad593b704815a",
+    "map": "20bd834ce6e7614ccfc36638a23f1fb4094ca4ad2c9a18f8b9008d8038326438",
+    "ntt16_macro": "84d83365fe77a1d0edc4670fbddeccd53d8837ff260d747370fbc0dd89647db5",
+    "ntt9_macro": "60bbc45fab8e861962cba8687f9f8f466cb24d99a577df0b17842ebae35d7bd3",
+    "paper_range": "b44cff81370587c2e830cdda4097ec39d2566adccdf050f96e73c568023289ac",
+    "prod0_contract": "310555e6cded4bf98e66012bc653c2812673bff4c846473f0fc06c9773e5dcdb",
+    "tables": "1c7eb7f210a293319a3ac94bb92914d4abfc561fc24d4cbdb336cc600a5fc0bc"
+  }
+}

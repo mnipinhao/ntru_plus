@@ -79,9 +79,10 @@ F0-PROD0 passes the algebra, map, scale, range, alias, canary, sanitizer, and
 entry-alignment gates.  It closes the producer correctness question but is not
 a production-shaped AVX2 leaf yet.
 
-The next checkpoint is F0-PROD1-MA2.  It must first replace the scalar
-gather/pre-twist and four-call C composition with a caller-shaped producer,
-while preserving this contract.  Then it installs four attribution variants:
+The next checkpoints are F0-PROD1-SCHED and F0-PROD1-ASM. They must replace
+the scalar gather/pre-twist and four-call C composition with a caller-shaped
+producer while preserving this contract. Only then does F0-PROD1-MA2 install
+four attribution variants:
 Official control, only-R direct F0, only-M direct F0, and both direct F0.  KAT
 and encapsulation consistency precede timing; no KEM or SUPERCOP promotion is
 authorized by F0-PROD0 alone.
