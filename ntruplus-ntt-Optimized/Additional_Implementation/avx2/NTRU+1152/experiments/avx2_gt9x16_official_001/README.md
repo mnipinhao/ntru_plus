@@ -382,3 +382,14 @@ SUPERCOP-derived serious run measures MA2 at 2072.1435 cycles versus MA0 at
 2826.4907, winning 9/9 launches with a median -753.8333-cycle delta. MA2 is
 selected for real encapsulation caller integration, but is not yet native-KEM
 or production qualified. See `CHECKPOINT-F0-MA2.md`.
+
+Checkpoint F0-MA2-KEM integrates MA2 into the real pinned encapsulation caller.
+It preserves actual public-key decoding, hashing, sampling, both forward NTTs,
+input residency, stack allocation, error behavior, and secure clears. Until a
+direct coefficient-domain F0 producer exists, two explicit scale-four
+Official-to-F0 adapters are included and priced. The candidate passes all 100
+canonical KAT vectors, but native SUPERCOP encapsulation regresses from
+43061.6157 to 44373.6944 cycles. Normal/reversed link-order and ASLR on/off
+fixed-ELF campaigns all put the 95% CI entirely above zero. This complete
+caller is frozen as a performance rejection; MA2 can reopen only after the
+adapters are removed by producer integration. See `CHECKPOINT-F0-MA2-KEM.md`.

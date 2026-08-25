@@ -90,6 +90,9 @@ F0_MA2_GENERATOR_ARGS := --schedule generated/f0-ma-schedule.json --range-proof 
 F0_MA2_RANGE_ARGS := --schedule generated/f0-ma-schedule.json --output generated/f0-ma2-range.json
 F0_MA2_AUDIT_ARGS := --object $(BUILD)/f0ma1/f0-ma2.o --elf $(BUILD)/f0ma1/test-f0-ma2 --source $(F0_MA2_ASM) --contract generated/f0-ma2-asm.json --range-proof generated/f0-ma2-range.json --output generated/f0-ma2-audit.json
 F0_MA2_TEST_SOURCES := $(F0_MA2_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s tests/test_f0_ma2.c
+F0_MA2_KEM_ADAPTER := asm/f0_official_to_f0.S
+F0_MA2_KEM_ADAPTER_ARGS := --schedule generated/f0-ma-schedule.json --asm $(F0_MA2_KEM_ADAPTER) --constants generated/f0-official-to-f0-constants.inc --header generated/f0-official-to-f0.h --contract generated/f0-official-to-f0.json
+F0_MA2_KEM_ARGS := --upstream $(UPSTREAM)/kem.c --output src/kem.c
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -167,6 +170,8 @@ generate:
 	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
 	$(BUILD)/f0ma1/test-f0-ma2
 	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS)
+	$(PYTHON) tools/generate_f0_official_to_f0.py $(F0_MA2_KEM_ADAPTER_ARGS)
+	$(PYTHON) tools/generate_f0_ma2_kem.py $(F0_MA2_KEM_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -238,6 +243,10 @@ check:
 	$(CC) $(CFLAGS_STRICT) -O3 $(F0_MA1_ASM1_LINK_FLAGS) -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/f0ma1/test-f0-ma2
 	$(BUILD)/f0ma1/test-f0-ma2
 	$(PYTHON) tools/audit_f0_ma2.py $(F0_MA2_AUDIT_ARGS) --check
+	$(PYTHON) tools/generate_f0_official_to_f0.py $(F0_MA2_KEM_ADAPTER_ARGS) --check
+	$(PYTHON) tools/generate_f0_ma2_kem.py $(F0_MA2_KEM_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(F0_MA2_KEM_ADAPTER) $(F0_MA0_ADAPTER) tests/test_f0_official_to_f0.c -o $(BUILD)/f0ma1/test-f0-official-to-f0
+	$(BUILD)/f0ma1/test-f0-official-to-f0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -287,6 +296,7 @@ check:
 	$(PYTHON) tests/test_f0_ma1_asm1_benchmark.py
 	$(PYTHON) tests/test_f0_ma3_evidence.py
 	$(PYTHON) tests/test_f0_ma2_evidence.py
+	$(PYTHON) tests/test_f0_ma2_kem_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
