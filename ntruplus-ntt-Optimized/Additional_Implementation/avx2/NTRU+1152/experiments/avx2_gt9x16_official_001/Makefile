@@ -66,6 +66,7 @@ INVERSE_TAIL_D0_ASM := asm/inverse_tail_d0.S
 INVERSE_TAIL_D0_PROOF_ARGS := --m3-proof generated/g1c-m3-full-path-proof.json --b1r-proof generated/g1c-inverse-ntt9-b1r.json --output generated/g1c-inverse-tail-d0-proof.json
 INVERSE_TAIL_D0_M2_PROOF_ARGS := --m3-proof generated/g1c-m3-full-path-proof.json --b1r-proof generated/g1c-inverse-ntt9-b1r.json --schedule late --output generated/g1c-inverse-tail-d0-m2-proof.json
 INVERSE_TAIL_D0_AUDIT_ARGS := --object $(BUILD)/g1c/inverse-tail-d0.o --source $(INVERSE_TAIL_D0_ASM) --proof generated/g1c-inverse-tail-d0-proof.json --m2-proof generated/g1c-inverse-tail-d0-m2-proof.json --output generated/g1c-inverse-tail-d0-audit.json --compiler $(CC) --cflags=-mavx2
+F0_MA_MAP_ARGS := --pipeline-layout generated/gt9x16-pipeline-layout.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --range-proof generated/gt9x16-ntt9-paper-range.json --lifecycle-audit generated/ntt-domain-lifecycle-audit.json --kem-source $(UPSTREAM)/kem.c --basemul-source $(UPSTREAM)/basemul.s --add-source $(UPSTREAM)/add.s --pack-source $(UPSTREAM)/pack.s --map-output generated/f0-ma-consumer-map.json --synthesis-output generated/f0-ma-symbolic-synthesis.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -110,6 +111,7 @@ generate:
 	$(PYTHON) tools/generate_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_GENERATOR_ARGS)
 	$(PYTHON) tools/generate_inverse_ntt9_b1p.py $(INVERSE_NTT9_B1P_ARGS)
 	$(PYTHON) tools/generate_inverse_ntt9_b1r.py $(INVERSE_NTT9_B1R_ARGS)
+	$(PYTHON) tools/generate_f0_ma_map.py $(F0_MA_MAP_ARGS)
 
 check:
 	mkdir -p $(BUILD)
@@ -151,6 +153,7 @@ check:
 	$(PYTHON) tools/generate_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_GENERATOR_ARGS) --check
 	$(PYTHON) tools/generate_inverse_ntt9_b1p.py $(INVERSE_NTT9_B1P_ARGS) --check
 	$(PYTHON) tools/generate_inverse_ntt9_b1r.py $(INVERSE_NTT9_B1R_ARGS) --check
+	$(PYTHON) tools/generate_f0_ma_map.py $(F0_MA_MAP_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -192,6 +195,8 @@ check:
 	$(PYTHON) tests/test_inverse_tail_d0_m2_proof.py
 	$(PYTHON) tests/test_inverse_tail_d0_evidence.py
 	$(PYTHON) tests/test_inverse_tail_d0_m2_evidence.py
+	$(PYTHON) tests/test_f0_ma_consumer_map.py
+	$(PYTHON) tests/test_f0_ma_symbolic_synthesis.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear

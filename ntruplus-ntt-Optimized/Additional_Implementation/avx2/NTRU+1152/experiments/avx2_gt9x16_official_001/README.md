@@ -323,3 +323,12 @@ faster than M1 by a per-launch median 215.1528 cycles but slower than M0 by
 fusion class. The next gate is F0 persistent forward to consumer-native
 BaseMul, followed by one integrated `2F+B+I` island. See
 `CHECKPOINT-G1C-ITAIL-D0-M2.md`.
+
+Checkpoint F0-MA-MAP moves to the actual pinned encapsulation caller. It proves
+that the boundary is `F0(r) + F0(m) + resident h -> MulAdd -> poly_tobytes`,
+not a `2F+B+I` path, and that encapsulation contains no inverse transform. The
+72-vector F0 map is a complete 1,152-cell semantic/physical/Official
+bijection, including the paper-adjusted final-row order `8,2,5`. MA0--MA3 are
+symbolically exact and remain alive; no assembly or benchmark is authorized
+until resident-`h`, range, register, inverse-four, and serializer schedules are
+proved. See `CHECKPOINT-F0-MA-MAP.md`.
