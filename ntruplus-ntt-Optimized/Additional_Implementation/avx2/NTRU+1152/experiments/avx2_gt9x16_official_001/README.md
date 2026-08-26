@@ -590,3 +590,14 @@ that the old H2 schedule confused Official physical NTT positions with the
 post-`pack.s` serialized order. A pinned basis probe corrects the map; H1 is
 unchanged, while all prior H2-24/48/96 counts are withdrawn. No benchmark was
 run. See `CHECKPOINT-GT9X16-PROD3-MA2-HASH-H1-ASM0.md`.
+
+Checkpoint GT9X16-PROD3-MA2-HASH-H1-PRICE prices only the materialized
+scale-four MA2-plane to exact 1,728-byte boundary. Direct H1 measures 768.3310
+cycles versus current H0 recovery at 1083.1238 pooled StQ2 under the selected
+reversed-placement ASLR-on setting. The per-launch median delta is -314.6458
+cycles with 95% CI [-317.9583,-311.9271], and H1 wins 9/9 launches under all
+four normal/reversed and ASLR on/off controls. H1 is therefore selected for a
+frozen-caller integration check, but the result is SUPERCOP-derived rather
+than native-KEM evidence and is not large enough by itself to close the prior
+encapsulation deficit. H2 remains withdrawn. See
+`CHECKPOINT-GT9X16-PROD3-MA2-HASH-H1-PRICE.md`.

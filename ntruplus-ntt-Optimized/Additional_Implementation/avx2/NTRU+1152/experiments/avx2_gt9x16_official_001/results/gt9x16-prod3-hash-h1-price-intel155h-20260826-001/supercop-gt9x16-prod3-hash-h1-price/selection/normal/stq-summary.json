@@ -1,0 +1,218 @@
+{
+  "balanced_combined_operations": {
+    "gt9x16_prod3_hash_h1_price_h0_cycles": {
+      "observations": 3456,
+      "stq1": 1074.09375,
+      "stq2": 1084.8217592592594,
+      "stq3": 1105.366898148148
+    },
+    "gt9x16_prod3_hash_h1_price_h1_cycles": {
+      "observations": 3456,
+      "stq1": 756.9699074074074,
+      "stq2": 769.3391203703703,
+      "stq3": 791.0277777777778
+    }
+  },
+  "balanced_paired_launches": {
+    "h1_faster_launches": 9,
+    "h1_slower_launches": 0,
+    "launches": [
+      {
+        "h0_stq2": 1082.2291666666667,
+        "h1_minus_h0_cycles": -309.22916666666674,
+        "h1_stq2": 773.0,
+        "launch": 1
+      },
+      {
+        "h0_stq2": 1082.5208333333333,
+        "h1_minus_h0_cycles": -314.89583333333326,
+        "h1_stq2": 767.625,
+        "launch": 2
+      },
+      {
+        "h0_stq2": 1085.59375,
+        "h1_minus_h0_cycles": -317.85416666666663,
+        "h1_stq2": 767.7395833333334,
+        "launch": 3
+      },
+      {
+        "h0_stq2": 1081.375,
+        "h1_minus_h0_cycles": -313.36458333333337,
+        "h1_stq2": 768.0104166666666,
+        "launch": 4
+      },
+      {
+        "h0_stq2": 1085.875,
+        "h1_minus_h0_cycles": -313.25,
+        "h1_stq2": 772.625,
+        "launch": 5
+      },
+      {
+        "h0_stq2": 1086.7395833333333,
+        "h1_minus_h0_cycles": -318.35416666666663,
+        "h1_stq2": 768.3854166666666,
+        "launch": 6
+      },
+      {
+        "h0_stq2": 1279.9895833333333,
+        "h1_minus_h0_cycles": -500.23958333333326,
+        "h1_stq2": 779.75,
+        "launch": 7
+      },
+      {
+        "h0_stq2": 1081.7708333333333,
+        "h1_minus_h0_cycles": -316.0937499999999,
+        "h1_stq2": 765.6770833333334,
+        "launch": 8
+      },
+      {
+        "h0_stq2": 1080.9583333333333,
+        "h1_minus_h0_cycles": -312.29166666666663,
+        "h1_stq2": 768.6666666666666,
+        "launch": 9
+      }
+    ],
+    "median_h1_minus_h0_cycles": -314.89583333333326
+  },
+  "decision": {
+    "candidate_direction_stable": true,
+    "headline": "direct-H1-minus-current-H0-recovery",
+    "native_kem_result": false
+  },
+  "elf_layout": {
+    "sections": {
+      ".rodata": 3264,
+      ".text": 34519
+    },
+    "symbols": {
+      "ntruplus1152_exp001_f0_ma0_to_official": {
+        "address": 28448,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 5272,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_ma2_planes_to_generic": {
+        "address": 33728,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 1559,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_prod3_hash_bytes": {
+        "address": 16896,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 200,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_prod3_hash_h1_price_h0": {
+        "address": 9504,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 9,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_prod3_hash_h1_price_h1": {
+        "address": 9536,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 9,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_prod3_ma2_hash_h1": {
+        "address": 17120,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 10133,
+        "size_source": "elf-symbol-size"
+      },
+      "poly_tobytes": {
+        "address": 27264,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 659,
+        "size_source": "inferred-to-next-global-symbol"
+      }
+    }
+  },
+  "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+  "fresh_process_launches": 9,
+  "linked_hash_h1_price_audit": {
+    "direct_transfers": {
+      "h0": [
+        "ntruplus1152_exp001_prod3_hash_bytes"
+      ],
+      "h1": [
+        "ntruplus1152_exp001_prod3_ma2_hash_h1"
+      ]
+    },
+    "h0_path": "planes-to-generic; generic-to-Official; inv4; poly_tobytes",
+    "h1_path": "direct H1 serializer",
+    "input_boundary": "same materialized scale-4 MA2 planes",
+    "ma2_arithmetic_executed": false,
+    "native_kem_result": false,
+    "output_boundary": "same exact 1728-byte hash input",
+    "producer_executed": false
+  },
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-prod3-h1-price-normal -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "gt9x16_prod3_hash_h1_price_h0_pos1_cycles": {
+      "observations": 864,
+      "stq1": 1072.6990740740741,
+      "stq2": 1083.4583333333333,
+      "stq3": 1107.1064814814815
+    },
+    "gt9x16_prod3_hash_h1_price_h0_pos2_cycles": {
+      "observations": 864,
+      "stq1": 1075.2916666666667,
+      "stq2": 1086.013888888889,
+      "stq3": 1108.2222222222222
+    },
+    "gt9x16_prod3_hash_h1_price_h0_pos3_cycles": {
+      "observations": 864,
+      "stq1": 1076.0972222222222,
+      "stq2": 1086.4166666666667,
+      "stq3": 1106.4490740740741
+    },
+    "gt9x16_prod3_hash_h1_price_h0_pos4_cycles": {
+      "observations": 864,
+      "stq1": 1072.5833333333333,
+      "stq2": 1083.236111111111,
+      "stq3": 1100.1435185185185
+    },
+    "gt9x16_prod3_hash_h1_price_h1_pos1_cycles": {
+      "observations": 864,
+      "stq1": 755.0185185185185,
+      "stq2": 767.1712962962963,
+      "stq3": 791.3564814814815
+    },
+    "gt9x16_prod3_hash_h1_price_h1_pos2_cycles": {
+      "observations": 864,
+      "stq1": 757.4953703703703,
+      "stq2": 770.6898148148148,
+      "stq3": 791.8194444444445
+    },
+    "gt9x16_prod3_hash_h1_price_h1_pos3_cycles": {
+      "observations": 864,
+      "stq1": 758.199074074074,
+      "stq2": 770.1342592592592,
+      "stq3": 787.7777777777778
+    },
+    "gt9x16_prod3_hash_h1_price_h1_pos4_cycles": {
+      "observations": 864,
+      "stq1": 757.3703703703703,
+      "stq2": 769.1296296296297,
+      "stq3": 794.6435185185185
+    }
+  },
+  "timings_per_loop": 32
+}

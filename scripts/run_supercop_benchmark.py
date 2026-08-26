@@ -238,7 +238,8 @@ def main() -> int:
                                            "derived-f0-prod2-consumer",
                                            "derived-gt9x16-prod3-price",
                                            "derived-gt9x16-prod3-consumer",
-                                           "derived-gt9x16-prod3-hash-fanout"),
+                                           "derived-gt9x16-prod3-hash-fanout",
+                                           "derived-gt9x16-prod3-hash-h1-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -255,7 +256,8 @@ def main() -> int:
                      "derived-f0-prod2", "derived-f0-prod2-consumer",
                      "derived-gt9x16-prod3-price",
                      "derived-gt9x16-prod3-consumer",
-                     "derived-gt9x16-prod3-hash-fanout") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-hash-fanout",
+                     "derived-gt9x16-prod3-hash-h1-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -311,7 +313,8 @@ def main() -> int:
                          "derived-f0-prod2-consumer",
                          "derived-gt9x16-prod3-price",
                          "derived-gt9x16-prod3-consumer",
-                         "derived-gt9x16-prod3-hash-fanout"):
+                         "derived-gt9x16-prod3-hash-fanout",
+                         "derived-gt9x16-prod3-hash-h1-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -330,6 +333,8 @@ def main() -> int:
                     "gt9x16_prod3_aos_consumer_measure.c",
                 "derived-gt9x16-prod3-hash-fanout":
                     "gt9x16_prod3_hash_fanout_measure.c",
+                "derived-gt9x16-prod3-hash-h1-price":
+                    "gt9x16_prod3_hash_h1_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -460,6 +465,10 @@ def main() -> int:
             f"gt9x16_prod3_hash_fanout_{variant}_pos{position}_cycles"
             for variant in ("o0", "o1", "c0", "c1")
             for position in range(1, 5))
+    elif args.mode == "derived-gt9x16-prod3-hash-h1-price":
+        required = tuple(
+            f"gt9x16_prod3_hash_h1_price_{variant}_pos{position}_cycles"
+            for variant in ("h0", "h1") for position in range(1, 5))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1343,6 +1352,79 @@ def main() -> int:
             "native_kem_result": False,
             "direct_hash_serializer_implemented": False,
         }
+    if args.mode == "derived-gt9x16-prod3-hash-h1-price":
+        prefix = "gt9x16_prod3_hash_h1_price"
+        variants = ("h0", "h1")
+        combined = {
+            variant: sum(
+                (pooled[f"{prefix}_{variant}_pos{position}_cycles"]
+                 for position in range(1, 5)), [])
+            for variant in variants
+        }
+        summary["balanced_combined_operations"] = {
+            f"{prefix}_{variant}_cycles": {
+                "observations": len(values),
+                "stq1": stabilized_quartiles(values)[0],
+                "stq2": stabilized_quartiles(values)[1],
+                "stq3": stabilized_quartiles(values)[2],
+            }
+            for variant, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            stq2 = {
+                variant: stabilized_quartiles(sum(
+                    (observed[f"{prefix}_{variant}_pos{position}_cycles"]
+                     for position in range(1, 5)), []))[1]
+                for variant in variants
+            }
+            paired_launches.append({
+                "launch": launch_number,
+                "h0_stq2": stq2["h0"],
+                "h1_stq2": stq2["h1"],
+                "h1_minus_h0_cycles": stq2["h1"] - stq2["h0"],
+            })
+        deltas = [float(entry["h1_minus_h0_cycles"])
+                  for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "median_h1_minus_h0_cycles": statistics.median(deltas),
+            "h1_faster_launches": sum(value < 0 for value in deltas),
+            "h1_slower_launches": sum(value > 0 for value in deltas),
+        }
+        wrappers = {
+            "h0": "ntruplus1152_exp001_prod3_hash_h1_price_h0",
+            "h1": "ntruplus1152_exp001_prod3_hash_h1_price_h1",
+        }
+        bridge = "ntruplus1152_exp001_prod3_hash_bytes"
+        direct = "ntruplus1152_exp001_prod3_ma2_hash_h1"
+        transfers = {
+            variant: direct_transfer_targets(saved_elf, symbol)
+            for variant, symbol in wrappers.items()
+        }
+        expected = {"h0": [bridge], "h1": [direct]}
+        if transfers != expected:
+            raise SystemExit(f"PROD3 H1 price call graph changed: {transfers}")
+        layout = elf_layout(saved_elf, (
+            *wrappers.values(), bridge, direct,
+            "ntruplus1152_exp001_f0_ma2_planes_to_generic",
+            "ntruplus1152_exp001_f0_ma0_to_official", "poly_tobytes"))
+        summary["linked_hash_h1_price_audit"] = {
+            "direct_transfers": transfers,
+            "input_boundary": "same materialized scale-4 MA2 planes",
+            "output_boundary": "same exact 1728-byte hash input",
+            "h0_path": "planes-to-generic; generic-to-Official; inv4; poly_tobytes",
+            "h1_path": "direct H1 serializer",
+            "producer_executed": False,
+            "ma2_arithmetic_executed": False,
+            "native_kem_result": False,
+        }
+        summary["elf_layout"] = layout
+        summary["decision"] = {
+            "headline": "direct-H1-minus-current-H0-recovery",
+            "native_kem_result": False,
+            "candidate_direction_stable": all(delta < 0 for delta in deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1364,6 +1446,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-price" if args.mode == "derived-gt9x16-prod3-price"
                             else "supercop-derived-gt9x16-prod3-consumer" if args.mode == "derived-gt9x16-prod3-consumer"
                             else "supercop-derived-gt9x16-prod3-hash-fanout" if args.mode == "derived-gt9x16-prod3-hash-fanout"
+                            else "supercop-derived-gt9x16-prod3-hash-h1-price" if args.mode == "derived-gt9x16-prod3-hash-h1-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1408,7 +1491,9 @@ def main() -> int:
               "derived-gt9x16-prod3-consumer":
                   "gt9x16_prod3_aos_consumer_measure.c",
               "derived-gt9x16-prod3-hash-fanout":
-                  "gt9x16_prod3_hash_fanout_measure.c"}[args.mode])
+                  "gt9x16_prod3_hash_fanout_measure.c",
+              "derived-gt9x16-prod3-hash-h1-price":
+                  "gt9x16_prod3_hash_h1_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),
