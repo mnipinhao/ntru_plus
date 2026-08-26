@@ -1,0 +1,122 @@
+scheme_id: ntruplus
+variant_family: ntru-like
+spec_version: unresolved-current-repository-is-authoritative
+repo_url: https://github.com/pinhaocrypto/ntru_plus.git
+repo_commit: c8bdd73c113951b42c75bbc8903e7be3ab7dd548
+parameter_set: NTRU+864
+
+ring:
+  coefficient_ring: Z/3457Z
+  q: 3457
+  q_bits: 12
+  polynomial_modulus: x^864 - x^432 + 1
+  degree: 864
+  modulus_shape: composed-trinomial
+  transform_length: 288 cubic base blocks
+  roots_of_unity:
+    source_fact: "288 divides q-1 because 3456 = 12 * 288"
+    production_root_and_zeta_mapping: unresolved-must-be-derived-from-ntt.c
+  ntt_condition: incomplete NTT ending in Z_q[X]/(X^3-zeta_i)
+  coefficient_storage: 864 signed int16 coefficients aligned to 16 bytes
+  arithmetic_width: int16 storage with int32 products where required
+
+representations:
+  input: coefficient order coeffs[0..863]
+  internal: current assembly-specific transform layout containing 288 cubic blocks
+  output: consumer-dependent coefficient, cubic-block, or canonical byte representation
+  canonical_or_bounded: centered/bounded internally; canonical serialization at byte boundary
+  centered_or_unsigned: centered internal field representatives
+  conversion_points:
+    - coefficient-to-current-ntt
+    - current-ntt-to-coefficient
+    - current-ntt-to-canonical-bytes
+    - canonical-bytes-to-current-ntt
+
+ranges:
+  operand_a: caller-dependent; exact pre-NTT bounds unresolved
+  operand_b: caller-dependent; exact pre-NTT bounds unresolved
+  public_constants: Montgomery-form zetas in current reference and assembly tables
+  known_intermediates:
+    - current reference montgomery_reduce requires input in [-q*2^15, q*2^15-1]
+    - current barrett_reduce returns centered representatives
+    - exact per-stage assembly bounds unresolved and required before GT Neon code
+  output: exact current cubic-block representative contract must be reconstructed
+  exact_or_rounded: exact modulo q; serialization is canonical
+
+security:
+  secret_operands:
+    - sampled f
+    - sampled g
+    - encapsulation r
+    - recovered m1
+    - secret-key f and hinv
+  public_operands:
+    - modulus and transform constants
+    - public key h
+    - ciphertext c
+  constant_time_required: true
+
+module:
+  k: null
+  l: null
+  matrix_shape: not-a-module-lattice-operation
+  decomposition_constants: []
+
+hot_operations:
+  - forward_ntt
+  - cubic_base_multiply
+  - cubic_base_multiply_add
+  - cubic_base_inverse
+  - inverse_ntt
+
+workload:
+  caller_paths:
+    - keygen: two forward NTT, two base inverse, two base multiply
+    - encap: two forward NTT, one base multiply-add
+    - decap: two forward NTT, two base multiply, one inverse NTT
+  reuse_model: transformed secret/public values are serialized and later reloaded
+  precomputation_allowed: only when byte and ABI contracts remain unchanged
+  full_path_baseline: SUPERCOP baseline not yet captured for this campaign
+
+target_requirements:
+  candidate_architectures:
+    - AArch64 Armv8-A/Armv9-A Neon
+  required_isa_features:
+    - Advanced SIMD 128-bit registers
+  memory_constraints: count all CRT permutations, scratch, table loads, and extra passes
+  code_size_constraints: measure text size and instruction-cache effects before promotion
+  selected_platform_skill: aarch64-neon-lattice-polymul
+
+source_paths:
+  reference_c: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+  ntt_tables: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+  constants:
+    - ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+    - ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+864/asm/ntt.s
+    - ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+864/asm/base.s
+  tests: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+864/test/test.c
+  kats: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+864/kat
+  benchmark_harness: bench/supercop
+
+validation:
+  differential_tests: to-be-created-stage-and-full-transform-oracle
+  known_answer_tests: frozen NTRU+864 KAT comparison
+  range_proof: to-be-created-before-neon-candidate
+  representation_proof: to-be-created-before-neon-candidate
+  constant_time_review: required-for-each-candidate
+  benchmark_harness: SUPERCOP plus component attribution on the same AArch64 host
+
+unresolved_facts:
+  - exact current NTT output index-to-zeta formula
+  - exact ring-specific twist relation to a 288-point DFT
+  - forward and inverse Good-Thomas CRT/exponent conventions
+  - exact Montgomery scale at every stage boundary
+  - exact per-stage coefficient bounds in current and candidate transforms
+  - best cubic AoS/SoA layout for 9-by-32 Neon kernels
+  - authoritative target core and SUPERCOP revision for this campaign
+
+do_not_assume:
+  - NTRU+768 Good-Thomas constants or layouts apply to NTRU+864
+  - fewer modular multiplications imply faster Neon execution
+  - an isolated forward NTT win implies a full-KEM win
+  - equal-size poly objects have interchangeable internal layouts

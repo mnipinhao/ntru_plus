@@ -1,0 +1,75 @@
+kernel_id: ntruplus864-current-forward-ntt
+scheme_id: ntruplus
+parameter_set: NTRU+864
+status: reconstructed-baseline-dag-not-a-good-thomas-contract
+
+math_contract:
+  operation: coefficient polynomial to 288 cubic base-ring elements
+  ring: Z_3457[x]/(x^864-x^432+1)
+  input_representation: natural coefficient order
+  output_representation: current block layout consumed by cubic base operations
+  coefficient_bounds_before: caller-dependent-and-not-yet-fully-recorded
+  coefficient_bounds_after: centered/bounded-current-contract-needs-exact-proof
+  exact_or_rounded: exact modulo 3457
+
+dependencies:
+  - special ring-specific radix-2 layer over coefficient halves
+  - radix-3 layer at step 144
+  - radix-3 layer at step 48
+  - radix-2 layer at step 24
+  - radix-2 layer at step 12
+  - radix-2 layer at step 6
+  - radix-2 layer at step 3
+  - store 288 contiguous cubic blocks
+
+dataflow:
+  inputs:
+    - 864 int16 coefficient representatives
+  outputs:
+    - 288 blocks of three int16 field representatives
+  live_ins:
+    - source pointer
+    - destination pointer
+    - public zeta table
+  live_outs:
+    - current NTT-domain polynomial
+  temporaries:
+    - butterfly values
+    - Montgomery reduction intermediates
+    - Barrett reduction intermediates
+
+constants:
+  zetas:
+    - 288-entry Montgomery-form table in reference ntt.c
+    - packed forward table in aarch64 asm/ntt.s
+  modulus_constants:
+    - q=3457
+    - R=2^16 mod q
+    - omega and inverse scaling constants from reference ntt.c
+  decomposition_constants: []
+  representation: mixed plain and Montgomery factors as documented by reference operations
+
+memory:
+  loads:
+    - coefficient input
+    - public packed zeta/constants tables
+  stores:
+    - intermediate destination used between assembly phase groups
+    - final cubic-block destination
+  alignment: poly is 16-byte aligned
+  aliasing: public API permits in-place use and must be tested
+  public_offsets_only: true
+
+forbidden:
+  - secret_dependent_branch
+  - secret_dependent_memory_access
+  - changing_zeta_order_without-a-new-representation-proof
+  - changing_representative_convention
+  - changing_math_contract_without_dag_update
+
+validation:
+  reference_function: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c:ntt
+  boundary_tests: to-be-created-in-phase-1
+  differential_tests: current-asm-versus-reference-plus-future-stage-oracle
+  range_proof: unresolved
+  constant_time_review: required
