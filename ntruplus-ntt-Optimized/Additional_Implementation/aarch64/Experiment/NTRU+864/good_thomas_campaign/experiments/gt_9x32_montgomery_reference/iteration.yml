@@ -1,0 +1,20 @@
+iteration_id: gt864_9x32_montgomery_reference_01
+mode: explore_implement
+candidate_status: gate_passed
+hypothesis: GT can preserve R^0 coefficients while using Montgomery-form public roots and a permutation-only legacy leaf adapter
+production_default_changed: false
+validation:
+  command: make check
+  compiler: Apple clang through cc
+  flags: -O2 -std=c99 -Wall -Wextra -Wpedantic -Werror
+  sanitizer_flags: -fsanitize=address,undefined -fno-omit-frame-pointer
+  build: pass
+  exact_current_forward: pass_32_cases
+  exact_current_basemul: pass_17_cases
+  current_inverse_mod_q: pass_32_cases
+  centered_roundtrip: pass_32_cases
+  full_product: pass_17_cases
+  alias: pass_81_cases
+  total_mismatches: 0
+performance:
+  status: forbidden

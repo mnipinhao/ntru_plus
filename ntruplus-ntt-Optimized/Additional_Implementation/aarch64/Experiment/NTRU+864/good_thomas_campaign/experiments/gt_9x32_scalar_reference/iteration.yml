@@ -1,0 +1,17 @@
+iteration_id: gt864_9x32_scalar_reference_01
+mode: explore_implement
+candidate_status: gate_passed
+hypothesis: the proven root grid supports an exact factorized forward/inverse and cubic-leaf quotient-ring product
+production_default_changed: false
+validation:
+  command: make check
+  compiler: Apple clang through cc
+  flags: -O2 -std=c99 -Wall -Wextra -Wpedantic -Werror
+  build: pass
+  forward_direct_differential: pass_36_cases
+  roundtrip: pass_36_cases
+  multiplication_schoolbook_differential: pass_21_cases
+  alias: pass_93_cases
+  total_mismatches: 0
+performance:
+  status: forbidden

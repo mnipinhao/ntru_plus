@@ -1,0 +1,16 @@
+# NTRU+864 Good-Thomas optimization scoreboard
+
+This is the campaign decision ledger. A row is not a performance claim unless
+the named correctness and benchmark evidence exists.
+
+| Experiment | Gate | Evidence | Decision | Next action |
+| --- | --- | --- | --- | --- |
+| `gt_9x32_root_gate` | root-set equality, 9-by-32 grid bijection, legacy leaf-label bijection | pass; mapping SHA-256 `a15f659eb13bf6ee173d04135e02a774ef0e90c2b153797dcecb39644eaecae5` | keep as algebra oracle | Start a separate direct scalar evaluation/interpolation experiment; do not start Neon. |
+| `gt_9x32_scalar_reference` | factorized forward vs direct evaluation; round trip; GT product vs schoolbook; aliases | pass: 36 forward, 36 round-trip, 21 product, 93 alias cases; zero mismatches | freeze as readable canonical algebra oracle | Open a new experiment for legacy leaf order and Montgomery boundaries. Do not add that work to this closed directory. |
+| `gt_9x32_montgomery_reference` | exact current forward and basemul representatives; inverse/full-product modulo q; alias; Montgomery scale | pass: 32 exact forward, 17 exact basemul, 32 inverse-mod-q, 32 centered round trip, 17 full product, 81 alias; zero mismatches | freeze as Montgomery/legacy-boundary oracle | Start a new range-proof and staged 32-point algorithm experiment; do not add Neon here. |
+
+## Global promotion rule
+
+No experiment changes the NTRU+864 Production default. Promotion requires a
+separate audit covering exact representation boundaries, range, constant time,
+ABI, KAT, full KEM, source closure, Pi 5 PMU, and SUPERCOP-native evidence.

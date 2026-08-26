@@ -1,0 +1,31 @@
+candidate:
+  id: gt864_9x32_montgomery_scalar_reference
+  status: gate_passed
+representation:
+  coefficient_domain: normal R^0 centered int16
+  transform_domain: normal R^0 centered int16 in row-major GT grid
+  public_roots: Montgomery encoded
+  legacy_adapter: root-label-derived permutation only, no rescaling
+forward:
+  stage32: Horner evaluation with z_column times R public factors
+  stage9: Horner evaluation with y_row_column times R public factors
+inverse:
+  stage9: inverse eta and lambda factors encoded times R
+  stage32: inverse Vandermonde coefficients encoded times R
+  output: centered normal R^0
+leaf_multiply:
+  formula: current cubic basemul operation order
+  root: y_row_column times R
+  final_scale: R_squared followed by Montgomery reduction returns R^0
+required_checks:
+  - exact mapped forward equality with current ntt
+  - exact mapped cubic basemul equality with current basemul
+  - inverse equality modulo q with current invntt
+  - exact centered round trip
+  - full multiplication equality modulo q with canonical and schoolbook oracles
+  - alias safety
+forbidden_claims:
+  - exact current inverse representative
+  - lazy int16 range safety
+  - Neon readiness
+  - performance improvement

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "active_limit": 2,
+  "default_artifact_budget": 12,
+  "experiments": [
+    {
+      "id": "gt_9x32_root_gate",
+      "path": "gt_9x32_root_gate",
+      "question": "Does the exact current cubic-leaf root set admit the proposed 9-by-32 grid?",
+      "status": "passed",
+      "role": "root_topology_oracle",
+      "production_linked": false,
+      "next": "gt_9x32_scalar_reference"
+    },
+    {
+      "id": "gt_9x32_scalar_reference",
+      "path": "gt_9x32_scalar_reference",
+      "question": "Does a readable canonical-mod-q 9-by-32 factorization implement the exact NTRU+864 quotient-ring product?",
+      "status": "passed",
+      "role": "independent_algebra_oracle",
+      "production_linked": false,
+      "next": "legacy leaf-order and Montgomery boundary experiment"
+    },
+    {
+      "id": "gt_9x32_montgomery_reference",
+      "path": "gt_9x32_montgomery_reference",
+      "question": "Can the 9-by-32 reference preserve the current R^0 coefficient and Montgomery-public-factor contract across legacy leaf consumers?",
+      "status": "passed",
+      "role": "authoritative_gt_c_reference_v1",
+      "production_linked": false,
+      "next": "range proof and staged 32-point algorithm selection"
+    }
+  ]
+}

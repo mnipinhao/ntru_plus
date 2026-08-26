@@ -1,0 +1,17 @@
+iteration_id: gt864_9x32_root_gate_01
+mode: algebra_exploration
+candidate_status: gate_passed
+hypothesis: the exact current NTRU+864 cubic-leaf roots form 32 Q-roots with nine P-root preimages per column
+production_default_changed: false
+
+validation:
+  command: make check
+  zeta_parse: pass
+  polynomial_root_set: pass
+  gt_grid_bijection: pass
+  legacy_leaf_mapping: pass
+  legacy_leaf_mapping_sha256: a15f659eb13bf6ee173d04135e02a774ef0e90c2b153797dcecb39644eaecae5
+  arithmetic_crt_permutation: pass
+
+performance:
+  status: forbidden_until_scalar_multiplication_correctness

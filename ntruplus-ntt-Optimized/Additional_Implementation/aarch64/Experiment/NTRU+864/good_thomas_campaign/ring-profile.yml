@@ -2,7 +2,8 @@ scheme_id: ntruplus
 variant_family: ntru-like
 spec_version: unresolved-current-repository-is-authoritative
 repo_url: https://github.com/pinhaocrypto/ntru_plus.git
-repo_commit: c8bdd73c113951b42c75bbc8903e7be3ab7dd548
+repo_commit: 5b85f4e19cb90ab07c836af2bcdb2b1a4ff092bc
+artifact_revision: containing commit; repo_commit records the campaign parent
 parameter_set: NTRU+864
 
 ring:
@@ -15,7 +16,7 @@ ring:
   transform_length: 288 cubic base blocks
   roots_of_unity:
     source_fact: "288 divides q-1 because 3456 = 12 * 288"
-    production_root_and_zeta_mapping: unresolved-must-be-derived-from-ntt.c
+    production_root_and_zeta_mapping: proven by gt_9x32_root_gate and frozen in the authoritative GT C reference
   ntt_condition: incomplete NTT ending in Z_q[X]/(X^3-zeta_i)
   coefficient_storage: 864 signed int16 coefficients aligned to 16 bytes
   arithmetic_width: int16 storage with int32 products where required
@@ -31,6 +32,12 @@ representations:
     - current-ntt-to-coefficient
     - current-ntt-to-canonical-bytes
     - canonical-bytes-to-current-ntt
+  gt_reference:
+    coefficient_scale: normal R^0
+    public_factor_scale: Montgomery constant times R
+    gt_layout: row-major 9-by-32 cubic leaves
+    legacy_adapter: raw int16 permutation with no reduction or rescaling
+    inverse_output: centered normal R^0
 
 ranges:
   operand_a: caller-dependent; exact pre-NTT bounds unresolved
@@ -76,7 +83,7 @@ workload:
     - decap: two forward NTT, two base multiply, one inverse NTT
   reuse_model: transformed secret/public values are serialized and later reloaded
   precomputation_allowed: only when byte and ABI contracts remain unchanged
-  full_path_baseline: SUPERCOP baseline not yet captured for this campaign
+  full_path_baseline: local M2 Pro SUPERCOP bring-up captured; authoritative Pi 5 baseline still required
 
 target_requirements:
   candidate_architectures:
@@ -88,7 +95,9 @@ target_requirements:
   selected_platform_skill: aarch64-neon-lattice-polymul
 
 source_paths:
-  reference_c: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+  authoritative_gt_reference_c: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/Experiment/NTRU+864/good_thomas_campaign/experiments/gt_9x32_montgomery_reference/gt864_montgomery.c
+  independent_algebra_oracle: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/Experiment/NTRU+864/good_thomas_campaign/experiments/gt_9x32_scalar_reference/gt864_reference.c
+  legacy_compatibility_oracle: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
   ntt_tables: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
   constants:
     - ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
@@ -99,19 +108,16 @@ source_paths:
   benchmark_harness: bench/supercop
 
 validation:
-  differential_tests: to-be-created-stage-and-full-transform-oracle
+  differential_tests: make check-reference plus future candidate-specific stage tests
   known_answer_tests: frozen NTRU+864 KAT comparison
   range_proof: to-be-created-before-neon-candidate
-  representation_proof: to-be-created-before-neon-candidate
+  representation_proof: scalar Montgomery and legacy-leaf boundary pass; staged range proof still required before Neon
   constant_time_review: required-for-each-candidate
   benchmark_harness: SUPERCOP plus component attribution on the same AArch64 host
 
 unresolved_facts:
-  - exact current NTT output index-to-zeta formula
-  - exact ring-specific twist relation to a 288-point DFT
-  - forward and inverse Good-Thomas CRT/exponent conventions
-  - exact Montgomery scale at every stage boundary
   - exact per-stage coefficient bounds in current and candidate transforms
+  - efficient staged 32-point transform and its Montgomery constant consumption order
   - best cubic AoS/SoA layout for 9-by-32 Neon kernels
   - authoritative target core and SUPERCOP revision for this campaign
 

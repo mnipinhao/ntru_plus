@@ -123,6 +123,37 @@ not automatically apply to NTRU+864.
 
 ## Phase plan and hard gates
 
+Current algebra experiment:
+
+```text
+experiments/gt_9x32_root_gate
+```
+
+Its local root-topology gate passes. This proves that the exact current cubic
+leaf roots form a 9-by-32 grid, but does not yet prove the forward/inverse
+factorization, scaling, ranges, or a Neon layout. The next permitted experiment
+is direct scalar evaluation/interpolation against this root oracle.
+
+The follow-up `experiments/gt_9x32_scalar_reference` gate also passes. It now
+serves as the frozen canonical-mod-q C oracle for direct versus factorized
+forward transforms, inverse round trip, cubic-leaf multiplication, and complete
+schoolbook quotient-ring multiplication. Its scope is closed; legacy leaf
+ordering and Montgomery boundaries must be handled in a new experiment.
+
+That boundary experiment is now complete as
+`experiments/gt_9x32_montgomery_reference`. It proves that GT can retain normal
+`R^0` coefficients while encoding public roots and inverse factors in
+Montgomery form. The row-major GT grid maps to the current cubic-leaf order by
+a pure permutation with no rescaling. Forward and basemul match current scalar
+representatives exactly; inverse and full products match modulo q, with the
+candidate inverse intentionally returning centered representatives.
+
+This Montgomery implementation is the frozen authoritative GT C reference v1.
+The canonical scalar implementation remains its independent algebra oracle and
+the repository scalar `ntt.c` remains its legacy compatibility oracle. Future
+staged or Neon candidates must test against the authoritative GT reference;
+they must not modify it to absorb candidate behavior.
+
 ### Phase 0 — Freeze the baseline
 
 Deliverables:

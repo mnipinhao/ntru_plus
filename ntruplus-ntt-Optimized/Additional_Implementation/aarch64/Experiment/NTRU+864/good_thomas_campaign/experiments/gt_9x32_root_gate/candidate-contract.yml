@@ -1,0 +1,43 @@
+candidate:
+  id: ntruplus864_gt_9x32_root_grid
+  status: gate_passed
+
+factorization:
+  residual_polynomial: P(y) = y^288 - y^144 + 1
+  outer_polynomial: Q(z) = z^32 - z^16 + 1
+  substitution: z = y^9
+  rows: 9
+  columns: 32
+
+grid_contract:
+  primitive_864_root: derived from the smallest generator of Z_3457^*
+  primitive_9_root: eta = primitive_864_root^96
+  column_representatives: lambda_c = primitive_864_root^k_c
+  column_exponents: k_c in 0..95 with k_c mod 6 in {1, 5}
+  roots: zeta[row][column] = lambda_column * eta^row mod 3457
+  required_properties:
+    - each lambda_column^9 is a root of Q
+    - the 32 Q roots are distinct
+    - every Q root has exactly 9 P-root preimages
+    - all 288 grid roots are distinct
+    - the grid root set equals the current cubic-leaf root set
+
+mapping_contract:
+  legacy_leaf_to_grid: must be a bijection and recorded by stable SHA-256
+  arithmetic_crt_candidate: j = 64*row + 225*column mod 288
+  warning: arithmetic CRT permutation is not yet proven to be the transform leaf ordering
+
+security:
+  secret_inputs: none
+  public_inputs:
+    - q
+    - reference zeta table
+  constant_time_claim: not_applicable_to_offline_checker
+
+gate:
+  command: make check
+  on_pass: permit_direct_scalar_evaluation_and_interpolation_experiment
+  on_failure: revise_or_reject_9x32_mapping
+  neon_allowed: false
+  benchmark_allowed: false
+  production_default_changed: false

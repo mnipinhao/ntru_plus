@@ -1,0 +1,24 @@
+candidate:
+  id: gt864_9x32_canonical_scalar_reference
+  status: gate_passed
+forward:
+  coefficient_split: input[3*(s+9*t)+branch]
+  stage_32: direct evaluation of B_branch_s at z_column
+  stage_9: direct evaluation across s at lambda_column * eta^row
+  layout: output[(row*32+column)*3+branch]
+inverse:
+  stage_9: inverse DFT9 with inverse lambda power and 1/9
+  stage_32: inverse public Vandermonde evaluation matrix
+  output: natural coefficient order
+leaf_multiply:
+  ring: Z_3457[X] / (X^3 - y_row_column)
+required_checks:
+  - factorized forward equals direct evaluation exactly
+  - inverse of forward equals canonical input exactly
+  - GT multiplication equals schoolbook quotient-ring multiplication exactly
+  - forward, inverse, basemul, and full multiply support output aliasing an input
+forbidden_claims:
+  - current serialized leaf compatibility
+  - Montgomery compatibility
+  - Neon readiness
+  - performance improvement

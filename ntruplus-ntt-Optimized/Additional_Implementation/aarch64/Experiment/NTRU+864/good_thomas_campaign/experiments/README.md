@@ -1,0 +1,23 @@
+# NTRU+864 Good-Thomas experiment registry
+
+This directory follows the experiment discipline used by the NTRU+768 work on
+`main`, while remaining completely outside the NTRU+864 Production Makefile.
+
+Rules:
+
+1. One directory answers one bounded question.
+2. Every experiment declares a baseline contract and candidate contract.
+3. Static and correctness gates run before implementation or timing.
+4. Failed or incomplete experiments remain default-off and are not hidden.
+5. Production promotion is a separate change with source-closure, KAT, ABI,
+   full-KEM, and SUPERCOP evidence.
+
+Current experiments:
+
+| Experiment | Question | Status | Production linked? |
+| --- | --- | --- | --- |
+| `gt_9x32_root_gate` | Does the NTRU+864 cubic-leaf root set admit the proposed 9-by-32 algebraic grid? | passed | no |
+| `gt_9x32_scalar_reference` | Does the 9-by-32 factorization implement the exact quotient-ring product? | passed | no |
+| `gt_9x32_montgomery_reference` | Can GT preserve the current normal-coefficient/Montgomery-public-factor and legacy leaf contract? | passed | no |
+
+See `optimization_scoreboard.md` for decisions and reopen conditions.

@@ -1,0 +1,29 @@
+mode: montgomery_representation_boundary
+baseline:
+  source: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+  functions:
+    - ntt
+    - invntt
+    - basemul
+  zeta_source: zetas[288]
+field:
+  q: 3457
+  R: 3310
+  R_inverse: 2775
+  R_squared: 867
+representation:
+  coefficients: normal R^0 signed int16 representatives
+  public_factors: Montgomery constant times R
+  forward_output: centered current legacy leaf order
+  basemul_output: current bounded normal representative
+  inverse_output: current bounded normal representative
+legacy_leaf_rule:
+  - block 2*i uses zetas[144+i]
+  - block 2*i+1 uses negative zetas[144+i]
+validation:
+  exact_forward_required: true
+  exact_basemul_required: true
+  inverse_mod_q_required: true
+isolation:
+  production_default_changed: false
+  benchmark_allowed: false

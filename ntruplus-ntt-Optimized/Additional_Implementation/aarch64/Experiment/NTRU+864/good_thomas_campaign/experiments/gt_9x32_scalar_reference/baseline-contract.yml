@@ -1,0 +1,17 @@
+mode: scalar_algebra_reference
+baseline:
+  forward_oracle: direct evaluation of three degree-less-than-288 polynomials at all 288 P roots
+  multiplication_oracle: schoolbook convolution reduced by x^864 = x^432 - 1
+ring: Z_3457[x] / (x^864 - x^432 + 1)
+representation:
+  input: 864 canonical int16 residues in natural coefficient order
+  output: 864 canonical int16 residues
+  transform_output: row-major 9-by-32 cubic leaves with three contiguous coefficients per leaf
+arithmetic:
+  reduction: readable signed int64 modulo 3457
+  montgomery: false
+validation:
+  command: make check
+isolation:
+  production_default_changed: false
+  benchmark_allowed: false

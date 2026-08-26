@@ -1,0 +1,32 @@
+mode: algebraic_root_topology
+baseline_status: source_extracted
+
+baseline:
+  id: ntruplus864_current_cubic_leaf_roots
+  source: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864/ntt.c
+  zeta_table: zetas[288]
+  leaf_label_rule:
+    - zetas[144+i] for i in 0..143
+    - negative zetas[144+i] for i in 0..143
+
+ring:
+  q: 3457
+  polynomial_modulus: x^864 - x^432 + 1
+  cubic_substitution: y = x^3
+  residual_polynomial: P(y) = y^288 - y^144 + 1
+  leaf_ring: Z_q[X] / (X^3 - zeta)
+
+representation:
+  table_encoding: Montgomery form with R = 2^16 mod q
+  checker_domain: canonical residues in 0..3456
+  legacy_leaf_order: current poly_basemul and poly_baseinv block order
+
+validation:
+  command: make check
+  required_root_count: 288
+  exact_set_equality_required: true
+
+isolation:
+  production_default_changed: false
+  production_object_linked: false
+  benchmark_allowed: false
