@@ -43,10 +43,86 @@
 #define NTRUPLUS_RSQ           867 /* R^2 mod q */
 #define NTRUPLUS_QINV        12929 /* q^-1 mod 2^16 */
 
-#define GT864_PRIMITIVE_864   2401 /* element of order 864 in Z_q */
 #define GT864_ETA              1520 /* primitive ninth root */
 
 extern const int16_t zetas[GT864_POINTS];
+
+/*
+ * Compile-time Montgomery root tables, analogous to zetas[] in the current
+ * scalar NTRU+864 reference.  They are generated from
+ *
+ *   lambda[column] = 2401^k,  0 <= k < 96 and k mod 6 in {1, 5},
+ *   z[column]      = lambda[column]^9,
+ *   root[row][col] = lambda[column] * 1520^row,
+ *
+ * and every entry below is the centered representative of value * R mod q.
+ * The row-zero root is lambda itself, so no duplicate lambda table is kept.
+ * These Montgomery-form tables avoid rebuilding the public grid and
+ * re-encoding its entries on every transform call.
+ */
+static const int16_t gt864_z_mont[GT864_COLUMNS] = {
+      -888,  -1028,    963,  -1548,   -729,    978,    -62,   1392,
+      -470,  -1603,   -775,    115,   1039,  -1024,  -1045,   -291,
+       888,   1028,   -963,   1548,    729,   -978,     62,  -1392,
+       470,   1603,    775,   -115,  -1039,   1024,   1045,    291,
+};
+
+static const int16_t gt864_roots_mont[GT864_ROWS][GT864_COLUMNS] = {
+    {
+          -333,    365,    917,   -403,   -179,   1089,   1230,     -9,
+          -553,  -1657,    -24,   -472,   1343,   1061,   1046,  -1323,
+          1677,  -1589,    -71,   -244,    372,    402,   1654,   -889,
+          1072,   1493,    -66,  -1298,   -628,    325,   1148,    683,
+    },
+    {
+         -1438,   1680,    669,   -671,   1023,   -623,   -637,    148,
+          -509,   1513,   1547,   1616,  -1727,  -1699,   -300,   1014,
+          1231,   1163,   -753,   -981,  -1508,   -849,    841,    407,
+          1193,   1568,    -67,    987,   -428,   -351,   -825,   1060,
+    },
+    {
+          -936,  -1123,    522,   -105,   -690,    258,   -280,    255,
+           688,    855,    680,  -1607,  -1177,   -101,    324,   -542,
+           883,   1233,   -293,  -1153,   -169,  -1019,   -770,   -163,
+         -1565,   1487,  -1587,    -98,   -644,  -1142,    891,    238,
+    },
+    {
+          1564,    798,  -1670,   -578,  -1329,   1519,   -389,    416,
+         -1711,   -232,    -43,   1459,   1686,  -1412,   1586,  -1074,
+           844,    466,    593,    139,  -1062,   -144,   1523,   1144,
+          -384,   -638,    746,   -309,   -549,   -426,   -824,  -1225,
+    },
+    {
+         -1136,   -447,   -962,   -482,  -1192,   -396,   -133,   -311,
+         -1056,    -26,    323,  -1714,   1083,    557,   1191,   -776,
+           333,   -365,   -917,    403,    179,  -1089,  -1230,      9,
+           553,   1657,     24,    472,  -1343,  -1061,  -1046,   1323,
+    },
+    {
+         -1677,   1589,     71,    244,   -372,   -402,  -1654,    889,
+         -1072,  -1493,     66,   1298,    628,   -325,  -1148,   -683,
+          1438,  -1680,   -669,    671,  -1023,    623,    637,   -148,
+           509,  -1513,  -1547,  -1616,   1727,   1699,    300,  -1014,
+    },
+    {
+         -1231,  -1163,    753,    981,   1508,    849,   -841,   -407,
+         -1193,  -1568,     67,   -987,    428,    351,    825,  -1060,
+           936,   1123,   -522,    105,    690,   -258,    280,   -255,
+          -688,   -855,   -680,   1607,   1177,    101,   -324,    542,
+    },
+    {
+          -883,  -1233,    293,   1153,    169,   1019,    770,    163,
+          1565,  -1487,   1587,     98,    644,   1142,   -891,   -238,
+         -1564,   -798,   1670,    578,   1329,  -1519,    389,   -416,
+          1711,    232,     43,  -1459,  -1686,   1412,  -1586,   1074,
+    },
+    {
+          -844,   -466,   -593,   -139,   1062,    144,  -1523,  -1144,
+           384,    638,   -746,    309,    549,    426,    824,   1225,
+          1136,    447,    962,    482,   1192,    396,    133,    311,
+          1056,     26,   -323,   1714,  -1083,   -557,  -1191,    776,
+    },
+};
 
 /*************************************************
 * Name:        canonical
@@ -181,47 +257,6 @@ static void centered_copy(int16_t out[GT864_N], const int16_t in[GT864_N])
 }
 
 /*************************************************
-* Name:        build_grid
-*
-* Description: Constructs the public 9-by-32 root grid.
-*
-*              The 32 column representatives are
-*
-*                lambda_c = primitive_864^k_c,
-*                k_c in {0,...,95}, k_c mod 6 in {1,5}.
-*
-*              Their ninth powers z_c=lambda_c^9 are the 32 roots of
-*              Q(z)=z^32-z^16+1.  The full P(y) roots are
-*
-*                root[row][column] = lambda_column * eta^row.
-*
-* Arguments:   - lambda: 32 normal R^0 column representatives
-*              - z:      32 normal R^0 roots of Q
-*              - roots:  9-by-32 normal R^0 roots of P
-**************************************************/
-static void build_grid(int16_t lambda[GT864_COLUMNS],
-                       int16_t z[GT864_COLUMNS],
-                       int16_t roots[GT864_ROWS][GT864_COLUMNS])
-{
-    int column = 0;
-
-    for (int exponent = 0; exponent < 96; exponent++) {
-        if (exponent % 6 != 1 && exponent % 6 != 5)
-            continue;
-        lambda[column] = fqpow_canonical(GT864_PRIMITIVE_864, exponent);
-        z[column] = fqpow_canonical(lambda[column], GT864_ROWS);
-        column++;
-    }
-    assert(column == GT864_COLUMNS);
-
-    for (int row = 0; row < GT864_ROWS; row++) {
-        int16_t eta_power = fqpow_canonical(GT864_ETA, row);
-        for (int col = 0; col < GT864_COLUMNS; col++)
-            roots[row][col] = fqmul_canonical(lambda[col], eta_power);
-    }
-}
-
-/*************************************************
 * Name:        build_legacy_to_grid
 *
 * Description: Derives the permutation between the current scalar cubic-leaf
@@ -232,11 +267,6 @@ static void build_grid(int16_t lambda[GT864_COLUMNS],
 **************************************************/
 static void build_legacy_to_grid(int mapping[GT864_POINTS])
 {
-    int16_t lambda[GT864_COLUMNS];
-    int16_t z[GT864_COLUMNS];
-    int16_t roots[GT864_ROWS][GT864_COLUMNS];
-
-    build_grid(lambda, z, roots);
     for (int pair = 0; pair < GT864_POINTS / 2; pair++) {
         for (int sign = 0; sign < 2; sign++) {
             int legacy = 2 * pair + sign;
@@ -246,7 +276,9 @@ static void build_legacy_to_grid(int mapping[GT864_POINTS])
             mapping[legacy] = -1;
             for (int row = 0; row < GT864_ROWS; row++) {
                 for (int col = 0; col < GT864_COLUMNS; col++) {
-                    if (roots[row][col] == root)
+                    int16_t grid_root = canonical(montgomery_reduce(
+                        gt864_roots_mont[row][col]));
+                    if (grid_root == root)
                         mapping[legacy] = row * GT864_COLUMNS + col;
                 }
             }
@@ -305,16 +337,16 @@ void gt864_legacy_to_grid(int16_t out[GT864_N], const int16_t in[GT864_N])
 * Name:        invert_vandermonde
 *
 * Description: Builds the inverse of V[column][degree]=z_column^degree over
-*              Z_q using public-data Gaussian elimination.  This slow helper
+*              Z_q from the compile-time Montgomery z table.  This slow helper
 *              makes inverse reconstruction explicit and is not an optimized
 *              32-point inverse transform.
 *
 * Arguments:   - inverse: output 32-by-32 inverse evaluation matrix
-*              - z:       the 32 public roots of Q(z)
+*              - z_mont:  the 32 public roots of Q(z), encoded as z*R mod q
 **************************************************/
 static void invert_vandermonde(
     int16_t inverse[GT864_COLUMNS][GT864_COLUMNS],
-    const int16_t z[GT864_COLUMNS])
+    const int16_t z_mont[GT864_COLUMNS])
 {
     int16_t matrix[GT864_COLUMNS][2 * GT864_COLUMNS];
 
@@ -322,7 +354,7 @@ static void invert_vandermonde(
         int16_t power = 1;
         for (int col = 0; col < GT864_COLUMNS; col++) {
             matrix[row][col] = power;
-            power = fqmul_canonical(power, z[row]);
+            power = canonical(fqmul_public(power, z_mont[row]));
             matrix[row][GT864_COLUMNS + col] = (int16_t)(row == col);
         }
     }
@@ -388,22 +420,17 @@ static void invert_vandermonde(
 void gt864_mont_forward(int16_t out[GT864_N], const int16_t in[GT864_N])
 {
     int16_t input[GT864_N];
-    int16_t lambda[GT864_COLUMNS];
-    int16_t z[GT864_COLUMNS];
-    int16_t roots[GT864_ROWS][GT864_COLUMNS];
     int16_t stage32[GT864_LEAF_DEGREE][GT864_ROWS][GT864_COLUMNS];
 
     centered_copy(input, in);
-    build_grid(lambda, z, roots);
 
     /* Stage 32: evaluate every B_{branch,residue} at each z column. */
     for (int branch = 0; branch < GT864_LEAF_DEGREE; branch++) {
         for (int residue = 0; residue < GT864_ROWS; residue++) {
             for (int col = 0; col < GT864_COLUMNS; col++) {
                 int16_t value = 0;
-                int16_t z_mont = montgomery_encode(z[col]);
                 for (int degree = GT864_COLUMNS - 1; degree >= 0; degree--)
-                    value = centered(fqmul_public(value, z_mont) +
+                    value = centered(fqmul_public(value, gt864_z_mont[col]) +
                                      input[GT864_LEAF_DEGREE *
                                            (residue + GT864_ROWS * degree) + branch]);
                 stage32[branch][residue][col] = value;
@@ -414,11 +441,11 @@ void gt864_mont_forward(int16_t out[GT864_N], const int16_t in[GT864_N])
     /* Stage 9: combine the nine residue classes at y=lambda*eta^row. */
     for (int row = 0; row < GT864_ROWS; row++) {
         for (int col = 0; col < GT864_COLUMNS; col++) {
-            int16_t root_mont = montgomery_encode(roots[row][col]);
             for (int branch = 0; branch < GT864_LEAF_DEGREE; branch++) {
                 int16_t value = 0;
                 for (int residue = GT864_ROWS - 1; residue >= 0; residue--)
-                    value = centered(fqmul_public(value, root_mont) +
+                    value = centered(fqmul_public(
+                                         value, gt864_roots_mont[row][col]) +
                                      stage32[branch][residue][col]);
                 out[(row * GT864_COLUMNS + col) * GT864_LEAF_DEGREE + branch] = value;
             }
@@ -452,15 +479,11 @@ void gt864_mont_inverse(int16_t out[GT864_N], const int16_t in[GT864_N])
 {
     const int16_t inverse_9 = fqinv_canonical(GT864_ROWS);
     int16_t input[GT864_N];
-    int16_t lambda[GT864_COLUMNS];
-    int16_t z[GT864_COLUMNS];
-    int16_t roots[GT864_ROWS][GT864_COLUMNS];
     int16_t inverse_v[GT864_COLUMNS][GT864_COLUMNS];
     int16_t stage32[GT864_LEAF_DEGREE][GT864_ROWS][GT864_COLUMNS];
 
     centered_copy(input, in);
-    build_grid(lambda, z, roots);
-    invert_vandermonde(inverse_v, z);
+    invert_vandermonde(inverse_v, gt864_z_mont);
 
     /* Inverse Stage 9: undo eta^row and the column-dependent lambda twist. */
     for (int branch = 0; branch < GT864_LEAF_DEGREE; branch++) {
@@ -476,9 +499,11 @@ void gt864_mont_inverse(int16_t out[GT864_N], const int16_t in[GT864_N])
                         input[(row * GT864_COLUMNS + col) *
                               GT864_LEAF_DEGREE + branch], factor_mont));
                 }
+                int16_t lambda = canonical(montgomery_reduce(
+                    gt864_roots_mont[0][col]));
                 int16_t scale = fqmul_canonical(
                     inverse_9,
-                    fqpow_canonical(fqinv_canonical(lambda[col]), residue));
+                    fqpow_canonical(fqinv_canonical(lambda), residue));
                 stage32[branch][residue][col] =
                     centered(fqmul_public(sum, montgomery_encode(scale)));
             }
@@ -532,18 +557,14 @@ void gt864_mont_basemul(int16_t out[GT864_N], const int16_t a[GT864_N],
     int16_t left[GT864_N];
     int16_t right[GT864_N];
     int16_t result[GT864_N];
-    int16_t lambda[GT864_COLUMNS];
-    int16_t z[GT864_COLUMNS];
-    int16_t roots[GT864_ROWS][GT864_COLUMNS];
 
     centered_copy(left, a);
     centered_copy(right, b);
-    build_grid(lambda, z, roots);
 
     for (int row = 0; row < GT864_ROWS; row++) {
         for (int col = 0; col < GT864_COLUMNS; col++) {
             int offset = (row * GT864_COLUMNS + col) * GT864_LEAF_DEGREE;
-            int16_t root_mont = montgomery_encode(roots[row][col]);
+            int16_t root_mont = gt864_roots_mont[row][col];
             int16_t a0 = left[offset + 0];
             int16_t a1 = left[offset + 1];
             int16_t a2 = left[offset + 2];
