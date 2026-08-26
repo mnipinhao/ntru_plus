@@ -6,7 +6,8 @@
  *
  * Input:  one physical-p row immediately after D4, in AoS order
  *         [q0.j0..j3, q1.j0..j3, ... q15.j0..j3].
- * Output: four MA2-native coefficient planes [j0.q0..q15, ... j3.q0..q15].
+ * Output: four AoS-physical-q coefficient planes.  Branch0 later proved that
+ *         the frozen MA2 packed-lane ABI needs eight more routes per tile.
  *
  * This row-0 feasibility leaf implements only D2, D1, and the live C1
  * transpose.  It intentionally does not include NTT9, D8, D4, a caller, or a
@@ -29,10 +30,10 @@ ntruplus1152_exp001_gt9x16_prod3_aos_c1_tile_row0:
   vperm2i128 ymm6, ymm2, ymm3, 0x20
   vperm2i128 ymm7, ymm2, ymm3, 0x31
 
-  vpmullw ymm8, ymm5, YMMWORD PTR [rip + .Lprod3_aos_d2_qinv]
-  vpmullw ymm10, ymm7, YMMWORD PTR [rip + .Lprod3_aos_d2_qinv]
-  vpmulhw ymm9, ymm5, YMMWORD PTR [rip + .Lprod3_aos_d2_zeta]
-  vpmulhw ymm11, ymm7, YMMWORD PTR [rip + .Lprod3_aos_d2_zeta]
+  vpmullw ymm8, ymm5, YMMWORD PTR [rip + .Lprod3_aos_d2_lo_qinv]
+  vpmullw ymm10, ymm7, YMMWORD PTR [rip + .Lprod3_aos_d2_hi_qinv]
+  vpmulhw ymm9, ymm5, YMMWORD PTR [rip + .Lprod3_aos_d2_lo_zeta]
+  vpmulhw ymm11, ymm7, YMMWORD PTR [rip + .Lprod3_aos_d2_hi_zeta]
   vpmulhw ymm8, ymm8, ymm15
   vpmulhw ymm10, ymm10, ymm15
   vpsubw ymm8, ymm9, ymm8

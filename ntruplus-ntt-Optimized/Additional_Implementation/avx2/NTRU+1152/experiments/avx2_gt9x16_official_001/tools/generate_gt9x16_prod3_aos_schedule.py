@@ -41,8 +41,14 @@ def aos_tile_constants(scaled: dict) -> str:
 
     vectors = {
         ".Lprod3_aos_q": [3457] * 16,
-        ".Lprod3_aos_d2_qinv": repeated(d2["qinv_signed"]),
-        ".Lprod3_aos_d2_zeta": repeated(d2["montgomery_signed"]),
+        ".Lprod3_aos_d2_lo_qinv": ([d2["qinv_signed"][0]] * 8 +
+                                     [d2["qinv_signed"][1]] * 8),
+        ".Lprod3_aos_d2_lo_zeta": ([d2["montgomery_signed"][0]] * 8 +
+                                     [d2["montgomery_signed"][1]] * 8),
+        ".Lprod3_aos_d2_hi_qinv": ([d2["qinv_signed"][2]] * 8 +
+                                     [d2["qinv_signed"][3]] * 8),
+        ".Lprod3_aos_d2_hi_zeta": ([d2["montgomery_signed"][2]] * 8 +
+                                     [d2["montgomery_signed"][3]] * 8),
         ".Lprod3_aos_d1_lo_qinv": repeated(d1["qinv_signed"][:4]),
         ".Lprod3_aos_d1_lo_zeta": repeated(d1["montgomery_signed"][:4]),
         ".Lprod3_aos_d1_hi_qinv": repeated(d1["qinv_signed"][4:]),
@@ -138,10 +144,15 @@ def c1_network() -> tuple[list[list[tuple[int, int]]], dict]:
     d1a1, d1b1 = unpack(y2, y3, 4, False), unpack(y2, y3, 4, True)
     d1_checks = pair_check(d1a0, d1b0, 1) + pair_check(d1a1, d1b1, 1)
     post_d1 = [d1a0, d1b0, d1a1, d1b1]
-    planes = transpose_network(post_d1)
-    expected = [[(q, coefficient) for q in range(16)] for coefficient in range(4)]
+    aos_planes = transpose_network(post_d1)
+    aos_expected = [[(q, coefficient) for q in range(16)] for coefficient in range(4)]
+    if aos_planes != aos_expected:
+        raise SystemExit("C0/C1 D1-to-AoS-plane transpose network is not exact")
+    planes = [permq_d8(shuffle_words(vector)) for vector in aos_planes]
+    packed_q = list(range(0, 16, 2)) + list(range(1, 16, 2))
+    expected = [[(q, coefficient) for q in packed_q] for coefficient in range(4)]
     if planes != expected:
-        raise SystemExit("C0/C1 D1-to-MA2 transpose network is not exact")
+        raise SystemExit("C0/C1 AoS-plane to MA2 packed-lane formation is not exact")
     return planes, {
         "d2_scalar_lane_pairs_per_physical_p_row": d2_checks,
         "d1_scalar_lane_pairs_per_physical_p_row": d1_checks,
@@ -233,14 +244,14 @@ def main() -> int:
         "paper_radix3_butterflies": 48,
         "montgomery_chains": 80,
         "barrett_vectors": 72,
-        "data_loads": 144,
-        "data_stores": 144,
+        "data_loads": 72,
+        "data_stores": 72,
         "routing": 0,
-        "peak_ymm": 15,
+        "peak_ymm": 16,
         "cutpoints": {
             "input": "72 top-split AoS vectors; four q values x four terminal coefficients",
-            "after_round1": "72 AoS vectors materialized in transform backing",
-            "after_round2": "72 AoS vectors in paper physical P order",
+            "after_round1": "all nine rows remain register-resident within one branch/q-block",
+            "after_round2": "72 AoS vectors materialized once in paper physical P order",
         },
     }
     d8_d4 = {
@@ -261,16 +272,17 @@ def main() -> int:
             "vpunpckwd": 4, "vpunpckdq": 4,
             "vpunpckqdq": 4, "vpermq": 4,
         },
+        "ma2_packed_lane_formation": {"vpshufb": 4, "vpermq": 4},
         "boundary_stores": 4,
         "boundary_reloads": 4,
-        "routing_total": 24,
+        "routing_total": 32,
     }
     c1_per_tile = {
         **{key: value for key, value in c0_per_tile.items()
            if key not in ("boundary_stores", "boundary_reloads")},
         "boundary_stores": 0,
         "boundary_reloads": 0,
-        "routing_total": 24,
+        "routing_total": 32,
         "fusion": "D1 sum/difference registers feed the first vpunpckwd layer directly",
     }
     c2_per_tile = {
@@ -299,15 +311,15 @@ def main() -> int:
         "barrett_vectors": 72,
     }
     c1 = {
-        "data_loads_after_top_split": 216,
-        "data_stores_after_top_split": 216,
+        "data_loads_after_top_split": 144,
+        "data_stores_after_top_split": 144,
         "ntt9_routing": 0,
         "d8_d4_routing": 0,
         "d2_d1_to_ma2_routing": c1_per_tile["routing_total"] * tiles,
         "routing_total": c1_per_tile["routing_total"] * tiles,
         "montgomery_chains": 296,
         "barrett_vectors": 72,
-        "peak_ymm": 15,
+        "peak_ymm": 16,
         "extra_temporary_bytes": 0,
     }
 
@@ -389,9 +401,9 @@ def main() -> int:
             ],
             "all_preoperations_signed_i16": True,
             "extra_reductions": 0,
-            "ntt9_peak_ymm": 15,
-            "d8_d4_d2_d1_transpose_peak_ymm_upper_bound": 11,
-            "phasewise_peak_ymm": 15,
+            "ntt9_peak_ymm": 16,
+            "d8_d4_d2_d1_transpose_peak_ymm_upper_bound": 12,
+            "phasewise_peak_ymm": 16,
             "spill_target": 0,
         },
         "apples_to_apples_ledger": {

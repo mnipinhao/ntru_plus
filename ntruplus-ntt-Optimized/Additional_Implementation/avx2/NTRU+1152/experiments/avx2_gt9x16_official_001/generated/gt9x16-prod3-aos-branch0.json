@@ -1,0 +1,353 @@
+{
+  "authorization": {
+    "benchmark": false,
+    "branch0_asm": true,
+    "native_kem": false,
+    "second_branch": false
+  },
+  "checkpoint": "GT9X16-PROD3-AOS-BRANCH0",
+  "corrected_static_assumption": {
+    "exact_MA2_routes_per_tile": 32,
+    "prior_C1_routes_per_tile": 24,
+    "reason": "the prior symbolic transpose stopped at AoS physical-q order; the frozen MA2 packed-lane map requires an even/odd lane formation"
+  },
+  "frozen": {
+    "branch": 0,
+    "ntt16": "adjusted D8/D4 plus selected C1 D2/D1 transpose",
+    "ntt9": "paper-R2 two-layer radix-3",
+    "q": 3457,
+    "scale": 4,
+    "top_split_arithmetic_changed": false,
+    "twist": "T0"
+  },
+  "movement": {
+    "backing_bytes": 1152,
+    "data_loads": 72,
+    "data_stores": 72,
+    "extra_array_bytes": 0,
+    "final_stores": 36,
+    "intermediate_stores": 36,
+    "source_loads": 36,
+    "stage_boundary_reloads": 36
+  },
+  "passes": {
+    "A_ntt9": {
+      "barrett_vectors": 36,
+      "materialization_stores": 36,
+      "ntt9_montgomery_chains": 40,
+      "q_blocks": 4,
+      "routing": 0,
+      "source_loads": 36,
+      "twist_montgomery_chains": 36
+    },
+    "B_ntt16": {
+      "boundary_reloads": 36,
+      "final_stores": 36,
+      "montgomery_chains": {
+        "D1": 18,
+        "D2": 18,
+        "D4": 18,
+        "D8": 18
+      },
+      "physical_p_rows": 9,
+      "routing": 288,
+      "routing_breakdown": {
+        "D1": 36,
+        "D2": 36,
+        "MA2_packed_lane_formation": 72,
+        "transpose": 144
+      }
+    }
+  },
+  "range_proof": {
+    "after_NTT9_R1_reduction": [
+      -13128,
+      13128
+    ],
+    "after_NTT9_R2": [
+      -13128,
+      13128
+    ],
+    "after_T0": [
+      -1795,
+      1780
+    ],
+    "all_fit_signed16": true,
+    "new_reductions": 0,
+    "ntt16_rows": [
+      {
+        "final": [
+          -20751,
+          20753
+        ],
+        "frequency_p": 0,
+        "ntt16_input": [
+          -13128,
+          13128
+        ],
+        "physical_row": 0,
+        "stages": {
+          "distance1": [
+            -20751,
+            20753
+          ],
+          "distance2": [
+            -18699,
+            18699
+          ],
+          "distance4": [
+            -16691,
+            16691
+          ],
+          "distance8": [
+            -14883,
+            14883
+          ]
+        }
+      },
+      {
+        "final": [
+          -18568,
+          18568
+        ],
+        "frequency_p": 3,
+        "ntt16_input": [
+          -10574,
+          10574
+        ],
+        "physical_row": 1,
+        "stages": {
+          "distance1": [
+            -18568,
+            18568
+          ],
+          "distance2": [
+            -16418,
+            16418
+          ],
+          "distance4": [
+            -14450,
+            14450
+          ],
+          "distance8": [
+            -12437,
+            12437
+          ]
+        }
+      },
+      {
+        "final": [
+          -18537,
+          18537
+        ],
+        "frequency_p": 6,
+        "ntt16_input": [
+          -10574,
+          10574
+        ],
+        "physical_row": 2,
+        "stages": {
+          "distance1": [
+            -18537,
+            18537
+          ],
+          "distance2": [
+            -16571,
+            16571
+          ],
+          "distance4": [
+            -14469,
+            14469
+          ],
+          "distance8": [
+            -12458,
+            12458
+          ]
+        }
+      },
+      {
+        "final": [
+          -18843,
+          18843
+        ],
+        "frequency_p": 1,
+        "ntt16_input": [
+          -11016,
+          11016
+        ],
+        "physical_row": 3,
+        "stages": {
+          "distance1": [
+            -18843,
+            18843
+          ],
+          "distance2": [
+            -16715,
+            16715
+          ],
+          "distance4": [
+            -14825,
+            14825
+          ],
+          "distance8": [
+            -12818,
+            12818
+          ]
+        }
+      },
+      {
+        "final": [
+          -17043,
+          17043
+        ],
+        "frequency_p": 4,
+        "ntt16_input": [
+          -9336,
+          9336
+        ],
+        "physical_row": 4,
+        "stages": {
+          "distance1": [
+            -17043,
+            17043
+          ],
+          "distance2": [
+            -14961,
+            14961
+          ],
+          "distance4": [
+            -13091,
+            13091
+          ],
+          "distance8": [
+            -11156,
+            11156
+          ]
+        }
+      },
+      {
+        "final": [
+          -17001,
+          17001
+        ],
+        "frequency_p": 7,
+        "ntt16_input": [
+          -9336,
+          9336
+        ],
+        "physical_row": 5,
+        "stages": {
+          "distance1": [
+            -17001,
+            17001
+          ],
+          "distance2": [
+            -15059,
+            15059
+          ],
+          "distance4": [
+            -13007,
+            13007
+          ],
+          "distance8": [
+            -11095,
+            11095
+          ]
+        }
+      },
+      {
+        "final": [
+          -18619,
+          18619
+        ],
+        "frequency_p": 8,
+        "ntt16_input": [
+          -11016,
+          11016
+        ],
+        "physical_row": 6,
+        "stages": {
+          "distance1": [
+            -18619,
+            18619
+          ],
+          "distance2": [
+            -16710,
+            16710
+          ],
+          "distance4": [
+            -14708,
+            14708
+          ],
+          "distance8": [
+            -12850,
+            12850
+          ]
+        }
+      },
+      {
+        "final": [
+          -17208,
+          17208
+        ],
+        "frequency_p": 2,
+        "ntt16_input": [
+          -9336,
+          9336
+        ],
+        "physical_row": 7,
+        "stages": {
+          "distance1": [
+            -17208,
+            17208
+          ],
+          "distance2": [
+            -15121,
+            15121
+          ],
+          "distance4": [
+            -13083,
+            13083
+          ],
+          "distance8": [
+            -11238,
+            11238
+          ]
+        }
+      },
+      {
+        "final": [
+          -17166,
+          17166
+        ],
+        "frequency_p": 5,
+        "ntt16_input": [
+          -9336,
+          9336
+        ],
+        "physical_row": 8,
+        "stages": {
+          "distance1": [
+            -17166,
+            17166
+          ],
+          "distance2": [
+            -15154,
+            15154
+          ],
+          "distance4": [
+            -13113,
+            13113
+          ],
+          "distance8": [
+            -11263,
+            11263
+          ]
+        }
+      }
+    ],
+    "top_split_domain": "KEM-small coefficient input [-3,4]"
+  },
+  "schema": "gt9x16-prod3-aos-branch0/v1",
+  "scope": "one 1152-byte branch in place from top-split AoS through T0/R2/D8/D4/C1 to MA2 planes"
+}

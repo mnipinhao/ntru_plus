@@ -8,7 +8,7 @@ one physical-p=0 D4-output AoS tile
 -> D2
 -> D1
 -> live hierarchical transpose
--> four MA2 coefficient planes
+-> four AoS-physical-q coefficient planes
 ```
 
 It does not implement NTT9, twist, D8, D4, a complete branch, a complete
@@ -22,13 +22,12 @@ The previous MAP and SCHED headlines used different scopes:
 | --- | ---: | ---: | ---: | ---: |
 | MAP known boundary count | 576 | excluded/open | 72 | 648 |
 | linked G0/P2-B control | 576 | 288 | 72 | 936 |
-| persistent-AoS C1 | 0 | 432, including D2/D1-to-plane | 0 | 432 |
+| persistent-AoS exact MA2 | 0 | 432 to AoS planes | 144 packed-lane routes | 576 |
 
-Therefore `936 - 432 = 504` is the full linked routing difference. The
-boundary-only view is `648 - 432 = 216`, but it excludes the control's internal
-radix-2 routing and must not be used as the full-path headline. The generator
-now emits this taxonomy explicitly and the linked audit refuses a changed
-`648 + 288 = 936` identity.
+Branch0 later found that this tile stopped one representation short of the
+frozen MA2 packed-lane ABI. Exact MA2 output needs another eight routes per
+tile, so the corrected full-forward comparison is `936 - 576 = 360`. The
+linked audit still refuses a changed `648 + 288 = 936` control identity.
 
 ## Tile ABI
 
@@ -38,10 +37,10 @@ The input is 64 signed 16-bit representatives in D4-output AoS order:
 [q0.j0, q0.j1, q0.j2, q0.j3, ... q15.j3]
 ```
 
-The output is the exact MA2-native plane order:
+The output is the AoS physical-q plane order:
 
 ```text
-[j0.q0..q15, j1.q0..q15, j2.q0..q15, j3.q0..q15]
+[j0.physical_q0..q15, ..., j3.physical_q0..q15]
 ```
 
 The arithmetic is the frozen physical-row-zero adjusted D2 and D1 Montgomery
@@ -71,7 +70,7 @@ There is no `vpshufb`, call, stack frame, stack reference, vector spill, or
 registers, leaving seven architectural registers free. This closes the
 symbolic schedule's register-pressure concern for this tile.
 
-The public leaf entry and all seven YMM constant vectors use `.p2align 5`.
+The public leaf entry and all nine YMM constant vectors use `.p2align 5`.
 The linked object reports 32-byte `.text` and `.rodata` alignment and entry
 address modulo 32 equal to zero. No bare `.align` is present.
 
@@ -92,9 +91,9 @@ applicable proof; no repair or reduction was inserted.
 
 ## Decision
 
-The C1 tile is machine-feasible: the exact 24-route network lowers to a clean,
-aligned, zero-spill AVX2 leaf. This does not qualify the full producer and it
-does not authorize timing the tile as a headline.
+The C1 arithmetic tile is machine-feasible: its 24-route AoS-plane network
+lowers to a clean, aligned, zero-spill AVX2 leaf. Branch0 supersedes the old
+claim that these four vectors already were the exact MA2 packed-lane ABI.
 
 The next review checkpoint is a one-branch realization:
 

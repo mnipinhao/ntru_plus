@@ -47,7 +47,7 @@ static void reference(int16_t output[64], const int16_t input[64]) {
       for (coefficient = 0; coefficient < 4; ++coefficient) {
         int left = block + q;
         int right = left + 2;
-        int factor = 2 * ((block & 7) / 4) + q;
+        int factor = block / 4;
         int16_t a = state[left][coefficient];
         int16_t t = montgomery_reduce(
             (int32_t)state[right][coefficient] * d2_zeta[factor]);

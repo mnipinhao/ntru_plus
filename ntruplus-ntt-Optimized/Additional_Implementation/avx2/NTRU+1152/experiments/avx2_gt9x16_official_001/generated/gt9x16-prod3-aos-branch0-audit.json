@@ -1,0 +1,91 @@
+{
+  "alignment": {
+    "caller_pointer_alignment_required": false,
+    "data_memory_opcode": "vmovdqu",
+    "function_entry_bytes": 32,
+    "generated_constant_vectors": 199,
+    "rodata_section_alignment_bytes": 32
+  },
+  "authorization": {
+    "benchmark": false,
+    "branch0_machine_feasible": true,
+    "native_kem": false,
+    "second_branch": false
+  },
+  "checkpoint": "GT9X16-PROD3-AOS-BRANCH0",
+  "corrected_static_assumption": {
+    "exact_MA2_routes_per_tile": 32,
+    "prior_C1_routes_per_tile": 24,
+    "reason": "the prior symbolic transpose stopped at AoS physical-q order; the frozen MA2 packed-lane map requires an even/odd lane formation"
+  },
+  "linked": {
+    "arithmetic": {
+      "vpmulhrsw": 36,
+      "vpmulhw": 296,
+      "vpmullw": 184
+    },
+    "barrett_vectors": 36,
+    "calls": 0,
+    "conditional_branches": 0,
+    "data_loads": 72,
+    "data_stores": 72,
+    "frame_instructions": 0,
+    "montgomery_chains": 148,
+    "routing": {
+      "vperm2i128": 36,
+      "vpermq": 72,
+      "vpshufb": 36,
+      "vpunpckhdq": 18,
+      "vpunpckhqdq": 36,
+      "vpunpckhwd": 18,
+      "vpunpckldq": 18,
+      "vpunpcklqdq": 36,
+      "vpunpcklwd": 18
+    },
+    "routing_total": 288,
+    "stack_references": 0,
+    "text_bytes": 8259,
+    "vector_spills": 0,
+    "vzeroupper": 0
+  },
+  "overwrite": {
+    "in_place_safe": true,
+    "pass_A": "for each q-block all nine source rows load before any of its nine destinations store",
+    "pass_B": "for each physical-p row all four AoS vectors load before the four MA2 planes overwrite them"
+  },
+  "registers": {
+    "architectural_ymm": 16,
+    "linked_ymm_registers_used": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "peak_live_ymm": 16,
+    "phase_live_upper_bounds": {
+      "D8_to_MA2": 12,
+      "T0_and_NTT9": 16
+    },
+    "spill_free": true
+  },
+  "schema": "gt9x16-prod3-aos-branch0-audit/v1",
+  "sha256": {
+    "constants": "b0248f0fe61b16dcd8ee5d12609f8d6a0fb827bf6c02ea068485176262eaaff9",
+    "object": "7a9f5f6e3de28c3db93baf31854052851329a2b993614049f27e05548b1f78de",
+    "proof": "b72eb4fca81da31adc506572b7cf76aff7c208e4b60c683470010e8959daadfd",
+    "source": "62209a09689d5ce8fc91e8f5821927138742050496a5e96b1c3a21c887b0b2a4"
+  },
+  "symbol": "ntruplus1152_exp001_gt9x16_prod3_aos_branch0"
+}

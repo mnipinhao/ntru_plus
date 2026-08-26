@@ -2,22 +2,22 @@
   "apples_to_apples_ledger": {
     "AOS_C1": {
       "barrett_vectors": 72,
-      "d2_d1_to_ma2_routing": 432,
+      "d2_d1_to_ma2_routing": 576,
       "d8_d4_routing": 0,
-      "data_loads_after_top_split": 216,
-      "data_stores_after_top_split": 216,
+      "data_loads_after_top_split": 144,
+      "data_stores_after_top_split": 144,
       "extra_temporary_bytes": 0,
       "montgomery_chains": 296,
       "ntt9_routing": 0,
-      "peak_ymm": 15,
-      "routing_total": 432
+      "peak_ymm": 16,
+      "routing_total": 576
     },
     "AOS_C1_minus_G0": {
       "barrett_vectors": 0,
-      "data_loads_after_top_split": -72,
-      "data_stores_after_top_split": 0,
+      "data_loads_after_top_split": -144,
+      "data_stores_after_top_split": -72,
       "montgomery_chains": 0,
-      "routing_total": -504
+      "routing_total": -360
     },
     "G0_P2B": {
       "adjusted_ntt16_routing": 288,
@@ -103,15 +103,15 @@
   "parameter": 1152,
   "range_and_register_proof": {
     "all_preoperations_signed_i16": true,
-    "d8_d4_d2_d1_transpose_peak_ymm_upper_bound": 11,
+    "d8_d4_d2_d1_transpose_peak_ymm_upper_bound": 12,
     "extra_reductions": 0,
     "global_final_i16": [
       -20751,
       20753
     ],
     "method": "same arithmetic DAG and representatives; AoS only co-locates four independent terminal coefficients",
-    "ntt9_peak_ymm": 15,
-    "phasewise_peak_ymm": 15,
+    "ntt9_peak_ymm": 16,
+    "phasewise_peak_ymm": 16,
     "physical_row_cutpoints": [
       {
         "distance1": [
@@ -344,15 +344,15 @@
   "step_A_aos_ntt9": {
     "barrett_vectors": 72,
     "cutpoints": {
-      "after_round1": "72 AoS vectors materialized in transform backing",
-      "after_round2": "72 AoS vectors in paper physical P order",
+      "after_round1": "all nine rows remain register-resident within one branch/q-block",
+      "after_round2": "72 AoS vectors materialized once in paper physical P order",
       "input": "72 top-split AoS vectors; four q values x four terminal coefficients"
     },
-    "data_loads": 144,
-    "data_stores": 144,
+    "data_loads": 72,
+    "data_stores": 72,
     "montgomery_chains": 80,
     "paper_radix3_butterflies": 48,
-    "peak_ymm": 15,
+    "peak_ymm": 16,
     "routing": 0,
     "vector_streams": 8
   },
@@ -370,11 +370,15 @@
     "C0_materialized_post_d1": {
       "full_forward_boundary_reloads": 72,
       "full_forward_boundary_stores": 72,
-      "full_forward_routing": 432,
+      "full_forward_routing": 576,
       "per_tile": {
         "boundary_reloads": 4,
         "boundary_stores": 4,
-        "routing_total": 24,
+        "ma2_packed_lane_formation": {
+          "vpermq": 4,
+          "vpshufb": 4
+        },
+        "routing_total": 32,
         "standalone_transpose": {
           "vpermq": 4,
           "vpunpckdq": 4,
@@ -389,12 +393,16 @@
     "C1_live_d1_to_transpose": {
       "full_forward_boundary_reloads": 0,
       "full_forward_boundary_stores": 0,
-      "full_forward_routing": 432,
+      "full_forward_routing": 576,
       "per_tile": {
         "boundary_reloads": 0,
         "boundary_stores": 0,
         "fusion": "D1 sum/difference registers feed the first vpunpckwd layer directly",
-        "routing_total": 24,
+        "ma2_packed_lane_formation": {
+          "vpermq": 4,
+          "vpshufb": 4
+        },
+        "routing_total": 32,
         "standalone_transpose": {
           "vpermq": 4,
           "vpunpckdq": 4,

@@ -124,14 +124,14 @@ def main() -> int:
     constants_text = args.constants.read_text(encoding="utf-8")
     if ".align" in source_text or ".align" in constants_text:
         raise SystemExit("ambiguous bare .align directive found")
-    if source_text.count(".p2align 5") < 1 or constants_text.count(".p2align 5") != 7:
+    if source_text.count(".p2align 5") < 1 or constants_text.count(".p2align 5") != 9:
         raise SystemExit("function/constant .p2align 5 contract changed")
 
     report = {
         "schema": "gt9x16-prod3-aos-c1-tile-audit/v1",
         "checkpoint": "GT9X16-PROD3-AOS-ASM0",
         "symbol": SYMBOL,
-        "scope": "one physical-p=0 D4-output AoS tile through D2/D1 to four MA2 planes",
+        "scope": "one physical-p=0 D4-output AoS tile through D2/D1 to four AoS-physical-q coefficient planes; not the final MA2 packed-lane ABI",
         "routing_reconciliation": reconciliation,
         "linked_tile": {
             "input_loads": input_loads,
@@ -166,7 +166,7 @@ def main() -> int:
         "alignment": {
             "function_entry_bytes": 32,
             "rodata_section_alignment_bytes": int(rodata_match.group(1)),
-            "constant_vectors": 7,
+            "constant_vectors": 9,
             "constant_vector_bytes": 32,
             "caller_pointer_alignment_required": False,
             "data_memory_opcode": "vmovdqu",

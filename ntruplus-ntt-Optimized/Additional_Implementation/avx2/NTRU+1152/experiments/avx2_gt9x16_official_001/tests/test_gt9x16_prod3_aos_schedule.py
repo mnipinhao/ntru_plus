@@ -24,9 +24,9 @@ assert step_b["routing"] == 0
 step_c = data["step_C_networks"]
 assert step_c["lane_coverage_proof"] == {
     "distance1": 576, "distance2": 576, "ma2_cells": 1152}
-assert step_c["C0_materialized_post_d1"]["full_forward_routing"] == 432
+assert step_c["C0_materialized_post_d1"]["full_forward_routing"] == 576
 assert step_c["C0_materialized_post_d1"]["full_forward_boundary_stores"] == 72
-assert step_c["C1_live_d1_to_transpose"]["full_forward_routing"] == 432
+assert step_c["C1_live_d1_to_transpose"]["full_forward_routing"] == 576
 assert step_c["C1_live_d1_to_transpose"]["full_forward_boundary_stores"] == 0
 assert step_c["C1_live_d1_to_transpose"]["selected"] is True
 assert step_c["C2_early_plane_orientation"]["full_forward_routing"] == 792
@@ -47,13 +47,13 @@ assert ledger["routing_taxonomy_reconciliation"] == {
     "map_known_total": 648,
 }
 assert ledger["G0_P2B"]["routing_total"] == 936
-assert ledger["AOS_C1"]["routing_total"] == 432
+assert ledger["AOS_C1"]["routing_total"] == 576
 assert ledger["AOS_C1_minus_G0"] == {
     "barrett_vectors": 0,
-    "data_loads_after_top_split": -72,
-    "data_stores_after_top_split": 0,
+    "data_loads_after_top_split": -144,
+    "data_stores_after_top_split": -72,
     "montgomery_chains": 0,
-    "routing_total": -504,
+    "routing_total": -360,
 }
 
 decision = data["decision"]

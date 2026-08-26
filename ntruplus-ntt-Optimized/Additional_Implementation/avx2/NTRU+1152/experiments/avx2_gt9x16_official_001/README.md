@@ -482,3 +482,15 @@ but current P1-H/P2-B is not advanced to native KEM against the earlier
 approximately 1,312-cycle encapsulation deficit. The next gate is only an
 Official-like faster-producer-to-MA2 mapping study (`F0-PROD3-MA2-MAP`), not
 permutation micro-optimization. See `CHECKPOINT-F0-PROD2-MA2-CONSUMER.md`.
+
+Checkpoint GT9X16-PROD3-AOS-BRANCH0 implements one complete in-place branch
+from the unchanged top-split AoS state to the exact P2-B/MA2 plane ABI. The
+1,152-byte raw differential passes the complete impulse, random-small,
+unaligned in-place, and canary suite. The linked leaf has 72 data loads, 72
+stores, 148 Montgomery chains, 36 Barrett vectors, zero spill, and a 16-YMM
+peak. It also corrects the earlier C1 static ledger: 24 routes reach
+AoS-physical-q coefficient planes, while exact MA2 packed lanes require eight
+additional routes per tile. The real count is therefore 288 per branch and
+576 per full forward, leaving a static 360-route credit versus G0/P2-B's 936.
+No benchmark was run. Only the second-branch/full-producer correctness gate is
+next. See `CHECKPOINT-GT9X16-PROD3-AOS-BRANCH0.md`.

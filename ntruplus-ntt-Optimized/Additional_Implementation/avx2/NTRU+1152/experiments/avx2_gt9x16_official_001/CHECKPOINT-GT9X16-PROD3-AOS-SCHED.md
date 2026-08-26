@@ -14,9 +14,9 @@ current G0/P2-B physical realization, its complete post-top-split ledger is:
 
 | dynamic class / forward | G0/P2-B | AoS C1 | delta |
 | --- | ---: | ---: | ---: |
-| data loads | 288 | 216 | -72 |
-| data stores | 216 | 216 | 0 |
-| routing instructions | 936 | 432 | -504 |
+| data loads | 288 | 144 | -144 |
+| data stores | 216 | 144 | -72 |
+| routing instructions | 936 | 576 | -360 |
 | Montgomery chains | 296 | 296 | 0 |
 | Barrett vectors | 72 | 72 | 0 |
 
@@ -27,9 +27,9 @@ The `936` control total reconciles the earlier MAP checkpoint's `648` known
 boundary routes. MAP counted `576` early-formation routes plus `72` P2-B
 epilogue routes and deliberately left adjusted-NTT16 routing as the open
 schedule variable. The linked control adds those `288` internal D8/D4/D2/D1
-routes. Because C1's `432` includes its own D2/D1-to-plane routes, `936` versus
-`432` is the apples-to-apples full-routing comparison; `648` versus `432` is
-only the narrower boundary-only view (`-216`).
+routes. The Branch0 correction adds the exact MA2 packed-lane formation, so
+`936` versus `576` is the apples-to-apples full-routing comparison. The old
+`432` figure stopped at AoS-physical-q coefficient planes.
 
 ## Step A: complete AoS NTT9
 
@@ -49,13 +49,13 @@ Across two branches and four q blocks:
 | radix-3 vector butterflies | 48 |
 | Montgomery chains | 80 |
 | Barrett vectors | 72 |
-| data loads / stores | 144 / 144 |
+| data loads / stores | 72 / 72 |
 | routing | 0 |
-| peak YMM | 15 |
+| peak YMM | 16 |
 
-The existing complete-NTT9 materialization remains: round 1 writes 72 AoS
-vectors, round 2 reloads and overwrites them. Cross-axis wavefront scheduling
-is explicitly deferred.
+The complete-NTT9 materialization remains, but the branch lowering keeps all
+nine rows resident for both radix-3 layers and writes only the round-2 result.
+Cross-axis wavefront scheduling is explicitly deferred.
 
 ## Step B: AoS D8 and D4
 
@@ -88,14 +88,17 @@ transpose:
   4 x vpunpck{l,h}dq
   4 x vpunpck{l,h}qdq
   4 x vpermq
+MA2 packed-lane formation:
+  4 x vpshufb
+  4 x vpermq
 ```
 
-The route total is 24 per tile, or 432 per forward, plus 72 stores and 72
+The route total is 32 per tile, or 576 per forward, plus 72 stores and 72
 reloads at the artificial D1 boundary.
 
 ### C1: live D1 into hierarchical transpose
 
-C1 has the same arithmetic and 24 routes per tile, but the D1 sum/difference
+C1 has the same arithmetic and 32 exact-MA2 routes per tile, but the D1 sum/difference
 registers directly feed the first `vpunpckwd` layer. It removes all 144 C0
 boundary memory operations and needs no extra temporary array.
 
@@ -147,9 +150,9 @@ Merely moving a multiply into the radix routine is not a chain reduction.
 
 ## Register and storage plan
 
-- NTT9 reuses the proved peak of 15 YMM registers.
-- AoS D8/D4/D2/D1 plus the C1 transpose has an explicit upper bound of 11 YMM.
-- Phasewise peak is therefore 15 YMM, with a zero-spill target.
+- The linked register-resident NTT9 uses all 16 YMM registers without spill.
+- AoS D8/D4/D2/D1 plus exact MA2 formation has an upper bound of 12 YMM.
+- Phasewise peak is therefore 16 YMM, with zero linked spill.
 - The 2,304-byte top-split array and existing 2,304-byte output backing are
   sufficient; extra temporary storage is zero.
 
