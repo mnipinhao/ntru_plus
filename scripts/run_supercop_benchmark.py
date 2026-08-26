@@ -235,7 +235,8 @@ def main() -> int:
                                            "derived-f0-ma3", "derived-f0-ma2-chunk",
                                            "derived-f0-ma2", "derived-f0-prod1",
                                            "derived-f0-prod2",
-                                           "derived-f0-prod2-consumer"),
+                                           "derived-f0-prod2-consumer",
+                                           "derived-gt9x16-prod3-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -249,7 +250,8 @@ def main() -> int:
                      "derived-f0-ma1", "derived-f0-ma1-ma0",
                      "derived-f0-ma3", "derived-f0-ma2-chunk",
                      "derived-f0-ma2", "derived-f0-prod1",
-                     "derived-f0-prod2", "derived-f0-prod2-consumer") and args.parameter != "1152":
+                     "derived-f0-prod2", "derived-f0-prod2-consumer",
+                     "derived-gt9x16-prod3-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -302,7 +304,8 @@ def main() -> int:
                          "derived-f0-ma1-ma0", "derived-f0-ma3",
                          "derived-f0-ma2-chunk", "derived-f0-ma2",
                          "derived-f0-prod1", "derived-f0-prod2",
-                         "derived-f0-prod2-consumer"):
+                         "derived-f0-prod2-consumer",
+                         "derived-gt9x16-prod3-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -316,6 +319,7 @@ def main() -> int:
                 "derived-f0-prod1": "f0_prod1_measure.c",
                 "derived-f0-prod2": "f0_prod2_measure.c",
                 "derived-f0-prod2-consumer": "f0_prod2_consumer_measure.c",
+                "derived-gt9x16-prod3-price": "gt9x16_prod3_aos_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -426,6 +430,14 @@ def main() -> int:
             "f0_prod2_consumer_candidate_first_cycles",
             "f0_prod2_consumer_control_second_cycles",
         )
+    elif args.mode == "derived-gt9x16-prod3-price":
+        required = tuple(
+            f"gt9x16_prod3_price_{width}_{variant}_{position}_cycles"
+            for width in ("1x", "2x")
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1020,6 +1032,100 @@ def main() -> int:
             "ntruplus1152_exp001_f0_forward_for_ma2_p2b",
             "ntruplus1152_exp001_f0_generic_to_ma2_planes", native_ma2,
         ))
+    if args.mode == "derived-gt9x16-prod3-price":
+        prefix = "gt9x16_prod3_price"
+        combined = {
+            f"{prefix}_{width}_{variant}_cycles": (
+                pooled[f"{prefix}_{width}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{width}_{variant}_second_cycles"])
+            for width in ("1x", "2x")
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            entry: dict[str, object] = {"launch": launch_number}
+            for width in ("1x", "2x"):
+                control = stabilized_quartiles(
+                    observed[f"{prefix}_{width}_control_first_cycles"] +
+                    observed[f"{prefix}_{width}_control_second_cycles"])[1]
+                candidate = stabilized_quartiles(
+                    observed[f"{prefix}_{width}_candidate_first_cycles"] +
+                    observed[f"{prefix}_{width}_candidate_second_cycles"])[1]
+                entry.update({
+                    f"{width}_control_stq2": control,
+                    f"{width}_candidate_stq2": candidate,
+                    f"{width}_candidate_minus_control_cycles": candidate - control,
+                    f"{width}_candidate_over_control_ratio": candidate / control,
+                })
+            paired_launches.append(entry)
+        one_deltas = [float(entry["1x_candidate_minus_control_cycles"])
+                      for entry in paired_launches]
+        two_deltas = [float(entry["2x_candidate_minus_control_cycles"])
+                      for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "candidate_1x_faster_launches": sum(x < 0 for x in one_deltas),
+            "candidate_1x_slower_launches": sum(x > 0 for x in one_deltas),
+            "candidate_1x_tied_launches": sum(x == 0 for x in one_deltas),
+            "median_1x_candidate_minus_control_cycles": statistics.median(one_deltas),
+            "candidate_2x_faster_launches": sum(x < 0 for x in two_deltas),
+            "candidate_2x_slower_launches": sum(x > 0 for x in two_deltas),
+            "candidate_2x_tied_launches": sum(x == 0 for x in two_deltas),
+            "median_2x_candidate_minus_control_cycles": statistics.median(two_deltas),
+        }
+        summary["decision"] = {
+            "headline": "2x-post-top-split-to-exact-MA2-boundary",
+            "ma2_arithmetic_executed": False,
+            "native_kem_result": False,
+        }
+        price_symbol = "ntruplus1152_exp001_gt9x16_prod3_aos_full_price"
+        forbidden_symbols = (
+            "ntruplus1152_exp001_gt9x16_prod3_aos_branch0",
+            "ntruplus1152_exp001_gt9x16_prod3_aos_full",
+        )
+        relevant_symbols = (
+            "ntruplus1152_exp001_f0_prod2_ma2_p2b_pair",
+            "ntruplus1152_exp001_gt9x16_prod3_price_control_1x",
+            "ntruplus1152_exp001_gt9x16_prod3_price_candidate_1x",
+            "ntruplus1152_exp001_gt9x16_prod3_price_control_2x",
+            "ntruplus1152_exp001_gt9x16_prod3_price_candidate_2x",
+            price_symbol,
+            *forbidden_symbols,
+        )
+        layout = elf_layout(saved_elf, relevant_symbols)
+        retained_forbidden = [name for name in forbidden_symbols
+                              if name in layout["symbols"]]
+        if retained_forbidden:
+            raise SystemExit(
+                "PRICE ELF retained duplicate PROD3 symbols: " +
+                ", ".join(retained_forbidden))
+        price_layout = layout["symbols"].get(price_symbol)
+        if price_layout is None or price_layout["size"] != 16569:
+            raise SystemExit(
+                f"unexpected candidate-only PROD3 size: {price_layout}")
+        summary["elf_layout"] = layout
+        summary["linked_retention_gate"] = {
+            "candidate_only_symbol": price_symbol,
+            "candidate_only_text_bytes": price_layout["size"],
+            "forbidden_duplicate_symbols": list(forbidden_symbols),
+            "forbidden_duplicate_symbols_retained": retained_forbidden,
+            "passed": True,
+        }
+        audit_paths = list(REPO_ROOT.glob(
+            "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/"
+            "experiments/*/generated/gt9x16-prod3-aos-full-audit.json"))
+        if len(audit_paths) != 1:
+            raise SystemExit(f"expected one PROD3 full audit, found {len(audit_paths)}")
+        summary["linked_movement_audit"] = json.loads(
+            audit_paths[0].read_text(encoding="utf-8"))
+        shutil.copy2(audit_paths[0], args.result_dir / audit_paths[0].name)
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1038,6 +1144,7 @@ def main() -> int:
                             else "supercop-derived-poly-f0-prod1" if args.mode == "derived-f0-prod1"
                             else "supercop-derived-poly-f0-prod2-boundary" if args.mode == "derived-f0-prod2"
                             else "supercop-derived-poly-f0-prod2-consumer" if args.mode == "derived-f0-prod2-consumer"
+                            else "supercop-derived-gt9x16-prod3-price" if args.mode == "derived-gt9x16-prod3-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1076,7 +1183,9 @@ def main() -> int:
               "derived-f0-ma2": "f0_ma2_measure.c",
               "derived-f0-prod1": "f0_prod1_measure.c",
               "derived-f0-prod2": "f0_prod2_measure.c",
-              "derived-f0-prod2-consumer": "f0_prod2_consumer_measure.c"}[args.mode])
+              "derived-f0-prod2-consumer": "f0_prod2_consumer_measure.c",
+              "derived-gt9x16-prod3-price":
+                  "gt9x16_prod3_aos_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

@@ -182,6 +182,7 @@
  * In-place 1152-byte branch-0 leaf.  The caller supplies the existing
  * top-split branch AoS.  No stronger pointer alignment is required.
  */
+#ifndef PROD3_FULL_ONLY
 .p2align 5
 .globl ntruplus1152_exp001_gt9x16_prod3_aos_branch0
 .type ntruplus1152_exp001_gt9x16_prod3_aos_branch0,@function
@@ -202,6 +203,7 @@ ntruplus1152_exp001_gt9x16_prod3_aos_branch0:
   PROD3_PASS_B 0,8
   ret
 .size ntruplus1152_exp001_gt9x16_prod3_aos_branch0, .-ntruplus1152_exp001_gt9x16_prod3_aos_branch0
+#endif
 
 /*
  * In-place 2304-byte full leaf.  This deliberately repeats the proven

@@ -505,3 +505,15 @@ vectors. The tradeoff is 78 more constant-memory operands and 8,826 more
 symbol text bytes. No benchmark was run; only SUPERCOP-derived serious
 producer-boundary pricing is authorized next. See
 `CHECKPOINT-GT9X16-PROD3-AOS-FULL.md`.
+
+Checkpoint GT9X16-PROD3-AOS-PRICE prices the complete coefficient-to-exact-MA2
+boundary with the pinned SUPERCOP compiler/build/timing machinery. A
+nine-process ASLR-on selection chooses reversed archive placement by absolute
+2x candidate time; the serious headline then measures persistent AoS at
+2946.5231 versus G0/P2-B at 3377.8935 pooled StQ2. The candidate wins all nine
+launches with a paired median delta of -429.1250 cycles and bootstrap 95% CI
+[-432.1458,-425.1875]. Normal/reversed and ASLR on/off controls all preserve
+the direction. This validates the producer architecture at the materialized
+boundary, but remains SUPERCOP-derived rather than native-KEM evidence. Only
+the unchanged-MA2 consumer island is authorized next. See
+`CHECKPOINT-GT9X16-PROD3-AOS-PRICE.md`.

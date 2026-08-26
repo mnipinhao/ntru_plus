@@ -133,6 +133,7 @@ GT9X16_PROD3_AOS_FULL_TEST_SOURCES := src/top_split_adapter.c $(F0_PROD2_ASM) $(
  supercop-f0-prod1-short supercop-f0-prod1-serious \
  supercop-f0-prod2-short supercop-f0-prod2-serious \
  supercop-f0-prod2-consumer-short supercop-f0-prod2-consumer-serious \
+ supercop-gt9x16-prod3-price \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -872,6 +873,11 @@ supercop-f0-prod2-consumer-short:
 supercop-f0-prod2-consumer-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod2-consumer --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-gt9x16-prod3-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-price-normal} --reversed-implementation $${PROD3_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --selection-launches 9 --output $(RESULTS)/$@
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"
