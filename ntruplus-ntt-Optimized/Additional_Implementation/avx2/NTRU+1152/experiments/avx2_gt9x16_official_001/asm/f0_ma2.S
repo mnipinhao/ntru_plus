@@ -2757,6 +2757,1822 @@ ntruplus1152_exp001_f0_ma2_full:
   ret
 .size ntruplus1152_exp001_f0_ma2_full, .-ntruplus1152_exp001_f0_ma2_full
 
+.globl ntruplus1152_exp001_f0_ma2_native_full
+.type ntruplus1152_exp001_f0_ma2_native_full,@function
+.p2align 5
+ntruplus1152_exp001_f0_ma2_native_full:
+  /* Complete MA2 native-input serializer chunk 0. */
+  /* MA2 streaming tile b0p4: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,0,128,0x31,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,32,160,0x31,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,64,192,0x31,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,96,224,0x31,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 512]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 544]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 576]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 608]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 512]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p4,.Llambda_b0p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 544]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p4,.Llambda_b0p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 576]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p4,.Llambda_b0p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 608]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b0p7: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,0,128,0x20,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,32,160,0x20,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,64,192,0x20,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,96,224,0x20,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 640]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 672]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 704]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 736]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 640]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p7,.Llambda_b0p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 672]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p7,.Llambda_b0p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 704]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p7,.Llambda_b0p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 736]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_8]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_9]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_9]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_8]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_8]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_9]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_9]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_8]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_8]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_9]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_9]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_8]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_8]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_9]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_9]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_8]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 0
+  /* Complete MA2 native-input serializer chunk 1. */
+  /* MA2 streaming tile b0p0: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,256,384,0x31,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,288,416,0x31,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,320,448,0x31,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,352,480,0x31,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 0]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 32]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 64]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 96]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 0]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p0,.Llambda_b0p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 32]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p0,.Llambda_b0p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 64]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p0,.Llambda_b0p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 96]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b0p1: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,256,384,0x20,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,288,416,0x20,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,320,448,0x20,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,352,480,0x20,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 384]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 416]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 448]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 480]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 384]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p1,.Llambda_b0p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 416]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p1,.Llambda_b0p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 448]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p1,.Llambda_b0p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 480]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_10]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_11]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_11]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_10]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_10]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_11]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_11]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_10]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_10]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_11]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_11]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_10]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_10]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_11]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_11]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_10]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 192
+  /* Complete MA2 native-input serializer chunk 2. */
+  /* MA2 streaming tile b0p3: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,512,640,0x31,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,544,672,0x31,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,576,704,0x31,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,608,736,0x31,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 128]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 160]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 192]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 224]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 128]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p3,.Llambda_b0p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 160]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p3,.Llambda_b0p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 192]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p3,.Llambda_b0p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 224]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b0p6: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,512,640,0x20,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,544,672,0x20,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,576,704,0x20,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,608,736,0x20,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 256]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 288]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 320]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 352]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 256]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p6,.Llambda_b0p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 288]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p6,.Llambda_b0p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 320]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p6,.Llambda_b0p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 352]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_12]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_13]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_13]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_12]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_12]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_13]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_13]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_12]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_12]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_13]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_13]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_12]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_12]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_13]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_13]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_12]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 384
+  /* Complete MA2 native-input serializer chunk 3. */
+  /* MA2 streaming tile b0p2: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,768,896,0x20,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,800,928,0x20,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,832,960,0x20,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,864,992,0x20,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 896]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 928]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 960]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 992]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 896]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p2,.Llambda_b0p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 928]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p2,.Llambda_b0p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 960]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p2,.Llambda_b0p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 992]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b0p8: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,768,896,0x31,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,800,928,0x31,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,832,960,0x31,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,864,992,0x31,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 768]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 800]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 832]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 864]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 768]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p8,.Llambda_b0p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 800]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p8,.Llambda_b0p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 832]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p8,.Llambda_b0p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 864]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_14]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_15]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_15]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_14]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_14]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_15]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_15]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_14]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_14]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_15]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_15]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_14]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_14]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_15]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_15]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_14]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 576
+  /* Complete MA2 native-input serializer chunk 4. */
+  /* MA2 streaming tile b0p5: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1024,1152,0x20,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1056,1184,0x20,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1088,1216,0x20,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1120,1248,0x20,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1024]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1056]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1088]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1120]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1024]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p5,.Llambda_b0p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1056]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p5,.Llambda_b0p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1088]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b0p5,.Llambda_b0p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1120]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b1p3: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1024,1152,0x31,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1056,1184,0x31,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1088,1216,0x31,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1120,1248,0x31,.Lma2_mask_5,0xff
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1280]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1312]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1344]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1376]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1280]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p3,.Llambda_b1p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1312]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p3,.Llambda_b1p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1344]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p3,.Llambda_b1p3_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1376]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_16]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_17]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_17]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_16]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_16]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_17]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_17]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_16]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_16]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_17]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_17]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_16]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_16]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_17]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_17]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_16]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 768
+  /* Complete MA2 native-input serializer chunk 5. */
+  /* MA2 streaming tile b1p0: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1280,1408,0x20,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1312,1440,0x20,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1344,1472,0x20,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1376,1504,0x20,.Lma2_mask_4,0xa8
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1152]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1184]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1216]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1248]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1152]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p0,.Llambda_b1p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1184]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p0,.Llambda_b1p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1216]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p0,.Llambda_b1p0_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1248]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b1p6: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1280,1408,0x31,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1312,1440,0x31,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1344,1472,0x31,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1376,1504,0x31,.Lma2_mask_3,0x11
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1408]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1440]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1472]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1504]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1408]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p6,.Llambda_b1p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1440]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p6,.Llambda_b1p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1472]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p6,.Llambda_b1p6_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1504]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_18]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_19]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_19]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_18]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_18]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_19]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_19]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_18]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_18]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_19]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_19]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_18]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_18]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_19]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x20
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_19]
+  vperm2i128 ymm11, ymm8, ymm9, 0x31
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_18]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 960
+  /* Complete MA2 native-input serializer chunk 6. */
+  /* MA2 streaming tile b1p2: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1536,1664,0x31,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1568,1696,0x31,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1600,1728,0x31,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1632,1760,0x31,.Lma2_mask_2,0x55
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 2048]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 2080]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 2112]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 2144]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2048]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p2,.Llambda_b1p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2080]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p2,.Llambda_b1p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2112]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p2,.Llambda_b1p2_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2144]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b1p5: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1536,1664,0x20,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1568,1696,0x20,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1600,1728,0x20,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1632,1760,0x20,.Lma2_mask_0,0x80
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 2176]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 2208]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 2240]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 2272]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2176]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p5,.Llambda_b1p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2208]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p5,.Llambda_b1p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2240]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p5,.Llambda_b1p5_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2272]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_20]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_21]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_21]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_20]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_20]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_21]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_21]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_20]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_20]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_21]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_21]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_20]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_20]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_21]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_21]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_20]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 1152
+  /* Complete MA2 native-input serializer chunk 7. */
+  /* MA2 streaming tile b1p7: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1792,1920,0x31,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1824,1952,0x31,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1856,1984,0x31,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1888,2016,0x31,.Lma2_mask_7,0x77
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1792]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1824]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1856]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1888]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1792]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p7,.Llambda_b1p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1824]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p7,.Llambda_b1p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1856]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p7,.Llambda_b1p7_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1888]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b1p8: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,1792,1920,0x20,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,1824,1952,0x20,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,1856,1984,0x20,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,1888,2016,0x20,.Lma2_mask_1,0xfe
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1920]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1952]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1984]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 2016]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1920]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p8,.Llambda_b1p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1952]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p8,.Llambda_b1p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1984]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p8,.Llambda_b1p8_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 2016]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_22]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_23]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_23]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_22]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_22]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_23]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_23]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_22]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_22]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_23]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_23]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_22]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_22]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_23]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_23]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_22]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 1344
+  /* Complete MA2 native-input serializer chunk 8. */
+  /* MA2 streaming tile b1p1: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,2048,2176,0x31,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,2080,2208,0x31,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,2112,2240,0x31,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,2144,2272,0x31,.Lma2_mask_5,0x00
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1536]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1568]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1600]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1632]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1536]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p1,.Llambda_b1p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 0], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1568]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p1,.Llambda_b1p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 32], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1600]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p1,.Llambda_b1p1_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 64], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1632]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 96], ymm8
+  /* MA2 streaming tile b1p4: retain h[0..3], r[0..3]. */
+  MA1_PROJECT_H 0,12,2048,2176,0x20,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 0,0,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 1,12,2080,2208,0x20,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 1,1,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 2,12,2112,2240,0x20,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 2,2,.Lma1_r2,.Lma1_r2_qinv,11
+  MA1_PROJECT_H 3,12,2144,2272,0x20,.Lma2_mask_6,0xea
+  MA1_MONT_CONST 3,3,.Lma1_r2,.Lma1_r2_qinv,11
+  vmovdqa ymm4, YMMWORD PTR [rsi + 1664]
+  vmovdqa ymm5, YMMWORD PTR [rsi + 1696]
+  vmovdqa ymm6, YMMWORD PTR [rsi + 1728]
+  vmovdqa ymm7, YMMWORD PTR [rsi + 1760]
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1664]
+  MA1_MONT_REG 10,0,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,2,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_REG 10,3,5,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p4,.Llambda_b1p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 128], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1696]
+  MA1_MONT_REG 10,0,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_REG 10,3,6,11
+  vpaddw ymm9, ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p4,.Llambda_b1p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 160], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1728]
+  MA1_MONT_REG 10,0,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,7,11
+  vmovdqa ymm9, ymm10
+  MA1_MONT_CONST 10,9,.Llambda_b1p4,.Llambda_b1p4_qinv,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 192], ymm8
+  vmovdqa ymm8, YMMWORD PTR [rdx + 1760]
+  MA1_MONT_REG 10,0,7,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,1,6,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,2,5,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_REG 10,3,4,11
+  vpaddw ymm8, ymm8, ymm10
+  MA1_MONT_CONST 8,8,.Lma1_inv4,.Lma1_inv4_qinv,11
+  vmovdqa YMMWORD PTR [r8 + 224], ymm8
+  /* Semantic planes -> registers -> bytes; no Official-vector scratch. */
+  vmovdqa ymm8, YMMWORD PTR [r8 + 0]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 128]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_24]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_25]
+  vpor ymm0, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_25]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_24]
+  vpor ymm4, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 32]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 160]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_24]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_25]
+  vpor ymm1, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_25]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_24]
+  vpor ymm5, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 64]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 192]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_24]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_25]
+  vpor ymm2, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_25]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_24]
+  vpor ymm6, ymm10, ymm11
+  vmovdqa ymm8, YMMWORD PTR [r8 + 96]
+  vmovdqa ymm9, YMMWORD PTR [r8 + 224]
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_24]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_25]
+  vpor ymm3, ymm10, ymm11
+  vperm2i128 ymm10, ymm8, ymm9, 0x02
+  vpshufb ymm10, ymm10, YMMWORD PTR [rip + .Lma2_mask_25]
+  vperm2i128 ymm11, ymm8, ymm9, 0x13
+  vpshufb ymm11, ymm11, YMMWORD PTR [rip + .Lma2_mask_24]
+  vpor ymm7, ymm10, ymm11
+  vpsraw ymm12, ymm0, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm0, ymm0, ymm12
+  vpsraw ymm12, ymm1, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm1, ymm1, ymm12
+  vpsraw ymm12, ymm2, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm2, ymm2, ymm12
+  vpsraw ymm12, ymm3, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm3, ymm3, ymm12
+  vpsraw ymm12, ymm4, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm4, ymm4, ymm12
+  vpsraw ymm12, ymm5, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm5, ymm5, ymm12
+  vpsraw ymm12, ymm6, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm6, ymm6, ymm12
+  vpsraw ymm12, ymm7, 15
+  vpand ymm12, ymm12, YMMWORD PTR [rip + .Lma1_q]
+  vpaddw ymm7, ymm7, ymm12
+  MA2_PACK_DIRECT 1536
+  ret
+.size ntruplus1152_exp001_f0_ma2_native_full, .-ntruplus1152_exp001_f0_ma2_native_full
+
 .section .rodata
 #include "generated/f0-ma2-constants.inc"
 

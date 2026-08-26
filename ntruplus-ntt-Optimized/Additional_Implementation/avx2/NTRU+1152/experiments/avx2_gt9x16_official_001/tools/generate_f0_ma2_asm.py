@@ -43,8 +43,17 @@ def emit_plane(pointer: str, base: int, coefficient: int,
     ]
 
 
+def emit_native_plane(pointer: str, base: int, coefficient: int,
+                      destination: int) -> list[str]:
+    return [
+        f"  vmovdqa ymm{destination}, YMMWORD PTR "
+        f"[{pointer} + {base + 32 * coefficient}]",
+    ]
+
+
 def emit_tile(tile: dict, h_specs: dict, labels: dict, r_base: int,
-              m_base: int, output_base: int, output_pointer: str) -> list[str]:
+              m_base: int, output_base: int, output_pointer: str,
+              native_inputs: bool = False) -> list[str]:
     name = ma1.label_tile(tile)
     out = [f"  /* MA2 streaming tile {name}: retain h[0..3], r[0..3]. */"]
     for coefficient in range(4):
@@ -56,10 +65,16 @@ def emit_tile(tile: dict, h_specs: dict, labels: dict, r_base: int,
             f"  MA1_MONT_CONST {coefficient},{coefficient},.Lma1_r2,.Lma1_r2_qinv,11",
         ]
     for coefficient in range(4):
-        out += emit_plane("rsi", r_base, coefficient, 4 + coefficient)
+        if native_inputs:
+            out += emit_native_plane("rsi", r_base, coefficient, 4 + coefficient)
+        else:
+            out += emit_plane("rsi", r_base, coefficient, 4 + coefficient)
 
     for coefficient, (plain, wrapped) in enumerate(TERMS):
-        out += emit_plane("rdx", m_base, coefficient, 8)
+        if native_inputs:
+            out += emit_native_plane("rdx", m_base, coefficient, 8)
+        else:
+            out += emit_plane("rdx", m_base, coefficient, 8)
         for h_index, r_index in plain:
             out += [f"  MA1_MONT_REG 10,{h_index},{4+r_index},11",
                     "  vpaddw ymm8, ymm8, ymm10"]
@@ -204,6 +219,24 @@ def main() -> int:
                                              output_specs, masks,
                                              192 * chunk_index)) + "\n"
     asm += f"  ret\n.size {full}, .-{full}\n"
+
+    native_full = "ntruplus1152_exp001_f0_ma2_native_full"
+    asm += (f"\n.globl {native_full}\n.type {native_full},@function\n"
+            f".p2align 5\n{native_full}:\n")
+    for chunk_index, chunk_tiles in enumerate(chunks):
+        asm += f"  /* Complete MA2 native-input serializer chunk {chunk_index}. */\n"
+        asm += "\n".join(emit_tile(chunk_tiles[0], h_specs, masks,
+                                    tile_base(chunk_tiles[0]),
+                                    tile_base(chunk_tiles[0]), 0, "r8",
+                                    native_inputs=True)) + "\n"
+        asm += "\n".join(emit_tile(chunk_tiles[1], h_specs, masks,
+                                    tile_base(chunk_tiles[1]),
+                                    tile_base(chunk_tiles[1]), 128, "r8",
+                                    native_inputs=True)) + "\n"
+        asm += "\n".join(emit_direct_route(chunk_index, chunk_tiles,
+                                             output_specs, masks,
+                                             192 * chunk_index)) + "\n"
+    asm += f"  ret\n.size {native_full}, .-{native_full}\n"
     asm += '\n.section .rodata\n#include "generated/f0-ma2-constants.inc"\n'
     asm += '\n.section .note.GNU-stack,"",@progbits\n'
 
@@ -219,6 +252,10 @@ void ntruplus1152_exp001_f0_ma2_chunk0(
 void ntruplus1152_exp001_f0_ma2_full(
     uint8_t out[1728], const int16_t r[1152], const int16_t m[1152],
     const int16_t h[1152], int16_t plane_scratch[128]);
+void ntruplus1152_exp001_f0_ma2_native_full(
+    uint8_t out[1728], const int16_t r_planes[1152],
+    const int16_t m_planes[1152], const int16_t h[1152],
+    int16_t plane_scratch[128]);
 #endif
 """
     contract = {
@@ -238,6 +275,15 @@ void ntruplus1152_exp001_f0_ma2_full(
                  "official_vector_intermediate": False,
                  "pack_barrett": False, "peak_ymm": 14,
                  "total_montgomery_chains": 486},
+        "native_full": {
+            "symbol": native_full, "chunks": 9, "tiles": 18,
+            "input_abi": "MA2 coefficient planes",
+            "r_aligned_plane_loads": 72, "m_aligned_plane_loads": 72,
+            "generic_f0_projection_permutations": 0,
+            "arithmetic_and_serializer": "identical to full",
+            "scratch_i16": 128, "peak_ymm": 14,
+            "total_montgomery_chains": 486,
+        },
         "alignment": {"entries": 32, "constants": 32,
                       "polys_and_scratch": 32, "bytes": "unaligned"},
         "range_proof_sha256": hashlib.sha256(proof_raw).hexdigest(),

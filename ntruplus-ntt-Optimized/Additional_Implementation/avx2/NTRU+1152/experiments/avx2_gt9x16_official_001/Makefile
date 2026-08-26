@@ -101,6 +101,10 @@ F0_PROD1_ASM := asm/f0_prod1_p1h.S
 F0_PROD1_TEST_SOURCES := src/f0_forward_for_ma2.c src/f0_prod1_wrapper.c src/top_split_adapter.c $(F0_PROD1_ASM) $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod1_p1h.c
 F0_PROD1_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o --helper-object $(BUILD)/f0prod1/f0-prod1-p1h.o --wrapper-source src/f0_prod1_wrapper.c --helper-source $(F0_PROD1_ASM) --schedule generated/f0-prod1-schedule.json --output generated/f0-prod1-p1h-audit.json
 F0_PROD2_MAP_ARGS := --consumer-map generated/f0-ma-consumer-map.json --ma2-schedule generated/f0-ma-schedule.json --prod1-schedule generated/f0-prod1-schedule.json --ma2-contract generated/f0-ma2-asm.json --ma2-audit generated/f0-ma2-audit.json --ma2-asm $(F0_MA2_ASM) --output generated/f0-prod2-ma2-map.json
+F0_PROD2_ASM := asm/f0_prod2_ma2_p2b.S
+F0_PROD2_GENERATOR_ARGS := --p1h-source $(F0_PROD1_ASM) --map generated/f0-prod2-ma2-map.json --asm $(F0_PROD2_ASM) --header generated/f0-prod2-ma2-asm.h --contract generated/f0-prod2-ma2-asm.json
+F0_PROD2_TEST_SOURCES := src/f0_prod1_wrapper.c src/f0_prod2_ma2_wrapper.c src/top_split_adapter.c $(F0_PROD1_ASM) $(F0_PROD2_ASM) $(F0_MA2_ASM) tests/test_f0_prod2_ma2_asm0.c
+F0_PROD2_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod2/f0-prod2-wrapper.o --helper-object $(BUILD)/f0prod2/f0-prod2-p2b.o --ma2-object $(BUILD)/f0prod2/f0-ma2.o --wrapper-source src/f0_prod2_ma2_wrapper.c --helper-source $(F0_PROD2_ASM) --ma2-source $(F0_MA2_ASM) --contract generated/f0-prod2-ma2-asm.json --map generated/f0-prod2-ma2-map.json --prod1-audit generated/f0-prod1-p1h-audit.json --output generated/f0-prod2-ma2-audit.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -184,6 +188,7 @@ generate:
 	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS)
 	$(PYTHON) tools/generate_f0_prod1_schedule.py $(F0_PROD1_SCHED_ARGS)
 	$(PYTHON) tools/generate_f0_prod2_ma2_map.py $(F0_PROD2_MAP_ARGS)
+	$(PYTHON) tools/generate_f0_prod2_ma2_asm.py $(F0_PROD2_GENERATOR_ARGS)
 	mkdir -p $(BUILD)/f0prod0
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
 	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS)
@@ -195,6 +200,13 @@ generate:
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD1_TEST_SOURCES) -o $(BUILD)/f0prod1/test-f0-prod1-p1h
 	$(BUILD)/f0prod1/test-f0-prod1-p1h
+	mkdir -p $(BUILD)/f0prod2
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod2_ma2_wrapper.c -o $(BUILD)/f0prod2/f0-prod2-wrapper.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/f0prod2/f0-prod2-p2b.o
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0prod2/f0-ma2.o
+	$(PYTHON) tools/audit_f0_prod2_ma2_asm.py $(F0_PROD2_AUDIT_ARGS)
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
+	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
 check:
 	mkdir -p $(BUILD)
@@ -273,6 +285,7 @@ check:
 	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS) --check
 	$(PYTHON) tools/generate_f0_prod1_schedule.py $(F0_PROD1_SCHED_ARGS) --check
 	$(PYTHON) tools/generate_f0_prod2_ma2_map.py $(F0_PROD2_MAP_ARGS) --check
+	$(PYTHON) tools/generate_f0_prod2_ma2_asm.py $(F0_PROD2_GENERATOR_ARGS) --check
 	mkdir -p $(BUILD)/f0prod0
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
 	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS) --check
@@ -284,6 +297,13 @@ check:
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -I$(UPSTREAM) $(F0_PROD1_TEST_SOURCES) -o $(BUILD)/f0prod1/test-f0-prod1-p1h
 	$(BUILD)/f0prod1/test-f0-prod1-p1h
+	mkdir -p $(BUILD)/f0prod2
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod2_ma2_wrapper.c -o $(BUILD)/f0prod2/f0-prod2-wrapper.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/f0prod2/f0-prod2-p2b.o
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0prod2/f0-ma2.o
+	$(PYTHON) tools/audit_f0_prod2_ma2_asm.py $(F0_PROD2_AUDIT_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
+	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
 	$(PYTHON) tools/audit_inverse_ntt9_b0.py $(INVERSE_NTT9_B0_AUDIT_ARGS) --check
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B1_ASM) -o $(BUILD)/g1c/inverse-ntt9-b1.o
@@ -338,6 +358,7 @@ check:
 	$(PYTHON) tests/test_f0_prod1_p1h_evidence.py
 	$(PYTHON) tests/test_f0_prod1_price_evidence.py
 	$(PYTHON) tests/test_f0_prod2_ma2_map.py
+	$(PYTHON) tests/test_f0_prod2_ma2_asm0_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -392,6 +413,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma3-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Igenerated -I$(UPSTREAM) -I. $(F0_MA2_TEST_SOURCES) -o $(BUILD)/test-f0-ma2-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-ma2-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/test-f0-prod2-ma2-asm0-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-prod2-ma2-asm0-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -467,6 +490,11 @@ audit:
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod1_wrapper.c -o $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o
 	$(CC) -mavx2 -I. -c $(F0_PROD1_ASM) -o $(BUILD)/f0prod1/f0-prod1-p1h.o
 	$(PYTHON) tools/audit_f0_prod1_p1h.py $(F0_PROD1_AUDIT_ARGS)
+	mkdir -p $(BUILD)/f0prod2
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_prod2_ma2_wrapper.c -o $(BUILD)/f0prod2/f0-prod2-wrapper.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/f0prod2/f0-prod2-p2b.o
+	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0prod2/f0-ma2.o
+	$(PYTHON) tools/audit_f0_prod2_ma2_asm.py $(F0_PROD2_AUDIT_ARGS)
 
 bench-local:
 	mkdir -p $(BUILD)

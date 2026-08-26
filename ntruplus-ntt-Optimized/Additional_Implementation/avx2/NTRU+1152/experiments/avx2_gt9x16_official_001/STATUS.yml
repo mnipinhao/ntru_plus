@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-prod2-ma2-map-p2b-materialized-realization-selected
+state: checkpoint-f0-prod2-ma2-asm0-materialized-p2b-correctness-structure-qualified
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -383,7 +383,14 @@ checkpoint_f0_prod1_p1h_routing: exact-576-direct-formation-instructions-per-for
   checkpoint_f0_prod2_ma2_transient: passed-same-terminal-pair-slots-reuse-2304-byte-backing
   checkpoint_f0_prod2_ma2_movement: passed-minus72-duplicated-loads-per-operand-minus144-two-operand
   checkpoint_f0_prod2_ma2_p2c: deferred-zero-movement-credit-vs-p2b-schedule-change
-  checkpoint_f0_prod2_ma2_asm: not-implemented-p2b-only-authorized
+  checkpoint_f0_prod2_ma2_asm_raw: passed-exact-2304-byte-2304-impulse-1003-random-boundary-alias
+  checkpoint_f0_prod2_ma2_asm_consumer: passed-257-full-ma2-ciphertext-byte-exact
+  checkpoint_f0_prod2_ma2_asm_structure: passed-only-72-dynamic-p2b-permutes-and-stores
+  checkpoint_f0_prod2_ma2_asm_overwrite: passed-18of18-static-slots-first-write-after-last-read
+  checkpoint_f0_prod2_ma2_asm_abi: passed-aligned-leaf-zero-frame-spill-call-vzeroupper
+  checkpoint_f0_prod2_ma2_asm_constant_time: passed-no-new-control-flow-native-ma2-straight-line
+  checkpoint_f0_prod2_ma2_asm_sanitizer: passed-asan-ubsan
+  checkpoint_f0_prod2_ma2_asm: qualified-producer-boundary-pricing-only
   checkpoint_f0_prod2_ma2_kem: not-authorized
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
@@ -401,7 +408,10 @@ f0_prod1_price_result: results/f0-prod1-price-supercop-derived-intel155h-2026082
 checkpoint_f0_prod1_price: generic-f0-p1h-rejected-specialized-ma2-epilogue-movement-graph-next
 f0_prod2_ma2_map: generated/f0-prod2-ma2-map.json
 checkpoint_f0_prod2_ma2_map: p2a-rejected-p2b-selected-p2c-deferred
-next_step: f0-prod2-ma2-asm0-p2b-materialized-producer-consumer-differential-no-kem
+f0_prod2_ma2_asm_contract: generated/f0-prod2-ma2-asm.json
+f0_prod2_ma2_asm_audit: generated/f0-prod2-ma2-audit.json
+checkpoint_f0_prod2_ma2_asm0: materialized-p2b-exact-and-structurally-qualified
+next_step: f0-prod2-ma2-boundary-pricing-p1h-projection-vs-direct-p2b-no-kem
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

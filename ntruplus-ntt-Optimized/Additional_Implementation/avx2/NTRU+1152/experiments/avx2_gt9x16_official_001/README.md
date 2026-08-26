@@ -448,3 +448,15 @@ the plane permutations move to the producer rather than disappear. Only a
 materialized P2-B ASM0 differential is authorized next; KEM, resident-`h`,
 top-split fusion, and chunk-oriented P2-C remain blocked. See
 `CHECKPOINT-F0-PROD2-MA2-MAP.md`.
+
+Checkpoint F0-PROD2-MA2-ASM0 implements only the selected materialized P2-B
+redeposit. The generated assembly preserves P1-H formation, R2, D1 arithmetic,
+traversal, reductions, and scale; its linked D1 ledger adds only the expected
+72 dynamic `vperm2i128` plane formations per forward. Raw 2,304-byte plane
+output is exact over 2,304 signed impulses and 1,003 random/boundary/alias
+cases, while 257 complete MA2 consumer cases produce byte-identical
+ciphertexts. All eighteen static backing slots satisfy last-read-before-write,
+so the existing 2,304-byte backing is reused without another temporary. The
+next authorized gate is only P1-H-plus-projection versus direct-P2-B boundary
+pricing; KEM and encapsulation integration remain blocked. See
+`CHECKPOINT-F0-PROD2-MA2-ASM0.md`.
