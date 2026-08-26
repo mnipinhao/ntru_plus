@@ -38,6 +38,14 @@ assert twist["T1_h_factor_into_ntt9"]["one_montgomery_multiplication_removed_pro
 assert twist["T2_q_factor_into_ntt16"]["one_montgomery_multiplication_removed_proved"] is False
 
 ledger = data["apples_to_apples_ledger"]
+assert ledger["routing_taxonomy_reconciliation"] == {
+    "explanation": "648 was the MAP checkpoint's deliberately incomplete known-boundary count; 936 adds the 288 linked adjusted-NTT16 internal routes so both control and C1 include their radix-2 routing",
+    "full_linked_control_total": 936,
+    "map_excluded_open_variable": {
+        "adjusted_ntt16_internal_D8_D4_D2_D1": 288},
+    "map_included": {"P2B_epilogue": 72, "early_formation": 576},
+    "map_known_total": 648,
+}
 assert ledger["G0_P2B"]["routing_total"] == 936
 assert ledger["AOS_C1"]["routing_total"] == 432
 assert ledger["AOS_C1_minus_G0"] == {

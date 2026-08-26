@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-aos-schedule-c1-selected-asm-review-next
+state: checkpoint-gt9x16-prod3-aos-asm0-c1-tile-machine-feasible-branch-review-next
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -422,6 +422,12 @@ checkpoint_f0_prod1_p1h_routing: exact-576-direct-formation-instructions-per-for
   checkpoint_gt9x16_prod3_aos_twist: frozen-t0-72-chains-t1-t2-credit-unproved
   checkpoint_gt9x16_prod3_aos_asm: not-authorized-review-static-schedule-first
   checkpoint_gt9x16_prod3_aos_benchmark: not-run-static-schedule-only
+  checkpoint_gt9x16_prod3_aos_routing_reconciliation: passed-map648-plus-linked-radix2-288-equals-full936
+  checkpoint_gt9x16_prod3_aos_asm0_exact: passed-row0-d4-input-d2-d1-ma2-raw-bit-exact
+  checkpoint_gt9x16_prod3_aos_asm0_structure: passed-24-routes-4-montgomery-4-loads-4-stores
+  checkpoint_gt9x16_prod3_aos_asm0_abi: passed-entry32-constants32-frame0-spill0-vzeroupper0-unaligned-data-safe
+  checkpoint_gt9x16_prod3_aos_asm0_registers: passed-linked-peak9-of16
+  checkpoint_gt9x16_prod3_aos_asm0_benchmark: not-run-machine-feasibility-only
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
 f0_ma3_result: results/f0-ma3-supercop-derived-intel155h-20260825-001/supercop-f0-ma3-serious/stq-summary.json
@@ -452,7 +458,9 @@ gt9x16_prod3_map: generated/gt9x16-prod3-map.json
 checkpoint_gt9x16_prod3_map: persistent-aos-selected-naive-16first-deferred-official-remains-control
 gt9x16_prod3_aos_schedule: generated/gt9x16-prod3-aos-schedule.json
 checkpoint_gt9x16_prod3_aos_schedule: c1-live-d1-to-hierarchical-transpose-selected-static-only
-next_step: review-gt9x16-prod3-aos-asm0-one-branch-one-p-tile-authorization
+gt9x16_prod3_aos_tile_audit: generated/gt9x16-prod3-aos-c1-tile-audit.json
+checkpoint_gt9x16_prod3_aos_asm0: row0-d4-aos-d2-d1-ma2-tile-machine-feasible-no-benchmark
+next_step: review-gt9x16-prod3-aos-one-branch-asm-authorization
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

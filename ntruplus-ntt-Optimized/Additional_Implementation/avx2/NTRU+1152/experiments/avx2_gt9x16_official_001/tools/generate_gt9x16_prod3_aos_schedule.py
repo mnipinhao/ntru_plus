@@ -25,6 +25,40 @@ def write(path: Path, text: str, check: bool) -> None:
         path.write_text(text, encoding="utf-8")
 
 
+def vector_words(values: list[int]) -> str:
+    return ", ".join(str(value) for value in values)
+
+
+def aos_tile_constants(scaled: dict) -> str:
+    row = scaled["paper_adjusted_ntt16_rows"][0]
+    if row["physical_row"] != 0 or row["frequency_p"] != 0:
+        raise SystemExit("physical row zero is no longer the ASM0 tile control")
+    d2 = row["adjusted_ntt16_stages"]["distance2"]
+    d1 = row["adjusted_ntt16_stages"]["distance1"]
+
+    def repeated(values: list[int]) -> list[int]:
+        return [value for value in values for _ in range(4)]
+
+    vectors = {
+        ".Lprod3_aos_q": [3457] * 16,
+        ".Lprod3_aos_d2_qinv": repeated(d2["qinv_signed"]),
+        ".Lprod3_aos_d2_zeta": repeated(d2["montgomery_signed"]),
+        ".Lprod3_aos_d1_lo_qinv": repeated(d1["qinv_signed"][:4]),
+        ".Lprod3_aos_d1_lo_zeta": repeated(d1["montgomery_signed"][:4]),
+        ".Lprod3_aos_d1_hi_qinv": repeated(d1["qinv_signed"][4:]),
+        ".Lprod3_aos_d1_hi_zeta": repeated(d1["montgomery_signed"][4:]),
+    }
+    lines = [
+        "/* Generated GT9X16-PROD3-AOS-ASM0 row-0 tile constants. */",
+        ".section .rodata",
+    ]
+    for label, values in vectors.items():
+        if len(values) != 16:
+            raise SystemExit(f"bad generated YMM constant width for {label}")
+        lines.extend((".p2align 5", f"{label}:", f"  .word {vector_words(values)}"))
+    return "\n".join(lines) + "\n"
+
+
 def perm2x128(a: list[tuple[int, int]], b: list[tuple[int, int]], imm: int) -> list[tuple[int, int]]:
     if imm == 0x20:
         return a[:8] + b[:8]
@@ -137,6 +171,7 @@ def main() -> int:
     parser.add_argument("--ntt16-macro", type=Path, required=True)
     parser.add_argument("--prod2-audit", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--asm-constants", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
@@ -371,6 +406,18 @@ def main() -> int:
                 "barrett_vectors": 0,
             },
             "constant_loads_excluded_until_asm_register_allocation": True,
+            "routing_taxonomy_reconciliation": {
+                "map_known_total": prod3["current_control_G0"]["known_routing_total"],
+                "map_included": {
+                    "early_formation": g0["formation_routing"],
+                    "P2B_epilogue": g0["p2b_plane_routing"],
+                },
+                "map_excluded_open_variable": {
+                    "adjusted_ntt16_internal_D8_D4_D2_D1": g0["adjusted_ntt16_routing"],
+                },
+                "full_linked_control_total": g0["routing_total"],
+                "explanation": "648 was the MAP checkpoint's deliberately incomplete known-boundary count; 936 adds the 288 linked adjusted-NTT16 internal routes so both control and C1 include their radix-2 routing",
+            },
         },
         "decision": {
             "schedule_complete": True,
@@ -394,6 +441,7 @@ def main() -> int:
         },
     }
     write(args.output, json.dumps(document, indent=2, sort_keys=True) + "\n", args.check)
+    write(args.asm_constants, aos_tile_constants(scaled), args.check)
     return 0
 
 

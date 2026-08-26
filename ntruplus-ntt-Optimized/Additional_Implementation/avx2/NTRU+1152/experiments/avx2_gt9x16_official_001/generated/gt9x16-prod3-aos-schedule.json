@@ -30,6 +30,18 @@
       "routing_total": 936
     },
     "constant_loads_excluded_until_asm_register_allocation": true,
+    "routing_taxonomy_reconciliation": {
+      "explanation": "648 was the MAP checkpoint's deliberately incomplete known-boundary count; 936 adds the 288 linked adjusted-NTT16 internal routes so both control and C1 include their radix-2 routing",
+      "full_linked_control_total": 936,
+      "map_excluded_open_variable": {
+        "adjusted_ntt16_internal_D8_D4_D2_D1": 288
+      },
+      "map_included": {
+        "P2B_epilogue": 72,
+        "early_formation": 576
+      },
+      "map_known_total": 648
+    },
     "unit": "dynamic AVX2 data-memory/routing operations per forward after the common top split"
   },
   "checkpoint": "GT9X16-PROD3-AOS-SCHED",

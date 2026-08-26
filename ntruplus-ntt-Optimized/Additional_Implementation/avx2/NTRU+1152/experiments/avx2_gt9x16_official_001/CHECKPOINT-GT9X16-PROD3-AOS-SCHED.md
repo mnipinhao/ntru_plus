@@ -23,6 +23,14 @@ current G0/P2-B physical realization, its complete post-top-split ledger is:
 These are static schedule counts, not cycle estimates. Constant-memory
 operands remain excluded until an actual register allocation exists.
 
+The `936` control total reconciles the earlier MAP checkpoint's `648` known
+boundary routes. MAP counted `576` early-formation routes plus `72` P2-B
+epilogue routes and deliberately left adjusted-NTT16 routing as the open
+schedule variable. The linked control adds those `288` internal D8/D4/D2/D1
+routes. Because C1's `432` includes its own D2/D1-to-plane routes, `936` versus
+`432` is the apples-to-apples full-routing comparison; `648` versus `432` is
+only the narrower boundary-only view (`-216`).
+
 ## Step A: complete AoS NTT9
 
 One AoS YMM contains four q cells and all four terminal coefficients:

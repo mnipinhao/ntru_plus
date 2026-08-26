@@ -1,0 +1,84 @@
+{
+  "alignment": {
+    "caller_pointer_alignment_required": false,
+    "constant_vector_bytes": 32,
+    "constant_vectors": 7,
+    "data_memory_opcode": "vmovdqu",
+    "function_entry_bytes": 32,
+    "rodata_section_alignment_bytes": 32
+  },
+  "authorization": {
+    "benchmark": false,
+    "full_branch_asm": false,
+    "full_producer_asm": false,
+    "native_kem": false,
+    "tile_machine_feasibility": true
+  },
+  "checkpoint": "GT9X16-PROD3-AOS-ASM0",
+  "linked_tile": {
+    "arithmetic": {
+      "vpaddw": 4,
+      "vpmulhw": 8,
+      "vpmullw": 4,
+      "vpsubw": 8
+    },
+    "calls": 0,
+    "conditional_branches": 0,
+    "entry_mod32": 0,
+    "entry_mod64": 0,
+    "frame_instructions": 0,
+    "input_loads": 4,
+    "montgomery_chains": 4,
+    "output_stores": 4,
+    "routing": {
+      "vperm2i128": 4,
+      "vpermq": 4,
+      "vpshufb": 0,
+      "vpunpckhdq": 2,
+      "vpunpckhqdq": 4,
+      "vpunpckhwd": 2,
+      "vpunpckldq": 2,
+      "vpunpcklqdq": 4,
+      "vpunpcklwd": 2
+    },
+    "routing_total": 24,
+    "stack_references": 0,
+    "text_bytes": 297,
+    "vector_spills": 0,
+    "vzeroupper": 0
+  },
+  "register_flow": {
+    "architectural_ymm": 16,
+    "method": "instruction-by-instruction fixed-register inspection of the linked leaf",
+    "peak_live_ymm": 9,
+    "phase_live_upper_bounds": {
+      "D1_montgomery": 9,
+      "D1_pairing": 9,
+      "D2_montgomery": 9,
+      "hierarchical_transpose": 8,
+      "loads_and_D2_pairing": 9
+    },
+    "spill_free": true
+  },
+  "routing_reconciliation": {
+    "explanation": "648 was the MAP checkpoint's deliberately incomplete known-boundary count; 936 adds the 288 linked adjusted-NTT16 internal routes so both control and C1 include their radix-2 routing",
+    "full_linked_control_total": 936,
+    "map_excluded_open_variable": {
+      "adjusted_ntt16_internal_D8_D4_D2_D1": 288
+    },
+    "map_included": {
+      "P2B_epilogue": 72,
+      "early_formation": 576
+    },
+    "map_known_total": 648
+  },
+  "schema": "gt9x16-prod3-aos-c1-tile-audit/v1",
+  "scope": "one physical-p=0 D4-output AoS tile through D2/D1 to four MA2 planes",
+  "sha256": {
+    "constants": "2426429fc76990ff29a73f2a7db43eef5d35297e2cb3812aed08bb222ada9925",
+    "object": "11ac5543dda96164ef964b5fed5af0c2fe6f180db23e9c7c9b4d2c19fd2905cb",
+    "schedule": "aaf2fc75c2b27dcb3dd8a751fdbeb6237654b34124c67cd8008ca4fe246050ea",
+    "source": "fe886357a594bc5788f675ab1d240aa6ba7587965a22a208083429a74190a389"
+  },
+  "symbol": "ntruplus1152_exp001_gt9x16_prod3_aos_c1_tile_row0"
+}
