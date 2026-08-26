@@ -528,3 +528,16 @@ complete ciphertext consumer boundary rather than being consumed by the
 larger frontend footprint. This reauthorizes complete encapsulation KAT and
 native SUPERCOP `enc_cycles`, but is not itself a native-KEM result. See
 `CHECKPOINT-GT9X16-PROD3-AOS-CONSUMER.md`.
+
+Checkpoint GT9X16-PROD3-ENCAP integrates persistent AoS into the real caller
+without changing its semantics.  Correctness and the 100-case KAT are exact,
+but the caller reveals a missing island edge: `r` must also be serialized in
+Official NTT order for `hash_g` before SOTP creates `m`.  The candidate uses an
+exact inverse projection and scale-removal bridge for that second output.
+Native SUPERCOP measures `enc_cycles` at 44557.9769 versus Official 43059.2778,
+a +1498.6991-cycle (+3.48%) regression.  Fixed-common O3GC paired replay is
+also slower by +1892.85 to +2125.25 cycles across normal/reversed placement
+and ASLR on/off, with every confidence interval above zero.  No production
+promotion is allowed.  The next checkpoint isolates the coefficient-`r`
+dual-output/hash fanout; PROD3, MA2, twist, top split, and code organization
+remain frozen.  See `CHECKPOINT-GT9X16-PROD3-ENCAP.md`.

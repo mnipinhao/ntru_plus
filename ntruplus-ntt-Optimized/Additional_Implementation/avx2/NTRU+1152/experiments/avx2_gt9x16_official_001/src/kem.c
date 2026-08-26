@@ -1,4 +1,4 @@
-/* Generated experiment overlay: real encapsulation caller with F0-MA2. */
+/* Generated experiment overlay: PROD3 persistent-AoS encapsulation with native MA2. */
 #include "util.h"
 #include "crypto_kem.h"
 #include <stddef.h>
@@ -11,7 +11,9 @@
 #include "fips202.h"
 #include "randombytes.h"
 #include "f0-ma2-asm.h"
-#include "f0-official-to-f0.h"
+#include "f0_prod3_hash_bridge.h"
+#include "gt9x16_forward.h"
+#include "gt9x16_prod3_aos_full.h"
 
 #ifdef SUPERCOP
 #include "crypto_declassify.h"
@@ -228,17 +230,18 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     hash_h(buf, msg);
 
     poly_cbd1(&r, buf + NTRUPLUS_SYMBYTES);
-    poly_ntt(&r);
+    ntruplus1152_exp001_top_split_small(r_f0.coeffs, r.coeffs);
+    ntruplus1152_exp001_gt9x16_prod3_aos_full(r_f0.coeffs);
 
-    poly_tobytes(ct, &r);
+    /* r has two consumers: preserve Official's exact serialized hash edge. */
+    ntruplus1152_exp001_prod3_hash_bytes(ct, r_f0.coeffs, &r, &m);
     hash_g(ct, ct);
     poly_sotp_encode(&m, msg, ct);
-    poly_ntt(&m);
+    ntruplus1152_exp001_top_split_small(m_f0.coeffs, m.coeffs);
+    ntruplus1152_exp001_gt9x16_prod3_aos_full(m_f0.coeffs);
 
-    ntruplus1152_exp001_official_to_f0(r_f0.coeffs, r.coeffs);
-    ntruplus1152_exp001_official_to_f0(m_f0.coeffs, m.coeffs);
-    ntruplus1152_exp001_f0_ma2_full(ct, r_f0.coeffs, m_f0.coeffs,
-                                    h.coeffs, ma2_scratch);
+    ntruplus1152_exp001_f0_ma2_native_full(
+        ct, r_f0.coeffs, m_f0.coeffs, h.coeffs, ma2_scratch);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf[i];

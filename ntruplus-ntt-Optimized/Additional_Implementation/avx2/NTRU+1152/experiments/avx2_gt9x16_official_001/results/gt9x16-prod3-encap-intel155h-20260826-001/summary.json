@@ -1,0 +1,40 @@
+{
+  "benchmark_class": "supercop-native-kem",
+  "candidate": "crypto_kem/ntruplus1152/avx2-gt9x16-exp001",
+  "cpu": 1,
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 155H",
+  "decision": "reject-native-encap-promotion-and-open-caller-attribution",
+  "frequency_policy": "performance-governor-turbo-disabled",
+  "kat_passed": true,
+  "native_supercop": {
+    "candidate_compiler": "gcc native O2",
+    "fresh_process_launches": 9,
+    "official": "crypto_kem/ntruplus1152/avx2",
+    "official_compiler": "gcc native O3",
+    "operations": {
+      "dec_cycles": {
+        "candidate_stq2": 30352.3565,
+        "delta_cycles": -197.7407,
+        "delta_percent": -0.6473,
+        "official_stq2": 30550.0972
+      },
+      "enc_cycles": {
+        "candidate_stq2": 44557.9769,
+        "delta_cycles": 1498.6991,
+        "delta_percent": 3.4805,
+        "official_stq2": 43059.2778
+      },
+      "keypair_cycles": {
+        "candidate_stq2": 34141.5741,
+        "delta_cycles": -756.9120,
+        "delta_percent": -2.1689,
+        "official_stq2": 34898.4861
+      }
+    },
+    "observations_per_operation": 864
+  },
+  "parameter": 1152,
+  "promotion_gate": false,
+  "schema": "gt9x16-prod3-encap/v1",
+  "supercop_version": "20260627"
+}
