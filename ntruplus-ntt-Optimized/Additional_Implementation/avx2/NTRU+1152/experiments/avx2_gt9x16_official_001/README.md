@@ -460,3 +460,14 @@ so the existing 2,304-byte backing is reused without another temporary. The
 next authorized gate is only P1-H-plus-projection versus direct-P2-B boundary
 pricing; KEM and encapsulation integration remain blocked. See
 `CHECKPOINT-F0-PROD2-MA2-ASM0.md`.
+
+Checkpoint F0-PROD2-MA2-PRICE measures the exact materialized MA2-plane
+boundary without executing MA2 arithmetic. P2-B beats P1-H-plus-projection in
+all 9 serious launches: the paired per-launch median is -20.0000 cycles for
+one producer and -115.1458 cycles for two back-to-back producers. The full
+linked ledger shows that cross-lane work is relocated, not removed:
+`vperm2i128` delta is zero, while each operand removes 144 aligned reloads and
+72 extra plane stores. Consumer-native final materialization is therefore
+validated as a machine-level architecture, but this remains a SUPERCOP-derived
+boundary result rather than a KEM claim. Only the unchanged-MA2 consumer
+island is authorized next. See `CHECKPOINT-F0-PROD2-MA2-PRICE.md`.

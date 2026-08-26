@@ -214,7 +214,8 @@ def main() -> int:
                                            "derived-itail-d0", "derived-itail-d0-m2",
                                            "derived-f0-ma1", "derived-f0-ma1-ma0",
                                            "derived-f0-ma3", "derived-f0-ma2-chunk",
-                                           "derived-f0-ma2", "derived-f0-prod1"),
+                                           "derived-f0-ma2", "derived-f0-prod1",
+                                           "derived-f0-prod2"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -227,7 +228,8 @@ def main() -> int:
     if args.mode in ("derived-itail", "derived-itail-d0", "derived-itail-d0-m2",
                      "derived-f0-ma1", "derived-f0-ma1-ma0",
                      "derived-f0-ma3", "derived-f0-ma2-chunk",
-                     "derived-f0-ma2", "derived-f0-prod1") and args.parameter != "1152":
+                     "derived-f0-ma2", "derived-f0-prod1",
+                     "derived-f0-prod2") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -279,7 +281,7 @@ def main() -> int:
                          "derived-itail-d0-m2", "derived-f0-ma1",
                          "derived-f0-ma1-ma0", "derived-f0-ma3",
                          "derived-f0-ma2-chunk", "derived-f0-ma2",
-                         "derived-f0-prod1"):
+                         "derived-f0-prod1", "derived-f0-prod2"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -291,6 +293,7 @@ def main() -> int:
                 "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
                 "derived-f0-ma2": "f0_ma2_measure.c",
                 "derived-f0-prod1": "f0_prod1_measure.c",
+                "derived-f0-prod2": "f0_prod2_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -386,6 +389,14 @@ def main() -> int:
             for width in ("1x", "2x")
             for variant, position in (("legacy", "first"), ("p1h", "second"),
                                       ("p1h", "first"), ("legacy", "second")))
+    elif args.mode == "derived-f0-prod2":
+        required = tuple(
+            f"f0_prod2_{width}_{variant}_{position}_cycles"
+            for width in ("1x", "2x")
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -828,6 +839,77 @@ def main() -> int:
             audit_paths[0].read_text(encoding="utf-8"))[
                 "dynamic_instruction_attribution_per_forward"]
         shutil.copy2(audit_paths[0], args.result_dir / "f0-prod1-p1h-audit.json")
+    if args.mode == "derived-f0-prod2":
+        combined = {
+            f"f0_prod2_{width}_{variant}_cycles": (
+                pooled[f"f0_prod2_{width}_{variant}_first_cycles"] +
+                pooled[f"f0_prod2_{width}_{variant}_second_cycles"])
+            for width in ("1x", "2x") for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            entry: dict[str, object] = {"launch": launch_number}
+            for width in ("1x", "2x"):
+                control = stabilized_quartiles(
+                    observed[f"f0_prod2_{width}_control_first_cycles"] +
+                    observed[f"f0_prod2_{width}_control_second_cycles"])[1]
+                candidate = stabilized_quartiles(
+                    observed[f"f0_prod2_{width}_candidate_first_cycles"] +
+                    observed[f"f0_prod2_{width}_candidate_second_cycles"])[1]
+                entry.update({
+                    f"{width}_control_stq2": control,
+                    f"{width}_candidate_stq2": candidate,
+                    f"{width}_candidate_minus_control_cycles": candidate - control,
+                    f"{width}_candidate_over_control_ratio": candidate / control,
+                })
+            paired_launches.append(entry)
+        one_deltas = [float(entry["1x_candidate_minus_control_cycles"])
+                      for entry in paired_launches]
+        two_deltas = [float(entry["2x_candidate_minus_control_cycles"])
+                      for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "candidate_1x_faster_launches": sum(x < 0 for x in one_deltas),
+            "candidate_1x_slower_launches": sum(x > 0 for x in one_deltas),
+            "candidate_1x_tied_launches": sum(x == 0 for x in one_deltas),
+            "median_1x_candidate_minus_control_cycles": statistics.median(one_deltas),
+            "candidate_2x_faster_launches": sum(x < 0 for x in two_deltas),
+            "candidate_2x_slower_launches": sum(x > 0 for x in two_deltas),
+            "candidate_2x_tied_launches": sum(x == 0 for x in two_deltas),
+            "median_2x_candidate_minus_control_cycles": statistics.median(two_deltas),
+        }
+        summary["decision"] = {
+            "headline": "2x exact-MA2-boundary",
+            "consumer_native_materialization_validated": (
+                all(delta < 0 for delta in two_deltas)),
+            "kem_promotion_result": False,
+            "ma2_arithmetic_executed": False,
+        }
+        relevant_symbols = (
+            "ntruplus1152_exp001_f0_forward_for_ma2_p1h",
+            "ntruplus1152_exp001_f0_forward_for_ma2_p2b",
+            "ntruplus1152_exp001_f0_generic_to_ma2_planes",
+            "ntruplus1152_exp001_f0_prod2_control_1x",
+            "ntruplus1152_exp001_f0_prod2_candidate_1x",
+            "ntruplus1152_exp001_f0_prod2_control_2x",
+            "ntruplus1152_exp001_f0_prod2_candidate_2x",
+        )
+        summary["elf_layout"] = elf_layout(saved_elf, relevant_symbols)
+        audit_paths = list(REPO_ROOT.glob(
+            "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/"
+            "experiments/*/generated/f0-prod2-boundary-audit.json"))
+        if len(audit_paths) != 1:
+            raise SystemExit(f"expected one PROD2 boundary audit, found {len(audit_paths)}")
+        summary["linked_movement_audit"] = json.loads(
+            audit_paths[0].read_text(encoding="utf-8"))
+        shutil.copy2(audit_paths[0], args.result_dir / "f0-prod2-boundary-audit.json")
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -844,6 +926,7 @@ def main() -> int:
                             else "supercop-derived-poly-f0-ma2-chunk-diagnostic" if args.mode == "derived-f0-ma2-chunk"
                             else "supercop-derived-poly-f0-ma2" if args.mode == "derived-f0-ma2"
                             else "supercop-derived-poly-f0-prod1" if args.mode == "derived-f0-prod1"
+                            else "supercop-derived-poly-f0-prod2-boundary" if args.mode == "derived-f0-prod2"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -880,7 +963,8 @@ def main() -> int:
               "derived-f0-ma3": "f0_ma3_measure.c",
               "derived-f0-ma2-chunk": "f0_ma2_chunk_measure.c",
               "derived-f0-ma2": "f0_ma2_measure.c",
-              "derived-f0-prod1": "f0_prod1_measure.c"}[args.mode])
+              "derived-f0-prod1": "f0_prod1_measure.c",
+              "derived-f0-prod2": "f0_prod2_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

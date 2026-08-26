@@ -1,0 +1,43 @@
+{
+  "checkpoint": "F0-PROD2-MA2-PRICE",
+  "comparison_boundary": "exact materialized 2304-byte MA2 coefficient-plane ABI",
+  "full_linked_candidate_minus_control": {
+    "cross_lane_work_removed": false,
+    "interpretation": "the 72 projection permutes move into the P2-B producer; the durable credit is removal of 144 reloads and 72 extra plane stores per operand at this materialized boundary",
+    "per_operand": {
+      "aligned_vector_loads": -144,
+      "aligned_vector_stores": -72,
+      "projection_calls": -1,
+      "projection_returns": -1,
+      "vperm2i128": 0
+    },
+    "two_operands": {
+      "aligned_vector_loads": -288,
+      "aligned_vector_stores": -144,
+      "projection_calls": -2,
+      "projection_returns": -2,
+      "vperm2i128": 0
+    }
+  },
+  "ma2_arithmetic_executed": false,
+  "producer_delta": {
+    "other_frozen_helper_opcode_deltas": 0,
+    "p2b_minus_p1h_vperm2i128_per_forward": 72
+  },
+  "projection": {
+    "aligned_loads": 144,
+    "aligned_stores": 72,
+    "stack_frame_bytes": 0,
+    "symbol": "ntruplus1152_exp001_f0_generic_to_ma2_planes",
+    "vector_spills": 0,
+    "vperm2i128": 72,
+    "vzeroupper": 0
+  },
+  "schema": "gt-f0-prod2-boundary-audit/v1",
+  "sha256": {
+    "prod1_audit": "04121fc8028641a9d1158adcaf6f57c007263ce0c32571bd0055e6d0534ecf16",
+    "prod2_audit": "3097db19d2e7fcc6d58cdc4520ad77964c43638c24cdc5490b0acd8bb837068b",
+    "projection_object": "b284b5064f237f4a7d03a7b7c9674956ec847c32a31cc6579c2747fbb0a4ebe2",
+    "projection_source": "5e9605f30b7ba12d31e7d45c2e2bd54f33c11ddac4ee134b50fb862a607297b1"
+  }
+}

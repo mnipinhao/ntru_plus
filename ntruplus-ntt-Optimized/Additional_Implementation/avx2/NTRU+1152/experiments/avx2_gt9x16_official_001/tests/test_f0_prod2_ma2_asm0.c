@@ -6,6 +6,7 @@
 
 #include "f0-ma2-asm.h"
 #include "f0_forward_for_ma2.h"
+#include "f0_generic_to_ma2_planes.h"
 
 #define N 1152
 #define CT_BYTES 1728
@@ -43,8 +44,8 @@ static void fail_u8(const char *label, int trial, int index,
 }
 
 /* Exact P1-H generic physical ABI -> MA2 coefficient-plane physical ABI. */
-static void project_generic_to_ma2(int16_t output[N],
-                                   const int16_t generic[N]) {
+static void project_generic_to_ma2_oracle(int16_t output[N],
+                                          const int16_t generic[N]) {
   int branch, row, coefficient, stream, lane;
   for (branch = 0; branch < 2; ++branch)
     for (row = 0; row < 9; ++row)
@@ -78,7 +79,8 @@ static void compare_u8(const char *label, int trial,
 
 static void raw_producer_case(const char *label, int trial,
                               const int16_t source[N]) {
-  _Alignas(32) int16_t input[N], saved[N], generic[N], projected[N], alias[N];
+  _Alignas(32) int16_t input[N], saved[N], generic[N], projected[N];
+  _Alignas(32) int16_t projected_asm[N], alias[N];
   struct __attribute__((aligned(32))) guarded_output {
     int16_t before[GUARD_I16];
     int16_t value[N];
@@ -93,7 +95,9 @@ static void raw_producer_case(const char *label, int trial,
     native.after[index] = (int16_t)(0x2300 + index);
   }
   ntruplus1152_exp001_f0_forward_for_ma2_p1h(generic, input);
-  project_generic_to_ma2(projected, generic);
+  project_generic_to_ma2_oracle(projected, generic);
+  ntruplus1152_exp001_f0_generic_to_ma2_planes(projected_asm, generic);
+  compare_i16("generic-projection-asm", trial, projected, projected_asm);
   ntruplus1152_exp001_f0_forward_for_ma2_p2b(native.value, input);
   compare_i16(label, trial, projected, native.value);
   compare_i16("input-immutability", trial, saved, input);
@@ -148,8 +152,8 @@ static void consumer_case(int trial) {
 
   ntruplus1152_exp001_f0_forward_for_ma2_p1h(r_generic, r_input);
   ntruplus1152_exp001_f0_forward_for_ma2_p1h(m_generic, m_input);
-  project_generic_to_ma2(r_projected, r_generic);
-  project_generic_to_ma2(m_projected, m_generic);
+  ntruplus1152_exp001_f0_generic_to_ma2_planes(r_projected, r_generic);
+  ntruplus1152_exp001_f0_generic_to_ma2_planes(m_projected, m_generic);
   ntruplus1152_exp001_f0_forward_for_ma2_p2b(r_native, r_input);
   ntruplus1152_exp001_f0_forward_for_ma2_p2b(m_native, m_input);
   compare_i16("consumer-r-raw-plane", trial, r_projected, r_native);
