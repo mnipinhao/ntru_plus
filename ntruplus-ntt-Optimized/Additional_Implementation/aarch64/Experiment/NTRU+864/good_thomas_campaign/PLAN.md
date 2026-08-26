@@ -1,8 +1,12 @@
 # NTRU+864 Good-Thomas Neon optimization campaign
 
-Status: planning and contract reconstruction; Production is unchanged.
+Status: local full-KEM SUPERCOP baseline established; Production is unchanged.
 
-Repository revision: `c8bdd73c113951b42c75bbc8903e7be3ab7dd548`
+Baseline source revision: `5c2e3053b33a32b7d637a74296759cac2103534b`
+
+Baseline record:
+`results/supercop_m2pro_baseline_20260826/SUMMARY.md`. This is the same-host
+A/B baseline; a target-host baseline is still required before promotion.
 
 ## Campaign goals
 
@@ -134,27 +138,30 @@ Deliverables:
 Gate: no optimization result is reported without a reproducible baseline using
 the same host, compiler policy, hash policy, and counter backend.
 
-### Phase 1 — Reconstruct the current contract
+### Phase 1 — Record only the minimum replacement contract
 
-We will walk through, annotate, and test:
+Good-Thomas is expected to replace the current internal transform schedule, so
+we will not document every old butterfly, physical block index, or packed zeta
+slot unless it is needed to diagnose a mismatch. We retain only:
 
-1. the coefficient-domain ring relation;
-2. every forward NTT stage and zeta consumption order;
-3. the exact 288-cubic-block output layout;
-4. Montgomery and centered-representative conventions;
-5. base multiplication, base inversion, and inverse input contracts;
-6. every keygen, encap, and decap consumer.
+1. coefficient-domain input and in-place/aliasing behavior;
+2. the mathematical transform/base-ring relation used as the oracle;
+3. Montgomery and centered-representative conventions at boundaries;
+4. base multiplication, base inversion, inverse, and byte-output contracts;
+5. every keygen, encap, and decap consumer.
 
 Deliverables:
 
 - current forward operation DAG;
-- stage-by-stage C oracle;
-- layout/index map with small worked examples;
-- current range table;
-- annotated assembly reading guide.
+- operation-level C oracle and full multiplication relation;
+- boundary representation and scale table;
+- caller/consumer map;
+- only the old internal details required by failing differential tests.
 
-Gate: each transform boundary must be explainable in both mathematics and
-memory offsets before a GT candidate is created.
+Gate: the new GT path must have an independent mathematical oracle and preserve
+all externally consumed semantics. Exact equality with the old internal NTT
+array is optional if all downstream GT consumers are replaced and the complete
+polynomial/KEM relations are verified.
 
 ### Phase 2 — Prove or reject the 9-by-32 decomposition
 
@@ -186,8 +193,11 @@ coefficient input
   -> explicit map to the current cubic-block contract
 ```
 
-The first reference should return the exact current output ordering so the
-existing base multiplication, base inversion, and inverse NTT remain unchanged.
+The first reference must declare one complete GT representation contract. It
+may either adapt back to the current cubic-block ordering for staged reuse, or
+replace the forward transform, base multiplication/inversion, and inverse as a
+closed GT family. Exact equality with the old internal NTT array is required
+only for the compatibility-adapter route.
 
 Tests:
 
@@ -241,7 +251,8 @@ No later phase is used to hide a regression introduced by an earlier phase.
 ### Phase 6 — SUPERCOP measurement
 
 Production and candidate are packaged as distinct implementations of the same
-`crypto_kem/ntruplus864` primitive. Record:
+`crypto_kem/ntruplus864repo` primitive. The `repo` suffix prevents collision
+with SUPERCOP's different built-in NTRU+864 byte contract. Record:
 
 - SUPERCOP revision and raw result path;
 - host CPU, core policy, OS, compiler, and frequency policy;
@@ -304,7 +315,17 @@ After a change:
 
 ## Immediate next action
 
-The next implementation turn should perform Phase 0 and Phase 1 only: capture
-the SUPERCOP-capable baseline and produce a small executable reference that
-prints and verifies the current 288 cubic-block index/zeta map. It should not
-write a GT Neon kernel yet.
+The full-KEM SUPERCOP baseline is captured. The next implementation turn should
+complete the minimum Phase 1 boundary contract and begin the scalar Phase 2
+proof:
+
+1. freeze coefficient input, aliasing, ring relation, serialization, and
+   caller-visible scale/representative rules;
+2. choose the closed GT-family route unless compatibility with an unchanged
+   current consumer is demonstrably cheaper;
+3. derive and test the 9-by-32 maps, roots, twists, inverse scale, and full
+   polynomial relation without first reconstructing the old packed layout;
+4. inspect old block indices or packed zeta order only to connect an unchanged
+   consumer or diagnose a differential failure.
+
+Do not write a GT Neon kernel until the scalar relation passes.

@@ -78,4 +78,4 @@ help:
 	@echo "  CYCLE_WARMUP=<n>                           # default 100"
 	@echo ""
 	@echo "SUPERCOP packaging:"
-	@echo "  make supercop-package IMPL=<path> SUPERCOP_ROOT=<path> SUPERCOP_SCHEME=ntruplus864 SUPERCOP_IMPL=neon-production"
+	@echo "  make supercop-package IMPL=<path> SUPERCOP_ROOT=<path> SUPERCOP_SCHEME=ntruplus864repo SUPERCOP_IMPL=neon-production"

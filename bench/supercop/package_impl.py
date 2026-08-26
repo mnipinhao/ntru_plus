@@ -13,6 +13,7 @@ from pathlib import Path
 
 
 SOURCE_SUFFIXES = {".c", ".s", ".S"}
+CHECKSUM_FILES = ("checksumsmall", "checksumbig")
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
 
 
@@ -52,7 +53,9 @@ def dry_run_sources(impl: Path) -> list[PackageFile]:
         if token == "randombytes.c":
             continue
         source = (impl / candidate).resolve()
-        destination = candidate if ".." not in candidate.parts else Path(candidate.name)
+        # SUPERCOP compiles implementation sources only from the directory that
+        # contains api.h, so sources from repo subdirectories must be flattened.
+        destination = Path(candidate.name)
         packaged = PackageFile(source, destination)
         if source.exists() and packaged not in sources:
             sources.append(packaged)
@@ -98,6 +101,10 @@ def copy_file(destination: Path, packaged: PackageFile) -> None:
     target = destination / packaged.destination
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(packaged.source, target)
+    if packaged.destination == Path("kem.c"):
+        text = target.read_text()
+        if '#include "crypto_kem.h"' not in text:
+            target.write_text('#include "crypto_kem.h"\n' + text)
 
 
 def main() -> int:
@@ -115,8 +122,28 @@ def main() -> int:
     if destination.exists():
         raise SystemExit(f"destination already exists; remove or rename it explicitly: {destination}")
 
+    checksum_source = Path(__file__).resolve().parent / "checksums" / scheme
+    checksum_targets: list[tuple[Path, str]] = []
+    for name in CHECKSUM_FILES:
+        source = checksum_source / name
+        if not source.is_file():
+            continue
+        target = destination.parent / name
+        expected = source.read_text()
+        if target.exists() and target.read_text() != expected:
+            raise SystemExit(f"existing SUPERCOP checksum differs: {target}")
+        checksum_targets.append((target, expected))
+
     sources = dry_run_sources(impl)
     headers = collect_headers(impl, sources)
+    # SUPERCOP supplies a randombytes.h that also exposes measurement counters.
+    # A repo-local header would shadow it because the implementation directory
+    # is the first include path.
+    headers = {
+        packaged
+        for packaged in headers
+        if packaged.destination != Path("randombytes.h")
+    }
     destination.mkdir(parents=True)
     files = set(sources) | headers
     destinations: dict[Path, Path] = {}
@@ -129,8 +156,26 @@ def main() -> int:
     for packaged in sorted(files, key=lambda item: item.destination.as_posix()):
         copy_file(destination, packaged)
 
+    (destination / "architectures").write_text("aarch64\n")
+    for target, expected in checksum_targets:
+        target.write_text(expected)
+    revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=impl,
+        text=True,
+        capture_output=True,
+    )
+    source_revision = revision.stdout.strip() if revision.returncode == 0 else "unknown"
     (destination / "PROVENANCE").write_text(
-        f"source={impl}\npackager=bench/supercop/package_impl.py\n"
+        f"source={impl}\n"
+        f"source_revision={source_revision}\n"
+        f"scheme={scheme}\n"
+        f"implementation={implementation}\n"
+        "architecture=aarch64\n"
+        "namespace_shim=kem.c includes SUPERCOP-generated crypto_kem.h\n"
+        "randombytes_header=SUPERCOP-provided\n"
+        f"checksums={checksum_source if checksum_source.is_dir() else 'unavailable'}\n"
+        "packager=bench/supercop/package_impl.py\n"
     )
     print(destination)
     print(f"copied {len(sources)} sources and {len(headers)} headers")

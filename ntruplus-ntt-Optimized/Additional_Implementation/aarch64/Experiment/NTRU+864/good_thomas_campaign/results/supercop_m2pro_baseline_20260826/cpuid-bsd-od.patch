@@ -1,0 +1,7 @@
+--- supercop-20260627/cpuid/do
++++ supercop-20260627-macos/cpuid/do
+@@ -24 +24,3 @@
+-	    od -t x1 -A n < cpuid.out | sed 's/ \(..\)/0x\1,/g' >> cpuid.h || continue
++	    od -t x1 -A n < cpuid.out \
++	    | tr -s '[:space:]' '\n' \
++	    | sed '/^$/d;s/^/0x/;s/$/,/' >> cpuid.h || continue
