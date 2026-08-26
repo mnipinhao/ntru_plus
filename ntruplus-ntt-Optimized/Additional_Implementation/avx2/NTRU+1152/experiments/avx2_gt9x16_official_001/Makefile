@@ -115,6 +115,9 @@ GT9X16_PROD3_AOS_BRANCH_ASM := asm/gt9x16_prod3_aos_branch0.S
 GT9X16_PROD3_AOS_BRANCH_ARGS := --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --paper-range generated/gt9x16-ntt9-paper-range.json --twist-constants generated/f0-prod1-constants.inc --schedule generated/gt9x16-prod3-aos-schedule.json --output generated/gt9x16-prod3-aos-branch0.json --asm-constants generated/gt9x16-prod3-aos-branch0-constants.inc
 GT9X16_PROD3_AOS_BRANCH_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-aos-branch0.o --source $(GT9X16_PROD3_AOS_BRANCH_ASM) --constants generated/gt9x16-prod3-aos-branch0-constants.inc --proof generated/gt9x16-prod3-aos-branch0.json --output generated/gt9x16-prod3-aos-branch0-audit.json
 GT9X16_PROD3_AOS_BRANCH_TEST_SOURCES := src/top_split_adapter.c $(F0_PROD2_ASM) $(GT9X16_PROD3_AOS_BRANCH_ASM) tests/test_gt9x16_prod3_aos_branch0.c
+GT9X16_PROD3_AOS_FULL_ARGS := --branch-proof generated/gt9x16-prod3-aos-branch0.json --branch1-constants generated/gt9x16-prod3-aos-branch1-constants.inc --output generated/gt9x16-prod3-aos-full.json
+GT9X16_PROD3_AOS_FULL_AUDIT_ARGS := --candidate-object $(BUILD)/prod3/gt9x16-prod3-aos-full.o --control-object $(BUILD)/prod3/f0-prod2-p2b.o --source $(GT9X16_PROD3_AOS_BRANCH_ASM) --proof generated/gt9x16-prod3-aos-full.json --output generated/gt9x16-prod3-aos-full-audit.json
+GT9X16_PROD3_AOS_FULL_TEST_SOURCES := src/top_split_adapter.c $(F0_PROD2_ASM) $(GT9X16_PROD3_AOS_BRANCH_ASM) tests/test_gt9x16_prod3_aos_full.c
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -230,11 +233,19 @@ generate:
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_c1_tile.py $(GT9X16_PROD3_AOS_TILE_AUDIT_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_aos_c1_tile_evidence.py
 	$(PYTHON) tools/generate_gt9x16_prod3_aos_branch0.py $(GT9X16_PROD3_AOS_BRANCH_ARGS)
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_branch1.py --twist-constants generated/f0-prod1-constants.inc --asm-constants generated/gt9x16-prod3-aos-branch1-constants.inc
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-branch0.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_BRANCH_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-aos-branch0
 	$(BUILD)/prod3/test-gt9x16-prod3-aos-branch0
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_branch0.py $(GT9X16_PROD3_AOS_BRANCH_AUDIT_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_aos_branch0_evidence.py
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_ARGS)
+	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-full.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/prod3/f0-prod2-p2b.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_FULL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-aos-full
+	$(BUILD)/prod3/test-gt9x16-prod3-aos-full
+	$(PYTHON) tools/audit_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_AUDIT_ARGS)
+	$(PYTHON) tests/test_gt9x16_prod3_aos_full_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
@@ -345,11 +356,19 @@ check:
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_c1_tile.py $(GT9X16_PROD3_AOS_TILE_AUDIT_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_aos_c1_tile_evidence.py
 	$(PYTHON) tools/generate_gt9x16_prod3_aos_branch0.py $(GT9X16_PROD3_AOS_BRANCH_ARGS) --check
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_branch1.py --twist-constants generated/f0-prod1-constants.inc --asm-constants generated/gt9x16-prod3-aos-branch1-constants.inc --check
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-branch0.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_BRANCH_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-aos-branch0
 	$(BUILD)/prod3/test-gt9x16-prod3-aos-branch0
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_branch0.py $(GT9X16_PROD3_AOS_BRANCH_AUDIT_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_aos_branch0_evidence.py
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_ARGS) --check
+	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-full.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/prod3/f0-prod2-p2b.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_FULL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-aos-full
+	$(BUILD)/prod3/test-gt9x16-prod3-aos-full
+	$(PYTHON) tools/audit_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_AUDIT_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_aos_full_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
@@ -469,6 +488,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-aos-c1-tile-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_BRANCH_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-aos-branch0-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-aos-branch0-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I. $(GT9X16_PROD3_AOS_FULL_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-aos-full-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-aos-full-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -495,6 +516,9 @@ audit:
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_c1_tile.py $(GT9X16_PROD3_AOS_TILE_AUDIT_ARGS)
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-branch0.o
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_branch0.py $(GT9X16_PROD3_AOS_BRANCH_AUDIT_ARGS)
+	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_AOS_BRANCH_ASM) -o $(BUILD)/prod3/gt9x16-prod3-aos-full.o
+	$(CC) -mavx2 -I. -c $(F0_PROD2_ASM) -o $(BUILD)/prod3/f0-prod2-p2b.o
+	$(PYTHON) tools/audit_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_AUDIT_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o

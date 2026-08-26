@@ -1,0 +1,49 @@
+{
+  "authorization": {
+    "benchmark": false,
+    "correctness_and_linked_audit": true,
+    "full_asm": true,
+    "native_kem": false
+  },
+  "checkpoint": "GT9X16-PROD3-AOS-FULL",
+  "frozen": {
+    "branch_order": [
+      0,
+      1
+    ],
+    "branch_schedule": "exact BRANCH0 machine shape",
+    "cross_branch_fusion": false,
+    "output_abi": "raw exact P2-B MA2 coefficient planes",
+    "scale": 4,
+    "top_split_arithmetic_changed": false
+  },
+  "full": {
+    "backing_bytes": 2304,
+    "barrett_vectors": 72,
+    "data_loads": 144,
+    "data_stores": 144,
+    "extra_array_bytes": 0,
+    "montgomery_chains": 296,
+    "routing": 576,
+    "routing_decomposition": {
+      "exact_ma2_vpermq": 72,
+      "exact_ma2_vpshufb": 72,
+      "fused_transform_routing": 432
+    }
+  },
+  "per_branch": {
+    "backing_bytes": 1152,
+    "barrett_vectors": 36,
+    "data_loads": 72,
+    "data_stores": 72,
+    "montgomery_chains": 148,
+    "routing": 288
+  },
+  "range_proof": {
+    "all_fit_signed16": true,
+    "new_reductions": 0,
+    "same_as_branch0_for_both_branches": true
+  },
+  "schema": "gt9x16-prod3-aos-full/v1",
+  "scope": "two independent persistent-AoS branches in one 2304-byte in-place leaf"
+}

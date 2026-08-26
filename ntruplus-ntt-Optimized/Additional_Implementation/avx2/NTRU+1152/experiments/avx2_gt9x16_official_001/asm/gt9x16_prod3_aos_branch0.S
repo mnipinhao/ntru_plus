@@ -30,23 +30,23 @@
   vpsubw ymm\x, ymm\x, ymm\tmp
 .endm
 
-.macro PROD3_LOAD_TWIST row,qblock,reg
+.macro PROD3_LOAD_TWIST branch,base,row,qblock,reg
   /* Top-split source h is (5*GT-row) mod 9; q/j remain AoS. */
-  vmovdqu ymm\reg, YMMWORD PTR [rdi + ((5*(\row)%9)*128) + (\qblock)*32]
-  PROD3_MONT6 \reg,0,.Lprod3_b0_r\row\()_q\qblock\()_twist,.Lprod3_b0_r\row\()_q\qblock\()_twist_qinv
+  vmovdqu ymm\reg, YMMWORD PTR [rdi + (\base) + ((5*(\row)%9)*128) + (\qblock)*32]
+  PROD3_MONT6 \reg,0,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist_qinv
 .endm
 
-.macro PROD3_PASS_A qblock
+.macro PROD3_PASS_A branch,base,qblock
   vmovdqa ymm6, YMMWORD PTR [rip + .Lgt_q]
-  PROD3_LOAD_TWIST 0,\qblock,7
-  PROD3_LOAD_TWIST 1,\qblock,8
-  PROD3_LOAD_TWIST 2,\qblock,9
-  PROD3_LOAD_TWIST 3,\qblock,10
-  PROD3_LOAD_TWIST 4,\qblock,11
-  PROD3_LOAD_TWIST 5,\qblock,12
-  PROD3_LOAD_TWIST 6,\qblock,13
-  PROD3_LOAD_TWIST 7,\qblock,14
-  PROD3_LOAD_TWIST 8,\qblock,15
+  PROD3_LOAD_TWIST \branch,\base,0,\qblock,7
+  PROD3_LOAD_TWIST \branch,\base,1,\qblock,8
+  PROD3_LOAD_TWIST \branch,\base,2,\qblock,9
+  PROD3_LOAD_TWIST \branch,\base,3,\qblock,10
+  PROD3_LOAD_TWIST \branch,\base,4,\qblock,11
+  PROD3_LOAD_TWIST \branch,\base,5,\qblock,12
+  PROD3_LOAD_TWIST \branch,\base,6,\qblock,13
+  PROD3_LOAD_TWIST \branch,\base,7,\qblock,14
+  PROD3_LOAD_TWIST \branch,\base,8,\qblock,15
 
   vmovdqa ymm4, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
   vmovdqa ymm5, YMMWORD PTR [rip + .Lgt_paper_kappa]
@@ -73,15 +73,15 @@
   PROD3_MONT6 12,0,.Lgt_ntt9_zeta4,.Lgt_ntt9_qinv4
   PROD3_R3 13,14,12
 
-  vmovdqu YMMWORD PTR [rdi + 0*128 + (\qblock)*32], ymm7
-  vmovdqu YMMWORD PTR [rdi + 1*128 + (\qblock)*32], ymm8
-  vmovdqu YMMWORD PTR [rdi + 2*128 + (\qblock)*32], ymm15
-  vmovdqu YMMWORD PTR [rdi + 3*128 + (\qblock)*32], ymm10
-  vmovdqu YMMWORD PTR [rdi + 4*128 + (\qblock)*32], ymm11
-  vmovdqu YMMWORD PTR [rdi + 5*128 + (\qblock)*32], ymm9
-  vmovdqu YMMWORD PTR [rdi + 6*128 + (\qblock)*32], ymm13
-  vmovdqu YMMWORD PTR [rdi + 7*128 + (\qblock)*32], ymm14
-  vmovdqu YMMWORD PTR [rdi + 8*128 + (\qblock)*32], ymm12
+  vmovdqu YMMWORD PTR [rdi + (\base) + 0*128 + (\qblock)*32], ymm7
+  vmovdqu YMMWORD PTR [rdi + (\base) + 1*128 + (\qblock)*32], ymm8
+  vmovdqu YMMWORD PTR [rdi + (\base) + 2*128 + (\qblock)*32], ymm15
+  vmovdqu YMMWORD PTR [rdi + (\base) + 3*128 + (\qblock)*32], ymm10
+  vmovdqu YMMWORD PTR [rdi + (\base) + 4*128 + (\qblock)*32], ymm11
+  vmovdqu YMMWORD PTR [rdi + (\base) + 5*128 + (\qblock)*32], ymm9
+  vmovdqu YMMWORD PTR [rdi + (\base) + 6*128 + (\qblock)*32], ymm13
+  vmovdqu YMMWORD PTR [rdi + (\base) + 7*128 + (\qblock)*32], ymm14
+  vmovdqu YMMWORD PTR [rdi + (\base) + 8*128 + (\qblock)*32], ymm12
 .endm
 
 .macro PROD3_MONT15 x,lo,hi,zeta,qinv
@@ -97,12 +97,12 @@
   vpaddw ymm\x, ymm\x, ymm\hi
 .endm
 
-.macro PROD3_PASS_B row
+.macro PROD3_PASS_B base,row
   /* All four source vectors are loaded before this row is overwritten. */
-  vmovdqu ymm0, YMMWORD PTR [rdi + (\row)*128 + 0]
-  vmovdqu ymm1, YMMWORD PTR [rdi + (\row)*128 + 32]
-  vmovdqu ymm2, YMMWORD PTR [rdi + (\row)*128 + 64]
-  vmovdqu ymm3, YMMWORD PTR [rdi + (\row)*128 + 96]
+  vmovdqu ymm0, YMMWORD PTR [rdi + (\base) + (\row)*128 + 0]
+  vmovdqu ymm1, YMMWORD PTR [rdi + (\base) + (\row)*128 + 32]
+  vmovdqu ymm2, YMMWORD PTR [rdi + (\base) + (\row)*128 + 64]
+  vmovdqu ymm3, YMMWORD PTR [rdi + (\base) + (\row)*128 + 96]
 
   /* D8 then D4 preserve contiguous AoS q blocks: zero routing. */
   PROD3_BFLY 0,2,4,5,.Lprod3_b0_p\row\()_distance8_zeta,.Lprod3_b0_p\row\()_distance8_qinv
@@ -172,10 +172,10 @@
   vpermq ymm5, ymm5, 0xd8
   vpermq ymm6, ymm6, 0xd8
   vpermq ymm7, ymm7, 0xd8
-  vmovdqu YMMWORD PTR [rdi + (\row)*128 + 0], ymm4
-  vmovdqu YMMWORD PTR [rdi + (\row)*128 + 32], ymm5
-  vmovdqu YMMWORD PTR [rdi + (\row)*128 + 64], ymm6
-  vmovdqu YMMWORD PTR [rdi + (\row)*128 + 96], ymm7
+  vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 0], ymm4
+  vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 32], ymm5
+  vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 64], ymm6
+  vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 96], ymm7
 .endm
 
 /*
@@ -186,24 +186,65 @@
 .globl ntruplus1152_exp001_gt9x16_prod3_aos_branch0
 .type ntruplus1152_exp001_gt9x16_prod3_aos_branch0,@function
 ntruplus1152_exp001_gt9x16_prod3_aos_branch0:
-  PROD3_PASS_A 0
-  PROD3_PASS_A 1
-  PROD3_PASS_A 2
-  PROD3_PASS_A 3
+  PROD3_PASS_A 0,0,0
+  PROD3_PASS_A 0,0,1
+  PROD3_PASS_A 0,0,2
+  PROD3_PASS_A 0,0,3
   vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
-  PROD3_PASS_B 0
-  PROD3_PASS_B 1
-  PROD3_PASS_B 2
-  PROD3_PASS_B 3
-  PROD3_PASS_B 4
-  PROD3_PASS_B 5
-  PROD3_PASS_B 6
-  PROD3_PASS_B 7
-  PROD3_PASS_B 8
+  PROD3_PASS_B 0,0
+  PROD3_PASS_B 0,1
+  PROD3_PASS_B 0,2
+  PROD3_PASS_B 0,3
+  PROD3_PASS_B 0,4
+  PROD3_PASS_B 0,5
+  PROD3_PASS_B 0,6
+  PROD3_PASS_B 0,7
+  PROD3_PASS_B 0,8
   ret
 .size ntruplus1152_exp001_gt9x16_prod3_aos_branch0, .-ntruplus1152_exp001_gt9x16_prod3_aos_branch0
 
+/*
+ * In-place 2304-byte full leaf.  This deliberately repeats the proven
+ * branch-local machine shape; there is no cross-branch fusion or reschedule.
+ */
+.p2align 5
+.globl ntruplus1152_exp001_gt9x16_prod3_aos_full
+.type ntruplus1152_exp001_gt9x16_prod3_aos_full,@function
+ntruplus1152_exp001_gt9x16_prod3_aos_full:
+  PROD3_PASS_A 0,0,0
+  PROD3_PASS_A 0,0,1
+  PROD3_PASS_A 0,0,2
+  PROD3_PASS_A 0,0,3
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PROD3_PASS_B 0,0
+  PROD3_PASS_B 0,1
+  PROD3_PASS_B 0,2
+  PROD3_PASS_B 0,3
+  PROD3_PASS_B 0,4
+  PROD3_PASS_B 0,5
+  PROD3_PASS_B 0,6
+  PROD3_PASS_B 0,7
+  PROD3_PASS_B 0,8
+
+  PROD3_PASS_A 1,1152,0
+  PROD3_PASS_A 1,1152,1
+  PROD3_PASS_A 1,1152,2
+  PROD3_PASS_A 1,1152,3
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PROD3_PASS_B 1152,0
+  PROD3_PASS_B 1152,1
+  PROD3_PASS_B 1152,2
+  PROD3_PASS_B 1152,3
+  PROD3_PASS_B 1152,4
+  PROD3_PASS_B 1152,5
+  PROD3_PASS_B 1152,6
+  PROD3_PASS_B 1152,7
+  PROD3_PASS_B 1152,8
+  ret
+.size ntruplus1152_exp001_gt9x16_prod3_aos_full, .-ntruplus1152_exp001_gt9x16_prod3_aos_full
+
 .include "generated/gt9x16-ntt16-constants.inc"
 .include "generated/gt9x16-prod3-aos-branch0-constants.inc"
+.include "generated/gt9x16-prod3-aos-branch1-constants.inc"
 
 .section .note.GNU-stack,"",@progbits

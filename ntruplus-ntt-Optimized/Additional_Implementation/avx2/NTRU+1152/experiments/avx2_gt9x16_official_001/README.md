@@ -494,3 +494,14 @@ additional routes per tile. The real count is therefore 288 per branch and
 576 per full forward, leaving a static 360-route credit versus G0/P2-B's 936.
 No benchmark was run. Only the second-branch/full-producer correctness gate is
 next. See `CHECKPOINT-GT9X16-PROD3-AOS-BRANCH0.md`.
+
+Checkpoint GT9X16-PROD3-AOS-FULL expands the proven machine shape to both
+branches and passes a raw exact 2,304-byte differential against all four
+G0/P2-B pair paths, including full impulse, random-small, unaligned in-place,
+immutability, canary, and sanitizer gates. The linked apples-to-apples audit
+confirms 144 loads, 144 stores, and 576 routes versus G0/P2-B's 288 loads, 216
+stores, and 936 routes, with identical 296 Montgomery chains and 72 Barrett
+vectors. The tradeoff is 78 more constant-memory operands and 8,826 more
+symbol text bytes. No benchmark was run; only SUPERCOP-derived serious
+producer-boundary pricing is authorized next. See
+`CHECKPOINT-GT9X16-PROD3-AOS-FULL.md`.
