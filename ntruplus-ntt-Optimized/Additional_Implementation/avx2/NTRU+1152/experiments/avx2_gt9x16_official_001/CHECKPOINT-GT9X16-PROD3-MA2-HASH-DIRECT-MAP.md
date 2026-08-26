@@ -1,0 +1,133 @@
+# GT9X16-PROD3-MA2-HASH-DIRECT-MAP
+
+## Scope
+
+This checkpoint maps the materialized scale-4 PROD3/MA2 coefficient planes
+directly to the 1,728 bytes required by pinned Official `poly_tobytes`. It is
+a static ownership, range, and movement proof. It does not add serializer
+assembly, change PROD3 or MA2 arithmetic, or run a benchmark.
+
+The target boundary is deliberately bytes rather than an Official NTT array:
+
+```text
+MA2 scale-4 coefficient planes
+  -> inv4/canonicalization
+  -> exact 12-bit packing ownership
+  -> 1728 bytes
+```
+
+Neither a generic-F0 array nor a 2,304-byte Official-order coefficient array
+belongs in the target contract.
+
+## Exact ownership result
+
+`generated/gt9x16-prod3-ma2-hash-direct-map.json` joins the existing semantic
+owner `(branch,p,q,terminal_coefficient)` from the MA2 plane map to its exact
+Official coefficient index. It then expands every coefficient into the exact
+bits it owns in the pinned two-coefficients/three-bytes format.
+
+The mechanical proof closes all cardinalities:
+
+| Object | Count |
+| --- | ---: |
+| MA2 cells | 1,152 |
+| Official coefficient indices | 1,152 |
+| serialized coefficient pairs | 576 |
+| serialized bytes | 1,728 |
+| MA2 vectors | 72 |
+| serializer blocks | 9 |
+
+Every adjacent serialized pair is already contained in one MA2 vector. Each
+MA2 vector owns exactly eight complete coefficient pairs, belongs to exactly
+one 128-coefficient Official serializer block, and contributes two exact
+12-byte fragments. Each serializer block is covered by exactly eight MA2
+vectors.
+
+This is the important H2 result: coefficient pairing does not require a
+cross-vector gather. It is not a zero-routing result, however. Of the 576
+pairs, 320 are within one 128-bit half and 256 cross the halves of their YMM.
+Fifty-six of the 72 vectors contain at least one cross-half pair. Any
+in-register H2 schedule that retains the pinned 32-byte output-store geometry
+therefore has a lower bound of at least 56 cross-half routes before considering
+fragment recombination.
+
+## Exact scale and range proof
+
+The proof exhaustively evaluates every signed integer in the global proved
+PROD3 MA2 envelope:
+
+```text
+input scale-4 representative: [-20751, 20753]
+tested integers:               41505
+inv4 Montgomery output:        [-1998, 1998]
+direct canonical output:       [0, 3456]
+```
+
+For every tested value the AVX2 `vpmullw`/`vpmulhw` Montgomery identity using
+`-901` and `16379` satisfies `4*y == x (mod 3457)`. The output lies strictly
+inside `(-q,q)`, so one sign-mask add of `q` is sufficient. Exhaustive
+comparison also proves that this direct sign canonicalization is bit-exact
+with pinned Official `pack.s`, including its `vpmulhrsw` Barrett step. The
+Official Barrett step is therefore redundant after this inv4 operation, and
+the resulting `[0,3456]` values are safe for 12-bit packing.
+
+This is a representative-level proof, not merely a modular differential.
+
+## Movement ledger
+
+The current H0 ledger is derived from the linked source shapes already used by
+the hash bridge:
+
+| Dynamic vector work | H0 current | H1 direct Official block | H2 packing-oriented |
+| --- | ---: | ---: | ---: |
+| initial MA2/source loads | 72 | 272 | 72 lower bound |
+| intermediate reloads | 416 | 0 | 0 |
+| intermediate stores | 216 | 0 | 0 |
+| routing before pack | 408 | 336 | >=56 cross-half lower bound; exact open |
+| inv4 Montgomery vectors | 72 | 72 | 72 |
+| Official Barrett vectors | 72 | 0 | 0 |
+| sign canonicalization vectors | 72 | 72 | 72 |
+| pinned pack bit/transpose instructions | 468 | 468 | exact schedule open |
+| final 32-byte stores | 54 | 54 | 54 target |
+| coefficient temporary | 4,608 B | 0 | 0 |
+
+H0 comprises:
+
+```text
+planes -> generic F0: 72 loads, 72 routes, 72 stores
+generic F0 -> Official: 272 loads, 336 routes, 72 stores
+inv4 array pass: 72 reloads, 72 Montgomery vectors, 72 stores
+Official pack: 72 reloads, 72 Barrett vectors, 468 pack instructions, 54 stores
+```
+
+H1 independently re-derives the same 136 source-half groups as the existing
+proved MA0 adapter. It can reconstruct each eight-vector Official serializer
+block in registers and immediately apply inv4, sign-add-q, and the pinned pack
+network. This supplies an exact construction upper bound with no coefficient
+temporary. Relative to H0 it removes 216 vector loads/reloads, all 216
+intermediate stores, 72 pre-pack routes, and the redundant 72-vector Barrett
+stage.
+
+H2 has the stronger 72-load lower bound because every serialized pair is
+already local to one MA2 vector. It is not yet an exact instruction schedule:
+the 256 cross-half pairs, two 12-byte fragments per vector, recombination into
+54 32-byte output stores, and linked peak-YMM/spill proof remain open. Writing
+H2 assembly from only the lower bound would overstate the result.
+
+## Decision
+
+The ownership, byte boundary, and range portions of the direct-hash map pass.
+H1 is selected as the first realization to schedule because it already removes
+all full-array materialization and has an exact, mechanically counted register
+construction. H2 remains the optimized realization candidate, but requires an
+exact within-vector pair and fragment-recombination schedule first.
+
+No serializer assembly or benchmark is authorized by this checkpoint. The
+next checkpoint is a static H1/H2 register schedule and linked instruction
+budget. It must prove a spill-free schedule and exact 54-store byte geometry
+before either realization is implemented.
+
+The native interpretation remains unchanged: the approximately 530-cycle
+excess hash tax is the recoverable target of this work, while the separate
+approximately 182-cycle PROD3 producer debt remains open and cannot be erased
+by a direct serializer claim.

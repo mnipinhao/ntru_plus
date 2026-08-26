@@ -553,3 +553,17 @@ ASLR on/off agree.  Hash recovery is therefore a significant but incomplete
 explanation of native regression.  The next checkpoint is only an exact
 MA2-plane-to-12-bit-byte mapping/range/movement proof; direct serializer ASM
 is not yet authorized.  See `CHECKPOINT-GT9X16-PROD3-HASH-FANOUT.md`.
+
+Checkpoint GT9X16-PROD3-MA2-HASH-DIRECT-MAP removes the Official coefficient
+array from the target contract and maps every MA2 plane lane directly to its
+Official coefficient and exact 12-bit byte ownership. All 576 adjacent
+serializer pairs reside within one MA2 vector; each vector owns eight pairs in
+one serializer block and two 12-byte output fragments. The exhaustive scale
+proof covers all 41,505 integers in `[-20751,20753]`: inv4 Montgomery produces
+`[-1998,1998]`, after which sign-add-q is bit-exact with Official's Barrett plus
+sign canonicalization and yields `[0,3456]`. H1 is the first schedule target:
+it removes 416 current intermediate reloads and 216 stores without a full
+coefficient temporary. H2 exposes a 72-load lower bound, but 256 pairs cross
+128-bit halves and its exact fragment-recombination schedule remains open.
+Serializer ASM and benchmarking are still unauthorized. See
+`CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-MAP.md`.
