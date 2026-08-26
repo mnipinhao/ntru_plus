@@ -236,7 +236,8 @@ def main() -> int:
                                            "derived-f0-ma2", "derived-f0-prod1",
                                            "derived-f0-prod2",
                                            "derived-f0-prod2-consumer",
-                                           "derived-gt9x16-prod3-price"),
+                                           "derived-gt9x16-prod3-price",
+                                           "derived-gt9x16-prod3-consumer"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -251,7 +252,8 @@ def main() -> int:
                      "derived-f0-ma3", "derived-f0-ma2-chunk",
                      "derived-f0-ma2", "derived-f0-prod1",
                      "derived-f0-prod2", "derived-f0-prod2-consumer",
-                     "derived-gt9x16-prod3-price") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-price",
+                     "derived-gt9x16-prod3-consumer") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -305,7 +307,8 @@ def main() -> int:
                          "derived-f0-ma2-chunk", "derived-f0-ma2",
                          "derived-f0-prod1", "derived-f0-prod2",
                          "derived-f0-prod2-consumer",
-                         "derived-gt9x16-prod3-price"):
+                         "derived-gt9x16-prod3-price",
+                         "derived-gt9x16-prod3-consumer"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -320,6 +323,8 @@ def main() -> int:
                 "derived-f0-prod2": "f0_prod2_measure.c",
                 "derived-f0-prod2-consumer": "f0_prod2_consumer_measure.c",
                 "derived-gt9x16-prod3-price": "gt9x16_prod3_aos_price_measure.c",
+                "derived-gt9x16-prod3-consumer":
+                    "gt9x16_prod3_aos_consumer_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -438,6 +443,13 @@ def main() -> int:
                                       ("candidate", "second"),
                                       ("candidate", "first"),
                                       ("control", "second")))
+    elif args.mode == "derived-gt9x16-prod3-consumer":
+        required = (
+            "gt9x16_prod3_consumer_control_first_cycles",
+            "gt9x16_prod3_consumer_candidate_second_cycles",
+            "gt9x16_prod3_consumer_candidate_first_cycles",
+            "gt9x16_prod3_consumer_control_second_cycles",
+        )
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1126,6 +1138,92 @@ def main() -> int:
         summary["linked_movement_audit"] = json.loads(
             audit_paths[0].read_text(encoding="utf-8"))
         shutil.copy2(audit_paths[0], args.result_dir / audit_paths[0].name)
+    if args.mode == "derived-gt9x16-prod3-consumer":
+        prefix = "gt9x16_prod3_consumer"
+        combined = {
+            f"{prefix}_{variant}_cycles": (
+                pooled[f"{prefix}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{variant}_second_cycles"])
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            control = stabilized_quartiles(
+                observed[f"{prefix}_control_first_cycles"] +
+                observed[f"{prefix}_control_second_cycles"])[1]
+            candidate = stabilized_quartiles(
+                observed[f"{prefix}_candidate_first_cycles"] +
+                observed[f"{prefix}_candidate_second_cycles"])[1]
+            paired_launches.append({
+                "launch": launch_number,
+                "control_stq2": control,
+                "candidate_stq2": candidate,
+                "candidate_minus_control_cycles": candidate - control,
+                "candidate_over_control_ratio": candidate / control,
+            })
+        deltas = [float(entry["candidate_minus_control_cycles"])
+                  for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "candidate_faster_launches": sum(x < 0 for x in deltas),
+            "candidate_slower_launches": sum(x > 0 for x in deltas),
+            "candidate_tied_launches": sum(x == 0 for x in deltas),
+            "median_candidate_minus_control_cycles": statistics.median(deltas),
+        }
+        control_symbol = "ntruplus1152_exp001_gt9x16_prod3_consumer_control"
+        candidate_symbol = "ntruplus1152_exp001_gt9x16_prod3_consumer_candidate"
+        top_split = "ntruplus1152_exp001_top_split_small"
+        p2b = "ntruplus1152_exp001_f0_prod2_ma2_p2b_pair"
+        price_symbol = "ntruplus1152_exp001_gt9x16_prod3_aos_full_price"
+        native_ma2 = "ntruplus1152_exp001_f0_ma2_native_full"
+        control_calls = direct_transfer_targets(saved_elf, control_symbol)
+        candidate_calls = direct_transfer_targets(saved_elf, candidate_symbol)
+        expected_control = [top_split, p2b, p2b, p2b, p2b,
+                            top_split, p2b, p2b, p2b, p2b, native_ma2]
+        expected_candidate = [top_split, price_symbol, top_split,
+                              price_symbol, native_ma2]
+        if control_calls != expected_control or candidate_calls != expected_candidate:
+            raise SystemExit(
+                f"PROD3 consumer call graph changed: {control_calls} / {candidate_calls}")
+        forbidden_symbols = (
+            "ntruplus1152_exp001_gt9x16_prod3_aos_branch0",
+            "ntruplus1152_exp001_gt9x16_prod3_aos_full",
+        )
+        layout = elf_layout(saved_elf, (
+            control_symbol, candidate_symbol, top_split, p2b,
+            price_symbol, native_ma2, *forbidden_symbols))
+        retained_forbidden = [name for name in forbidden_symbols
+                              if name in layout["symbols"]]
+        if retained_forbidden:
+            raise SystemExit(
+                "consumer ELF retained duplicate PROD3 symbols: " +
+                ", ".join(retained_forbidden))
+        price_layout = layout["symbols"].get(price_symbol)
+        if price_layout is None or price_layout["size"] != 16569:
+            raise SystemExit(f"unexpected consumer PROD3 size: {price_layout}")
+        summary["linked_consumer_island_audit"] = {
+            "control_direct_transfers": control_calls,
+            "candidate_direct_transfers": candidate_calls,
+            "shared_top_split_symbol": top_split,
+            "shared_ma2_symbol": native_ma2,
+            "resident_h_pointer": "same measure allocation and value",
+            "ma2_inv4_serializer": "same linked native MA2 symbol",
+            "only_two_gt_producers_differ": True,
+            "forbidden_duplicate_symbols_retained": retained_forbidden,
+        }
+        summary["elf_layout"] = layout
+        summary["decision"] = {
+            "headline": "two-producer-plus-unchanged-ma2-consumer-island",
+            "native_kem_result": False,
+            "candidate_direction_stable": all(delta < 0 for delta in deltas),
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1145,6 +1243,7 @@ def main() -> int:
                             else "supercop-derived-poly-f0-prod2-boundary" if args.mode == "derived-f0-prod2"
                             else "supercop-derived-poly-f0-prod2-consumer" if args.mode == "derived-f0-prod2-consumer"
                             else "supercop-derived-gt9x16-prod3-price" if args.mode == "derived-gt9x16-prod3-price"
+                            else "supercop-derived-gt9x16-prod3-consumer" if args.mode == "derived-gt9x16-prod3-consumer"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1185,7 +1284,9 @@ def main() -> int:
               "derived-f0-prod2": "f0_prod2_measure.c",
               "derived-f0-prod2-consumer": "f0_prod2_consumer_measure.c",
               "derived-gt9x16-prod3-price":
-                  "gt9x16_prod3_aos_price_measure.c"}[args.mode])
+                  "gt9x16_prod3_aos_price_measure.c",
+              "derived-gt9x16-prod3-consumer":
+                  "gt9x16_prod3_aos_consumer_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

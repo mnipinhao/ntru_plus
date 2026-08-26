@@ -517,3 +517,14 @@ the direction. This validates the producer architecture at the materialized
 boundary, but remains SUPERCOP-derived rather than native-KEM evidence. Only
 the unchanged-MA2 consumer island is authorized next. See
 `CHECKPOINT-GT9X16-PROD3-AOS-PRICE.md`.
+
+Checkpoint GT9X16-PROD3-AOS-CONSUMER appends the identical resident-`h`, native
+MA2, inverse-four, and serializer tail to both producer variants. Persistent
+AoS measures 4765.0602 versus G0/P2-B at 5192.9537 pooled StQ2; it wins all
+nine headline launches with a paired median delta of -432.0000 cycles and 95%
+CI [-436.1875,-421.9583]. Normal/reversed placement and ASLR on/off all agree.
+The preceding producer-only median was -429.1250, so the credit survives the
+complete ciphertext consumer boundary rather than being consumed by the
+larger frontend footprint. This reauthorizes complete encapsulation KAT and
+native SUPERCOP `enc_cycles`, but is not itself a native-KEM result. See
+`CHECKPOINT-GT9X16-PROD3-AOS-CONSUMER.md`.

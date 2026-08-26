@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-aos-price-selected-consumer-island-next
+state: checkpoint-gt9x16-prod3-aos-consumer-selected-native-encap-next
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -485,7 +485,16 @@ checkpoint_gt9x16_prod3_aos_price_paired: selected-minus429.1250-median-9of9-ci-
 checkpoint_gt9x16_prod3_aos_price_controls: passed-normal-reversed-aslr-on-off-all-9of9-negative-ci
 checkpoint_gt9x16_prod3_aos_price_class: supercop-derived-exact-ma2-boundary-not-native-kem
 checkpoint_gt9x16_prod3_aos_price_result: results/gt9x16-prod3-aos-price-intel155h-20260826-002/summary.json
-next_step: gt9x16-prod3-aos-unchanged-ma2-consumer-island
+checkpoint_gt9x16_prod3_aos_consumer_correctness: passed-257-raw-plane-and-ciphertext-exact-cases-asan-ubsan
+checkpoint_gt9x16_prod3_aos_consumer_link: passed-only-two-gt-producers-differ-shared-top-split-resident-h-ma2-inv4-serializer
+checkpoint_gt9x16_prod3_aos_consumer_selection: selected-normal-fastest-absolute-aslr-on-nine-processes
+checkpoint_gt9x16_prod3_aos_consumer_result: selected-pooled-4765.0602-vs-control-5192.9537
+checkpoint_gt9x16_prod3_aos_consumer_paired: selected-minus432.0000-median-9of9-ci-minus436.1875-minus421.9583
+checkpoint_gt9x16_prod3_aos_consumer_controls: passed-normal-reversed-aslr-on-off-all-9of9-negative-ci
+checkpoint_gt9x16_prod3_aos_consumer_credit: preserved-vs-producer-only-minus429.1250
+checkpoint_gt9x16_prod3_aos_consumer_class: supercop-derived-ciphertext-island-not-native-kem
+gt9x16_prod3_aos_consumer_result: results/gt9x16-prod3-aos-consumer-intel155h-20260826-001/summary.json
+next_step: gt9x16-prod3-aos-kat-native-enc-fixed-elf
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -511,6 +520,7 @@ selected_candidates:
   - f0-prod2-p2b-boundary-minus115.1458-two-producer-paired-median-9of9
   - f0-prod2-p2b-consumer-island-minus126.5000-paired-median-9of9-insufficient-for-kem
   - gt9x16-prod3-persistent-aos-boundary-minus429.1250-two-producer-paired-median-9of9
+  - gt9x16-prod3-persistent-aos-consumer-minus432.0000-paired-median-9of9-native-encap-reopened
 shortlisted_candidates:
   - g0-f1-terminal-major-consumer-natural-shortlist
   - g0-f3-terminal-basis-consumer-fused-shortlist
