@@ -108,6 +108,7 @@ F0_PROD2_TEST_SOURCES := src/f0_prod1_wrapper.c src/f0_prod2_ma2_wrapper.c src/t
 F0_PROD2_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod2/f0-prod2-wrapper.o --helper-object $(BUILD)/f0prod2/f0-prod2-p2b.o --ma2-object $(BUILD)/f0prod2/f0-ma2.o --wrapper-source src/f0_prod2_ma2_wrapper.c --helper-source $(F0_PROD2_ASM) --ma2-source $(F0_MA2_ASM) --contract generated/f0-prod2-ma2-asm.json --map generated/f0-prod2-ma2-map.json --prod1-audit generated/f0-prod1-p1h-audit.json --output generated/f0-prod2-ma2-audit.json
 F0_PROD2_BOUNDARY_AUDIT_ARGS := --projection-object $(BUILD)/f0prod2/f0-generic-to-ma2-planes.o --projection-source $(F0_PROD2_PROJECTION_ASM) --prod1-audit generated/f0-prod1-p1h-audit.json --prod2-audit generated/f0-prod2-ma2-audit.json --output generated/f0-prod2-boundary-audit.json
 GT9X16_PROD3_MAP_ARGS := --component-oracle generated/gt9x16-component-oracle.json --ntt9-first-oracle generated/gt9x16-ntt9-first-oracle.json --prod1-schedule generated/f0-prod1-schedule.json --prod2-map generated/f0-prod2-ma2-map.json --output generated/gt9x16-prod3-map.json
+GT9X16_PROD3_AOS_SCHED_ARGS := --prod3-map generated/gt9x16-prod3-map.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --paper-range generated/gt9x16-ntt9-paper-range.json --ntt9-macro asm/gt9x16_ntt9_paper.inc --ntt16-macro asm/gt9x16_ntt16_paper.inc --prod2-audit generated/f0-prod2-ma2-audit.json --output generated/gt9x16-prod3-aos-schedule.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -214,6 +215,8 @@ generate:
 	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0prod2/f0-ma2.o
 	$(PYTHON) tools/audit_f0_prod2_ma2_asm.py $(F0_PROD2_AUDIT_ARGS)
 	$(PYTHON) tools/audit_f0_prod2_boundary.py $(F0_PROD2_BOUNDARY_AUDIT_ARGS)
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_schedule.py $(GT9X16_PROD3_AOS_SCHED_ARGS)
+	$(PYTHON) tests/test_gt9x16_prod3_aos_schedule.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
@@ -315,6 +318,8 @@ check:
 	$(CC) -mavx2 -I. -c $(F0_MA2_ASM) -o $(BUILD)/f0prod2/f0-ma2.o
 	$(PYTHON) tools/audit_f0_prod2_ma2_asm.py $(F0_PROD2_AUDIT_ARGS) --check
 	$(PYTHON) tools/audit_f0_prod2_boundary.py $(F0_PROD2_BOUNDARY_AUDIT_ARGS) --check
+	$(PYTHON) tools/generate_gt9x16_prod3_aos_schedule.py $(GT9X16_PROD3_AOS_SCHED_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_aos_schedule.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o

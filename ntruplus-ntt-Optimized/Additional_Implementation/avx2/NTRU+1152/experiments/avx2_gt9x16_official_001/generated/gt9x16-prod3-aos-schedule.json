@@ -1,0 +1,473 @@
+{
+  "apples_to_apples_ledger": {
+    "AOS_C1": {
+      "barrett_vectors": 72,
+      "d2_d1_to_ma2_routing": 432,
+      "d8_d4_routing": 0,
+      "data_loads_after_top_split": 216,
+      "data_stores_after_top_split": 216,
+      "extra_temporary_bytes": 0,
+      "montgomery_chains": 296,
+      "ntt9_routing": 0,
+      "peak_ymm": 15,
+      "routing_total": 432
+    },
+    "AOS_C1_minus_G0": {
+      "barrett_vectors": 0,
+      "data_loads_after_top_split": -72,
+      "data_stores_after_top_split": 0,
+      "montgomery_chains": 0,
+      "routing_total": -504
+    },
+    "G0_P2B": {
+      "adjusted_ntt16_routing": 288,
+      "barrett_vectors": 72,
+      "data_loads_after_top_split": 288,
+      "data_stores_after_top_split": 216,
+      "formation_routing": 576,
+      "montgomery_chains": 296,
+      "p2b_plane_routing": 72,
+      "routing_total": 936
+    },
+    "constant_loads_excluded_until_asm_register_allocation": true,
+    "unit": "dynamic AVX2 data-memory/routing operations per forward after the common top split"
+  },
+  "checkpoint": "GT9X16-PROD3-AOS-SCHED",
+  "decision": {
+    "asm_authorized": false,
+    "benchmark_authorized": false,
+    "cross_axis_wavefront_authorized": false,
+    "full_producer_asm_authorized": false,
+    "native_kem_authorized": false,
+    "recommended_asm_scope": "one branch/one physical-p tile leaf proving AoS R2, D8/D4, C1 D2/D1-to-plane; no full producer or caller",
+    "recommended_next_checkpoint": "GT9X16-PROD3-AOS-ASM0",
+    "schedule_complete": true,
+    "selected_network": "C1_live_d1_to_transpose",
+    "twist_absorption_authorized": false
+  },
+  "frozen_contract": {
+    "complete_ntt9_materialization_retained": true,
+    "cross_axis_wavefront": false,
+    "montgomery_r_exponent": 0,
+    "physical_p_order": [
+      0,
+      3,
+      6,
+      1,
+      4,
+      7,
+      8,
+      2,
+      5
+    ],
+    "physical_q_order": [
+      0,
+      8,
+      4,
+      12,
+      2,
+      10,
+      6,
+      14,
+      1,
+      9,
+      5,
+      13,
+      3,
+      11,
+      7,
+      15
+    ],
+    "pipeline": [
+      "top-split AoS",
+      "complete paper-R2 NTT9 in AoS",
+      "adjusted D8/D4 in AoS",
+      "adjusted D2/D1",
+      "MA2-native coefficient planes"
+    ],
+    "transform_scale": 4,
+    "twist_absorption": false
+  },
+  "parameter": 1152,
+  "range_and_register_proof": {
+    "all_preoperations_signed_i16": true,
+    "d8_d4_d2_d1_transpose_peak_ymm_upper_bound": 11,
+    "extra_reductions": 0,
+    "global_final_i16": [
+      -20751,
+      20753
+    ],
+    "method": "same arithmetic DAG and representatives; AoS only co-locates four independent terminal coefficients",
+    "ntt9_peak_ymm": 15,
+    "phasewise_peak_ymm": 15,
+    "physical_row_cutpoints": [
+      {
+        "distance1": [
+          -20751,
+          20753
+        ],
+        "distance2": [
+          -18699,
+          18699
+        ],
+        "distance4": [
+          -16691,
+          16691
+        ],
+        "distance8": [
+          -14883,
+          14883
+        ],
+        "frequency_p": 0,
+        "ntt9_output": [
+          -13128,
+          13128
+        ],
+        "physical_row": 0
+      },
+      {
+        "distance1": [
+          -18568,
+          18568
+        ],
+        "distance2": [
+          -16418,
+          16418
+        ],
+        "distance4": [
+          -14450,
+          14450
+        ],
+        "distance8": [
+          -12437,
+          12437
+        ],
+        "frequency_p": 3,
+        "ntt9_output": [
+          -10574,
+          10574
+        ],
+        "physical_row": 1
+      },
+      {
+        "distance1": [
+          -18537,
+          18537
+        ],
+        "distance2": [
+          -16571,
+          16571
+        ],
+        "distance4": [
+          -14469,
+          14469
+        ],
+        "distance8": [
+          -12458,
+          12458
+        ],
+        "frequency_p": 6,
+        "ntt9_output": [
+          -10574,
+          10574
+        ],
+        "physical_row": 2
+      },
+      {
+        "distance1": [
+          -18843,
+          18843
+        ],
+        "distance2": [
+          -16715,
+          16715
+        ],
+        "distance4": [
+          -14825,
+          14825
+        ],
+        "distance8": [
+          -12818,
+          12818
+        ],
+        "frequency_p": 1,
+        "ntt9_output": [
+          -11016,
+          11016
+        ],
+        "physical_row": 3
+      },
+      {
+        "distance1": [
+          -17043,
+          17043
+        ],
+        "distance2": [
+          -14961,
+          14961
+        ],
+        "distance4": [
+          -13091,
+          13091
+        ],
+        "distance8": [
+          -11156,
+          11156
+        ],
+        "frequency_p": 4,
+        "ntt9_output": [
+          -9336,
+          9336
+        ],
+        "physical_row": 4
+      },
+      {
+        "distance1": [
+          -17001,
+          17001
+        ],
+        "distance2": [
+          -15059,
+          15059
+        ],
+        "distance4": [
+          -13007,
+          13007
+        ],
+        "distance8": [
+          -11095,
+          11095
+        ],
+        "frequency_p": 7,
+        "ntt9_output": [
+          -9336,
+          9336
+        ],
+        "physical_row": 5
+      },
+      {
+        "distance1": [
+          -18619,
+          18619
+        ],
+        "distance2": [
+          -16710,
+          16710
+        ],
+        "distance4": [
+          -14708,
+          14708
+        ],
+        "distance8": [
+          -12850,
+          12850
+        ],
+        "frequency_p": 8,
+        "ntt9_output": [
+          -11016,
+          11016
+        ],
+        "physical_row": 6
+      },
+      {
+        "distance1": [
+          -17208,
+          17208
+        ],
+        "distance2": [
+          -15121,
+          15121
+        ],
+        "distance4": [
+          -13083,
+          13083
+        ],
+        "distance8": [
+          -11238,
+          11238
+        ],
+        "frequency_p": 2,
+        "ntt9_output": [
+          -9336,
+          9336
+        ],
+        "physical_row": 7
+      },
+      {
+        "distance1": [
+          -17166,
+          17166
+        ],
+        "distance2": [
+          -15154,
+          15154
+        ],
+        "distance4": [
+          -13113,
+          13113
+        ],
+        "distance8": [
+          -11263,
+          11263
+        ],
+        "frequency_p": 5,
+        "ntt9_output": [
+          -9336,
+          9336
+        ],
+        "physical_row": 8
+      }
+    ],
+    "spill_target": 0
+  },
+  "schema": "gt9x16-prod3-aos-schedule/v1",
+  "source_sha256": {
+    "ntt16_macro": "84d83365fe77a1d0edc4670fbddeccd53d8837ff260d747370fbc0dd89647db5",
+    "ntt9_macro": "60bbc45fab8e861962cba8687f9f8f466cb24d99a577df0b17842ebae35d7bd3",
+    "paper_range": "b44cff81370587c2e830cdda4097ec39d2566adccdf050f96e73c568023289ac",
+    "prod2_audit": "3097db19d2e7fcc6d58cdc4520ad77964c43638c24cdc5490b0acd8bb837068b",
+    "prod3_map": "cb97aa8fc43d58e0e01c1bd4d73ad3414cf469bc81d4fa73c893c4d4e22c1c4f",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  },
+  "step_A_aos_ntt9": {
+    "barrett_vectors": 72,
+    "cutpoints": {
+      "after_round1": "72 AoS vectors materialized in transform backing",
+      "after_round2": "72 AoS vectors in paper physical P order",
+      "input": "72 top-split AoS vectors; four q values x four terminal coefficients"
+    },
+    "data_loads": 144,
+    "data_stores": 144,
+    "montgomery_chains": 80,
+    "paper_radix3_butterflies": 48,
+    "peak_ymm": 15,
+    "routing": 0,
+    "vector_streams": 8
+  },
+  "step_B_aos_d8_d4": {
+    "data_loads": 72,
+    "data_stores": 0,
+    "distance4_montgomery_chains": 36,
+    "distance8_montgomery_chains": 36,
+    "ownership": "four contiguous physical-q cells per YMM; terminal coefficient remains the innermost word",
+    "physical_p_tiles": 18,
+    "routing": 0,
+    "vectors_per_tile": 4
+  },
+  "step_C_networks": {
+    "C0_materialized_post_d1": {
+      "full_forward_boundary_reloads": 72,
+      "full_forward_boundary_stores": 72,
+      "full_forward_routing": 432,
+      "per_tile": {
+        "boundary_reloads": 4,
+        "boundary_stores": 4,
+        "routing_total": 24,
+        "standalone_transpose": {
+          "vpermq": 4,
+          "vpunpckdq": 4,
+          "vpunpckqdq": 4,
+          "vpunpckwd": 4
+        },
+        "vperm2i128_d2": 4,
+        "vpunpck_qword_d1": 4
+      },
+      "selected": false
+    },
+    "C1_live_d1_to_transpose": {
+      "full_forward_boundary_reloads": 0,
+      "full_forward_boundary_stores": 0,
+      "full_forward_routing": 432,
+      "per_tile": {
+        "boundary_reloads": 0,
+        "boundary_stores": 0,
+        "fusion": "D1 sum/difference registers feed the first vpunpckwd layer directly",
+        "routing_total": 24,
+        "standalone_transpose": {
+          "vpermq": 4,
+          "vpunpckdq": 4,
+          "vpunpckqdq": 4,
+          "vpunpckwd": 4
+        },
+        "vperm2i128_d2": 4,
+        "vpunpck_qword_d1": 4
+      },
+      "selected": true
+    },
+    "C2_early_plane_orientation": {
+      "full_forward_routing": 792,
+      "hierarchical_transpose_natural_q_order": [
+        0,
+        4,
+        1,
+        5,
+        2,
+        6,
+        3,
+        7,
+        8,
+        12,
+        9,
+        13,
+        10,
+        14,
+        11,
+        15
+      ],
+      "lane_local_q_reorder": [
+        0,
+        2,
+        4,
+        6,
+        1,
+        3,
+        5,
+        7
+      ],
+      "per_tile": {
+        "boundary_reloads": 0,
+        "boundary_stores": 0,
+        "early_transpose": {
+          "vpermq": 4,
+          "vpshufb_q_order": 4,
+          "vpunpckdq": 4,
+          "vpunpckqdq": 4,
+          "vpunpckwd": 4
+        },
+        "final_plane_reconstruction_routes": 8,
+        "reused_proven_primitives": [
+          "PAPER_D1_ROUTE2",
+          "PAPER_D1_ROUTE1",
+          "PAPER_F1_RECONSTRUCT"
+        ],
+        "routing_total": 44,
+        "soa_distance1_routes": 8,
+        "soa_distance2_routes": 8
+      },
+      "reason": "exact but pays 20 early plane routes plus 24 proved SoA D2/D1/reconstruction routes per tile",
+      "selected": false
+    },
+    "lane_coverage_proof": {
+      "distance1": 576,
+      "distance2": 576,
+      "ma2_cells": 1152
+    }
+  },
+  "step_D_twist_ledger": {
+    "T0_control": {
+      "pre_twist_montgomery_chains": 72,
+      "selected": true
+    },
+    "T1_h_factor_into_ntt9": {
+      "algebraically_feasible": true,
+      "one_montgomery_multiplication_removed_proved": false,
+      "status": "deferred; combined constants and exact chain ledger required"
+    },
+    "T2_q_factor_into_ntt16": {
+      "algebraically_feasible": true,
+      "one_montgomery_multiplication_removed_proved": false,
+      "status": "deferred; adjusted twiddle/factor/scale proof required"
+    },
+    "separable_identity": "g^(offset*(16h+q)) = g^(16*offset*h) * g^(offset*q)"
+  }
+}
