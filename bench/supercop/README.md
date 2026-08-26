@@ -42,6 +42,13 @@ The three-way M0/M1/M2 late-layer attribution is labeled
 `supercop-derived-itail-d0-m2`; it is also a primitive diagnostic, not a native
 SUPERCOP public result.
 
+The NTRU+1152 PROD3 hash-fanout measure is labelled
+`supercop-derived-gt9x16-prod3-hash-fanout`.  It runs O0/O1/C0/C1 in a
+four-position Latin square within one ELF.  Its headline is the per-launch
+median excess tax `(C1-C0)-(O1-O0)`, not the raw `C1-O1` difference.  Placement
+selection uses the fastest absolute C1 ASLR-on result; normal/reversed and
+ASLR on/off serious replays remain diagnostic controls.
+
 Each result retains `run.out`, SUPERCOP `data`, `metadata.json`, the exact
 `measure` ELF, `fresh-launches/*.out`, `stq-summary.json`, and the lock file.
 Repository-local paired timings remain useful diagnostics but are not

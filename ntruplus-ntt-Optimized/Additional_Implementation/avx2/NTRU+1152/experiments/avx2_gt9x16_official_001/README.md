@@ -541,3 +541,15 @@ and ASLR on/off, with every confidence interval above zero.  No production
 promotion is allowed.  The next checkpoint isolates the coefficient-`r`
 dual-output/hash fanout; PROD3, MA2, twist, top split, and code organization
 remain frozen.  See `CHECKPOINT-GT9X16-PROD3-ENCAP.md`.
+
+Checkpoint GT9X16-PROD3-ENCAP-R-HASH-FANOUT-ATTRIBUTION uses four same-ELF
+variants to separate producer cost from the incremental hash consumer.  Under
+the selected normal-placement ASLR-on serious replay, Official hash fanout
+costs +305.8021 cycles while current PROD3 recovery costs +835.3333, producing
+a **+529.5313-cycle excess fanout tax** with 9/9 positive launches and 95% CI
+[+525.8021,+533.7500].  C0 is also +181.8750 cycles slower than Official O0,
+so complete dual output is +712.8333 cycles.  Normal/reversed placement and
+ASLR on/off agree.  Hash recovery is therefore a significant but incomplete
+explanation of native regression.  The next checkpoint is only an exact
+MA2-plane-to-12-bit-byte mapping/range/movement proof; direct serializer ASM
+is not yet authorized.  See `CHECKPOINT-GT9X16-PROD3-HASH-FANOUT.md`.

@@ -237,7 +237,8 @@ def main() -> int:
                                            "derived-f0-prod2",
                                            "derived-f0-prod2-consumer",
                                            "derived-gt9x16-prod3-price",
-                                           "derived-gt9x16-prod3-consumer"),
+                                           "derived-gt9x16-prod3-consumer",
+                                           "derived-gt9x16-prod3-hash-fanout"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -253,7 +254,8 @@ def main() -> int:
                      "derived-f0-ma2", "derived-f0-prod1",
                      "derived-f0-prod2", "derived-f0-prod2-consumer",
                      "derived-gt9x16-prod3-price",
-                     "derived-gt9x16-prod3-consumer") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-consumer",
+                     "derived-gt9x16-prod3-hash-fanout") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -308,7 +310,8 @@ def main() -> int:
                          "derived-f0-prod1", "derived-f0-prod2",
                          "derived-f0-prod2-consumer",
                          "derived-gt9x16-prod3-price",
-                         "derived-gt9x16-prod3-consumer"):
+                         "derived-gt9x16-prod3-consumer",
+                         "derived-gt9x16-prod3-hash-fanout"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -325,6 +328,8 @@ def main() -> int:
                 "derived-gt9x16-prod3-price": "gt9x16_prod3_aos_price_measure.c",
                 "derived-gt9x16-prod3-consumer":
                     "gt9x16_prod3_aos_consumer_measure.c",
+                "derived-gt9x16-prod3-hash-fanout":
+                    "gt9x16_prod3_hash_fanout_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -450,6 +455,11 @@ def main() -> int:
             "gt9x16_prod3_consumer_candidate_first_cycles",
             "gt9x16_prod3_consumer_control_second_cycles",
         )
+    elif args.mode == "derived-gt9x16-prod3-hash-fanout":
+        required = tuple(
+            f"gt9x16_prod3_hash_fanout_{variant}_pos{position}_cycles"
+            for variant in ("o0", "o1", "c0", "c1")
+            for position in range(1, 5))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1224,6 +1234,115 @@ def main() -> int:
             "native_kem_result": False,
             "candidate_direction_stable": all(delta < 0 for delta in deltas),
         }
+    if args.mode == "derived-gt9x16-prod3-hash-fanout":
+        prefix = "gt9x16_prod3_hash_fanout"
+        variants = ("o0", "o1", "c0", "c1")
+        combined = {
+            variant: sum(
+                (pooled[f"{prefix}_{variant}_pos{position}_cycles"]
+                 for position in range(1, 5)), [])
+            for variant in variants
+        }
+        summary["balanced_combined_operations"] = {
+            f"{prefix}_{variant}_cycles": {
+                "observations": len(values),
+                "stq1": stabilized_quartiles(values)[0],
+                "stq2": stabilized_quartiles(values)[1],
+                "stq3": stabilized_quartiles(values)[2],
+            }
+            for variant, values in combined.items()
+        }
+        paired_launches = []
+        for launch_number, observed in enumerate(launch_observations, start=1):
+            stq2 = {
+                variant: stabilized_quartiles(sum(
+                    (observed[f"{prefix}_{variant}_pos{position}_cycles"]
+                     for position in range(1, 5)), []))[1]
+                for variant in variants
+            }
+            official_fanout = stq2["o1"] - stq2["o0"]
+            candidate_fanout = stq2["c1"] - stq2["c0"]
+            paired_launches.append({
+                "launch": launch_number,
+                **{f"{variant}_stq2": value for variant, value in stq2.items()},
+                "official_hash_fanout_cycles": official_fanout,
+                "candidate_hash_fanout_cycles": candidate_fanout,
+                "excess_hash_fanout_tax_cycles":
+                    candidate_fanout - official_fanout,
+                "producer_candidate_minus_official_cycles":
+                    stq2["c0"] - stq2["o0"],
+                "complete_dual_output_candidate_minus_official_cycles":
+                    stq2["c1"] - stq2["o1"],
+            })
+        excess = [float(entry["excess_hash_fanout_tax_cycles"])
+                  for entry in paired_launches]
+        producer = [float(entry["producer_candidate_minus_official_cycles"])
+                    for entry in paired_launches]
+        complete = [float(entry[
+            "complete_dual_output_candidate_minus_official_cycles"])
+                    for entry in paired_launches]
+        summary["balanced_paired_launches"] = {
+            "launches": paired_launches,
+            "median_excess_hash_fanout_tax_cycles": statistics.median(excess),
+            "positive_excess_tax_launches": sum(value > 0 for value in excess),
+            "negative_excess_tax_launches": sum(value < 0 for value in excess),
+            "median_producer_candidate_minus_official_cycles":
+                statistics.median(producer),
+            "candidate_producer_faster_launches":
+                sum(value < 0 for value in producer),
+            "candidate_producer_slower_launches":
+                sum(value > 0 for value in producer),
+            "median_complete_dual_output_candidate_minus_official_cycles":
+                statistics.median(complete),
+            "candidate_complete_dual_output_faster_launches":
+                sum(value < 0 for value in complete),
+            "candidate_complete_dual_output_slower_launches":
+                sum(value > 0 for value in complete),
+        }
+        symbols = {
+            variant: f"ntruplus1152_exp001_hash_fanout_{variant}"
+            for variant in variants
+        }
+        top_split = "ntruplus1152_exp001_top_split_small"
+        price_symbol = "ntruplus1152_exp001_gt9x16_prod3_aos_full_price"
+        hash_bridge = "ntruplus1152_exp001_prod3_hash_bytes"
+        expected = {
+            "o0": ["poly_ntt"],
+            "o1": ["poly_ntt", "poly_tobytes"],
+            "c0": [top_split, price_symbol],
+            "c1": [top_split, price_symbol, hash_bridge],
+        }
+        transfers = {
+            variant: direct_transfer_targets(saved_elf, symbol)
+            for variant, symbol in symbols.items()
+        }
+        if transfers != expected:
+            raise SystemExit(
+                f"PROD3 hash-fanout call graph changed: {transfers}")
+        layout = elf_layout(saved_elf, (
+            *symbols.values(), top_split, price_symbol, hash_bridge,
+            "ntruplus1152_exp001_f0_ma2_planes_to_generic",
+            "ntruplus1152_exp001_f0_ma0_to_official",
+            "poly_ntt", "poly_tobytes"))
+        price_layout = layout["symbols"].get(price_symbol)
+        if price_layout is None or price_layout["size"] != 16569:
+            raise SystemExit(f"unexpected hash-fanout PROD3 size: {price_layout}")
+        summary["linked_hash_fanout_audit"] = {
+            "direct_transfers": transfers,
+            "latin_square_positions_per_variant": [1, 2, 3, 4],
+            "same_coefficient_input_residency": True,
+            "o0_output": "Official transformed state",
+            "o1_output": "Official transformed state plus exact 1728 bytes",
+            "c0_output": "PROD3 exact MA2-native planes",
+            "c1_output": "same MA2-native planes plus exact 1728 bytes",
+            "prod3_arithmetic_frozen": True,
+        }
+        summary["elf_layout"] = layout
+        summary["decision"] = {
+            "headline": "excess-hash-fanout-tax-(c1-c0)-(o1-o0)",
+            "native_kem_result": False,
+            "direct_hash_serializer_implemented": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1244,6 +1363,7 @@ def main() -> int:
                             else "supercop-derived-poly-f0-prod2-consumer" if args.mode == "derived-f0-prod2-consumer"
                             else "supercop-derived-gt9x16-prod3-price" if args.mode == "derived-gt9x16-prod3-price"
                             else "supercop-derived-gt9x16-prod3-consumer" if args.mode == "derived-gt9x16-prod3-consumer"
+                            else "supercop-derived-gt9x16-prod3-hash-fanout" if args.mode == "derived-gt9x16-prod3-hash-fanout"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1286,7 +1406,9 @@ def main() -> int:
               "derived-gt9x16-prod3-price":
                   "gt9x16_prod3_aos_price_measure.c",
               "derived-gt9x16-prod3-consumer":
-                  "gt9x16_prod3_aos_consumer_measure.c"}[args.mode])
+                  "gt9x16_prod3_aos_consumer_measure.c",
+              "derived-gt9x16-prod3-hash-fanout":
+                  "gt9x16_prod3_hash_fanout_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

@@ -122,6 +122,7 @@ GT9X16_PROD3_AOS_PRICE_ASM := asm/gt9x16_prod3_aos_full_price.S
 GT9X16_PROD3_AOS_CONSUMER_TEST_SOURCES := src/top_split_adapter.c $(F0_PROD2_ASM) $(F0_MA2_ASM) $(GT9X16_PROD3_AOS_PRICE_ASM) tests/test_gt9x16_prod3_aos_consumer.c
 GT9X16_PROD3_HASH_UNPROJECT_ASM := asm/f0_ma2_planes_to_generic.S
 GT9X16_PROD3_HASH_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_UNPROJECT_ASM) $(F0_MA0_ADAPTER) src/f0_prod3_hash_bridge.c $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_f0_prod3_hash_bridge.c
+GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_PRICE_ASM) $(GT9X16_PROD3_HASH_UNPROJECT_ASM) $(F0_MA0_ADAPTER) src/f0_prod3_hash_bridge.c src/gt9x16_prod3_hash_fanout.c $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_hash_fanout.c
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -138,6 +139,7 @@ GT9X16_PROD3_HASH_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRA
  supercop-f0-prod2-short supercop-f0-prod2-serious \
  supercop-f0-prod2-consumer-short supercop-f0-prod2-consumer-serious \
  supercop-gt9x16-prod3-price supercop-gt9x16-prod3-consumer \
+ supercop-gt9x16-prod3-hash-fanout \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -378,6 +380,8 @@ check:
 	$(BUILD)/prod3/test-gt9x16-prod3-aos-consumer
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_TEST_SOURCES) -o $(BUILD)/prod3/test-f0-prod3-hash-bridge
 	$(BUILD)/prod3/test-f0-prod3-hash-bridge
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-hash-fanout
+	$(BUILD)/prod3/test-gt9x16-prod3-hash-fanout
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
@@ -437,6 +441,7 @@ check:
 	$(PYTHON) tests/test_f0_prod2_ma2_asm0_evidence.py
 	$(PYTHON) tests/test_f0_prod2_price_evidence.py
 	$(PYTHON) tests/test_f0_prod2_consumer_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_hash_fanout_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -503,6 +508,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-aos-consumer-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_TEST_SOURCES) -o $(BUILD)/test-f0-prod3-hash-bridge-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-prod3-hash-bridge-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-hash-fanout-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-hash-fanout-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize
@@ -895,6 +902,11 @@ supercop-gt9x16-prod3-consumer:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_consumer.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-price-normal} --reversed-implementation $${PROD3_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
+
+supercop-gt9x16-prod3-hash-fanout:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_hash_fanout.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-fanout-normal} --reversed-implementation $${PROD3_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-fanout-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"
