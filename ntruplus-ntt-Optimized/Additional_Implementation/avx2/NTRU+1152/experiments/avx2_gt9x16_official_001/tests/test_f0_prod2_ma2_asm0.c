@@ -141,7 +141,7 @@ static void consumer_case(int trial) {
     uint8_t before[GUARD_U8];
     uint8_t value[CT_BYTES];
     uint8_t after[GUARD_U8];
-  } generic_ct, native_ct;
+  } generic_ct, projected_ct, native_ct;
   int index;
 
   fill_small(r_input, trial, 0);
@@ -162,6 +162,7 @@ static void consumer_case(int trial) {
   memset(&generic_scratch, 0x5a, sizeof generic_scratch);
   memset(&native_scratch, 0x6b, sizeof native_scratch);
   memset(&generic_ct, 0xa5, sizeof generic_ct);
+  memset(&projected_ct, 0xb6, sizeof projected_ct);
   memset(&native_ct, 0xc7, sizeof native_ct);
   for (index = 0; index < GUARD_I16; ++index) {
     generic_scratch.before[index] = native_scratch.before[index] =
@@ -170,14 +171,21 @@ static void consumer_case(int trial) {
         (int16_t)(0x4500 + index);
   }
   for (index = 0; index < GUARD_U8; ++index) {
-    generic_ct.before[index] = native_ct.before[index] = (uint8_t)(0x51 + index);
-    generic_ct.after[index] = native_ct.after[index] = (uint8_t)(0x91 + index);
+    generic_ct.before[index] = projected_ct.before[index] =
+        native_ct.before[index] = (uint8_t)(0x51 + index);
+    generic_ct.after[index] = projected_ct.after[index] =
+        native_ct.after[index] = (uint8_t)(0x91 + index);
   }
 
   ntruplus1152_exp001_f0_ma2_full(generic_ct.value, r_generic, m_generic, h,
                                    generic_scratch.value);
   ntruplus1152_exp001_f0_ma2_native_full(
+      projected_ct.value, r_projected, m_projected, h,
+      generic_scratch.value);
+  ntruplus1152_exp001_f0_ma2_native_full(
       native_ct.value, r_native, m_native, h, native_scratch.value);
+  compare_u8("projected-native-consumer", trial, generic_ct.value,
+             projected_ct.value);
   compare_u8("full-ma2-consumer", trial, generic_ct.value, native_ct.value);
   compare_i16("h-immutability", trial, saved_h, h);
   for (index = 0; index < GUARD_I16; ++index)
@@ -188,8 +196,10 @@ static void consumer_case(int trial) {
       fail_i16("scratch-canary", trial, index, 0, 1);
   for (index = 0; index < GUARD_U8; ++index)
     if (generic_ct.before[index] != (uint8_t)(0x51 + index) ||
+        projected_ct.before[index] != (uint8_t)(0x51 + index) ||
         native_ct.before[index] != (uint8_t)(0x51 + index) ||
         generic_ct.after[index] != (uint8_t)(0x91 + index) ||
+        projected_ct.after[index] != (uint8_t)(0x91 + index) ||
         native_ct.after[index] != (uint8_t)(0x91 + index))
       fail_u8("ciphertext-canary", trial, index, 0, 1);
 }

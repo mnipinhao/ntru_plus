@@ -471,3 +471,14 @@ linked ledger shows that cross-lane work is relocated, not removed:
 validated as a machine-level architecture, but this remains a SUPERCOP-derived
 boundary result rather than a KEM claim. Only the unchanged-MA2 consumer
 island is authorized next. See `CHECKPOINT-F0-PROD2-MA2-PRICE.md`.
+
+Checkpoint F0-PROD2-MA2-CONSUMER appends the exact same resident-`h` projection,
+MA2 arithmetic, inverse-four, and serializer symbol to control and candidate.
+P2-B remains faster in all 9 serious launches, with pooled StQ2 5191.8750
+versus 5318.4097 and paired median -126.5000 cycles. This is close to the
+standalone boundary's -115.1458-cycle magnitude rather than a substantial
+downstream amplification. Consumer-native materialization remains validated,
+but current P1-H/P2-B is not advanced to native KEM against the earlier
+approximately 1,312-cycle encapsulation deficit. The next gate is only an
+Official-like faster-producer-to-MA2 mapping study (`F0-PROD3-MA2-MAP`), not
+permutation micro-optimization. See `CHECKPOINT-F0-PROD2-MA2-CONSUMER.md`.

@@ -1,0 +1,200 @@
+{
+  "balanced_combined_operations": {
+    "f0_prod2_consumer_candidate_cycles": {
+      "observations": 1728,
+      "stq1": 5171.810185185185,
+      "stq2": 5191.875,
+      "stq3": 5216.43287037037
+    },
+    "f0_prod2_consumer_control_cycles": {
+      "observations": 1728,
+      "stq1": 5294.277777777777,
+      "stq2": 5318.409722222223,
+      "stq3": 5349.601851851852
+    }
+  },
+  "balanced_paired_launches": {
+    "candidate_faster_launches": 9,
+    "candidate_slower_launches": 0,
+    "candidate_tied_launches": 0,
+    "launches": [
+      {
+        "candidate_minus_control_cycles": -136.35416666666697,
+        "candidate_over_control_ratio": 0.974396488661302,
+        "candidate_stq2": 5189.25,
+        "control_stq2": 5325.604166666667,
+        "launch": 1
+      },
+      {
+        "candidate_minus_control_cycles": -126.5,
+        "candidate_over_control_ratio": 0.976195050044497,
+        "candidate_stq2": 5187.520833333333,
+        "control_stq2": 5314.020833333333,
+        "launch": 2
+      },
+      {
+        "candidate_minus_control_cycles": -132.95833333333303,
+        "candidate_over_control_ratio": 0.9750517962550331,
+        "candidate_stq2": 5196.416666666667,
+        "control_stq2": 5329.375,
+        "launch": 3
+      },
+      {
+        "candidate_minus_control_cycles": -119.52083333333303,
+        "candidate_over_control_ratio": 0.9775223229153199,
+        "candidate_stq2": 5197.791666666667,
+        "control_stq2": 5317.3125,
+        "launch": 4
+      },
+      {
+        "candidate_minus_control_cycles": -128.1875,
+        "candidate_over_control_ratio": 0.9759012078770504,
+        "candidate_stq2": 5191.0625,
+        "control_stq2": 5319.25,
+        "launch": 5
+      },
+      {
+        "candidate_minus_control_cycles": -133.04166666666697,
+        "candidate_over_control_ratio": 0.9749809007032458,
+        "candidate_stq2": 5184.5625,
+        "control_stq2": 5317.604166666667,
+        "launch": 6
+      },
+      {
+        "candidate_minus_control_cycles": -120.70833333333303,
+        "candidate_over_control_ratio": 0.9772800351347749,
+        "candidate_stq2": 5192.166666666667,
+        "control_stq2": 5312.875,
+        "launch": 7
+      },
+      {
+        "candidate_minus_control_cycles": -117.47916666666697,
+        "candidate_over_control_ratio": 0.9778820243890002,
+        "candidate_stq2": 5194.0,
+        "control_stq2": 5311.479166666667,
+        "launch": 8
+      },
+      {
+        "candidate_minus_control_cycles": -125.54166666666606,
+        "candidate_over_control_ratio": 0.9764023119938599,
+        "candidate_stq2": 5194.541666666667,
+        "control_stq2": 5320.083333333333,
+        "launch": 9
+      }
+    ],
+    "median_candidate_minus_control_cycles": -126.5
+  },
+  "decision": {
+    "candidate_direction_stable": true,
+    "headline": "two-producer-plus-unchanged-ma2-consumer-island",
+    "native_kem_result": false
+  },
+  "elf_layout": {
+    "sections": {
+      ".rodata": 14888,
+      ".text": 102231
+    },
+    "symbols": {
+      "ntruplus1152_exp001_f0_forward_for_ma2_p1h": {
+        "address": 80096,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 135,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_forward_for_ma2_p2b": {
+        "address": 80256,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 135,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_generic_to_ma2_planes": {
+        "address": 15840,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 2122,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_ma2_native_full": {
+        "address": 52288,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 27791,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_prod2_consumer_candidate": {
+        "address": 10144,
+        "address_mod32": 0,
+        "address_mod64": 32,
+        "size": 94,
+        "size_source": "elf-symbol-size"
+      },
+      "ntruplus1152_exp001_f0_prod2_consumer_control": {
+        "address": 9984,
+        "address_mod32": 0,
+        "address_mod64": 0,
+        "size": 132,
+        "size_source": "elf-symbol-size"
+      }
+    }
+  },
+  "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+  "fresh_process_launches": 9,
+  "linked_consumer_island_audit": {
+    "candidate_direct_transfers": [
+      "ntruplus1152_exp001_f0_forward_for_ma2_p2b",
+      "ntruplus1152_exp001_f0_forward_for_ma2_p2b",
+      "ntruplus1152_exp001_f0_ma2_native_full"
+    ],
+    "control_direct_transfers": [
+      "ntruplus1152_exp001_f0_forward_for_ma2_p1h",
+      "ntruplus1152_exp001_f0_forward_for_ma2_p1h",
+      "ntruplus1152_exp001_f0_generic_to_ma2_planes",
+      "ntruplus1152_exp001_f0_generic_to_ma2_planes",
+      "ntruplus1152_exp001_f0_ma2_native_full"
+    ],
+    "generic_ma2_symbol_calls": 0,
+    "ma2_schedule_inv4_serializer": "same linked symbol",
+    "only_r_m_producer_boundary_differs": true,
+    "resident_h_projection": "same native MA2 symbol and input pointer",
+    "shared_ma2_symbol": "ntruplus1152_exp001_f0_ma2_native_full",
+    "shared_ma2_tail_transfers_per_island": 1
+  },
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-exp001 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "f0_prod2_consumer_candidate_first_cycles": {
+      "observations": 864,
+      "stq1": 5170.333333333333,
+      "stq2": 5190.277777777777,
+      "stq3": 5215.763888888889
+    },
+    "f0_prod2_consumer_candidate_second_cycles": {
+      "observations": 864,
+      "stq1": 5173.148148148148,
+      "stq2": 5193.481481481482,
+      "stq3": 5217.111111111111
+    },
+    "f0_prod2_consumer_control_first_cycles": {
+      "observations": 864,
+      "stq1": 5296.550925925926,
+      "stq2": 5320.356481481482,
+      "stq3": 5356.944444444444
+    },
+    "f0_prod2_consumer_control_second_cycles": {
+      "observations": 864,
+      "stq1": 5291.99537037037,
+      "stq2": 5316.398148148148,
+      "stq3": 5344.587962962963
+    }
+  },
+  "timings_per_loop": 32
+}

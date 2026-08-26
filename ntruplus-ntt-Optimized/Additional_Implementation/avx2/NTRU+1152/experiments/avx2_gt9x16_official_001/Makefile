@@ -121,6 +121,7 @@ F0_PROD2_BOUNDARY_AUDIT_ARGS := --projection-object $(BUILD)/f0prod2/f0-generic-
  supercop-f0-ma2-short supercop-f0-ma2-serious \
  supercop-f0-prod1-short supercop-f0-prod1-serious \
  supercop-f0-prod2-short supercop-f0-prod2-serious \
+ supercop-f0-prod2-consumer-short supercop-f0-prod2-consumer-serious \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -367,6 +368,7 @@ check:
 	$(PYTHON) tests/test_f0_prod2_ma2_map.py
 	$(PYTHON) tests/test_f0_prod2_ma2_asm0_evidence.py
 	$(PYTHON) tests/test_f0_prod2_price_evidence.py
+	$(PYTHON) tests/test_f0_prod2_consumer_evidence.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear
@@ -789,6 +791,14 @@ supercop-f0-prod2-short:
 supercop-f0-prod2-serious:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod2 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-prod2-consumer-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod2-consumer --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SHORT) --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
+
+supercop-f0-prod2-consumer-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $(SUPERCOP_IMPLEMENTATION) --cpu $(BENCH_CPU) --mode derived-f0-prod2-consumer --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@ $(COMPILER_ARG)
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"
