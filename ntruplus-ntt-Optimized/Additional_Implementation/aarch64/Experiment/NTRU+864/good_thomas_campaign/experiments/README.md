@@ -19,5 +19,6 @@ Current experiments:
 | `gt_9x32_root_gate` | Does the NTRU+864 cubic-leaf root set admit the proposed 9-by-32 algebraic grid? | passed | no |
 | `gt_9x32_scalar_reference` | Does the 9-by-32 factorization implement the exact quotient-ring product? | passed | no |
 | `gt_9x32_montgomery_reference` | Can GT preserve the current normal-coefficient/Montgomery-public-factor and legacy leaf contract? | passed | no |
+| `gt_9x32_radix3_orientation_reference` | Does the paper-style oriented radix-3 NTT9 preserve the frozen canonical GT representation? | passed | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

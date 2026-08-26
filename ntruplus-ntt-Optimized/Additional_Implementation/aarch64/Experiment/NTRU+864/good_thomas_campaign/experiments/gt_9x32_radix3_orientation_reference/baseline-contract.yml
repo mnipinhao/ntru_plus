@@ -1,0 +1,12 @@
+baseline:
+  id: gt864_9x32_montgomery_reference_v1
+  source: ../gt_9x32_montgomery_reference/gt864_montgomery.c
+  forward_stage9: direct Horner evaluation at y_row_column
+  coefficient_domain: normal R^0 centered int16
+  transform_layout: row-major 9-by-32 cubic leaves
+  public_constants: centered Montgomery encoded
+oracles:
+  exact_forward: gt864_mont_forward
+  full_product: gt864_mont_mul
+  supporting_algebra: ../gt_9x32_scalar_reference/gt864_reference.c
+  legacy_compatibility: Reference_Implementation/NTRU+864/ntt.c

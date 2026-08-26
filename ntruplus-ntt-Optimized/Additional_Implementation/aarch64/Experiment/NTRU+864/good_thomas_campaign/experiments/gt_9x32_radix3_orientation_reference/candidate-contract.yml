@@ -1,0 +1,35 @@
+candidate:
+  id: gt864_9x32_radix3_orientation_reference
+  status: gate_passed
+scope:
+  changed_stage: forward NTT9 only
+  unchanged_stage32: direct Horner reference
+  unchanged_consumers:
+    - frozen GT cubic basemul
+    - frozen GT inverse
+representation:
+  input: natural-order centered normal R^0
+  output: canonical row-major GT centered normal R^0
+  column_twist: f_s = T_s times lambda_column^s
+radix3:
+  convention: positive exponent
+  first_layer:
+    - B3(f0, f3, f6)
+    - B3(f1, f4, f7)
+    - B3(f8, f2, f5)
+  second_layer_output_groups:
+    - [F0, F3, F6]
+    - [F1, F4, F7]
+    - [F8, F2, F5]
+  interlevel_multiply_count: 4
+  interlevel_distinct_constants: [eta, eta_inverse]
+required_checks:
+  - exact forward equality with frozen Horner reference
+  - full product equality modulo q with frozen reference
+  - forward and full-product alias safety
+forbidden_claims:
+  - performance improvement
+  - reduced multiplication count
+  - Neon readiness
+  - non-canonical phase carried through BaseMul
+  - Production readiness
