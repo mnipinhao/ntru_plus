@@ -567,3 +567,15 @@ coefficient temporary. H2 exposes a 72-load lower bound, but 256 pairs cross
 128-bit halves and its exact fragment-recombination schedule remains open.
 Serializer ASM and benchmarking are still unauthorized. See
 `CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-MAP.md`.
+
+Checkpoint GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE turns the byte map into one
+fully lowerable H1 schedule and exact-mask H2 24/48/96-byte tile candidates.
+H1 uses 272 data loads, 27 separately accounted constant loads, 804 routing
+plus packing instructions, 54 byte stores, no coefficient temporary, and a
+spill-free 16-YMM peak. H2-96 is the main challenger: it reaches the 72-load
+lower bound and preserves 54 stores, but increases route/pack work to 1,086
+instructions with a 15-YMM peak. H2-24 and H2-48 retain distinct store/pressure
+tradeoffs on the static frontier. All word and byte masks pass symbolic replay.
+Only H1 ASM0 is authorized next; H2 and benchmarking remain deferred until H1
+passes raw-byte correctness and linked structural audit. See
+`CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE.md`.
