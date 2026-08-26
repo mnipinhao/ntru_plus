@@ -78,6 +78,15 @@ def main() -> int:
     assert h1["pack_transpose_routes"] == 324
     assert h1["byte_store_instructions"] == 54 and h1["peak_ymm"] == 16
 
+    if schedule["H2"].get("status", "").startswith("invalidated"):
+        assert not schedule["H2"]["asm_authorized"]
+        assert schedule["pareto"]["frontier"] == ["H1-direct-official-block"]
+        assert schedule["decision"]["H1_asm0_authorized"]
+        assert not schedule["decision"]["H2_asm_authorized"]
+        assert not schedule["decision"]["benchmark_authorized"]
+        print("PROD3 hash direct schedule: corrected H1 masks passed; old H2 withdrawn")
+        return 0
+
     pair_map = {pair["pair"]: pair for pair in direct["pair_map"]}
     fragment_bytes = {}
     for vector in direct["packing_oriented_vectors"]:

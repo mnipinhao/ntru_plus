@@ -51,61 +51,29 @@ The exact dynamic H1 ledger is:
 The H1 schedule is therefore directly lowerable to a `.p2align 5` AVX2 leaf
 with no calls, frame, stack vector traffic, or internal `vzeroupper`.
 
-## H2: byte-oriented tile search
+## H2 correction from ASM0 raw-byte closure
 
-H2 never constructs ordered coefficient vectors. For each input YMM it creates
-the low and high member of four serializer pairs in each 128-bit half, performs
-the frozen inv4/sign operation, and produces two padded fragments:
-
-```text
-low128:  12 exact bytes + 4 zero bytes
-high128: 12 exact bytes + 4 zero bytes
-```
-
-The pair masks are exact and symbolically replayed. Across all 72 vectors their
-formation costs 144 `vperm2i128`, 192 `vpshufb`, and 48 `vpor`. The local
-12-bit epilogue adds six instructions per vector: 216 bit instructions and 216
-local pack routes in total.
-
-Three store tiles were then generated and replayed byte-for-byte:
-
-| Candidate | Data loads | Route/pack total | Byte stores | Peak YMM |
-| --- | ---: | ---: | ---: | ---: |
-| H1 direct block | 272 | 804 | 54 | 16 |
-| H2-24 scattered fragments | 72 | 888 | 288 | 8 |
-| H2-48 four-fragment tiles | 72 | 1,176 | 72 | 11 |
-| H2-96 eight-fragment tiles | 72 | 1,086 | 54 | 15 |
-
-All H2 variants use only three vector constant loads for the whole leaf, 288
-inv4 Montgomery instructions, 216 sign-canonicalization instructions, and no
-intermediate array. Counts are kept as separate resource classes; they are not
-converted to cycle predictions.
-
-H2-24 pays four scalar-width stores per input vector. H2-48 compacts four
-consecutive 12-byte fragments into one 32-byte and one 16-byte store. H2-96
-compacts eight fragments into three 32-byte stores, preserving the pinned total
-of 54 stores. The generated compaction masks prove exact byte order for every
-48- and 96-byte tile.
-
-H2-48 is not useful on loads/routes/stores alone versus H2-96, but remains on
-the recorded multi-resource frontier because its peak is 11 rather than 15
-YMM. H2-24 similarly trades a much larger store count for the lowest peak and
-only 84 more route/pack operations than H1. None is declared faster without a
-machine measurement.
+The old H2-24/48/96 schedules were based on treating the Official physical NTT
+cell index as the linear serialized coefficient index. ASM0's external-byte
+differential exposed that `pack.s` transposes those physical cells. A basis
+probe now records the pinned 1,152-cell physical-to-serialized permutation.
+After applying it, `0/576` true adjacent serialized pairs remain within one
+MA2 vector. The old H2 72-load bound and all three derived route/store ledgers
+are therefore withdrawn. H2 is not an implementation candidate until a new
+ownership and register schedule is derived from the probed order.
 
 ## Decision
 
 H1 is authorized for ASM0. It is exact, spill-free, removes all full-array
 materialization, and provides the highest-information machine test without
-waiting for the 72-load lower-bound design.
+waiting for a speculative byte-oriented alternative.
 
-H2-96 remains the primary optimized challenger because it combines 72 data
-loads with the same 54-store geometry as H1. It is not yet authorized for
-assembly: its 1,086 route/pack operations versus H1's 804 must first be judged
-against the H1 machine result, and implementing both now would weaken
-attribution.
+H2 is not authorized for assembly. Its prior schedule is invalidated, not
+merely deferred for pricing.
 
 The next checkpoint implements only H1 ASM0, with `.p2align 5` entry and
 aligned read-only constants. It must pass raw 1,728-byte differential tests,
 range/alias/canary checks, and linked frame/spill/call/`vzeroupper`/instruction
-audits. Benchmarking remains blocked until those gates pass.
+audits. Those gates are completed in
+`CHECKPOINT-GT9X16-PROD3-MA2-HASH-H1-ASM0.md`; benchmark pricing is the next
+checkpoint, but was not run as part of ASM0.

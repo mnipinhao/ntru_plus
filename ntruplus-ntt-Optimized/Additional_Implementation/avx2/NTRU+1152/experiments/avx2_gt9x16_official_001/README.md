@@ -579,3 +579,14 @@ tradeoffs on the static frontier. All word and byte masks pass symbolic replay.
 Only H1 ASM0 is authorized next; H2 and benchmarking remain deferred until H1
 passes raw-byte correctness and linked structural audit. See
 `CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE.md`.
+
+Checkpoint GT9X16-PROD3-MA2-HASH-H1-ASM0 implements the complete 2,304-byte
+MA2-plane to 1,728-byte serializer as one aligned, straight-line AVX2 leaf.
+Raw byte tests cover every signed plane impulse, the full uniform proved range,
+random full-range states, and actual coefficient-domain PROD3 callers. The
+linked 1,662-instruction ledger matches all scheduled classes exactly and has
+zero stack/spill/call/branch/`vzeroupper`. The external-byte gate also exposed
+that the old H2 schedule confused Official physical NTT positions with the
+post-`pack.s` serialized order. A pinned basis probe corrects the map; H1 is
+unchanged, while all prior H2-24/48/96 counts are withdrawn. No benchmark was
+run. See `CHECKPOINT-GT9X16-PROD3-MA2-HASH-H1-ASM0.md`.

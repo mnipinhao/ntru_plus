@@ -187,6 +187,69 @@ def main() -> int:
             "routing_excluding_register_copy": 336}:
         raise SystemExit(f"H1 construction shape changed: {h1_construction}")
 
+    h1_ledger_now = {
+        "name": "H1-direct-official-block",
+        "data_loads": 272,
+        "constant_vector_loads": 27,
+        "constant_memory_operands": 136,
+        "coefficient_reorder_routes": 336,
+        "coefficient_register_copies": 0,
+        "inv4_montgomery_instructions": 288,
+        "sign_canonicalization_instructions": 216,
+        "pack_bit_instructions": 144,
+        "pack_transpose_routes": 324,
+        "byte_store_instructions": 54,
+        "intermediate_stores": 0,
+        "intermediate_reloads": 0,
+        "temporary_bytes": 0,
+        "peak_ymm": 16,
+    }
+    if not direct["bijection_and_ownership_proof"]["all_pairs_same_ma2_vector"]:
+        document = {
+            "schema": "gt9x16-prod3-ma2-hash-direct-schedule/v1",
+            "checkpoint": "GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE",
+            "frozen_contract": {
+                "input": "materialized scale-4 MA2 coefficient planes",
+                "output": "exact 1728 pinned-Official poly_tobytes bytes",
+                "inv4_and_sign_canonicalization": "frozen from direct-map exhaustive proof",
+                "barrett_after_inv4": False,
+                "producer_fusion": False,
+                "prod3_and_ma2_arithmetic_changed": False,
+            },
+            "H1": {
+                "blocks": h1_blocks,
+                "construction_counts": h1_construction,
+                "normalization_per_vector": ["vpmullw", "vpmulhw", "vpmulhw",
+                                             "vpsubw", "vpsraw", "vpand", "vpaddw"],
+                "pack_network": "pinned pack.s after its redundant Barrett/sign prefix",
+                "ledger": h1_ledger_now,
+                "lowerable_to_asm": True,
+                "spill_free_register_plan": True,
+            },
+            "H2": {
+                "status": "invalidated by pinned physical-to-serialized pack probe",
+                "reason": "0/576 true serialized pairs remain within one MA2 vector; the old 72-load schedule paired Official physical positions instead of serialized neighbors",
+                "asm_authorized": False,
+                "redesign_deferred_until_after_H1_pricing": True,
+            },
+            "pareto": {"metrics": [], "frontier": ["H1-direct-official-block"],
+                       "candidates": [h1_ledger_now],
+                       "interpretation": "H2 counts were withdrawn after exact pack-layout probing"},
+            "decision": {
+                "schedule_complete": True,
+                "H1_asm0_authorized": True,
+                "H2_asm_authorized": False,
+                "benchmark_authorized": False,
+                "selected_first_implementation": "H1-direct-official-block",
+                "reason": "H1 follows the pinned Official physical pack input exactly; H2 requires a new design",
+                "next": "implement only aligned-entry H1 ASM0, then raw-byte correctness and linked structural audit before pricing",
+            },
+            "source_sha256": {"direct_map": sha256(args.direct_map)},
+        }
+        write_json(args.output, document, args.check)
+        print("PROD3 hash schedule: corrected pack permutation; H1 retained, old H2 withdrawn")
+        return 0
+
     # H2 local step: one MA2 vector -> two padded 12-byte fragments.
     vector_pairs: dict[int, list[dict]] = defaultdict(list)
     for pair in direct["pair_map"]:

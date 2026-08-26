@@ -102,6 +102,7 @@ def main() -> int:
     parser.add_argument("--consumer-map", type=Path, required=True)
     parser.add_argument("--ma0-contract", type=Path, required=True)
     parser.add_argument("--pack-source", type=Path, required=True)
+    parser.add_argument("--pack-layout", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
@@ -110,12 +111,18 @@ def main() -> int:
     consumer = json.loads(args.consumer_map.read_text())
     ma0 = json.loads(args.ma0_contract.read_text())
     pack_source = args.pack_source.read_text()
+    pack_layout = json.loads(args.pack_layout.read_text())
     if prod2["schema"] != "gt-f0-prod2-ma2-map/v1":
         raise SystemExit("wrong PROD2 MA2-map schema")
     if consumer["schema"] != "gt-f0-ma-consumer-map/v1":
         raise SystemExit("wrong F0 consumer-map schema")
     if ma0["schema"] != "gt-f0-ma0-adapter/v1":
         raise SystemExit("wrong MA0 adapter schema")
+    if pack_layout["schema"] != "official-pack-layout/v1":
+        raise SystemExit("wrong Official pack-layout schema")
+    physical_to_serialized = pack_layout["physical_to_serialized"]
+    if len(physical_to_serialized) != N or sorted(physical_to_serialized) != list(range(N)):
+        raise SystemExit("Official pack layout is not a permutation")
     if prod2["bijection_proof"]["ma2_destination_cells"] != N:
         raise SystemExit("MA2 destination map is incomplete")
     if consumer["bijection_proof"]["official_positions"] != N:
@@ -135,12 +142,14 @@ def main() -> int:
 
     coefficients = []
     by_official = {}
+    by_serialized = {}
     vector_cells: dict[int, list[dict]] = defaultdict(list)
     for cell in prod2["d1_to_ma2_cells"]:
         owner = cell["semantic_owner"]
         key = (owner["branch"], owner["p"], owner["q"],
                owner["terminal_coefficient"])
         official = owner_to_official[key]
+        serialized = physical_to_serialized[official]
         consumer_cell = cell["consumer"]
         record = {
             "ma2": {
@@ -156,11 +165,12 @@ def main() -> int:
             "semantic_owner": owner,
             "official_coefficient": official,
             "serializer": {
-                "block": official // SERIALIZER_BLOCK_COEFFICIENTS,
-                "coefficient_in_block": official % SERIALIZER_BLOCK_COEFFICIENTS,
-                "pair": official // 2,
-                "pair_parity": "low" if official % 2 == 0 else "high",
-                "byte_contributions": byte_contributions(official),
+                "serialized_coefficient": serialized,
+                "block": serialized // SERIALIZER_BLOCK_COEFFICIENTS,
+                "coefficient_in_block": serialized % SERIALIZER_BLOCK_COEFFICIENTS,
+                "pair": serialized // 2,
+                "pair_parity": "low" if serialized % 2 == 0 else "high",
+                "byte_contributions": byte_contributions(serialized),
             },
             "input_range_i16": cell["range_i16"],
             "input_scale": 4,
@@ -168,9 +178,11 @@ def main() -> int:
         if official in by_official:
             raise SystemExit(f"duplicate Official coefficient {official}")
         by_official[official] = record
+        by_serialized[serialized] = record
         coefficients.append(record)
         vector_cells[record["ma2"]["vector"]].append(record)
-    if sorted(by_official) != list(range(N)) or len(vector_cells) != 72:
+    if (sorted(by_official) != list(range(N)) or
+            sorted(by_serialized) != list(range(N)) or len(vector_cells) != 72):
         raise SystemExit("MA2-to-Official coefficient mapping is incomplete")
 
     pairs = []
@@ -178,8 +190,8 @@ def main() -> int:
     same_half_pairs = 0
     cross_half_vectors = set()
     for even in range(0, N, 2):
-        low = by_official[even]
-        high = by_official[even + 1]
+        low = by_serialized[even]
+        high = by_serialized[even + 1]
         low_position = low["ma2"]
         high_position = high["ma2"]
         same_vector = low_position["vector"] == high_position["vector"]
@@ -194,49 +206,27 @@ def main() -> int:
             "pair": even // 2,
             "serializer_block": even // SERIALIZER_BLOCK_COEFFICIENTS,
             "output_bytes": [3 * (even // 2) + offset for offset in range(3)],
-            "low": {"official_coefficient": even, "ma2_vector": low_position["vector"],
+            "low": {"official_coefficient": low["official_coefficient"],
+                    "serialized_coefficient": even,
+                    "ma2_vector": low_position["vector"],
                     "ma2_lane": low_position["lane"]},
-            "high": {"official_coefficient": even + 1,
+            "high": {"official_coefficient": high["official_coefficient"],
+                     "serialized_coefficient": even + 1,
                      "ma2_vector": high_position["vector"],
                      "ma2_lane": high_position["lane"]},
             "same_ma2_vector": same_vector,
             "same_128bit_half": same_half,
         })
-    if same_vector_pairs != N // 2:
-        raise SystemExit("a serialized coefficient pair crosses MA2 vectors")
-
     vector_fragments = []
-    block_vectors: dict[int, list[int]] = defaultdict(list)
+    block_vectors: dict[int, set[int]] = defaultdict(set)
     for vector in range(72):
         cells = vector_cells[vector]
         if len(cells) != 16:
             raise SystemExit(f"MA2 vector {vector} does not own 16 coefficients")
-        blocks = {cell["serializer"]["block"] for cell in cells}
-        pair_indices = sorted({cell["serializer"]["pair"] for cell in cells})
-        if len(blocks) != 1 or len(pair_indices) != 8:
-            raise SystemExit(f"MA2 vector {vector} is not an eight-pair single-block owner")
-        pair_offsets = [pair % 64 for pair in pair_indices]
-        runs = [pair_offsets[:4], pair_offsets[4:]]
-        if any(run != list(range(run[0], run[0] + 4)) for run in runs):
-            raise SystemExit(f"MA2 vector {vector} does not form two four-pair runs")
-        block = next(iter(blocks))
-        block_vectors[block].append(vector)
-        vector_fragments.append({
-            "ma2_vector": vector,
-            "serializer_block": block,
-            "coefficient_pairs": pair_indices,
-            "pair_offsets_in_block": pair_offsets,
-            "fragments": [{
-                "pair_offsets_in_block": run,
-                "output_byte_offset": block * 192 + 3 * run[0],
-                "output_bytes": 12,
-            } for run in runs],
-            "cross_128bit_pair_count": sum(
-                not pair["same_128bit_half"] for pair in pairs
-                if pair["low"]["ma2_vector"] == vector),
-        })
-    if set(block_vectors) != set(range(9)) or any(len(v) != 8 for v in block_vectors.values()):
-        raise SystemExit("serializer blocks are not owned by eight MA2 vectors each")
+        for cell in cells:
+            block_vectors[cell["serializer"]["block"]].add(vector)
+    if set(block_vectors) != set(range(9)):
+        raise SystemExit("serializer block ownership is incomplete")
 
     global_low = min(record["input_range_i16"][0] for record in coefficients)
     global_high = max(record["input_range_i16"][1] for record in coefficients)
@@ -320,26 +310,26 @@ def main() -> int:
         "proof_note": "the MA2 ownership map independently re-derives the same 136 source-half groups as the proved MA0 adapter; rebuild each eight-vector Official pack block in registers, then fuse inv4, sign-add-q and the pinned pack network",
     }
     h2 = {
-        "status": "ownership closed; exact instruction schedule intentionally open",
-        "ma2_initial_loads_lower_bound": 72,
+        "status": "invalidated by pinned pack-layout probe; redesign deferred",
+        "ma2_initial_loads_lower_bound": None,
         "intermediate_stores": 0,
         "intermediate_reloads": 0,
         "serialized_pairs_same_ma2_vector": same_vector_pairs,
         "serialized_pairs_same_128bit_half": same_half_pairs,
-        "serialized_pairs_cross_128bit_half": N // 2 - same_half_pairs,
-        "vectors_requiring_cross_half_pair_routing": len(cross_half_vectors),
-        "cross_half_route_lower_bound": len(cross_half_vectors),
-        "fragments": 144,
-        "fragment_bytes": 12,
+        "serialized_pairs_cross_ma2_vector": N // 2 - same_vector_pairs,
+        "serialized_pairs_cross_128bit_half": None,
+        "vectors_requiring_cross_half_pair_routing": None,
+        "cross_half_route_lower_bound": None,
+        "fragments": None,
+        "fragment_bytes": None,
         "inv4_montgomery_vectors": 72,
         "official_barrett_vectors": 0,
         "sign_canonicalization_vectors": 72,
-        "byte_stores": "54 if fragments are recombined into the pinned 32-byte store geometry; 144 if emitted separately, which is not selected",
+        "byte_stores": None,
         "temporary_bytes": 0,
         "unresolved_before_asm": [
-            "exact within-vector pair formation network for the 256 cross-half pairs",
-            "exact 12-byte-fragment recombination network into 32-byte output stores",
-            "linked peak-YMM and spill-free schedule",
+            "derive a new H2 ownership schedule from probed physical-to-serialized order",
+            "price H1 before authorizing that redesign",
         ],
     }
 
@@ -371,10 +361,11 @@ def main() -> int:
             "serialized_pairs": len(pairs),
             "all_pairs_same_ma2_vector": same_vector_pairs == N // 2,
             "vectors": len(vector_cells),
-            "pairs_per_vector": 8,
-            "fragments_per_vector": 2,
-            "fragment_bytes": 12,
-            "vectors_per_serializer_block": 8,
+            "pairs_per_vector": None,
+            "fragments_per_vector": None,
+            "fragment_bytes": None,
+            "vectors_per_serializer_block": [len(block_vectors[block])
+                                                for block in range(9)],
         },
         "scale_and_range_proof": {
             "method": "exhaustive over every signed integer in the global proved PROD3 MA2 input envelope",
@@ -407,19 +398,20 @@ def main() -> int:
             "direct_serializer_asm_authorized": False,
             "benchmark_authorized": False,
             "selected_first_realization": "H1-direct-official-block",
-            "reason": "H1 already removes all three full-array materializations with an exact proved register construction; H2 exposes a stronger 72-load lower bound but still needs an exact cross-half and fragment-recombination schedule before assembly authorization",
-            "next": "derive and audit exact H1/H2 register schedules; do not write serializer assembly yet",
+            "reason": "H1 removes all full-array materializations and follows the probed pinned-pack physical order; the earlier H2 lower bound used an incorrect linear interpretation of Official physical positions and is invalidated",
+            "next": "lower and audit H1 only; defer any H2 redesign until after H1 pricing",
         },
         "source_sha256": {
             "prod2_map": sha256(args.prod2_map),
             "consumer_map": sha256(args.consumer_map),
             "ma0_contract": sha256(args.ma0_contract),
             "pinned_pack_s": sha256(args.pack_source),
+            "pinned_pack_layout": sha256(args.pack_layout),
         },
     }
     write_json(args.output, document, args.check)
-    print("PROD3 MA2 hash map: 1152 cells, 576 same-vector pairs, "
-          f"{N // 2 - same_half_pairs} cross-half pairs; H1 schedule proof next")
+    print("PROD3 MA2 hash map: probed pack permutation applied; "
+          f"{same_vector_pairs}/576 serialized pairs stay within one MA2 vector")
     return 0
 
 

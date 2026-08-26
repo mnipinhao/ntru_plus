@@ -123,8 +123,13 @@ GT9X16_PROD3_AOS_CONSUMER_TEST_SOURCES := src/top_split_adapter.c $(F0_PROD2_ASM
 GT9X16_PROD3_HASH_UNPROJECT_ASM := asm/f0_ma2_planes_to_generic.S
 GT9X16_PROD3_HASH_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_UNPROJECT_ASM) $(F0_MA0_ADAPTER) src/f0_prod3_hash_bridge.c $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_f0_prod3_hash_bridge.c
 GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_PRICE_ASM) $(GT9X16_PROD3_HASH_UNPROJECT_ASM) $(F0_MA0_ADAPTER) src/f0_prod3_hash_bridge.c src/gt9x16_prod3_hash_fanout.c $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_hash_fanout.c
-GT9X16_PROD3_HASH_DIRECT_MAP_ARGS := --prod2-map generated/f0-prod2-ma2-map.json --consumer-map generated/f0-ma-consumer-map.json --ma0-contract generated/f0-ma0-adapter.json --pack-source $(UPSTREAM)/pack.s --output generated/gt9x16-prod3-ma2-hash-direct-map.json
+GT9X16_PROD3_HASH_PACK_LAYOUT := generated/official-pack-layout.json
+GT9X16_PROD3_HASH_DIRECT_MAP_ARGS := --prod2-map generated/f0-prod2-ma2-map.json --consumer-map generated/f0-ma-consumer-map.json --ma0-contract generated/f0-ma0-adapter.json --pack-source $(UPSTREAM)/pack.s --pack-layout $(GT9X16_PROD3_HASH_PACK_LAYOUT) --output generated/gt9x16-prod3-ma2-hash-direct-map.json
 GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS := --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --output generated/gt9x16-prod3-ma2-hash-direct-schedule.json
+GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
+GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
+GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
+GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o --elf $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1 --source $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json --output generated/gt9x16-prod3-ma2-hash-h1-audit.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -255,10 +260,18 @@ generate:
 	$(BUILD)/prod3/test-gt9x16-prod3-aos-full
 	$(PYTHON) tools/audit_gt9x16_prod3_aos_full.py $(GT9X16_PROD3_AOS_FULL_AUDIT_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_aos_full_evidence.py
+	$(CC) $(CFLAGS_STRICT) -O3 -I$(UPSTREAM) tools/probe_official_pack_layout.c $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s -o $(BUILD)/prod3/probe-official-pack-layout
+	$(BUILD)/prod3/probe-official-pack-layout $(GT9X16_PROD3_HASH_PACK_LAYOUT)
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_map.py $(GT9X16_PROD3_HASH_DIRECT_MAP_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_map.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_schedule.py $(GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_schedule.py
+	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS)
+	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
+	$(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
+	$(PYTHON) tools/audit_gt9x16_prod3_ma2_hash_h1.py $(GT9X16_PROD3_HASH_H1_AUDIT_ARGS)
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_h1_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
@@ -388,8 +401,19 @@ check:
 	$(BUILD)/prod3/test-f0-prod3-hash-bridge
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-hash-fanout
 	$(BUILD)/prod3/test-gt9x16-prod3-hash-fanout
+	$(CC) $(CFLAGS_STRICT) -O3 -I$(UPSTREAM) tools/probe_official_pack_layout.c $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s -o $(BUILD)/prod3/probe-official-pack-layout
+	$(BUILD)/prod3/probe-official-pack-layout $(BUILD)/prod3/official-pack-layout.json
+	cmp $(GT9X16_PROD3_HASH_PACK_LAYOUT) $(BUILD)/prod3/official-pack-layout.json
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_map.py $(GT9X16_PROD3_HASH_DIRECT_MAP_ARGS) --check
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_schedule.py $(GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_map.py
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_schedule.py
+	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS) --check
+	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
+	$(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
+	$(PYTHON) tools/audit_gt9x16_prod3_ma2_hash_h1.py $(GT9X16_PROD3_HASH_H1_AUDIT_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_h1_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
@@ -520,6 +544,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-f0-prod3-hash-bridge-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-hash-fanout-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-hash-fanout-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-ma2-hash-h1-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-ma2-hash-h1-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/probe-g1c-m3b-range-sanitize > /dev/null
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3c2_repair.c -o $(BUILD)/probe-g1c-m3c2-repair-sanitize

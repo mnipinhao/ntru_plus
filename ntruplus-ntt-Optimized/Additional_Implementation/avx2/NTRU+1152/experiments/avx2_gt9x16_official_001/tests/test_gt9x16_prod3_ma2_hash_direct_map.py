@@ -48,13 +48,9 @@ def main() -> int:
     assert [cell["official_coefficient"] for cell in coefficients] == list(range(1152))
     assert len({(cell["ma2"]["vector"], cell["ma2"]["lane"])
                 for cell in coefficients}) == 1152
-    assert len(pairs) == 576 and all(pair["same_ma2_vector"] for pair in pairs)
-    assert sum(pair["same_128bit_half"] for pair in pairs) == 320
-    assert len(vectors) == 72
-    assert all(len(vector["coefficient_pairs"]) == 8 for vector in vectors)
-    assert all(len(vector["fragments"]) == 2 for vector in vectors)
-    assert all(fragment["output_bytes"] == 12
-               for vector in vectors for fragment in vector["fragments"])
+    assert len(pairs) == 576 and not any(pair["same_ma2_vector"] for pair in pairs)
+    assert sum(pair["same_128bit_half"] for pair in pairs) == 0
+    assert vectors == []
 
     byte_bits = {(byte, bit): [] for byte in range(1728) for bit in range(8)}
     for cell in coefficients:
@@ -76,11 +72,11 @@ def main() -> int:
         for (vector, lane), cell in by_ma2.items():
             low, high = cell["input_range_i16"]
             planes[16 * vector + lane] = rng.randint(low, high)
-        official = [0] * 1152
+        serialized = [0] * 1152
         for (vector, lane), cell in by_ma2.items():
-            official[cell["official_coefficient"]] = remove_scale4(
+            serialized[cell["serializer"]["serialized_coefficient"]] = remove_scale4(
                 planes[16 * vector + lane])
-        control = pack12(official)
+        control = pack12(serialized)
         direct = bytearray(1728)
         for pair in pairs:
             low_pos = pair["low"]
@@ -99,7 +95,7 @@ def main() -> int:
     assert proof["pack12_safe"]
     assert document["movement_ledger"]["H0-current"]["intermediate_stores"] == 216
     assert document["movement_ledger"]["H1-direct-official-block"]["intermediate_stores"] == 0
-    assert document["movement_ledger"]["H2-packing-oriented"]["ma2_initial_loads_lower_bound"] == 72
+    assert document["movement_ledger"]["H2-packing-oriented"]["ma2_initial_loads_lower_bound"] is None
     assert not document["decision"]["direct_serializer_asm_authorized"]
     assert not document["decision"]["benchmark_authorized"]
 
@@ -109,6 +105,7 @@ def main() -> int:
         "consumer_map": ROOT / "generated/f0-ma-consumer-map.json",
         "ma0_contract": ROOT / "generated/f0-ma0-adapter.json",
         "pinned_pack_s": ROOT / "upstream/supercop-avx2/pack.s",
+        "pinned_pack_layout": ROOT / "generated/official-pack-layout.json",
     }
     for name, path in source_paths.items():
         assert sources[name] == hashlib.sha256(path.read_bytes()).hexdigest()

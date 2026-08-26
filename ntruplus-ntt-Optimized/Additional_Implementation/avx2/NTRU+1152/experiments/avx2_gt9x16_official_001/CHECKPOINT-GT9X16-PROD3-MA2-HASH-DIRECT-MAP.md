@@ -37,19 +37,14 @@ The mechanical proof closes all cardinalities:
 | MA2 vectors | 72 |
 | serializer blocks | 9 |
 
-Every adjacent serialized pair is already contained in one MA2 vector. Each
-MA2 vector owns exactly eight complete coefficient pairs, belongs to exactly
-one 128-coefficient Official serializer block, and contributes two exact
-12-byte fragments. Each serializer block is covered by exactly eight MA2
-vectors.
-
-This is the important H2 result: coefficient pairing does not require a
-cross-vector gather. It is not a zero-routing result, however. Of the 576
-pairs, 320 are within one 128-bit half and 256 cross the halves of their YMM.
-Fifty-six of the 72 vectors contain at least one cross-half pair. Any
-in-register H2 schedule that retains the pinned 32-byte output-store geometry
-therefore has a lower bound of at least 56 cross-half routes before considering
-fragment recombination.
+Correction from ASM0 raw-byte closure: `official_coefficient` is a physical
+Official NTT cell, not the linear serialized coefficient index. Pinned
+`pack.s` transposes each eight-vector input block. A basis probe now records
+that exact physical-to-serialized permutation before assigning byte ownership.
+Under the corrected mapping, zero of the 576 true adjacent serialized pairs is
+contained in one MA2 vector. The earlier same-vector H2 conclusion and its
+72-load lower bound are withdrawn. The H1 physical-block construction remains
+valid because it reconstructs exactly the vectors consumed by `pack.s`.
 
 ## Exact scale and range proof
 
@@ -80,10 +75,10 @@ the hash bridge:
 
 | Dynamic vector work | H0 current | H1 direct Official block | H2 packing-oriented |
 | --- | ---: | ---: | ---: |
-| initial MA2/source loads | 72 | 272 | 72 lower bound |
+| initial MA2/source loads | 72 | 272 | withdrawn; redesign required |
 | intermediate reloads | 416 | 0 | 0 |
 | intermediate stores | 216 | 0 | 0 |
-| routing before pack | 408 | 336 | >=56 cross-half lower bound; exact open |
+| routing before pack | 408 | 336 | withdrawn; exact open |
 | inv4 Montgomery vectors | 72 | 72 | 72 |
 | Official Barrett vectors | 72 | 0 | 0 |
 | sign canonicalization vectors | 72 | 72 | 72 |
@@ -108,19 +103,16 @@ temporary. Relative to H0 it removes 216 vector loads/reloads, all 216
 intermediate stores, 72 pre-pack routes, and the redundant 72-vector Barrett
 stage.
 
-H2 has the stronger 72-load lower bound because every serialized pair is
-already local to one MA2 vector. It is not yet an exact instruction schedule:
-the 256 cross-half pairs, two 12-byte fragments per vector, recombination into
-54 32-byte output stores, and linked peak-YMM/spill proof remain open. Writing
-H2 assembly from only the lower bound would overstate the result.
+H2 no longer has a proved 72-load bound. A future H2 must start from the probed
+physical-to-serialized permutation and account for cross-vector pair formation
+before any route, store, or register-pressure claim.
 
 ## Decision
 
 The ownership, byte boundary, and range portions of the direct-hash map pass.
 H1 is selected as the first realization to schedule because it already removes
 all full-array materialization and has an exact, mechanically counted register
-construction. H2 remains the optimized realization candidate, but requires an
-exact within-vector pair and fragment-recombination schedule first.
+construction. The old H2 realization is invalidated and requires a new map.
 
 No serializer assembly or benchmark is authorized by this checkpoint. The
 next checkpoint is a static H1/H2 register schedule and linked instruction
