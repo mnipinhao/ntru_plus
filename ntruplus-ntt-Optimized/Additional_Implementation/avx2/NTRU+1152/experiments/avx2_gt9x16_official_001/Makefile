@@ -100,6 +100,7 @@ F0_PROD1_SCHED_ARGS := --tables generated/gt9x16-full-forward-tables.h --map gen
 F0_PROD1_ASM := asm/f0_prod1_p1h.S
 F0_PROD1_TEST_SOURCES := src/f0_forward_for_ma2.c src/f0_prod1_wrapper.c src/top_split_adapter.c $(F0_PROD1_ASM) $(NTT16_ASM) $(F0_MA2_KEM_ADAPTER) $(OFFICIAL_FORWARD) tests/test_f0_prod1_p1h.c
 F0_PROD1_AUDIT_ARGS := --wrapper-object $(BUILD)/f0prod1/f0-prod1-p1h-wrapper.o --helper-object $(BUILD)/f0prod1/f0-prod1-p1h.o --wrapper-source src/f0_prod1_wrapper.c --helper-source $(F0_PROD1_ASM) --schedule generated/f0-prod1-schedule.json --output generated/f0-prod1-p1h-audit.json
+F0_PROD2_MAP_ARGS := --consumer-map generated/f0-ma-consumer-map.json --ma2-schedule generated/f0-ma-schedule.json --prod1-schedule generated/f0-prod1-schedule.json --ma2-contract generated/f0-ma2-asm.json --ma2-audit generated/f0-ma2-audit.json --ma2-asm $(F0_MA2_ASM) --output generated/f0-prod2-ma2-map.json
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
@@ -182,6 +183,7 @@ generate:
 	$(PYTHON) tools/generate_f0_ma2_kem.py $(F0_MA2_KEM_ARGS)
 	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS)
 	$(PYTHON) tools/generate_f0_prod1_schedule.py $(F0_PROD1_SCHED_ARGS)
+	$(PYTHON) tools/generate_f0_prod2_ma2_map.py $(F0_PROD2_MAP_ARGS)
 	mkdir -p $(BUILD)/f0prod0
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
 	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS)
@@ -270,6 +272,7 @@ check:
 	$(BUILD)/f0ma1/test-f0-official-to-f0
 	$(PYTHON) tools/generate_f0_prod0_contract.py $(F0_PROD0_CONTRACT_ARGS) --check
 	$(PYTHON) tools/generate_f0_prod1_schedule.py $(F0_PROD1_SCHED_ARGS) --check
+	$(PYTHON) tools/generate_f0_prod2_ma2_map.py $(F0_PROD2_MAP_ARGS) --check
 	mkdir -p $(BUILD)/f0prod0
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated -c src/f0_forward_for_ma2.c -o $(BUILD)/f0prod0/f0-forward-for-ma2.o
 	$(PYTHON) tools/audit_f0_prod0.py $(F0_PROD0_AUDIT_ARGS) --check
@@ -334,6 +337,7 @@ check:
 	$(PYTHON) tests/test_f0_prod1_schedule.py
 	$(PYTHON) tests/test_f0_prod1_p1h_evidence.py
 	$(PYTHON) tests/test_f0_prod1_price_evidence.py
+	$(PYTHON) tests/test_f0_prod2_ma2_map.py
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS_STRICT) -O3 $(CPPFLAGS_LOCAL) $(SHEAR_SOURCES) tests/test_gt9x16_shear.c -o $(BUILD)/test-gt9x16-shear
 	$(BUILD)/test-gt9x16-shear

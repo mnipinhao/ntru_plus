@@ -435,3 +435,16 @@ producer boundary is therefore rejected for MA2 caller integration. The next
 gate is only a movement-graph study for an `F0-PROD2-MA2` specialized epilogue;
 top-split fusion and routing micro-superoptimization remain unauthorized. See
 `CHECKPOINT-F0-PROD1-PRICE.md`.
+
+Checkpoint F0-PROD2-MA2-MAP removes the generic-F0 boundary from the design,
+not the memory boundary. Its 1,152-cell oracle maps every D1 lane to the exact
+MA2 serializer chunk, tile, coefficient plane, and q lane. Store-address-only
+P2-A is impossible because a D1 vector contains two coefficient halves. P2-B
+is selected: four local `vperm2i128` operations per tile form MA2-native planes
+and overwrite the same terminal-pair slots, preserving the 2,304-byte backing
+with no extra temporary. Against the actual MA2 assembly this removes 72
+duplicated loads per forward operand, or 144 for encapsulation's two operands;
+the plane permutations move to the producer rather than disappear. Only a
+materialized P2-B ASM0 differential is authorized next; KEM, resident-`h`,
+top-split fusion, and chunk-oriented P2-C remain blocked. See
+`CHECKPOINT-F0-PROD2-MA2-MAP.md`.

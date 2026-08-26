@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-f0-prod1-price-generic-f0-producer-rejected
+state: checkpoint-f0-prod2-ma2-map-p2b-materialized-realization-selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -376,6 +376,15 @@ checkpoint_f0_prod1_p1h_routing: exact-576-direct-formation-instructions-per-for
   checkpoint_f0_prod1_p1h_benchmark_class: supercop-derived-poly-f0-prod1-not-native-kem
   checkpoint_f0_prod1_p1h_perf: diagnostic-minus110-instructions-plus168-loads-minus65-stores-per-forward
   checkpoint_f0_prod1_flat_packaging: passed-distinct-wrapper-and-assembly-object-basenames
+  checkpoint_f0_prod2_ma2_bijection: passed-1152-d1-source-ma2-destination-semantic-owner-cells
+  checkpoint_f0_prod2_ma2_scale_range: passed-scale4-r0-exact-envelope-minus20751-plus20753-no-reduction
+  checkpoint_f0_prod2_ma2_p2a: rejected-zero-whole-d1-vectors-match-one-ma2-plane
+  checkpoint_f0_prod2_ma2_p2b: selected-72-local-permutes-72-stores-zero-extra-bytes-per-forward
+  checkpoint_f0_prod2_ma2_transient: passed-same-terminal-pair-slots-reuse-2304-byte-backing
+  checkpoint_f0_prod2_ma2_movement: passed-minus72-duplicated-loads-per-operand-minus144-two-operand
+  checkpoint_f0_prod2_ma2_p2c: deferred-zero-movement-credit-vs-p2b-schedule-change
+  checkpoint_f0_prod2_ma2_asm: not-implemented-p2b-only-authorized
+  checkpoint_f0_prod2_ma2_kem: not-authorized
 f0_ma1_schedule_result: results/f0-ma1-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-serious/stq-summary.json
 f0_ma1_ma0_result: results/f0-ma1-ma0-supercop-derived-intel155h-20260825-002/supercop-f0-ma1-ma0-serious/stq-summary.json
 f0_ma3_result: results/f0-ma3-supercop-derived-intel155h-20260825-001/supercop-f0-ma3-serious/stq-summary.json
@@ -390,7 +399,9 @@ f0_prod1_schedule: generated/f0-prod1-schedule.json
 f0_prod1_p1h_audit: generated/f0-prod1-p1h-audit.json
 f0_prod1_price_result: results/f0-prod1-price-supercop-derived-intel155h-20260825-002/supercop-f0-prod1-serious/stq-summary.json
 checkpoint_f0_prod1_price: generic-f0-p1h-rejected-specialized-ma2-epilogue-movement-graph-next
-next_step: f0-prod2-ma2-specialized-epilogue-movement-graph-no-asm-yet
+f0_prod2_ma2_map: generated/f0-prod2-ma2-map.json
+checkpoint_f0_prod2_ma2_map: p2a-rejected-p2b-selected-p2c-deferred
+next_step: f0-prod2-ma2-asm0-p2b-materialized-producer-consumer-differential-no-kem
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
