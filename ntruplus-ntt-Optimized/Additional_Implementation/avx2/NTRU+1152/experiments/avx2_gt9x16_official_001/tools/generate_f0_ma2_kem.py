@@ -13,7 +13,7 @@ def main() -> int:
         '#include "randombytes.h"',
         '#include "randombytes.h"\n'
         '#include "f0-ma2-asm.h"\n'
-        '#include "f0_prod3_hash_bridge.h"\n'
+        '#include "gt9x16-prod3-ma2-hash-h1.h"\n'
         '#include "gt9x16_forward.h"\n'
         '#include "gt9x16_prod3_aos_full.h"')
     text = text.replace('    poly c, h, r, m;', '    poly h, r, m, r_f0, m_f0;\n    _Alignas(32) int16_t ma2_scratch[128];')
@@ -21,8 +21,8 @@ def main() -> int:
     ntruplus1152_exp001_top_split_small(r_f0.coeffs, r.coeffs);
     ntruplus1152_exp001_gt9x16_prod3_aos_full(r_f0.coeffs);
 
-    /* r has two consumers: preserve Official's exact serialized hash edge. */
-    ntruplus1152_exp001_prod3_hash_bytes(ct, r_f0.coeffs, &r, &m);
+    /* r has two consumers: H1 serializes the MA2-native planes directly. */
+    ntruplus1152_exp001_prod3_ma2_hash_h1(ct, r_f0.coeffs);
     hash_g(ct, ct);
     poly_sotp_encode(&m, msg, ct);
     ntruplus1152_exp001_top_split_small(m_f0.coeffs, m.coeffs);
@@ -47,8 +47,8 @@ def main() -> int:
     secure_clear(&r_f0, sizeof r_f0);
     secure_clear(&m_f0, sizeof m_f0);
     secure_clear(ma2_scratch, sizeof ma2_scratch);''', 1)
-    banner = ("/* Generated experiment overlay: PROD3 persistent-AoS "
-              "encapsulation with native MA2. */\n")
+    banner = ("/* Generated experiment overlay: PROD3 persistent-AoS, direct "
+              "H1 hash serialization, and native MA2. */\n")
     rendered = banner + "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
     if a.check:
         if not a.output.is_file() or a.output.read_text() != rendered:

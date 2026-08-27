@@ -147,6 +147,7 @@ GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash
  supercop-f0-prod2-consumer-short supercop-f0-prod2-consumer-serious \
  supercop-gt9x16-prod3-price supercop-gt9x16-prod3-consumer \
  supercop-gt9x16-prod3-hash-fanout supercop-gt9x16-prod3-hash-h1-price \
+ gt9x16-prod3-h1-kat \
  supercop-paired-serious supercop-promotion-report
 
 generate:
@@ -273,6 +274,7 @@ generate:
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_hash_h1.py $(GT9X16_PROD3_HASH_H1_AUDIT_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_h1_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_hash_h1_price_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_h1_integration_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
@@ -416,6 +418,7 @@ check:
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_hash_h1.py $(GT9X16_PROD3_HASH_H1_AUDIT_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_h1_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_hash_h1_price_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_h1_integration_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o
@@ -950,6 +953,10 @@ supercop-gt9x16-prod3-hash-h1-price:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_hash_h1_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-h1-price-normal} --reversed-implementation $${PROD3_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-h1-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
+
+gt9x16-prod3-h1-kat:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_h1_kat.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --implementation $${SUPERCOP_IMPLEMENTATION:-avx2-gt9x16-prod3-h1-exp001} --output $(RESULTS)/kat.json
 
 supercop-paired-serious:
 	test -n "$(OFFICIAL_MEASURE)"; test -n "$(CANDIDATE_MEASURE)"

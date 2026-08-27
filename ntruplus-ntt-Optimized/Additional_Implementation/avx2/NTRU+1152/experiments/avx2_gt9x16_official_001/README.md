@@ -601,3 +601,13 @@ frozen-caller integration check, but the result is SUPERCOP-derived rather
 than native-KEM evidence and is not large enough by itself to close the prior
 encapsulation deficit. H2 remains withdrawn. See
 `CHECKPOINT-GT9X16-PROD3-MA2-HASH-H1-PRICE.md`.
+
+Checkpoint GT9X16-PROD3-H1-INTEGRATION replaces only the old `r` hash-recovery
+bridge in the real research caller with the selected direct H1 serializer.
+The caller retains two PROD3 forwards, unchanged `hash_g`/SOTP ordering,
+resident `h`, native MA2, allocation, and secure clears. The newly installed
+flat candidate passes all 100 frozen NTRU+1152 KAT vectors byte-for-byte; the
+response SHA-256 remains `2ddfc810...9464c3`. Native performance is
+intentionally not rerun. H1 is now the research Encap baseline, and the next
+checkpoint is map-only joint Q-order co-design. See
+`CHECKPOINT-GT9X16-PROD3-H1-INTEGRATION.md`.

@@ -1,4 +1,4 @@
-/* Generated experiment overlay: PROD3 persistent-AoS encapsulation with native MA2. */
+/* Generated experiment overlay: PROD3 persistent-AoS, direct H1 hash serialization, and native MA2. */
 #include "util.h"
 #include "crypto_kem.h"
 #include <stddef.h>
@@ -11,7 +11,7 @@
 #include "fips202.h"
 #include "randombytes.h"
 #include "f0-ma2-asm.h"
-#include "f0_prod3_hash_bridge.h"
+#include "gt9x16-prod3-ma2-hash-h1.h"
 #include "gt9x16_forward.h"
 #include "gt9x16_prod3_aos_full.h"
 
@@ -233,8 +233,8 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     ntruplus1152_exp001_top_split_small(r_f0.coeffs, r.coeffs);
     ntruplus1152_exp001_gt9x16_prod3_aos_full(r_f0.coeffs);
 
-    /* r has two consumers: preserve Official's exact serialized hash edge. */
-    ntruplus1152_exp001_prod3_hash_bytes(ct, r_f0.coeffs, &r, &m);
+    /* r has two consumers: H1 serializes the MA2-native planes directly. */
+    ntruplus1152_exp001_prod3_ma2_hash_h1(ct, r_f0.coeffs);
     hash_g(ct, ct);
     poly_sotp_encode(&m, msg, ct);
     ntruplus1152_exp001_top_split_small(m_f0.coeffs, m.coeffs);
