@@ -1,5 +1,10 @@
 # H4-M2B exact terminal-to-wire ownership search
 
+> **Rejected by H4-M2D.** This checkpoint treated
+> `serialized_coefficient` as the semantic wire key. Direct replay against
+> Official physical coefficient order finds 1134 mismatches in 1152 cells.
+> None of its pair-locality or staging conclusions authorizes ASM.
+
 ## Outcome
 
 This checkpoint rebuilds the H4 serializer graph with `wire_coefficient` as

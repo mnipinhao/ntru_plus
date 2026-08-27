@@ -1,5 +1,11 @@
 # ENCAP-MA2-CT-EGRESS-H4-M1
 
+> **Ownership-derived conclusions rejected by H4-M2D.** This checkpoint used
+> the legacy `serialized_coefficient` field as wire identity. Its pair graph,
+> pending bound, presentation frontier, and serializer ranking must not
+> authorize implementation. See
+> `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M2D.md`.
+
 H4-M1 searches the terminal presentation from live caller-wide scale-1 MA2
 outputs to exact 12-bit serializer-pair ownership. It does not require or
 create a complete Natural-Q `c[1152]` object, and it does not emit assembly.

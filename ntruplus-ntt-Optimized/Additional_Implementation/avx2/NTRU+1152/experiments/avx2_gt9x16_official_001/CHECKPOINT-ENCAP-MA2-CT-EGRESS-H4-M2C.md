@@ -1,5 +1,10 @@
 # H4-M2C Natural-Q exact wire egress schedule
 
+> **Rejected by H4-M2D; do not implement this schedule.** Its 1502-count
+> lowering pairs the wrong semantic coefficients. The hard pair32 oracle
+> established that true wire coefficient `k` is Official physical coefficient
+> `k`, placing all 576 pairs within one YMM rather than across adjacent vectors.
+
 ## Outcome
 
 M2C lowers the frozen 2304-byte canonical Natural-Q scale-1 scratch to exact

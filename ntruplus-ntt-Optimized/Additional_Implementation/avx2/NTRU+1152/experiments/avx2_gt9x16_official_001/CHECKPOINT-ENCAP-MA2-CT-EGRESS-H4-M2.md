@@ -1,5 +1,10 @@
 # ENCAP MA2 ciphertext egress H4-M2
 
+> **Rejected by H4-M2D.** The staging ranking below depends on the incorrect
+> cross-vector serializer ownership model and is not an ASM authorization.
+> The corrected physical-wire rerank is recorded in
+> `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M2D.md`.
+
 > **Post-ASM correction (H4-M2B):** the exact linked ciphertext differential
 > rejected the first M3 lowering, not M2's abstract same-lane cross-plane
 > wire-pair model.  The lowering confused Official physical coefficient IDs
