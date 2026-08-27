@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "control_commit": "b2a4bea",
+  "static": {
+    "status": "PASS",
+    "control_commit": "b2a4bea",
+    "symbol": "ntruplus768_basemul_general_m_avx2",
+    "symbol_sha256": "02f4338daf1fa173266cebdfb9554b7d4686af87b95c78b90e150f46d59b4a4c",
+    "symbol_bytes": 684,
+    "instruction_count": 143,
+    "tile_bytes": 128,
+    "tiles": 12,
+    "input_a_load_offsets": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "input_b_load_offsets": [
+      0,
+      32,
+      64,
+      96
+    ],
+    "disassembly_ledger_relative_to_symbol": {
+      "last_read_a": "0x41",
+      "last_read_b": "0x2e",
+      "first_output_store": "0xcd"
+    },
+    "first_output_store_after_all_eight_input_loads": true,
+    "input_reloads_after_first_output_store": 0,
+    "cross_tile_dependencies": 0,
+    "stack_references": 0,
+    "extra_alias_instructions": 0,
+    "exact_alias_contract": [
+      "out == a",
+      "out == b"
+    ],
+    "partial_overlap_contract": "unsupported",
+    "alias_h_vs_alias_r": {
+      "kernel_instruction_difference": 0,
+      "kernel_register_difference": 0,
+      "kernel_addressing_difference": 0,
+      "preferred_for_096": "out == r",
+      "reason": "performance tie; the existing Encap cleanup already clears the r slot"
+    }
+  },
+  "native": "PASS cases=1005 alias_a=exact alias_b=exact suffix=byte-exact",
+  "asan_ubsan": "PASS cases=1005 alias_a=exact alias_b=exact suffix=byte-exact",
+  "production_modified": false,
+  "next_gate": "096 \u2014 three-slot production frame"
+}
