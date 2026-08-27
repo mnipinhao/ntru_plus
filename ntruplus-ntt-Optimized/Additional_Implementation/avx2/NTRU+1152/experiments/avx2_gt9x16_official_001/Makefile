@@ -133,6 +133,8 @@ GT9X16_PROD3_QORDER_NATURAL_PRODUCER := asm/gt9x16_prod3_aos_natural.S
 GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS := --ma-schedule generated/f0-ma-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --asm $(GT9X16_PROD3_QORDER_NATURAL_ASM) --constants generated/gt9x16-prod3-ma2-qorder-natural-constants.inc --header generated/gt9x16-prod3-ma2-qorder-natural-asm.h --contract generated/gt9x16-prod3-ma2-qorder-natural-asm.json
 GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES = src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_QORDER_NATURAL_PRODUCER) $(GT9X16_PROD3_QORDER_NATURAL_ASM) $(GT9X16_PROD3_HASH_H1_ASM) tests/test_gt9x16_prod3_ma2_qorder_natural_asm0.c
 GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS := --elf $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0 --contract generated/gt9x16-prod3-ma2-qorder-natural-asm.json --constants generated/gt9x16-prod3-ma2-qorder-natural-constants.inc --output generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json
+GT9X16_PROD3_CUMULATIVE_MA2_ARGS := --source $(GT9X16_PROD3_QORDER_NATURAL_ASM) --asm asm/gt9x16_prod3_cumulative_ma2.S --header generated/gt9x16-prod3-cumulative-ma2.h
+GT9X16_PROD3_CUMULATIVE_KEM_ARGS := --source src/kem.c --output src/kem_cumulative_native.c
 GT9X16_PROD3_T0_MAP_ARGS := --component-oracle generated/gt9x16-component-oracle.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --paper-range generated/gt9x16-ntt9-paper-range.json --prod3-schedule generated/gt9x16-prod3-aos-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --qorder-price results/gt9x16-prod3-qorder-price-intel155h-20260827-001/summary.json --top-split-source src/top_split_adapter.c --output generated/gt9x16-prod3-natural-q-t0-absorption-map.json
 GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS := --map generated/gt9x16-prod3-natural-q-t0-absorption-map.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --natural-audit generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json --full-audit generated/gt9x16-prod3-aos-full-audit.json --producer-source asm/gt9x16_prod3_aos_branch0.S --branch0-constants generated/gt9x16-prod3-aos-branch0-constants.inc --branch1-constants generated/gt9x16-prod3-aos-branch1-constants.inc --output generated/gt9x16-prod3-natural-q-t0-beta-schedule.json --asm-constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc
 GT9X16_PROD3_T0_BETA_CONTROL_ASM := asm/gt9x16_prod3_aos_natural.S
@@ -286,6 +288,8 @@ generate:
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_schedule.py $(GT9X16_PROD3_QORDER_NATURAL_SCHED_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_natural_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_asm.py $(GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS)
+	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_ma2.py $(GT9X16_PROD3_CUMULATIVE_MA2_ARGS)
+	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_kem.py $(GT9X16_PROD3_CUMULATIVE_KEM_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
@@ -450,6 +454,8 @@ check:
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_schedule.py $(GT9X16_PROD3_QORDER_NATURAL_SCHED_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_natural_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_asm.py $(GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS) --check
+	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_ma2.py $(GT9X16_PROD3_CUMULATIVE_MA2_ARGS) --check
+	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_kem.py $(GT9X16_PROD3_CUMULATIVE_KEM_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS) --check
@@ -473,6 +479,7 @@ check:
 	$(PYTHON) tests/test_gt9x16_prod3_h1_integration_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_qorder_price_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_price_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_cumulative_native_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(CC) -mavx2 -I. -c $(INVERSE_NTT9_B0_ASM) -o $(BUILD)/g1c/inverse-ntt9-b0.o

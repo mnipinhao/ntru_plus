@@ -699,3 +699,15 @@ confidence intervals are below zero. T0-beta is therefore the new frozen
 Natural-Q PROD3 research baseline. This is not native-KEM or production
 promotion evidence. See
 `CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-BETA-PRICE.md`.
+
+Checkpoint GT9X16-PROD3-CUMULATIVE-NATIVE-REBASE integrates persistent-AoS,
+Natural-Q, T0-beta, Natural-Q MA2, and Direct H1 into one KEM caller. The first
+KAT exposed that the earlier Q-order price harness applied `inv4` in both MA2
+and H1; a namespaced scale-4 MA2 boundary repairs that integration contract
+without changing arithmetic or the selected representation. The cumulative
+candidate passes 100/100 frozen KAT vectors. Native SUPERCOP 20260627 measures
+Official Enc at 42893.51 cycles and cumulative Enc at 43885.53 cycles, a
+remaining +992.02-cycle or +2.31% deficit. This narrows the old cross-campaign
+gap by about 506.68 cycles but does not justify promotion. The next checkpoint
+is ENCAP-CALLER-ATTRIBUTION-V2 on this exact baseline; no new ASM is yet
+authorized. See `CHECKPOINT-GT9X16-PROD3-CUMULATIVE-NATIVE-REBASE.md`.

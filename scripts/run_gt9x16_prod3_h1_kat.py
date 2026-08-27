@@ -20,6 +20,13 @@ IMPLEMENTATION_SOURCES = (
     "gt9x16_prod3_ma2_hash_h1.S",
 )
 
+CUMULATIVE_SOURCES = IMPLEMENTATION_SOURCES + (
+    "gt9x16_prod3_aos_natural.S",
+    "gt9x16_prod3_aos_t0_beta.S",
+    "gt9x16_prod3_ma2_qorder_natural.S",
+    "gt9x16_prod3_cumulative_ma2.S",
+)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -27,6 +34,7 @@ def main() -> int:
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cc", default="cc")
+    parser.add_argument("--profile", choices=("h1", "cumulative"), default="h1")
     args = parser.parse_args()
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite {args.output}")
@@ -42,7 +50,9 @@ def main() -> int:
     implementation = root / "crypto_kem/ntruplus1152" / args.implementation
     if not implementation.is_dir():
         raise SystemExit(f"missing implementation: {implementation}")
-    missing = [name for name in IMPLEMENTATION_SOURCES
+    implementation_sources = (CUMULATIVE_SOURCES if args.profile == "cumulative"
+                              else IMPLEMENTATION_SOURCES)
+    missing = [name for name in implementation_sources
                if not (implementation / name).is_file()]
     if missing:
         raise SystemExit(f"implementation lacks KAT sources: {missing}")
@@ -65,7 +75,7 @@ def main() -> int:
     compile_command.extend(str(kat_dir / name) for name in (
         "PQCgenKAT_kem.c", "aes.c", "rng.c"))
     compile_command.extend(str(implementation / name)
-                           for name in IMPLEMENTATION_SOURCES)
+                           for name in implementation_sources)
     with tempfile.TemporaryDirectory(prefix="ntruplus-prod3-h1-kat-") as temp:
         work = Path(temp)
         binary = work / "PQCgenKAT_kem"
@@ -90,6 +100,7 @@ def main() -> int:
             "created_at": datetime.now(timezone.utc).isoformat(),
             "parameter": 1152,
             "implementation": args.implementation,
+            "profile": args.profile,
             "campaign": str(root),
             "compiler": compiler,
             "cases": 100,

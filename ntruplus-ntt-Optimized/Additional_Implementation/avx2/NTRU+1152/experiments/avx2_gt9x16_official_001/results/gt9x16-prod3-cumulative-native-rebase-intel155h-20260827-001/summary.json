@@ -1,0 +1,73 @@
+{
+  "benchmark_class": "supercop-native-kem",
+  "candidate": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-prod3-cumulative-exp002 -"
+  },
+  "cpu": 1,
+  "cross_campaign_coordinate": {
+    "gap_narrowing_cycles": 506.67595185185405,
+    "new_enc_delta_cycles": 992.023148148146,
+    "old_enc_delta_cycles": 1498.6991,
+    "warning": "different native campaigns; not an additive causal attribution"
+  },
+  "decision": {
+    "native_encap_winner": false,
+    "new_asm_authorized": false,
+    "next_checkpoint": "ENCAP-CALLER-ATTRIBUTION-V2",
+    "promotion": false
+  },
+  "frequency_policy": "performance-governor-turbo-disabled",
+  "fresh_process_launches": 9,
+  "kat": {
+    "cases": 100,
+    "passed": true,
+    "request_sha256": "36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa",
+    "response_sha256": "2ddfc810c44f63f8d24086da7c33faf17d66c393f519a5b9cb76b0b7509464c3"
+  },
+  "linked_call_graph": {
+    "counts": {
+      "ntruplus1152_exp001_f0_ma2_native_full": 0,
+      "ntruplus1152_exp001_f0_ma2_planes_natural_q_scale4": 1,
+      "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta": 2,
+      "ntruplus1152_exp001_prod3_hash_bytes": 0,
+      "ntruplus1152_exp001_prod3_ma2_hash_h1_natural_q": 2
+    },
+    "measure_elf_sha256": "3fa6bae9610b27c4f7142b7020abf1485b3b39a224c51ca5896450367d17acf3",
+    "symbol": "crypto_kem_enc_derand"
+  },
+  "observations_per_operation": 864,
+  "official": {
+    "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2 -"
+  },
+  "operations": {
+    "dec_cycles": {
+      "candidate_stq2": 30235.98611111111,
+      "delta_cycles": -61.847222222222626,
+      "delta_percent": -0.2041308417726987,
+      "official_stq2": 30297.833333333332
+    },
+    "enc_cycles": {
+      "candidate_stq2": 43885.53240740741,
+      "delta_cycles": 992.023148148146,
+      "delta_percent": 2.3127581894782874,
+      "official_stq2": 42893.50925925926
+    },
+    "keypair_cycles": {
+      "candidate_stq2": 34306.01388888889,
+      "delta_cycles": 69.85648148148175,
+      "delta_percent": 0.20404299656119543,
+      "official_stq2": 34236.15740740741
+    }
+  },
+  "parameter": 1152,
+  "schema": "gt9x16-prod3-cumulative-native-rebase/v1",
+  "supercop_version": "20260627"
+}
