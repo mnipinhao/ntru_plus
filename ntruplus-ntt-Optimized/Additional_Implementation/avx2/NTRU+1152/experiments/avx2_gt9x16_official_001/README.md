@@ -621,3 +621,15 @@ serialized pairs cross MA2 vectors for every candidate, so Q-order cannot
 revive the invalidated H2-96 design. Natural Q is retained only for an exact
 schedule-lowering checkpoint; no ASM, timing, or native KEM is authorized.
 See `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-CO-DESIGN.md`.
+
+Checkpoint GT9X16-PROD3-MA2-QORDER-NATURAL-SCHEDULE performs the final
+current-Q versus natural-Q machine-schedule arbitration with true Encap
+multiplicity. It also corrects the current linked resident-`h` count to 288
+routes (144 `vperm2i128`, 72 `vpshufb`, 72 `vpblendw`). Natural-Q removes 288
+producer routes across the two forwards, while its exact resident-`h` schedule
+adds 72 routes and H1 adds 24 routes plus 16 loads. H1 pack remains 324 routes.
+The separated caller delta is therefore -192 routes and +16 loads, with no
+scratch/spill and peak bounds of 15 YMM for MA2 and 16 for H1. Q-order search is
+closed; natural-Q is authorized only for a namespaced ASM correctness/audit
+checkpoint. No timing or native KEM was run. H2-v1 is formally rejected. See
+`CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-SCHEDULE.md`.

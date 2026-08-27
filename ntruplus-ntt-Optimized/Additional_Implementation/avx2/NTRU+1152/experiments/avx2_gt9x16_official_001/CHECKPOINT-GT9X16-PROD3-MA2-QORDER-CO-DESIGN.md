@@ -40,8 +40,8 @@ The metrics intentionally remain separate:
   a conservative constructed upper bound.
 - Resident-`h` reports exact source-half ownership groups. Candidate route and
   load counts are generic construction bounds, not claims about an optimized
-  shared-load schedule. The linked current hand schedule remains calibrated at
-  144 routes.
+  shared-load schedule. The linked current hand schedule is independently
+  calibrated at 288 routes: 144 `vperm2i128`, 72 `vpshufb`, and 72 `vpblendw`.
 - H1 reconstructs the exact pinned Official pack inputs, so its coefficient
   loads/routes are exact. The subsequent 324 pack-transpose routes are
   invariant under Q-order.

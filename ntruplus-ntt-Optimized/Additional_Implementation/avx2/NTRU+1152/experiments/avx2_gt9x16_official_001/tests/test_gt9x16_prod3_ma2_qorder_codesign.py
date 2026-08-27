@@ -30,7 +30,7 @@ assert natural["producer"]["routes_per_forward"] == 0
 assert natural["H1"]["coefficient_routes"] == 360
 assert natural["H1"]["data_loads"] == 288
 
-assert DATA["linked_current_calibration"]["resident_h_projection_routes"] == 144
+assert DATA["linked_current_calibration"]["resident_h_projection_routes"] == 288
 assert DATA["pareto"]["current_is_pareto_optimal"]
 assert DATA["pareto"]["frontier_count"] == 33
 assert len(DATA["pareto"]["cost_profiles"]) == 2

@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-ma2-qorder-codesign-complete
+state: checkpoint-gt9x16-prod3-ma2-qorder-natural-schedule-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -549,9 +549,19 @@ checkpoint_gt9x16_prod3_qorder_h1_pack: invariant-324-routes
 checkpoint_gt9x16_prod3_qorder_h2: passed-all384-orders-576of576-pairs-cross-ma2-vector-old256-and1086-not-reused
 checkpoint_gt9x16_prod3_qorder_asm: not-authorized-map-only
 checkpoint_gt9x16_prod3_qorder_benchmark: not-run-by-design
+gt9x16_prod3_ma2_qorder_natural_schedule: generated/gt9x16-prod3-ma2-qorder-natural-schedule.json
+checkpoint_gt9x16_prod3_qorder_current_h_correction: linked-144-vperm2i128-72-vpshufb-72-vpblendw-equals288-routes
+checkpoint_gt9x16_prod3_qorder_natural_producer: passed-zero-final-routes-minus288-per-encap-two-forwards
+checkpoint_gt9x16_prod3_qorder_natural_h: passed-144-loads-360-routes-zero-scratch-peak15-upper-bound
+checkpoint_gt9x16_prod3_qorder_natural_h1: passed-288-loads-360-coeff-routes-324-pack-routes-zero-intermediate-peak16
+checkpoint_gt9x16_prod3_qorder_caller_delta: selected-minus192-routes-plus16-loads-zero-scratch-spill
+checkpoint_gt9x16_prod3_qorder_search: closed-two-point-arbitration-selects-natural-for-machine-realization
+checkpoint_gt9x16_prod3_qorder_h2v1: rejected-wrong-exact-serializer-pair-locality-model
+checkpoint_gt9x16_prod3_qorder_natural_asm: authorized-next-namespaced-correctness-and-linked-audit-only
+checkpoint_gt9x16_prod3_qorder_natural_benchmark: not-authorized
 research_encap_baseline: prod3-persistent-aos-plus-direct-h1-plus-native-ma2
 native_reentry_gate: caller-shaped-island-within-0-to-200-cycles-or-known-structural-opportunities-closed
-next_step: gt9x16-prod3-ma2-qorder-natural-schedule-lowering-only
+next_step: gt9x16-prod3-ma2-qorder-natural-asm0-correctness-and-linked-audit
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

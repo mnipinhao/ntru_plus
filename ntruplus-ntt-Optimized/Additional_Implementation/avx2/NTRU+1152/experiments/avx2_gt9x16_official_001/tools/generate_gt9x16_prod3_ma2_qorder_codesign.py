@@ -246,6 +246,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prod3-schedule", type=Path, required=True)
     parser.add_argument("--ma-schedule", type=Path, required=True)
+    parser.add_argument("--ma2-audit", type=Path, required=True)
     parser.add_argument("--direct-map", type=Path, required=True)
     parser.add_argument("--hash-schedule", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -254,6 +255,7 @@ def main() -> int:
 
     prod3 = json.loads(args.prod3_schedule.read_text())
     ma = json.loads(args.ma_schedule.read_text())
+    ma2_audit = json.loads(args.ma2_audit.read_text())
     direct = json.loads(args.direct_map.read_text())
     hash_schedule = json.loads(args.hash_schedule.read_text())
     if prod3["schema"] != "gt9x16-prod3-aos-schedule/v1":
@@ -317,9 +319,9 @@ def main() -> int:
     if (current_h1["source_half_groups"] != expected_h1["source_half_groups"] or
             current_h1["coefficient_routes"] != expected_h1["routing_excluding_register_copy"]):
         raise SystemExit("current H1 baseline no longer reproduces 136 groups/336 routes")
-    current_h_routes = (ma["physical_schedule"]["resident_h_projection_per_tile"]
-                           ["routing_total"] * len(ma["semantic_tiles"]))
-    if current_h_routes != 144:
+    current_h_movement = ma2_audit["variants"]["FULL"]["movement"]["resident_h_formation"]
+    current_h_routes = sum(current_h_movement.values())
+    if current_h_routes != 288:
         raise SystemExit("current linked resident-h route baseline changed")
 
     metrics = tuple(current_candidate["frontier_metrics"])
@@ -375,6 +377,7 @@ def main() -> int:
         "linked_current_calibration": {
             "producer_final_routes": 144,
             "resident_h_projection_routes": current_h_routes,
+            "resident_h_projection_opcodes": current_h_movement,
             "H1_coefficient_routes": 336,
             "H1_data_loads": 272,
             "H1_pack_transpose_routes": 324,
@@ -415,6 +418,7 @@ def main() -> int:
         "source_sha256": {
             "prod3_schedule": sha256(args.prod3_schedule),
             "ma_schedule": sha256(args.ma_schedule),
+            "ma2_audit": sha256(args.ma2_audit),
             "direct_map": sha256(args.direct_map),
             "hash_schedule": sha256(args.hash_schedule),
         },
