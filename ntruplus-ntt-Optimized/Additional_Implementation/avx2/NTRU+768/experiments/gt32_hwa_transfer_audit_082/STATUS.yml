@@ -1,0 +1,65 @@
+experiment: NTRUPLUS768-HWA-TRANSFER-AUDIT-082
+title: Source-backed 1152/Hwa architecture transfer audit for GT Clean 768
+mode: generator-only
+production_modified: false
+assembly_emitted: false
+
+status:
+  caller_graph: PASS_CURRENT_GT_CLEAN
+  transfer_matrix: COMPLETE
+  enc_r_dual_terminal: OPEN_DISTINCT_MECHANISM
+  enc_m_consumer_abi: SEARCHED_AND_PAUSED
+  alternative_scale: DEFER_UNTIL_DUAL_TERMINAL
+  cbd_sotp_direct_deposit: OPEN_SECONDARY
+  d6_d8: UNPROVED_MACROARCHITECTURE_WILDCARD
+
+source_corrections:
+  - Production M is coefficient-plane SoA, not persistent TILE4 AoS.
+  - TILE4 is the NTT32 internal and pre-terminal register arrangement.
+  - ENC-R stores one full M polynomial; it does not store separate full M and P polynomials.
+  - DEC-R1 uses native M-domain equality in current GT Clean and has no second Q24 pack.
+
+selected_callers:
+  keygen: P
+  encap: M
+  decap: M
+  forward_callsites: [KG-F, KG-G, ENC-R, ENC-M, DEC-M2, DEC-R1]
+
+enc_r_current:
+  path: CBD_r -> frontend -> ntt_m -> M
+  consumers: [M_Q24_to_hash_g_bytes, general_B3_rhs]
+  full_1536_byte_representations: 1
+
+enc_r_dual_terminal_static_ceiling:
+  current_q24_vector_loads_removable: 48
+  current_q24_transpose_instructions_removable: 144
+  total_instructions_before_new_cost: 192
+  bytes_not_reloaded: 1536
+  m_stores_removable: 0
+  canonical_reduction_removable: 0
+  wire_stores_removable: 0
+  caveat: ceiling_only_transition_register_pressure_scatter_and_code_footprint_uncharged
+
+prior_evidence:
+  enc_m:
+    - 032_B3_final_store_add_m_local_champion
+    - 068_typed_packet_correct_but_shared_and_inline_shapes_lose
+    - 069_clustered_shapes_still_lose
+    - 070_uniform_Mprime_found_but_forward_landing_not_free
+    - 071_affine_terminal_topology_closed
+  decap:
+    - 063_to_066_late_SoA_architecture_and_caller_pass
+    - 067_production_promotion_rejected
+  d2:
+    - 079_to_081_current_inverse64_realization_closed_for_scope
+
+decision:
+  next: ENC_R_DUAL_TERMINAL_GENERATOR_AND_BOUNDED_ASM_GATE
+  first_region: complete_Forward_r_plus_WIRE12_plus_retained_M
+  no_full_encap_yet: true
+  no_scale_search_yet: true
+  no_new_leaf_degree_yet: true
+
+artifacts:
+  - generated/forward_callsite_graph.json
+  - generated/transfer_audit.json

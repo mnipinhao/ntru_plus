@@ -1,0 +1,116 @@
+{
+  "schema": "ntruplus768-hwa-transfer-audit-v1",
+  "experiment": "NTRUPLUS768-HWA-TRANSFER-AUDIT-082",
+  "mode": "source-backed-generator-only",
+  "assembly_emitted": false,
+  "production_modified": false,
+  "selected_layouts": {
+    "TILE4": "NTT32 internal AoS: four quartics per YMM",
+    "M": "persistent coefficient-plane SoA for Encap/Decap",
+    "P": "Keygen-specific coefficient-plane placement",
+    "WIRE12": "canonical 1152-byte external/hash representation"
+  },
+  "static_shape": {
+    "M_terminal": {
+      "FR_PACKED_TO_PLANES_instructions_per_call": 16,
+      "calls_per_tile": 2,
+      "tiles": 6,
+      "instructions_per_polynomial": 192,
+      "stores_per_polynomial": 48,
+      "must_remain_for_ENC_R_B3": true
+    },
+    "current_M_Q24_presentation": {
+      "vector_loads": 48,
+      "transpose_networks": 12,
+      "instructions_per_transpose": 12,
+      "transpose_instructions": 144
+    },
+    "ENC_R_dual_terminal_max_direct_deletion_before_new_cost": {
+      "vector_loads": 48,
+      "transpose_instructions": 144,
+      "total_instructions": 192,
+      "bytes_not_reloaded": 1536,
+      "M_stores_deleted": 0,
+      "canonical_reduction_deleted": 0,
+      "wire_packet_stores_deleted": 0,
+      "meaning": "Ceiling only; terminal register pressure, output scattering, control transfer, and code footprint are uncharged."
+    }
+  },
+  "transfer_matrix": [
+    {
+      "principle": "persistent transform-friendly representation",
+      "coverage": "absorbed",
+      "evidence": "TILE4 is resident through NTT32; M/P are selected only at caller-specific terminals",
+      "action": "do_not_recreate_768_PROD3"
+    },
+    {
+      "principle": "consumer-native coefficient planes",
+      "coverage": "absorbed",
+      "evidence": "M/P B3, BaseInv, inverse, and Q24 typed edges",
+      "action": "do_not_reopen_quartic_formula_without_new_operation_deletion"
+    },
+    {
+      "principle": "direct native serializer",
+      "coverage": "absorbed",
+      "evidence": "M/P Q24 reaches WIRE12 without Official coefficient-layout materialization",
+      "action": "do_not_build_another_standalone_TILE4_to_WIRE12"
+    },
+    {
+      "principle": "ENC-R multi-consumer terminal",
+      "coverage": "open_distinct_mechanism",
+      "evidence": "one M value is read by Q24/hash and later by general B3",
+      "action": "next_generator_then_bounded_ASM_if_code_shape_is_credible"
+    },
+    {
+      "principle": "ENC-M B3/add/Q24 consumer ABI",
+      "coverage": "searched_and_paused",
+      "evidence": "032 local champion; 068/069 delete materialization but lose to executable delivery; 070/071 close current M-prime terminal topology",
+      "action": "reopen_only_with_lower_unique_executed_text_or_non_affine_replacement_DAG"
+    },
+    {
+      "principle": "alternative scale carry",
+      "coverage": "conditionally_open",
+      "evidence": "old e1 gate had static credit but violated current Encodeq economics",
+      "action": "recompute_only_after_an_executable_ENC_R_dual_terminal_contract_exists"
+    },
+    {
+      "principle": "twist absorption",
+      "coverage": "narrow_reopen_only",
+      "evidence": "028/029 and 079--081 reject relabel-only/current D2 forms",
+      "action": "retain_only_if_a_complete_Montgomery_chain_disappears"
+    },
+    {
+      "principle": "CBD/SOTP direct deposit",
+      "coverage": "open_but_secondary",
+      "evidence": "current producers materialize coefficient order before the shared frontend",
+      "action": "bounded_producer_frontend_region_after_ENC_R_terminal_gate"
+    },
+    {
+      "principle": "different leaf degree",
+      "coverage": "unproved_macroarchitecture_wildcard",
+      "evidence": "not established by current GT Clean contracts",
+      "action": "require_ring_factorization_root_supply_BaseMul_BaseInv_and_inverse_proof_before_costing_d6_or_d8"
+    }
+  ],
+  "decision": {
+    "highest_information_next_gate": "ENC-R dual terminal: pre-M TILE4 registers -> persistent M plus direct WIRE12",
+    "why_new": "068--071 concern the final B3/add/Q24 seam or M-prime terminal; they do not execute a Forward-r dual-output terminal.",
+    "first_gate_scope": "one complete Forward-r plus its WIRE12 output and retained M output; no B3 or full Encap yet",
+    "required_controls": [
+      "current ntt_m -> M plus current pack_m_lazy10788",
+      "candidate emits byte-exact WIRE12 and identical M/e0",
+      "same ELF paired order and matched code geometry",
+      "report terminal code bytes, DSB/MITE, IDQ not-delivered, port 5/11, loads/stores, instructions, core cycles, and TSC"
+    ],
+    "stop_conditions": [
+      "candidate duplicates the 5-KiB Q24 body per NTT tile",
+      "candidate needs a second full 1536-byte representation",
+      "candidate does not beat the complete Forward+pack region"
+    ],
+    "not_yet_open": [
+      "e1 scale search",
+      "full Encap",
+      "d6 macroarchitecture"
+    ]
+  }
+}

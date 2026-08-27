@@ -1,0 +1,87 @@
+{
+  "schema": "ntruplus768-gt-clean-forward-callgraph-v1",
+  "experiment": "NTRUPLUS768-HWA-TRANSFER-AUDIT-082",
+  "source_root": "/home/nuc/src/ntru-plus-avx2-gt-rewrite-official-001/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768",
+  "source_fingerprints": {
+    "encap.c": "c6707654ec50808b07d73662fa25da56551219d9b14926eb8daa750a541fa8b9",
+    "decap.c": "7146f52b955edac48a0ab8214a7ca7449717b9eb081df17aee8b38fc29c7c3b9",
+    "keygen.c": "0d5ddb28e708d146c08150423e48c064566a23c3020c35dbc2da7464f2419d99",
+    "LAYOUTS.md": "486c72417735502709e9b0109cbcbad774cd9df1f9165be91320eb72812e346e",
+    "ntt_m.s": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0",
+    "pack.s": "e484f4d6abc4a19f0c760b504b3f376a9f1dc2ef9604cddfd5aa1a063fef95aa"
+  },
+  "corrections_to_transfer_proposal": [
+    "Production M is coefficient-plane SoA, not persistent TILE4 AoS.",
+    "TILE4 AoS exists as the NTT32 internal/pre-terminal state; ntt_m converts it to M at S4/S5 retirement.",
+    "ENC-R currently materializes one M polynomial, not separate full M and P polynomials.",
+    "DEC-R1 currently ends in native M-domain comparison and has no second Q24 serialization."
+  ],
+  "callsites": [
+    {
+      "id": "KG-F",
+      "producer": "coefficient f -> frontend -> ntt_p",
+      "representation": "P/F0/e0",
+      "consumers": [
+        "BaseInv_J1",
+        "F0xJ1_BM",
+        "P_Q24_to_secret_key"
+      ],
+      "multi_consumer": true,
+      "transfer_note": "Already caller-specialized; not an M/P dual-output target."
+    },
+    {
+      "id": "KG-G",
+      "producer": "coefficient g -> frontend -> ntt_p",
+      "representation": "P/F0/e0",
+      "consumers": [
+        "BaseInv_J1",
+        "F0xJ1_BM"
+      ],
+      "multi_consumer": true,
+      "transfer_note": "P/J1 path already co-designed with its consumers."
+    },
+    {
+      "id": "ENC-R",
+      "producer": "CBD r -> frontend -> ntt_m",
+      "representation": "M/e0",
+      "consumers": [
+        "M_Q24_to_hash_g_bytes",
+        "general_B3_rhs"
+      ],
+      "multi_consumer": true,
+      "transfer_note": "Primary open dual-consumer terminal: retain M for B3 while emitting WIRE12 without a later M reload/transpose."
+    },
+    {
+      "id": "ENC-M",
+      "producer": "SOTP m -> frontend -> ntt_m",
+      "representation": "M/e0",
+      "consumers": [
+        "lane_wise_add_to_B3_result",
+        "final_M_Q24_after_add"
+      ],
+      "multi_consumer": false,
+      "transfer_note": "B3->add->Q24 seam was already exercised by 032 and 068--071."
+    },
+    {
+      "id": "DEC-M2",
+      "producer": "crepmod3 m2 -> frontend -> ntt_m",
+      "representation": "M/e0",
+      "consumers": [
+        "M_subtraction_from_decoded_c",
+        "general_B3_lhs_after_subtraction"
+      ],
+      "multi_consumer": false,
+      "transfer_note": "No wire consumer; not analogous to ENC-R."
+    },
+    {
+      "id": "DEC-R1",
+      "producer": "CBD derived r1 -> frontend -> ntt_m",
+      "representation": "M/e0",
+      "consumers": [
+        "native_mod_q_equality"
+      ],
+      "multi_consumer": false,
+      "transfer_note": "Current GT Clean no longer serializes this value; stale documents that name a Q24 consumer are superseded."
+    }
+  ]
+}
