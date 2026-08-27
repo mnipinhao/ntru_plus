@@ -61,6 +61,14 @@
   PROD3_R3 8,11,14
   /* Paper R2 address rotation: semantic g8,g2,g5 become rows 2,5,8. */
   PROD3_R3 15,9,12
+#ifdef PROD3_LAZY_R2_REDUCTIONS
+  /* Exact mask 79: twisted b/c inputs reduce in their existing Montgomery. */
+  PROD3_REDUCE 7
+  PROD3_REDUCE 8
+  PROD3_REDUCE 15
+  PROD3_REDUCE 10
+  PROD3_REDUCE 13
+#else
   PROD3_REDUCE 7
   PROD3_REDUCE 8
   PROD3_REDUCE 9
@@ -70,6 +78,7 @@
   PROD3_REDUCE 13
   PROD3_REDUCE 14
   PROD3_REDUCE 15
+#endif
 
   /* Second paper-R2 layer; keep all nine vectors resident. */
   PROD3_R3 7,8,15

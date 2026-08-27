@@ -1,0 +1,63 @@
+{
+  "checkpoint": "ENCAP-TAIL-ATTRIBUTION-V1-MAP",
+  "correctness": {
+    "T0": "projected-h raw differential against offline Natural-Q ownership map",
+    "T1": "Official and GT result canonicalized to identical polynomial",
+    "T2": "ciphertext bytes byte-exact"
+  },
+  "decision": {
+    "measure_source_next": true,
+    "native_kem": false,
+    "new_arithmetic_asm": false,
+    "promotion": false
+  },
+  "frozen_inputs": {
+    "gt_r_m": "resident Natural-Q T0-beta MA2 planes",
+    "official_r_m_h": "resident pinned-Official NTT states",
+    "producer_timed": false,
+    "semantic_inputs": "identical modulo-q r/m/h"
+  },
+  "identity": "delta_T0 + (delta_T1-delta_T0) + (delta_T2-delta_T1) = delta_T2",
+  "measurement": {
+    "headline": "preselected placement; no post-hoc fastest selection",
+    "launches": 9,
+    "method": "SUPERCOP-derived fixed-common O3GC paired cumulative boundaries",
+    "observations_per_label_per_launch": 96,
+    "order": "Official GT GT Official / GT Official Official GT",
+    "settings": [
+      "normal-aslr-on",
+      "normal-aslr-off",
+      "reversed-aslr-on",
+      "reversed-aslr-off"
+    ]
+  },
+  "nested_boundaries": {
+    "T0": {
+      "delta": "GT_T0 - Official_T0",
+      "gt": "ntruplus1152_exp001_project_h_natural_q",
+      "meaning": "resident-h projection debt",
+      "official": "resident-h no-op wrapper"
+    },
+    "T1": {
+      "delta": "GT_T1 - Official_T1",
+      "gt": "ntruplus1152_exp001_f0_ma2_planes_natural_q_scale4",
+      "increment": "delta_T1 - delta_T0",
+      "meaning": "MA2 arithmetic increment after h projection",
+      "official": "poly_basemul + poly_add"
+    },
+    "T2": {
+      "delta": "GT_T2 - Official_T2",
+      "gt": "scale4 MA2 + Direct H1",
+      "increment": "delta_T2 - delta_T1",
+      "meaning": "ciphertext serializer increment",
+      "official": "poly_basemul + poly_add + poly_tobytes"
+    }
+  },
+  "schema": "gt9x16-encap-tail-attribution-v1/v1",
+  "sha256": {
+    "cumulative_ma2": "e48d000edc3313f5be3522841e625e69964b433771c5e5412f5a3bd6fd8a854c",
+    "h1_asm": "24bea5a884d3cc22676f6afd7a0e7eb0324fceb2ccb61d573e9f503d649ec8f6",
+    "kem": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "natural_asm": "dbb32ec5a4ec78aca5746b96169388c46a9740ccbf153e48af54a39304ec7feb"
+  }
+}

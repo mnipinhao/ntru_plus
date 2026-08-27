@@ -1,27 +1,62 @@
 {
-  "alignment": {
-    "constant_labels": 32,
-    "function_entries": 32,
-    "rodata_section": 32,
-    "text_section": 32,
-    "unaligned_caller_data_supported": true
-  },
   "authorization": {
-    "native_kem": false,
-    "producer_caller_island_pricing_next": true,
-    "promotion": false
+    "promotion": false,
+    "serious_pricing": false,
+    "short_paired_diagnostic": true
   },
-  "checkpoint": "GT9X16-PROD3-NATURAL-Q-T0-BETA-ASM",
+  "checkpoint": "GT9X16-FORWARD-OPT-V2-LAZY-REDUCTION-ASM",
   "gates": {
-    "asm_correctness_required_separately": true,
-    "exact_schedule_matched": true,
-    "same_routing_data_barrett": true,
-    "zero_call_branch_vzeroupper": true,
-    "zero_spill": true,
-    "zero_stack": true
+    "barrett_72_to_40": true,
+    "canonical_differential": true,
+    "entry_text_rodata_alignment": 32,
+    "range_bound": 21333,
+    "zero_new_movement": true,
+    "zero_spill_stack_branch_vzeroupper": true
   },
   "linked_machine": {
     "candidate": {
+      "barrett": 40,
+      "branches": 0,
+      "calls": 0,
+      "constant_memory_operands": 546,
+      "data_loads": 144,
+      "data_stores": 144,
+      "instructions": 2691,
+      "routing": {
+        "vpblendd": 0,
+        "vpblendw": 0,
+        "vperm2i128": 72,
+        "vpermq": 72,
+        "vpshufb": 0,
+        "vpsllq": 0,
+        "vpsrlq": 0,
+        "vpunpckhdq": 36,
+        "vpunpckhqdq": 72,
+        "vpunpckhwd": 36,
+        "vpunpckldq": 36,
+        "vpunpcklqdq": 72,
+        "vpunpcklwd": 36
+      },
+      "routing_total": 432,
+      "stack_references": 0,
+      "vector_spills": 0,
+      "vpmulhw": 576,
+      "vpmullw": 328,
+      "vpsubw": 616,
+      "vzeroupper": 0
+    },
+    "candidate_minus_control": {
+      "barrett": -32,
+      "constant_memory_operands": -32,
+      "data_loads": 0,
+      "data_stores": 0,
+      "instructions": -96,
+      "routing_total": 0,
+      "vpmulhw": 0,
+      "vpmullw": -32,
+      "vpsubw": -32
+    },
+    "control": {
       "barrett": 72,
       "branches": 0,
       "calls": 0,
@@ -51,71 +86,29 @@
       "vpmullw": 360,
       "vpsubw": 648,
       "vzeroupper": 0
-    },
-    "candidate_minus_control": {
-      "barrett": 0,
-      "constant_memory_operands": -16,
-      "data_loads": 0,
-      "data_stores": 0,
-      "instructions": -32,
-      "routing_total": 0,
-      "vpmulhw": -16,
-      "vpmullw": -8,
-      "vpsubw": -8
-    },
-    "control": {
-      "barrett": 72,
-      "branches": 0,
-      "calls": 0,
-      "constant_memory_operands": 594,
-      "data_loads": 144,
-      "data_stores": 144,
-      "instructions": 2819,
-      "routing": {
-        "vpblendd": 0,
-        "vpblendw": 0,
-        "vperm2i128": 72,
-        "vpermq": 72,
-        "vpshufb": 0,
-        "vpsllq": 0,
-        "vpsrlq": 0,
-        "vpunpckhdq": 36,
-        "vpunpckhqdq": 72,
-        "vpunpckhwd": 36,
-        "vpunpckldq": 36,
-        "vpunpcklqdq": 72,
-        "vpunpcklwd": 36
-      },
-      "routing_total": 432,
-      "stack_references": 0,
-      "vector_spills": 0,
-      "vpmulhw": 592,
-      "vpmullw": 368,
-      "vpsubw": 656,
-      "vzeroupper": 0
     }
   },
   "object_footprint": {
     "candidate": {
       "rodata": 10816,
-      "text": 15297
+      "text": 14753
     },
     "control": {
-      "rodata": 10400,
-      "text": 15489
+      "rodata": 10816,
+      "text": 15297
     },
     "delta": {
-      "rodata": 416,
-      "text": -192
+      "rodata": 0,
+      "text": -544
     }
   },
-  "schema": "gt9x16-prod3-natural-q-t0-beta-asm-audit/v1",
+  "range_proof_mask": 79,
+  "schema": "gt9x16-forward-reduction-asm-audit/v1",
   "sha256": {
-    "candidate_object": "3d638dbbddc07807d101e169a8802c72edbce0b86e27f1df5771105ad9c99b6f",
-    "constants": "080be380e0f61a30d226337726402bafe056ce3344a658a0a8793ac62f753190",
-    "control_object": "467584f5a5b0ab11ab5d5043eb1193facc4a2dc3ef82035e61053c96f416256b",
+    "candidate_object": "54a1c6b2aacaea41faacd0a7f56affe853461205dd58054913f9627823256181",
+    "control_object": "3d638dbbddc07807d101e169a8802c72edbce0b86e27f1df5771105ad9c99b6f",
     "elf": "f2abfd6ac290365fc28c8ab88a7127bed66d072d50bf9e07815b8e0724579ee7",
-    "schedule": "efb0095e923829ec5d5c0f1e4ed767c0b1d253ae4f3f3e35a0844fd0a412d70f",
+    "proof": "fba662f8ba1eee9d368bca9b14c7ef8bf9e2d3406ac42f0c4bb1d7d3aa8d39ef",
     "source": "d8534a837dd8172e42cef94c6d9979b0f3bb24398aec312c804276fa90f454cd"
   }
 }

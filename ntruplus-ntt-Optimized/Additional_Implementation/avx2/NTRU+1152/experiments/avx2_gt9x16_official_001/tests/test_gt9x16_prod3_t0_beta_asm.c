@@ -7,6 +7,9 @@
 #include "gt9x16_forward.h"
 #include "gt9x16_prod3_aos_full.h"
 
+void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_lazy_reduce(
+    int16_t *state);
+
 #define N 1152
 #define RANDOM_TRIALS 1003
 #define STORAGE_BYTES 2432
@@ -54,19 +57,24 @@ static void run_case(const char *label, int trial, const int16_t input[N]) {
   _Alignas(32) int16_t input_before[N], split[N];
   _Alignas(32) unsigned char control_storage[STORAGE_BYTES];
   _Alignas(32) unsigned char candidate_storage[STORAGE_BYTES];
+  _Alignas(32) unsigned char lazy_storage[STORAGE_BYTES];
   int16_t *control = (int16_t *)(void *)(control_storage + UNALIGNED_OFFSET);
   int16_t *candidate = (int16_t *)(void *)(candidate_storage + UNALIGNED_OFFSET);
+  int16_t *lazy = (int16_t *)(void *)(lazy_storage + UNALIGNED_OFFSET);
   int index;
 
   memcpy(input_before, input, sizeof input_before);
   ntruplus1152_exp001_top_split_small(split, input);
   memset(control_storage, 0xa5, sizeof control_storage);
   memset(candidate_storage, 0xa5, sizeof candidate_storage);
+  memset(lazy_storage, 0xa5, sizeof lazy_storage);
   memcpy(control, split, sizeof split);
   memcpy(candidate, split, sizeof split);
+  memcpy(lazy, split, sizeof split);
 
   ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q(control);
   ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta(candidate);
+  ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_lazy_reduce(lazy);
 
   if (memcmp(input, input_before, sizeof input_before) != 0)
     fail("coefficient-input-immutability", trial, 0, 0, 1);
@@ -74,15 +82,21 @@ static void run_case(const char *label, int trial, const int16_t input[N]) {
     if (canonical(control[index]) != canonical(candidate[index]))
       fail(label, trial, index, canonical(control[index]),
            canonical(candidate[index]));
+    if (canonical(candidate[index]) != canonical(lazy[index]))
+      fail("lazy-reduction-canonical", trial, index,
+           canonical(candidate[index]), canonical(lazy[index]));
     raw_differences += control[index] != candidate[index];
     if (candidate[index] < observed_min) observed_min = candidate[index];
     if (candidate[index] > observed_max) observed_max = candidate[index];
     if (candidate[index] < -CANDIDATE_BOUND ||
         candidate[index] > CANDIDATE_BOUND)
       fail("candidate-range", trial, index, CANDIDATE_BOUND, candidate[index]);
+    if (lazy[index] < -CANDIDATE_BOUND || lazy[index] > CANDIDATE_BOUND)
+      fail("lazy-reduction-range", trial, index, CANDIDATE_BOUND, lazy[index]);
   }
   check_canary("control-canary", trial, control_storage);
   check_canary("candidate-canary", trial, candidate_storage);
+  check_canary("lazy-reduction-canary", trial, lazy_storage);
 }
 
 int main(void) {

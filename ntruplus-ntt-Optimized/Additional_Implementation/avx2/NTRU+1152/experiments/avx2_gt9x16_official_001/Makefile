@@ -139,9 +139,12 @@ GT9X16_PROD3_T0_MAP_ARGS := --component-oracle generated/gt9x16-component-oracle
 GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS := --map generated/gt9x16-prod3-natural-q-t0-absorption-map.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --natural-audit generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json --full-audit generated/gt9x16-prod3-aos-full-audit.json --producer-source asm/gt9x16_prod3_aos_branch0.S --branch0-constants generated/gt9x16-prod3-aos-branch0-constants.inc --branch1-constants generated/gt9x16-prod3-aos-branch1-constants.inc --output generated/gt9x16-prod3-natural-q-t0-beta-schedule.json --asm-constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc
 GT9X16_PROD3_T0_BETA_CONTROL_ASM := asm/gt9x16_prod3_aos_natural.S
 GT9X16_PROD3_T0_BETA_ASM := asm/gt9x16_prod3_aos_t0_beta.S
-GT9X16_PROD3_T0_BETA_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_CONTROL_ASM) $(GT9X16_PROD3_T0_BETA_ASM) tests/test_gt9x16_prod3_t0_beta_asm.c
+GT9X16_FORWARD_REDUCTION_ASM := asm/gt9x16_prod3_aos_t0_beta_lazy_reduce.S
+GT9X16_PROD3_T0_BETA_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_CONTROL_ASM) $(GT9X16_PROD3_T0_BETA_ASM) $(GT9X16_FORWARD_REDUCTION_ASM) tests/test_gt9x16_prod3_t0_beta_asm.c
 GT9X16_PROD3_T0_BETA_AUDIT_ARGS := --elf $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta --control-object $(BUILD)/prod3/gt9x16-prod3-natural-q-control.o --candidate-object $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o --source asm/gt9x16_prod3_aos_branch0.S --constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc --schedule generated/gt9x16-prod3-natural-q-t0-beta-schedule.json --output generated/gt9x16-prod3-natural-q-t0-beta-asm-audit.json
 GT9X16_FORWARD_REDUCTION_AUDIT_ARGS := --tables generated/gt9x16-full-forward-tables.h --t0-map generated/gt9x16-prod3-natural-q-t0-absorption-map.json --output generated/gt9x16-forward-reduction-audit.json
+GT9X16_FORWARD_REDUCTION_ASM_AUDIT_ARGS := --elf $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta --control-object $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o --candidate-object $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta-lazy-reduce.o --proof generated/gt9x16-forward-reduction-audit.json --source asm/gt9x16_prod3_aos_branch0.S --output generated/gt9x16-forward-reduction-asm-audit.json
+ENCAP_TAIL_ATTR_V1_MAP_ARGS := --natural-asm asm/gt9x16_prod3_ma2_qorder_natural.S --cumulative-ma2 asm/gt9x16_prod3_cumulative_ma2.S --h1-asm asm/gt9x16_prod3_ma2_hash_h1.S --kem $(UPSTREAM)/kem.c --output generated/gt9x16-encap-tail-attribution-v1.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -166,6 +169,7 @@ GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash
  supercop-gt9x16-prod3-qorder-price supercop-gt9x16-prod3-t0-beta-price \
  prepare-gt9x16-prod3-encap-attribution-v2 \
  supercop-gt9x16-prod3-encap-attribution-v2 \
+ bench-forward-reduction-short \
  gt9x16-prod3-h1-kat \
  supercop-paired-serious supercop-promotion-report
 
@@ -292,6 +296,7 @@ generate:
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_natural_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_asm.py $(GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS)
 	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_ma2.py $(GT9X16_PROD3_CUMULATIVE_MA2_ARGS)
+	$(PYTHON) tools/generate_encap_tail_attribution_v1.py $(ENCAP_TAIL_ATTR_V1_MAP_ARGS)
 	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_kem.py $(GT9X16_PROD3_CUMULATIVE_KEM_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
@@ -304,9 +309,11 @@ generate:
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_T0_BETA_CONTROL_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-control.o
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_T0_BETA_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o
+	$(CC) -mavx2 -I. -c $(GT9X16_FORWARD_REDUCTION_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta-lazy-reduce.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_T0_BETA_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta
 	$(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta
 	$(PYTHON) tools/audit_gt9x16_prod3_t0_beta.py $(GT9X16_PROD3_T0_BETA_AUDIT_ARGS)
+	$(PYTHON) tools/audit_gt9x16_forward_reduction_asm.py $(GT9X16_FORWARD_REDUCTION_ASM_AUDIT_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_asm_evidence.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS)
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
@@ -461,6 +468,7 @@ check:
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_natural_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_natural_asm.py $(GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS) --check
 	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_ma2.py $(GT9X16_PROD3_CUMULATIVE_MA2_ARGS) --check
+	$(PYTHON) tools/generate_encap_tail_attribution_v1.py $(ENCAP_TAIL_ATTR_V1_MAP_ARGS) --check
 	$(PYTHON) tools/generate_gt9x16_prod3_cumulative_kem.py $(GT9X16_PROD3_CUMULATIVE_KEM_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
@@ -473,9 +481,11 @@ check:
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_T0_BETA_CONTROL_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-control.o
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_T0_BETA_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o
+	$(CC) -mavx2 -I. -c $(GT9X16_FORWARD_REDUCTION_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta-lazy-reduce.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_T0_BETA_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta
 	$(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta
 	$(PYTHON) tools/audit_gt9x16_prod3_t0_beta.py $(GT9X16_PROD3_T0_BETA_AUDIT_ARGS) --check
+	$(PYTHON) tools/audit_gt9x16_forward_reduction_asm.py $(GT9X16_FORWARD_REDUCTION_ASM_AUDIT_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_asm_evidence.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS) --check
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
@@ -1048,6 +1058,11 @@ supercop-gt9x16-prod3-encap-attribution-v2:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_encap_attribution_v2.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_ATTR_V2_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-normal} --reversed-implementation $${PROD3_ATTR_V2_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
+
+bench-forward-reduction-short:
+	mkdir -p $(BUILD)/prod3
+	$(CC) $(PAIRED_CFLAGS) -Isrc -Igenerated -I. src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(GT9X16_FORWARD_REDUCTION_ASM) bench/bench_gt9x16_forward_reduction_paired.c -o $(BUILD)/prod3/bench-forward-reduction
+	taskset -c $(BENCH_CPU) $(BUILD)/prod3/bench-forward-reduction
 
 gt9x16-prod3-h1-kat:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
