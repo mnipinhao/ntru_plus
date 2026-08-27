@@ -114,6 +114,14 @@ Require a full modular basis differential (or an equivalent linear proof) and
 range replay before treating an existing twiddle or constant as a free scale
 absorption site.
 
+Likewise, a semantic pending-state or zero-materialization lower bound is not
+an executable register-allocation proof. Replay the exact linked def/use
+liveness across every producer/consumer hook before claiming that a value can
+remain live. If an external alias contract already requires a later egress
+boundary, search an internal scratch ABI that gives that boundary a machine
+purpose; do not assume either canonical wire order or complete
+zero-materialization is automatically cheapest.
+
 After authorization, the linked object is the source of truth for instruction,
 constant-operand, spill, alignment, and footprint ledgers. If it contradicts a
 symbolic estimate, preserve and correct the estimate; do not discard the

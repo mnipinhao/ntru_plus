@@ -765,3 +765,17 @@ M2, ranging from zero-route Natural-Q with 512 pair-order runs to an exact
 216-route tile-sorted presentation with 36 runs. No lane winner or ASM is
 selected until joint packing/liveness lowering. See
 `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M1.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-H4-M2 replaces abstract pair runs with exact
+Barrett/canonicalize/pair32/24-bit egress schedules.  The direct same-lane pair
+primitive needs four instructions for 16 pairs and no pre-pair route.  Exact
+linked-H3 replay corrects the M1 semantic lower bound: 27 adjacent terminal
+pairs can retain one YMM, while the first pair of each of nine decode blocks
+needs one localized store/reload because the intervening H3 body reaches
+16/16 YMM.  Across four presentations and direct/scratch-native families,
+Natural-Q plus a canonical-i16 packed-egress scratch wins the static schedule
+at 1502 instructions.  Pair32 scratch is +18, direct-wire is +54, and paid
+tile sorting is +118 under the selected S2 family.  `0x1c7` remains scoped to
+direct-wire only.  M3 may write one namespaced ASM prototype; M2 itself writes
+no ASM and authorizes no benchmark.  See
+`CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M2.md`.
