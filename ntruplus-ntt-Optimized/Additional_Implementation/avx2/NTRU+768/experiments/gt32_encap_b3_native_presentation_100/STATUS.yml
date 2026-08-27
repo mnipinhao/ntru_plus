@@ -1,0 +1,19 @@
+experiment: GT32-ENCAP-B3-NATIVE-PRESENTATION-100
+baseline: b2a4bea
+mode: generator-only
+production_modified: false
+correctness:
+  source_contract_audit: PASS
+  terminal_to_wire_identity: PASS
+  scale_and_bound: unchanged_permutation_only
+decision:
+  Eh: M
+  Er: T
+  status: PASS_TO_EXECUTABLE_101
+  structural_credit:
+    routing_instructions_per_encap: -96
+    vector_loads: 0
+    vector_stores: 0
+    materialized_bytes: 0
+  next: implement experiment-private ntt_r_T + pack_r_T + B3_M_T
+

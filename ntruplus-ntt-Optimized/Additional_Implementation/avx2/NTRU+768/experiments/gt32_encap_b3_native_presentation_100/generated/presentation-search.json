@@ -1,0 +1,199 @@
+{
+  "schema": "ntruplus768-encap-b3-native-presentation-v1",
+  "experiment": "GT32-ENCAP-B3-NATIVE-PRESENTATION-100",
+  "baseline": "b2a4bea",
+  "mode": "generator-only",
+  "production_modified": false,
+  "frozen": [
+    "current caller topology",
+    "E0V two-source Q24",
+    "6592-byte frame",
+    "e=0",
+    "Good-Thomas and NTT32 arithmetic",
+    "quartic B3 mathematics",
+    "B3 output M",
+    "Keypair and Decap executable geometry"
+  ],
+  "source_audit": {
+    "source_sha256": {
+      "ntt_m.s": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0",
+      "basemul.s": "5dcf8b359c061ad9c469ed650f05ff5570d737fb13dc474e1fd333cfd388e654",
+      "pack.s": "5e34f735fb21dfb1045a90adf9e058d62aad4e835987b835c5ab52f9218b661e",
+      "encap.c": "d90741cd88252de9c0657d17128f5e5bc068e9184def5dbcaffe903a9d6d5efb"
+    },
+    "FR_PACKED_TO_PLANES": {
+      "instructions_per_group_including_stores": 16,
+      "routing_per_group": 12,
+      "stores_per_group": 4
+    },
+    "Q24_TRANSPOSE": {
+      "routing_per_group": 12
+    },
+    "B3_M_input": {
+      "loads_per_operand_per_group": 4,
+      "routing_per_operand_per_group": 0
+    },
+    "Decode_h_to_M": {
+      "groups": 12,
+      "routing_per_group": 12
+    }
+  },
+  "mapping_proof": {
+    "identity": "Q24_TRANSPOSE(FR_PACKED_TO_PLANES(T)) == four qword unpacks(T)",
+    "symbolic_words": 64,
+    "proof": "PASS",
+    "direct_packet_lanes": [
+      [
+        "t0.w0",
+        "t0.w1",
+        "t0.w2",
+        "t0.w3",
+        "t1.w0",
+        "t1.w1",
+        "t1.w2",
+        "t1.w3",
+        "t0.w8",
+        "t0.w9",
+        "t0.w10",
+        "t0.w11",
+        "t1.w8",
+        "t1.w9",
+        "t1.w10",
+        "t1.w11"
+      ],
+      [
+        "t0.w4",
+        "t0.w5",
+        "t0.w6",
+        "t0.w7",
+        "t1.w4",
+        "t1.w5",
+        "t1.w6",
+        "t1.w7",
+        "t0.w12",
+        "t0.w13",
+        "t0.w14",
+        "t0.w15",
+        "t1.w12",
+        "t1.w13",
+        "t1.w14",
+        "t1.w15"
+      ],
+      [
+        "t2.w0",
+        "t2.w1",
+        "t2.w2",
+        "t2.w3",
+        "t3.w0",
+        "t3.w1",
+        "t3.w2",
+        "t3.w3",
+        "t2.w8",
+        "t2.w9",
+        "t2.w10",
+        "t2.w11",
+        "t3.w8",
+        "t3.w9",
+        "t3.w10",
+        "t3.w11"
+      ],
+      [
+        "t2.w4",
+        "t2.w5",
+        "t2.w6",
+        "t2.w7",
+        "t3.w4",
+        "t3.w5",
+        "t3.w6",
+        "t3.w7",
+        "t2.w12",
+        "t2.w13",
+        "t2.w14",
+        "t2.w15",
+        "t3.w12",
+        "t3.w13",
+        "t3.w14",
+        "t3.w15"
+      ]
+    ]
+  },
+  "partial_cut_audit": {
+    "cuts": [
+      "F1: after the per-register vpshufb layer",
+      "F2: after the dword-unpack layer"
+    ],
+    "producer_to_B3": "each omitted Forward routing layer must be completed before the unchanged load-only B3 arithmetic; this moves work but does not delete it",
+    "serializer": "only the raw T cut has an existing exact four-route/group WIRE12 proof (083); no partial cut has a stronger proven operation-class deletion",
+    "decision": "do not emit a second candidate until a partial-cut serializer synthesis proves more than the selected 96-route deletion"
+  },
+  "candidates": [
+    {
+      "id": "C0_EhM_ErM",
+      "Eh": "M",
+      "Er": "M",
+      "status": "PRODUCTION_CONTROL",
+      "forward_r_routes": 144,
+      "wire_r_routes": 144,
+      "b3_h_routes": 0,
+      "b3_r_routes": 0,
+      "reason": "current coefficient-plane producers and load-only B3 inputs",
+      "net_route_total_vs_current_decode_baseline": 288,
+      "delta_routes_vs_control": 0,
+      "loads_delta": 0,
+      "stores_delta": 0,
+      "materialized_bytes_delta": 0
+    },
+    {
+      "id": "H_PACKET_EhT_ErM",
+      "Eh": "decoded packet",
+      "Er": "M",
+      "status": "NO_DELETION",
+      "forward_r_routes": 144,
+      "wire_r_routes": 144,
+      "b3_h_routes": 144,
+      "b3_r_routes": 0,
+      "decode_h_saved_routes": 144,
+      "reason": "moves the same 4x16 transpose from Decode(h) to B3",
+      "net_route_total_vs_current_decode_baseline": 288,
+      "delta_routes_vs_control": 0,
+      "loads_delta": 0,
+      "stores_delta": 0,
+      "materialized_bytes_delta": 0
+    },
+    {
+      "id": "R_TERMINAL_EhM_ErT",
+      "Eh": "M",
+      "Er": "post-S5 terminal T",
+      "status": "PASS_TO_EXECUTABLE_101",
+      "forward_r_routes": 0,
+      "wire_r_routes": 48,
+      "b3_h_routes": 0,
+      "b3_r_routes": 144,
+      "reason": "persistent boundary preserves scheduling and deletes the composite T->M->WIRE routing overlap",
+      "net_route_total_vs_current_decode_baseline": 192,
+      "delta_routes_vs_control": -96,
+      "loads_delta": 0,
+      "stores_delta": 0,
+      "materialized_bytes_delta": 0
+    }
+  ],
+  "selected": {
+    "id": "R_TERMINAL_EhM_ErT",
+    "Eh": "M",
+    "Er": "post-S5 terminal T",
+    "operation_class_deletion": "96 executed vector routing instructions per Encap",
+    "entrypoints_for_101": [
+      "ntt_r_T",
+      "pack_r_T",
+      "B3_M_T"
+    ],
+    "conversion_schedule": {
+      "peak_YMM_before_B3_arithmetic": 15,
+      "existing_B3_arithmetic_peak_YMM": 16,
+      "spills_required": 0,
+      "note": "T routing temporaries and mask die before loading/entering the existing arithmetic body"
+    },
+    "why_083_does_not_close_it": "083 coupled Q24 immediately to each live Forward tile; persistent T restores separate producer, serializer and B3 scheduling windows",
+    "decision": "PASS_TO_EXECUTABLE_101"
+  }
+}
