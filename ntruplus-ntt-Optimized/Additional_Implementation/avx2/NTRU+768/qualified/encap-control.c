@@ -1,3 +1,4 @@
+/* Geometry reference only: the pre-E0V production Encap caller. */
 #include <stddef.h>
 #include <stdint.h>
 
@@ -52,14 +53,10 @@ int ntruplus768_enc_derand_impl(
 	poly_sotp_encode((poly *)(void *)scratch.work, msg, ct);
 	forward_m(scratch.m, scratch.c, scratch.work);
 	ntruplus768_basemul_general_m_avx2(scratch.c, scratch.h, scratch.r);
-	/*
-	 * product + message is a semantic M/e=0 value, but is deliberately
-	 * not materialized as a polynomial.  Addition occurs before the
-	 * existing Q24 transpose and canonicalization under the validated
-	 * |product + message| <= 12699 contract.
-	 */
-	ntruplus768_pack_m_sum_highrange12699_avx2(
-		ct, scratch.c, scratch.m);
+	poly_add((poly *)(void *)scratch.c,
+		(const poly *)(const void *)scratch.c,
+		(const poly *)(const void *)scratch.m);
+	ntruplus768_pack_m_highrange12699_avx2(ct, scratch.c);
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
 		ss[i] = buf[i];

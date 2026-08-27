@@ -1,5 +1,42 @@
 # Benchmark record
 
+## E0V executable-layout qualification
+
+E0V removes the memory-resident Encap sum polynomial: the existing B3 product
+and message M values enter a two-source Q24 routine, which adds them before the
+unchanged transpose, reduction, and packing path. Experiments 087 and 091
+proved the local and block-caged full-caller mechanisms. Experiment 093 then
+qualified the production integration contract.
+
+The geometry-preserving ASLR-on paired block medians were:
+
+| Operation | E0V - control cycles | Bootstrap 95% CI | Favorable blocks |
+|---|---:|---:|---:|
+| Keypair | -10.375 | [-32.875, +25.75] | 10/16 |
+| Encap | **-26.875** | **[-71.75, -8.00]** | **13/16** |
+| Decap | +2.750 | [-11.75, +15.50] | 7/16 |
+
+With ASLR disabled the corresponding medians were +13.375, **-42.625**, and
++10.625 cycles; only Encap had a confidence interval excluding zero. Thus the
+production expectation is Keypair approximately neutral, Encap faster, and
+Decap approximately neutral. The much larger movements in the natural 092
+relink are not assigned to E0V.
+
+### Executable layout is an implementation contract
+
+For cycle-scale SIMD optimizations, source-level equivalence is insufficient
+when integration moves unrelated hot code by more than the causal credit. This
+implementation therefore treats the qualified executable layout as part of
+the implementation contract: the Encap caller keeps a 611-byte reservation,
+the E0V helper occupies a dedicated page-aligned RX tail, pre-existing hot
+text and rodata remain fixed, and a build-time audit rejects drift. Helper size
+itself is not frozen; isolation, alignment, security flags, and non-movement of
+the existing hot image are the invariant properties.
+
+The production-owned `qualified/build-supercop.py` applies the same link recipe
+inside a prepared SUPERcop tree and `qualified/audit-layout.py` emits a map with
+symbol geometry, hashes, section flags, and tail alignment.
+
 ## Constant-table-GC fixed-ELF comparison
 
 The independently exported `avx2-gt32-clean-tablegc` implementation was

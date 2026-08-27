@@ -23,6 +23,7 @@ M, P, F0, and J1 are types, not runtime modes.
 | `centered` | Input already satisfies the narrow centered representative contract. |
 | `lazy10788` | Every signed input word satisfies `abs(x) <= 10788`, `e=0`. |
 | `highrange12699` | Every signed input word satisfies `abs(x) <= 12699`, `e=0`. |
+| `sum` | Two M/e0 inputs are added in registers; the semantic sum is not materialized. |
 | `modq12699` | Difference is safe in signed 16-bit and compared after exact reduction modulo 3457. |
 | `sp1` | Selected P-to-Q24 scheduling/orientation; it changes execution order, not the P semantic type. |
 | `frontend` | Shared coefficient-order-to-GT landing state; it is not a persistent external ABI. |
@@ -48,6 +49,7 @@ M, P, F0, and J1 are types, not runtime modes.
 | `ntruplus768_pack_m_centered_avx2` | `pack.s` | Narrow centered M/e0 to canonical 1152-byte serialization. Recovered-r Decap boundary. |
 | `ntruplus768_pack_m_lazy10788_avx2` | `pack.s` | M/e0, `abs(x)<=10788`, to canonical bytes. Encap `r-hat`. |
 | `ntruplus768_pack_m_highrange12699_avx2` | `pack.s` | M/e0, `abs(x)<=12699`, to canonical bytes. Encap ciphertext. |
+| `ntruplus768_pack_m_sum_highrange12699_avx2` | `pack.s` | Two M/e0 inputs whose sum satisfies `abs(x)<=12699`; add before Q24 transpose/canonicalization. Encap ciphertext. |
 | `ntruplus768_pack_p_sp1_lazy10788_avx2` | `pack.s` | P/e0, `abs(x)<=10788`, to canonical bytes. Keygen public/secret polynomial fields. |
 | `ntruplus768_equal_m_modq12699_avx2` | `pack.s` | Constant-time equality of two M/e0 values modulo 3457 under the 12699 difference contract. Final Decap check. |
 

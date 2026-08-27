@@ -23,17 +23,23 @@ fi
 mkdir "$target_dir"
 for name in \
 	KeccakP-1600-AVX2.s KeccakP-1600-SnP.h \
+	Makefile \
 	add.s api.h architectures baseinv.c baseinv.h baseinv_impl.inc \
 	baseinv_tables.inc basemul.h basemul.s batch_inverse.s cbd.s consts.c \
 	consts.h crepmod3.s decap.c encap.c fips202.c fips202.h goal-constbranch \
 	goal-constindex internal.h invntt.s kem.c keygen.c ntt.h ntt.s \
 	ntt_bounds.h ntt_m.s ntt_p.s pack.s params.h poly.c poly.h symmetric.c \
-	symmetric.h util.h
+	symmetric.h util.h encap-slot-pad.s e0v-tail.ld QUALIFICATION.md
 do
 	cp "$source_dir/$name" "$target_dir/$name"
 done
 mkdir "$target_dir/generated"
 cp "$source_dir/generated/tile4_inverse_tail_constants.inc" \
 	"$target_dir/generated/tile4_inverse_tail_constants.inc"
+mkdir "$target_dir/qualified"
+for name in audit-layout.py build-supercop.py encap-control.c
+do
+	cp "$source_dir/qualified/$name" "$target_dir/qualified/$name"
+done
 
 echo "$target_dir"

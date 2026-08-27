@@ -2603,6 +2603,17 @@ ntruplus768_pack_m_highrange12699_avx2:
  .size ntruplus768_pack_m_highrange12699_avx2,.-ntruplus768_pack_m_highrange12699_avx2
  .section .text.gt32_q24_encode_soa_encap_hr_sum_asm,"ax",@progbits
  .p2align 5
+ .section .e0v_tail,"ax",@progbits
+ .p2align 5
+ .globl ntruplus768_pack_m_sum_highrange12699_avx2
+ .type ntruplus768_pack_m_sum_highrange12699_avx2,@function
+ntruplus768_pack_m_sum_highrange12699_avx2:
+ vmovdqa .Lq24_q(%rip), %ymm15
+ vmovdqa .Lq24_v(%rip), %ymm13
+ Q24_ENCODE_SOA_SUM_BODY
+ vzeroupper
+ ret
+ .size ntruplus768_pack_m_sum_highrange12699_avx2,.-ntruplus768_pack_m_sum_highrange12699_avx2
  .macro Q24_HR_REDUCE4 a,b,c,d
  vpmulhrsw %ymm13, \a, %ymm8
  vpmulhrsw %ymm13, \b, %ymm9

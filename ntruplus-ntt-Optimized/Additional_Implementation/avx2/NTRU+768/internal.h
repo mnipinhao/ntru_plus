@@ -45,6 +45,9 @@ void ntruplus768_pack_m_lazy10788_avx2(
 	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t in[NTRUPLUS_N]);
 void ntruplus768_pack_m_highrange12699_avx2(
 	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t in[NTRUPLUS_N]);
+void ntruplus768_pack_m_sum_highrange12699_avx2(
+	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t product[NTRUPLUS_N],
+	const int16_t message[NTRUPLUS_N]);
 void ntruplus768_pack_p_sp1_lazy10788_avx2(
 	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t in[NTRUPLUS_N]);
 

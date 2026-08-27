@@ -22,7 +22,8 @@ File names describe the primitive rather than the research history:
 - `basemul.s`: M-domain BaseMul and the F0-by-J1 key-generation product.
 - `baseinv.c`, `batch_inverse.s`: P-domain J1 BaseInv and batch inversion.
 - `invntt.s`: M-domain inverse core and coefficient-output tail.
-- `pack.s`: Q24 GT-native unpack, pack, and native equality routines.
+- `pack.s`: Q24 GT-native unpack, pack, virtual-sum pack, and native equality
+  routines.
 - `keygen.c`, `encap.c`, `decap.c`: resolved production call paths.
 - `kem.c`: public KEM API wrappers.
 
@@ -31,10 +32,17 @@ encapsulation and decapsulation use the persistent M path.  See
 [`SYMBOLS.md`](SYMBOLS.md) for symbol notation and [`LAYOUTS.md`](LAYOUTS.md)
 for the typed representation contracts.
 
+Encapsulation uses the qualified E0V virtual-sum boundary: the semantic
+`B3(h,r)+m` value is added in registers at Q24 entry and is not materialized as
+a polynomial.  Its executable-layout contract is part of this production
+implementation.  `encap-slot-pad.s` preserves the qualified 611-byte caller
+slot and `e0v-tail.ld` places the helper in a page-aligned RX tail without
+moving pre-existing hot code or read-only data.
+
 The production root deliberately excludes default-off experiments such as F14,
-TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and linker-padding
-variants.  A candidate enters this directory only after it is selected as a
-whole-operation component.
+TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and arbitrary
+linker-padding variants. A candidate enters this directory only after it is
+selected as a whole-operation component.
 
 The numbered research archive and its current architecture-closure summary are
 documented in [`experiments/README.md`](experiments/README.md).
@@ -87,3 +95,15 @@ Install the production file set into a fresh SUPERcop implementation directory:
 
 The installer refuses to overwrite an existing target.  Benchmark method and
 the source baseline are documented in [`BENCHMARK.md`](BENCHMARK.md).
+
+The qualified SUPERcop link must use the same executable-layout recipe as the
+production build. From either this directory or the installed export, run:
+
+```sh
+make qualified-supercop SUPERCOP_ROOT=/home/nuc/supercop-20260627
+```
+
+This builds matched pre-E0V/E0V measure ELFs and fails unless at least 80
+pre-existing hot symbols, `.rodata`, the caller reservation, tail alignment,
+and RX/RWX security properties satisfy the layout contract. The generated
+`qualified/build/layout-audit.json` is the machine-readable qualification map.

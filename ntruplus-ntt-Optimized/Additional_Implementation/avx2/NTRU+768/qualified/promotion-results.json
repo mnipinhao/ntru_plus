@@ -1,0 +1,39 @@
+{
+  "schema": "ntruplus768-gtclean-e0v-promotion-v1",
+  "date": "2026-08-27",
+  "export": "avx2-gt32-clean-e0v-093",
+  "layout_audit": {
+    "status": "PASS",
+    "preexisting_symbols_checked": 82,
+    "preexisting_symbol_mismatches": 0,
+    "caller_slot_bytes": 611,
+    "encap_symbol_bytes": {"control": 611, "e0v": 596},
+    "tail_address": 106496,
+    "tail_size_observed": 4914,
+    "tail_flags": "AX",
+    "tail_page_aligned": true,
+    "rwx_segment": false,
+    "rodata_address": 73728,
+    "rodata_size": 21480,
+    "rodata_sha256": "4592ac64d09f4e4bc5a4261065eb9d010c044a2cb03ac8572b15a6158618b72b",
+    "control_elf_sha256": "7bb508f15122083e8f7cfc78005db33026665ad5b1b7760a7ce0fe6c47ec6b72",
+    "e0v_elf_sha256": "34ca16cf2217ff190cb50f8aaf032a1cdcc3181b293536a6a61d4a073c5546f6"
+  },
+  "kat": {
+    "response_bytes": 948402,
+    "response_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
+  },
+  "paired_block_median_cycles": {
+    "aslr_on": {
+      "keypair": {"delta": 11.75, "ci95": [-18.25, 40.75], "negative_blocks": 6},
+      "encap": {"delta": -32.375, "ci95": [-82.125, -0.75], "negative_blocks": 12},
+      "decap": {"delta": 1.125, "ci95": [-17.25, 26.25], "negative_blocks": 8}
+    },
+    "aslr_off": {
+      "keypair": {"delta": -1.625, "ci95": [-13.75, 8.75], "negative_blocks": 8},
+      "encap": {"delta": -42.5, "ci95": [-57.0, -15.5], "negative_blocks": 13},
+      "decap": {"delta": 2.75, "ci95": [-6.25, 17.5], "negative_blocks": 5}
+    }
+  },
+  "decision": "PROMOTED_GT_CLEAN_BASELINE"
+}

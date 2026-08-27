@@ -37,4 +37,9 @@ Selected source families were:
 | `invntt.s` | selected global inverse core and isolated T9 tail |
 | `pack.s` | selected Q24 M/P codec and native Decap equality |
 
+The promoted E0V integration adds `encap-slot-pad.s`, `e0v-tail.ld`, and the
+production-owned `qualified/` builder/auditor. These files preserve the
+executable geometry qualified by experiments 087, 091, 092, and 093; they are
+not optional benchmark padding.
+
 `SHA256SUMS` contains relative checksums of the finished clean snapshot.

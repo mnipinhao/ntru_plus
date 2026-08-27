@@ -19,11 +19,18 @@ performed.
 ```text
 public-key bytes -> Q24 unpack M
 r,m coefficient producers -> shared frontend -> M Forward
-M general BaseMul -> standalone add(m) -> high-range Q24 pack
+M general BaseMul -> two-source high-range Q24 pack
 ```
 
-The standalone add is intentional in this snapshot: the B3-final-store-add
-probe is not part of the formally selected whole-image implementation.
+The two-source Q24 entry adds the B3 product and message before the existing
+transpose/canonicalization. The semantic sum is never a memory-resident
+polynomial. The five-polynomial 8128-byte frame is intentionally retained;
+frame compaction is a separate, unselected campaign.
+
+The E0V helper lives in a page-aligned RX tail. The Encap caller retains its
+qualified 611-byte input-section reservation, while pre-existing hot text and
+rodata remain byte- and address-identical to the pre-E0V geometry reference.
+The qualified SUPERcop builder enforces this contract automatically.
 
 ## Decapsulation
 
