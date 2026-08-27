@@ -633,3 +633,11 @@ scratch/spill and peak bounds of 15 YMM for MA2 and 16 for H1. Q-order search is
 closed; natural-Q is authorized only for a namespaced ASM correctness/audit
 checkpoint. No timing or native KEM was run. H2-v1 is formally rejected. See
 `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-SCHEDULE.md`.
+
+Checkpoint GT9X16-PROD3-MA2-QORDER-NATURAL-ASM0 realizes that schedule as
+namespaced AVX2.  Four raw-exact gates cover producer permutation, resident h,
+MA2 lane equivariance, and final H1 bytes.  Its linked caller-weighted ledger
+is `-192` routes and `+16` loads with identical arithmetic/store counts, zero
+spill/stack temporary, and 32-byte-aligned entries/constants.  No benchmark or
+native KEM was run.  See
+`CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-ASM0.md`.

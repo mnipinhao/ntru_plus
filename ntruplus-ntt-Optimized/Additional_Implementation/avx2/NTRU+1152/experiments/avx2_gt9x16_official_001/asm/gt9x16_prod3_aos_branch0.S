@@ -163,6 +163,7 @@
   vpermq ymm5, ymm5, 0xd8
   vpermq ymm6, ymm6, 0xd8
   vpermq ymm7, ymm7, 0xd8
+#ifndef PROD3_NATURAL_Q
   /* Frozen P2-B/MA2 packed-lane order: even physical lanes, then odd. */
   vpshufb ymm4, ymm4, YMMWORD PTR [rip + .Lprod3_b0_ma2_q_mask]
   vpshufb ymm5, ymm5, YMMWORD PTR [rip + .Lprod3_b0_ma2_q_mask]
@@ -172,6 +173,9 @@
   vpermq ymm5, ymm5, 0xd8
   vpermq ymm6, ymm6, 0xd8
   vpermq ymm7, ymm7, 0xd8
+#else
+  /* C1-natural-Q ABI: retain the transpose's native physical-q lanes. */
+#endif
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 0], ymm4
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 32], ymm5
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 64], ymm6

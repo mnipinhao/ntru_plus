@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-ma2-qorder-natural-schedule-complete
+state: checkpoint-gt9x16-prod3-ma2-qorder-natural-asm0-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -559,9 +559,18 @@ checkpoint_gt9x16_prod3_qorder_search: closed-two-point-arbitration-selects-natu
 checkpoint_gt9x16_prod3_qorder_h2v1: rejected-wrong-exact-serializer-pair-locality-model
 checkpoint_gt9x16_prod3_qorder_natural_asm: authorized-next-namespaced-correctness-and-linked-audit-only
 checkpoint_gt9x16_prod3_qorder_natural_benchmark: not-authorized
+gt9x16_prod3_ma2_qorder_natural_asm_contract: generated/gt9x16-prod3-ma2-qorder-natural-asm.json
+gt9x16_prod3_ma2_qorder_natural_asm_audit: generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json
+checkpoint_gt9x16_prod3_qorder_natural_producer_asm: passed-raw-exact-q-permutation-all1152-cells
+checkpoint_gt9x16_prod3_qorder_natural_h_asm: passed-raw-exact-source-oracle-all1152-cells
+checkpoint_gt9x16_prod3_qorder_natural_ma2: passed-raw-exact-lane-equivariance-offline-lambda-reindex-zero-runtime-routes
+checkpoint_gt9x16_prod3_qorder_natural_h1_asm: passed-current-vs-natural-1728-byte-exact
+checkpoint_gt9x16_prod3_qorder_natural_linked: passed-minus192-routes-plus16-loads-stores-and-arithmetic-identical
+checkpoint_gt9x16_prod3_qorder_natural_abi: passed-entry32-constants32-frame0-call0-branch0-spill0-vzeroupper0
+checkpoint_gt9x16_prod3_qorder_natural_asm_benchmark: not-run-by-design
 research_encap_baseline: prod3-persistent-aos-plus-direct-h1-plus-native-ma2
 native_reentry_gate: caller-shaped-island-within-0-to-200-cycles-or-known-structural-opportunities-closed
-next_step: gt9x16-prod3-ma2-qorder-natural-asm0-correctness-and-linked-audit
+next_step: gt9x16-prod3-ma2-qorder-current-vs-natural-caller-shaped-paired-pricing
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
