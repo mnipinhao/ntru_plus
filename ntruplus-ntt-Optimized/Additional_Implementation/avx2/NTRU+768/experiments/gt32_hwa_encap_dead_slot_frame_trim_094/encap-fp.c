@@ -7,6 +7,7 @@
 #include "util.h"
 
 typedef struct __attribute__((aligned(64))) {
+	int16_t phase_reservation[NTRUPLUS_N];
 	int16_t h[NTRUPLUS_N];
 	int16_t r[NTRUPLUS_N];
 	int16_t m[NTRUPLUS_N];
@@ -49,15 +50,8 @@ int ntruplus768_enc_derand_impl(
 	hash_g(ct, ct);
 
 	poly_sotp_encode((poly *)(void *)scratch.m, msg, ct);
-	/* frontend consumes m before ntt_m overwrites it with message M. */
 	forward_m(scratch.m, scratch.c, scratch.m);
 	ntruplus768_basemul_general_m_avx2(scratch.c, scratch.h, scratch.r);
-	/*
-	 * product + message is a semantic M/e=0 value, but is deliberately
-	 * not materialized as a polynomial.  Addition occurs before the
-	 * existing Q24 transpose and canonicalization under the validated
-	 * |product + message| <= 12699 contract.
-	 */
 	ntruplus768_pack_m_sum_highrange12699_avx2(
 		ct, scratch.c, scratch.m);
 

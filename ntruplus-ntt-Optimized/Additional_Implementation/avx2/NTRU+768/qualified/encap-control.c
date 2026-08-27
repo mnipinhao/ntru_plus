@@ -1,4 +1,4 @@
-/* Geometry reference only: the pre-E0V production Encap caller. */
+/* Geometry reference only: promoted E0V before the 094 frame trim. */
 #include <stddef.h>
 #include <stdint.h>
 
@@ -53,10 +53,8 @@ int ntruplus768_enc_derand_impl(
 	poly_sotp_encode((poly *)(void *)scratch.work, msg, ct);
 	forward_m(scratch.m, scratch.c, scratch.work);
 	ntruplus768_basemul_general_m_avx2(scratch.c, scratch.h, scratch.r);
-	poly_add((poly *)(void *)scratch.c,
-		(const poly *)(const void *)scratch.c,
-		(const poly *)(const void *)scratch.m);
-	ntruplus768_pack_m_highrange12699_avx2(ct, scratch.c);
+	ntruplus768_pack_m_sum_highrange12699_avx2(
+		ct, scratch.c, scratch.m);
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
 		ss[i] = buf[i];

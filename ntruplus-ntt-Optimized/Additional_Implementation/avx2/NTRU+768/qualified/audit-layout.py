@@ -106,7 +106,7 @@ def main() -> None:
 
     control_slot = section(build / "objects/encap-control.o",
                            ".text.ntruplus768_enc_derand_impl")[1]
-    candidate_slot = section(build / "objects/encap-e0v-qualified.o",
+    candidate_slot = section(build / "objects/encap-e0v.o",
                              ".text.ntruplus768_enc_derand_impl")[1]
     if (control_slot, candidate_slot) != (611, 611):
         raise SystemExit(f"caller slot contract failed: {control_slot}, {candidate_slot}")

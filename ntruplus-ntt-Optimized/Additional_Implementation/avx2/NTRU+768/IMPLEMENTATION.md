@@ -24,8 +24,9 @@ M general BaseMul -> two-source high-range Q24 pack
 
 The two-source Q24 entry adds the B3 product and message before the existing
 transpose/canonicalization. The semantic sum is never a memory-resident
-polynomial. The five-polynomial 8128-byte frame is intentionally retained;
-frame compaction is a separate, unselected campaign.
+polynomial. The coefficient-producer lifetime reuses the final message slot
+after the frontend returns, giving four polynomial slots and a 6592-byte
+Encap frame without changing the B3 output alias contract.
 
 The E0V helper lives in a page-aligned RX tail. The Encap caller retains its
 qualified 611-byte input-section reservation, while pre-existing hot text and

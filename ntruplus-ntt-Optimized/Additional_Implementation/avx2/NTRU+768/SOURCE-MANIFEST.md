@@ -42,4 +42,9 @@ production-owned `qualified/` builder/auditor. These files preserve the
 executable geometry qualified by experiments 087, 091, 092, and 093; they are
 not optional benchmark padding.
 
+Experiment 094 subsequently removed the dead fifth Encap polynomial slot. The
+qualified geometry reference remains the promoted E0V caller before this
+frame-only change, so the audit isolates the 6592-byte current frame from the
+8128-byte E0V control.
+
 `SHA256SUMS` contains relative checksums of the finished clean snapshot.

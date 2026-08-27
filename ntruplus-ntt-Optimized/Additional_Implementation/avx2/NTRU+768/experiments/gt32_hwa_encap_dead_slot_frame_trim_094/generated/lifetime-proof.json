@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "control_commit": "9600506",
+  "semantic_lifetimes": {
+    "h": "unpack through B3 input",
+    "r": "first Forward through B3 input",
+    "m": "coefficient producer; overwritten after frontend; live through Q24",
+    "product": "distinct B3 output through Q24",
+    "sum": "semantic register value only; zero memory accesses"
+  },
+  "peak_at_b3": [
+    "h",
+    "r",
+    "m",
+    "product"
+  ],
+  "peak_polynomial_live_count": 4,
+  "four_slot_lower_bound": true,
+  "alias_contract": "coefficient input aliases Forward output only after frontend returns",
+  "frames": {
+    "F0": 8128,
+    "FP": 8128,
+    "F1": 6592
+  },
+  "removed_bytes": 1536
+}

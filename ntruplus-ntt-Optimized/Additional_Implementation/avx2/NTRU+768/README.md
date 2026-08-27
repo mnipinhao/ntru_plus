@@ -39,6 +39,11 @@ implementation.  `encap-slot-pad.s` preserves the qualified 611-byte caller
 slot and `e0v-tail.ld` places the helper in a page-aligned RX tail without
 moving pre-existing hot code or read-only data.
 
+The selected Encap scratch map has four polynomial slots. The `m` slot first
+holds the coefficient producer and is overwritten by `ntt_m` only after the
+frontend has consumed it. This reduces the frame from 8128 to 6592 bytes; it
+is a resource-shape improvement, not a claimed cycle speedup.
+
 The production root deliberately excludes default-off experiments such as F14,
 TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and arbitrary
 linker-padding variants. A candidate enters this directory only after it is

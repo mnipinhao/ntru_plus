@@ -13,7 +13,9 @@ two-source Q24(product, message)
 ```
 
 The sum remains a semantic M/e0 value but is never stored as a polynomial.
-The existing five-polynomial, 8128-byte frame is deliberately unchanged.
+The selected frame contains four polynomial slots and is 6592 bytes. The
+message slot is reused for coefficient production before its final NTT-domain
+value is written; the frontend call is the lifetime boundary.
 
 ## Executable-layout contract
 
@@ -60,3 +62,12 @@ Median-bootstrap 95% confidence intervals were:
 Thus only Encap has a stable improvement; Keypair and Decap remain neutral.
 The canonical 948,402-byte response SHA-256 is
 `22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8`.
+
+## Frame trim qualification (094)
+
+The phase-controlled F0/FP/F1 campaign proved a four-polynomial lifetime
+lower bound and reduced the frame from 8128 to 6592 bytes. In the
+phase-matched comparison, Encap was `-19.375` cycles with ASLR enabled and
+`+4.125` cycles with ASLR disabled; both bootstrap intervals crossed zero.
+The trim is therefore promoted as a performance-neutral 1536-byte stack
+reduction, not as a timing optimization.

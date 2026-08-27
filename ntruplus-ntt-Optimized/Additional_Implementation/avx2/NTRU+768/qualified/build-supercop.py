@@ -29,6 +29,34 @@ def compile_one(source: Path, output: Path, includes: list[str]) -> None:
     run(["gcc", *FLAGS, *includes, "-c", str(source), "-o", str(output)])
 
 
+def section_size(path: Path) -> int:
+    text = subprocess.check_output(["readelf", "-SW", str(path)], text=True)
+    for line in text.splitlines():
+        if ".text.ntruplus768_enc_derand_impl " in line:
+            fields = line.split()
+            return int(fields[fields.index("PROGBITS") + 3], 16)
+    raise SystemExit(f"missing Encap input section in {path}")
+
+
+def qualify_encap(name: str, source: Path, objects: Path,
+                  includes: list[str]) -> Path:
+    raw = objects / f"encap-{name}-raw.o"
+    compile_one(source, raw, includes)
+    size = section_size(raw)
+    if size > 611:
+        raise SystemExit(f"{name} Encap exceeds qualified slot: {size}")
+    pad_source = objects.parent / f"encap-{name}-pad.s"
+    pad_source.write_text(
+        '.section .text.ntruplus768_enc_derand_impl,"ax",@progbits\n'
+        f'.fill {611 - size},1,0x90\n'
+        '.section .note.GNU-stack,"",@progbits\n')
+    pad = objects / f"encap-{name}-pad.o"
+    compile_one(pad_source, pad, includes)
+    result = objects / f"encap-{name}.o"
+    run(["ld", "-r", str(raw), str(pad), "-o", str(result)])
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--supercop-root", type=Path, required=True)
@@ -59,14 +87,9 @@ def main() -> None:
         compile_one(ROOT / name, target, includes)
         ordered.append(target)
 
-    enc_control = objects / "encap-control.o"
-    enc_e0v_raw = objects / "encap-e0v-raw.o"
-    enc_pad = objects / "encap-slot-pad.o"
-    enc_e0v = objects / "encap-e0v-qualified.o"
-    compile_one(ROOT / "qualified/encap-control.c", enc_control, includes)
-    compile_one(ROOT / "encap.c", enc_e0v_raw, includes)
-    compile_one(ROOT / "encap-slot-pad.s", enc_pad, includes)
-    run(["ld", "-r", str(enc_e0v_raw), str(enc_pad), "-o", str(enc_e0v)])
+    enc_control = qualify_encap("control", ROOT / "qualified/encap-control.c",
+                                objects, includes)
+    enc_e0v = qualify_encap("e0v", ROOT / "encap.c", objects, includes)
 
     harness: list[Path] = []
     for name in ("measure-anything.c", "measure.c"):

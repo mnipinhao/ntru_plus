@@ -37,6 +37,16 @@ The production-owned `qualified/build-supercop.py` applies the same link recipe
 inside a prepared SUPERcop tree and `qualified/audit-layout.py` emits a map with
 symbol geometry, hashes, section flags, and tail alignment.
 
+### 094 frame trim
+
+After E0V promotion, lifetime coloring removed the unused fifth polynomial
+slot. A phase-matched three-profile campaign separated address phase from
+frame size. `F1-FP` Encap measured -19.375 cycles with ASLR enabled and +4.125
+cycles with ASLR disabled; both median-bootstrap confidence intervals crossed
+zero widely. The 8128-to-6592-byte frame reduction is therefore selected as a
+performance-neutral stack-footprint improvement. No cycle credit is assigned
+to it.
+
 ## Constant-table-GC fixed-ELF comparison
 
 The independently exported `avx2-gt32-clean-tablegc` implementation was
