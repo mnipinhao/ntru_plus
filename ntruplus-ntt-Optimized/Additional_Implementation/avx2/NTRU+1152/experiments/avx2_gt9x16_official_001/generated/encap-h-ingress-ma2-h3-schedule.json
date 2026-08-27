@@ -1,0 +1,2308 @@
+{
+  "checkpoint": "ENCAP-H-INGRESS-MA2-H3-SCHEDULE",
+  "contract": {
+    "accepted_set_and_error": "identical to Official poly_frombytes validation",
+    "frozen": [
+      "Natural-Q r/m ABI",
+      "MA2 quartic formulas",
+      "lambda placement",
+      "Montgomery domains",
+      "scale 4",
+      "output stores"
+    ],
+    "function": "(pk bytes, r_Natural-Q_scale4, m_Natural-Q_scale4) -> c_MA2_scale4",
+    "intermediate_h_array": "does not exist",
+    "valid_output": "raw bit-exact with H1 preprojected-h MA2"
+  },
+  "decision": {
+    "benchmark": false,
+    "do_not_change": [
+      "serializer",
+      "forward",
+      "Natural-Q",
+      "MA2 formulas"
+    ],
+    "h3_namespaced_asm": "authorized-next",
+    "native_kem": false
+  },
+  "decoder": {
+    "decoded_pair_order": [
+      [
+        0,
+        4
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        7
+      ]
+    ],
+    "decoder_intrinsic_routes_per_block": {
+      "vpblend": 12,
+      "vperm2i128": 6,
+      "vpunpck": 6
+    },
+    "decoder_intrinsic_routes_total": {
+      "vpblend": 108,
+      "vperm2i128": 54,
+      "vpunpck": 54
+    },
+    "full_eight_vector_natural_q_cut": false,
+    "note": "the packed decoder has shared unpack state, but no eight-vector Natural-Q quartet is formed before MA2 ownership is attached",
+    "strategy": "produce, validate, and consume each decoded source pair before decoding the next pair",
+    "validation": {
+      "constant_time": "work and control flow are independent of decoded values",
+      "persistent_state": "eax public-invalid accumulator",
+      "schedule_ledger": {
+        "candidate_validation_instruction_count": 16,
+        "h1_validation_instruction_count": 10,
+        "instruction_count": 120,
+        "pairwise_validation": {
+          "gpr_or": 4,
+          "vpcmpgtw": 4,
+          "vpmaxuw": 4,
+          "vpmovmskb": 4
+        },
+        "peak_before_instruction": "vpblendw ymm0, ymm8, ymm0, 0xaa",
+        "peak_registers": [
+          "ymm0",
+          "ymm1",
+          "ymm2",
+          "ymm3",
+          "ymm4",
+          "ymm5",
+          "ymm8",
+          "ymm9",
+          "ymm10",
+          "ymm11",
+          "ymm12",
+          "ymm13"
+        ],
+        "peak_ymm": 12,
+        "validation_delta_per_block": 6
+      },
+      "temporary_state": "one recycled YMM max/compare plus edx movemask"
+    }
+  },
+  "fallback": {
+    "H2": "not selected",
+    "H3-full": "selected; exact 16/16 schedule closes",
+    "H3-half": "not selected; would store/reload four h vectors per block (128 bytes/block)"
+  },
+  "formation": {
+    "blocks": [
+      {
+        "decode_block": 0,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 16,
+              "owner": {
+                "branch": 0,
+                "p": 4,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 20,
+              "owner": {
+                "branch": 0,
+                "p": 7,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 17,
+              "owner": {
+                "branch": 0,
+                "p": 4,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 21,
+              "owner": {
+                "branch": 0,
+                "p": 7,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 18,
+              "owner": {
+                "branch": 0,
+                "p": 4,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 22,
+              "owner": {
+                "branch": 0,
+                "p": 7,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 19,
+              "owner": {
+                "branch": 0,
+                "p": 4,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 23,
+              "owner": {
+                "branch": 0,
+                "p": 7,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          0,
+          191
+        ],
+        "tile_a": {
+          "branch": 0,
+          "p": 4
+        },
+        "tile_b": {
+          "branch": 0,
+          "p": 7
+        }
+      },
+      {
+        "decode_block": 1,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 0,
+              "owner": {
+                "branch": 0,
+                "p": 0,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 12,
+              "owner": {
+                "branch": 0,
+                "p": 1,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 1,
+              "owner": {
+                "branch": 0,
+                "p": 0,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 13,
+              "owner": {
+                "branch": 0,
+                "p": 1,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 2,
+              "owner": {
+                "branch": 0,
+                "p": 0,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 14,
+              "owner": {
+                "branch": 0,
+                "p": 1,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 3,
+              "owner": {
+                "branch": 0,
+                "p": 0,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 15,
+              "owner": {
+                "branch": 0,
+                "p": 1,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          192,
+          383
+        ],
+        "tile_a": {
+          "branch": 0,
+          "p": 0
+        },
+        "tile_b": {
+          "branch": 0,
+          "p": 1
+        }
+      },
+      {
+        "decode_block": 2,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 4,
+              "owner": {
+                "branch": 0,
+                "p": 3,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 8,
+              "owner": {
+                "branch": 0,
+                "p": 6,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 5,
+              "owner": {
+                "branch": 0,
+                "p": 3,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 9,
+              "owner": {
+                "branch": 0,
+                "p": 6,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 6,
+              "owner": {
+                "branch": 0,
+                "p": 3,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 10,
+              "owner": {
+                "branch": 0,
+                "p": 6,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 7,
+              "owner": {
+                "branch": 0,
+                "p": 3,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 11,
+              "owner": {
+                "branch": 0,
+                "p": 6,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          384,
+          575
+        ],
+        "tile_a": {
+          "branch": 0,
+          "p": 3
+        },
+        "tile_b": {
+          "branch": 0,
+          "p": 6
+        }
+      },
+      {
+        "decode_block": 3,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 28,
+              "owner": {
+                "branch": 0,
+                "p": 2,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 24,
+              "owner": {
+                "branch": 0,
+                "p": 8,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 29,
+              "owner": {
+                "branch": 0,
+                "p": 2,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 25,
+              "owner": {
+                "branch": 0,
+                "p": 8,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 30,
+              "owner": {
+                "branch": 0,
+                "p": 2,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 26,
+              "owner": {
+                "branch": 0,
+                "p": 8,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 31,
+              "owner": {
+                "branch": 0,
+                "p": 2,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 27,
+              "owner": {
+                "branch": 0,
+                "p": 8,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          576,
+          767
+        ],
+        "tile_a": {
+          "branch": 0,
+          "p": 2
+        },
+        "tile_b": {
+          "branch": 0,
+          "p": 8
+        }
+      },
+      {
+        "decode_block": 4,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 32,
+              "owner": {
+                "branch": 0,
+                "p": 5,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 40,
+              "owner": {
+                "branch": 1,
+                "p": 3,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 33,
+              "owner": {
+                "branch": 0,
+                "p": 5,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 41,
+              "owner": {
+                "branch": 1,
+                "p": 3,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 34,
+              "owner": {
+                "branch": 0,
+                "p": 5,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 42,
+              "owner": {
+                "branch": 1,
+                "p": 3,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 35,
+              "owner": {
+                "branch": 0,
+                "p": 5,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 43,
+              "owner": {
+                "branch": 1,
+                "p": 3,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          768,
+          959
+        ],
+        "tile_a": {
+          "branch": 0,
+          "p": 5
+        },
+        "tile_b": {
+          "branch": 1,
+          "p": 3
+        }
+      },
+      {
+        "decode_block": 5,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 36,
+              "owner": {
+                "branch": 1,
+                "p": 0,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 44,
+              "owner": {
+                "branch": 1,
+                "p": 6,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 37,
+              "owner": {
+                "branch": 1,
+                "p": 0,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 45,
+              "owner": {
+                "branch": 1,
+                "p": 6,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 38,
+              "owner": {
+                "branch": 1,
+                "p": 0,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 46,
+              "owner": {
+                "branch": 1,
+                "p": 6,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 39,
+              "owner": {
+                "branch": 1,
+                "p": 0,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 47,
+              "owner": {
+                "branch": 1,
+                "p": 6,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          960,
+          1151
+        ],
+        "tile_a": {
+          "branch": 1,
+          "p": 0
+        },
+        "tile_b": {
+          "branch": 1,
+          "p": 6
+        }
+      },
+      {
+        "decode_block": 6,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 64,
+              "owner": {
+                "branch": 1,
+                "p": 2,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 68,
+              "owner": {
+                "branch": 1,
+                "p": 5,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 65,
+              "owner": {
+                "branch": 1,
+                "p": 2,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 69,
+              "owner": {
+                "branch": 1,
+                "p": 5,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 66,
+              "owner": {
+                "branch": 1,
+                "p": 2,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 70,
+              "owner": {
+                "branch": 1,
+                "p": 5,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 67,
+              "owner": {
+                "branch": 1,
+                "p": 2,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 71,
+              "owner": {
+                "branch": 1,
+                "p": 5,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          1152,
+          1343
+        ],
+        "tile_a": {
+          "branch": 1,
+          "p": 2
+        },
+        "tile_b": {
+          "branch": 1,
+          "p": 5
+        }
+      },
+      {
+        "decode_block": 7,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 56,
+              "owner": {
+                "branch": 1,
+                "p": 7,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 60,
+              "owner": {
+                "branch": 1,
+                "p": 8,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 57,
+              "owner": {
+                "branch": 1,
+                "p": 7,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 61,
+              "owner": {
+                "branch": 1,
+                "p": 8,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 58,
+              "owner": {
+                "branch": 1,
+                "p": 7,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 62,
+              "owner": {
+                "branch": 1,
+                "p": 8,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 59,
+              "owner": {
+                "branch": 1,
+                "p": 7,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 63,
+              "owner": {
+                "branch": 1,
+                "p": 8,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          1344,
+          1535
+        ],
+        "tile_a": {
+          "branch": 1,
+          "p": 7
+        },
+        "tile_b": {
+          "branch": 1,
+          "p": 8
+        }
+      },
+      {
+        "decode_block": 8,
+        "pair_flow": [
+          {
+            "coefficient": 0,
+            "decoded_source_registers": [
+              "ymm11",
+              "ymm7"
+            ],
+            "decoded_source_vectors": [
+              0,
+              4
+            ],
+            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm6",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 48,
+              "owner": {
+                "branch": 1,
+                "p": 1,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm6",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 52,
+              "owner": {
+                "branch": 1,
+                "p": 4,
+                "terminal_coefficient": 0
+              },
+              "register": "ymm7",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 1,
+            "decoded_source_registers": [
+              "ymm12",
+              "ymm8"
+            ],
+            "decoded_source_vectors": [
+              1,
+              5
+            ],
+            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm11",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 49,
+              "owner": {
+                "branch": 1,
+                "p": 1,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm11",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 53,
+              "owner": {
+                "branch": 1,
+                "p": 4,
+                "terminal_coefficient": 1
+              },
+              "register": "ymm8",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 2,
+            "decoded_source_registers": [
+              "ymm13",
+              "ymm9"
+            ],
+            "decoded_source_vectors": [
+              2,
+              6
+            ],
+            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm12",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 50,
+              "owner": {
+                "branch": 1,
+                "p": 1,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm12",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 54,
+              "owner": {
+                "branch": 1,
+                "p": 4,
+                "terminal_coefficient": 2
+              },
+              "register": "ymm9",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          },
+          {
+            "coefficient": 3,
+            "decoded_source_registers": [
+              "ymm14",
+              "ymm10"
+            ],
+            "decoded_source_vectors": [
+              3,
+              7
+            ],
+            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "route_absorption": {
+              "consumer_required": 10,
+              "decoder_intrinsic": 0,
+              "explanation": "two five-route lane alignments are the first MA2-use presentation; no h boundary is written",
+              "pure_h_abi_formation": 0
+            },
+            "scratch_registers": [
+              "ymm13",
+              "ymm15"
+            ],
+            "source_last_use": "second tile-specific shuffle input",
+            "tile_a": {
+              "natural_vector": 51,
+              "owner": {
+                "branch": 1,
+                "p": 1,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm13",
+              "route_immediates": [
+                "0x31",
+                "0x31"
+              ]
+            },
+            "tile_b": {
+              "natural_vector": 55,
+              "owner": {
+                "branch": 1,
+                "p": 4,
+                "terminal_coefficient": 3
+              },
+              "register": "ymm10",
+              "route_immediates": [
+                "0x20",
+                "0x20"
+              ]
+            }
+          }
+        ],
+        "pk_byte_range": [
+          1536,
+          1727
+        ],
+        "tile_a": {
+          "branch": 1,
+          "p": 1
+        },
+        "tile_b": {
+          "branch": 1,
+          "p": 4
+        }
+      }
+    ],
+    "explanation": "the 360 lane-aligning routes remain arithmetic-consumer work; only the 2304-byte H1 boundary disappears",
+    "h_reloads": 0,
+    "h_stores": 0,
+    "routes_per_block": {
+      "consumer_required": 40,
+      "decoder_intrinsic": 24,
+      "pure_h_abi_formation": 0
+    },
+    "routes_total": {
+      "consumer_required": 360,
+      "decoder_intrinsic": 216,
+      "pure_h_abi_formation": 0
+    }
+  },
+  "gates": {
+    "frame_scratch_zero": true,
+    "h_store_reload_zero": true,
+    "ma2_arithmetic_unchanged": true,
+    "peak_ymm_le_16": true,
+    "pure_h_abi_routes_zero": true,
+    "raw_h1_output_contract_preserved": true,
+    "spill_zero": true
+  },
+  "ma2": {
+    "candidate_ledger": {
+      "c_stores": 72,
+      "h_r2_montgomery": 72,
+      "h_times_r_montgomery": 288,
+      "lambda_montgomery": 54,
+      "m_loads": 72,
+      "r_loads": 72,
+      "tiles": 18
+    },
+    "execution": "tile A then tile B; formation is pair-interleaved across both tiles",
+    "linked_control_ledger": {
+      "c_stores": 72,
+      "h_r2_montgomery": 72,
+      "h_times_r_montgomery": 288,
+      "lambda_montgomery": 54,
+      "m_loads": 72,
+      "r_loads": 72,
+      "tiles": 18
+    },
+    "range": {
+      "all_preoperations_signed_i16": true,
+      "global_pre_output_bound": [
+        -29899,
+        29901
+      ],
+      "proof_reused": "f0-ma2-range.json"
+    },
+    "raw_exact_reason": "identical h R2, product order, wrapped accumulation, one lambda multiply, and c-store order",
+    "terms": [
+      {
+        "coefficient": 0,
+        "plain": [
+          [
+            0,
+            0
+          ]
+        ],
+        "wrapped": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      },
+      {
+        "coefficient": 1,
+        "plain": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "wrapped": [
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      {
+        "coefficient": 2,
+        "plain": [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "wrapped": [
+          [
+            3,
+            3
+          ]
+        ]
+      },
+      {
+        "coefficient": 3,
+        "plain": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        "wrapped": []
+      }
+    ]
+  },
+  "movement_delta_vs_h1": {
+    "consumer_required_routes": 0,
+    "h_vector_reloads": -72,
+    "h_vector_stores": -72,
+    "new_temporaries_bytes": 0,
+    "pure_abi_routes": 0
+  },
+  "register_flow": {
+    "frame_scratch": 0,
+    "peak_ymm": 16,
+    "phases": [
+      {
+        "live_upper_bound": 12,
+        "note": "mechanical backward liveness includes injected pair formation",
+        "persistent": [],
+        "phase": "packed-load-and-unpack"
+      },
+      {
+        "live_upper_bound": 12,
+        "note": "each decoded pair is validated into eax, then overwritten by both tile h_j values",
+        "persistent_after_phase": [
+          "ymm6",
+          "ymm7",
+          "ymm8",
+          "ymm9",
+          "ymm10",
+          "ymm11",
+          "ymm12",
+          "ymm13"
+        ],
+        "phase": "pairwise-validate-and-dual-form"
+      },
+      {
+        "live_upper_bound": 9,
+        "persistent": [
+          "ymm6",
+          "ymm7",
+          "ymm8",
+          "ymm9",
+          "ymm10",
+          "ymm11",
+          "ymm12",
+          "ymm13"
+        ],
+        "phase": "in-place-R2-normalization",
+        "temporary": "ymm15"
+      },
+      {
+        "h_a": [
+          "ymm6",
+          "ymm11",
+          "ymm12",
+          "ymm13"
+        ],
+        "h_b_held": [
+          "ymm7",
+          "ymm8",
+          "ymm9",
+          "ymm10"
+        ],
+        "live_upper_bound": 16,
+        "phase": "tile-a-MA2-while-tile-b-h-remains-live",
+        "r_a": [
+          "ymm0",
+          "ymm1",
+          "ymm2",
+          "ymm3"
+        ],
+        "work": {
+          "c": "ymm4",
+          "montgomery": "ymm15",
+          "product": "ymm14",
+          "wrapped": "ymm5"
+        }
+      },
+      {
+        "h_b": [
+          "ymm7",
+          "ymm8",
+          "ymm9",
+          "ymm10"
+        ],
+        "live_upper_bound": 12,
+        "phase": "tile-b-MA2",
+        "r_b": [
+          "ymm0",
+          "ymm1",
+          "ymm2",
+          "ymm3"
+        ],
+        "work": {
+          "c": "ymm4",
+          "montgomery": "ymm15",
+          "product": "ymm14",
+          "wrapped": "ymm5"
+        }
+      }
+    ],
+    "spill": 0,
+    "tile_a_exact_partition": [
+      "ymm0",
+      "ymm1",
+      "ymm2",
+      "ymm3",
+      "ymm4",
+      "ymm5",
+      "ymm6",
+      "ymm7",
+      "ymm8",
+      "ymm9",
+      "ymm10",
+      "ymm11",
+      "ymm12",
+      "ymm13",
+      "ymm14",
+      "ymm15"
+    ],
+    "tile_b_slack": 4
+  },
+  "schema": "encap-h-ingress-ma2-h3-schedule/v1",
+  "scope": "exact register-flow and arithmetic-preservation gate; no ASM or benchmark",
+  "source_sha256": {
+    "codesign": "8f4759f659a24eabff36ca16df511e08aa6f19bda26f3be511b919dfacf398b2",
+    "decode_map": "54e797667a0df39d49c593370afa1a875466a23bf1341d9717b362f4c82d0846",
+    "h1_asm": "a6beededce55e2cede6ae076a68d9b893a7a3bf6819013ff598755f77fb44c28",
+    "h1_contract": "af633255ed5598495079d4c0668e641a87b80e73e5e75d006eb22fd89239be38",
+    "ma2_source": "e48d000edc3313f5be3522841e625e69964b433771c5e5412f5a3bd6fd8a854c",
+    "natural_schedule": "4a5e32ab88030798b5d39afd72868d4085df724264ccf78aa495c89c47037ac5",
+    "range_proof": "54638e7b2102d856120505f97725dd538709d8a634a71d3e0d7ad593b704815a"
+  },
+  "terminal_contract": {
+    "coefficients": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "form": "H3_EMIT_C(tile, coefficient, ymm4) immediately before each aligned final store",
+    "future_h4": "may replace each store hook with serializer work or store to the old h stack slot followed by one final 1728-byte copy",
+    "mandatory_materialization_before_hook": false,
+    "note": "the first tile cannot retain all four c vectors simultaneously because the second h quartet occupies four registers; each c_j is live at its own terminal hook",
+    "representative": "raw H1-exact scale-4 MA2 value"
+  }
+}
