@@ -242,7 +242,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-hash-h1-price",
                                            "derived-gt9x16-prod3-qorder-price",
                                            "derived-gt9x16-prod3-t0-beta-price",
-                                           "derived-gt9x16-prod3-encap-attribution-v2"),
+                                           "derived-gt9x16-prod3-encap-attribution-v2",
+                                           "derived-gt9x16-prod3-encap-tail-attribution-v1"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -263,7 +264,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-hash-h1-price",
                      "derived-gt9x16-prod3-qorder-price",
                      "derived-gt9x16-prod3-t0-beta-price",
-                     "derived-gt9x16-prod3-encap-attribution-v2") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-encap-attribution-v2",
+                     "derived-gt9x16-prod3-encap-tail-attribution-v1") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -323,7 +325,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-hash-h1-price",
                          "derived-gt9x16-prod3-qorder-price",
                          "derived-gt9x16-prod3-t0-beta-price",
-                         "derived-gt9x16-prod3-encap-attribution-v2"):
+                         "derived-gt9x16-prod3-encap-attribution-v2",
+                         "derived-gt9x16-prod3-encap-tail-attribution-v1"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -350,6 +353,8 @@ def main() -> int:
                     "gt9x16_prod3_t0_beta_price_measure.c",
                 "derived-gt9x16-prod3-encap-attribution-v2":
                     "gt9x16_prod3_encap_attribution_v2_measure.c",
+                "derived-gt9x16-prod3-encap-tail-attribution-v1":
+                    "gt9x16_prod3_encap_tail_attribution_v1_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -503,6 +508,14 @@ def main() -> int:
         required = tuple(
             f"gt9x16_prod3_encap_attribution_v2_{boundary}_{variant}_{position}_cycles"
             for boundary in ("producer_r", "producer_m", "dual_r", "tail")
+            for variant, position in (("official", "first"),
+                                      ("gt", "second"),
+                                      ("gt", "first"),
+                                      ("official", "second")))
+    elif args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1":
+        required = tuple(
+            f"gt9x16_prod3_encap_tail_attribution_v1_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("t0", "t1", "t2")
             for variant, position in (("official", "first"),
                                       ("gt", "second"),
                                       ("gt", "first"),
@@ -1706,6 +1719,32 @@ def main() -> int:
             "new_asm": False,
             "native_kem_result": False,
         }
+    if args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1":
+        prefix = "gt9x16_prod3_encap_tail_attribution_v1"
+        boundaries = ("t0", "t1", "t2")
+        combined = {
+            f"{prefix}_{boundary}_{variant}_cycles": (
+                pooled[f"{prefix}_{boundary}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{boundary}_{variant}_second_cycles"])
+            for boundary in boundaries for variant in ("official", "gt")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["tail_attribution_contract"] = {
+            "t0": "resident h projection",
+            "t1": "resident h projection plus MA2 arithmetic",
+            "t2": "resident h projection plus MA2 arithmetic plus ciphertext serialization",
+            "starting_residency": "reset coefficients and independently prepare identical semantic r/m/h states before every balanced entry",
+            "gt_scale_contract": "scale-4 MA2 followed by exactly one Direct H1 inv4",
+            "preflight": "resident-h raw map exact; T1 semantic bytes exact; GT T2 equals cumulative production path equals Official bytes",
+            "new_asm": False,
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1731,6 +1770,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-qorder-price" if args.mode == "derived-gt9x16-prod3-qorder-price"
                             else "supercop-derived-gt9x16-prod3-t0-beta-price" if args.mode == "derived-gt9x16-prod3-t0-beta-price"
                             else "supercop-derived-gt9x16-prod3-encap-attribution-v2" if args.mode == "derived-gt9x16-prod3-encap-attribution-v2"
+                            else "supercop-derived-gt9x16-prod3-encap-tail-attribution-v1" if args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1783,7 +1823,9 @@ def main() -> int:
               "derived-gt9x16-prod3-t0-beta-price":
                   "gt9x16_prod3_t0_beta_price_measure.c",
               "derived-gt9x16-prod3-encap-attribution-v2":
-                  "gt9x16_prod3_encap_attribution_v2_measure.c"}[args.mode])
+                  "gt9x16_prod3_encap_attribution_v2_measure.c",
+              "derived-gt9x16-prod3-encap-tail-attribution-v1":
+                  "gt9x16_prod3_encap_tail_attribution_v1_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

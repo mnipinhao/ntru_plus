@@ -1,0 +1,1586 @@
+{
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-gt9x16-prod3-encap-tail-attribution-v1",
+  "boundaries": {
+    "T0": "resident h projection",
+    "T1": "resident h projection + MA2 arithmetic",
+    "T2": "resident h projection + MA2 arithmetic + ciphertext serialization"
+  },
+  "builds": {
+    "normal": {
+      "implementation": "avx2-gt9x16-prod3-attr-v2-normal-exp003",
+      "measure_sha256": "97563de319d60c6abd3d1e23aab4753eba7f6920124469e92cbd8fb1447c0ccf",
+      "metadata_sha256": "8b28351aee6df874e78d74cfe6a2eebfdb950cf7d1e3732173f6fb0bb02aa185"
+    },
+    "reversed": {
+      "implementation": "avx2-gt9x16-prod3-attr-v2-reversed-exp003",
+      "measure_sha256": "b3a533cc8a5a0609b042d4c0484b95e2b801feabec07b84140b6c426a8856c94",
+      "metadata_sha256": "4db0cc99d80dc38a7f24de3eebd9c909f268b9d5116e8426549b5a7034a07ff1"
+    }
+  },
+  "candidate": "persistent-AoS + Natural-Q + T0-beta + scale4 MA2 + Direct H1",
+  "compiler_policy": "fixed-common-O3GC",
+  "compiler_wrapper": "/home/nuc/src/ntru_plus/bench/supercop/okc-o3gc.sh",
+  "compiler_wrapper_sha256": "3f836a7681176963041dd28eea2bafec730c769a4ee0a537f146def2aaaad395",
+  "cpu": 1,
+  "created_at": "2026-08-27T06:46:53.518179+00:00",
+  "decision": "attack-largest-tail-component:resident_h_projection",
+  "forward_lazy_reduction_status": "ready-for-serious-pricing; not included in this cumulative tail baseline",
+  "headline_component_medians_cycles": {
+    "ciphertext_serialization": 222.41666666666674,
+    "ma2_arithmetic": 137.4583333333334,
+    "resident_h_projection": 248.14583333333334
+  },
+  "headline_placement": "normal",
+  "headline_setting": "normal-aslr-on",
+  "headline_t2_delta_cycles": 608.9375,
+  "largest_component_by_absolute_launch_median": "resident_h_projection",
+  "native_kem_result": false,
+  "new_asm": false,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_label_per_launch": 96,
+  "placement_policy": "predeclared from completed ENCAP-CALLER-ATTRIBUTION-V2; current Tail V1 observations are not used for selection",
+  "placement_reference": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/results/gt9x16-prod3-encap-attribution-v2-intel155h-20260827-001/summary.json",
+  "placement_reference_sha256": "1cb4a4a1be9c96f3a042daa50d3d5b946f100c9ac69cf9fd85c9e3e7ff438564",
+  "preflight": "resident-h raw map exact; T1 semantic bytes exact; GT T2 equals cumulative production path equals Official bytes",
+  "serious_launches_per_setting": 9,
+  "settings": {
+    "normal-aslr-off": {
+      "boundary_evidence": {
+        "t0": {
+          "bootstrap_95pct_ci_median": [
+            244.22916666666669,
+            248.54166666666669
+          ],
+          "median_cycles": 247.31249999999997,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t1": {
+          "bootstrap_95pct_ci_median": [
+            384.2916666666665,
+            387.5
+          ],
+          "median_cycles": 386.10416666666674,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t2": {
+          "bootstrap_95pct_ci_median": [
+            607.5416666666667,
+            612.6041666666665
+          ],
+          "median_cycles": 609.6041666666667,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "combined": {
+        "t0_gt": {
+          "observations": 1728,
+          "stq1": 418.3587962962963,
+          "stq2": 436.05324074074076,
+          "stq3": 449.9050925925926
+        },
+        "t0_official": {
+          "observations": 1728,
+          "stq1": 186.65972222222223,
+          "stq2": 189.07407407407408,
+          "stq3": 193.125
+        },
+        "t1_gt": {
+          "observations": 1728,
+          "stq1": 1445.3680555555557,
+          "stq2": 1456.3819444444443,
+          "stq3": 1469.5439814814815
+        },
+        "t1_official": {
+          "observations": 1728,
+          "stq1": 1061.513888888889,
+          "stq2": 1070.5462962962963,
+          "stq3": 1080.1226851851852
+        },
+        "t2_gt": {
+          "observations": 1728,
+          "stq1": 2003.3194444444443,
+          "stq2": 2020.5972222222222,
+          "stq3": 2040.138888888889
+        },
+        "t2_official": {
+          "observations": 1728,
+          "stq1": 1402.0092592592594,
+          "stq2": 1410.537037037037,
+          "stq3": 1421.388888888889
+        }
+      },
+      "component_evidence": {
+        "ciphertext_serialization": {
+          "bootstrap_95pct_ci_median": [
+            221.56250000000023,
+            226.79166666666652
+          ],
+          "median_cycles": 223.27083333333326,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "ma2_arithmetic": {
+          "bootstrap_95pct_ci_median": [
+            135.58333333333331,
+            142.1041666666668
+          ],
+          "median_cycles": 138.6458333333333,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "resident_h_projection": {
+          "bootstrap_95pct_ci_median": [
+            244.22916666666669,
+            248.54166666666669
+          ],
+          "median_cycles": 247.31249999999997,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "estimator_contract": {
+        "boundary": "per-launch balanced Official/GT StQ2 difference",
+        "components": "differences of nested boundary deltas within the same launch",
+        "headline": "median across nine launch-level estimates",
+        "warning": "component medians are for ranking and are not summed; telescoping is checked per launch"
+      },
+      "launches": [
+        {
+          "component_ciphertext_serialization_cycles": 227.875,
+          "component_ma2_arithmetic_cycles": 147.18750000000003,
+          "component_reconstructed_t2_cycles": 615.375,
+          "component_resident_h_projection_cycles": 240.31249999999997,
+          "launch": 1,
+          "t0_gt_minus_official_cycles": 240.31249999999997,
+          "t0_gt_stq2": 428.2708333333333,
+          "t0_official_stq2": 187.95833333333334,
+          "t1_gt_minus_official_cycles": 387.5,
+          "t1_gt_stq2": 1458.9166666666667,
+          "t1_official_stq2": 1071.4166666666667,
+          "t2_gt_minus_official_cycles": 615.375,
+          "t2_gt_stq2": 2025.25,
+          "t2_official_stq2": 1409.875,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 221.10416666666674,
+          "component_ma2_arithmetic_cycles": 140.85416666666654,
+          "component_reconstructed_t2_cycles": 609.2708333333333,
+          "component_resident_h_projection_cycles": 247.31249999999997,
+          "launch": 2,
+          "t0_gt_minus_official_cycles": 247.31249999999997,
+          "t0_gt_stq2": 438.5833333333333,
+          "t0_official_stq2": 191.27083333333334,
+          "t1_gt_minus_official_cycles": 388.1666666666665,
+          "t1_gt_stq2": 1455.9583333333333,
+          "t1_official_stq2": 1067.7916666666667,
+          "t2_gt_minus_official_cycles": 609.2708333333333,
+          "t2_gt_stq2": 2018.3958333333333,
+          "t2_official_stq2": 1409.125,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 226.79166666666652,
+          "component_ma2_arithmetic_cycles": 137.37500000000003,
+          "component_reconstructed_t2_cycles": 612.6041666666665,
+          "component_resident_h_projection_cycles": 248.43749999999997,
+          "launch": 3,
+          "t0_gt_minus_official_cycles": 248.43749999999997,
+          "t0_gt_stq2": 437.8333333333333,
+          "t0_official_stq2": 189.39583333333334,
+          "t1_gt_minus_official_cycles": 385.8125,
+          "t1_gt_stq2": 1455.4791666666667,
+          "t1_official_stq2": 1069.6666666666667,
+          "t2_gt_minus_official_cycles": 612.6041666666665,
+          "t2_gt_stq2": 2023.0208333333333,
+          "t2_official_stq2": 1410.4166666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 222.77083333333348,
+          "component_ma2_arithmetic_cycles": 137.99999999999991,
+          "component_reconstructed_t2_cycles": 607.5416666666667,
+          "component_resident_h_projection_cycles": 246.77083333333334,
+          "launch": 4,
+          "t0_gt_minus_official_cycles": 246.77083333333334,
+          "t0_gt_stq2": 435.8125,
+          "t0_official_stq2": 189.04166666666666,
+          "t1_gt_minus_official_cycles": 384.77083333333326,
+          "t1_gt_stq2": 1457.875,
+          "t1_official_stq2": 1073.1041666666667,
+          "t2_gt_minus_official_cycles": 607.5416666666667,
+          "t2_gt_stq2": 2017.5,
+          "t2_official_stq2": 1409.9583333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 223.27083333333326,
+          "component_ma2_arithmetic_cycles": 142.1041666666668,
+          "component_reconstructed_t2_cycles": 609.6041666666667,
+          "component_resident_h_projection_cycles": 244.22916666666669,
+          "launch": 5,
+          "t0_gt_minus_official_cycles": 244.22916666666669,
+          "t0_gt_stq2": 434.9791666666667,
+          "t0_official_stq2": 190.75,
+          "t1_gt_minus_official_cycles": 386.3333333333335,
+          "t1_gt_stq2": 1456.3541666666667,
+          "t1_official_stq2": 1070.0208333333333,
+          "t2_gt_minus_official_cycles": 609.6041666666667,
+          "t2_gt_stq2": 2019.375,
+          "t2_official_stq2": 1409.7708333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 221.56250000000023,
+          "component_ma2_arithmetic_cycles": 138.6458333333333,
+          "component_reconstructed_t2_cycles": 607.8333333333335,
+          "component_resident_h_projection_cycles": 247.62499999999997,
+          "launch": 6,
+          "t0_gt_minus_official_cycles": 247.62499999999997,
+          "t0_gt_stq2": 434.7083333333333,
+          "t0_official_stq2": 187.08333333333334,
+          "t1_gt_minus_official_cycles": 386.27083333333326,
+          "t1_gt_stq2": 1456.9583333333333,
+          "t1_official_stq2": 1070.6875,
+          "t2_gt_minus_official_cycles": 607.8333333333335,
+          "t2_gt_stq2": 2020.7916666666667,
+          "t2_official_stq2": 1412.9583333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 224.6875,
+          "component_ma2_arithmetic_cycles": 141.2708333333334,
+          "component_reconstructed_t2_cycles": 610.7916666666667,
+          "component_resident_h_projection_cycles": 244.83333333333334,
+          "launch": 7,
+          "t0_gt_minus_official_cycles": 244.83333333333334,
+          "t0_gt_stq2": 431.875,
+          "t0_official_stq2": 187.04166666666666,
+          "t1_gt_minus_official_cycles": 386.10416666666674,
+          "t1_gt_stq2": 1456.3125,
+          "t1_official_stq2": 1070.2083333333333,
+          "t2_gt_minus_official_cycles": 610.7916666666667,
+          "t2_gt_stq2": 2020.4375,
+          "t2_official_stq2": 1409.6458333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 226.20833333333348,
+          "component_ma2_arithmetic_cycles": 133.6666666666665,
+          "component_reconstructed_t2_cycles": 610.5,
+          "component_resident_h_projection_cycles": 250.62500000000003,
+          "launch": 8,
+          "t0_gt_minus_official_cycles": 250.62500000000003,
+          "t0_gt_stq2": 439.4791666666667,
+          "t0_official_stq2": 188.85416666666666,
+          "t1_gt_minus_official_cycles": 384.2916666666665,
+          "t1_gt_stq2": 1454.7708333333333,
+          "t1_official_stq2": 1070.4791666666667,
+          "t2_gt_minus_official_cycles": 610.5,
+          "t2_gt_stq2": 2021.9166666666667,
+          "t2_official_stq2": 1411.4166666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 222.375,
+          "component_ma2_arithmetic_cycles": 135.58333333333331,
+          "component_reconstructed_t2_cycles": 606.5,
+          "component_resident_h_projection_cycles": 248.54166666666669,
+          "launch": 9,
+          "t0_gt_minus_official_cycles": 248.54166666666669,
+          "t0_gt_stq2": 439.3541666666667,
+          "t0_official_stq2": 190.8125,
+          "t1_gt_minus_official_cycles": 384.125,
+          "t1_gt_stq2": 1455.0208333333333,
+          "t1_official_stq2": 1070.8958333333333,
+          "t2_gt_minus_official_cycles": 606.5,
+          "t2_gt_stq2": 2018.3958333333333,
+          "t2_official_stq2": 1411.8958333333333,
+          "telescoping_residual_cycles": 0.0
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992249856,
+          93824992270752,
+          93824992254080,
+          93824992335776
+        ]
+      ],
+      "telescoping": {
+        "identity": "H + M + S = delta(T2)",
+        "launches_checked": 9,
+        "max_absolute_residual_cycles": 0.0,
+        "median_direct_t2_cycles": 609.6041666666667,
+        "median_reconstructed_t2_cycles": 609.6041666666667
+      },
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "boundary_evidence": {
+        "t0": {
+          "bootstrap_95pct_ci_median": [
+            245.81250000000003,
+            253.50000000000003
+          ],
+          "median_cycles": 248.14583333333334,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t1": {
+          "bootstrap_95pct_ci_median": [
+            383.79166666666674,
+            389.25
+          ],
+          "median_cycles": 386.4791666666665,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t2": {
+          "bootstrap_95pct_ci_median": [
+            606.5208333333335,
+            611.1875
+          ],
+          "median_cycles": 608.9375,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "combined": {
+        "t0_gt": {
+          "observations": 1728,
+          "stq1": 419.8240740740741,
+          "stq2": 437.64814814814815,
+          "stq3": 453.75925925925924
+        },
+        "t0_official": {
+          "observations": 1728,
+          "stq1": 186.73842592592592,
+          "stq2": 189.4189814814815,
+          "stq3": 193.5462962962963
+        },
+        "t1_gt": {
+          "observations": 1728,
+          "stq1": 1443.8171296296296,
+          "stq2": 1455.6041666666667,
+          "stq3": 1468.3125
+        },
+        "t1_official": {
+          "observations": 1728,
+          "stq1": 1060.287037037037,
+          "stq2": 1069.1365740740741,
+          "stq3": 1078.7662037037037
+        },
+        "t2_gt": {
+          "observations": 1728,
+          "stq1": 2003.6597222222222,
+          "stq2": 2019.6342592592594,
+          "stq3": 2039.8194444444443
+        },
+        "t2_official": {
+          "observations": 1728,
+          "stq1": 1400.8032407407406,
+          "stq2": 1410.2592592592594,
+          "stq3": 1420.798611111111
+        }
+      },
+      "component_evidence": {
+        "ciphertext_serialization": {
+          "bootstrap_95pct_ci_median": [
+            218.85416666666652,
+            225.0625
+          ],
+          "median_cycles": 222.41666666666674,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "ma2_arithmetic": {
+          "bootstrap_95pct_ci_median": [
+            135.06250000000009,
+            142.79166666666666
+          ],
+          "median_cycles": 137.4583333333334,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "resident_h_projection": {
+          "bootstrap_95pct_ci_median": [
+            245.81250000000003,
+            253.50000000000003
+          ],
+          "median_cycles": 248.14583333333334,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "estimator_contract": {
+        "boundary": "per-launch balanced Official/GT StQ2 difference",
+        "components": "differences of nested boundary deltas within the same launch",
+        "headline": "median across nine launch-level estimates",
+        "warning": "component medians are for ranking and are not summed; telescoping is checked per launch"
+      },
+      "launches": [
+        {
+          "component_ciphertext_serialization_cycles": 225.0625,
+          "component_ma2_arithmetic_cycles": 142.79166666666666,
+          "component_reconstructed_t2_cycles": 609.5,
+          "component_resident_h_projection_cycles": 241.64583333333334,
+          "launch": 1,
+          "t0_gt_minus_official_cycles": 241.64583333333334,
+          "t0_gt_stq2": 431.5,
+          "t0_official_stq2": 189.85416666666666,
+          "t1_gt_minus_official_cycles": 384.4375,
+          "t1_gt_stq2": 1452.375,
+          "t1_official_stq2": 1067.9375,
+          "t2_gt_minus_official_cycles": 609.5,
+          "t2_gt_stq2": 2021.2083333333333,
+          "t2_official_stq2": 1411.7083333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 218.85416666666652,
+          "component_ma2_arithmetic_cycles": 143.99999999999997,
+          "component_reconstructed_t2_cycles": 608.6666666666665,
+          "component_resident_h_projection_cycles": 245.81250000000003,
+          "launch": 2,
+          "t0_gt_minus_official_cycles": 245.81250000000003,
+          "t0_gt_stq2": 434.2916666666667,
+          "t0_official_stq2": 188.47916666666666,
+          "t1_gt_minus_official_cycles": 389.8125,
+          "t1_gt_stq2": 1458.4583333333333,
+          "t1_official_stq2": 1068.6458333333333,
+          "t2_gt_minus_official_cycles": 608.6666666666665,
+          "t2_gt_stq2": 2019.3333333333333,
+          "t2_official_stq2": 1410.6666666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 224.16666666666674,
+          "component_ma2_arithmetic_cycles": 136.62499999999991,
+          "component_reconstructed_t2_cycles": 608.9375,
+          "component_resident_h_projection_cycles": 248.14583333333334,
+          "launch": 3,
+          "t0_gt_minus_official_cycles": 248.14583333333334,
+          "t0_gt_stq2": 435.8541666666667,
+          "t0_official_stq2": 187.70833333333334,
+          "t1_gt_minus_official_cycles": 384.77083333333326,
+          "t1_gt_stq2": 1454.5,
+          "t1_official_stq2": 1069.7291666666667,
+          "t2_gt_minus_official_cycles": 608.9375,
+          "t2_gt_stq2": 2018.4166666666667,
+          "t2_official_stq2": 1409.4791666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 223.83333333333326,
+          "component_ma2_arithmetic_cycles": 137.58333333333343,
+          "component_reconstructed_t2_cycles": 611.1875,
+          "component_resident_h_projection_cycles": 249.77083333333331,
+          "launch": 4,
+          "t0_gt_minus_official_cycles": 249.77083333333331,
+          "t0_gt_stq2": 438.6458333333333,
+          "t0_official_stq2": 188.875,
+          "t1_gt_minus_official_cycles": 387.35416666666674,
+          "t1_gt_stq2": 1455.5,
+          "t1_official_stq2": 1068.1458333333333,
+          "t2_gt_minus_official_cycles": 611.1875,
+          "t2_gt_stq2": 2021.1041666666667,
+          "t2_official_stq2": 1409.9166666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 220.95833333333326,
+          "component_ma2_arithmetic_cycles": 133.16666666666677,
+          "component_reconstructed_t2_cycles": 604.75,
+          "component_resident_h_projection_cycles": 250.62499999999997,
+          "launch": 5,
+          "t0_gt_minus_official_cycles": 250.62499999999997,
+          "t0_gt_stq2": 439.0208333333333,
+          "t0_official_stq2": 188.39583333333334,
+          "t1_gt_minus_official_cycles": 383.79166666666674,
+          "t1_gt_stq2": 1455.1666666666667,
+          "t1_official_stq2": 1071.375,
+          "t2_gt_minus_official_cycles": 604.75,
+          "t2_gt_stq2": 2017.9791666666667,
+          "t2_official_stq2": 1413.2291666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 222.41666666666674,
+          "component_ma2_arithmetic_cycles": 140.43749999999983,
+          "component_reconstructed_t2_cycles": 608.8958333333333,
+          "component_resident_h_projection_cycles": 246.04166666666669,
+          "launch": 6,
+          "t0_gt_minus_official_cycles": 246.04166666666669,
+          "t0_gt_stq2": 436.2291666666667,
+          "t0_official_stq2": 190.1875,
+          "t1_gt_minus_official_cycles": 386.4791666666665,
+          "t1_gt_stq2": 1455.6458333333333,
+          "t1_official_stq2": 1069.1666666666667,
+          "t2_gt_minus_official_cycles": 608.8958333333333,
+          "t2_gt_stq2": 2019.0625,
+          "t2_official_stq2": 1410.1666666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 233.41666666666674,
+          "component_ma2_arithmetic_cycles": 137.4583333333334,
+          "component_reconstructed_t2_cycles": 617.0833333333335,
+          "component_resident_h_projection_cycles": 246.20833333333334,
+          "launch": 7,
+          "t0_gt_minus_official_cycles": 246.20833333333334,
+          "t0_gt_stq2": 436.6666666666667,
+          "t0_official_stq2": 190.45833333333334,
+          "t1_gt_minus_official_cycles": 383.66666666666674,
+          "t1_gt_stq2": 1454.5416666666667,
+          "t1_official_stq2": 1070.875,
+          "t2_gt_minus_official_cycles": 617.0833333333335,
+          "t2_gt_stq2": 2025.3541666666667,
+          "t2_official_stq2": 1408.2708333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 217.27083333333348,
+          "component_ma2_arithmetic_cycles": 135.74999999999997,
+          "component_reconstructed_t2_cycles": 606.5208333333335,
+          "component_resident_h_projection_cycles": 253.50000000000003,
+          "launch": 8,
+          "t0_gt_minus_official_cycles": 253.50000000000003,
+          "t0_gt_stq2": 443.9791666666667,
+          "t0_official_stq2": 190.47916666666666,
+          "t1_gt_minus_official_cycles": 389.25,
+          "t1_gt_stq2": 1457.0416666666667,
+          "t1_official_stq2": 1067.7916666666667,
+          "t2_gt_minus_official_cycles": 606.5208333333335,
+          "t2_gt_stq2": 2016.0416666666667,
+          "t2_official_stq2": 1409.5208333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 221.29166666666652,
+          "component_ma2_arithmetic_cycles": 135.06250000000009,
+          "component_reconstructed_t2_cycles": 610.2083333333333,
+          "component_resident_h_projection_cycles": 253.85416666666666,
+          "launch": 9,
+          "t0_gt_minus_official_cycles": 253.85416666666666,
+          "t0_gt_stq2": 443.2708333333333,
+          "t0_official_stq2": 189.41666666666666,
+          "t1_gt_minus_official_cycles": 388.91666666666674,
+          "t1_gt_stq2": 1457.875,
+          "t1_official_stq2": 1068.9583333333333,
+          "t2_gt_minus_official_cycles": 610.2083333333333,
+          "t2_gt_stq2": 2019.0833333333333,
+          "t2_official_stq2": 1408.875,
+          "telescoping_residual_cycles": 0.0
+        }
+      ],
+      "runtime_addresses": [
+        [
+          105559825398528,
+          105559825398560,
+          105559825398592,
+          105559825398656,
+          105559825398688,
+          105559825398752,
+          105559825405952,
+          105559825426848,
+          105559825410176,
+          105559825491872
+        ],
+        [
+          99924940159744,
+          99924940159776,
+          99924940159808,
+          99924940159872,
+          99924940159904,
+          99924940159968,
+          99924940167168,
+          99924940188064,
+          99924940171392,
+          99924940253088
+        ],
+        [
+          95117056920320,
+          95117056920352,
+          95117056920384,
+          95117056920448,
+          95117056920480,
+          95117056920544,
+          95117056927744,
+          95117056948640,
+          95117056931968,
+          95117057013664
+        ],
+        [
+          95548079069952,
+          95548079069984,
+          95548079070016,
+          95548079070080,
+          95548079070112,
+          95548079070176,
+          95548079077376,
+          95548079098272,
+          95548079081600,
+          95548079163296
+        ],
+        [
+          108147423296256,
+          108147423296288,
+          108147423296320,
+          108147423296384,
+          108147423296416,
+          108147423296480,
+          108147423303680,
+          108147423324576,
+          108147423307904,
+          108147423389600
+        ],
+        [
+          105564783979264,
+          105564783979296,
+          105564783979328,
+          105564783979392,
+          105564783979424,
+          105564783979488,
+          105564783986688,
+          105564784007584,
+          105564783990912,
+          105564784072608
+        ],
+        [
+          93888830884608,
+          93888830884640,
+          93888830884672,
+          93888830884736,
+          93888830884768,
+          93888830884832,
+          93888830892032,
+          93888830912928,
+          93888830896256,
+          93888830977952
+        ],
+        [
+          100354758953728,
+          100354758953760,
+          100354758953792,
+          100354758953856,
+          100354758953888,
+          100354758953952,
+          100354758961152,
+          100354758982048,
+          100354758965376,
+          100354759047072
+        ],
+        [
+          101483189242624,
+          101483189242656,
+          101483189242688,
+          101483189242752,
+          101483189242784,
+          101483189242848,
+          101483189250048,
+          101483189270944,
+          101483189254272,
+          101483189335968
+        ]
+      ],
+      "telescoping": {
+        "identity": "H + M + S = delta(T2)",
+        "launches_checked": 9,
+        "max_absolute_residual_cycles": 0.0,
+        "median_direct_t2_cycles": 608.9375,
+        "median_reconstructed_t2_cycles": 608.9375
+      },
+      "unique_runtime_address_tuples": 9
+    },
+    "reversed-aslr-off": {
+      "boundary_evidence": {
+        "t0": {
+          "bootstrap_95pct_ci_median": [
+            234.08333333333334,
+            237.43750000000003
+          ],
+          "median_cycles": 235.72916666666666,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t1": {
+          "bootstrap_95pct_ci_median": [
+            370.9375,
+            376.1875
+          ],
+          "median_cycles": 374.35416666666674,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t2": {
+          "bootstrap_95pct_ci_median": [
+            594.8958333333335,
+            601.0416666666665
+          ],
+          "median_cycles": 599.1458333333333,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "combined": {
+        "t0_gt": {
+          "observations": 1728,
+          "stq1": 413.525462962963,
+          "stq2": 424.79398148148147,
+          "stq3": 443.12731481481484
+        },
+        "t0_official": {
+          "observations": 1728,
+          "stq1": 186.63425925925927,
+          "stq2": 189.59722222222223,
+          "stq3": 193.1412037037037
+        },
+        "t1_gt": {
+          "observations": 1728,
+          "stq1": 1436.7662037037037,
+          "stq2": 1448.1898148148148,
+          "stq3": 1461.3148148148148
+        },
+        "t1_official": {
+          "observations": 1728,
+          "stq1": 1062.6666666666667,
+          "stq2": 1074.8101851851852,
+          "stq3": 1086.4166666666667
+        },
+        "t2_gt": {
+          "observations": 1728,
+          "stq1": 1999.6157407407406,
+          "stq2": 2016.8912037037037,
+          "stq3": 2037.4814814814815
+        },
+        "t2_official": {
+          "observations": 1728,
+          "stq1": 1408.1458333333333,
+          "stq2": 1418.9953703703704,
+          "stq3": 1429.673611111111
+        }
+      },
+      "component_evidence": {
+        "ciphertext_serialization": {
+          "bootstrap_95pct_ci_median": [
+            220.06249999999977,
+            228.97916666666652
+          ],
+          "median_cycles": 223.35416666666674,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "ma2_arithmetic": {
+          "bootstrap_95pct_ci_median": [
+            134.31250000000006,
+            140.35416666666666
+          ],
+          "median_cycles": 139.47916666666677,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "resident_h_projection": {
+          "bootstrap_95pct_ci_median": [
+            234.08333333333334,
+            237.43750000000003
+          ],
+          "median_cycles": 235.72916666666666,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "estimator_contract": {
+        "boundary": "per-launch balanced Official/GT StQ2 difference",
+        "components": "differences of nested boundary deltas within the same launch",
+        "headline": "median across nine launch-level estimates",
+        "warning": "component medians are for ranking and are not summed; telescoping is checked per launch"
+      },
+      "launches": [
+        {
+          "component_ciphertext_serialization_cycles": 230.10416666666652,
+          "component_ma2_arithmetic_cycles": 140.0,
+          "component_reconstructed_t2_cycles": 601.0416666666665,
+          "component_resident_h_projection_cycles": 230.9375,
+          "launch": 1,
+          "t0_gt_minus_official_cycles": 230.9375,
+          "t0_gt_stq2": 422.625,
+          "t0_official_stq2": 191.6875,
+          "t1_gt_minus_official_cycles": 370.9375,
+          "t1_gt_stq2": 1447.4166666666667,
+          "t1_official_stq2": 1076.4791666666667,
+          "t2_gt_minus_official_cycles": 601.0416666666665,
+          "t2_gt_stq2": 2018.3333333333333,
+          "t2_official_stq2": 1417.2916666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 220.06249999999977,
+          "component_ma2_arithmetic_cycles": 140.3958333333335,
+          "component_reconstructed_t2_cycles": 595.2083333333333,
+          "component_resident_h_projection_cycles": 234.74999999999997,
+          "launch": 2,
+          "t0_gt_minus_official_cycles": 234.74999999999997,
+          "t0_gt_stq2": 426.3333333333333,
+          "t0_official_stq2": 191.58333333333334,
+          "t1_gt_minus_official_cycles": 375.1458333333335,
+          "t1_gt_stq2": 1450.6666666666667,
+          "t1_official_stq2": 1075.5208333333333,
+          "t2_gt_minus_official_cycles": 595.2083333333333,
+          "t2_gt_stq2": 2015.7708333333333,
+          "t2_official_stq2": 1420.5625,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 222.95833333333326,
+          "component_ma2_arithmetic_cycles": 140.35416666666666,
+          "component_reconstructed_t2_cycles": 599.1458333333333,
+          "component_resident_h_projection_cycles": 235.83333333333334,
+          "launch": 3,
+          "t0_gt_minus_official_cycles": 235.83333333333334,
+          "t0_gt_stq2": 425.6875,
+          "t0_official_stq2": 189.85416666666666,
+          "t1_gt_minus_official_cycles": 376.1875,
+          "t1_gt_stq2": 1450.3125,
+          "t1_official_stq2": 1074.125,
+          "t2_gt_minus_official_cycles": 599.1458333333333,
+          "t2_gt_stq2": 2022.8333333333333,
+          "t2_official_stq2": 1423.6875,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 223.35416666666674,
+          "component_ma2_arithmetic_cycles": 136.08333333333323,
+          "component_reconstructed_t2_cycles": 596.875,
+          "component_resident_h_projection_cycles": 237.43750000000003,
+          "launch": 4,
+          "t0_gt_minus_official_cycles": 237.43750000000003,
+          "t0_gt_stq2": 426.3541666666667,
+          "t0_official_stq2": 188.91666666666666,
+          "t1_gt_minus_official_cycles": 373.52083333333326,
+          "t1_gt_stq2": 1446.7708333333333,
+          "t1_official_stq2": 1073.25,
+          "t2_gt_minus_official_cycles": 596.875,
+          "t2_gt_stq2": 2017.3333333333333,
+          "t2_official_stq2": 1420.4583333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 222.77083333333326,
+          "component_ma2_arithmetic_cycles": 140.1041666666667,
+          "component_reconstructed_t2_cycles": 599.375,
+          "component_resident_h_projection_cycles": 236.50000000000003,
+          "launch": 5,
+          "t0_gt_minus_official_cycles": 236.50000000000003,
+          "t0_gt_stq2": 423.2916666666667,
+          "t0_official_stq2": 186.79166666666666,
+          "t1_gt_minus_official_cycles": 376.60416666666674,
+          "t1_gt_stq2": 1449.1666666666667,
+          "t1_official_stq2": 1072.5625,
+          "t2_gt_minus_official_cycles": 599.375,
+          "t2_gt_stq2": 2016.0,
+          "t2_official_stq2": 1416.625,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 228.97916666666652,
+          "component_ma2_arithmetic_cycles": 138.29166666666666,
+          "component_reconstructed_t2_cycles": 601.3541666666665,
+          "component_resident_h_projection_cycles": 234.08333333333334,
+          "launch": 6,
+          "t0_gt_minus_official_cycles": 234.08333333333334,
+          "t0_gt_stq2": 423.2291666666667,
+          "t0_official_stq2": 189.14583333333334,
+          "t1_gt_minus_official_cycles": 372.375,
+          "t1_gt_stq2": 1446.5625,
+          "t1_official_stq2": 1074.1875,
+          "t2_gt_minus_official_cycles": 601.3541666666665,
+          "t2_gt_stq2": 2016.9583333333333,
+          "t2_official_stq2": 1415.6041666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 219.54166666666652,
+          "component_ma2_arithmetic_cycles": 134.31250000000006,
+          "component_reconstructed_t2_cycles": 593.8958333333333,
+          "component_resident_h_projection_cycles": 240.04166666666669,
+          "launch": 7,
+          "t0_gt_minus_official_cycles": 240.04166666666669,
+          "t0_gt_stq2": 430.1666666666667,
+          "t0_official_stq2": 190.125,
+          "t1_gt_minus_official_cycles": 374.35416666666674,
+          "t1_gt_stq2": 1450.4375,
+          "t1_official_stq2": 1076.0833333333333,
+          "t2_gt_minus_official_cycles": 593.8958333333333,
+          "t2_gt_stq2": 2012.8333333333333,
+          "t2_official_stq2": 1418.9375,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 228.12500000000023,
+          "component_ma2_arithmetic_cycles": 131.0416666666666,
+          "component_reconstructed_t2_cycles": 594.8958333333335,
+          "component_resident_h_projection_cycles": 235.72916666666666,
+          "launch": 8,
+          "t0_gt_minus_official_cycles": 235.72916666666666,
+          "t0_gt_stq2": 422.8125,
+          "t0_official_stq2": 187.08333333333334,
+          "t1_gt_minus_official_cycles": 366.77083333333326,
+          "t1_gt_stq2": 1443.3125,
+          "t1_official_stq2": 1076.5416666666667,
+          "t2_gt_minus_official_cycles": 594.8958333333335,
+          "t2_gt_stq2": 2015.4166666666667,
+          "t2_official_stq2": 1420.5208333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 224.4375,
+          "component_ma2_arithmetic_cycles": 139.47916666666677,
+          "component_reconstructed_t2_cycles": 599.3541666666667,
+          "component_resident_h_projection_cycles": 235.43749999999997,
+          "launch": 9,
+          "t0_gt_minus_official_cycles": 235.43749999999997,
+          "t0_gt_stq2": 424.2708333333333,
+          "t0_official_stq2": 188.83333333333334,
+          "t1_gt_minus_official_cycles": 374.91666666666674,
+          "t1_gt_stq2": 1449.0416666666667,
+          "t1_official_stq2": 1074.125,
+          "t2_gt_minus_official_cycles": 599.3541666666667,
+          "t2_gt_stq2": 2016.9791666666667,
+          "t2_official_stq2": 1417.625,
+          "telescoping_residual_cycles": 0.0
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242496,
+          93824992242560,
+          93824992242592,
+          93824992242656,
+          93824992340768,
+          93824992264800,
+          93824992344992,
+          93824992329824
+        ]
+      ],
+      "telescoping": {
+        "identity": "H + M + S = delta(T2)",
+        "launches_checked": 9,
+        "max_absolute_residual_cycles": 0.0,
+        "median_direct_t2_cycles": 599.1458333333333,
+        "median_reconstructed_t2_cycles": 599.1458333333333
+      },
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "boundary_evidence": {
+        "t0": {
+          "bootstrap_95pct_ci_median": [
+            235.58333333333334,
+            241.0625
+          ],
+          "median_cycles": 238.75,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t1": {
+          "bootstrap_95pct_ci_median": [
+            373.5,
+            377.8333333333335
+          ],
+          "median_cycles": 375.75,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "t2": {
+          "bootstrap_95pct_ci_median": [
+            593.6458333333333,
+            600.5
+          ],
+          "median_cycles": 597.7916666666667,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "combined": {
+        "t0_gt": {
+          "observations": 1728,
+          "stq1": 415.56018518518516,
+          "stq2": 428.150462962963,
+          "stq3": 446.22222222222223
+        },
+        "t0_official": {
+          "observations": 1728,
+          "stq1": 186.7037037037037,
+          "stq2": 189.46064814814815,
+          "stq3": 193.5462962962963
+        },
+        "t1_gt": {
+          "observations": 1728,
+          "stq1": 1438.414351851852,
+          "stq2": 1450.2152777777778,
+          "stq3": 1464.0277777777778
+        },
+        "t1_official": {
+          "observations": 1728,
+          "stq1": 1063.1805555555557,
+          "stq2": 1074.775462962963,
+          "stq3": 1085.7592592592594
+        },
+        "t2_gt": {
+          "observations": 1728,
+          "stq1": 1999.9791666666667,
+          "stq2": 2017.138888888889,
+          "stq3": 2036.8148148148148
+        },
+        "t2_official": {
+          "observations": 1728,
+          "stq1": 1410.601851851852,
+          "stq2": 1420.5324074074074,
+          "stq3": 1430.75
+        }
+      },
+      "component_evidence": {
+        "ciphertext_serialization": {
+          "bootstrap_95pct_ci_median": [
+            219.35416666666674,
+            224.5625
+          ],
+          "median_cycles": 219.95833333333326,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "ma2_arithmetic": {
+          "bootstrap_95pct_ci_median": [
+            135.33333333333334,
+            138.60416666666666
+          ],
+          "median_cycles": 136.95833333333326,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "resident_h_projection": {
+          "bootstrap_95pct_ci_median": [
+            235.58333333333334,
+            241.0625
+          ],
+          "median_cycles": 238.75,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        }
+      },
+      "estimator_contract": {
+        "boundary": "per-launch balanced Official/GT StQ2 difference",
+        "components": "differences of nested boundary deltas within the same launch",
+        "headline": "median across nine launch-level estimates",
+        "warning": "component medians are for ranking and are not summed; telescoping is checked per launch"
+      },
+      "launches": [
+        {
+          "component_ciphertext_serialization_cycles": 219.95833333333326,
+          "component_ma2_arithmetic_cycles": 141.43750000000014,
+          "component_reconstructed_t2_cycles": 597.7916666666667,
+          "component_resident_h_projection_cycles": 236.39583333333334,
+          "launch": 1,
+          "t0_gt_minus_official_cycles": 236.39583333333334,
+          "t0_gt_stq2": 424.2291666666667,
+          "t0_official_stq2": 187.83333333333334,
+          "t1_gt_minus_official_cycles": 377.8333333333335,
+          "t1_gt_stq2": 1451.6041666666667,
+          "t1_official_stq2": 1073.7708333333333,
+          "t2_gt_minus_official_cycles": 597.7916666666667,
+          "t2_gt_stq2": 2017.625,
+          "t2_official_stq2": 1419.8333333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 223.5625,
+          "component_ma2_arithmetic_cycles": 138.1875,
+          "component_reconstructed_t2_cycles": 600.5,
+          "component_resident_h_projection_cycles": 238.75,
+          "launch": 2,
+          "t0_gt_minus_official_cycles": 238.75,
+          "t0_gt_stq2": 429.0,
+          "t0_official_stq2": 190.25,
+          "t1_gt_minus_official_cycles": 376.9375,
+          "t1_gt_stq2": 1449.4791666666667,
+          "t1_official_stq2": 1072.5416666666667,
+          "t2_gt_minus_official_cycles": 600.5,
+          "t2_gt_stq2": 2018.1666666666667,
+          "t2_official_stq2": 1417.6666666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 216.25,
+          "component_ma2_arithmetic_cycles": 138.60416666666666,
+          "component_reconstructed_t2_cycles": 588.875,
+          "component_resident_h_projection_cycles": 234.02083333333334,
+          "launch": 3,
+          "t0_gt_minus_official_cycles": 234.02083333333334,
+          "t0_gt_stq2": 423.25,
+          "t0_official_stq2": 189.22916666666666,
+          "t1_gt_minus_official_cycles": 372.625,
+          "t1_gt_stq2": 1447.8333333333333,
+          "t1_official_stq2": 1075.2083333333333,
+          "t2_gt_minus_official_cycles": 588.875,
+          "t2_gt_stq2": 2011.9791666666667,
+          "t2_official_stq2": 1423.1041666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 219.85416666666674,
+          "component_ma2_arithmetic_cycles": 130.47916666666677,
+          "component_reconstructed_t2_cycles": 594.9583333333335,
+          "component_resident_h_projection_cycles": 244.62499999999997,
+          "launch": 4,
+          "t0_gt_minus_official_cycles": 244.62499999999997,
+          "t0_gt_stq2": 432.2083333333333,
+          "t0_official_stq2": 187.58333333333334,
+          "t1_gt_minus_official_cycles": 375.10416666666674,
+          "t1_gt_stq2": 1449.6875,
+          "t1_official_stq2": 1074.5833333333333,
+          "t2_gt_minus_official_cycles": 594.9583333333335,
+          "t2_gt_stq2": 2015.0416666666667,
+          "t2_official_stq2": 1420.0833333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 219.85416666666652,
+          "component_ma2_arithmetic_cycles": 135.95833333333343,
+          "component_reconstructed_t2_cycles": 593.6458333333333,
+          "component_resident_h_projection_cycles": 237.83333333333331,
+          "launch": 5,
+          "t0_gt_minus_official_cycles": 237.83333333333331,
+          "t0_gt_stq2": 429.0833333333333,
+          "t0_official_stq2": 191.25,
+          "t1_gt_minus_official_cycles": 373.79166666666674,
+          "t1_gt_stq2": 1448.7916666666667,
+          "t1_official_stq2": 1075.0,
+          "t2_gt_minus_official_cycles": 593.6458333333333,
+          "t2_gt_stq2": 2016.0208333333333,
+          "t2_official_stq2": 1422.375,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 225.00000000000023,
+          "component_ma2_arithmetic_cycles": 136.95833333333326,
+          "component_reconstructed_t2_cycles": 603.0208333333335,
+          "component_resident_h_projection_cycles": 241.0625,
+          "launch": 6,
+          "t0_gt_minus_official_cycles": 241.0625,
+          "t0_gt_stq2": 429.875,
+          "t0_official_stq2": 188.8125,
+          "t1_gt_minus_official_cycles": 378.02083333333326,
+          "t1_gt_stq2": 1452.2083333333333,
+          "t1_official_stq2": 1074.1875,
+          "t2_gt_minus_official_cycles": 603.0208333333335,
+          "t2_gt_stq2": 2023.7916666666667,
+          "t2_official_stq2": 1420.7708333333333,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 219.35416666666674,
+          "component_ma2_arithmetic_cycles": 135.33333333333334,
+          "component_reconstructed_t2_cycles": 595.1041666666667,
+          "component_resident_h_projection_cycles": 240.41666666666666,
+          "launch": 7,
+          "t0_gt_minus_official_cycles": 240.41666666666666,
+          "t0_gt_stq2": 429.1458333333333,
+          "t0_official_stq2": 188.72916666666666,
+          "t1_gt_minus_official_cycles": 375.75,
+          "t1_gt_stq2": 1451.4791666666667,
+          "t1_official_stq2": 1075.7291666666667,
+          "t2_gt_minus_official_cycles": 595.1041666666667,
+          "t2_gt_stq2": 2017.5416666666667,
+          "t2_official_stq2": 1422.4375,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 224.5625,
+          "component_ma2_arithmetic_cycles": 137.91666666666666,
+          "component_reconstructed_t2_cycles": 598.0625,
+          "component_resident_h_projection_cycles": 235.58333333333334,
+          "launch": 8,
+          "t0_gt_minus_official_cycles": 235.58333333333334,
+          "t0_gt_stq2": 425.6666666666667,
+          "t0_official_stq2": 190.08333333333334,
+          "t1_gt_minus_official_cycles": 373.5,
+          "t1_gt_stq2": 1450.0833333333333,
+          "t1_official_stq2": 1076.5833333333333,
+          "t2_gt_minus_official_cycles": 598.0625,
+          "t2_gt_stq2": 2015.9166666666667,
+          "t2_official_stq2": 1417.8541666666667,
+          "telescoping_residual_cycles": 0.0
+        },
+        {
+          "component_ciphertext_serialization_cycles": 221.52083333333326,
+          "component_ma2_arithmetic_cycles": 136.64583333333334,
+          "component_reconstructed_t2_cycles": 598.3958333333333,
+          "component_resident_h_projection_cycles": 240.22916666666666,
+          "launch": 9,
+          "t0_gt_minus_official_cycles": 240.22916666666666,
+          "t0_gt_stq2": 430.3333333333333,
+          "t0_official_stq2": 190.10416666666666,
+          "t1_gt_minus_official_cycles": 376.875,
+          "t1_gt_stq2": 1451.7291666666667,
+          "t1_official_stq2": 1074.8541666666667,
+          "t2_gt_minus_official_cycles": 598.3958333333333,
+          "t2_gt_stq2": 2018.8958333333333,
+          "t2_official_stq2": 1420.5,
+          "telescoping_residual_cycles": 0.0
+        }
+      ],
+      "runtime_addresses": [
+        [
+          101929292499712,
+          101929292499744,
+          101929292499776,
+          101929292499840,
+          101929292499872,
+          101929292499936,
+          101929292598048,
+          101929292522080,
+          101929292602272,
+          101929292587104
+        ],
+        [
+          102871870352128,
+          102871870352160,
+          102871870352192,
+          102871870352256,
+          102871870352288,
+          102871870352352,
+          102871870450464,
+          102871870374496,
+          102871870454688,
+          102871870439520
+        ],
+        [
+          100661838859008,
+          100661838859040,
+          100661838859072,
+          100661838859136,
+          100661838859168,
+          100661838859232,
+          100661838957344,
+          100661838881376,
+          100661838961568,
+          100661838946400
+        ],
+        [
+          95920641313536,
+          95920641313568,
+          95920641313600,
+          95920641313664,
+          95920641313696,
+          95920641313760,
+          95920641411872,
+          95920641335904,
+          95920641416096,
+          95920641400928
+        ],
+        [
+          111132133255936,
+          111132133255968,
+          111132133256000,
+          111132133256064,
+          111132133256096,
+          111132133256160,
+          111132133354272,
+          111132133278304,
+          111132133358496,
+          111132133343328
+        ],
+        [
+          106744763751168,
+          106744763751200,
+          106744763751232,
+          106744763751296,
+          106744763751328,
+          106744763751392,
+          106744763849504,
+          106744763773536,
+          106744763853728,
+          106744763838560
+        ],
+        [
+          108628274510592,
+          108628274510624,
+          108628274510656,
+          108628274510720,
+          108628274510752,
+          108628274510816,
+          108628274608928,
+          108628274532960,
+          108628274613152,
+          108628274597984
+        ],
+        [
+          108798348499712,
+          108798348499744,
+          108798348499776,
+          108798348499840,
+          108798348499872,
+          108798348499936,
+          108798348598048,
+          108798348522080,
+          108798348602272,
+          108798348587104
+        ],
+        [
+          105899858053888,
+          105899858053920,
+          105899858053952,
+          105899858054016,
+          105899858054048,
+          105899858054112,
+          105899858152224,
+          105899858076256,
+          105899858156448,
+          105899858141280
+        ]
+      ],
+      "telescoping": {
+        "identity": "H + M + S = delta(T2)",
+        "launches_checked": 9,
+        "max_absolute_residual_cycles": 0.0,
+        "median_direct_t2_cycles": 597.7916666666667,
+        "median_reconstructed_t2_cycles": 597.7916666666667
+      },
+      "unique_runtime_address_tuples": 9
+    }
+  },
+  "single_inv4_contract": "GT T2 uses scale-4 MA2 and exactly one Direct H1 inv4",
+  "starting_residency": "every balanced T0/T1/T2 entry independently resets coefficients and prepares identical semantic r/m/h states outside timing",
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}
