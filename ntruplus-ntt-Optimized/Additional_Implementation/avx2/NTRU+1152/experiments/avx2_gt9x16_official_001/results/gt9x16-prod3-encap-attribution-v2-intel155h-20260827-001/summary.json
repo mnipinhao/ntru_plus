@@ -1,0 +1,1532 @@
+{
+  "additivity_warning": "island debts and native gap are not expected to add exactly because cache, placement, dependency overlap, and hash_g/SOTP are cut out",
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-gt9x16-prod3-encap-attribution-v2",
+  "builds": {
+    "normal": {
+      "implementation": "avx2-gt9x16-prod3-attr-v2-normal-exp003",
+      "measure_sha256": "1457ee60cb54926c93dc77afd752e2a94047a868780aa046901cf13b4d7f8267",
+      "metadata_sha256": "a2b4cf7287371d9aa03e4dd0d0cb59387a51855456f982fe335ef1f93378e631"
+    },
+    "reversed": {
+      "implementation": "avx2-gt9x16-prod3-attr-v2-reversed-exp003",
+      "measure_sha256": "e6b6080c98808223443f87de4d7159d8199ddbaf18e7dc4d78811b103dea288e",
+      "metadata_sha256": "d01d44c8a9b15decbc0077774e3978ae3aa2ab2ddad79027ebb6c3c1460cb056"
+    }
+  },
+  "candidate": "persistent-AoS + Natural-Q + T0-beta + scale4 MA2 + Direct H1",
+  "compiler_policy": "fixed-common-O3GC",
+  "compiler_wrapper": "/home/nuc/src/ntru_plus/bench/supercop/okc-o3gc.sh",
+  "compiler_wrapper_sha256": "3f836a7681176963041dd28eea2bafec730c769a4ee0a537f146def2aaaad395",
+  "corrected_single_inv4_qorder_sidecar": "not-run: would require a new current-Q scale4 machine object, outside the no-new-ASM cheap-sidecar boundary",
+  "cpu": 1,
+  "created_at": "2026-08-27T05:52:00.212915+00:00",
+  "cross_campaign_residual_cycles": 4.606433333333257,
+  "decision": "attack-largest-component:h_ma2_ciphertext_tail",
+  "headline_component_balance": {
+    "h_ma2_ciphertext_tail": 605.3958333333333,
+    "m_producer": 76.10416666666674,
+    "r_excess_hash_fanout": 226.70833333333348,
+    "r_producer": 78.8125
+  },
+  "headline_rough_modeled_debt_cycles": 987.4166666666667,
+  "headline_setting": "normal-aslr-on",
+  "largest_component_by_absolute_median": "h_ma2_ciphertext_tail",
+  "native_kem_result": false,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_label_per_launch": 96,
+  "reference_native_enc_gap_cycles": 992.0231,
+  "reference_native_result": "gt9x16-prod3-cumulative-native-rebase-intel155h-20260827-001",
+  "selected_placement": "normal",
+  "selection_gt_modeled_path_stq2": {
+    "normal": 5510.428240740741,
+    "reversed": 5515.173611111111
+  },
+  "selection_policy": "minimum absolute GT StQ2 sum for dual-r + m producer + tail from independent SUPERCOP builds",
+  "serious_launches_per_setting": 9,
+  "settings": {
+    "normal-aslr-off": {
+      "combined": {
+        "dual_r_gt": {
+          "observations": 1728,
+          "stq1": 2007.2662037037037,
+          "stq2": 2020.263888888889,
+          "stq3": 2037.125
+        },
+        "dual_r_official": {
+          "observations": 1728,
+          "stq1": 1700.7800925925926,
+          "stq2": 1712.5,
+          "stq3": 1726.025462962963
+        },
+        "producer_m_gt": {
+          "observations": 1728,
+          "stq1": 1465.6712962962963,
+          "stq2": 1476.4398148148148,
+          "stq3": 1489.7476851851852
+        },
+        "producer_m_official": {
+          "observations": 1728,
+          "stq1": 1388.0,
+          "stq2": 1399.7314814814815,
+          "stq3": 1412.898148148148
+        },
+        "producer_r_gt": {
+          "observations": 1728,
+          "stq1": 1465.5833333333333,
+          "stq2": 1477.236111111111,
+          "stq3": 1490.8055555555557
+        },
+        "producer_r_official": {
+          "observations": 1728,
+          "stq1": 1386.8055555555557,
+          "stq2": 1397.9953703703704,
+          "stq3": 1411.0162037037037
+        },
+        "tail_gt": {
+          "observations": 1728,
+          "stq1": 2001.3449074074074,
+          "stq2": 2016.5347222222222,
+          "stq3": 2033.4699074074074
+        },
+        "tail_official": {
+          "observations": 1728,
+          "stq1": 1401.0972222222222,
+          "stq2": 1410.7175925925926,
+          "stq3": 1420.9837962962963
+        }
+      },
+      "evidence": {
+        "dual_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            306.6875,
+            309.5
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 307.75
+        },
+        "hash_fanout_excess_cycles": {
+          "bootstrap_95pct_ci_median": [
+            224.68750000000023,
+            234.22916666666674
+          ],
+          "median_cycles": 228.22916666666674
+        },
+        "producer_m": {
+          "bootstrap_95pct_ci_median_delta": [
+            75.10416666666652,
+            79.64583333333326
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 76.75
+        },
+        "producer_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            76.3125,
+            82.29166666666652
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 79.52083333333326
+        },
+        "rough_modeled_debt_cycles": {
+          "bootstrap_95pct_ci_median": [
+            989.1041666666665,
+            993.5625
+          ],
+          "median_cycles": 991.0416666666665
+        },
+        "tail": {
+          "bootstrap_95pct_ci_median_delta": [
+            603.0833333333333,
+            607.5208333333335
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 606.9791666666665
+        }
+      },
+      "launches": [
+        {
+          "dual_r_gt_minus_official_cycles": 309.5,
+          "dual_r_gt_stq2": 2020.5416666666667,
+          "dual_r_official_stq2": 1711.0416666666667,
+          "hash_fanout_excess_cycles": 227.20833333333348,
+          "launch": 1,
+          "producer_m_gt_minus_official_cycles": 76.02083333333326,
+          "producer_m_gt_stq2": 1475.5208333333333,
+          "producer_m_official_stq2": 1399.5,
+          "producer_r_gt_minus_official_cycles": 82.29166666666652,
+          "producer_r_gt_stq2": 1480.8333333333333,
+          "producer_r_official_stq2": 1398.5416666666667,
+          "rough_modeled_debt_cycles": 992.4999999999998,
+          "tail_gt_minus_official_cycles": 606.9791666666665,
+          "tail_gt_stq2": 2016.5833333333333,
+          "tail_official_stq2": 1409.6041666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 308.72916666666674,
+          "dual_r_gt_stq2": 2019.6875,
+          "dual_r_official_stq2": 1710.9583333333333,
+          "hash_fanout_excess_cycles": 234.22916666666674,
+          "launch": 2,
+          "producer_m_gt_minus_official_cycles": 79.72916666666674,
+          "producer_m_gt_stq2": 1477.1875,
+          "producer_m_official_stq2": 1397.4583333333333,
+          "producer_r_gt_minus_official_cycles": 74.5,
+          "producer_r_gt_stq2": 1473.9166666666667,
+          "producer_r_official_stq2": 1399.4166666666667,
+          "rough_modeled_debt_cycles": 994.3541666666667,
+          "tail_gt_minus_official_cycles": 605.8958333333333,
+          "tail_gt_stq2": 2016.625,
+          "tail_official_stq2": 1410.7291666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 308.41666666666674,
+          "dual_r_gt_stq2": 2019.3541666666667,
+          "dual_r_official_stq2": 1710.9375,
+          "hash_fanout_excess_cycles": 224.68750000000023,
+          "launch": 3,
+          "producer_m_gt_minus_official_cycles": 77.60416666666652,
+          "producer_m_gt_stq2": 1480.8958333333333,
+          "producer_m_official_stq2": 1403.2916666666667,
+          "producer_r_gt_minus_official_cycles": 83.72916666666652,
+          "producer_r_gt_stq2": 1479.9583333333333,
+          "producer_r_official_stq2": 1396.2291666666667,
+          "rough_modeled_debt_cycles": 989.1041666666665,
+          "tail_gt_minus_official_cycles": 603.0833333333333,
+          "tail_gt_stq2": 2016.875,
+          "tail_official_stq2": 1413.7916666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 312.1666666666665,
+          "dual_r_gt_stq2": 2021.4583333333333,
+          "dual_r_official_stq2": 1709.2916666666667,
+          "hash_fanout_excess_cycles": 235.85416666666652,
+          "launch": 4,
+          "producer_m_gt_minus_official_cycles": 78.41666666666674,
+          "producer_m_gt_stq2": 1476.6875,
+          "producer_m_official_stq2": 1398.2708333333333,
+          "producer_r_gt_minus_official_cycles": 76.3125,
+          "producer_r_gt_stq2": 1474.3541666666667,
+          "producer_r_official_stq2": 1398.0416666666667,
+          "rough_modeled_debt_cycles": 993.5625,
+          "tail_gt_minus_official_cycles": 602.9791666666667,
+          "tail_gt_stq2": 2015.9166666666667,
+          "tail_official_stq2": 1412.9375
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 307.0833333333335,
+          "dual_r_gt_stq2": 2020.7291666666667,
+          "dual_r_official_stq2": 1713.6458333333333,
+          "hash_fanout_excess_cycles": 226.33333333333348,
+          "launch": 5,
+          "producer_m_gt_minus_official_cycles": 76.75,
+          "producer_m_gt_stq2": 1475.125,
+          "producer_m_official_stq2": 1398.375,
+          "producer_r_gt_minus_official_cycles": 80.75,
+          "producer_r_gt_stq2": 1476.2291666666667,
+          "producer_r_official_stq2": 1395.4791666666667,
+          "rough_modeled_debt_cycles": 990.916666666667,
+          "tail_gt_minus_official_cycles": 607.0833333333335,
+          "tail_gt_stq2": 2015.7291666666667,
+          "tail_official_stq2": 1408.6458333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 306.6875,
+          "dual_r_gt_stq2": 2019.625,
+          "dual_r_official_stq2": 1712.9375,
+          "hash_fanout_excess_cycles": 229.91666666666652,
+          "launch": 6,
+          "producer_m_gt_minus_official_cycles": 75.10416666666652,
+          "producer_m_gt_stq2": 1475.6458333333333,
+          "producer_m_official_stq2": 1400.5416666666667,
+          "producer_r_gt_minus_official_cycles": 76.77083333333348,
+          "producer_r_gt_stq2": 1477.5416666666667,
+          "producer_r_official_stq2": 1400.7708333333333,
+          "rough_modeled_debt_cycles": 989.3125,
+          "tail_gt_minus_official_cycles": 607.5208333333335,
+          "tail_gt_stq2": 2015.2916666666667,
+          "tail_official_stq2": 1407.7708333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 302.08333333333326,
+          "dual_r_gt_stq2": 2016.7708333333333,
+          "dual_r_official_stq2": 1714.6875,
+          "hash_fanout_excess_cycles": 222.0625,
+          "launch": 7,
+          "producer_m_gt_minus_official_cycles": 72.4375,
+          "producer_m_gt_stq2": 1474.4375,
+          "producer_m_official_stq2": 1402.0,
+          "producer_r_gt_minus_official_cycles": 80.02083333333326,
+          "producer_r_gt_stq2": 1477.625,
+          "producer_r_official_stq2": 1397.6041666666667,
+          "rough_modeled_debt_cycles": 982.0208333333333,
+          "tail_gt_minus_official_cycles": 607.5,
+          "tail_gt_stq2": 2017.0416666666667,
+          "tail_official_stq2": 1409.5416666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 307.4166666666665,
+          "dual_r_gt_stq2": 2022.9583333333333,
+          "dual_r_official_stq2": 1715.5416666666667,
+          "hash_fanout_excess_cycles": 228.31249999999977,
+          "launch": 8,
+          "producer_m_gt_minus_official_cycles": 79.64583333333326,
+          "producer_m_gt_stq2": 1474.2083333333333,
+          "producer_m_official_stq2": 1394.5625,
+          "producer_r_gt_minus_official_cycles": 79.10416666666674,
+          "producer_r_gt_stq2": 1476.625,
+          "producer_r_official_stq2": 1397.5208333333333,
+          "rough_modeled_debt_cycles": 991.5624999999998,
+          "tail_gt_minus_official_cycles": 604.5,
+          "tail_gt_stq2": 2016.7083333333333,
+          "tail_official_stq2": 1412.2083333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 307.75,
+          "dual_r_gt_stq2": 2021.2083333333333,
+          "dual_r_official_stq2": 1713.4583333333333,
+          "hash_fanout_excess_cycles": 228.22916666666674,
+          "launch": 9,
+          "producer_m_gt_minus_official_cycles": 75.47916666666652,
+          "producer_m_gt_stq2": 1478.3333333333333,
+          "producer_m_official_stq2": 1402.8541666666667,
+          "producer_r_gt_minus_official_cycles": 79.52083333333326,
+          "producer_r_gt_stq2": 1478.4375,
+          "producer_r_official_stq2": 1398.9166666666667,
+          "rough_modeled_debt_cycles": 991.0416666666665,
+          "tail_gt_minus_official_cycles": 607.8125,
+          "tail_gt_stq2": 2019.3958333333333,
+          "tail_official_stq2": 1411.5833333333333
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992253312,
+          93824992256384,
+          93824992250816,
+          93824992271712
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "combined": {
+        "dual_r_gt": {
+          "observations": 1728,
+          "stq1": 2004.5787037037037,
+          "stq2": 2017.8819444444443,
+          "stq3": 2034.5208333333333
+        },
+        "dual_r_official": {
+          "observations": 1728,
+          "stq1": 1701.25,
+          "stq2": 1712.6342592592594,
+          "stq3": 1726.2523148148148
+        },
+        "producer_m_gt": {
+          "observations": 1728,
+          "stq1": 1465.1875,
+          "stq2": 1475.960648148148,
+          "stq3": 1487.662037037037
+        },
+        "producer_m_official": {
+          "observations": 1728,
+          "stq1": 1388.1157407407406,
+          "stq2": 1399.4351851851852,
+          "stq3": 1412.0324074074074
+        },
+        "producer_r_gt": {
+          "observations": 1728,
+          "stq1": 1465.75,
+          "stq2": 1476.8865740740741,
+          "stq3": 1490.3240740740741
+        },
+        "producer_r_official": {
+          "observations": 1728,
+          "stq1": 1385.8865740740741,
+          "stq2": 1398.0324074074074,
+          "stq3": 1412.349537037037
+        },
+        "tail_gt": {
+          "observations": 1728,
+          "stq1": 2001.414351851852,
+          "stq2": 2015.9722222222222,
+          "stq3": 2031.8819444444443
+        },
+        "tail_official": {
+          "observations": 1728,
+          "stq1": 1400.6921296296296,
+          "stq2": 1410.3773148148148,
+          "stq3": 1421.2777777777778
+        }
+      },
+      "evidence": {
+        "dual_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            303.52083333333326,
+            306.97916666666674
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 304.5
+        },
+        "hash_fanout_excess_cycles": {
+          "bootstrap_95pct_ci_median": [
+            224.14583333333348,
+            228.39583333333326
+          ],
+          "median_cycles": 226.70833333333348
+        },
+        "producer_m": {
+          "bootstrap_95pct_ci_median_delta": [
+            74.33333333333348,
+            80.25
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 76.10416666666674
+        },
+        "producer_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            77.6875,
+            79.9375
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 78.8125
+        },
+        "rough_modeled_debt_cycles": {
+          "bootstrap_95pct_ci_median": [
+            982.4166666666665,
+            992.5833333333333
+          ],
+          "median_cycles": 987.4166666666667
+        },
+        "tail": {
+          "bootstrap_95pct_ci_median_delta": [
+            602.3333333333333,
+            609.5625
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 605.3958333333333
+        }
+      },
+      "launches": [
+        {
+          "dual_r_gt_minus_official_cycles": 310.20833333333326,
+          "dual_r_gt_stq2": 2022.0625,
+          "dual_r_official_stq2": 1711.8541666666667,
+          "hash_fanout_excess_cycles": 230.27083333333326,
+          "launch": 1,
+          "producer_m_gt_minus_official_cycles": 80.25,
+          "producer_m_gt_stq2": 1476.6666666666667,
+          "producer_m_official_stq2": 1396.4166666666667,
+          "producer_r_gt_minus_official_cycles": 79.9375,
+          "producer_r_gt_stq2": 1483.4791666666667,
+          "producer_r_official_stq2": 1403.5416666666667,
+          "rough_modeled_debt_cycles": 992.5833333333333,
+          "tail_gt_minus_official_cycles": 602.125,
+          "tail_gt_stq2": 2011.6041666666667,
+          "tail_official_stq2": 1409.4791666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 306.29166666666674,
+          "dual_r_gt_stq2": 2017.2291666666667,
+          "dual_r_official_stq2": 1710.9375,
+          "hash_fanout_excess_cycles": 228.39583333333326,
+          "launch": 2,
+          "producer_m_gt_minus_official_cycles": 77.89583333333326,
+          "producer_m_gt_stq2": 1477.4583333333333,
+          "producer_m_official_stq2": 1399.5625,
+          "producer_r_gt_minus_official_cycles": 77.89583333333348,
+          "producer_r_gt_stq2": 1476.3541666666667,
+          "producer_r_official_stq2": 1398.4583333333333,
+          "rough_modeled_debt_cycles": 990.5416666666667,
+          "tail_gt_minus_official_cycles": 606.3541666666667,
+          "tail_gt_stq2": 2017.6875,
+          "tail_official_stq2": 1411.3333333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 303.72916666666674,
+          "dual_r_gt_stq2": 2018.5625,
+          "dual_r_official_stq2": 1714.8333333333333,
+          "hash_fanout_excess_cycles": 224.91666666666674,
+          "launch": 3,
+          "producer_m_gt_minus_official_cycles": 81.45833333333326,
+          "producer_m_gt_stq2": 1478.9375,
+          "producer_m_official_stq2": 1397.4791666666667,
+          "producer_r_gt_minus_official_cycles": 78.8125,
+          "producer_r_gt_stq2": 1476.2916666666667,
+          "producer_r_official_stq2": 1397.4791666666667,
+          "rough_modeled_debt_cycles": 995.1041666666665,
+          "tail_gt_minus_official_cycles": 609.9166666666665,
+          "tail_gt_stq2": 2018.4583333333333,
+          "tail_official_stq2": 1408.5416666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 306.97916666666674,
+          "dual_r_gt_stq2": 2018.5625,
+          "dual_r_official_stq2": 1711.5833333333333,
+          "hash_fanout_excess_cycles": 228.0625,
+          "launch": 4,
+          "producer_m_gt_minus_official_cycles": 77.14583333333326,
+          "producer_m_gt_stq2": 1475.625,
+          "producer_m_official_stq2": 1398.4791666666667,
+          "producer_r_gt_minus_official_cycles": 78.91666666666674,
+          "producer_r_gt_stq2": 1476.0416666666667,
+          "producer_r_official_stq2": 1397.125,
+          "rough_modeled_debt_cycles": 989.5208333333333,
+          "tail_gt_minus_official_cycles": 605.3958333333333,
+          "tail_gt_stq2": 2014.125,
+          "tail_official_stq2": 1408.7291666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 304.5,
+          "dual_r_gt_stq2": 2016.0416666666667,
+          "dual_r_official_stq2": 1711.5416666666667,
+          "hash_fanout_excess_cycles": 224.52083333333348,
+          "launch": 5,
+          "producer_m_gt_minus_official_cycles": 74.52083333333326,
+          "producer_m_gt_stq2": 1475.5,
+          "producer_m_official_stq2": 1400.9791666666667,
+          "producer_r_gt_minus_official_cycles": 79.97916666666652,
+          "producer_r_gt_stq2": 1475.7083333333333,
+          "producer_r_official_stq2": 1395.7291666666667,
+          "rough_modeled_debt_cycles": 982.4166666666665,
+          "tail_gt_minus_official_cycles": 603.3958333333333,
+          "tail_gt_stq2": 2013.9375,
+          "tail_official_stq2": 1410.5416666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.8333333333335,
+          "dual_r_gt_stq2": 2015.9166666666667,
+          "dual_r_official_stq2": 1714.0833333333333,
+          "hash_fanout_excess_cycles": 224.14583333333348,
+          "launch": 6,
+          "producer_m_gt_minus_official_cycles": 72.35416666666674,
+          "producer_m_gt_stq2": 1473.9375,
+          "producer_m_official_stq2": 1401.5833333333333,
+          "producer_r_gt_minus_official_cycles": 77.6875,
+          "producer_r_gt_stq2": 1474.4166666666667,
+          "producer_r_official_stq2": 1396.7291666666667,
+          "rough_modeled_debt_cycles": 982.041666666667,
+          "tail_gt_minus_official_cycles": 607.8541666666667,
+          "tail_gt_stq2": 2020.6041666666667,
+          "tail_official_stq2": 1412.75
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 304.16666666666674,
+          "dual_r_gt_stq2": 2017.1041666666667,
+          "dual_r_official_stq2": 1712.9375,
+          "hash_fanout_excess_cycles": 226.70833333333348,
+          "launch": 7,
+          "producer_m_gt_minus_official_cycles": 76.10416666666674,
+          "producer_m_gt_stq2": 1478.0416666666667,
+          "producer_m_official_stq2": 1401.9375,
+          "producer_r_gt_minus_official_cycles": 77.45833333333326,
+          "producer_r_gt_stq2": 1477.0208333333333,
+          "producer_r_official_stq2": 1399.5625,
+          "rough_modeled_debt_cycles": 985.3333333333335,
+          "tail_gt_minus_official_cycles": 605.0625,
+          "tail_gt_stq2": 2014.6875,
+          "tail_official_stq2": 1409.625
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 305.6458333333335,
+          "dual_r_gt_stq2": 2018.1666666666667,
+          "dual_r_official_stq2": 1712.5208333333333,
+          "hash_fanout_excess_cycles": 227.5,
+          "launch": 8,
+          "producer_m_gt_minus_official_cycles": 74.58333333333326,
+          "producer_m_gt_stq2": 1473.875,
+          "producer_m_official_stq2": 1399.2916666666667,
+          "producer_r_gt_minus_official_cycles": 78.14583333333348,
+          "producer_r_gt_stq2": 1477.1666666666667,
+          "producer_r_official_stq2": 1399.0208333333333,
+          "rough_modeled_debt_cycles": 982.5625,
+          "tail_gt_minus_official_cycles": 602.3333333333333,
+          "tail_gt_stq2": 2014.5208333333333,
+          "tail_official_stq2": 1412.1875
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 303.52083333333326,
+          "dual_r_gt_stq2": 2017.5625,
+          "dual_r_official_stq2": 1714.0416666666667,
+          "hash_fanout_excess_cycles": 223.625,
+          "launch": 9,
+          "producer_m_gt_minus_official_cycles": 74.33333333333348,
+          "producer_m_gt_stq2": 1474.0416666666667,
+          "producer_m_official_stq2": 1399.7083333333333,
+          "producer_r_gt_minus_official_cycles": 79.89583333333326,
+          "producer_r_gt_stq2": 1476.125,
+          "producer_r_official_stq2": 1396.2291666666667,
+          "rough_modeled_debt_cycles": 987.4166666666667,
+          "tail_gt_minus_official_cycles": 609.5625,
+          "tail_gt_stq2": 2019.2916666666667,
+          "tail_official_stq2": 1409.7291666666667
+        }
+      ],
+      "runtime_addresses": [
+        [
+          96382395067136,
+          96382395067168,
+          96382395067328,
+          96382395067392,
+          96382395067456,
+          96382395067520,
+          96382395078016,
+          96382395081088,
+          96382395075520,
+          96382395096416
+        ],
+        [
+          100775603190528,
+          100775603190560,
+          100775603190720,
+          100775603190784,
+          100775603190848,
+          100775603190912,
+          100775603201408,
+          100775603204480,
+          100775603198912,
+          100775603219808
+        ],
+        [
+          105866351184640,
+          105866351184672,
+          105866351184832,
+          105866351184896,
+          105866351184960,
+          105866351185024,
+          105866351195520,
+          105866351198592,
+          105866351193024,
+          105866351213920
+        ],
+        [
+          96787581324032,
+          96787581324064,
+          96787581324224,
+          96787581324288,
+          96787581324352,
+          96787581324416,
+          96787581334912,
+          96787581337984,
+          96787581332416,
+          96787581353312
+        ],
+        [
+          98656909441792,
+          98656909441824,
+          98656909441984,
+          98656909442048,
+          98656909442112,
+          98656909442176,
+          98656909452672,
+          98656909455744,
+          98656909450176,
+          98656909471072
+        ],
+        [
+          95846065412864,
+          95846065412896,
+          95846065413056,
+          95846065413120,
+          95846065413184,
+          95846065413248,
+          95846065423744,
+          95846065426816,
+          95846065421248,
+          95846065442144
+        ],
+        [
+          107387572517632,
+          107387572517664,
+          107387572517824,
+          107387572517888,
+          107387572517952,
+          107387572518016,
+          107387572528512,
+          107387572531584,
+          107387572526016,
+          107387572546912
+        ],
+        [
+          109232490646272,
+          109232490646304,
+          109232490646464,
+          109232490646528,
+          109232490646592,
+          109232490646656,
+          109232490657152,
+          109232490660224,
+          109232490654656,
+          109232490675552
+        ],
+        [
+          98049737673472,
+          98049737673504,
+          98049737673664,
+          98049737673728,
+          98049737673792,
+          98049737673856,
+          98049737684352,
+          98049737687424,
+          98049737681856,
+          98049737702752
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    },
+    "reversed-aslr-off": {
+      "combined": {
+        "dual_r_gt": {
+          "observations": 1728,
+          "stq1": 2006.7546296296296,
+          "stq2": 2020.9537037037037,
+          "stq3": 2036.898148148148
+        },
+        "dual_r_official": {
+          "observations": 1728,
+          "stq1": 1706.2546296296296,
+          "stq2": 1719.0578703703704,
+          "stq3": 1732.837962962963
+        },
+        "producer_m_gt": {
+          "observations": 1728,
+          "stq1": 1464.662037037037,
+          "stq2": 1475.6921296296296,
+          "stq3": 1487.7939814814815
+        },
+        "producer_m_official": {
+          "observations": 1728,
+          "stq1": 1389.3194444444443,
+          "stq2": 1400.923611111111,
+          "stq3": 1413.4675925925926
+        },
+        "producer_r_gt": {
+          "observations": 1728,
+          "stq1": 1465.9097222222222,
+          "stq2": 1476.9791666666667,
+          "stq3": 1489.7222222222222
+        },
+        "producer_r_official": {
+          "observations": 1728,
+          "stq1": 1389.5833333333333,
+          "stq2": 1401.673611111111,
+          "stq3": 1414.0300925925926
+        },
+        "tail_gt": {
+          "observations": 1728,
+          "stq1": 2000.6087962962963,
+          "stq2": 2015.5462962962963,
+          "stq3": 2032.0092592592594
+        },
+        "tail_official": {
+          "observations": 1728,
+          "stq1": 1400.048611111111,
+          "stq2": 1411.9560185185185,
+          "stq3": 1425.5648148148148
+        }
+      },
+      "evidence": {
+        "dual_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            299.35416666666674,
+            304.16666666666674
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 301.27083333333326
+        },
+        "hash_fanout_excess_cycles": {
+          "bootstrap_95pct_ci_median": [
+            224.45833333333348,
+            229.875
+          ],
+          "median_cycles": 226.3125
+        },
+        "producer_m": {
+          "bootstrap_95pct_ci_median_delta": [
+            73.60416666666674,
+            75.75
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 75.02083333333348
+        },
+        "producer_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            73.20833333333326,
+            77.4375
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 75.83333333333326
+        },
+        "rough_modeled_debt_cycles": {
+          "bootstrap_95pct_ci_median": [
+            976.1041666666667,
+            983.8125
+          ],
+          "median_cycles": 981.2500000000002
+        },
+        "tail": {
+          "bootstrap_95pct_ci_median_delta": [
+            601.0416666666667,
+            605.8958333333335
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 604.0625
+        }
+      },
+      "launches": [
+        {
+          "dual_r_gt_minus_official_cycles": 300.29166666666674,
+          "dual_r_gt_stq2": 2018.75,
+          "dual_r_official_stq2": 1718.4583333333333,
+          "hash_fanout_excess_cycles": 224.45833333333348,
+          "launch": 1,
+          "producer_m_gt_minus_official_cycles": 74.0625,
+          "producer_m_gt_stq2": 1476.2083333333333,
+          "producer_m_official_stq2": 1402.1458333333333,
+          "producer_r_gt_minus_official_cycles": 75.83333333333326,
+          "producer_r_gt_stq2": 1478.0625,
+          "producer_r_official_stq2": 1402.2291666666667,
+          "rough_modeled_debt_cycles": 976.6041666666667,
+          "tail_gt_minus_official_cycles": 602.25,
+          "tail_gt_stq2": 2013.375,
+          "tail_official_stq2": 1411.125
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 303.75,
+          "dual_r_gt_stq2": 2022.1875,
+          "dual_r_official_stq2": 1718.4375,
+          "hash_fanout_excess_cycles": 226.3125,
+          "launch": 2,
+          "producer_m_gt_minus_official_cycles": 72.5625,
+          "producer_m_gt_stq2": 1477.4375,
+          "producer_m_official_stq2": 1404.875,
+          "producer_r_gt_minus_official_cycles": 77.4375,
+          "producer_r_gt_stq2": 1477.375,
+          "producer_r_official_stq2": 1399.9375,
+          "rough_modeled_debt_cycles": 981.5833333333333,
+          "tail_gt_minus_official_cycles": 605.2708333333333,
+          "tail_gt_stq2": 2015.6458333333333,
+          "tail_official_stq2": 1410.375
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 298.8125,
+          "dual_r_gt_stq2": 2020.25,
+          "dual_r_official_stq2": 1721.4375,
+          "hash_fanout_excess_cycles": 226.64583333333348,
+          "launch": 3,
+          "producer_m_gt_minus_official_cycles": 73.60416666666674,
+          "producer_m_gt_stq2": 1475.9375,
+          "producer_m_official_stq2": 1402.3333333333333,
+          "producer_r_gt_minus_official_cycles": 72.16666666666652,
+          "producer_r_gt_stq2": 1476.5833333333333,
+          "producer_r_official_stq2": 1404.4166666666667,
+          "rough_modeled_debt_cycles": 973.4583333333335,
+          "tail_gt_minus_official_cycles": 601.0416666666667,
+          "tail_gt_stq2": 2013.75,
+          "tail_official_stq2": 1412.7083333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.27083333333326,
+          "dual_r_gt_stq2": 2022.9375,
+          "dual_r_official_stq2": 1721.6666666666667,
+          "hash_fanout_excess_cycles": 227.12499999999977,
+          "launch": 4,
+          "producer_m_gt_minus_official_cycles": 75.22916666666674,
+          "producer_m_gt_stq2": 1476.1041666666667,
+          "producer_m_official_stq2": 1400.875,
+          "producer_r_gt_minus_official_cycles": 74.14583333333348,
+          "producer_r_gt_stq2": 1476.5416666666667,
+          "producer_r_official_stq2": 1402.3958333333333,
+          "rough_modeled_debt_cycles": 976.1041666666667,
+          "tail_gt_minus_official_cycles": 599.6041666666667,
+          "tail_gt_stq2": 2012.9166666666667,
+          "tail_official_stq2": 1413.3125
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 299.35416666666674,
+          "dual_r_gt_stq2": 2020.6875,
+          "dual_r_official_stq2": 1721.3333333333333,
+          "hash_fanout_excess_cycles": 221.89583333333348,
+          "launch": 5,
+          "producer_m_gt_minus_official_cycles": 73.95833333333326,
+          "producer_m_gt_stq2": 1472.3125,
+          "producer_m_official_stq2": 1398.3541666666667,
+          "producer_r_gt_minus_official_cycles": 77.45833333333326,
+          "producer_r_gt_stq2": 1475.9583333333333,
+          "producer_r_official_stq2": 1398.5,
+          "rough_modeled_debt_cycles": 979.5208333333333,
+          "tail_gt_minus_official_cycles": 606.2083333333333,
+          "tail_gt_stq2": 2019.75,
+          "tail_official_stq2": 1413.5416666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 305.1875,
+          "dual_r_gt_stq2": 2022.2291666666667,
+          "dual_r_official_stq2": 1717.0416666666667,
+          "hash_fanout_excess_cycles": 229.875,
+          "launch": 6,
+          "producer_m_gt_minus_official_cycles": 75.75,
+          "producer_m_gt_stq2": 1476.125,
+          "producer_m_official_stq2": 1400.375,
+          "producer_r_gt_minus_official_cycles": 75.3125,
+          "producer_r_gt_stq2": 1477.125,
+          "producer_r_official_stq2": 1401.8125,
+          "rough_modeled_debt_cycles": 986.8333333333335,
+          "tail_gt_minus_official_cycles": 605.8958333333335,
+          "tail_gt_stq2": 2016.2916666666667,
+          "tail_official_stq2": 1410.3958333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 304.16666666666674,
+          "dual_r_gt_stq2": 2018.5625,
+          "dual_r_official_stq2": 1714.3958333333333,
+          "hash_fanout_excess_cycles": 230.95833333333348,
+          "launch": 7,
+          "producer_m_gt_minus_official_cycles": 75.02083333333348,
+          "producer_m_gt_stq2": 1475.1666666666667,
+          "producer_m_official_stq2": 1400.1458333333333,
+          "producer_r_gt_minus_official_cycles": 73.20833333333326,
+          "producer_r_gt_stq2": 1473.8125,
+          "producer_r_official_stq2": 1400.6041666666667,
+          "rough_modeled_debt_cycles": 981.2500000000002,
+          "tail_gt_minus_official_cycles": 602.0625,
+          "tail_gt_stq2": 2014.2083333333333,
+          "tail_official_stq2": 1412.1458333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 302.6875,
+          "dual_r_gt_stq2": 2021.7708333333333,
+          "dual_r_official_stq2": 1719.0833333333333,
+          "hash_fanout_excess_cycles": 225.85416666666652,
+          "launch": 8,
+          "producer_m_gt_minus_official_cycles": 75.5,
+          "producer_m_gt_stq2": 1475.375,
+          "producer_m_official_stq2": 1399.875,
+          "producer_r_gt_minus_official_cycles": 76.83333333333348,
+          "producer_r_gt_stq2": 1480.3541666666667,
+          "producer_r_official_stq2": 1403.5208333333333,
+          "rough_modeled_debt_cycles": 983.8125,
+          "tail_gt_minus_official_cycles": 605.625,
+          "tail_gt_stq2": 2017.4375,
+          "tail_official_stq2": 1411.8125
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.2083333333335,
+          "dual_r_gt_stq2": 2020.7291666666667,
+          "dual_r_official_stq2": 1719.5208333333333,
+          "hash_fanout_excess_cycles": 225.0625,
+          "launch": 9,
+          "producer_m_gt_minus_official_cycles": 76.875,
+          "producer_m_gt_stq2": 1476.9791666666667,
+          "producer_m_official_stq2": 1400.1041666666667,
+          "producer_r_gt_minus_official_cycles": 76.14583333333348,
+          "producer_r_gt_stq2": 1478.1041666666667,
+          "producer_r_official_stq2": 1401.9583333333333,
+          "rough_modeled_debt_cycles": 982.1458333333335,
+          "tail_gt_minus_official_cycles": 604.0625,
+          "tail_gt_stq2": 2016.4166666666667,
+          "tail_official_stq2": 1412.3541666666667
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ],
+        [
+          93824992242432,
+          93824992242464,
+          93824992242624,
+          93824992242688,
+          93824992242752,
+          93824992242816,
+          93824992344224,
+          93824992250432,
+          93824992341728,
+          93824992265760
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "combined": {
+        "dual_r_gt": {
+          "observations": 1728,
+          "stq1": 2008.1087962962963,
+          "stq2": 2022.263888888889,
+          "stq3": 2038.8125
+        },
+        "dual_r_official": {
+          "observations": 1728,
+          "stq1": 1708.4074074074074,
+          "stq2": 1721.5185185185185,
+          "stq3": 1734.900462962963
+        },
+        "producer_m_gt": {
+          "observations": 1728,
+          "stq1": 1465.7662037037037,
+          "stq2": 1476.7060185185185,
+          "stq3": 1489.6342592592594
+        },
+        "producer_m_official": {
+          "observations": 1728,
+          "stq1": 1391.4074074074074,
+          "stq2": 1402.8078703703704,
+          "stq3": 1414.9375
+        },
+        "producer_r_gt": {
+          "observations": 1728,
+          "stq1": 1466.4189814814815,
+          "stq2": 1477.8842592592594,
+          "stq3": 1491.9537037037037
+        },
+        "producer_r_official": {
+          "observations": 1728,
+          "stq1": 1392.1180555555557,
+          "stq2": 1404.1087962962963,
+          "stq3": 1417.9398148148148
+        },
+        "tail_gt": {
+          "observations": 1728,
+          "stq1": 2005.6319444444443,
+          "stq2": 2020.7847222222222,
+          "stq3": 2038.0
+        },
+        "tail_official": {
+          "observations": 1728,
+          "stq1": 1401.2777777777778,
+          "stq2": 1413.548611111111,
+          "stq3": 1427.8472222222222
+        }
+      },
+      "evidence": {
+        "dual_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            297.25,
+            302.45833333333326
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 301.41666666666674
+        },
+        "hash_fanout_excess_cycles": {
+          "bootstrap_95pct_ci_median": [
+            223.29166666666674,
+            231.25
+          ],
+          "median_cycles": 226.75
+        },
+        "producer_m": {
+          "bootstrap_95pct_ci_median_delta": [
+            71.14583333333326,
+            75.9375
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 73.9375
+        },
+        "producer_r": {
+          "bootstrap_95pct_ci_median_delta": [
+            71.14583333333348,
+            76.14583333333326
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 74.5
+        },
+        "rough_modeled_debt_cycles": {
+          "bootstrap_95pct_ci_median": [
+            977.6875,
+            986.0208333333333
+          ],
+          "median_cycles": 981.3125000000002
+        },
+        "tail": {
+          "bootstrap_95pct_ci_median_delta": [
+            603.4375,
+            610.0625
+          ],
+          "gt_faster_launches": 0,
+          "gt_slower_launches": 9,
+          "median_gt_minus_official_cycles": 608.5625
+        }
+      },
+      "launches": [
+        {
+          "dual_r_gt_minus_official_cycles": 295.625,
+          "dual_r_gt_stq2": 2018.5625,
+          "dual_r_official_stq2": 1722.9375,
+          "hash_fanout_excess_cycles": 221.04166666666674,
+          "launch": 1,
+          "producer_m_gt_minus_official_cycles": 72.0,
+          "producer_m_gt_stq2": 1474.7083333333333,
+          "producer_m_official_stq2": 1402.7083333333333,
+          "producer_r_gt_minus_official_cycles": 74.58333333333326,
+          "producer_r_gt_stq2": 1475.7083333333333,
+          "producer_r_official_stq2": 1401.125,
+          "rough_modeled_debt_cycles": 977.6875,
+          "tail_gt_minus_official_cycles": 610.0625,
+          "tail_gt_stq2": 2019.6041666666667,
+          "tail_official_stq2": 1409.5416666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 303.5,
+          "dual_r_gt_stq2": 2022.9583333333333,
+          "dual_r_official_stq2": 1719.4583333333333,
+          "hash_fanout_excess_cycles": 236.20833333333348,
+          "launch": 2,
+          "producer_m_gt_minus_official_cycles": 78.3125,
+          "producer_m_gt_stq2": 1478.8333333333333,
+          "producer_m_official_stq2": 1400.5208333333333,
+          "producer_r_gt_minus_official_cycles": 67.29166666666652,
+          "producer_r_gt_stq2": 1474.4583333333333,
+          "producer_r_official_stq2": 1407.1666666666667,
+          "rough_modeled_debt_cycles": 990.4166666666665,
+          "tail_gt_minus_official_cycles": 608.6041666666665,
+          "tail_gt_stq2": 2017.4583333333333,
+          "tail_official_stq2": 1408.8541666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 302.45833333333326,
+          "dual_r_gt_stq2": 2017.875,
+          "dual_r_official_stq2": 1715.4166666666667,
+          "hash_fanout_excess_cycles": 227.31249999999977,
+          "launch": 3,
+          "producer_m_gt_minus_official_cycles": 73.9375,
+          "producer_m_gt_stq2": 1474.4375,
+          "producer_m_official_stq2": 1400.5,
+          "producer_r_gt_minus_official_cycles": 75.14583333333348,
+          "producer_r_gt_stq2": 1476.2291666666667,
+          "producer_r_official_stq2": 1401.0833333333333,
+          "rough_modeled_debt_cycles": 986.0208333333333,
+          "tail_gt_minus_official_cycles": 609.625,
+          "tail_gt_stq2": 2022.6041666666667,
+          "tail_official_stq2": 1412.9791666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.25,
+          "dual_r_gt_stq2": 2018.0416666666667,
+          "dual_r_official_stq2": 1716.7916666666667,
+          "hash_fanout_excess_cycles": 226.75,
+          "launch": 4,
+          "producer_m_gt_minus_official_cycles": 71.14583333333326,
+          "producer_m_gt_stq2": 1474.1458333333333,
+          "producer_m_official_stq2": 1403.0,
+          "producer_r_gt_minus_official_cycles": 74.5,
+          "producer_r_gt_stq2": 1474.9375,
+          "producer_r_official_stq2": 1400.4375,
+          "rough_modeled_debt_cycles": 980.9583333333333,
+          "tail_gt_minus_official_cycles": 608.5625,
+          "tail_gt_stq2": 2017.875,
+          "tail_official_stq2": 1409.3125
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 302.3958333333335,
+          "dual_r_gt_stq2": 2033.2291666666667,
+          "dual_r_official_stq2": 1730.8333333333333,
+          "hash_fanout_excess_cycles": 231.25,
+          "launch": 5,
+          "producer_m_gt_minus_official_cycles": 75.9375,
+          "producer_m_gt_stq2": 1487.6875,
+          "producer_m_official_stq2": 1411.75,
+          "producer_r_gt_minus_official_cycles": 71.14583333333348,
+          "producer_r_gt_stq2": 1491.1041666666667,
+          "producer_r_official_stq2": 1419.9583333333333,
+          "rough_modeled_debt_cycles": 981.7708333333335,
+          "tail_gt_minus_official_cycles": 603.4375,
+          "tail_gt_stq2": 2029.4583333333333,
+          "tail_official_stq2": 1426.0208333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 297.25,
+          "dual_r_gt_stq2": 2024.3333333333333,
+          "dual_r_official_stq2": 1727.0833333333333,
+          "hash_fanout_excess_cycles": 223.29166666666674,
+          "launch": 6,
+          "producer_m_gt_minus_official_cycles": 70.91666666666674,
+          "producer_m_gt_stq2": 1474.1666666666667,
+          "producer_m_official_stq2": 1403.25,
+          "producer_r_gt_minus_official_cycles": 73.95833333333326,
+          "producer_r_gt_stq2": 1476.8333333333333,
+          "producer_r_official_stq2": 1402.875,
+          "rough_modeled_debt_cycles": 983.3125,
+          "tail_gt_minus_official_cycles": 615.1458333333333,
+          "tail_gt_stq2": 2027.0,
+          "tail_official_stq2": 1411.8541666666667
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.33333333333326,
+          "dual_r_gt_stq2": 2023.625,
+          "dual_r_official_stq2": 1722.2916666666667,
+          "hash_fanout_excess_cycles": 223.41666666666652,
+          "launch": 7,
+          "producer_m_gt_minus_official_cycles": 74.45833333333326,
+          "producer_m_gt_stq2": 1475.3958333333333,
+          "producer_m_official_stq2": 1400.9375,
+          "producer_r_gt_minus_official_cycles": 77.91666666666674,
+          "producer_r_gt_stq2": 1477.2916666666667,
+          "producer_r_official_stq2": 1399.375,
+          "rough_modeled_debt_cycles": 976.875,
+          "tail_gt_minus_official_cycles": 601.0833333333335,
+          "tail_gt_stq2": 2018.6041666666667,
+          "tail_official_stq2": 1417.5208333333333
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 302.45833333333326,
+          "dual_r_gt_stq2": 2022.2708333333333,
+          "dual_r_official_stq2": 1719.8125,
+          "hash_fanout_excess_cycles": 231.06249999999977,
+          "launch": 8,
+          "producer_m_gt_minus_official_cycles": 72.64583333333348,
+          "producer_m_gt_stq2": 1473.2916666666667,
+          "producer_m_official_stq2": 1400.6458333333333,
+          "producer_r_gt_minus_official_cycles": 71.39583333333348,
+          "producer_r_gt_stq2": 1478.5416666666667,
+          "producer_r_official_stq2": 1407.1458333333333,
+          "rough_modeled_debt_cycles": 980.4375,
+          "tail_gt_minus_official_cycles": 605.3333333333333,
+          "tail_gt_stq2": 2018.9583333333333,
+          "tail_official_stq2": 1413.625
+        },
+        {
+          "dual_r_gt_minus_official_cycles": 301.41666666666674,
+          "dual_r_gt_stq2": 2018.6875,
+          "dual_r_official_stq2": 1717.2708333333333,
+          "hash_fanout_excess_cycles": 225.27083333333348,
+          "launch": 9,
+          "producer_m_gt_minus_official_cycles": 75.375,
+          "producer_m_gt_stq2": 1476.4791666666667,
+          "producer_m_official_stq2": 1401.1041666666667,
+          "producer_r_gt_minus_official_cycles": 76.14583333333326,
+          "producer_r_gt_stq2": 1476.1458333333333,
+          "producer_r_official_stq2": 1400.0,
+          "rough_modeled_debt_cycles": 981.3125000000002,
+          "tail_gt_minus_official_cycles": 604.5208333333335,
+          "tail_gt_stq2": 2016.7916666666667,
+          "tail_official_stq2": 1412.2708333333333
+        }
+      ],
+      "runtime_addresses": [
+        [
+          104081601927936,
+          104081601927968,
+          104081601928128,
+          104081601928192,
+          104081601928256,
+          104081601928320,
+          104081602029728,
+          104081601935936,
+          104081602027232,
+          104081601951264
+        ],
+        [
+          111015266802432,
+          111015266802464,
+          111015266802624,
+          111015266802688,
+          111015266802752,
+          111015266802816,
+          111015266904224,
+          111015266810432,
+          111015266901728,
+          111015266825760
+        ],
+        [
+          103151413119744,
+          103151413119776,
+          103151413119936,
+          103151413120000,
+          103151413120064,
+          103151413120128,
+          103151413221536,
+          103151413127744,
+          103151413219040,
+          103151413143072
+        ],
+        [
+          102150338054912,
+          102150338054944,
+          102150338055104,
+          102150338055168,
+          102150338055232,
+          102150338055296,
+          102150338156704,
+          102150338062912,
+          102150338154208,
+          102150338078240
+        ],
+        [
+          101311375338240,
+          101311375338272,
+          101311375338432,
+          101311375338496,
+          101311375338560,
+          101311375338624,
+          101311375440032,
+          101311375346240,
+          101311375437536,
+          101311375361568
+        ],
+        [
+          97267680107264,
+          97267680107296,
+          97267680107456,
+          97267680107520,
+          97267680107584,
+          97267680107648,
+          97267680209056,
+          97267680115264,
+          97267680206560,
+          97267680130592
+        ],
+        [
+          101086670281472,
+          101086670281504,
+          101086670281664,
+          101086670281728,
+          101086670281792,
+          101086670281856,
+          101086670383264,
+          101086670289472,
+          101086670380768,
+          101086670304800
+        ],
+        [
+          104016847715072,
+          104016847715104,
+          104016847715264,
+          104016847715328,
+          104016847715392,
+          104016847715456,
+          104016847816864,
+          104016847723072,
+          104016847814368,
+          104016847738400
+        ],
+        [
+          109852616760064,
+          109852616760096,
+          109852616760256,
+          109852616760320,
+          109852616760384,
+          109852616760448,
+          109852616861856,
+          109852616768064,
+          109852616859360,
+          109852616783392
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    }
+  },
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}

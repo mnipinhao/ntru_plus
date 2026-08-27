@@ -241,7 +241,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-hash-fanout",
                                            "derived-gt9x16-prod3-hash-h1-price",
                                            "derived-gt9x16-prod3-qorder-price",
-                                           "derived-gt9x16-prod3-t0-beta-price"),
+                                           "derived-gt9x16-prod3-t0-beta-price",
+                                           "derived-gt9x16-prod3-encap-attribution-v2"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -261,7 +262,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-hash-fanout",
                      "derived-gt9x16-prod3-hash-h1-price",
                      "derived-gt9x16-prod3-qorder-price",
-                     "derived-gt9x16-prod3-t0-beta-price") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-t0-beta-price",
+                     "derived-gt9x16-prod3-encap-attribution-v2") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -320,7 +322,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-hash-fanout",
                          "derived-gt9x16-prod3-hash-h1-price",
                          "derived-gt9x16-prod3-qorder-price",
-                         "derived-gt9x16-prod3-t0-beta-price"):
+                         "derived-gt9x16-prod3-t0-beta-price",
+                         "derived-gt9x16-prod3-encap-attribution-v2"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -345,6 +348,8 @@ def main() -> int:
                     "gt9x16_prod3_qorder_price_measure.c",
                 "derived-gt9x16-prod3-t0-beta-price":
                     "gt9x16_prod3_t0_beta_price_measure.c",
+                "derived-gt9x16-prod3-encap-attribution-v2":
+                    "gt9x16_prod3_encap_attribution_v2_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -494,6 +499,14 @@ def main() -> int:
                                       ("candidate", "second"),
                                       ("candidate", "first"),
                                       ("control", "second")))
+    elif args.mode == "derived-gt9x16-prod3-encap-attribution-v2":
+        required = tuple(
+            f"gt9x16_prod3_encap_attribution_v2_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("producer_r", "producer_m", "dual_r", "tail")
+            for variant, position in (("official", "first"),
+                                      ("gt", "second"),
+                                      ("gt", "first"),
+                                      ("official", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1606,6 +1619,93 @@ def main() -> int:
             "headline": "2x-producer-and-frozen-caller-island",
             "native_kem_result": False,
         }
+    if args.mode == "derived-gt9x16-prod3-encap-attribution-v2":
+        prefix = "gt9x16_prod3_encap_attribution_v2"
+        boundaries = ("producer_r", "producer_m", "dual_r", "tail")
+        combined = {
+            f"{prefix}_{boundary}_{variant}_cycles": (
+                pooled[f"{prefix}_{boundary}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{boundary}_{variant}_second_cycles"])
+            for boundary in boundaries for variant in ("official", "gt")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        launches = []
+        for number, observed in enumerate(launch_observations, 1):
+            entry: dict[str, object] = {"launch": number}
+            deltas = {}
+            for boundary in boundaries:
+                official = stabilized_quartiles(
+                    observed[f"{prefix}_{boundary}_official_first_cycles"] +
+                    observed[f"{prefix}_{boundary}_official_second_cycles"])[1]
+                gt = stabilized_quartiles(
+                    observed[f"{prefix}_{boundary}_gt_first_cycles"] +
+                    observed[f"{prefix}_{boundary}_gt_second_cycles"])[1]
+                deltas[boundary] = gt - official
+                entry.update({f"{boundary}_official_stq2": official,
+                              f"{boundary}_gt_stq2": gt,
+                              f"{boundary}_gt_minus_official_cycles": gt - official})
+            entry["hash_fanout_excess_cycles"] = (
+                deltas["dual_r"] - deltas["producer_r"])
+            entry["rough_modeled_debt_cycles"] = (
+                deltas["producer_r"] + deltas["producer_m"] +
+                entry["hash_fanout_excess_cycles"] + deltas["tail"])
+            launches.append(entry)
+        summary["balanced_paired_launches"] = {"launches": launches}
+        symbols = {
+            "official_producer": "ntruplus1152_exp001_attr_v2_official_producer",
+            "gt_producer": "ntruplus1152_exp001_attr_v2_gt_producer",
+            "official_dual": "ntruplus1152_exp001_attr_v2_official_dual",
+            "gt_dual": "ntruplus1152_exp001_attr_v2_gt_dual",
+            "official_tail": "ntruplus1152_exp001_attr_v2_official_tail",
+            "gt_tail": "ntruplus1152_exp001_attr_v2_gt_tail",
+            "official_forward": "poly_ntt",
+            "gt_top": "ntruplus1152_exp001_top_split_small",
+            "gt_forward":
+                "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta",
+            "official_basemul": "poly_basemul",
+            "official_add": "poly_add",
+            "official_tobytes": "poly_tobytes",
+            "gt_ma2": "ntruplus1152_exp001_f0_ma2_planes_natural_q_scale4",
+            "gt_h1": "ntruplus1152_exp001_prod3_ma2_hash_h1_natural_q",
+        }
+        expected = {
+            "official_producer": [symbols["official_forward"]],
+            "gt_producer": [symbols["gt_top"], symbols["gt_forward"]],
+            "official_dual": [symbols["official_producer"],
+                              symbols["official_tobytes"]],
+            "gt_dual": [symbols["gt_producer"], symbols["gt_h1"]],
+            "official_tail": [symbols["official_basemul"],
+                              symbols["official_add"],
+                              symbols["official_tobytes"]],
+            "gt_tail": [symbols["gt_ma2"], symbols["gt_h1"]],
+        }
+        transfers = {key: direct_transfer_targets(saved_elf, symbols[key])
+                     for key in expected}
+        if transfers != expected:
+            raise SystemExit(f"Attribution V2 call graph changed: {transfers}")
+        summary["linked_encap_attribution_v2_audit"] = {
+            "direct_transfers": transfers,
+            "producer_boundary": "coefficient input to native transformed state",
+            "dual_boundary": "coefficient input to native state plus exact 1728 bytes",
+            "tail_boundary": "resident transformed r/m/h to exact ciphertext polynomial bytes",
+            "preflight": "Official poly_tobytes equals GT Direct H1; tail bytes exact",
+            "candidate": "persistent-AoS + Natural-Q + T0-beta + scale4 MA2 + Direct H1",
+            "native_kem_result": False,
+        }
+        summary["elf_layout"] = elf_layout(saved_elf, tuple(symbols.values()))
+        summary["decision"] = {
+            "headline": "ENCAP-CALLER-ATTRIBUTION-V2",
+            "next_if_residual_large":
+                "r-dual-output-to-hash-g-to-sotp-to-m-producer-chain",
+            "new_asm": False,
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1630,6 +1730,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-hash-h1-price" if args.mode == "derived-gt9x16-prod3-hash-h1-price"
                             else "supercop-derived-gt9x16-prod3-qorder-price" if args.mode == "derived-gt9x16-prod3-qorder-price"
                             else "supercop-derived-gt9x16-prod3-t0-beta-price" if args.mode == "derived-gt9x16-prod3-t0-beta-price"
+                            else "supercop-derived-gt9x16-prod3-encap-attribution-v2" if args.mode == "derived-gt9x16-prod3-encap-attribution-v2"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1680,7 +1781,9 @@ def main() -> int:
               "derived-gt9x16-prod3-qorder-price":
                   "gt9x16_prod3_qorder_price_measure.c",
               "derived-gt9x16-prod3-t0-beta-price":
-                  "gt9x16_prod3_t0_beta_price_measure.c"}[args.mode])
+                  "gt9x16_prod3_t0_beta_price_measure.c",
+              "derived-gt9x16-prod3-encap-attribution-v2":
+                  "gt9x16_prod3_encap_attribution_v2_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

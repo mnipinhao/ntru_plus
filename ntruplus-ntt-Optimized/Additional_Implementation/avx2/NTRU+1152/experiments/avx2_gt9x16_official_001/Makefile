@@ -163,6 +163,8 @@ GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash
  supercop-gt9x16-prod3-price supercop-gt9x16-prod3-consumer \
  supercop-gt9x16-prod3-hash-fanout supercop-gt9x16-prod3-hash-h1-price \
  supercop-gt9x16-prod3-qorder-price supercop-gt9x16-prod3-t0-beta-price \
+ prepare-gt9x16-prod3-encap-attribution-v2 \
+ supercop-gt9x16-prod3-encap-attribution-v2 \
  gt9x16-prod3-h1-kat \
  supercop-paired-serious supercop-promotion-report
 
@@ -313,6 +315,7 @@ generate:
 	$(PYTHON) tests/test_gt9x16_prod3_h1_integration_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_qorder_price_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_price_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_encap_attribution_v2_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 
@@ -479,6 +482,7 @@ check:
 	$(PYTHON) tests/test_gt9x16_prod3_h1_integration_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_qorder_price_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_price_evidence.py
+	$(PYTHON) tests/test_gt9x16_prod3_encap_attribution_v2_evidence.py
 	$(PYTHON) tests/test_gt9x16_prod3_cumulative_native_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -I. -Isrc -Igenerated $(F0_PROD2_TEST_SOURCES) -o $(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
 	$(BUILD)/f0prod2/test-f0-prod2-ma2-asm0
@@ -1030,6 +1034,15 @@ supercop-gt9x16-prod3-t0-beta-price:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_t0_beta_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_T0_BETA_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-t0-beta-price-normal} --reversed-implementation $${PROD3_T0_BETA_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-t0-beta-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
+
+prepare-gt9x16-prod3-encap-attribution-v2:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_gt9x16_prod3_encap_attribution_v2_placements.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --source-implementation $${PROD3_ATTR_V2_SOURCE_IMPLEMENTATION:-avx2-gt9x16-prod3-cumulative-exp002} --normal-implementation $${PROD3_ATTR_V2_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-normal} --reversed-implementation $${PROD3_ATTR_V2_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-reversed}
+
+supercop-gt9x16-prod3-encap-attribution-v2:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_encap_attribution_v2.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_ATTR_V2_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-normal} --reversed-implementation $${PROD3_ATTR_V2_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
 
 gt9x16-prod3-h1-kat:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
