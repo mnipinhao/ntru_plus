@@ -71,22 +71,18 @@ def planned_decoder_liveness(h1_asm: str) -> dict:
     lines = [line.strip() for line in block.splitlines()
              if line.strip() and not line.strip().startswith("/*")]
     injection = {
-        "vpand ymm7, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": (11, 7, 6),
-        "vpand ymm8, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": (12, 8, 11),
-        "vpand ymm9, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": (13, 9, 12),
-        "vpand ymm10, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": (14, 10, 13),
+        "vpand ymm7, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": 0,
+        "vpand ymm8, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": 1,
+        "vpand ymm9, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": 2,
+        "vpand ymm10, ymm3, YMMWORD PTR [rip + .Lhdec_low_mask]": 3,
     }
-    scheduled = []
-    for line in lines:
-        scheduled.append(line)
-        if line not in injection:
-            continue
-        source_a, source_b, final_a = injection[line]
-        final_b = source_b
-        scheduled += [
-            f"vpmaxuw ymm15, ymm{source_a}, ymm{source_b}",
-            "vpcmpgtw ymm15, ymm15, [q-1]", "vpmovmskb edx, ymm15",
-            "or eax, edx",
+
+    def formation(coefficient: int) -> list[str]:
+        source_a = DECODER_SOURCES[coefficient]
+        source_b = DECODER_SOURCES[coefficient + 4]
+        final_a = H_A_REGS[coefficient]
+        final_b = H_B_REGS[coefficient]
+        return [
             f"vperm2i128 ymm{final_a}, ymm{source_a}, ymm{source_a}, tile-a-imm",
             f"vpshufb ymm{final_a}, ymm{final_a}, [tile-a-mask-a]",
             f"vperm2i128 ymm15, ymm{source_b}, ymm{source_b}, tile-a-imm",
@@ -98,6 +94,26 @@ def planned_decoder_liveness(h1_asm: str) -> dict:
             f"vpshufb ymm{source_a}, ymm{source_a}, [tile-b-mask-b]",
             f"vpor ymm{final_b}, ymm15, ymm{source_a}",
         ]
+
+    scheduled = []
+    for line in lines:
+        scheduled.append(line)
+        if line not in injection:
+            continue
+        coefficient = injection[line]
+        source_a = DECODER_SOURCES[coefficient]
+        source_b = DECODER_SOURCES[coefficient + 4]
+        scheduled += [
+            f"vpmaxuw ymm15, ymm{source_a}, ymm{source_b}",
+            "vpcmpgtw ymm15, ymm15, [q-1]", "vpmovmskb edx, ymm15",
+            "or eax, edx",
+        ]
+        # ymm6 is still a decoder temporary after d0 is extracted.  Form each
+        # pair one extraction later, once the destination chosen by the exact
+        # allocation is genuinely dead.  Pair 3 is drained below.
+        if coefficient >= 1:
+            scheduled += formation(coefficient - 1)
+    scheduled += formation(3)
     live = set(H_A_REGS) | set(H_B_REGS)
     peak = len(live)
     peak_line = "decoder-exit"
@@ -219,7 +235,9 @@ def main() -> int:
                 "coefficient": coefficient,
                 "decoded_source_vectors": list(expected_sources),
                 "decoded_source_registers": [f"ymm{x}" for x in source_regs],
-                "formed_immediately_after": f"decode-pair-{coefficient}-and-public-validation",
+                "validated_after": f"decode-pair-{coefficient}",
+                "formed_after": (f"decode-pair-{coefficient + 1}"
+                                 if coefficient < 3 else "decode-pair-3-after-pair-2-drain"),
                 "tile_a": {"owner": {"branch": tile_keys[0][0], "p": tile_keys[0][1],
                                         "terminal_coefficient": coefficient},
                            "natural_vector": a_destination,
@@ -251,10 +269,10 @@ def main() -> int:
 
     phase_registers = [
         {"phase": "packed-load-and-unpack", "live_upper_bound": decoder_liveness["peak_ymm"],
-         "persistent": [], "note": "mechanical backward liveness includes injected pair formation"},
-        {"phase": "pairwise-validate-and-dual-form", "live_upper_bound": decoder_liveness["peak_ymm"],
+         "persistent": [], "note": "mechanical backward liveness includes the one-pair-delayed formation pipeline"},
+        {"phase": "pairwise-validate-and-delayed-dual-form", "live_upper_bound": decoder_liveness["peak_ymm"],
          "persistent_after_phase": register_set(H_A_REGS, H_B_REGS),
-         "note": "each decoded pair is validated into eax, then overwritten by both tile h_j values"},
+         "note": "each pair is validated immediately; formation is delayed one extraction so its final register is dead"},
         {"phase": "in-place-R2-normalization", "live_upper_bound": 9,
          "persistent": register_set(H_A_REGS, H_B_REGS),
          "temporary": "ymm15"},
@@ -285,7 +303,7 @@ def main() -> int:
                        "Montgomery domains", "scale 4", "output stores"],
         },
         "decoder": {
-            "strategy": "produce, validate, and consume each decoded source pair before decoding the next pair",
+            "strategy": "validate each decoded pair immediately and dual-form it one extraction later",
             "validation": {"persistent_state": "eax public-invalid accumulator",
                            "temporary_state": "one recycled YMM max/compare plus edx movemask",
                            "constant_time": "work and control flow are independent of decoded values",
@@ -295,7 +313,7 @@ def main() -> int:
             "decoder_intrinsic_routes_total": {
                 key: 9 * value for key, value in decoder_routes_per_block.items()},
             "full_eight_vector_natural_q_cut": False,
-            "note": "the packed decoder has shared unpack state, but no eight-vector Natural-Q quartet is formed before MA2 ownership is attached",
+            "note": "the one-pair delay preserves decoder liveness; no resident Natural-Q h object or memory boundary is formed",
         },
         "formation": {
             "blocks": blocks,
@@ -321,7 +339,7 @@ def main() -> int:
                        "plain": [list(x) for x in term["plain"]],
                        "wrapped": [list(x) for x in term["wrapped"]]}
                       for i, term in enumerate(TERMS)],
-            "execution": "tile A then tile B; formation is pair-interleaved across both tiles",
+            "execution": "tile A then tile B; dual formation uses a one-pair-delayed pipeline across both tiles",
             "raw_exact_reason": "identical h R2, product order, wrapped accumulation, one lambda multiply, and c-store order",
             "range": {"proof_reused": args.range_proof.name,
                       "global_pre_output_bound": range_proof["global_pre_inv4"],
@@ -363,7 +381,7 @@ def main() -> int:
             "range_proof": args.range_proof}.items()},
     }
     write(args.output, json.dumps(report, indent=2, sort_keys=True) + "\n", args.check)
-    print("H3 schedule: pairwise decode/validate/dual-form, exact peak 16, zero h boundary; ASM authorized next")
+    print("H3 schedule: pairwise validation plus delayed dual-form, exact peak 16, zero h boundary")
     return 0
 
 

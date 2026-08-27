@@ -26,19 +26,26 @@ The packed decoder naturally exposes four source pairs:
 ```
 
 Each pair supplies one terminal coefficient to both MA2 tiles owned by the
-192-byte block.  The exact schedule therefore performs, for each pair:
+192-byte block.  Linked ASM realization exposed one stale symbolic-liveness
+assumption: `ymm6` is still a decoder destination after `(d0,d4)` appears.
+The corrected exact schedule therefore validates immediately but delays
+formation by one decoded pair:
 
 ```text
 finish decoded pair
 -> unsigned max/compare against q-1
--> vpmovmskb into edx; OR into public GPR accumulator eax
--> form tile-A h_j
--> form tile-B h_j
--> overwrite the now-dead decoded pair
+-> vpmovmskb into r8d; OR into public GPR accumulator eax
+-> finish the next decoded pair, making the selected destination dead
+-> form the preceding tile-A h_j and tile-B h_j
+-> overwrite that now-dead decoded pair
 ```
 
+Pair 3 is drained after pair 2 at the decoder exit.  This one-pair delay is a
+machine-schedule correction only: ownership, arithmetic, final registers, and
+the zero-materialization boundary are unchanged.
+
 The validation YMM is short-lived.  A mechanical backward-liveness pass over
-the reordered decoder gives a peak of 12 YMM registers.  Pairwise validation
+the corrected decoder gives a peak of 12 YMM registers.  Pairwise validation
 costs four max/compare/movemask/GPR-OR groups per block; this is six more
 instructions than the H1 tree reduction, but it removes the long-lived vector
 validation state and permits immediate ownership conversion.

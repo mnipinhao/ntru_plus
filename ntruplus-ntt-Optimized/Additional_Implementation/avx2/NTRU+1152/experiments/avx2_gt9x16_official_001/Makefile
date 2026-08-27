@@ -152,6 +152,10 @@ ENCAP_H_DECODE_H1_TEST_SOURCES := $(ENCAP_H_DECODE_H1_ASM) $(GT9X16_PROD3_QORDER
 ENCAP_H_DECODE_H1_AUDIT_ARGS := --candidate-object $(BUILD)/hdecode/h1.o --control-object $(BUILD)/hdecode/control.o --contract generated/encap-h-decode-natural-q-asm.json --output generated/encap-h-decode-natural-q-asm-audit.json
 ENCAP_H_INGRESS_CODESIGN_ARGS := --decode-map generated/encap-h-decode-natural-q-map.json --h1-contract generated/encap-h-decode-natural-q-asm.json --official-kem $(UPSTREAM)/kem.c --candidate-kem src/kem_cumulative_native.c --api $(UPSTREAM)/api.h --output generated/encap-h-ingress-ma2-codesign-v1.json
 ENCAP_H_INGRESS_H3_SCHEDULE_ARGS := --codesign generated/encap-h-ingress-ma2-codesign-v1.json --decode-map generated/encap-h-decode-natural-q-map.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --h1-contract generated/encap-h-decode-natural-q-asm.json --h1-asm $(ENCAP_H_DECODE_H1_ASM) --ma2-source asm/gt9x16_prod3_cumulative_ma2.S --range-proof generated/f0-ma2-range.json --output generated/encap-h-ingress-ma2-h3-schedule.json
+ENCAP_H_INGRESS_H3_ASM := asm/encap_h_ingress_ma2_h3.S
+ENCAP_H_INGRESS_H3_GENERATOR_ARGS := --schedule generated/encap-h-ingress-ma2-h3-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --ma2-source asm/gt9x16_prod3_cumulative_ma2.S --asm $(ENCAP_H_INGRESS_H3_ASM) --header generated/encap-h-ingress-ma2-h3.h --contract generated/encap-h-ingress-ma2-h3-asm.json
+ENCAP_H_INGRESS_H3_TEST_SOURCES := $(ENCAP_H_DECODE_H1_ASM) $(GT9X16_PROD3_QORDER_NATURAL_ASM) asm/gt9x16_prod3_cumulative_ma2.S $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s $(ENCAP_H_INGRESS_H3_ASM) tests/test_encap_h_ingress_ma2_h3.c
+ENCAP_H_INGRESS_H3_AUDIT_ARGS := --h3-object $(BUILD)/h3/h3.o --h1-object $(BUILD)/h3/h1.o --contract generated/encap-h-ingress-ma2-h3-asm.json --schedule generated/encap-h-ingress-ma2-h3-schedule.json --output generated/encap-h-ingress-ma2-h3-asm-audit.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -319,6 +323,13 @@ generate:
 	$(PYTHON) tests/test_encap_h_ingress_ma2_codesign_v1.py
 	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_schedule.py $(ENCAP_H_INGRESS_H3_SCHEDULE_ARGS)
 	$(PYTHON) tests/test_encap_h_ingress_ma2_h3_schedule.py
+	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_asm.py $(ENCAP_H_INGRESS_H3_GENERATOR_ARGS)
+	mkdir -p $(BUILD)/h3
+	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h3/h3.o
+	$(CC) -mavx2 -I. -c $(ENCAP_H_DECODE_H1_ASM) -o $(BUILD)/h3/h1.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H_INGRESS_H3_TEST_SOURCES) -o $(BUILD)/h3/test-h3
+	$(BUILD)/h3/test-h3
+	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
@@ -505,6 +516,13 @@ check:
 	$(PYTHON) tests/test_encap_h_ingress_ma2_codesign_v1.py
 	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_schedule.py $(ENCAP_H_INGRESS_H3_SCHEDULE_ARGS) --check
 	$(PYTHON) tests/test_encap_h_ingress_ma2_h3_schedule.py
+	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_asm.py $(ENCAP_H_INGRESS_H3_GENERATOR_ARGS) --check
+	mkdir -p $(BUILD)/h3
+	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h3/h3.o
+	$(CC) -mavx2 -I. -c $(ENCAP_H_DECODE_H1_ASM) -o $(BUILD)/h3/h1.o
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H_INGRESS_H3_TEST_SOURCES) -o $(BUILD)/h3/test-h3
+	$(BUILD)/h3/test-h3
+	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS) --check
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS) --check
@@ -667,6 +685,8 @@ sanitize:
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-hash-fanout-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-ma2-hash-h1-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-ma2-hash-h1-sanitize
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H_INGRESS_H3_TEST_SOURCES) -o $(BUILD)/test-encap-h-ingress-ma2-h3-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-encap-h-ingress-ma2-h3-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I. $(GT9X16_PROD3_T0_BETA_TEST_SOURCES) -o $(BUILD)/test-gt9x16-prod3-natural-q-t0-beta-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/test-gt9x16-prod3-natural-q-t0-beta-sanitize
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. $(CPPFLAGS_LOCAL) $(NTT16_ASM) bench/probe_g1c_m3b_correlated_range.c -o $(BUILD)/probe-g1c-m3b-range-sanitize
@@ -702,6 +722,10 @@ audit:
 	$(CC) -mavx2 -I. -c $(GT9X16_PROD3_T0_BETA_ASM) -o $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_T0_BETA_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta
 	$(PYTHON) tools/audit_gt9x16_prod3_t0_beta.py $(GT9X16_PROD3_T0_BETA_AUDIT_ARGS)
+	mkdir -p $(BUILD)/h3
+	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h3/h3.o
+	$(CC) -mavx2 -I. -c $(ENCAP_H_DECODE_H1_ASM) -o $(BUILD)/h3/h1.o
+	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o

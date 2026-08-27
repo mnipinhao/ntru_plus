@@ -711,3 +711,16 @@ remaining +992.02-cycle or +2.31% deficit. This narrows the old cross-campaign
 gap by about 506.68 cycles but does not justify promotion. The next checkpoint
 is ENCAP-CALLER-ATTRIBUTION-V2 on this exact baseline; no new ASM is yet
 authorized. See `CHECKPOINT-GT9X16-PROD3-CUMULATIVE-NATIVE-REBASE.md`.
+
+Checkpoint ENCAP-H-INGRESS-MA2-H3-ASM realizes external PK bytes directly into
+Natural-Q MA2 arithmetic as one namespaced aligned AVX2 leaf.  Linked
+realization corrected the symbolic schedule to delay dual formation by one
+decoded pair because `ymm6` remained decoder-live; the final allocation and
+12-YMM decode/formation peak are unchanged.  Official accept/reject semantics,
+raw H1-preprojected MA2 output, exhaustive 12-bit and position-edge cases,
+random valid/invalid inputs, alias/canary/immutability, and sanitizer gates all
+pass.  Relative to H1, H3 removes 72 resident-h stores and 72 reloads, retains
+the same 360 consumer-required routes and identical MA2 arithmetic, reduces
+logical instructions from 3,678 to 3,587, and has no frame, spill, call,
+branch, or `vzeroupper`.  No benchmark or caller integration is authorized in
+this checkpoint.  See `CHECKPOINT-ENCAP-H-INGRESS-MA2-H3-ASM.md`.

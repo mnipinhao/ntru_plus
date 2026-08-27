@@ -1,0 +1,128 @@
+{
+  "allocation": {
+    "expected_peak_ymm": 16,
+    "spill": 0,
+    "stack_bytes": 0
+  },
+  "architecture_ledger": {
+    "h1": {
+      "consumer_required_routes": 360,
+      "h_reloads": 72,
+      "h_stores": 72,
+      "resident_h": true
+    },
+    "h3": {
+      "consumer_required_routes": 360,
+      "h_reloads": 0,
+      "h_stores": 0,
+      "resident_h": false
+    }
+  },
+  "benchmark_authorized": false,
+  "checkpoint": "ENCAP-H-INGRESS-MA2-H3-ASM",
+  "delta_h3_minus_h1": {
+    "or": 27,
+    "ret": -1,
+    "vmovdqa": -144,
+    "vpcmpgtw": 27,
+    "vpmaxuw": -27,
+    "vpmovmskb": 27
+  },
+  "gates": {
+    "branch_free": true,
+    "call_free": true,
+    "entry_aligned_32": true,
+    "frame_free": true,
+    "h_boundary_eliminated": true,
+    "official_validation_semantics_tested": true,
+    "pure_h_abi_routes_zero": true,
+    "raw_h1_ma2_output_tested": true,
+    "same_ma2_arithmetic": true,
+    "spill_free": true,
+    "vzeroupper_free": true
+  },
+  "h1_control": {
+    "consumer_entry_mod32": 0,
+    "decoder_entry_mod32": 0,
+    "instructions": 3678,
+    "mnemonics": {
+      "movzx": 1,
+      "or": 9,
+      "ret": 2,
+      "setne": 1,
+      "test": 1,
+      "vmovdqa": 414,
+      "vmovdqu": 54,
+      "vpaddw": 288,
+      "vpand": 72,
+      "vpblendd": 54,
+      "vpblendw": 54,
+      "vpcmpgtw": 9,
+      "vperm2i128": 198,
+      "vpmaxuw": 63,
+      "vpmovmskb": 9,
+      "vpmulhw": 828,
+      "vpmullw": 702,
+      "vpor": 72,
+      "vpshufb": 144,
+      "vpsllq": 54,
+      "vpsllw": 36,
+      "vpsrlq": 54,
+      "vpsrlw": 54,
+      "vpsubw": 414,
+      "vpunpckhqdq": 27,
+      "vpunpcklqdq": 27,
+      "vpxor": 36,
+      "xor": 1
+    },
+    "text_bytes": 22866
+  },
+  "h3": {
+    "entry_mod32": 0,
+    "instructions": 3587,
+    "mnemonics": {
+      "movzx": 1,
+      "or": 36,
+      "ret": 1,
+      "setne": 1,
+      "test": 1,
+      "vmovdqa": 270,
+      "vmovdqu": 54,
+      "vpaddw": 288,
+      "vpand": 72,
+      "vpblendd": 54,
+      "vpblendw": 54,
+      "vpcmpgtw": 36,
+      "vperm2i128": 198,
+      "vpmaxuw": 36,
+      "vpmovmskb": 36,
+      "vpmulhw": 828,
+      "vpmullw": 702,
+      "vpor": 72,
+      "vpshufb": 144,
+      "vpsllq": 54,
+      "vpsllw": 36,
+      "vpsrlq": 54,
+      "vpsrlw": 54,
+      "vpsubw": 414,
+      "vpunpckhqdq": 27,
+      "vpunpcklqdq": 27,
+      "vpxor": 36,
+      "xor": 1
+    },
+    "text_bytes": 22072
+  },
+  "object_sections": {
+    "h1": {
+      "rodata_bytes": 5408,
+      "text_bytes": 22881
+    },
+    "h3": {
+      "rodata_alignment": 32,
+      "rodata_bytes": 5408,
+      "text_alignment": 32,
+      "text_bytes": 22072
+    }
+  },
+  "schema": "encap-h-ingress-ma2-h3-asm-audit/v1"
+}

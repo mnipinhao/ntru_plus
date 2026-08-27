@@ -55,8 +55,8 @@
       "vpunpck": 54
     },
     "full_eight_vector_natural_q_cut": false,
-    "note": "the packed decoder has shared unpack state, but no eight-vector Natural-Q quartet is formed before MA2 ownership is attached",
-    "strategy": "produce, validate, and consume each decoded source pair before decoding the next pair",
+    "note": "the one-pair delay preserves decoder liveness; no resident Natural-Q h object or memory boundary is formed",
+    "strategy": "validate each decoded pair immediately and dual-form it one extraction later",
     "validation": {
       "constant_time": "work and control flow are independent of decoded values",
       "persistent_state": "eax public-invalid accumulator",
@@ -111,7 +111,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -148,7 +148,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -160,7 +161,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -197,7 +198,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -209,7 +211,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -246,7 +248,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -258,7 +261,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -295,7 +298,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -324,7 +328,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -361,7 +365,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -373,7 +378,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -410,7 +415,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -422,7 +428,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -459,7 +465,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -471,7 +478,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -508,7 +515,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -537,7 +545,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -574,7 +582,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -586,7 +595,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -623,7 +632,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -635,7 +645,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -672,7 +682,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -684,7 +695,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -721,7 +732,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -750,7 +762,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -787,7 +799,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -799,7 +812,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -836,7 +849,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -848,7 +862,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -885,7 +899,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -897,7 +912,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -934,7 +949,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -963,7 +979,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1000,7 +1016,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -1012,7 +1029,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1049,7 +1066,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -1061,7 +1079,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1098,7 +1116,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -1110,7 +1129,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1147,7 +1166,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -1176,7 +1196,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1213,7 +1233,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -1225,7 +1246,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1262,7 +1283,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -1274,7 +1296,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1311,7 +1333,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -1323,7 +1346,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1360,7 +1383,8 @@
                 "0x31",
                 "0x31"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -1389,7 +1413,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1426,7 +1450,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -1438,7 +1463,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1475,7 +1500,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -1487,7 +1513,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1524,7 +1550,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -1536,7 +1563,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1573,7 +1600,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -1602,7 +1630,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1639,7 +1667,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -1651,7 +1680,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1688,7 +1717,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -1700,7 +1730,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1737,7 +1767,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -1749,7 +1780,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1786,7 +1817,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -1815,7 +1847,7 @@
               0,
               4
             ],
-            "formed_immediately_after": "decode-pair-0-and-public-validation",
+            "formed_after": "decode-pair-1",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1852,7 +1884,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-0"
           },
           {
             "coefficient": 1,
@@ -1864,7 +1897,7 @@
               1,
               5
             ],
-            "formed_immediately_after": "decode-pair-1-and-public-validation",
+            "formed_after": "decode-pair-2",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1901,7 +1934,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-1"
           },
           {
             "coefficient": 2,
@@ -1913,7 +1947,7 @@
               2,
               6
             ],
-            "formed_immediately_after": "decode-pair-2-and-public-validation",
+            "formed_after": "decode-pair-3",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1950,7 +1984,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-2"
           },
           {
             "coefficient": 3,
@@ -1962,7 +1997,7 @@
               3,
               7
             ],
-            "formed_immediately_after": "decode-pair-3-and-public-validation",
+            "formed_after": "decode-pair-3-after-pair-2-drain",
             "route_absorption": {
               "consumer_required": 10,
               "decoder_intrinsic": 0,
@@ -1999,7 +2034,8 @@
                 "0x20",
                 "0x20"
               ]
-            }
+            },
+            "validated_after": "decode-pair-3"
           }
         ],
         "pk_byte_range": [
@@ -2049,7 +2085,7 @@
       "r_loads": 72,
       "tiles": 18
     },
-    "execution": "tile A then tile B; formation is pair-interleaved across both tiles",
+    "execution": "tile A then tile B; dual formation uses a one-pair-delayed pipeline across both tiles",
     "linked_control_ledger": {
       "c_stores": 72,
       "h_r2_montgomery": 72,
@@ -2175,13 +2211,13 @@
     "phases": [
       {
         "live_upper_bound": 12,
-        "note": "mechanical backward liveness includes injected pair formation",
+        "note": "mechanical backward liveness includes the one-pair-delayed formation pipeline",
         "persistent": [],
         "phase": "packed-load-and-unpack"
       },
       {
         "live_upper_bound": 12,
-        "note": "each decoded pair is validated into eax, then overwritten by both tile h_j values",
+        "note": "each pair is validated immediately; formation is delayed one extraction so its final register is dead",
         "persistent_after_phase": [
           "ymm6",
           "ymm7",
@@ -2192,7 +2228,7 @@
           "ymm12",
           "ymm13"
         ],
-        "phase": "pairwise-validate-and-dual-form"
+        "phase": "pairwise-validate-and-delayed-dual-form"
       },
       {
         "live_upper_bound": 9,
