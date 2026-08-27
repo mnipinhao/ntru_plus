@@ -1,0 +1,5 @@
+layout,forward_output_routes_per_group,b3_output_routes_per_group,q24_suffix_routes_per_group,total_routes_per_group,total_routes_per_encap,delta_routes_per_encap,loads_delta,stores_delta,materialized_bytes_delta,spill_required,reason
+M,12,0,12,24,288,0,0,0,0,False,production control
+QL1,4,4,8,16,192,-96,0,0,0,False,T->QL1 is four vshufps; B3 adds W
+QL2,0,8,4,12,144,-144,0,0,0,False,T->QL2 is register/store ownership only; B3 adds W+D
+P,4,12,0,16,192,-96,0,0,0,False,T->P is four qword unpacks; B3 adds W+D+Q
