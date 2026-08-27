@@ -1,0 +1,545 @@
+{
+  "architectures": {
+    "H0-current": {
+      "h_presentation": "Official poly_frombytes layout",
+      "ma2_h_loads": 144,
+      "projection_routes": 360,
+      "resident_h_bytes": 2304
+    },
+    "H1-direct-natural-q-control": {
+      "decoder_formation_routes": 360,
+      "h_presentation": "exact Natural-Q",
+      "ma2_h_loads": 72,
+      "resident_h_bytes": 2304,
+      "status": "implemented correctness and linked-audit control"
+    },
+    "H2-decoder-native-persistent": {
+      "constraint": "each semantic h component multiplies the matching Natural-Q r component",
+      "freedoms": [
+        "vector order",
+        "lane order",
+        "half order",
+        "block-local output swaps",
+        "offline lambda reindex",
+        "h scale/Montgomery presentation"
+      ],
+      "status": "schedule search required",
+      "warning": "constant reindex alone cannot repair a mismatched h/r lane owner; the MA2 schedule must absorb it"
+    },
+    "H3-streaming-decode-ma2": {
+      "blocks": [
+        {
+          "decode_block": 0,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 0,
+              "p": 4,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 0,
+              "p": 7,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23
+          ],
+          "pk_byte_range": [
+            0,
+            191
+          ]
+        },
+        {
+          "decode_block": 1,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 0,
+              "p": 0,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 0,
+              "p": 1,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            0,
+            1,
+            2,
+            3,
+            12,
+            13,
+            14,
+            15
+          ],
+          "pk_byte_range": [
+            192,
+            383
+          ]
+        },
+        {
+          "decode_block": 2,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 0,
+              "p": 3,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 0,
+              "p": 6,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "pk_byte_range": [
+            384,
+            575
+          ]
+        },
+        {
+          "decode_block": 3,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 0,
+              "p": 2,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 0,
+              "p": 8,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "pk_byte_range": [
+            576,
+            767
+          ]
+        },
+        {
+          "decode_block": 4,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 0,
+              "p": 5,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 1,
+              "p": 3,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            32,
+            33,
+            34,
+            35,
+            40,
+            41,
+            42,
+            43
+          ],
+          "pk_byte_range": [
+            768,
+            959
+          ]
+        },
+        {
+          "decode_block": 5,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 1,
+              "p": 0,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 1,
+              "p": 6,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            36,
+            37,
+            38,
+            39,
+            44,
+            45,
+            46,
+            47
+          ],
+          "pk_byte_range": [
+            960,
+            1151
+          ]
+        },
+        {
+          "decode_block": 6,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 1,
+              "p": 2,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 1,
+              "p": 5,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71
+          ],
+          "pk_byte_range": [
+            1152,
+            1343
+          ]
+        },
+        {
+          "decode_block": 7,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 1,
+              "p": 7,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 1,
+              "p": 8,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "pk_byte_range": [
+            1344,
+            1535
+          ]
+        },
+        {
+          "decode_block": 8,
+          "decoded_source_vectors": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ma2_tiles": [
+            {
+              "branch": 1,
+              "p": 1,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "branch": 1,
+              "p": 4,
+              "terminal_coefficients": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "natural_destination_vectors": [
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ],
+          "pk_byte_range": [
+            1536,
+            1727
+          ]
+        }
+      ],
+      "caller_reorder": "hash/r/m/forwards, then nine decode+validate+MA2 waves",
+      "h_reloads": 0,
+      "h_stores": 0,
+      "invalid_key": "validation accumulator is public; after the final block zero ct/ss and return 1 exactly as current",
+      "pk_ct_overlap_preservation": "serialize/hash r into storage reusing the dead 2304-byte h frame slot; do not write ct until all pk blocks are consumed",
+      "randomness": "crypto_kem_enc consumes coins before crypto_kem_enc_derand both before and after reorder",
+      "resident_h_bytes": 0,
+      "status": "caller-legal and block-local; exact zero-spill schedule not yet proved"
+    }
+  },
+  "caller_legality": {
+    "api_explicit_overlap_contract": false,
+    "current_invalid_external_result": "zero ct, zero ss, return 1",
+    "extra_invalid_input_work_depends_only_on_public_pk": true,
+    "h_success_value_consumers": 1,
+    "hash_f_reads_pk_bytes_not_h": true,
+    "late_validation_external_result_can_match": true,
+    "overlap_safe_plan_required": true,
+    "r_m_production_has_no_h_dependency": true,
+    "randombytes_before_derand": true
+  },
+  "checkpoint": "ENCAP-H-INGRESS-MA2-CODESIGN-V1",
+  "decision": {
+    "H1": "retain as machine control; do not optimize or promote it before H3 pricing",
+    "H2": "fallback if H3 exact schedule spills or regresses",
+    "H3": "preferred architecture; next checkpoint is exact one-block/two-tile schedule",
+    "benchmark": false,
+    "native_kem": false
+  },
+  "frozen": {
+    "acceptance": "all coefficients <3457",
+    "ciphertext_and_shared_secret": "byte-exact external contract",
+    "ma2_mathematics": "quartic MulAdd unchanged",
+    "pk_wire_bytes": 1728,
+    "r_m_presentation": "Natural-Q scale-4 PROD3"
+  },
+  "official_order_checked": true,
+  "schema": "encap-h-ingress-ma2-codesign/v1",
+  "scope": "architecture map; H1 is implemented control; H2/H3 are not timed or promoted",
+  "source_sha256": {
+    "api": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "candidate_kem": "9ec4b37a3f619504e4c481b48e207c3d4baa423c4f3ee569396a82638f417aa5",
+    "decode_map": "54e797667a0df39d49c593370afa1a875466a23bf1341d9717b362f4c82d0846",
+    "h1_contract": "af633255ed5598495079d4c0668e641a87b80e73e5e75d006eb22fd89239be38",
+    "official_kem": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f"
+  },
+  "wavefront": {
+    "block_local_vectors": 72,
+    "candidate_accumulator_wavefront_bound": {
+      "decoded_sources": 8,
+      "fits_16_ymm": true,
+      "four_output_accumulators": 4,
+      "montgomery_and_route_temps": 2,
+      "one_formed_h": 1,
+      "one_r_operand": 1,
+      "requires": "exact register allocation and linked zero-spill proof",
+      "slack": 0,
+      "total": 16
+    },
+    "complete_ma2_tiles_per_decode_block": 2,
+    "cross_block_vectors": 0,
+    "fallback": "materialize four h vectors for the second tile only (128 bytes/block); prices a half-resident H3 control",
+    "naive_live_bound": {
+      "decoded_sources": 8,
+      "fits_16_ymm": false,
+      "formed_h_quartet": 4,
+      "minimum_temps": 2,
+      "r_quartet": 4,
+      "total": 18
+    },
+    "shared_decoded_sources": "both tiles reuse all eight decoded source vectors"
+  }
+}

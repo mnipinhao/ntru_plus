@@ -1,0 +1,89 @@
+{
+  "benchmark_authorized": false,
+  "checkpoint": "ENCAP-H-DECODE-NATURAL-Q-ASM-H1",
+  "consumer_delta": {
+    "ret": 0,
+    "vmovdqa": -72,
+    "vpaddw": 0,
+    "vperm2i128": -144,
+    "vpmulhw": 0,
+    "vpmullw": 0,
+    "vpor": -72,
+    "vpshufb": -144,
+    "vpsubw": 0
+  },
+  "control_consumer": {
+    "instructions": 3007,
+    "mnemonics": {
+      "ret": 1,
+      "vmovdqa": 414,
+      "vpaddw": 288,
+      "vperm2i128": 144,
+      "vpmulhw": 828,
+      "vpmullw": 702,
+      "vpor": 72,
+      "vpshufb": 144,
+      "vpsubw": 414
+    }
+  },
+  "decoder": {
+    "entry_mod32": 0,
+    "instructions": 1105,
+    "mnemonics": {
+      "data16": 1,
+      "movzx": 1,
+      "nop": 1,
+      "or": 9,
+      "ret": 1,
+      "setne": 1,
+      "test": 1,
+      "vmovdqa": 72,
+      "vmovdqu": 54,
+      "vpand": 72,
+      "vpblendd": 54,
+      "vpblendw": 54,
+      "vpcmpgtw": 9,
+      "vperm2i128": 198,
+      "vpmaxuw": 63,
+      "vpmovmskb": 9,
+      "vpor": 72,
+      "vpshufb": 144,
+      "vpsllq": 54,
+      "vpsllw": 36,
+      "vpsrlq": 54,
+      "vpsrlw": 54,
+      "vpunpckhqdq": 27,
+      "vpunpcklqdq": 27,
+      "vpxor": 36,
+      "xor": 1
+    },
+    "text_bytes": 6897
+  },
+  "gates": {
+    "call_free": true,
+    "entries_aligned_32": true,
+    "frame_free": true,
+    "same_ma2_arithmetic": true,
+    "spill_free": true,
+    "vzeroupper_free": true
+  },
+  "preprojected_consumer": {
+    "entry_mod32": 0,
+    "instructions": 2575,
+    "mnemonics": {
+      "ret": 1,
+      "vmovdqa": 342,
+      "vpaddw": 288,
+      "vpmulhw": 828,
+      "vpmullw": 702,
+      "vpsubw": 414
+    },
+    "text_bytes": 15969
+  },
+  "role": "conservative H1 control, not the target ingress architecture",
+  "schema": "encap-h-decode-natural-q-asm-audit/v1",
+  "sections": {
+    "rodata_alignment": 32,
+    "text_alignment": 32
+  }
+}
