@@ -1,0 +1,3213 @@
+{
+  "chain_ledger_per_forward": {
+    "candidate": {
+      "NTT16_existing": 144,
+      "NTT9_existing": 80,
+      "new_repair_or_final": 0,
+      "standalone_T0_or_normalization": 64,
+      "total": 288
+    },
+    "current": {
+      "NTT16_existing": 144,
+      "NTT9_existing": 80,
+      "new_repair_or_final": 0,
+      "standalone_T0": 72,
+      "total": 296
+    },
+    "delta": {
+      "NTT16": 0,
+      "NTT9": 0,
+      "repair": 0,
+      "standalone": -8,
+      "total": -8
+    },
+    "encap_two_forward_delta": -16
+  },
+  "chain_lower_bound": {
+    "branch_qblocks_per_forward": 8,
+    "lower_bound_attained_by_selected_candidate": true,
+    "method": "frozen paper-R2 DAG; each first R3 needs two gauge normalizations and its untwisted second-layer R3 needs two more; existing four second-layer twiddle chains absorb the other ratios",
+    "per_branch_qblock": [
+      8,
+      8
+    ],
+    "standalone_minimum_per_forward": 64
+  },
+  "checkpoint": "GT9X16-PROD3-NATURAL-Q-T0-ABSORPTION-MAP",
+  "decision": {
+    "asm_authorized": false,
+    "benchmark_authorized": false,
+    "chain_saving_per_encap": 16,
+    "chain_saving_per_forward": 8,
+    "map_complete": true,
+    "meets_minimum_schedule_threshold": true,
+    "native_kem_authorized": false,
+    "next": "T0-BETA-TO-RADIX2 exact schedule and constants; no ASM",
+    "qorder_search_reopened": false
+  },
+  "exact_proofs": {
+    "canonicalized_current_vs_candidate_exact": true,
+    "factorization_cells": 288,
+    "mod_q_basis_inputs": 288,
+    "mod_q_output_cells": 41472,
+    "raw_representatives_may_differ": true,
+    "representative_contract": {
+      "all_preoperations_signed_i16": true,
+      "candidate_global_i16": [
+        -21333,
+        21333
+      ],
+      "same_montgomery_r_exponent": 0,
+      "same_natural_q_lane_owner": true,
+      "same_scale": 4
+    }
+  },
+  "factorization": {
+    "alpha_h": "g^(16*offset*h)",
+    "beta_q": "g^(offset*q)",
+    "branches": [
+      {
+        "alpha_row_gauges_mod_q": [
+          1,
+          2337,
+          1078,
+          2590,
+          532,
+          2221,
+          3091,
+          1994,
+          3007
+        ],
+        "beta_q_gauges_mod_q": [
+          1,
+          3431,
+          676,
+          3166,
+          652,
+          333,
+          1713,
+          403,
+          3350,
+          2782,
+          265,
+          24,
+          2833,
+          2396,
+          3387,
+          1820
+        ],
+        "branch": 0,
+        "factorization_checks": 144,
+        "ntt16_beta_ratios": {
+          "distance1": 3431,
+          "distance2": 676,
+          "distance4": 652,
+          "distance8": 3350
+        },
+        "offset": 20,
+        "paper_r3_first_layer_lower_bound": [
+          {
+            "gauges": [
+              1,
+              2590,
+              3091
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              0,
+              3,
+              6
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 0,
+                "target_profile": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 2590,
+                "shift": 0,
+                "target_profile": [
+                  2590,
+                  2590,
+                  2590
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 3091,
+                "shift": 0,
+                "target_profile": [
+                  3091,
+                  3091,
+                  3091
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 1,
+                "target_profile": [
+                  1,
+                  722,
+                  2734
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1124,
+                "shift": 1,
+                "target_profile": [
+                  1124,
+                  2590,
+                  3200
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1937,
+                "shift": 1,
+                "target_profile": [
+                  1937,
+                  1886,
+                  3091
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 2,
+                "target_profile": [
+                  1,
+                  2734,
+                  722
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 3200,
+                "shift": 2,
+                "target_profile": [
+                  3200,
+                  2590,
+                  1124
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1886,
+                "shift": 2,
+                "target_profile": [
+                  1886,
+                  1937,
+                  3091
+                ]
+              }
+            ]
+          },
+          {
+            "gauges": [
+              2337,
+              532,
+              1994
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              1,
+              4,
+              7
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 2337,
+                "shift": 0,
+                "target_profile": [
+                  2337,
+                  2337,
+                  2337
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 532,
+                "shift": 0,
+                "target_profile": [
+                  532,
+                  532,
+                  532
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1994,
+                "shift": 0,
+                "target_profile": [
+                  1994,
+                  1994,
+                  1994
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 2337,
+                "shift": 1,
+                "target_profile": [
+                  2337,
+                  298,
+                  822
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 2548,
+                "shift": 1,
+                "target_profile": [
+                  2548,
+                  532,
+                  377
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1556,
+                "shift": 1,
+                "target_profile": [
+                  1556,
+                  3364,
+                  1994
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 2337,
+                "shift": 2,
+                "target_profile": [
+                  2337,
+                  822,
+                  298
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 377,
+                "shift": 2,
+                "target_profile": [
+                  377,
+                  532,
+                  2548
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 3364,
+                "shift": 2,
+                "target_profile": [
+                  3364,
+                  1556,
+                  1994
+                ]
+              }
+            ]
+          },
+          {
+            "gauges": [
+              3007,
+              1078,
+              2221
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              8,
+              2,
+              5
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 3007,
+                "shift": 0,
+                "target_profile": [
+                  3007,
+                  3007,
+                  3007
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1078,
+                "shift": 0,
+                "target_profile": [
+                  1078,
+                  1078,
+                  1078
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 2221,
+                "shift": 0,
+                "target_profile": [
+                  2221,
+                  2221,
+                  2221
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 3007,
+                "shift": 1,
+                "target_profile": [
+                  3007,
+                  58,
+                  392
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1888,
+                "shift": 1,
+                "target_profile": [
+                  1888,
+                  1078,
+                  491
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 2971,
+                "shift": 1,
+                "target_profile": [
+                  2971,
+                  1722,
+                  2221
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 3007,
+                "shift": 2,
+                "target_profile": [
+                  3007,
+                  392,
+                  58
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 491,
+                "shift": 2,
+                "target_profile": [
+                  491,
+                  1078,
+                  1888
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1722,
+                "shift": 2,
+                "target_profile": [
+                  1722,
+                  2971,
+                  2221
+                ]
+              }
+            ]
+          }
+        ],
+        "paper_r3_first_layer_minimum_normalizations": 6,
+        "per_branch_qblock_standalone_lower_bound": 8,
+        "pure_ntt16_frequency_shifts": [],
+        "pure_ntt9_frequency_shifts": [],
+        "pure_reindex_possible": false,
+        "terminal_gauge_mod_q": 1,
+        "untwisted_second_group_minimum_repairs": 2,
+        "untwisted_second_group_witness": {
+          "gauges": [
+            1,
+            2337,
+            3007
+          ],
+          "pivot_rows": [
+            0,
+            1,
+            8
+          ],
+          "profile_proof": {
+            "minimum_standalone_normalizations": 2,
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 0,
+                "target_profile": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 2337,
+                "shift": 0,
+                "target_profile": [
+                  2337,
+                  2337,
+                  2337
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 3007,
+                "shift": 0,
+                "target_profile": [
+                  3007,
+                  3007,
+                  3007
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 1,
+                "target_profile": [
+                  1,
+                  722,
+                  2734
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 822,
+                "shift": 1,
+                "target_profile": [
+                  822,
+                  2337,
+                  298
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 58,
+                "shift": 1,
+                "target_profile": [
+                  58,
+                  392,
+                  3007
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 2,
+                "target_profile": [
+                  1,
+                  2734,
+                  722
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 298,
+                "shift": 2,
+                "target_profile": [
+                  298,
+                  2337,
+                  822
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 392,
+                "shift": 2,
+                "target_profile": [
+                  392,
+                  58,
+                  3007
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "alpha_row_gauges_mod_q": [
+          1,
+          1078,
+          3080,
+          1520,
+          392,
+          822,
+          867,
+          1236,
+          1556
+        ],
+        "beta_q_gauges_mod_q": [
+          1,
+          2401,
+          1982,
+          1950,
+          1172,
+          3431,
+          3257,
+          323,
+          1155,
+          641,
+          676,
+          1743,
+          1973,
+          1083,
+          619,
+          3166
+        ],
+        "branch": 1,
+        "factorization_checks": 144,
+        "ntt16_beta_ratios": {
+          "distance1": 2401,
+          "distance2": 1982,
+          "distance4": 1172,
+          "distance8": 1155
+        },
+        "offset": 4,
+        "paper_r3_first_layer_lower_bound": [
+          {
+            "gauges": [
+              1,
+              1520,
+              867
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              0,
+              3,
+              6
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 0,
+                "target_profile": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1520,
+                "shift": 0,
+                "target_profile": [
+                  1520,
+                  1520,
+                  1520
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 867,
+                "shift": 0,
+                "target_profile": [
+                  867,
+                  867,
+                  867
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 1,
+                "target_profile": [
+                  1,
+                  722,
+                  2734
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 366,
+                "shift": 1,
+                "target_profile": [
+                  366,
+                  1520,
+                  1571
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 257,
+                "shift": 1,
+                "target_profile": [
+                  257,
+                  2333,
+                  867
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 2,
+                "target_profile": [
+                  1,
+                  2734,
+                  722
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1571,
+                "shift": 2,
+                "target_profile": [
+                  1571,
+                  1520,
+                  366
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 2333,
+                "shift": 2,
+                "target_profile": [
+                  2333,
+                  257,
+                  867
+                ]
+              }
+            ]
+          },
+          {
+            "gauges": [
+              1078,
+              392,
+              1236
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              1,
+              4,
+              7
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1078,
+                "shift": 0,
+                "target_profile": [
+                  1078,
+                  1078,
+                  1078
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 392,
+                "shift": 0,
+                "target_profile": [
+                  392,
+                  392,
+                  392
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1236,
+                "shift": 0,
+                "target_profile": [
+                  1236,
+                  1236,
+                  1236
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1078,
+                "shift": 1,
+                "target_profile": [
+                  1078,
+                  491,
+                  1888
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 58,
+                "shift": 1,
+                "target_profile": [
+                  58,
+                  392,
+                  3007
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 486,
+                "shift": 1,
+                "target_profile": [
+                  486,
+                  1735,
+                  1236
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1078,
+                "shift": 2,
+                "target_profile": [
+                  1078,
+                  1888,
+                  491
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 3007,
+                "shift": 2,
+                "target_profile": [
+                  3007,
+                  392,
+                  58
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1735,
+                "shift": 2,
+                "target_profile": [
+                  1735,
+                  486,
+                  1236
+                ]
+              }
+            ]
+          },
+          {
+            "gauges": [
+              1556,
+              3080,
+              822
+            ],
+            "minimum_standalone_normalizations": 2,
+            "rows": [
+              8,
+              2,
+              5
+            ],
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1556,
+                "shift": 0,
+                "target_profile": [
+                  1556,
+                  1556,
+                  1556
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 3080,
+                "shift": 0,
+                "target_profile": [
+                  3080,
+                  3080,
+                  3080
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 822,
+                "shift": 0,
+                "target_profile": [
+                  822,
+                  822,
+                  822
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1556,
+                "shift": 1,
+                "target_profile": [
+                  1556,
+                  3364,
+                  1994
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 2925,
+                "shift": 1,
+                "target_profile": [
+                  2925,
+                  3080,
+                  909
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 2337,
+                "shift": 1,
+                "target_profile": [
+                  2337,
+                  298,
+                  822
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1556,
+                "shift": 2,
+                "target_profile": [
+                  1556,
+                  1994,
+                  3364
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 909,
+                "shift": 2,
+                "target_profile": [
+                  909,
+                  3080,
+                  2925
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 298,
+                "shift": 2,
+                "target_profile": [
+                  298,
+                  2337,
+                  822
+                ]
+              }
+            ]
+          }
+        ],
+        "paper_r3_first_layer_minimum_normalizations": 6,
+        "per_branch_qblock_standalone_lower_bound": 8,
+        "pure_ntt16_frequency_shifts": [],
+        "pure_ntt9_frequency_shifts": [],
+        "pure_reindex_possible": false,
+        "terminal_gauge_mod_q": 1,
+        "untwisted_second_group_minimum_repairs": 2,
+        "untwisted_second_group_witness": {
+          "gauges": [
+            1,
+            1078,
+            1556
+          ],
+          "pivot_rows": [
+            0,
+            1,
+            8
+          ],
+          "profile_proof": {
+            "minimum_standalone_normalizations": 2,
+            "witnesses": [
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 0,
+                "target_profile": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1078,
+                "shift": 0,
+                "target_profile": [
+                  1078,
+                  1078,
+                  1078
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1556,
+                "shift": 0,
+                "target_profile": [
+                  1556,
+                  1556,
+                  1556
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 1,
+                "target_profile": [
+                  1,
+                  722,
+                  2734
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 1888,
+                "shift": 1,
+                "target_profile": [
+                  1888,
+                  1078,
+                  491
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 3364,
+                "shift": 1,
+                "target_profile": [
+                  3364,
+                  1994,
+                  1556
+                ]
+              },
+              {
+                "anchor": 0,
+                "common_gauge": 1,
+                "shift": 2,
+                "target_profile": [
+                  1,
+                  2734,
+                  722
+                ]
+              },
+              {
+                "anchor": 1,
+                "common_gauge": 491,
+                "shift": 2,
+                "target_profile": [
+                  491,
+                  1078,
+                  1888
+                ]
+              },
+              {
+                "anchor": 2,
+                "common_gauge": 1994,
+                "shift": 2,
+                "target_profile": [
+                  1994,
+                  3364,
+                  1556
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "identity": "g^(offset*(16h+q)) = alpha_h * beta_q",
+    "pure_reindex_result": "rejected for both axes and both branches"
+  },
+  "frozen_contract": {
+    "montgomery_r_exponent": 0,
+    "paper_R2_arithmetic_changed": false,
+    "qorder": "C1-natural-Q",
+    "radix2_butterfly_DAG_changed": false,
+    "runtime_qorder_routes_added": 0,
+    "top_split_arithmetic_changed": false,
+    "transform_scale": 4
+  },
+  "range_proof": {
+    "all_preoperations_signed_i16": true,
+    "branches": [
+      {
+        "branch": 0,
+        "first_layer": [
+          {
+            "intermediates": {
+              "base": [
+                -9127,
+                7685
+              ],
+              "difference_b_minus_c": [
+                -3345,
+                3345
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3345,
+                3345
+              ],
+              "twice_a": [
+                -5782,
+                4340
+              ]
+            },
+            "outputs": [
+              [
+                -12472,
+                11030
+              ],
+              [
+                -10923,
+                9481
+              ],
+              [
+                -10923,
+                9481
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "rows": [
+              0,
+              3,
+              6
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6887,
+                6930
+              ],
+              "difference_b_minus_c": [
+                -3448,
+                3405
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3448,
+                3405
+              ],
+              "twice_a": [
+                -3482,
+                3482
+              ]
+            },
+            "outputs": [
+              [
+                -10378,
+                10292
+              ],
+              [
+                -8683,
+                8726
+              ],
+              [
+                -8683,
+                8726
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              1,
+              4,
+              7
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6786,
+                6893
+              ],
+              "difference_b_minus_c": [
+                -3463,
+                3418
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3463,
+                3418
+              ],
+              "twice_a": [
+                -3368,
+                3430
+              ]
+            },
+            "outputs": [
+              [
+                -10294,
+                10266
+              ],
+              [
+                -8582,
+                8689
+              ],
+              [
+                -8582,
+                8689
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              8,
+              2,
+              5
+            ]
+          }
+        ],
+        "global_final_i16": [
+          -21333,
+          21333
+        ],
+        "ntt16_rows": [
+          {
+            "final_range": [
+              -21333,
+              21333
+            ],
+            "frequency_p": 0,
+            "input_range": [
+              -13128,
+              13128
+            ],
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3350
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -15163,
+                  15163
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  652,
+                  1622
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -17102,
+                  17102
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  676,
+                  1915,
+                  1536,
+                  1467
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -19209,
+                  19209
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  3431,
+                  1123,
+                  3132,
+                  1938,
+                  472,
+                  1153,
+                  2443,
+                  2313
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -21333,
+                  21333
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18549,
+              18549
+            ],
+            "frequency_p": 3,
+            "input_range": [
+              -10574,
+              10574
+            ],
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  1307
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12529,
+                  12529
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  592,
+                  2618
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14460,
+                  14460
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2146,
+                  1712,
+                  2626,
+                  658
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16427,
+                  16427
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1970,
+                  1868,
+                  426,
+                  2608,
+                  1998,
+                  2786,
+                  776,
+                  255
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18549,
+                  18549
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18109,
+              18109
+            ],
+            "frequency_p": 6,
+            "input_range": [
+              -10574,
+              10574
+            ],
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2257
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12315,
+                  12315
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  2213,
+                  2674
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14228,
+                  14228
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  635,
+                  3287,
+                  2752,
+                  1332
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16217,
+                  16217
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1513,
+                  466,
+                  3356,
+                  2368,
+                  987,
+                  2975,
+                  238,
+                  889
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18109,
+                  18109
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19301,
+              19301
+            ],
+            "frequency_p": 1,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2887
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13192,
+                  13192
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  99,
+                  2505
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15252,
+                  15252
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2575,
+                  2196,
+                  2803,
+                  3251
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17168,
+                  17168
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  638,
+                  1163,
+                  1061,
+                  2438,
+                  1714,
+                  3352,
+                  683,
+                  416
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19301,
+                  19301
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17440,
+              17440
+            ],
+            "frequency_p": 4,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  727
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11414,
+                  11414
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  2338,
+                  599
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13419,
+                  13419
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  1598,
+                  2512,
+                  2690,
+                  287
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15411,
+                  15411
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  855,
+                  3092,
+                  2045,
+                  623,
+                  3359,
+                  244,
+                  2232,
+                  3050
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17440,
+                  17440
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17628,
+              17631
+            ],
+            "frequency_p": 7,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3300
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11534,
+                  11534
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1020,
+                  353
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13478,
+                  13481
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2741,
+                  2206,
+                  1421,
+                  3376
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15508,
+                  15511
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1964,
+                  2659,
+                  351,
+                  396,
+                  1841,
+                  3318,
+                  542,
+                  3448
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17628,
+                  17631
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19294,
+              19294
+            ],
+            "frequency_p": 8,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  1296
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13115,
+                  13115
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  3421,
+                  1289
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15147,
+                  15147
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  791,
+                  6,
+                  1245,
+                  75
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17160,
+                  17160
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1800,
+                  1233,
+                  1758,
+                  3313,
+                  2159,
+                  2879,
+                  1060,
+                  3146
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19294,
+                  19294
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17336,
+              17336
+            ],
+            "frequency_p": 2,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3296
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11449,
+                  11449
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1664,
+                  725
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13317,
+                  13317
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  1969,
+                  2576,
+                  2142,
+                  1087
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15361,
+                  15361
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  3225,
+                  1777,
+                  557,
+                  3199,
+                  3148,
+                  981,
+                  1323,
+                  163
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17336,
+                  17336
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17436,
+              17436
+            ],
+            "frequency_p": 5,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2322
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11507,
+                  11507
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1829,
+                  1443
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13449,
+                  13449
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  697,
+                  875,
+                  70,
+                  2295
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15446,
+                  15446
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1889,
+                  447,
+                  1142,
+                  402,
+                  1607,
+                  3054,
+                  1074,
+                  148
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17436,
+                  17436
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ],
+        "offset": 20,
+        "r2_physical_output_ranges": [
+          [
+            -13128,
+            13128
+          ],
+          [
+            -10574,
+            10574
+          ],
+          [
+            -10574,
+            10574
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ]
+        ],
+        "second_layer": [
+          {
+            "group": 0,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -8752,
+                8752
+              ],
+              "difference_b_minus_c": [
+                -4376,
+                4376
+              ],
+              "kappa_difference": [
+                -1822,
+                1822
+              ],
+              "sum_b_plus_c": [
+                -4376,
+                4376
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -13128,
+                13128
+              ],
+              [
+                -10574,
+                10574
+              ],
+              [
+                -10574,
+                10574
+              ]
+            ]
+          },
+          {
+            "group": 1,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1735,
+                1735
+              ],
+              [
+                -1741,
+                1741
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          },
+          {
+            "group": 2,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1741,
+                1741
+              ],
+              [
+                -1735,
+                1735
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          }
+        ],
+        "top_split_and_alpha_input_ranges": [
+          [
+            -2891,
+            2170
+          ],
+          [
+            -1741,
+            1741
+          ],
+          [
+            -1741,
+            1696
+          ],
+          [
+            -1723,
+            1723
+          ],
+          [
+            -1706,
+            1663
+          ],
+          [
+            -1722,
+            1722
+          ],
+          [
+            -1622,
+            1622
+          ],
+          [
+            -1742,
+            1742
+          ],
+          [
+            -1684,
+            1715
+          ]
+        ]
+      },
+      {
+        "branch": 1,
+        "first_layer": [
+          {
+            "intermediates": {
+              "base": [
+                -7689,
+                9137
+              ],
+              "difference_b_minus_c": [
+                -3345,
+                3345
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3345,
+                3345
+              ],
+              "twice_a": [
+                -4344,
+                5792
+              ]
+            },
+            "outputs": [
+              [
+                -11034,
+                12482
+              ],
+              [
+                -9485,
+                10933
+              ],
+              [
+                -9485,
+                10933
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "rows": [
+              0,
+              3,
+              6
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6736,
+                6919
+              ],
+              "difference_b_minus_c": [
+                -3437,
+                3406
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3437,
+                3406
+              ],
+              "twice_a": [
+                -3330,
+                3482
+              ]
+            },
+            "outputs": [
+              [
+                -10204,
+                10294
+              ],
+              [
+                -8532,
+                8715
+              ],
+              [
+                -8532,
+                8715
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              1,
+              4,
+              7
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6883,
+                6852
+              ],
+              "difference_b_minus_c": [
+                -3422,
+                3379
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3422,
+                3379
+              ],
+              "twice_a": [
+                -3504,
+                3430
+              ]
+            },
+            "outputs": [
+              [
+                -10348,
+                10188
+              ],
+              [
+                -8679,
+                8648
+              ],
+              [
+                -8679,
+                8648
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              8,
+              2,
+              5
+            ]
+          }
+        ],
+        "global_final_i16": [
+          -21045,
+          21042
+        ],
+        "ntt16_rows": [
+          {
+            "final_range": [
+              -21045,
+              21042
+            ],
+            "frequency_p": 0,
+            "input_range": [
+              -13128,
+              13128
+            ],
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1155
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -14930,
+                  14930
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  1172,
+                  3361
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -16777,
+                  16780
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1982,
+                  286,
+                  576,
+                  118
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -18865,
+                  18862
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2401,
+                  936,
+                  628,
+                  1329,
+                  24,
+                  293,
+                  300,
+                  1934
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -21045,
+                  21042
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18345,
+              18345
+            ],
+            "frequency_p": 3,
+            "input_range": [
+              -10574,
+              10574
+            ],
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1529
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12310,
+                  12310
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  2676,
+                  3285
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14237,
+                  14237
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1669,
+                  642,
+                  1849,
+                  1111
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16240,
+                  16240
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  1565,
+                  1677,
+                  549,
+                  1949,
+                  43,
+                  669,
+                  2266,
+                  3177
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18345,
+                  18345
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18440,
+              18440
+            ],
+            "frequency_p": 6,
+            "input_range": [
+              -10574,
+              10574
+            ],
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  773
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12357,
+                  12357
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  3066,
+                  268
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14338,
+                  14338
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  3263,
+                  2529,
+                  1032,
+                  2228
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16388,
+                  16388
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2948,
+                  844,
+                  2280,
+                  179,
+                  3390,
+                  2495,
+                  891,
+                  1803
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18440,
+                  18440
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19224,
+              19224
+            ],
+            "frequency_p": 1,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1145
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13227,
+                  13227
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  284,
+                  2891
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15007,
+                  15007
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2262,
+                  2552,
+                  619,
+                  787
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17113,
+                  17113
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  384,
+                  1231,
+                  1343,
+                  3288,
+                  3134,
+                  522,
+                  1148,
+                  3068
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19224,
+                  19224
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17476,
+              17476
+            ],
+            "frequency_p": 4,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1845
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11596,
+                  11596
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  1085,
+                  2731
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13404,
+                  13404
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  3192,
+                  942,
+                  1873,
+                  1404
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15365,
+                  15365
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  688,
+                  333,
+                  1686,
+                  2434,
+                  1870,
+                  71,
+                  2633,
+                  2616
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17476,
+                  17476
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17285,
+              17285
+            ],
+            "frequency_p": 7,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  467
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11448,
+                  11448
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  2088,
+                  1292
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13301,
+                  13301
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1460,
+                  3420,
+                  965,
+                  1266
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15316,
+                  15316
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2385,
+                  1893,
+                  428,
+                  1192,
+                  1910,
+                  2864,
+                  3133,
+                  1230
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17285,
+                  17285
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18982,
+              18982
+            ],
+            "frequency_p": 8,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  3037
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13135,
+                  13135
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  211,
+                  2720
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15093,
+                  15093
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1593,
+                  2595,
+                  899,
+                  3053
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16998,
+                  16998
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2904,
+                  883,
+                  1730,
+                  2395,
+                  3391,
+                  1787,
+                  2632,
+                  3324
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18982,
+                  18982
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17570,
+              17570
+            ],
+            "frequency_p": 2,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  2901
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11553,
+                  11553
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  234,
+                  264
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13414,
+                  13414
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2899,
+                  966,
+                  3396,
+                  1704
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15460,
+                  15460
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  1746,
+                  1438,
+                  1083,
+                  690,
+                  746,
+                  753,
+                  2411,
+                  770
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17570,
+                  17570
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17438,
+              17438
+            ],
+            "frequency_p": 5,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  976
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11614,
+                  11614
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  3012,
+                  473
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13408,
+                  13408
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2422,
+                  3353,
+                  2619,
+                  2157
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15406,
+                  15406
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2264,
+                  1136,
+                  644,
+                  372,
+                  2777,
+                  917,
+                  1871,
+                  2820
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17438,
+                  17438
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ],
+        "offset": 4,
+        "r2_physical_output_ranges": [
+          [
+            -13128,
+            13128
+          ],
+          [
+            -10574,
+            10574
+          ],
+          [
+            -10574,
+            10574
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ]
+        ],
+        "second_layer": [
+          {
+            "group": 0,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -8752,
+                8752
+              ],
+              "difference_b_minus_c": [
+                -4376,
+                4376
+              ],
+              "kappa_difference": [
+                -1822,
+                1822
+              ],
+              "sum_b_plus_c": [
+                -4376,
+                4376
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -13128,
+                13128
+              ],
+              [
+                -10574,
+                10574
+              ],
+              [
+                -10574,
+                10574
+              ]
+            ]
+          },
+          {
+            "group": 1,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1735,
+                1735
+              ],
+              [
+                -1741,
+                1741
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          },
+          {
+            "group": 2,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1741,
+                1741
+              ],
+              [
+                -1735,
+                1735
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          }
+        ],
+        "top_split_and_alpha_input_ranges": [
+          [
+            -2172,
+            2896
+          ],
+          [
+            -1665,
+            1741
+          ],
+          [
+            -1706,
+            1663
+          ],
+          [
+            -1622,
+            1622
+          ],
+          [
+            -1715,
+            1684
+          ],
+          [
+            -1716,
+            1716
+          ],
+          [
+            -1723,
+            1723
+          ],
+          [
+            -1722,
+            1722
+          ],
+          [
+            -1752,
+            1715
+          ]
+        ]
+      }
+    ],
+    "candidate_global_i16": [
+      -21333,
+      21333
+    ],
+    "control_global_i16": [
+      -20751,
+      20753
+    ],
+    "method": "closed signed intervals with exact constant-Montgomery enumeration; top-split [-3,4] cases exhaustively seed every branch/row",
+    "new_reductions": 0
+  },
+  "schema": "gt9x16-prod3-natural-q-t0-absorption-map/v1",
+  "selected_candidate": {
+    "branch_specific_ntt16_constants": true,
+    "input_action": "multiply only alpha_h; h=0 is a raw load",
+    "name": "T0-BETA-TO-RADIX2",
+    "new_reductions": 0,
+    "new_routing": 0,
+    "ntt16_action": "replace each existing w by w*beta_(q+d)/beta_q = w*g^(offset*d)",
+    "ntt9_action": "unchanged paper-R2; beta_q is a common q-column gauge",
+    "terminal_action": "no multiply, repair, reduction, or permutation; beta_0=1"
+  },
+  "source_sha256": {
+    "component_oracle": "4106ff97f2a68720d696a96b5e8c8a6a53a9048c2ea4df28cc4c9061697b8eca",
+    "natural_schedule": "4a5e32ab88030798b5d39afd72868d4085df724264ccf78aa495c89c47037ac5",
+    "paper_range": "b44cff81370587c2e830cdda4097ec39d2566adccdf050f96e73c568023289ac",
+    "prod3_schedule": "b03e7f1a1910ef372938a976e56e6ecd8f1a9697898b92c381dbfe356511cd70",
+    "qorder_price": "ef17b94a0a33b7b27e8a599753b5aedae126d7be212fba86b3cbd62ac94d3e27",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9",
+    "top_split_source": "35bbe60c954acf979f26f94a0f953618ffcacf540feb2bad35bca525845e339c"
+  }
+}

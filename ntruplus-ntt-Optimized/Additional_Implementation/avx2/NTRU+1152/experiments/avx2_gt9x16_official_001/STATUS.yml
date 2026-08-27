@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-ma2-qorder-natural-price-complete
+state: checkpoint-gt9x16-prod3-natural-q-t0-absorption-map-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -574,9 +574,20 @@ checkpoint_gt9x16_prod3_qorder_price_method: fixed-common-o3gc-nine-launches-96-
 checkpoint_gt9x16_prod3_qorder_price_result: natural-minus-current-minus160-to-minus166-cycles-all-four-ci-below-zero
 checkpoint_gt9x16_prod3_qorder_price_launches: 35of36-natural-faster-one-normal-aslr-on-outlier
 checkpoint_gt9x16_prod3_qorder_freeze: natural-q-permanent-current-q-historical-control-reopen-only-after-consumer-architecture-redesign
+gt9x16_prod3_natural_q_t0_absorption_map: generated/gt9x16-prod3-natural-q-t0-absorption-map.json
+checkpoint_gt9x16_prod3_t0_factorization: passed-288-cells-alpha-h-times-beta-q
+checkpoint_gt9x16_prod3_t0_pure_reindex: rejected-both-axes-both-branches
+checkpoint_gt9x16_prod3_t0_beta_absorption: passed-existing-branch-specific-radix2-twiddles-zero-terminal-repair
+checkpoint_gt9x16_prod3_t0_alpha_lower_bound: passed-eight-normalizations-per-branch-qblock-attained
+checkpoint_gt9x16_prod3_t0_chain_ledger: current296-candidate288-minus8-per-forward-minus16-per-encap
+checkpoint_gt9x16_prod3_t0_differential: passed-288-basis-inputs-41472-output-cells-canonicalized-exact
+checkpoint_gt9x16_prod3_t0_range: passed-candidate-minus21333-plus21333-all-preoperations-i16-zero-new-reductions
+checkpoint_gt9x16_prod3_t0_movement: passed-zero-new-routes
+checkpoint_gt9x16_prod3_t0_asm: not-authorized-map-and-proof-only
+checkpoint_gt9x16_prod3_t0_benchmark: not-run-by-design
 research_encap_baseline: prod3-persistent-aos-natural-q-plus-direct-h1-plus-native-ma2
 native_reentry_gate: caller-shaped-island-within-0-to-200-cycles-or-known-structural-opportunities-closed
-next_step: gt9x16-prod3-natural-q-t0-absorption-map-and-exact-montgomery-chain-count-proof
+next_step: gt9x16-prod3-natural-q-t0-beta-to-radix2-exact-schedule-and-constants-no-asm
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

@@ -650,3 +650,16 @@ research ABI, and current-Q is historical/control only. This is a
 SUPERCOP-derived caller-island result, not native KEM evidence. The next
 authorized work is T0 absorption mapping and exact Montgomery chain-count
 proof. See `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-PRICE.md`.
+
+Checkpoint GT9X16-PROD3-NATURAL-Q-T0-ABSORPTION-MAP factorizes each T0 factor
+as an NTT9-row gauge times an NTT16-lane gauge under the frozen Natural-Q ABI.
+Pure frequency reindexing is rejected on both axes. The lane gauge is absorbed
+for free into branch-specific existing radix-2 twiddles, while an exact
+paper-R2 profile proof leaves a lower bound of eight row normalizations per
+branch/Q-block. The attainable ledger is therefore 296 to 288 Montgomery
+chains per forward, or -16 across the two Encap forwards, with zero new routes
+or reductions. A 288-input linear-basis proof checks 41,472 output cells, and
+the candidate signed-i16 envelope is `[-21333, 21333]`. Only exact schedule and
+constant-table work is authorized next; ASM, timing, native KEM, and Q-order
+reopening remain forbidden. See
+`CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-ABSORPTION-MAP.md`.
