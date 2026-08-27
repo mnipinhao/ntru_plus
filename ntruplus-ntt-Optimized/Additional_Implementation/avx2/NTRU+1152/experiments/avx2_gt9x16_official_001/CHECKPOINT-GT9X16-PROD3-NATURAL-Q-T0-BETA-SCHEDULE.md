@@ -53,8 +53,8 @@ exact schedule delta of 32 instructions per forward.
 | --- | ---: | ---: | ---: |
 | T0 / alpha memory-form operands | 144 | 128 | -16 |
 | NTT16 memory-form operands | 288 | 288 | 0 |
-| other unchanged operands | 234 | 234 | 0 |
-| **total** | **666** | **650** | **-16** |
+| other unchanged operands | 162 | 162 | 0 |
+| **total** | **594** | **578** | **-16** |
 
 No explicit constant load or table-selection instruction is added. The
 radix-2 operands stay in the same memory-form instruction positions. This
@@ -62,9 +62,10 @@ closes the main hidden-movement concern: the chain reduction is not repaid by
 runtime constant traffic.
 
 The static constant table does grow. Current T0 plus shared radix-2 tables use
-270 YMM vectors (8,640 bytes). The candidate uses 32 alpha vectors plus 252
-branch-specific radix-2 vectors, or 284 vectors (9,088 bytes). The exact
-penalty is 14 vectors / 448 read-only bytes. All 284 vector labels use
+271 YMM vectors (8,672 bytes), including the retained current-Q mask vector.
+The candidate uses 32 alpha vectors plus 252 branch-specific radix-2 vectors,
+or 284 vectors (9,088 bytes). The exact linked penalty is 13 vectors / 416
+read-only bytes. All 284 candidate vector labels use
 `.p2align 5`; no padding is inserted into code.
 
 ## Predicted linked machine shape
@@ -96,7 +97,7 @@ introduced.
 
 The schedule gate passes: all eight chains per forward really disappear,
 runtime constant operands decrease by 16, and routing, data movement,
-reductions, scratch, and peak register pressure do not increase. The 448-byte
+reductions, scratch, and peak register pressure do not increase. The 416-byte
 rodata growth is the only identified debt.
 
 A namespaced ASM correctness and linked-audit checkpoint is authorized next.

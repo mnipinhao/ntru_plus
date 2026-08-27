@@ -90,6 +90,34 @@ KEM, and finally a flat SUPERCOP implementation. A generic `2F+B+I` island is
 still a useful polynomial-multiplication gate, but it is not the universal KEM
 integration milestone. Isolated wins do not skip these steps.
 
+### Risk-tiered prototype workflow
+
+ASM prototypes are cheaper to authorize than serious pricing or production.
+Classify the change before deciding how much pre-ASM evidence to build:
+
+| change class | examples | minimum pre-ASM path |
+| --- | --- | --- |
+| High risk | decomposition, representation/ABI, Q-order/ownership, scale or Montgomery domain | map -> exact schedule -> namespaced ASM |
+| Medium risk | reduction placement, twist/twiddle absorption with unchanged output contract | small identity/range proof -> rough machine budget -> namespaced ASM |
+| Low risk | same-DAG scheduling, register reuse, instruction selection, constant caching | namespaced ASM directly |
+
+The medium-risk gate requires a proved or tightly scoped identity, an unchanged
+input/output contract, a safe range argument, real structural credit, and no
+evident routing, temporary, or spill debt. It does not require a complete
+generated instruction schedule. The low-risk gate requires an independent
+differential oracle but no separate map checkpoint.
+
+After authorization, the linked object is the source of truth for instruction,
+constant-operand, spill, alignment, and footprint ledgers. If it contradicts a
+symbolic estimate, preserve and correct the estimate; do not discard the
+machine result. A short diagnostic benchmark may reject a low-risk prototype,
+but cannot promote it.
+
+Before serious pricing, every surviving candidate still closes the full
+differential, range, ABI, constant-time, sanitizer, linked alignment/spill, and
+same-ELF gates. Native SUPERCOP and production promotion requirements are not
+weakened by this faster prototype workflow.
+
 ### GT pipeline checkpoint order
 
 GT work treats forward, terminal arithmetic, and inverse as one physical-layout

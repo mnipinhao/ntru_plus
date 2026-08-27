@@ -666,12 +666,25 @@ reopening remain forbidden. See
 
 Checkpoint GT9X16-PROD3-NATURAL-Q-T0-BETA-SCHEDULE lowers the selected map to
 an exact frozen-DAG schedule and aligned branch-specific constant table. It
-confirms 296 to 288 Montgomery chains and 666 to 650 runtime constant-memory
+confirms 296 to 288 Montgomery chains and 594 to 578 runtime constant-memory
 operands per forward, with zero routing, data-movement, reduction, scratch, or
 register-pressure debt. Exhaustive machine-constant replay covers 18,743,296
 signed-i16 cases without scale or Montgomery-exponent drift. The sole static
-cost is 14 additional YMM constant vectors, or 448 read-only bytes. All 296
+cost is 13 additional linked YMM constant vectors, or 416 read-only bytes. All 296
 range intervals remain signed-i16, with candidate envelope
 `[-21333, 21333]`. Namespaced ASM correctness and linked audit are authorized
 next; benchmark and native KEM are not. See
 `CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-BETA-SCHEDULE.md`.
+
+Checkpoint GT9X16-PROD3-NATURAL-Q-T0-BETA-ASM directly realizes the complete
+namespaced Natural-Q forward without tile or branch staging. Canonical
+coefficient-domain differential, impulses, random-small, boundary,
+alias/canary, and sanitizer gates pass. The linked candidate removes eight
+Montgomery chains, 32 instructions, and 16 constant-memory operands per
+forward while routing, data movement, Barrett reductions, and the output ABI
+remain identical; both objects have zero stack, spill, call, branch, and
+`vzeroupper`. Linked accounting corrects the Natural-Q baseline to
+`594 -> 578` constant operands and measures `.text -192` bytes and
+`.rodata +416` bytes. Producer/caller-island pricing is authorized next, but
+no benchmark or native KEM was run here. See
+`CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-BETA-ASM.md`.

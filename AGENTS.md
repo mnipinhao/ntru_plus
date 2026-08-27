@@ -76,6 +76,26 @@ before making changes.
 - Produce the final KpqC-style package through the documented non-overwriting
   exporter; never assemble it manually.
 
+## Risk-tiered ASM prototype gates
+
+- Keep promotion strict, but make a namespaced ASM prototype gate proportional
+  to risk. Do not require a full research checkpoint sequence merely to learn
+  the actual linked machine schedule.
+- Representation, ABI, ownership, decomposition, scale, or Montgomery-domain
+  changes remain high risk and require map, exact schedule, ASM, then timing.
+- Arithmetic-placement or reduction changes that preserve the frozen external
+  contract may proceed after a small identity/range proof, a rough machine
+  budget, real structural credit, and no evident routing/temp/spill debt.
+- Same-DAG instruction selection, register allocation, constant caching, and
+  peepholes may proceed directly to namespaced ASM, differential testing,
+  linked audit, and a short diagnostic benchmark.
+- Let the linked object correct schedule estimates. Record the correction
+  instead of forcing machine evidence to match a stale symbolic ledger.
+- Cheap ASM authorization never relaxes correctness or promotion. Serious
+  pricing still requires full differential, exact linked ABI/range/constant-
+  time audit, zero unexplained spill, sanitizer, and the prescribed same-ELF
+  methodology. Native KEM and production gates remain unchanged.
+
 ## GT pipeline co-design rules
 
 - Audit the linked binary, not only C source, for hot-stage calls, frames,

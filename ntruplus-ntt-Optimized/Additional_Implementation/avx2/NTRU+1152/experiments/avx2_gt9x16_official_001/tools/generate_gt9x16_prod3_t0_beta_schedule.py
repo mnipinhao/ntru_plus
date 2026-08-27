@@ -126,7 +126,7 @@ def main() -> int:
         "PROD3_LOAD_TWIST \\branch,\\base,0,\\qblock,7",
         "PROD3_LOAD_TWIST \\branch,\\base,8,\\qblock,15",
         "PROD3_PASS_A 0,0,0", "PROD3_PASS_A 1,1152,3",
-        "PROD3_PASS_B 0,0", "PROD3_PASS_B 1152,8",
+        "PROD3_PASS_B 0,0,0", "PROD3_PASS_B 1,1152,8",
     )
     if any(fragment not in source for fragment in required_source):
         raise SystemExit("frozen producer call geometry changed")
@@ -138,7 +138,10 @@ def main() -> int:
         count_labels(b1_constants, r"^\.Lprod3_b1_r\d+_q\d+_twist(?:_qinv)?:$"))
     current_radix2_vectors = count_labels(
         b0_constants, r"^\.Lprod3_b0_p\d+_distance\d+(?:_lo|_hi)?_(?:zeta|qinv):$")
-    if current_t0_vectors != 144 or current_radix2_vectors != 126:
+    current_aux_vectors = count_labels(
+        b0_constants, r"^\.Lprod3_b0_ma2_q_mask:$")
+    if (current_t0_vectors != 144 or current_radix2_vectors != 126 or
+            current_aux_vectors != 1):
         raise SystemExit("current constant-table geometry changed")
 
     scaled_rows = {row["physical_row"]: row
@@ -245,16 +248,21 @@ def main() -> int:
         raise SystemExit(f"signed-i16 preoperation failure: {unsafe[0]}")
 
     current_producer = natural["component"]["producer_natural"]
-    current_constant_operands = full_audit["linked_machine_counts"][
+    current_q_operands = full_audit["linked_machine_counts"][
         "prod3_persistent_aos_full"]["constant_memory_operands"]
-    if current_constant_operands != 666:
+    qorder_component = natural["component"]
+    current_constant_operands = current_q_operands + (
+        qorder_component["producer_natural"]["vpshufb"] -
+        qorder_component["producer_current"]["vpshufb"])
+    if current_constant_operands != 594:
         raise SystemExit("frozen producer constant-memory operand count changed")
     t0_operand_delta = -16
     candidate_constant_operands = current_constant_operands + t0_operand_delta
-    current_table_vectors = current_t0_vectors + current_radix2_vectors
+    current_table_vectors = (current_t0_vectors + current_radix2_vectors +
+                             current_aux_vectors)
     candidate_table_vectors = candidate_alpha_vectors + candidate_radix2_vectors
     table_delta_bytes = 32 * (candidate_table_vectors - current_table_vectors)
-    if table_delta_bytes != 448:
+    if table_delta_bytes != 416:
         raise SystemExit("constant table footprint delta changed")
 
     document = {
@@ -308,6 +316,7 @@ def main() -> int:
         "constant_table_footprint": {
             "current": {"T0_vectors": current_t0_vectors,
                         "shared_radix2_vectors": current_radix2_vectors,
+                        "linked_auxiliary_vectors": current_aux_vectors,
                         "total_vectors": current_table_vectors,
                         "bytes": current_table_vectors * 32},
             "candidate": {"alpha_vectors": candidate_alpha_vectors,
@@ -316,7 +325,7 @@ def main() -> int:
                           "bytes": candidate_table_vectors * 32},
             "delta_vectors": candidate_table_vectors - current_table_vectors,
             "delta_bytes": table_delta_bytes,
-            "interpretation": "runtime operands decrease, but duplicating radix2 tables by branch adds 448 static rodata bytes",
+            "interpretation": "runtime operands decrease; branch-specific radix2 tables add 416 linked rodata bytes after the control's retained 32-byte mask is counted",
         },
         "predicted_linked_machine_ledger_per_forward": {
             "basis": "frozen linked Natural-Q producer plus exact four-instruction Montgomery-chain deletion",
@@ -374,7 +383,7 @@ def main() -> int:
     write(args.asm_constants, "\n".join(lines) + "\n", args.check)
     write(args.output, json.dumps(document, indent=2, sort_keys=True) + "\n",
           args.check)
-    print("T0 beta schedule: -8 chains, -16 constant operands, +448 rodata bytes; ASM authorized")
+    print("T0 beta schedule: -8 chains, -16 constant operands, +416 linked rodata bytes; ASM authorized")
     return 0
 
 

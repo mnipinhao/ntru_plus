@@ -33,7 +33,14 @@
 .macro PROD3_LOAD_TWIST branch,base,row,qblock,reg
   /* Top-split source h is (5*GT-row) mod 9; q/j remain AoS. */
   vmovdqu ymm\reg, YMMWORD PTR [rdi + (\base) + ((5*(\row)%9)*128) + (\qblock)*32]
+#ifdef PROD3_T0_BETA
+  /* beta_q lives in the branch-specific radix-2 table; alpha_0 is one. */
+  .if \row != 0
+    PROD3_MONT6 \reg,0,.Lprod3_t0b_b\branch\()_r\row\()_alpha,.Lprod3_t0b_b\branch\()_r\row\()_alpha_qinv
+  .endif
+#else
   PROD3_MONT6 \reg,0,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist_qinv
+#endif
 .endm
 
 .macro PROD3_PASS_A branch,base,qblock
@@ -97,7 +104,7 @@
   vpaddw ymm\x, ymm\x, ymm\hi
 .endm
 
-.macro PROD3_PASS_B base,row
+.macro PROD3_PASS_B branch,base,row
   /* All four source vectors are loaded before this row is overwritten. */
   vmovdqu ymm0, YMMWORD PTR [rdi + (\base) + (\row)*128 + 0]
   vmovdqu ymm1, YMMWORD PTR [rdi + (\base) + (\row)*128 + 32]
@@ -105,20 +112,34 @@
   vmovdqu ymm3, YMMWORD PTR [rdi + (\base) + (\row)*128 + 96]
 
   /* D8 then D4 preserve contiguous AoS q blocks: zero routing. */
+#ifdef PROD3_T0_BETA
+  PROD3_BFLY 0,2,4,5,.Lprod3_t0b_b\branch\()_p\row\()_distance8_zeta,.Lprod3_t0b_b\branch\()_p\row\()_distance8_qinv
+  PROD3_BFLY 1,3,6,7,.Lprod3_t0b_b\branch\()_p\row\()_distance8_zeta,.Lprod3_t0b_b\branch\()_p\row\()_distance8_qinv
+  PROD3_BFLY 0,1,4,5,.Lprod3_t0b_b\branch\()_p\row\()_distance4_lo_zeta,.Lprod3_t0b_b\branch\()_p\row\()_distance4_lo_qinv
+  PROD3_BFLY 2,3,6,7,.Lprod3_t0b_b\branch\()_p\row\()_distance4_hi_zeta,.Lprod3_t0b_b\branch\()_p\row\()_distance4_hi_qinv
+#else
   PROD3_BFLY 0,2,4,5,.Lprod3_b0_p\row\()_distance8_zeta,.Lprod3_b0_p\row\()_distance8_qinv
   PROD3_BFLY 1,3,6,7,.Lprod3_b0_p\row\()_distance8_zeta,.Lprod3_b0_p\row\()_distance8_qinv
   PROD3_BFLY 0,1,4,5,.Lprod3_b0_p\row\()_distance4_lo_zeta,.Lprod3_b0_p\row\()_distance4_lo_qinv
   PROD3_BFLY 2,3,6,7,.Lprod3_b0_p\row\()_distance4_hi_zeta,.Lprod3_b0_p\row\()_distance4_hi_qinv
+#endif
 
   /* Selected C1 D2 packing: each chain owns two four-q blocks. */
   vperm2i128 ymm4, ymm0, ymm1, 0x20
   vperm2i128 ymm5, ymm0, ymm1, 0x31
   vperm2i128 ymm6, ymm2, ymm3, 0x20
   vperm2i128 ymm7, ymm2, ymm3, 0x31
+#ifdef PROD3_T0_BETA
+  vpmullw ymm8, ymm5, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance2_lo_qinv]
+  vpmullw ymm10, ymm7, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance2_hi_qinv]
+  vpmulhw ymm9, ymm5, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance2_lo_zeta]
+  vpmulhw ymm11, ymm7, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance2_hi_zeta]
+#else
   vpmullw ymm8, ymm5, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance2_lo_qinv]
   vpmullw ymm10, ymm7, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance2_hi_qinv]
   vpmulhw ymm9, ymm5, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance2_lo_zeta]
   vpmulhw ymm11, ymm7, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance2_hi_zeta]
+#endif
   vpmulhw ymm8, ymm8, ymm15
   vpmulhw ymm10, ymm10, ymm15
   vpsubw ymm8, ymm9, ymm8
@@ -133,10 +154,17 @@
   vpunpckhqdq ymm1, ymm4, ymm5
   vpunpcklqdq ymm2, ymm6, ymm7
   vpunpckhqdq ymm3, ymm6, ymm7
+#ifdef PROD3_T0_BETA
+  vpmullw ymm4, ymm1, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_lo_qinv]
+  vpmullw ymm6, ymm3, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_hi_qinv]
+  vpmulhw ymm5, ymm1, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_lo_zeta]
+  vpmulhw ymm7, ymm3, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_hi_zeta]
+#else
   vpmullw ymm4, ymm1, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_lo_qinv]
   vpmullw ymm6, ymm3, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_hi_qinv]
   vpmulhw ymm5, ymm1, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_lo_zeta]
   vpmulhw ymm7, ymm3, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_hi_zeta]
+#endif
   vpmulhw ymm4, ymm4, ymm15
   vpmulhw ymm6, ymm6, ymm15
   vpsubw ymm4, ymm5, ymm4
@@ -196,15 +224,15 @@ ntruplus1152_exp001_gt9x16_prod3_aos_branch0:
   PROD3_PASS_A 0,0,2
   PROD3_PASS_A 0,0,3
   vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
-  PROD3_PASS_B 0,0
-  PROD3_PASS_B 0,1
-  PROD3_PASS_B 0,2
-  PROD3_PASS_B 0,3
-  PROD3_PASS_B 0,4
-  PROD3_PASS_B 0,5
-  PROD3_PASS_B 0,6
-  PROD3_PASS_B 0,7
-  PROD3_PASS_B 0,8
+  PROD3_PASS_B 0,0,0
+  PROD3_PASS_B 0,0,1
+  PROD3_PASS_B 0,0,2
+  PROD3_PASS_B 0,0,3
+  PROD3_PASS_B 0,0,4
+  PROD3_PASS_B 0,0,5
+  PROD3_PASS_B 0,0,6
+  PROD3_PASS_B 0,0,7
+  PROD3_PASS_B 0,0,8
   ret
 .size ntruplus1152_exp001_gt9x16_prod3_aos_branch0, .-ntruplus1152_exp001_gt9x16_prod3_aos_branch0
 #endif
@@ -222,35 +250,39 @@ ntruplus1152_exp001_gt9x16_prod3_aos_full:
   PROD3_PASS_A 0,0,2
   PROD3_PASS_A 0,0,3
   vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
-  PROD3_PASS_B 0,0
-  PROD3_PASS_B 0,1
-  PROD3_PASS_B 0,2
-  PROD3_PASS_B 0,3
-  PROD3_PASS_B 0,4
-  PROD3_PASS_B 0,5
-  PROD3_PASS_B 0,6
-  PROD3_PASS_B 0,7
-  PROD3_PASS_B 0,8
+  PROD3_PASS_B 0,0,0
+  PROD3_PASS_B 0,0,1
+  PROD3_PASS_B 0,0,2
+  PROD3_PASS_B 0,0,3
+  PROD3_PASS_B 0,0,4
+  PROD3_PASS_B 0,0,5
+  PROD3_PASS_B 0,0,6
+  PROD3_PASS_B 0,0,7
+  PROD3_PASS_B 0,0,8
 
   PROD3_PASS_A 1,1152,0
   PROD3_PASS_A 1,1152,1
   PROD3_PASS_A 1,1152,2
   PROD3_PASS_A 1,1152,3
   vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
-  PROD3_PASS_B 1152,0
-  PROD3_PASS_B 1152,1
-  PROD3_PASS_B 1152,2
-  PROD3_PASS_B 1152,3
-  PROD3_PASS_B 1152,4
-  PROD3_PASS_B 1152,5
-  PROD3_PASS_B 1152,6
-  PROD3_PASS_B 1152,7
-  PROD3_PASS_B 1152,8
+  PROD3_PASS_B 1,1152,0
+  PROD3_PASS_B 1,1152,1
+  PROD3_PASS_B 1,1152,2
+  PROD3_PASS_B 1,1152,3
+  PROD3_PASS_B 1,1152,4
+  PROD3_PASS_B 1,1152,5
+  PROD3_PASS_B 1,1152,6
+  PROD3_PASS_B 1,1152,7
+  PROD3_PASS_B 1,1152,8
   ret
 .size ntruplus1152_exp001_gt9x16_prod3_aos_full, .-ntruplus1152_exp001_gt9x16_prod3_aos_full
 
 .include "generated/gt9x16-ntt16-constants.inc"
+#ifdef PROD3_T0_BETA
+.include "generated/gt9x16-prod3-natural-q-t0-beta-constants.inc"
+#else
 .include "generated/gt9x16-prod3-aos-branch0-constants.inc"
 .include "generated/gt9x16-prod3-aos-branch1-constants.inc"
+#endif
 
 .section .note.GNU-stack,"",@progbits

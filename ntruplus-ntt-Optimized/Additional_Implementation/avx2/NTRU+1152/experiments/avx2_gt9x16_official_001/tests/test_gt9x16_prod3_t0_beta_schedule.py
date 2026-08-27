@@ -46,18 +46,18 @@ assert chains["encap_two_forward_delta"] == -16
 
 operands = data["constant_memory_operand_ledger_per_forward"]
 assert operands["current"] == {"T0": 144, "NTT16": 288,
-                               "other_unchanged": 234, "total": 666}
+                               "other_unchanged": 162, "total": 594}
 assert operands["candidate"] == {"alpha_normalization": 128,
                                  "combined_NTT16": 288,
-                                 "other_unchanged": 234, "total": 650}
+                                 "other_unchanged": 162, "total": 578}
 assert operands["delta"]["total"] == -16
 assert operands["new_explicit_constant_loads"] == 0
 assert operands["new_table_selection_instructions"] == 0
 
 footprint = data["constant_table_footprint"]
-assert footprint["current"]["total_vectors"] == 270
+assert footprint["current"]["total_vectors"] == 271
 assert footprint["candidate"]["total_vectors"] == 284
-assert footprint["delta_bytes"] == 448
+assert footprint["delta_bytes"] == 416
 
 machine = data["predicted_linked_machine_ledger_per_forward"]
 assert machine["current"]["instructions"] == 2819
