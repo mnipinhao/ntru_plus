@@ -1,0 +1,2830 @@
+{
+  "checkpoint": "ENCAP-MA2-CT-EGRESS-H4-M0-SCALE-GAUGE",
+  "decision": {
+    "asm_authorized": false,
+    "benchmark_authorized": false,
+    "m0_complete": true,
+    "native_kem_authorized": false,
+    "next": "H4-M1 terminal ownership/orientation search under caller-wide scale1; no ASM",
+    "scale4_terminal_inv4_is_not_mandatory": true,
+    "selected_for_h4_m1_mapping": "M0-C2-caller-wide",
+    "zero_terminal_reduction_is_rejected": true
+  },
+  "frozen_contract": {
+    "asm_written": false,
+    "decomposition": "persistent-AoS GT9x16",
+    "lambda_placement_changed": false,
+    "ma2_formula_changed": false,
+    "qorder": "Natural-Q",
+    "t0_beta": true,
+    "terminal_owner_changed": false
+  },
+  "h3_constants": {
+    "quarter_scale_h": {
+      "chain_positions_changed": false,
+      "constant_mod_q": 1081,
+      "constant_signed": 1081,
+      "exact_input_cases": 3457,
+      "output_range_i16": [
+        -1726,
+        1783
+      ],
+      "qinv_signed16": 17081,
+      "semantic_scale": 2593
+    },
+    "scale1_h": {
+      "chain_positions_changed": false,
+      "constant_mod_q": 867,
+      "constant_signed": 867,
+      "exact_input_cases": 3457,
+      "output_range_i16": [
+        -1719,
+        1765
+      ],
+      "qinv_signed16": 2787,
+      "semantic_scale": 1
+    }
+  },
+  "machine_budget": {
+    "barrett_vector_instructions": 3,
+    "constant_memory_operand_delta_per_encap": 32,
+    "current_terminal_and_added_instructions": 576,
+    "data_load_store_delta": 0,
+    "minimum_new_shared_constant_table_bytes": 64,
+    "montgomery_vector_chain_instructions": 4,
+    "new_temporary_vectors": 0,
+    "note": "linked ASM may correct instruction taxonomy; this is a pre-ASM structural budget",
+    "routing_delta": 0,
+    "selected_delta_instructions_per_encap": -80,
+    "selected_terminal_and_added_instructions": 496
+  },
+  "producer_scale1": {
+    "added_chains_per_forward": 8,
+    "all_preoperations_signed_i16": true,
+    "alpha_sites": [
+      {
+        "branch": 0,
+        "new_factor_mod_q": 2593,
+        "new_montgomery_signed": -901,
+        "new_qinv_signed16": 16379,
+        "old_factor_mod_q": 1,
+        "physical_row": 0,
+        "was_raw_load": true
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 3177,
+        "new_montgomery_signed": -324,
+        "new_qinv_signed16": 5308,
+        "old_factor_mod_q": 2337,
+        "physical_row": 1,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 1998,
+        "new_montgomery_signed": 139,
+        "new_qinv_signed16": 27659,
+        "old_factor_mod_q": 1078,
+        "physical_row": 2,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 2376,
+        "new_montgomery_signed": -115,
+        "new_qinv_signed16": 20493,
+        "old_factor_mod_q": 2590,
+        "physical_row": 3,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 133,
+        "new_montgomery_signed": 1191,
+        "new_qinv_signed16": -2521,
+        "old_factor_mod_q": 532,
+        "physical_row": 4,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 3148,
+        "new_montgomery_signed": 482,
+        "new_qinv_signed16": 5858,
+        "old_factor_mod_q": 2221,
+        "physical_row": 5,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 1637,
+        "new_montgomery_signed": 1351,
+        "new_qinv_signed16": -31033,
+        "old_factor_mod_q": 3091,
+        "physical_row": 6,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 2227,
+        "new_montgomery_signed": 1046,
+        "new_qinv_signed16": 23318,
+        "old_factor_mod_q": 1994,
+        "physical_row": 7,
+        "was_raw_load": false
+      },
+      {
+        "branch": 0,
+        "new_factor_mod_q": 1616,
+        "new_montgomery_signed": 981,
+        "new_qinv_signed16": -30635,
+        "old_factor_mod_q": 3007,
+        "physical_row": 8,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 2593,
+        "new_montgomery_signed": -901,
+        "new_qinv_signed16": 16379,
+        "old_factor_mod_q": 1,
+        "physical_row": 0,
+        "was_raw_load": true
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 1998,
+        "new_montgomery_signed": 139,
+        "new_qinv_signed16": 27659,
+        "old_factor_mod_q": 1078,
+        "physical_row": 1,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 770,
+        "new_montgomery_signed": 891,
+        "new_qinv_signed16": -14597,
+        "old_factor_mod_q": 3080,
+        "physical_row": 2,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 380,
+        "new_montgomery_signed": -548,
+        "new_qinv_signed16": -7204,
+        "old_factor_mod_q": 1520,
+        "physical_row": 3,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 98,
+        "new_montgomery_signed": -578,
+        "new_qinv_signed16": -1858,
+        "old_factor_mod_q": 392,
+        "physical_row": 4,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 1934,
+        "new_montgomery_signed": -824,
+        "new_qinv_signed16": 28872,
+        "old_factor_mod_q": 822,
+        "physical_row": 5,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 1081,
+        "new_montgomery_signed": 115,
+        "new_qinv_signed16": -20493,
+        "old_factor_mod_q": 867,
+        "physical_row": 6,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 309,
+        "new_montgomery_signed": -482,
+        "new_qinv_signed16": -5858,
+        "old_factor_mod_q": 1236,
+        "physical_row": 7,
+        "was_raw_load": false
+      },
+      {
+        "branch": 1,
+        "new_factor_mod_q": 389,
+        "new_montgomery_signed": 1586,
+        "new_qinv_signed16": -7374,
+        "old_factor_mod_q": 1556,
+        "physical_row": 8,
+        "was_raw_load": false
+      }
+    ],
+    "branches": [
+      {
+        "branch": 0,
+        "first_layer": [
+          {
+            "intermediates": {
+              "base": [
+                -9062,
+                7761
+              ],
+              "difference_b_minus_c": [
+                -3304,
+                3397
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3421,
+                3280
+              ],
+              "twice_a": [
+                -5782,
+                4340
+              ]
+            },
+            "outputs": [
+              [
+                -12624,
+                10900
+              ],
+              [
+                -10858,
+                9557
+              ],
+              [
+                -10858,
+                9557
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2253,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "rows": [
+              0,
+              3,
+              6
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6705,
+                6699
+              ],
+              "difference_b_minus_c": [
+                -3355,
+                3361
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3355,
+                3361
+              ],
+              "twice_a": [
+                -3344,
+                3344
+              ]
+            },
+            "outputs": [
+              [
+                -10054,
+                10066
+              ],
+              [
+                -8501,
+                8495
+              ],
+              [
+                -8501,
+                8495
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              1,
+              4,
+              7
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6675,
+                6651
+              ],
+              "difference_b_minus_c": [
+                -3223,
+                3247
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3223,
+                3247
+              ],
+              "twice_a": [
+                -3428,
+                3428
+              ]
+            },
+            "outputs": [
+              [
+                -9874,
+                9922
+              ],
+              [
+                -8471,
+                8447
+              ],
+              [
+                -8471,
+                8447
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              8,
+              2,
+              5
+            ]
+          }
+        ],
+        "global_final_i16": [
+          -21469,
+          21335
+        ],
+        "ntt16_rows": [
+          {
+            "final_range": [
+              -21469,
+              21335
+            ],
+            "frequency_p": 0,
+            "input_range": [
+              -13258,
+              13128
+            ],
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3350
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -15293,
+                  15163
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  652,
+                  1622
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -17232,
+                  17102
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  676,
+                  1915,
+                  1536,
+                  1467
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -19343,
+                  19213
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  3431,
+                  1123,
+                  3132,
+                  1938,
+                  472,
+                  1153,
+                  2443,
+                  2313
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -21469,
+                  21335
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18684,
+              18568
+            ],
+            "frequency_p": 3,
+            "input_range": [
+              -10704,
+              10574
+            ],
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  1307
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12666,
+                  12536
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  592,
+                  2618
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14596,
+                  14473
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2146,
+                  1712,
+                  2626,
+                  658
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16558,
+                  16441
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1970,
+                  1868,
+                  426,
+                  2608,
+                  1998,
+                  2786,
+                  776,
+                  255
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18684,
+                  18568
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18239,
+              18109
+            ],
+            "frequency_p": 6,
+            "input_range": [
+              -10704,
+              10574
+            ],
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2257
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12445,
+                  12315
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  2213,
+                  2674
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14358,
+                  14228
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  635,
+                  3287,
+                  2752,
+                  1332
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16347,
+                  16217
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1513,
+                  466,
+                  3356,
+                  2368,
+                  987,
+                  2975,
+                  238,
+                  889
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18239,
+                  18109
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19301,
+              19301
+            ],
+            "frequency_p": 1,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2887
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13192,
+                  13192
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  99,
+                  2505
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15252,
+                  15252
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2575,
+                  2196,
+                  2803,
+                  3251
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17168,
+                  17168
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  638,
+                  1163,
+                  1061,
+                  2438,
+                  1714,
+                  3352,
+                  683,
+                  416
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19301,
+                  19301
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17440,
+              17440
+            ],
+            "frequency_p": 4,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  727
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11414,
+                  11414
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  2338,
+                  599
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13419,
+                  13419
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  1598,
+                  2512,
+                  2690,
+                  287
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15411,
+                  15411
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  855,
+                  3092,
+                  2045,
+                  623,
+                  3359,
+                  244,
+                  2232,
+                  3050
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17440,
+                  17440
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17628,
+              17631
+            ],
+            "frequency_p": 7,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3300
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11534,
+                  11534
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1020,
+                  353
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13478,
+                  13481
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  2741,
+                  2206,
+                  1421,
+                  3376
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15508,
+                  15511
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1964,
+                  2659,
+                  351,
+                  396,
+                  1841,
+                  3318,
+                  542,
+                  3448
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17628,
+                  17631
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19294,
+              19294
+            ],
+            "frequency_p": 8,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  1296
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13115,
+                  13115
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  3421,
+                  1289
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15147,
+                  15147
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  791,
+                  6,
+                  1245,
+                  75
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17160,
+                  17160
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1800,
+                  1233,
+                  1758,
+                  3313,
+                  2159,
+                  2879,
+                  1060,
+                  3146
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19294,
+                  19294
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17336,
+              17336
+            ],
+            "frequency_p": 2,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  3296
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11449,
+                  11449
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1664,
+                  725
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13317,
+                  13317
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  1969,
+                  2576,
+                  2142,
+                  1087
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15361,
+                  15361
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  3225,
+                  1777,
+                  557,
+                  3199,
+                  3148,
+                  981,
+                  1323,
+                  163
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17336,
+                  17336
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17436,
+              17436
+            ],
+            "frequency_p": 5,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "combined_twiddles_mod_q": [
+                  2322
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11507,
+                  11507
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "combined_twiddles_mod_q": [
+                  1829,
+                  1443
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13449,
+                  13449
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "combined_twiddles_mod_q": [
+                  697,
+                  875,
+                  70,
+                  2295
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15446,
+                  15446
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "combined_twiddles_mod_q": [
+                  1889,
+                  447,
+                  1142,
+                  402,
+                  1607,
+                  3054,
+                  1074,
+                  148
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17436,
+                  17436
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ],
+        "r2_physical_output_ranges": [
+          [
+            -13258,
+            13128
+          ],
+          [
+            -10704,
+            10574
+          ],
+          [
+            -10704,
+            10574
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ]
+        ],
+        "second_layer": [
+          {
+            "group": 0,
+            "inputs": [
+              [
+                -2253,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -8882,
+                8752
+              ],
+              "difference_b_minus_c": [
+                -4376,
+                4376
+              ],
+              "kappa_difference": [
+                -1822,
+                1822
+              ],
+              "sum_b_plus_c": [
+                -4376,
+                4376
+              ],
+              "twice_a": [
+                -4506,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -13258,
+                13128
+              ],
+              [
+                -10704,
+                10574
+              ],
+              [
+                -10704,
+                10574
+              ]
+            ]
+          },
+          {
+            "group": 1,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1735,
+                1735
+              ],
+              [
+                -1741,
+                1741
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          },
+          {
+            "group": 2,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1741,
+                1741
+              ],
+              [
+                -1735,
+                1735
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          }
+        ],
+        "top_split_and_alpha_input_ranges": [
+          [
+            -2891,
+            2170
+          ],
+          [
+            -1672,
+            1672
+          ],
+          [
+            -1550,
+            1574
+          ],
+          [
+            -1667,
+            1643
+          ],
+          [
+            -1673,
+            1679
+          ],
+          [
+            -1673,
+            1673
+          ],
+          [
+            -1754,
+            1637
+          ],
+          [
+            -1682,
+            1682
+          ],
+          [
+            -1714,
+            1714
+          ]
+        ]
+      },
+      {
+        "branch": 1,
+        "first_layer": [
+          {
+            "intermediates": {
+              "base": [
+                -7757,
+                9072
+              ],
+              "difference_b_minus_c": [
+                -3347,
+                3346
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3280,
+                3413
+              ],
+              "twice_a": [
+                -4344,
+                5792
+              ]
+            },
+            "outputs": [
+              [
+                -10904,
+                12618
+              ],
+              [
+                -9553,
+                10868
+              ],
+              [
+                -9553,
+                10868
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2247
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "rows": [
+              0,
+              3,
+              6
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6573,
+                6635
+              ],
+              "difference_b_minus_c": [
+                -3387,
+                3449
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3449,
+                3387
+              ],
+              "twice_a": [
+                -3186,
+                3186
+              ]
+            },
+            "outputs": [
+              [
+                -10084,
+                9960
+              ],
+              [
+                -8369,
+                8431
+              ],
+              [
+                -8369,
+                8431
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              1,
+              4,
+              7
+            ]
+          },
+          {
+            "intermediates": {
+              "base": [
+                -6715,
+                6709
+              ],
+              "difference_b_minus_c": [
+                -3345,
+                3351
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3345,
+                3351
+              ],
+              "twice_a": [
+                -3364,
+                3364
+              ]
+            },
+            "outputs": [
+              [
+                -10054,
+                10066
+              ],
+              [
+                -8511,
+                8505
+              ],
+              [
+                -8511,
+                8505
+              ]
+            ],
+            "outputs_after_barrett": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2004,
+                2004
+              ],
+              [
+                -2004,
+                2004
+              ]
+            ],
+            "rows": [
+              8,
+              2,
+              5
+            ]
+          }
+        ],
+        "global_final_i16": [
+          -21045,
+          21161
+        ],
+        "ntt16_rows": [
+          {
+            "final_range": [
+              -21045,
+              21161
+            ],
+            "frequency_p": 0,
+            "input_range": [
+              -13128,
+              13246
+            ],
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1155
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -14930,
+                  15048
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  1172,
+                  3361
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -16783,
+                  16903
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1982,
+                  286,
+                  576,
+                  118
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -18865,
+                  18981
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2401,
+                  936,
+                  628,
+                  1329,
+                  24,
+                  293,
+                  300,
+                  1934
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -21045,
+                  21161
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18345,
+              18463
+            ],
+            "frequency_p": 3,
+            "input_range": [
+              -10574,
+              10692
+            ],
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1529
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12310,
+                  12428
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  2676,
+                  3285
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14237,
+                  14355
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1669,
+                  642,
+                  1849,
+                  1111
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16240,
+                  16358
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  1565,
+                  1677,
+                  549,
+                  1949,
+                  43,
+                  669,
+                  2266,
+                  3177
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18345,
+                  18463
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18448,
+              18559
+            ],
+            "frequency_p": 6,
+            "input_range": [
+              -10574,
+              10692
+            ],
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  773
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -12358,
+                  12476
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  3066,
+                  268
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -14339,
+                  14456
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  3263,
+                  2529,
+                  1032,
+                  2228
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16396,
+                  16515
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2948,
+                  844,
+                  2280,
+                  179,
+                  3390,
+                  2495,
+                  891,
+                  1803
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18448,
+                  18559
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -19224,
+              19224
+            ],
+            "frequency_p": 1,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1145
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13227,
+                  13227
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  284,
+                  2891
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15007,
+                  15007
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2262,
+                  2552,
+                  619,
+                  787
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -17113,
+                  17113
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  384,
+                  1231,
+                  1343,
+                  3288,
+                  3134,
+                  522,
+                  1148,
+                  3068
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -19224,
+                  19224
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17476,
+              17476
+            ],
+            "frequency_p": 4,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  1845
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11596,
+                  11596
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  1085,
+                  2731
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13404,
+                  13404
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  3192,
+                  942,
+                  1873,
+                  1404
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15365,
+                  15365
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  688,
+                  333,
+                  1686,
+                  2434,
+                  1870,
+                  71,
+                  2633,
+                  2616
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17476,
+                  17476
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17285,
+              17285
+            ],
+            "frequency_p": 7,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  467
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11448,
+                  11448
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  2088,
+                  1292
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13301,
+                  13301
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1460,
+                  3420,
+                  965,
+                  1266
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15316,
+                  15316
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2385,
+                  1893,
+                  428,
+                  1192,
+                  1910,
+                  2864,
+                  3133,
+                  1230
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17285,
+                  17285
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -18982,
+              18982
+            ],
+            "frequency_p": 8,
+            "input_range": [
+              -11328,
+              11328
+            ],
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  3037
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -13135,
+                  13135
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  211,
+                  2720
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -15093,
+                  15093
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  1593,
+                  2595,
+                  899,
+                  3053
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -16998,
+                  16998
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2904,
+                  883,
+                  1730,
+                  2395,
+                  3391,
+                  1787,
+                  2632,
+                  3324
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -18982,
+                  18982
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17570,
+              17570
+            ],
+            "frequency_p": 2,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  2901
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11553,
+                  11553
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  234,
+                  264
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13414,
+                  13414
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2899,
+                  966,
+                  3396,
+                  1704
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15460,
+                  15460
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  1746,
+                  1438,
+                  1083,
+                  690,
+                  746,
+                  753,
+                  2411,
+                  770
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17570,
+                  17570
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "final_range": [
+              -17438,
+              17438
+            ],
+            "frequency_p": 5,
+            "input_range": [
+              -9648,
+              9648
+            ],
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "combined_twiddles_mod_q": [
+                  976
+                ],
+                "distance": 8,
+                "overall_output_range": [
+                  -11614,
+                  11614
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "combined_twiddles_mod_q": [
+                  3012,
+                  473
+                ],
+                "distance": 4,
+                "overall_output_range": [
+                  -13408,
+                  13408
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "combined_twiddles_mod_q": [
+                  2422,
+                  3353,
+                  2619,
+                  2157
+                ],
+                "distance": 2,
+                "overall_output_range": [
+                  -15406,
+                  15406
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "combined_twiddles_mod_q": [
+                  2264,
+                  1136,
+                  644,
+                  372,
+                  2777,
+                  917,
+                  1871,
+                  2820
+                ],
+                "distance": 1,
+                "overall_output_range": [
+                  -17438,
+                  17438
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ],
+        "r2_physical_output_ranges": [
+          [
+            -13128,
+            13246
+          ],
+          [
+            -10574,
+            10692
+          ],
+          [
+            -10574,
+            10692
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -11328,
+            11328
+          ],
+          [
+            -9648,
+            9648
+          ],
+          [
+            -9648,
+            9648
+          ]
+        ],
+        "second_layer": [
+          {
+            "group": 0,
+            "inputs": [
+              [
+                -2188,
+                2247
+              ],
+              [
+                -2188,
+                2188
+              ],
+              [
+                -2188,
+                2188
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -8752,
+                8870
+              ],
+              "difference_b_minus_c": [
+                -4376,
+                4376
+              ],
+              "kappa_difference": [
+                -1822,
+                1822
+              ],
+              "sum_b_plus_c": [
+                -4376,
+                4376
+              ],
+              "twice_a": [
+                -4376,
+                4494
+              ]
+            },
+            "outputs": [
+              [
+                -13128,
+                13246
+              ],
+              [
+                -10574,
+                10692
+              ],
+              [
+                -10574,
+                10692
+              ]
+            ]
+          },
+          {
+            "group": 1,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1735,
+                1735
+              ],
+              [
+                -1741,
+                1741
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          },
+          {
+            "group": 2,
+            "inputs": [
+              [
+                -2188,
+                2188
+              ],
+              [
+                -1741,
+                1741
+              ],
+              [
+                -1735,
+                1735
+              ]
+            ],
+            "intermediates": {
+              "base": [
+                -7852,
+                7852
+              ],
+              "difference_b_minus_c": [
+                -3476,
+                3476
+              ],
+              "kappa_difference": [
+                -1796,
+                1796
+              ],
+              "sum_b_plus_c": [
+                -3476,
+                3476
+              ],
+              "twice_a": [
+                -4376,
+                4376
+              ]
+            },
+            "outputs": [
+              [
+                -11328,
+                11328
+              ],
+              [
+                -9648,
+                9648
+              ],
+              [
+                -9648,
+                9648
+              ]
+            ]
+          }
+        ],
+        "top_split_and_alpha_input_ranges": [
+          [
+            -2172,
+            2896
+          ],
+          [
+            -1593,
+            1593
+          ],
+          [
+            -1673,
+            1679
+          ],
+          [
+            -1637,
+            1703
+          ],
+          [
+            -1714,
+            1714
+          ],
+          [
+            -1672,
+            1672
+          ],
+          [
+            -1643,
+            1710
+          ],
+          [
+            -1735,
+            1673
+          ],
+          [
+            -1682,
+            1682
+          ]
+        ]
+      }
+    ],
+    "exact_constant_cases": 1179648,
+    "global_i16": [
+      -21469,
+      21335
+    ],
+    "invalid_shortcut_rejected": "multiplying only radix-2 twiddles by inv4 does not scale untwiddled butterfly halves",
+    "method": "multiply every post-top-split alpha_h input gauge by inv4; beta-absorbed radix-2 constants remain unchanged",
+    "mod_q_basis_inputs": 288,
+    "mod_q_output_cells": 41472,
+    "new_total_forward_chains": 296,
+    "output": "Natural-Q semantic scale1, Montgomery exponent 0",
+    "reason": "the two branch x four-qblock h=0 raw loads become Montgomery chains; the other 64 alpha chains are only rekeyed",
+    "unchanged_existing_chains": 288
+  },
+  "scale_algebra": {
+    "caller_wide": "Mont(hR,r)=hr; add m; terminal Barrett; r-hash also Barrett",
+    "current": "Mont(hR,4r)=4hr; add 4m; terminal Mont(inv4R)",
+    "h4_local": "Mont(hR/4,4r)=hr; add m; terminal Barrett",
+    "lambda": "lambdaR constants preserve the common product scale and cannot alone scale the plain terms or m addend",
+    "uniform_scale_rule": "every summand of c=hr+m must have one common scale"
+  },
+  "schema": "encap-h4-scale-absorption-audit/v1",
+  "selection": {
+    "full_encap_minimum": "M0-C2-caller-wide",
+    "h4_local_minimum": "M0-C1-h4-local",
+    "important_correction": "scale absorption removes inv4 Montgomery chains, not the need to reduce wide lazy representatives before 12-bit packing",
+    "mandatory_h4_reduction_vectors": 72,
+    "minimum_h4_extra_montgomery_vectors": 0,
+    "reason": "caller-wide scale1 pays 16 added producer vector chains but replaces both 72-vector inv4 terminals with cheaper Barrett reductions"
+  },
+  "source_sha256": {
+    "f0_schedule": "51dc389364bda38ebed92b594a4ec346211bbbd3c088764dc64af7f9fa8608bb",
+    "h3_schedule": "6d0ba10dc3613a4dadf012404b8ee5e79ecb0c3a11e7b2334784df562bcacbd9",
+    "h4_map": "59350b08e05ab30eba761ba5dea58f9dba9cf2bbb4337c08d40584748714b13b",
+    "hash_audit": "dd996c92717725923a880c7cbd0e3a9ddd2625117249e2550b2ccbe829fb8f6b",
+    "ma2_range": "54638e7b2102d856120505f97725dd538709d8a634a71d3e0d7ad593b704815a",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9",
+    "t0_map": "a7e5c2c19c620e830053fbb575f94ec1f0a7c41a84bab62dfbec302bf30017ce"
+  },
+  "variants": [
+    {
+      "caller_terminal_plus_added_instructions": 576,
+      "delta_instructions_vs_current": 0,
+      "h3_rekey_only": false,
+      "h4_terminal": {
+        "barrett_vectors": 0,
+        "instructions": 288,
+        "montgomery_vectors": 72
+      },
+      "h_semantic_scale": 1,
+      "id": "M0-C0-current-scale4",
+      "m_scale": 4,
+      "ma2_output_scale": 4,
+      "producer_added_vector_chains_per_encap": 0,
+      "r_hash_terminal": {
+        "barrett_vectors": 0,
+        "instructions": 288,
+        "montgomery_vectors": 72
+      },
+      "r_scale": 4,
+      "range": {
+        "all_preoperations_signed_i16": true,
+        "global_post_terminal": [
+          -2133,
+          2133
+        ],
+        "global_pre_terminal": [
+          -29899,
+          29901
+        ],
+        "terminal_operation": "inv4-montgomery"
+      }
+    },
+    {
+      "caller_terminal_plus_added_instructions": 536,
+      "delta_instructions_vs_current": -40,
+      "h3_rekey_only": true,
+      "h4_terminal": {
+        "barrett_vectors": 72,
+        "instructions": 216,
+        "montgomery_vectors": 0
+      },
+      "h_semantic_scale": 2593,
+      "id": "M0-C1-h4-local",
+      "m_scale": 1,
+      "ma2_output_scale": 1,
+      "producer_added_vector_chains_per_encap": 8,
+      "r_hash_terminal": {
+        "barrett_vectors": 0,
+        "instructions": 288,
+        "montgomery_vectors": 72
+      },
+      "r_scale": 4,
+      "range": {
+        "all_preoperations_signed_i16": true,
+        "coefficient_bounds": [
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23778,
+                23644
+              ],
+              [
+                -25689,
+                25555
+              ]
+            ],
+            "coefficient": 0,
+            "pre_terminal": [
+              -25689,
+              25555
+            ],
+            "wrapped_after_lambda": [
+              -1911,
+              1911
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2309,
+                2309
+              ],
+              [
+                -4618,
+                4618
+              ],
+              [
+                -6927,
+                6927
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23778,
+                23644
+              ],
+              [
+                -26087,
+                25953
+              ],
+              [
+                -27937,
+                27803
+              ]
+            ],
+            "coefficient": 1,
+            "pre_terminal": [
+              -27937,
+              27803
+            ],
+            "wrapped_after_lambda": [
+              -1850,
+              1850
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2309,
+                2309
+              ],
+              [
+                -4618,
+                4618
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23778,
+                23644
+              ],
+              [
+                -26087,
+                25953
+              ],
+              [
+                -28396,
+                28262
+              ],
+              [
+                -30185,
+                30051
+              ]
+            ],
+            "coefficient": 2,
+            "pre_terminal": [
+              -30185,
+              30051
+            ],
+            "wrapped_after_lambda": [
+              -1789,
+              1789
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2309,
+                2309
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23778,
+                23644
+              ],
+              [
+                -26087,
+                25953
+              ],
+              [
+                -28396,
+                28262
+              ],
+              [
+                -30705,
+                30571
+              ]
+            ],
+            "coefficient": 3,
+            "pre_terminal": [
+              -30705,
+              30571
+            ],
+            "wrapped_after_lambda": [
+              0,
+              0
+            ],
+            "wrapped_sum_steps": []
+          }
+        ],
+        "global_post_terminal": [
+          -3107,
+          3107
+        ],
+        "global_pre_terminal": [
+          -30705,
+          30571
+        ],
+        "one_terminal_vector_operation_per_plane": true,
+        "terminal_operation": "barrett"
+      }
+    },
+    {
+      "caller_terminal_plus_added_instructions": 496,
+      "delta_instructions_vs_current": -80,
+      "h3_rekey_only": false,
+      "h4_terminal": {
+        "barrett_vectors": 72,
+        "instructions": 216,
+        "montgomery_vectors": 0
+      },
+      "h_semantic_scale": 1,
+      "id": "M0-C2-caller-wide",
+      "m_scale": 1,
+      "ma2_output_scale": 1,
+      "producer_added_vector_chains_per_encap": 16,
+      "r_hash_terminal": {
+        "barrett_vectors": 72,
+        "instructions": 216,
+        "montgomery_vectors": 0
+      },
+      "r_scale": 1,
+      "range": {
+        "all_preoperations_signed_i16": true,
+        "coefficient_bounds": [
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23776,
+                23638
+              ],
+              [
+                -25687,
+                25549
+              ]
+            ],
+            "coefficient": 0,
+            "pre_terminal": [
+              -25687,
+              25549
+            ],
+            "wrapped_after_lambda": [
+              -1911,
+              1911
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2307,
+                2303
+              ],
+              [
+                -4614,
+                4606
+              ],
+              [
+                -6921,
+                6909
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23776,
+                23638
+              ],
+              [
+                -26083,
+                25941
+              ],
+              [
+                -27933,
+                27791
+              ]
+            ],
+            "coefficient": 1,
+            "pre_terminal": [
+              -27933,
+              27791
+            ],
+            "wrapped_after_lambda": [
+              -1850,
+              1850
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2307,
+                2303
+              ],
+              [
+                -4614,
+                4606
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23776,
+                23638
+              ],
+              [
+                -26083,
+                25941
+              ],
+              [
+                -28390,
+                28244
+              ],
+              [
+                -30179,
+                30033
+              ]
+            ],
+            "coefficient": 2,
+            "pre_terminal": [
+              -30179,
+              30033
+            ],
+            "wrapped_after_lambda": [
+              -1789,
+              1789
+            ],
+            "wrapped_sum_steps": [
+              [
+                -2307,
+                2303
+              ]
+            ]
+          },
+          {
+            "accumulator_steps": [
+              [
+                -21469,
+                21335
+              ],
+              [
+                -23776,
+                23638
+              ],
+              [
+                -26083,
+                25941
+              ],
+              [
+                -28390,
+                28244
+              ],
+              [
+                -30697,
+                30547
+              ]
+            ],
+            "coefficient": 3,
+            "pre_terminal": [
+              -30697,
+              30547
+            ],
+            "wrapped_after_lambda": [
+              0,
+              0
+            ],
+            "wrapped_sum_steps": []
+          }
+        ],
+        "global_post_terminal": [
+          -3107,
+          3107
+        ],
+        "global_pre_terminal": [
+          -30697,
+          30547
+        ],
+        "one_terminal_vector_operation_per_plane": true,
+        "terminal_operation": "barrett"
+      }
+    }
+  ]
+}

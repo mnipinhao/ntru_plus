@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-encap-h3-price-and-h4-codesign-v1-complete
+state: checkpoint-encap-h4-m0-scale-gauge-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -717,10 +717,16 @@ checkpoint_h4_terminal_ownership: passed-72-vectors-1152-coefficients-576-exact-
 checkpoint_h4_pair_frontier: maximum16-pending-coefficients-one-ymm-storage-lower-bound
 checkpoint_h4a_feasibility: all72-hooks-have-one-scratch-normalization-room-exact-schedule-pending
 checkpoint_h4b_feasibility: promising-one-pending-ymm-not-yet-an-achievable-pack-schedule
+checkpoint_h4_m0_scale1_forward: passed-plus8-vector-chains-per-forward-all288-bases-41472-output-cells-i16-safe
+checkpoint_h4_m0_h4_local: scale1-m-plus-hR-over4-72-barrett-selected-only-for-isolated-h4-minus40-instructions
+checkpoint_h4_m0_caller_wide: scale1-rm-plus-hR-selected-full-encap-minus80-predicted-instructions
+checkpoint_h4_m0_terminal_reduction: zero-reduction-rejected-wide-lazy-representatives-one-barrett-pass-required
+checkpoint_h4_m0_movement: routing0-data-load-store0-constant-operands-plus32-per-encap-minimum-shared-rodata-plus64B
+encap_h4_scale_absorption_audit: generated/encap-h4-scale-absorption-audit.json
 checkpoint_h4_asm: not-written-map-only
 h3_machine_liveness: generated/h3-machine-def-use-liveness.json
 encap_ma2_ct_egress_codesign_v1: generated/encap-ma2-ct-egress-codesign-v1.json
-next_step: h4-exact-normalize-pair-pack-schedule-search-no-asm-until-machine-budget-closes
+next_step: h4-m1-terminal-ownership-orientation-search-under-caller-wide-scale1-no-asm
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

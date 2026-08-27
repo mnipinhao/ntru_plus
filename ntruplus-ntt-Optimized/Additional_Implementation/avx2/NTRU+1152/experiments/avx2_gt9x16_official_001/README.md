@@ -742,3 +742,14 @@ actual terminal order needs at most 16 pending coefficients, a one-YMM storage
 lower bound. H4 terminal normalization and a streaming pair join are therefore
 structurally plausible; exact schedule search is next, and no H4 ASM exists
 yet. See `CHECKPOINT-ENCAP-MA2-CT-EGRESS-CODESIGN-V1.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-H4-M0 closes the scale-gauge search before any
+terminal-layout ASM.  A scale-1 forward costs eight new vector Montgomery
+chains because the four q-block `h=0` raw loads in each branch must become
+`inv4` input-gauge chains.  Caller-wide scale 1 for both `r` and `m` removes
+the scale factor from both ciphertext and r-hash terminals, but their wide
+lazy representatives still require one Barrett vector reduction per plane.
+The resulting pre-ASM full-Encap budget is 576 to 496 instructions (`-80`),
+with no routing or ordinary data-traffic delta.  H4-M1 terminal ownership is
+next; no H4 ASM or benchmark is authorized.  See
+`CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M0.md`.

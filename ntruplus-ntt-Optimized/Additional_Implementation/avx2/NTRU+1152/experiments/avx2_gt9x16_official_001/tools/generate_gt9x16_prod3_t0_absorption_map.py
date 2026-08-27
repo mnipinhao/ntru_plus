@@ -169,11 +169,12 @@ def min_profile_repairs(values: list[int], root3: int) -> dict:
 
 def candidate_ranges(offset: int, branch: int, scaled: dict,
                      kappa_mont: int, rho_mont: int,
-                     rhoinv_mont: int) -> dict:
+                     rhoinv_mont: int, input_gauge_mod_q: int = 1) -> dict:
     row_inputs = []
     for row in range(9):
         source_h = 5 * row % 9
-        alpha = montgomery_constant(pow(GENERATOR, 16 * offset * source_h, Q))
+        alpha = montgomery_constant(
+            pow(GENERATOR, 16 * offset * source_h, Q) * input_gauge_mod_q)
         values = []
         for low in range(-3, 5):
             for high in range(-3, 5):
