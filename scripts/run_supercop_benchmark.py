@@ -239,7 +239,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-price",
                                            "derived-gt9x16-prod3-consumer",
                                            "derived-gt9x16-prod3-hash-fanout",
-                                           "derived-gt9x16-prod3-hash-h1-price"),
+                                           "derived-gt9x16-prod3-hash-h1-price",
+                                           "derived-gt9x16-prod3-qorder-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -257,7 +258,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-price",
                      "derived-gt9x16-prod3-consumer",
                      "derived-gt9x16-prod3-hash-fanout",
-                     "derived-gt9x16-prod3-hash-h1-price") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-hash-h1-price",
+                     "derived-gt9x16-prod3-qorder-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -314,7 +316,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-price",
                          "derived-gt9x16-prod3-consumer",
                          "derived-gt9x16-prod3-hash-fanout",
-                         "derived-gt9x16-prod3-hash-h1-price"):
+                         "derived-gt9x16-prod3-hash-h1-price",
+                         "derived-gt9x16-prod3-qorder-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -335,6 +338,8 @@ def main() -> int:
                     "gt9x16_prod3_hash_fanout_measure.c",
                 "derived-gt9x16-prod3-hash-h1-price":
                     "gt9x16_prod3_hash_h1_price_measure.c",
+                "derived-gt9x16-prod3-qorder-price":
+                    "gt9x16_prod3_qorder_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -469,6 +474,13 @@ def main() -> int:
         required = tuple(
             f"gt9x16_prod3_hash_h1_price_{variant}_pos{position}_cycles"
             for variant in ("h0", "h1") for position in range(1, 5))
+    elif args.mode == "derived-gt9x16-prod3-qorder-price":
+        required = (
+            "gt9x16_prod3_qorder_price_current_first_cycles",
+            "gt9x16_prod3_qorder_price_natural_second_cycles",
+            "gt9x16_prod3_qorder_price_natural_first_cycles",
+            "gt9x16_prod3_qorder_price_current_second_cycles",
+        )
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1425,6 +1437,80 @@ def main() -> int:
             "native_kem_result": False,
             "candidate_direction_stable": all(delta < 0 for delta in deltas),
         }
+    if args.mode == "derived-gt9x16-prod3-qorder-price":
+        prefix = "gt9x16_prod3_qorder_price"
+        combined = {
+            variant: (pooled[f"{prefix}_{variant}_first_cycles"] +
+                      pooled[f"{prefix}_{variant}_second_cycles"])
+            for variant in ("current", "natural")
+        }
+        summary["balanced_combined_operations"] = {
+            f"{prefix}_{variant}_cycles": {
+                "observations": len(values),
+                "stq1": stabilized_quartiles(values)[0],
+                "stq2": stabilized_quartiles(values)[1],
+                "stq3": stabilized_quartiles(values)[2],
+            } for variant, values in combined.items()
+        }
+        launches = []
+        for number, observed in enumerate(launch_observations, start=1):
+            current = stabilized_quartiles(
+                observed[f"{prefix}_current_first_cycles"] +
+                observed[f"{prefix}_current_second_cycles"])[1]
+            natural = stabilized_quartiles(
+                observed[f"{prefix}_natural_first_cycles"] +
+                observed[f"{prefix}_natural_second_cycles"])[1]
+            launches.append({"launch": number, "current_stq2": current,
+                             "natural_stq2": natural,
+                             "natural_minus_current_cycles": natural-current})
+        deltas = [float(row["natural_minus_current_cycles"]) for row in launches]
+        summary["balanced_paired_launches"] = {
+            "launches": launches,
+            "natural_faster_launches": sum(x < 0 for x in deltas),
+            "natural_slower_launches": sum(x > 0 for x in deltas),
+            "median_natural_minus_current_cycles": statistics.median(deltas),
+        }
+        wrappers = {"current": "ntruplus1152_exp001_qorder_price_current",
+                    "natural": "ntruplus1152_exp001_qorder_price_natural"}
+        symbols = {
+            "top": "ntruplus1152_exp001_top_split_small",
+            "current_producer": "ntruplus1152_exp001_gt9x16_prod3_aos_full_price",
+            "natural_producer": "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q",
+            "current_ma2": "ntruplus1152_exp001_f0_ma2_planes_current_q",
+            "natural_ma2": "ntruplus1152_exp001_f0_ma2_planes_natural_q",
+            "current_h1": "ntruplus1152_exp001_prod3_ma2_hash_h1",
+            "natural_h1": "ntruplus1152_exp001_prod3_ma2_hash_h1_natural_q",
+        }
+        transfers = {key: direct_transfer_targets(saved_elf, value)
+                     for key, value in wrappers.items()}
+        expected = {
+            "current": [symbols["top"], symbols["current_producer"],
+                        symbols["top"], symbols["current_producer"],
+                        symbols["current_ma2"], symbols["current_h1"],
+                        symbols["current_h1"]],
+            "natural": [symbols["top"], symbols["natural_producer"],
+                        symbols["top"], symbols["natural_producer"],
+                        symbols["natural_ma2"], symbols["natural_h1"],
+                        symbols["natural_h1"]],
+        }
+        if transfers != expected:
+            raise SystemExit(f"Q-order PRICE call graph changed: {transfers}")
+        summary["linked_qorder_price_audit"] = {
+            "direct_transfers": transfers,
+            "two_producers": True, "resident_h_multiplicity": 1,
+            "MA2_arithmetic_identical": True,
+            "hash_and_ciphertext_H1_multiplicity": 2,
+            "same_input_residency": True, "same_output_bytes": True,
+            "static_delta": {"routing": -192, "data_loads": 16,
+                             "total_instructions": -176},
+        }
+        summary["elf_layout"] = elf_layout(
+            saved_elf, (*wrappers.values(), *symbols.values()))
+        summary["decision"] = {
+            "headline": "complete-caller-shaped-current-Q-vs-natural-Q",
+            "native_kem_result": False,
+            "freeze_qorder_after_four-setting-arbitration": True,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1447,6 +1533,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-consumer" if args.mode == "derived-gt9x16-prod3-consumer"
                             else "supercop-derived-gt9x16-prod3-hash-fanout" if args.mode == "derived-gt9x16-prod3-hash-fanout"
                             else "supercop-derived-gt9x16-prod3-hash-h1-price" if args.mode == "derived-gt9x16-prod3-hash-h1-price"
+                            else "supercop-derived-gt9x16-prod3-qorder-price" if args.mode == "derived-gt9x16-prod3-qorder-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1493,7 +1580,9 @@ def main() -> int:
               "derived-gt9x16-prod3-hash-fanout":
                   "gt9x16_prod3_hash_fanout_measure.c",
               "derived-gt9x16-prod3-hash-h1-price":
-                  "gt9x16_prod3_hash_h1_price_measure.c"}[args.mode])
+                  "gt9x16_prod3_hash_h1_price_measure.c",
+              "derived-gt9x16-prod3-qorder-price":
+                  "gt9x16_prod3_qorder_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

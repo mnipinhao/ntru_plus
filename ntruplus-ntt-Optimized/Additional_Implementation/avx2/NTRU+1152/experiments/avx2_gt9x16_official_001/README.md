@@ -641,3 +641,12 @@ is `-192` routes and `+16` loads with identical arithmetic/store counts, zero
 spill/stack temporary, and 32-byte-aligned entries/constants.  No benchmark or
 native KEM was run.  See
 `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-ASM0.md`.
+
+Checkpoint GT9X16-PROD3-MA2-QORDER-NATURAL-PRICE completes the caller-shaped
+machine arbitration. Natural-Q is 160--166 cycles faster across normal and
+reversed placement with ASLR on and off; all four bootstrap 95% confidence
+intervals are below zero. Natural-Q is now the permanently frozen PROD3 Encap
+research ABI, and current-Q is historical/control only. This is a
+SUPERCOP-derived caller-island result, not native KEM evidence. The next
+authorized work is T0 absorption mapping and exact Montgomery chain-count
+proof. See `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-NATURAL-PRICE.md`.
