@@ -141,6 +141,7 @@ GT9X16_PROD3_T0_BETA_CONTROL_ASM := asm/gt9x16_prod3_aos_natural.S
 GT9X16_PROD3_T0_BETA_ASM := asm/gt9x16_prod3_aos_t0_beta.S
 GT9X16_PROD3_T0_BETA_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_CONTROL_ASM) $(GT9X16_PROD3_T0_BETA_ASM) tests/test_gt9x16_prod3_t0_beta_asm.c
 GT9X16_PROD3_T0_BETA_AUDIT_ARGS := --elf $(BUILD)/prod3/test-gt9x16-prod3-natural-q-t0-beta --control-object $(BUILD)/prod3/gt9x16-prod3-natural-q-control.o --candidate-object $(BUILD)/prod3/gt9x16-prod3-natural-q-t0-beta.o --source asm/gt9x16_prod3_aos_branch0.S --constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc --schedule generated/gt9x16-prod3-natural-q-t0-beta-schedule.json --output generated/gt9x16-prod3-natural-q-t0-beta-asm-audit.json
+GT9X16_FORWARD_REDUCTION_AUDIT_ARGS := --tables generated/gt9x16-full-forward-tables.h --t0-map generated/gt9x16-prod3-natural-q-t0-absorption-map.json --output generated/gt9x16-forward-reduction-audit.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -296,6 +297,8 @@ generate:
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_absorption_map.py $(GT9X16_PROD3_T0_MAP_ARGS)
+	$(PYTHON) tools/generate_gt9x16_forward_reduction_audit.py $(GT9X16_FORWARD_REDUCTION_AUDIT_ARGS)
+	$(PYTHON) tests/test_gt9x16_forward_reduction_audit.py
 	$(PYTHON) tests/test_gt9x16_prod3_t0_absorption_map.py
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_beta_schedule.py $(GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
@@ -463,6 +466,8 @@ check:
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_absorption_map.py $(GT9X16_PROD3_T0_MAP_ARGS) --check
+	$(PYTHON) tools/generate_gt9x16_forward_reduction_audit.py $(GT9X16_FORWARD_REDUCTION_AUDIT_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_forward_reduction_audit.py
 	$(PYTHON) tests/test_gt9x16_prod3_t0_absorption_map.py
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_beta_schedule.py $(GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
