@@ -1,0 +1,52 @@
+{
+  "abi": {
+    "inputs": "PK bytes plus Natural-Q/T0-beta caller-wide scale-1 r/m",
+    "output": {
+      "alignment": 1,
+      "bytes": 1728,
+      "representation": "exact Official ciphertext bytes"
+    },
+    "pk_equals_ct": true,
+    "raw_terminal": "scale1; no terminal inv4",
+    "scratch": {
+      "alignment": 32,
+      "bytes": 2304,
+      "representation": "canonical i16 Natural-Q MA2 planes"
+    }
+  },
+  "checkpoint": "ENCAP-MA2-CT-EGRESS-H4-M3-ASM",
+  "decision": {
+    "benchmark_authorized": false,
+    "correctness_authorized": true,
+    "m2_schedule_reopened": true,
+    "native_kem_authorized": false
+  },
+  "expected": {
+    "ciphertext_stores": 54,
+    "dense_pack_routes": 486,
+    "exact_ownership_fallback": {
+      "blocks": 9,
+      "ciphertext_stores": 54,
+      "coefficient_reconstruction_routes": 336,
+      "inv4_montgomery_instructions_removed": 288,
+      "pack_transpose_routes": 324,
+      "scratch_data_loads": 272,
+      "sign_canonicalization_instructions_removed": 216
+    },
+    "inv4_montgomery_vectors": 0,
+    "m2_ownership_correction": "exact serializer pairs are adjacent lanes within each plane, not same-lane values from adjacent planes",
+    "m2_selected_pair_primitive_realized": false,
+    "peak_ymm": 16,
+    "producer_added_montgomery_chains_per_forward": 8,
+    "scratch_reloads": 72,
+    "scratch_stores": 72,
+    "terminal_barrett_instructions": 216,
+    "terminal_sign_canonicalization_instructions": 216,
+    "terminal_vectors": 72
+  },
+  "schema": "encap-h4-m3-asm/v1",
+  "symbols": {
+    "h4_m3": "ntruplus1152_exp001_encap_h4_m3",
+    "producer_scale1": "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1"
+  }
+}

@@ -35,9 +35,14 @@
   vmovdqu ymm\reg, YMMWORD PTR [rdi + (\base) + ((5*(\row)%9)*128) + (\qblock)*32]
 #ifdef PROD3_T0_BETA
   /* beta_q lives in the branch-specific radix-2 table; alpha_0 is one. */
+#ifdef PROD3_SCALE1
+  /* H4 caller-wide gauge: every alpha row also absorbs inv4. */
+  PROD3_MONT6 \reg,0,.Lprod3_h4s1_b\branch\()_r\row\()_alpha,.Lprod3_h4s1_b\branch\()_r\row\()_alpha_qinv
+#else
   .if \row != 0
     PROD3_MONT6 \reg,0,.Lprod3_t0b_b\branch\()_r\row\()_alpha,.Lprod3_t0b_b\branch\()_r\row\()_alpha_qinv
   .endif
+#endif
 #else
   PROD3_MONT6 \reg,0,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist_qinv
 #endif
@@ -289,6 +294,9 @@ ntruplus1152_exp001_gt9x16_prod3_aos_full:
 .include "generated/gt9x16-ntt16-constants.inc"
 #ifdef PROD3_T0_BETA
 .include "generated/gt9x16-prod3-natural-q-t0-beta-constants.inc"
+#ifdef PROD3_SCALE1
+.include "generated/encap-h4-m3-scale1-producer-constants.inc"
+#endif
 #else
 .include "generated/gt9x16-prod3-aos-branch0-constants.inc"
 .include "generated/gt9x16-prod3-aos-branch1-constants.inc"

@@ -1,0 +1,106 @@
+{
+  "checkpoint": "ENCAP-MA2-CT-EGRESS-H4-M3-ASM",
+  "decision": {
+    "benchmark_authorized": false,
+    "h4_scale_gauge_and_terminal_asm_complete": true,
+    "m2_selected_egress_complete": false,
+    "native_kem_authorized": false
+  },
+  "gates": {
+    "branch_free": true,
+    "call_free": true,
+    "canonical_scratch_72": true,
+    "entry_and_rodata_aligned_32": true,
+    "frame_free": true,
+    "m2_pair_locality_rejected": true,
+    "pk_consumed_before_ct_store": true,
+    "pk_equals_ct_safe": true,
+    "scale1_producer_exact_chain_delta": true,
+    "scale1_producer_no_movement_delta": true,
+    "spill_free": true,
+    "terminal_barrett_72": true,
+    "terminal_inv4_absent": true,
+    "vzeroupper_free": true
+  },
+  "h1_control": {
+    "coefficient_routes": 336,
+    "instructions": 1662,
+    "inv4_montgomery_instructions": 288,
+    "pack_routes": 324,
+    "text_bytes": 10133
+  },
+  "h4": {
+    "canonical_scratch_stores": 72,
+    "ciphertext_stores": 54,
+    "entry_mod32": 0,
+    "exact_ownership_scratch_load_instructions": 288,
+    "instructions": 5189,
+    "mnemonics": {
+      "movzx": 1,
+      "or": 36,
+      "ret": 1,
+      "setne": 1,
+      "test": 1,
+      "vmovdqa": 270,
+      "vmovdqu": 396,
+      "vpaddw": 360,
+      "vpand": 144,
+      "vpblendd": 108,
+      "vpblendw": 108,
+      "vpcmpgtw": 36,
+      "vperm2i128": 396,
+      "vpmaxuw": 36,
+      "vpmovmskb": 36,
+      "vpmulhrsw": 72,
+      "vpmulhw": 828,
+      "vpmullw": 774,
+      "vpor": 144,
+      "vpshufb": 288,
+      "vpslld": 27,
+      "vpsllq": 81,
+      "vpsllw": 90,
+      "vpsraw": 72,
+      "vpsrlq": 108,
+      "vpsrlw": 90,
+      "vpsubw": 486,
+      "vpunpckhqdq": 54,
+      "vpunpcklqdq": 54,
+      "vpxor": 90,
+      "xor": 1
+    },
+    "pk_loads": 54,
+    "rodata_bytes": 5408,
+    "terminal_barrett_vectors": 72,
+    "terminal_sign_canonicalization_vectors": 72,
+    "text_bytes": 32996
+  },
+  "m2_model_correction": {
+    "benchmark_authorized": false,
+    "counterexample": {
+      "actual_pair_for_coefficient0": "ma2 vector20 lane14 (coefficient 1)",
+      "ma2_vector20_lane15": "official coefficient 0",
+      "ma2_vector21_lane15": "official coefficient 16"
+    },
+    "machine_realization": "correctness control uses Natural-Q H1 ownership/routing after the H4 terminal has already performed Barrett and sign canonicalization",
+    "selected_pair_primitive_is_exact": false
+  },
+  "producer_scale1": {
+    "added_montgomery_chains": 8,
+    "delta_vs_scale4": {
+      "vpmulhw": 16,
+      "vpmullw": 8,
+      "vpsubw": 8
+    },
+    "entry_mod32": 0,
+    "instructions": 2819,
+    "movement_delta": 0,
+    "text_bytes": 15489
+  },
+  "schema": "encap-h4-m3-linked-audit/v1",
+  "sections": {
+    "rodata_alignment": 32,
+    "rodata_bytes": 5408,
+    "text_alignment": 32,
+    "text_bytes": 32996
+  }
+}

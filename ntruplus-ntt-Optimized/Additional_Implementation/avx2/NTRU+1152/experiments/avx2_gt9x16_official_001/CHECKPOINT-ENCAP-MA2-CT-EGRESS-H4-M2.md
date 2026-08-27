@@ -1,5 +1,14 @@
 # ENCAP MA2 ciphertext egress H4-M2
 
+> **Post-ASM correction (H4-M3):** the exact linked ciphertext differential
+> rejected M2's same-lane cross-plane pair-locality model.  In the frozen
+> Natural-Q ABI, MA2 vector 20 lane 15 is Official coefficient 0, vector 21
+> lane 15 is coefficient 16, while coefficient 1 is vector 20 lane 14.
+> Therefore the four-instruction `vpunpckwd(A,B)` primitive below does not
+> form Official 12-bit serializer pairs.  The 1502-instruction selection is
+> retained as historical schedule evidence, not as an authorized benchmark
+> candidate.  See `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3.md`.
+
 ## Scope
 
 This checkpoint starts at each live scale-1 `H3_TERMINAL_C` value and lowers
