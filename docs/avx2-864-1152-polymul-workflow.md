@@ -107,6 +107,13 @@ evident routing, temporary, or spill debt. It does not require a complete
 generated instruction schedule. The low-risk gate requires an independent
 differential oracle but no separate map checkpoint.
 
+Scale absorption proofs follow the complete linear DAG, including identity
+branches and every add/sub merge. Rekeying only multiplication edges does not
+establish a common output gauge when an untwiddled path reaches the same merge.
+Require a full modular basis differential (or an equivalent linear proof) and
+range replay before treating an existing twiddle or constant as a free scale
+absorption site.
+
 After authorization, the linked object is the source of truth for instruction,
 constant-operand, spill, alignment, and footprint ledgers. If it contradicts a
 symbolic estimate, preserve and correct the estimate; do not discard the

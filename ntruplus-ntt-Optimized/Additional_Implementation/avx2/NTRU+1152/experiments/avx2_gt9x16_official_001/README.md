@@ -753,3 +753,15 @@ The resulting pre-ASM full-Encap budget is 576 to 496 instructions (`-80`),
 with no routing or ordinary data-traffic delta.  H4-M1 terminal ownership is
 next; no H4 ASM or benchmark is authorized.  See
 `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M0.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-H4-M1 maps the scale-1 live terminal directly
+to exact 12-bit pair ownership. All 576 pairs join the same lane of adjacent
+YMM terminals, so the pair-join route lower bound is zero; the existing 336
+H1 coefficient routes are an Official-vector reconstruction cost. Exhaustive
+plane-order search proves a 16-coefficient/one-YMM pending lower bound, already
+attained by `c0,c1,c2,c3`. Within-block tile swaps remove six reversed 96-byte
+spans for free at map level. Four lane-orientation cost profiles advance to
+M2, ranging from zero-route Natural-Q with 512 pair-order runs to an exact
+216-route tile-sorted presentation with 36 runs. No lane winner or ASM is
+selected until joint packing/liveness lowering. See
+`CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M1.md`.
