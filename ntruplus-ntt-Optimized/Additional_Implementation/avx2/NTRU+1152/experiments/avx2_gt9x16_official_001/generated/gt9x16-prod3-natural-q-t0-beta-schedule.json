@@ -1,0 +1,3050 @@
+{
+  "checkpoint": "GT9X16-PROD3-NATURAL-Q-T0-BETA-SCHEDULE",
+  "constant_memory_operand_ledger_per_forward": {
+    "all_hot_twiddle_operands": "same RIP-relative memory-form positions",
+    "candidate": {
+      "alpha_normalization": 128,
+      "combined_NTT16": 288,
+      "other_unchanged": 234,
+      "total": 650
+    },
+    "current": {
+      "NTT16": 288,
+      "T0": 144,
+      "other_unchanged": 234,
+      "total": 666
+    },
+    "delta": {
+      "NTT16": 0,
+      "T0_or_alpha": -16,
+      "other": 0,
+      "total": -16
+    },
+    "new_explicit_constant_loads": 0,
+    "new_table_selection_instructions": 0
+  },
+  "constant_table_footprint": {
+    "candidate": {
+      "alpha_vectors": 32,
+      "branch_specific_radix2_vectors": 252,
+      "bytes": 9088,
+      "total_vectors": 284
+    },
+    "current": {
+      "T0_vectors": 144,
+      "bytes": 8640,
+      "shared_radix2_vectors": 126,
+      "total_vectors": 270
+    },
+    "delta_bytes": 448,
+    "delta_vectors": 14,
+    "interpretation": "runtime operands decrease, but duplicating radix2 tables by branch adds 448 static rodata bytes"
+  },
+  "decision": {
+    "asm_authorized": true,
+    "benchmark_authorized": false,
+    "constant_operand_penalty": false,
+    "eight_chains_disappear": true,
+    "native_kem_authorized": false,
+    "new_movement_debt": false,
+    "next": "namespaced T0-BETA-TO-RADIX2 ASM correctness and linked audit",
+    "schedule_gate_passed": true,
+    "static_rodata_penalty_bytes": 448
+  },
+  "exact_schedule": {
+    "branch_selector": "static straight-line labels; no runtime branch, lookup, or index",
+    "branches": [
+      {
+        "branch": 0,
+        "offset": 20,
+        "pass_A_alpha_schedule": [
+          {
+            "action": "raw-load",
+            "chains_per_qblock": 0,
+            "physical_row": 0,
+            "qblocks": 4,
+            "semantic_h": 0
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 2337,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": -1296,
+            "physical_row": 1,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r1_alpha_qinv",
+            "qinv_signed16": 21232,
+            "semantic_h": 5,
+            "zeta_label": ".Lprod3_t0b_b0_r1_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1078,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 556,
+            "physical_row": 2,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r2_alpha_qinv",
+            "qinv_signed16": -20436,
+            "semantic_h": 1,
+            "zeta_label": ".Lprod3_t0b_b0_r2_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 2590,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": -460,
+            "physical_row": 3,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r3_alpha_qinv",
+            "qinv_signed16": 16436,
+            "semantic_h": 6,
+            "zeta_label": ".Lprod3_t0b_b0_r3_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 532,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 1307,
+            "physical_row": 4,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r4_alpha_qinv",
+            "qinv_signed16": -10085,
+            "semantic_h": 2,
+            "zeta_label": ".Lprod3_t0b_b0_r4_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 2221,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": -1529,
+            "physical_row": 5,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r5_alpha_qinv",
+            "qinv_signed16": 23431,
+            "semantic_h": 7,
+            "zeta_label": ".Lprod3_t0b_b0_r5_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 3091,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": -1510,
+            "physical_row": 6,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r6_alpha_qinv",
+            "qinv_signed16": 6938,
+            "semantic_h": 3,
+            "zeta_label": ".Lprod3_t0b_b0_r6_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1994,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 727,
+            "physical_row": 7,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r7_alpha_qinv",
+            "qinv_signed16": 27735,
+            "semantic_h": 8,
+            "zeta_label": ".Lprod3_t0b_b0_r7_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 3007,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 467,
+            "physical_row": 8,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b0_r8_alpha_qinv",
+            "qinv_signed16": 8531,
+            "semantic_h": 4,
+            "zeta_label": ".Lprod3_t0b_b0_r8_alpha"
+          }
+        ],
+        "pass_B_branch_specific_radix2": [
+          {
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3350
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p0_distance8_zeta",
+                  ".Lprod3_t0b_b0_p0_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -1556
+                ],
+                "original_twiddles_mod_q": [
+                  1
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  2028
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  652,
+                  1622
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p0_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p0_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p0_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p0_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  952,
+                  99
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -12360,
+                  -30749
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  676,
+                  1915,
+                  1536,
+                  1467
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p0_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p0_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p0_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p0_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  881,
+                  -1488,
+                  -1087,
+                  -1315
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749,
+                  1741,
+                  1521
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -12815,
+                  29232,
+                  -29119,
+                  -27811
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3431,
+                  1123,
+                  3132,
+                  1938,
+                  472,
+                  1153,
+                  2443,
+                  2313
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p0_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p0_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p0_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p0_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  365,
+                  855,
+                  -623,
+                  -1412,
+                  -244,
+                  -98,
+                  407,
+                  -1225
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749,
+                  1741,
+                  1521,
+                  2907,
+                  2216,
+                  39,
+                  44
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  493,
+                  -21289,
+                  6161,
+                  28796,
+                  -8948,
+                  -21858,
+                  19223,
+                  21687
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1307
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p1_distance8_zeta",
+                  ".Lprod3_t0b_b0_p1_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  1463
+                ],
+                "original_twiddles_mod_q": [
+                  2734
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -24777
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  592,
+                  2618
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p1_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p1_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p1_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p1_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -599,
+                  -1119
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -11223,
+                  15905
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2146,
+                  1712,
+                  2626,
+                  658
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p1_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p1_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p1_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p1_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -875,
+                  697,
+                  1162,
+                  70
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248,
+                  3062,
+                  3100
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  24853,
+                  -32455,
+                  15754,
+                  -12474
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1970,
+                  1868,
+                  426,
+                  2608,
+                  1998,
+                  2786,
+                  776,
+                  255
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p1_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p1_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p1_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p1_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  798,
+                  -1493,
+                  -396,
+                  351,
+                  139,
+                  -1616,
+                  9,
+                  542
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460,
+                  2111,
+                  2293,
+                  455,
+                  2818,
+                  502,
+                  655
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  28190,
+                  30123,
+                  -8076,
+                  16095,
+                  27659,
+                  12720,
+                  -14711,
+                  -4834
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2257
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p2_distance8_zeta",
+                  ".Lprod3_t0b_b0_p2_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  93
+                ],
+                "original_twiddles_mod_q": [
+                  722
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  22749
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2213,
+                  2674
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p2_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p2_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p2_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p2_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -353,
+                  1020
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  23583,
+                  14844
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  635,
+                  3287,
+                  2752,
+                  1332
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p2_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p2_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p2_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p2_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -6,
+                  791,
+                  -75,
+                  1245
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460,
+                  2111,
+                  2293
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -12038,
+                  3223,
+                  13365,
+                  -25251
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1513,
+                  466,
+                  3356,
+                  2368,
+                  987,
+                  2975,
+                  238,
+                  889
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p2_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p2_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p2_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p2_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1163,
+                  638,
+                  1019,
+                  1061,
+                  105,
+                  1714,
+                  -416,
+                  683
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248,
+                  3062,
+                  3100,
+                  95,
+                  1880,
+                  2916,
+                  2758
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -28683,
+                  -8834,
+                  1915,
+                  20645,
+                  -18711,
+                  9138,
+                  -4512,
+                  -16853
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2887
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p3_distance8_zeta",
+                  ".Lprod3_t0b_b0_p3_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  822
+                ],
+                "original_twiddles_mod_q": [
+                  2590
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  10806
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  99,
+                  2505
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p3_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p3_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p3_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p3_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -725,
+                  1664
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -1877,
+                  18048
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2575,
+                  2196,
+                  2803,
+                  3251
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p3_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p3_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p3_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p3_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1712,
+                  -1311,
+                  -658,
+                  -831
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192,
+                  1973,
+                  3201
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  16720,
+                  23905,
+                  12398,
+                  3905
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  638,
+                  1163,
+                  1061,
+                  2438,
+                  1714,
+                  3352,
+                  683,
+                  416
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p3_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p3_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p3_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p3_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -447,
+                  -1568,
+                  -402,
+                  1142,
+                  403,
+                  1607,
+                  -148,
+                  1074
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886,
+                  624,
+                  704,
+                  200,
+                  137,
+                  2500,
+                  3441
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -12095,
+                  -22048,
+                  -20114,
+                  19318,
+                  -32493,
+                  1991,
+                  -12948,
+                  -7886
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  727
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p4_distance8_zeta",
+                  ".Lprod3_t0b_b0_p4_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  298
+                ],
+                "original_twiddles_mod_q": [
+                  1124
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -13782
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2338,
+                  599
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p4_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p4_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p4_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p4_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1443,
+                  -1628
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  21213,
+                  -11356
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1598,
+                  2512,
+                  2690,
+                  287
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p4_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p4_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p4_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p4_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  170,
+                  635,
+                  -1332,
+                  -705
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947,
+                  1262,
+                  1867
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -30294,
+                  17915,
+                  14540,
+                  -5441
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  855,
+                  3092,
+                  2045,
+                  623,
+                  3359,
+                  244,
+                  2232,
+                  3050
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p4_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p4_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p4_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p4_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1233,
+                  -1657,
+                  144,
+                  -1699,
+                  578,
+                  -1298,
+                  311,
+                  1060
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147,
+                  1118,
+                  109,
+                  2663,
+                  2118,
+                  446,
+                  2276
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -16209,
+                  6919,
+                  26768,
+                  -11811,
+                  1858,
+                  -4626,
+                  23223,
+                  7716
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3300
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p5_distance8_zeta",
+                  ".Lprod3_t0b_b0_p5_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -1120
+                ],
+                "original_twiddles_mod_q": [
+                  3200
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  2976
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1020,
+                  353
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p5_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p5_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p5_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p5_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1289,
+                  -36
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -19337,
+                  -6692
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2741,
+                  2206,
+                  1421,
+                  3376
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p5_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p5_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p5_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p5_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1542,
+                  676,
+                  -1467,
+                  1536
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775,
+                  222,
+                  1846
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  13574,
+                  23716,
+                  -26939,
+                  1536
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1964,
+                  2659,
+                  351,
+                  396,
+                  1841,
+                  3318,
+                  542,
+                  3448
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p5_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p5_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p5_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p5_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1680,
+                  -232,
+                  258,
+                  557,
+                  -981,
+                  -309,
+                  -163,
+                  1323
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424,
+                  1715,
+                  2644,
+                  594,
+                  1202,
+                  511,
+                  1197
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  28304,
+                  15128,
+                  -6654,
+                  -7507,
+                  30635,
+                  2635,
+                  -10275,
+                  171
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1296
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p6_distance8_zeta",
+                  ".Lprod3_t0b_b0_p6_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -377
+                ],
+                "original_twiddles_mod_q": [
+                  1571
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -24569
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3421,
+                  1289
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p6_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p6_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p6_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p6_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1622,
+                  652
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  682,
+                  -24436
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  791,
+                  6,
+                  1245,
+                  75
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p6_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p6_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p6_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p6_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1261,
+                  -882,
+                  206,
+                  -654
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424,
+                  1715,
+                  2644
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -14995,
+                  -114,
+                  -23602,
+                  -1422
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1800,
+                  1233,
+                  1758,
+                  3313,
+                  2159,
+                  2879,
+                  1060,
+                  3146
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p6_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p6_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p6_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p6_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1589,
+                  -1487,
+                  849,
+                  426,
+                  671,
+                  -1459,
+                  -255,
+                  776
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947,
+                  1262,
+                  1867,
+                  3241,
+                  820,
+                  757,
+                  3336
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  31413,
+                  -23375,
+                  32209,
+                  2730,
+                  24607,
+                  10957,
+                  -20095,
+                  5896
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3296
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p7_distance8_zeta",
+                  ".Lprod3_t0b_b0_p7_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -532
+                ],
+                "original_twiddles_mod_q": [
+                  1520
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  3052
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1664,
+                  725
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p7_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p7_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p7_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p7_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  839,
+                  592
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -31545,
+                  -13744
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1969,
+                  2576,
+                  2142,
+                  1087
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p7_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p7_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p7_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p7_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  945,
+                  1598,
+                  -287,
+                  -767
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147,
+                  1118,
+                  109
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  28209,
+                  16702,
+                  24929,
+                  -20607
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3225,
+                  1777,
+                  557,
+                  3199,
+                  3148,
+                  981,
+                  1323,
+                  163
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p7_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p7_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p7_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p7_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -466,
+                  1513,
+                  1089,
+                  -101,
+                  482,
+                  987,
+                  -889,
+                  238
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192,
+                  1973,
+                  3201,
+                  3070,
+                  893,
+                  348,
+                  2520
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  4398,
+                  31849,
+                  -10559,
+                  4891,
+                  5858,
+                  -18597,
+                  -25081,
+                  -3090
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 3350,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2322
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p8_distance8_zeta",
+                  ".Lprod3_t0b_b0_p8_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  909
+                ],
+                "original_twiddles_mod_q": [
+                  366
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  21517
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 652,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1829,
+                  1443
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p8_distance4_lo_zeta",
+                  ".Lprod3_t0b_b0_p8_distance4_hi_zeta",
+                  ".Lprod3_t0b_b0_p8_distance4_lo_qinv",
+                  ".Lprod3_t0b_b0_p8_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  783,
+                  -1244
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  30863,
+                  -27356
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 676,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  697,
+                  875,
+                  70,
+                  2295
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p8_distance2_lo_zeta",
+                  ".Lprod3_t0b_b0_p8_distance2_hi_zeta",
+                  ".Lprod3_t0b_b0_p8_distance2_lo_qinv",
+                  ".Lprod3_t0b_b0_p8_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1251,
+                  -716,
+                  81,
+                  1421
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886,
+                  624,
+                  704
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -13213,
+                  -16588,
+                  -1327,
+                  22029
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 3431,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1889,
+                  447,
+                  1142,
+                  402,
+                  1607,
+                  3054,
+                  1074,
+                  148
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b0_p8_distance1_lo_zeta",
+                  ".Lprod3_t0b_b0_p8_distance1_hi_zeta",
+                  ".Lprod3_t0b_b0_p8_distance1_lo_qinv",
+                  ".Lprod3_t0b_b0_p8_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1123,
+                  -26,
+                  1519,
+                  -325,
+                  -1153,
+                  472,
+                  1144,
+                  -1014
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775,
+                  222,
+                  1846,
+                  603,
+                  1744,
+                  2352,
+                  1058
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  29725,
+                  -8474,
+                  -21649,
+                  -7621,
+                  -30465,
+                  7640,
+                  -20360,
+                  -2806
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "branch": 1,
+        "offset": 4,
+        "pass_A_alpha_schedule": [
+          {
+            "action": "raw-load",
+            "chains_per_qblock": 0,
+            "physical_row": 0,
+            "qblocks": 4,
+            "semantic_h": 0
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1078,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 556,
+            "physical_row": 1,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r1_alpha_qinv",
+            "qinv_signed16": -20436,
+            "semantic_h": 5,
+            "zeta_label": ".Lprod3_t0b_b1_r1_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 3080,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 107,
+            "physical_row": 2,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r2_alpha_qinv",
+            "qinv_signed16": 7147,
+            "semantic_h": 1,
+            "zeta_label": ".Lprod3_t0b_b1_r2_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1520,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 1265,
+            "physical_row": 3,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r3_alpha_qinv",
+            "qinv_signed16": -28815,
+            "semantic_h": 6,
+            "zeta_label": ".Lprod3_t0b_b1_r3_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 392,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 1145,
+            "physical_row": 4,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r4_alpha_qinv",
+            "qinv_signed16": -7431,
+            "semantic_h": 2,
+            "zeta_label": ".Lprod3_t0b_b1_r4_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 822,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 161,
+            "physical_row": 5,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r5_alpha_qinv",
+            "qinv_signed16": -15583,
+            "semantic_h": 7,
+            "zeta_label": ".Lprod3_t0b_b1_r5_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 867,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 460,
+            "physical_row": 6,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r6_alpha_qinv",
+            "qinv_signed16": -16436,
+            "semantic_h": 3,
+            "zeta_label": ".Lprod3_t0b_b1_r6_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1236,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": 1529,
+            "physical_row": 7,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r7_alpha_qinv",
+            "qinv_signed16": -23431,
+            "semantic_h": 8,
+            "zeta_label": ".Lprod3_t0b_b1_r7_alpha"
+          },
+          {
+            "action": "four-qblock-montgomery",
+            "chains_per_qblock": 1,
+            "factor_mod_q": 1556,
+            "memory_form_operands_per_chain": 2,
+            "montgomery_signed": -570,
+            "physical_row": 8,
+            "qblocks": 4,
+            "qinv_label": ".Lprod3_t0b_b1_r8_alpha_qinv",
+            "qinv_signed16": -29498,
+            "semantic_h": 4,
+            "zeta_label": ".Lprod3_t0b_b1_r8_alpha"
+          }
+        ],
+        "pass_B_branch_specific_radix2": [
+          {
+            "physical_row": 0,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1155
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p0_distance8_zeta",
+                  ".Lprod3_t0b_b1_p0_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -392
+                ],
+                "original_twiddles_mod_q": [
+                  1
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -21896
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1172,
+                  3361
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p0_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p0_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p0_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p0_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  566,
+                  284
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -22218,
+                  1820
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1982,
+                  286,
+                  576,
+                  118
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p0_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p0_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p0_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p0_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -966,
+                  -558,
+                  -1704,
+                  -61
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749,
+                  1741,
+                  1521
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  27962,
+                  -5422,
+                  -10920,
+                  -2237
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2401,
+                  936,
+                  628,
+                  1329,
+                  24,
+                  293,
+                  300,
+                  1934
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p0_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p0_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p0_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p0_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -333,
+                  688,
+                  1023,
+                  1686,
+                  -71,
+                  -1587,
+                  841,
+                  -824
+                ],
+                "original_twiddles_mod_q": [
+                  1,
+                  2749,
+                  1741,
+                  1521,
+                  2907,
+                  2216,
+                  39,
+                  44
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  20019,
+                  -17744,
+                  -11905,
+                  -25194,
+                  -455,
+                  -5555,
+                  -5687,
+                  28872
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 1,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1529
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p1_distance8_zeta",
+                  ".Lprod3_t0b_b1_p1_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -58
+                ],
+                "original_twiddles_mod_q": [
+                  2734
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -28986
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2676,
+                  3285
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p1_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p1_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p1_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p1_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  726,
+                  1085
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  14806,
+                  3261
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1669,
+                  642,
+                  1849,
+                  1111
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p1_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p1_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p1_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p1_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  104,
+                  -1035,
+                  1300,
+                  -838
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248,
+                  3062,
+                  3100
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -31640,
+                  -12171,
+                  30484,
+                  -21062
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1565,
+                  1677,
+                  549,
+                  1949,
+                  43,
+                  669,
+                  2266,
+                  3177
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p1_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p1_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p1_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p1_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  1564,
+                  -1072,
+                  -1192,
+                  428,
+                  593,
+                  -1547,
+                  -1230,
+                  -324
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460,
+                  2111,
+                  2293,
+                  455,
+                  2818,
+                  502,
+                  655
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -29668,
+                  -31792,
+                  -10408,
+                  28588,
+                  -815,
+                  -12683,
+                  22578,
+                  5308
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 2,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  773
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p2_distance8_zeta",
+                  ".Lprod3_t0b_b1_p2_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  450
+                ],
+                "original_twiddles_mod_q": [
+                  722
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -14654
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3066,
+                  268
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p2_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p2_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p2_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p2_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1292,
+                  -1369
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  7412,
+                  -5081
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3263,
+                  2529,
+                  1032,
+                  2228
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p2_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p2_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p2_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p2_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  862,
+                  1593,
+                  404,
+                  899
+                ],
+                "original_twiddles_mod_q": [
+                  722,
+                  460,
+                  2111,
+                  2293
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  3678,
+                  17593,
+                  -19564,
+                  23299
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2948,
+                  844,
+                  2280,
+                  179,
+                  3390,
+                  2495,
+                  891,
+                  1803
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p2_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p2_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p2_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p2_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1231,
+                  384,
+                  169,
+                  1343,
+                  -522,
+                  -323,
+                  389,
+                  1148
+                ],
+                "original_twiddles_mod_q": [
+                  2734,
+                  248,
+                  3062,
+                  3100,
+                  95,
+                  1880,
+                  2916,
+                  2758
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  9649,
+                  -16000,
+                  22313,
+                  -3393,
+                  1270,
+                  18237,
+                  -16891,
+                  31356
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 3,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1145
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p3_distance8_zeta",
+                  ".Lprod3_t0b_b1_p3_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  1078
+                ],
+                "original_twiddles_mod_q": [
+                  2590
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -21706
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  284,
+                  2891
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p3_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p3_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p3_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p3_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -264,
+                  234
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -5384,
+                  10730
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2262,
+                  2552,
+                  619,
+                  787
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p3_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p3_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p3_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p3_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -642,
+                  1669,
+                  -1111,
+                  -1608
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192,
+                  1973,
+                  3201
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  22654,
+                  17157,
+                  -11735,
+                  -14920
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  384,
+                  1231,
+                  1343,
+                  3288,
+                  3134,
+                  522,
+                  1148,
+                  3068
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p3_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p3_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p3_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p3_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1136,
+                  -1193,
+                  -372,
+                  644,
+                  -917,
+                  -680,
+                  637,
+                  -1586
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886,
+                  624,
+                  704,
+                  200,
+                  137,
+                  2500,
+                  3441
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -7280,
+                  -23337,
+                  -25460,
+                  3204,
+                  6123,
+                  -9896,
+                  -21763,
+                  7374
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 4,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1845
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p4_distance8_zeta",
+                  ".Lprod3_t0b_b1_p4_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -1569
+                ],
+                "original_twiddles_mod_q": [
+                  1124
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  30559
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1085,
+                  2731
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p4_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p4_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p4_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p4_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -473,
+                  -445
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -20569,
+                  13763
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3192,
+                  942,
+                  1873,
+                  1404
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p4_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p4_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p4_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p4_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  928,
+                  -194,
+                  1229,
+                  1032
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947,
+                  1262,
+                  1867
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  5024,
+                  -17858,
+                  30029,
+                  -26616
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  688,
+                  333,
+                  1686,
+                  2434,
+                  1870,
+                  71,
+                  2633,
+                  2616
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p4_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p4_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p4_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p4_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -883,
+                  -553,
+                  1062,
+                  -1727,
+                  1670,
+                  -66,
+                  133,
+                  -825
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147,
+                  1118,
+                  109,
+                  2663,
+                  2118,
+                  446,
+                  2276
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -13043,
+                  -6313,
+                  -31962,
+                  19393,
+                  30086,
+                  -1346,
+                  15621,
+                  15943
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 5,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  467
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p5_distance8_zeta",
+                  ".Lprod3_t0b_b1_p5_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  491
+                ],
+                "original_twiddles_mod_q": [
+                  3200
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -8853
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2088,
+                  1292
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p5_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p5_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p5_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p5_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  737,
+                  211
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  25953,
+                  -24493
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1460,
+                  3420,
+                  965,
+                  1266
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p5_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p5_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p5_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p5_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -286,
+                  -1475,
+                  -118,
+                  576
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775,
+                  222,
+                  1846
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -27678,
+                  701,
+                  -18294,
+                  -24000
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2385,
+                  1893,
+                  428,
+                  1192,
+                  1910,
+                  2864,
+                  3133,
+                  1230
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p5_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p5_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p5_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p5_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1438,
+                  -1711,
+                  -690,
+                  1083,
+                  -753,
+                  746,
+                  -770,
+                  -1046
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424,
+                  1715,
+                  2644,
+                  594,
+                  1202,
+                  511,
+                  1197
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  20322,
+                  29649,
+                  -8114,
+                  -22597,
+                  29327,
+                  11242,
+                  6142,
+                  -23318
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 6,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3037
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p6_distance8_zeta",
+                  ".Lprod3_t0b_b1_p6_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -486
+                ],
+                "original_twiddles_mod_q": [
+                  1571
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  7962
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  211,
+                  2720
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p6_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p6_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p6_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p6_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  96,
+                  1172
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -4000,
+                  13972
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1593,
+                  2595,
+                  899,
+                  3053
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p6_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p6_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p6_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p6_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  905,
+                  -1195,
+                  -787,
+                  619
+                ],
+                "original_twiddles_mod_q": [
+                  1520,
+                  2424,
+                  1715,
+                  2644
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -30199,
+                  16341,
+                  -17043,
+                  7659
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2904,
+                  883,
+                  1730,
+                  2395,
+                  3391,
+                  1787,
+                  2632,
+                  3324
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p6_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p6_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p6_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p6_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -1677,
+                  1565,
+                  1508,
+                  549,
+                  -669,
+                  43,
+                  280,
+                  -1191
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947,
+                  1262,
+                  1867,
+                  3241,
+                  820,
+                  757,
+                  3336
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  10483,
+                  -16739,
+                  32740,
+                  20133,
+                  1251,
+                  31659,
+                  15640,
+                  2521
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 7,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2901
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p7_distance8_zeta",
+                  ".Lprod3_t0b_b1_p7_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  -1236
+                ],
+                "original_twiddles_mod_q": [
+                  1520
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  10540
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  234,
+                  264
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p7_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p7_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p7_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p7_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  172,
+                  -781
+                ],
+                "original_twiddles_mod_q": [
+                  2590,
+                  1947
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -4436,
+                  -5005
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2899,
+                  966,
+                  3396,
+                  1704
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p7_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p7_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p7_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p7_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -942,
+                  -265,
+                  -1404,
+                  -1584
+                ],
+                "original_twiddles_mod_q": [
+                  366,
+                  147,
+                  1118,
+                  109
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  10578,
+                  -18313,
+                  1156,
+                  -32304
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  1746,
+                  1438,
+                  1083,
+                  690,
+                  746,
+                  753,
+                  2411,
+                  770
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p7_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p7_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p7_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p7_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -844,
+                  -509,
+                  -179,
+                  -1177,
+                  962,
+                  -67,
+                  1654,
+                  891
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192,
+                  1973,
+                  3201,
+                  3070,
+                  893,
+                  348,
+                  2520
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  32436,
+                  -27261,
+                  -20531,
+                  -13081,
+                  -14142,
+                  -14275,
+                  19830,
+                  -14597
+                ],
+                "stage": "distance1"
+              }
+            ]
+          },
+          {
+            "physical_row": 8,
+            "stages": [
+              {
+                "beta_ratio_mod_q": 1155,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  976
+                ],
+                "distance": 8,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p8_distance8_zeta",
+                  ".Lprod3_t0b_b1_p8_distance8_qinv"
+                ],
+                "montgomery_signed": [
+                  1722
+                ],
+                "original_twiddles_mod_q": [
+                  366
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  -18502
+                ],
+                "stage": "distance8"
+              },
+              {
+                "beta_ratio_mod_q": 1172,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  3012,
+                  473
+                ],
+                "distance": 4,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p8_distance4_lo_zeta",
+                  ".Lprod3_t0b_b1_p8_distance4_hi_zeta",
+                  ".Lprod3_t0b_b1_p8_distance4_lo_qinv",
+                  ".Lprod3_t0b_b1_p8_distance4_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -268,
+                  -391
+                ],
+                "original_twiddles_mod_q": [
+                  3200,
+                  2192
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  8436,
+                  -8967
+                ],
+                "stage": "distance4"
+              },
+              {
+                "beta_ratio_mod_q": 1982,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2422,
+                  3353,
+                  2619,
+                  2157
+                ],
+                "distance": 2,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p8_distance2_lo_zeta",
+                  ".Lprod3_t0b_b1_p8_distance2_hi_zeta",
+                  ".Lprod3_t0b_b1_p8_distance2_lo_qinv",
+                  ".Lprod3_t0b_b1_p8_distance2_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  37,
+                  1460,
+                  -1266,
+                  965
+                ],
+                "original_twiddles_mod_q": [
+                  1571,
+                  886,
+                  624,
+                  704
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  19621,
+                  1972,
+                  15886,
+                  24645
+                ],
+                "stage": "distance2"
+              },
+              {
+                "beta_ratio_mod_q": 2401,
+                "chain_positions_changed": false,
+                "combined_twiddles_mod_q": [
+                  2264,
+                  1136,
+                  644,
+                  372,
+                  2777,
+                  917,
+                  1871,
+                  2820
+                ],
+                "distance": 1,
+                "memory_operand_labels": [
+                  ".Lprod3_t0b_b1_p8_distance1_lo_zeta",
+                  ".Lprod3_t0b_b1_p8_distance1_hi_zeta",
+                  ".Lprod3_t0b_b1_p8_distance1_lo_qinv",
+                  ".Lprod3_t0b_b1_p8_distance1_hi_qinv"
+                ],
+                "montgomery_signed": [
+                  -936,
+                  -1056,
+                  -1329,
+                  628,
+                  -293,
+                  24,
+                  1523,
+                  300
+                ],
+                "original_twiddles_mod_q": [
+                  1124,
+                  2775,
+                  222,
+                  1846,
+                  603,
+                  1744,
+                  2352,
+                  1058
+                ],
+                "packing_geometry_changed": false,
+                "qinv_signed16": [
+                  22616,
+                  -21536,
+                  -12209,
+                  -7052,
+                  12891,
+                  -17384,
+                  30067,
+                  12076
+                ],
+                "stage": "distance1"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "candidate": "T0-BETA-TO-RADIX2",
+    "pass_A": "row h=0 raw-load; other rows use one alpha_h Montgomery chain per qblock",
+    "pass_B": "same chain positions and packing; select branch-specific w*g^(offset*d) constants"
+  },
+  "frozen_contract": {
+    "D_stage_order": [
+      "D8",
+      "D4",
+      "D2",
+      "D1"
+    ],
+    "montgomery_r_exponent": 0,
+    "paper_R2_changed": false,
+    "qorder": "C1-natural-Q",
+    "radix2_chain_positions_changed": false,
+    "range_repair_added": false,
+    "top_split_changed": false,
+    "transform_scale": 4
+  },
+  "montgomery_chain_ledger_per_forward": {
+    "candidate": {
+      "NTT9": 80,
+      "alpha_normalization": 64,
+      "combined_NTT16": 144,
+      "total": 288
+    },
+    "current": {
+      "NTT16": 144,
+      "NTT9": 80,
+      "T0": 72,
+      "total": 296
+    },
+    "delta": {
+      "NTT16": 0,
+      "NTT9": 0,
+      "T0_or_alpha": -8,
+      "total": -8
+    },
+    "encap_two_forward_delta": -16
+  },
+  "montgomery_representation_proof": {
+    "constant_formula": "centered((factor mod q) * 2^16 mod q)",
+    "exact_cases": 18743296,
+    "input_domain": "all 65536 signed-i16 values for every semantic alpha/combined constant occurrence",
+    "qinv_formula": "signed16(montgomery_constant * 12929)",
+    "same_r_exponent": 0,
+    "same_scale": 4
+  },
+  "predicted_linked_machine_ledger_per_forward": {
+    "basis": "frozen linked Natural-Q producer plus exact four-instruction Montgomery-chain deletion",
+    "candidate": {
+      "barrett": 72,
+      "data_loads": 144,
+      "data_stores": 144,
+      "instructions": 2787,
+      "peak_live_ymm_upper_bound": 16,
+      "routing": 432,
+      "vpmulhw": 576,
+      "vpmullw": 360
+    },
+    "current": {
+      "barrett": 72,
+      "data_loads": 144,
+      "data_stores": 144,
+      "instructions": 2819,
+      "peak_live_ymm": 16,
+      "routing": 432,
+      "vpmulhw": 592,
+      "vpmullw": 368
+    },
+    "delta": {
+      "barrett": 0,
+      "data_loads": 0,
+      "data_stores": 0,
+      "instructions": -32,
+      "routing": 0,
+      "spill": 0,
+      "vpmulhw": -16,
+      "vpmullw": -8,
+      "vpsubw": -8
+    },
+    "text_byte_delta": null
+  },
+  "range_and_pressure_gate": {
+    "all_preoperations_signed_i16": true,
+    "candidate_global_i16": [
+      -21333,
+      21333
+    ],
+    "control_global_i16": [
+      -20751,
+      20753
+    ],
+    "interval_nodes_checked": 296,
+    "new_reductions": 0,
+    "new_register_temporaries": 0,
+    "peak_live_ymm_upper_bound": 16
+  },
+  "schema": "gt9x16-prod3-natural-q-t0-beta-schedule/v1",
+  "source_sha256": {
+    "branch0_constants": "b0248f0fe61b16dcd8ee5d12609f8d6a0fb827bf6c02ea068485176262eaaff9",
+    "branch1_constants": "9f0fce7c1cf90db28666b68d4bdbb4ad484134afb819da7dc0cd5b4239cb5ca2",
+    "full_audit": "2287d55a84084c6d446c32028857350bc3db638661e269204e947d2001996f7f",
+    "map": "a7e5c2c19c620e830053fbb575f94ec1f0a7c41a84bab62dfbec302bf30017ce",
+    "natural_audit": "940d8c5e0e543b728ec696b2b5bc503eeca076bb39352cd518a277612dcc9a4a",
+    "producer_source": "4a9bfcbdaf6b296e0d00e0342a0e5836483c669d303d9cd015ef284baf248b3f",
+    "scaled_oracle": "c564af995c66601c4f249831fe24946cf7e1ab19b093024cd8f71ea7b9cc20f9"
+  }
+}

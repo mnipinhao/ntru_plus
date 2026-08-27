@@ -134,6 +134,7 @@ GT9X16_PROD3_QORDER_NATURAL_ASM_ARGS := --ma-schedule generated/f0-ma-schedule.j
 GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES = src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_QORDER_NATURAL_PRODUCER) $(GT9X16_PROD3_QORDER_NATURAL_ASM) $(GT9X16_PROD3_HASH_H1_ASM) tests/test_gt9x16_prod3_ma2_qorder_natural_asm0.c
 GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS := --elf $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0 --contract generated/gt9x16-prod3-ma2-qorder-natural-asm.json --constants generated/gt9x16-prod3-ma2-qorder-natural-constants.inc --output generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json
 GT9X16_PROD3_T0_MAP_ARGS := --component-oracle generated/gt9x16-component-oracle.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --paper-range generated/gt9x16-ntt9-paper-range.json --prod3-schedule generated/gt9x16-prod3-aos-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --qorder-price results/gt9x16-prod3-qorder-price-intel155h-20260827-001/summary.json --top-split-source src/top_split_adapter.c --output generated/gt9x16-prod3-natural-q-t0-absorption-map.json
+GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS := --map generated/gt9x16-prod3-natural-q-t0-absorption-map.json --scaled-oracle generated/gt9x16-scaled-r3r3-oracle.json --natural-audit generated/gt9x16-prod3-ma2-qorder-natural-asm-audit.json --full-audit generated/gt9x16-prod3-aos-full-audit.json --producer-source asm/gt9x16_prod3_aos_branch0.S --branch0-constants generated/gt9x16-prod3-aos-branch0-constants.inc --branch1-constants generated/gt9x16-prod3-aos-branch1-constants.inc --output generated/gt9x16-prod3-natural-q-t0-beta-schedule.json --asm-constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -286,6 +287,8 @@ generate:
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_absorption_map.py $(GT9X16_PROD3_T0_MAP_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_t0_absorption_map.py
+	$(PYTHON) tools/generate_gt9x16_prod3_t0_beta_schedule.py $(GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS)
+	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS)
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
@@ -441,6 +444,8 @@ check:
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS) --check
 	$(PYTHON) tools/generate_gt9x16_prod3_t0_absorption_map.py $(GT9X16_PROD3_T0_MAP_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_t0_absorption_map.py
+	$(PYTHON) tools/generate_gt9x16_prod3_t0_beta_schedule.py $(GT9X16_PROD3_T0_BETA_SCHEDULE_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_t0_beta_schedule.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS) --check
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
