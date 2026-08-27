@@ -126,6 +126,7 @@ GT9X16_PROD3_HASH_FANOUT_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_
 GT9X16_PROD3_HASH_PACK_LAYOUT := generated/official-pack-layout.json
 GT9X16_PROD3_HASH_DIRECT_MAP_ARGS := --prod2-map generated/f0-prod2-ma2-map.json --consumer-map generated/f0-ma-consumer-map.json --ma0-contract generated/f0-ma0-adapter.json --pack-source $(UPSTREAM)/pack.s --pack-layout $(GT9X16_PROD3_HASH_PACK_LAYOUT) --output generated/gt9x16-prod3-ma2-hash-direct-map.json
 GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS := --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --output generated/gt9x16-prod3-ma2-hash-direct-schedule.json
+GT9X16_PROD3_QORDER_CODESIGN_ARGS := --prod3-schedule generated/gt9x16-prod3-aos-schedule.json --ma-schedule generated/f0-ma-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --hash-schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --output generated/gt9x16-prod3-ma2-qorder-codesign.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -267,6 +268,8 @@ generate:
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_map.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_schedule.py $(GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS)
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_schedule.py
+	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_codesign.py $(GT9X16_PROD3_QORDER_CODESIGN_ARGS)
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_codesign.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS)
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1
@@ -411,6 +414,8 @@ check:
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_direct_schedule.py $(GT9X16_PROD3_HASH_DIRECT_SCHED_ARGS) --check
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_map.py
 	$(PYTHON) tests/test_gt9x16_prod3_ma2_hash_direct_schedule.py
+	$(PYTHON) tools/generate_gt9x16_prod3_ma2_qorder_codesign.py $(GT9X16_PROD3_QORDER_CODESIGN_ARGS) --check
+	$(PYTHON) tests/test_gt9x16_prod3_ma2_qorder_codesign.py
 	$(PYTHON) tools/generate_gt9x16_prod3_ma2_hash_h1_asm.py $(GT9X16_PROD3_HASH_H1_GENERATOR_ARGS) --check
 	$(CC) -mavx2 -c $(GT9X16_PROD3_HASH_H1_ASM) -o $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(GT9X16_PROD3_HASH_H1_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1

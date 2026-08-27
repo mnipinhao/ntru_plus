@@ -556,28 +556,25 @@ is not yet authorized.  See `CHECKPOINT-GT9X16-PROD3-HASH-FANOUT.md`.
 
 Checkpoint GT9X16-PROD3-MA2-HASH-DIRECT-MAP removes the Official coefficient
 array from the target contract and maps every MA2 plane lane directly to its
-Official coefficient and exact 12-bit byte ownership. All 576 adjacent
-serializer pairs reside within one MA2 vector; each vector owns eight pairs in
-one serializer block and two 12-byte output fragments. The exhaustive scale
+Official coefficient and exact 12-bit byte ownership. The later pinned
+physical-to-serialized pack probe corrects the initial locality assumption:
+zero of 576 true serializer pairs reside within one MA2 vector. The exhaustive scale
 proof covers all 41,505 integers in `[-20751,20753]`: inv4 Montgomery produces
 `[-1998,1998]`, after which sign-add-q is bit-exact with Official's Barrett plus
 sign canonicalization and yields `[0,3456]`. H1 is the first schedule target:
 it removes 416 current intermediate reloads and 216 stores without a full
-coefficient temporary. H2 exposes a 72-load lower bound, but 256 pairs cross
-128-bit halves and its exact fragment-recombination schedule remains open.
+coefficient temporary. All initial H2 locality and route counts are withdrawn;
+a corrected H2 design remains open.
 Serializer ASM and benchmarking are still unauthorized. See
 `CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-MAP.md`.
 
 Checkpoint GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE turns the byte map into one
-fully lowerable H1 schedule and exact-mask H2 24/48/96-byte tile candidates.
+fully lowerable H1 schedule. Its initial H2 24/48/96-byte candidates were later
+withdrawn after the pinned pack-layout probe.
 H1 uses 272 data loads, 27 separately accounted constant loads, 804 routing
 plus packing instructions, 54 byte stores, no coefficient temporary, and a
-spill-free 16-YMM peak. H2-96 is the main challenger: it reaches the 72-load
-lower bound and preserves 54 stores, but increases route/pack work to 1,086
-instructions with a 15-YMM peak. H2-24 and H2-48 retain distinct store/pressure
-tradeoffs on the static frontier. All word and byte masks pass symbolic replay.
-Only H1 ASM0 is authorized next; H2 and benchmarking remain deferred until H1
-passes raw-byte correctness and linked structural audit. See
+spill-free 16-YMM peak. Only H1 ASM0 was authorized; H2 remained deferred and
+its old `1086` figure is not evidence. See
 `CHECKPOINT-GT9X16-PROD3-MA2-HASH-DIRECT-SCHEDULE.md`.
 
 Checkpoint GT9X16-PROD3-MA2-HASH-H1-ASM0 implements the complete 2,304-byte
@@ -611,3 +608,16 @@ response SHA-256 remains `2ddfc810...9464c3`. Native performance is
 intentionally not rerun. H1 is now the research Encap baseline, and the next
 checkpoint is map-only joint Q-order co-design. See
 `CHECKPOINT-GT9X16-PROD3-H1-INTEGRATION.md`.
+
+Checkpoint GT9X16-PROD3-MA2-QORDER-CO-DESIGN searches all 384 four-bit index
+permutations plus XOR orientations without changing arithmetic. The 33 Pareto
+orders collapse to two movement profiles. Current frozen MA2 Q remains
+Pareto-optimal: 32 current-like orientations retain 144 producer routes, 128
+resident-`h` source-half groups, 336 H1 coefficient routes, and 272 H1 data
+loads. The sole different point is C1 natural Q: it removes all 144 final
+producer routes but raises the `h` ownership count by 16 groups and H1 by 24
+routes plus 16 loads. H1's 324 pack-transpose routes do not change. All 576
+serialized pairs cross MA2 vectors for every candidate, so Q-order cannot
+revive the invalidated H2-96 design. Natural Q is retained only for an exact
+schedule-lowering checkpoint; no ASM, timing, or native KEM is authorized.
+See `CHECKPOINT-GT9X16-PROD3-MA2-QORDER-CO-DESIGN.md`.

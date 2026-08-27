@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-aos-consumer-selected-native-encap-next
+state: checkpoint-gt9x16-prod3-ma2-qorder-codesign-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -540,9 +540,18 @@ checkpoint_gt9x16_prod3_h1_integration_source: passed-one-direct-h1-zero-old-rec
 checkpoint_gt9x16_prod3_h1_integration_kat: passed-100of100-byte-exact-request-response
 checkpoint_gt9x16_prod3_h1_integration_performance: not-run-by-design
 gt9x16_prod3_h1_integration_result: results/gt9x16-prod3-h1-integration-20260827-001/kat.json
+gt9x16_prod3_ma2_qorder_codesign: generated/gt9x16-prod3-ma2-qorder-codesign.json
+checkpoint_gt9x16_prod3_qorder_family: passed-384-four-bit-permutation-xor-orders
+checkpoint_gt9x16_prod3_qorder_contract: passed-semantic-owner-lane-q-lambda-scale-and-final-bytes-separated
+checkpoint_gt9x16_prod3_qorder_pareto: passed-33-orders-two-distinct-cost-profiles-current-remains-pareto
+checkpoint_gt9x16_prod3_qorder_natural: retained-minus144-exact-producer-routes-plus16-h-half-groups-plus24-h1-routes-plus16-h1-loads
+checkpoint_gt9x16_prod3_qorder_h1_pack: invariant-324-routes
+checkpoint_gt9x16_prod3_qorder_h2: passed-all384-orders-576of576-pairs-cross-ma2-vector-old256-and1086-not-reused
+checkpoint_gt9x16_prod3_qorder_asm: not-authorized-map-only
+checkpoint_gt9x16_prod3_qorder_benchmark: not-run-by-design
 research_encap_baseline: prod3-persistent-aos-plus-direct-h1-plus-native-ma2
 native_reentry_gate: caller-shaped-island-within-0-to-200-cycles-or-known-structural-opportunities-closed
-next_step: gt9x16-prod3-ma2-qorder-co-design-map-only
+next_step: gt9x16-prod3-ma2-qorder-natural-schedule-lowering-only
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
