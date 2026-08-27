@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-encap-h-ingress-ma2-h3-asm-complete
+state: checkpoint-encap-h3-price-and-h4-codesign-v1-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -707,8 +707,20 @@ checkpoint_encap_h_ingress_h3_abi: passed-entry32-text32-rodata32-call0-branch0-
 checkpoint_encap_h_ingress_h3_sanitizer: passed-asan-ubsan
 encap_h_ingress_ma2_h3_asm_contract: generated/encap-h-ingress-ma2-h3-asm.json
 encap_h_ingress_ma2_h3_asm_audit: generated/encap-h-ingress-ma2-h3-asm-audit.json
-checkpoint_encap_h_ingress_h3_benchmark: not-authorized
-next_step: decide-separate-h3-machine-pricing-or-pk-decode-ma2-ct-serializer-wavefront-map-no-native-kem-yet
+checkpoint_encap_h_ingress_h3_benchmark: passed-supercop-derived-fixed-elf-all-four-settings-9of9
+checkpoint_encap_h_ingress_h3_price_current: minus58.2292-cycles-normal-aslr-on-bootstrap-ci-below-zero
+checkpoint_encap_h_ingress_h3_price_h1: minus103.8542-cycles-normal-aslr-on-bootstrap-ci-below-zero
+checkpoint_encap_h_ingress_h3_price_scope: pk-bytes-plus-resident-rm-to-raw-natural-q-scale4-ma2-no-serializer-no-native-kem
+encap_h_ingress_h3_price_result: results/encap-h-ingress-ma2-h3-price-intel155h-20260827-001/summary.json
+checkpoint_h4_machine_liveness: passed-linked-def-use-peak16-all72-hooks-minimum3-free-ymm
+checkpoint_h4_terminal_ownership: passed-72-vectors-1152-coefficients-576-exact-12bit-pairs
+checkpoint_h4_pair_frontier: maximum16-pending-coefficients-one-ymm-storage-lower-bound
+checkpoint_h4a_feasibility: all72-hooks-have-one-scratch-normalization-room-exact-schedule-pending
+checkpoint_h4b_feasibility: promising-one-pending-ymm-not-yet-an-achievable-pack-schedule
+checkpoint_h4_asm: not-written-map-only
+h3_machine_liveness: generated/h3-machine-def-use-liveness.json
+encap_ma2_ct_egress_codesign_v1: generated/encap-ma2-ct-egress-codesign-v1.json
+next_step: h4-exact-normalize-pair-pack-schedule-search-no-asm-until-machine-budget-closes
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0

@@ -156,6 +156,8 @@ ENCAP_H_INGRESS_H3_ASM := asm/encap_h_ingress_ma2_h3.S
 ENCAP_H_INGRESS_H3_GENERATOR_ARGS := --schedule generated/encap-h-ingress-ma2-h3-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --ma2-source asm/gt9x16_prod3_cumulative_ma2.S --asm $(ENCAP_H_INGRESS_H3_ASM) --header generated/encap-h-ingress-ma2-h3.h --contract generated/encap-h-ingress-ma2-h3-asm.json
 ENCAP_H_INGRESS_H3_TEST_SOURCES := $(ENCAP_H_DECODE_H1_ASM) $(GT9X16_PROD3_QORDER_NATURAL_ASM) asm/gt9x16_prod3_cumulative_ma2.S $(UPSTREAM)/consts.c $(UPSTREAM)/pack.s $(ENCAP_H_INGRESS_H3_ASM) tests/test_encap_h_ingress_ma2_h3.c
 ENCAP_H_INGRESS_H3_AUDIT_ARGS := --h3-object $(BUILD)/h3/h3.o --h1-object $(BUILD)/h3/h1.o --contract generated/encap-h-ingress-ma2-h3-asm.json --schedule generated/encap-h-ingress-ma2-h3-schedule.json --output generated/encap-h-ingress-ma2-h3-asm-audit.json
+H3_MACHINE_LIVENESS_ARGS := --object $(BUILD)/h3/h3.o --output generated/h3-machine-def-use-liveness.json
+ENCAP_H4_CODESIGN_ARGS := --h3-source $(ENCAP_H_INGRESS_H3_ASM) --liveness generated/h3-machine-def-use-liveness.json --serializer-map generated/gt9x16-prod3-ma2-hash-direct-map.json --output generated/encap-ma2-ct-egress-codesign-v1.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -181,6 +183,8 @@ GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash
  prepare-gt9x16-prod3-encap-attribution-v2 \
  supercop-gt9x16-prod3-encap-attribution-v2 \
  supercop-gt9x16-prod3-encap-tail-attribution-v1 \
+ prepare-encap-h-ingress-ma2-h3-price \
+ supercop-encap-h-ingress-ma2-h3-price \
  bench-forward-reduction-short \
  gt9x16-prod3-h1-kat \
  supercop-paired-serious supercop-promotion-report
@@ -330,6 +334,9 @@ generate:
 	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H_INGRESS_H3_TEST_SOURCES) -o $(BUILD)/h3/test-h3
 	$(BUILD)/h3/test-h3
 	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS)
+	$(PYTHON) tools/audit_h3_machine_liveness.py $(H3_MACHINE_LIVENESS_ARGS)
+	$(PYTHON) tools/generate_encap_ma2_ct_egress_codesign_v1.py $(ENCAP_H4_CODESIGN_ARGS)
+	$(PYTHON) tests/test_encap_ma2_ct_egress_codesign_v1.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
@@ -523,6 +530,10 @@ check:
 	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H_INGRESS_H3_TEST_SOURCES) -o $(BUILD)/h3/test-h3
 	$(BUILD)/h3/test-h3
 	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS) --check
+	$(PYTHON) tools/audit_h3_machine_liveness.py $(H3_MACHINE_LIVENESS_ARGS) --check
+	$(PYTHON) tools/generate_encap_ma2_ct_egress_codesign_v1.py $(ENCAP_H4_CODESIGN_ARGS) --check
+	$(PYTHON) tests/test_encap_ma2_ct_egress_codesign_v1.py
+	$(PYTHON) tests/test_encap_h_ingress_ma2_h3_price_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS) --check
@@ -726,6 +737,8 @@ audit:
 	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h3/h3.o
 	$(CC) -mavx2 -I. -c $(ENCAP_H_DECODE_H1_ASM) -o $(BUILD)/h3/h1.o
 	$(PYTHON) tools/audit_encap_h_ingress_ma2_h3.py $(ENCAP_H_INGRESS_H3_AUDIT_ARGS)
+	$(PYTHON) tools/audit_h3_machine_liveness.py $(H3_MACHINE_LIVENESS_ARGS)
+	$(PYTHON) tools/generate_encap_ma2_ct_egress_codesign_v1.py $(ENCAP_H4_CODESIGN_ARGS)
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o
@@ -1123,6 +1136,15 @@ supercop-gt9x16-prod3-encap-tail-attribution-v1:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_encap_tail_attribution_v1.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${PROD3_ATTR_V2_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-normal} --reversed-implementation $${PROD3_ATTR_V2_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-attr-v2-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
+
+prepare-encap-h-ingress-ma2-h3-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_encap_h_ingress_ma2_h3_price_placements.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-source $${H3_PRICE_NORMAL_SOURCE:-avx2-gt9x16-prod3-cumulative-exp002} --reversed-source $${H3_PRICE_REVERSED_SOURCE:-avx2-gt9x16-prod3-cumulative-exp002} --normal-implementation $${H3_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-normal} --reversed-implementation $${H3_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-reversed}
+
+supercop-encap-h-ingress-ma2-h3-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_encap_h_ingress_ma2_h3_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${H3_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-normal} --reversed-implementation $${H3_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
 
 bench-forward-reduction-short:
 	mkdir -p $(BUILD)/prod3

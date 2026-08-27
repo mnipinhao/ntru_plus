@@ -724,3 +724,21 @@ the same 360 consumer-required routes and identical MA2 arithmetic, reduces
 logical instructions from 3,678 to 3,587, and has no frame, spill, call,
 branch, or `vzeroupper`.  No benchmark or caller integration is authorized in
 this checkpoint.  See `CHECKPOINT-ENCAP-H-INGRESS-MA2-H3-ASM.md`.
+
+Checkpoint ENCAP-H-INGRESS-MA2-H3-PRICE prices valid PK bytes plus resident
+`r/m` through the raw scale-4 MA2 boundary. H3 beats the current cumulative
+Official-decode/projection path by 58.23 cycles and the H1 materialized control
+by 103.85 cycles in the predeclared normal-placement ASLR-on headline. All
+four placement/ASLR settings win 9/9 launches and have bootstrap 95% confidence
+intervals below zero. This freezes H3 as the research ingress baseline but is
+SUPERCOP-derived primitive evidence, not native KEM promotion evidence. See
+`CHECKPOINT-ENCAP-H-INGRESS-MA2-H3-PRICE.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-CODESIGN-V1 adds linked machine def/use replay
+for H3 and maps every live terminal lane to exact ciphertext bytes. The linked
+leaf reaches 16 live YMM globally, but every one of the 72 terminal hooks has
+at least three free YMM. All 576 true serializer pairs cross MA2 vectors, while
+actual terminal order needs at most 16 pending coefficients, a one-YMM storage
+lower bound. H4 terminal normalization and a streaming pair join are therefore
+structurally plausible; exact schedule search is next, and no H4 ASM exists
+yet. See `CHECKPOINT-ENCAP-MA2-CT-EGRESS-CODESIGN-V1.md`.

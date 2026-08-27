@@ -243,7 +243,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-qorder-price",
                                            "derived-gt9x16-prod3-t0-beta-price",
                                            "derived-gt9x16-prod3-encap-attribution-v2",
-                                           "derived-gt9x16-prod3-encap-tail-attribution-v1"),
+                                           "derived-gt9x16-prod3-encap-tail-attribution-v1",
+                                           "derived-encap-h-ingress-ma2-h3-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -265,7 +266,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-qorder-price",
                      "derived-gt9x16-prod3-t0-beta-price",
                      "derived-gt9x16-prod3-encap-attribution-v2",
-                     "derived-gt9x16-prod3-encap-tail-attribution-v1") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-encap-tail-attribution-v1",
+                     "derived-encap-h-ingress-ma2-h3-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -326,7 +328,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-qorder-price",
                          "derived-gt9x16-prod3-t0-beta-price",
                          "derived-gt9x16-prod3-encap-attribution-v2",
-                         "derived-gt9x16-prod3-encap-tail-attribution-v1"):
+                         "derived-gt9x16-prod3-encap-tail-attribution-v1",
+                         "derived-encap-h-ingress-ma2-h3-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -355,6 +358,8 @@ def main() -> int:
                     "gt9x16_prod3_encap_attribution_v2_measure.c",
                 "derived-gt9x16-prod3-encap-tail-attribution-v1":
                     "gt9x16_prod3_encap_tail_attribution_v1_measure.c",
+                "derived-encap-h-ingress-ma2-h3-price":
+                    "encap_h_ingress_ma2_h3_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -520,6 +525,14 @@ def main() -> int:
                                       ("gt", "second"),
                                       ("gt", "first"),
                                       ("official", "second")))
+    elif args.mode == "derived-encap-h-ingress-ma2-h3-price":
+        required = tuple(
+            f"encap_h_ingress_ma2_h3_price_{control}_{variant}_{position}_cycles"
+            for control in ("current", "h1")
+            for variant, position in (("control", "first"),
+                                      ("h3", "second"),
+                                      ("h3", "first"),
+                                      ("control", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1745,6 +1758,30 @@ def main() -> int:
             "new_asm": False,
             "native_kem_result": False,
         }
+    if args.mode == "derived-encap-h-ingress-ma2-h3-price":
+        prefix = "encap_h_ingress_ma2_h3_price"
+        combined = {
+            f"{prefix}_{control}_{variant}_cycles": (
+                pooled[f"{prefix}_{control}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{control}_{variant}_second_cycles"])
+            for control in ("current", "h1") for variant in ("control", "h3")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["h3_price_contract"] = {
+            "input": "valid 1728-byte public key plus resident Natural-Q scale-4 r/m",
+            "output": "raw-exact Natural-Q scale-4 MA2 state",
+            "current": "Official poly_frombytes plus cumulative Natural-Q h projection/MA2",
+            "h1": "Natural-Q H1 decoder plus materialized h plus preprojected MA2",
+            "h3": "streaming PK decode/validate directly into unchanged MA2",
+            "serializer": "excluded",
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1771,6 +1808,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-t0-beta-price" if args.mode == "derived-gt9x16-prod3-t0-beta-price"
                             else "supercop-derived-gt9x16-prod3-encap-attribution-v2" if args.mode == "derived-gt9x16-prod3-encap-attribution-v2"
                             else "supercop-derived-gt9x16-prod3-encap-tail-attribution-v1" if args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1"
+                            else "supercop-derived-encap-h-ingress-ma2-h3-price" if args.mode == "derived-encap-h-ingress-ma2-h3-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1825,7 +1863,9 @@ def main() -> int:
               "derived-gt9x16-prod3-encap-attribution-v2":
                   "gt9x16_prod3_encap_attribution_v2_measure.c",
               "derived-gt9x16-prod3-encap-tail-attribution-v1":
-                  "gt9x16_prod3_encap_tail_attribution_v1_measure.c"}[args.mode])
+                  "gt9x16_prod3_encap_tail_attribution_v1_measure.c",
+              "derived-encap-h-ingress-ma2-h3-price":
+                  "encap_h_ingress_ma2_h3_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),
