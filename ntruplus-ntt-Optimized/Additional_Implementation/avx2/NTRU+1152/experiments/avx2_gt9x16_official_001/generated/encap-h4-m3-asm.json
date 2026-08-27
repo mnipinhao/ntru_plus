@@ -18,6 +18,7 @@
   "decision": {
     "benchmark_authorized": false,
     "correctness_authorized": true,
+    "m2_exact_lowering_reopened": true,
     "m2_schedule_reopened": true,
     "native_kem_authorized": false
   },
@@ -34,7 +35,7 @@
       "sign_canonicalization_instructions_removed": 216
     },
     "inv4_montgomery_vectors": 0,
-    "m2_ownership_correction": "exact serializer pairs are adjacent lanes within each plane, not same-lane values from adjacent planes",
+    "m2_ownership_correction": "M2 same-lane adjacent-plane wire pairing is valid; the first ASM helper incorrectly paired adjacent lanes using Official physical coefficient IDs instead of serialized wire IDs",
     "m2_selected_pair_primitive_realized": false,
     "peak_ymm": 16,
     "producer_added_montgomery_chains_per_forward": 8,

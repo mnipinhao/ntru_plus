@@ -41,9 +41,10 @@ def emit_scale1_constants(audit: dict) -> str:
     return "\n".join(lines)
 
 
-# Historical M2 lowering helpers below are deliberately not selected.  They
-# remain executable documentation of the schedule that the first ASM
-# differential rejected; generate_asm() uses canonical_h1_egress instead.
+# Historical M2 lowering helpers below are deliberately not selected.  The
+# first ASM attempt accidentally keyed pair formation by Official physical
+# coefficient rather than serialized wire coefficient.  generate_asm() uses
+# canonical_h1_egress until an exact wire-keyed lowering replaces this code.
 def source_intervals(vector: dict) -> tuple[int, int]:
     values = vector["pair_ids_after_final_sort"]
     return min(values[:4]) // 8, min(values[4:]) // 8
@@ -332,9 +333,10 @@ def generate_asm(h3: str, h1: str, schedule: dict,
     if count != 72 or len(scratch_offsets) != 18:
         raise SystemExit("did not replace all H3 terminal stores")
 
-    # The linked correctness oracle is authoritative over the M2 abstract
-    # pair labels.  Prove the mismatch explicitly before lowering the exact
-    # H1-ownership fallback.
+    # Record the namespace counterexample that rejected the first lowering.
+    # Official physical coefficients 0/1 are adjacent lanes in vector 20, but
+    # they are not wire pair 0.  Wire pair 0 is serialized coefficients 0/1,
+    # i.e. Official physical 0/16 in vectors 20/21 at the same lane.
     cells = {(cell["ma2"]["vector"], cell["ma2"]["lane"]):
              cell["official_coefficient"] for cell in direct["coefficient_map"]}
     if cells[(20, 15)] != 0 or cells[(21, 15)] != 16 or cells[(20, 14)] != 1:
@@ -401,8 +403,9 @@ int {SYMBOL}(uint8_t ct[1728], const uint8_t pk[1728],
             "terminal_sign_canonicalization_instructions": 216,
             "scratch_stores": 72, "scratch_reloads": 72,
             "m2_ownership_correction": (
-                "exact serializer pairs are adjacent lanes within each plane, "
-                "not same-lane values from adjacent planes"),
+                "M2 same-lane adjacent-plane wire pairing is valid; the first "
+                "ASM helper incorrectly paired adjacent lanes using Official "
+                "physical coefficient IDs instead of serialized wire IDs"),
             "exact_ownership_fallback": fallback_ledger,
             "m2_selected_pair_primitive_realized": False,
             "dense_pack_routes": 486, "ciphertext_stores": 54,
@@ -410,6 +413,7 @@ int {SYMBOL}(uint8_t ct[1728], const uint8_t pk[1728],
         },
         "decision": {"correctness_authorized": True,
                      "m2_schedule_reopened": True,
+                     "m2_exact_lowering_reopened": True,
                      "benchmark_authorized": False,
                      "native_kem_authorized": False},
     }

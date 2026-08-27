@@ -7,9 +7,10 @@ H4-M3 produced two real, namespaced AVX2 machine objects:
 - `ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1`;
 - `ntruplus1152_exp001_encap_h4_m3`.
 
-The caller-wide scale-1 gauge and the live H3 terminal are correct.  The M2
-packed-egress selection is not correct under the exact serializer ownership
-map, so no benchmark is authorized yet.
+The caller-wide scale-1 gauge and the live H3 terminal are correct.  The first
+M2 packed-egress lowering used the wrong coefficient namespace, so no
+benchmark is authorized yet.  The subsequent M2B exact search shows that the
+abstract M2 same-lane wire-pair model itself was valid.
 
 ## Scale-1 producer
 
@@ -65,10 +66,10 @@ int ntruplus1152_exp001_encap_h4_m3(
 All 54 PK loads complete before the first ciphertext store.  Exact `pk == ct`
 and both tested 16-byte partial-overlap directions therefore pass.
 
-## M2 ownership failure
+## First M3 lowering failure
 
-M2 treated a same lane in adjacent terminal planes as one Official serializer
-pair.  The exact map gives this counterexample:
+The failed helper treated adjacent Official physical coefficient IDs as a
+serializer pair.  The exact map gives this namespace counterexample:
 
 ```text
 MA2 vector 20 lane 15 -> Official coefficient 0
@@ -76,19 +77,22 @@ MA2 vector 21 lane 15 -> Official coefficient 16
 MA2 vector 20 lane 14 -> Official coefficient 1
 ```
 
-Thus:
+But ciphertext pairing is keyed by serialized wire coefficient.  Wire pair 0
+is physical coefficients 0 and 16, so:
 
 ```text
 vpunpckwd(vector20, vector21)
 ```
 
-forms `(0,16)`, not `(0,1)`.  The first nonzero ASM differential exposed this
-at ciphertext byte 1.  Canonical scratch remained exact, isolating the error
-to the M2 egress ownership model.
+forms the correct wire pair `(wire 0, wire 1)`.  The incorrect first helper
+instead paired adjacent lanes within vector 20 because it sorted by physical
+IDs 0/1.  The first nonzero ASM differential exposed this at ciphertext byte
+1.  Canonical scratch remained exact, isolating the error to that lowering.
 
-The generated 1502-instruction M2 ledger and its `72 vpunpckwd + 72
-vpmaddwd` primitive are therefore rejected.  They must not be benchmarked or
-used as performance evidence.
+The generated 1502-instruction M2 ledger remains a conditional symbolic
+estimate.  Its `72 vpunpckwd + 72 vpmaddwd` primitive is ownership-valid only
+when the operands are selected by wire ID.  It must not be benchmarked until
+that exact lowering exists and passes the byte differential.
 
 ## Exact-ownership correctness control
 
@@ -130,9 +134,10 @@ Passed:
 ## Decision
 
 The M0 caller-wide scale gauge and H3 terminal realization are closed.  The
-M2 packed-egress model is reopened.  No serious benchmark and no native KEM
-integration is authorized from this checkpoint.
+M2 packed-egress machine lowering is reopened.  No serious benchmark and no
+native KEM integration is authorized from this checkpoint.
 
-The next step must rebuild terminal-to-wire ownership from the exact direct
-map and find an achievable packed-egress schedule.  The H1-based H4-M3 object
-is the correctness control for that search, not a promotion candidate.
+H4-M2B rebuilds terminal-to-wire ownership from the exact direct map and
+separates physical and wire coefficient namespaces.  The H1-based H4-M3
+object remains the correctness control for the next exact schedule, not a
+promotion candidate.

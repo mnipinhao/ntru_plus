@@ -166,6 +166,7 @@ ENCAP_H4_M3_PRODUCER := asm/gt9x16_prod3_aos_h4_scale1.S
 ENCAP_H4_M3_GENERATOR_ARGS := --h3-source $(ENCAP_H_INGRESS_H3_ASM) --h1-source $(GT9X16_PROD3_QORDER_NATURAL_ASM) --m2 generated/encap-h4-joint-packed-egress-schedule.json --scale-audit generated/encap-h4-scale-absorption-audit.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(ENCAP_H4_M3_ASM) --producer-constants generated/encap-h4-m3-scale1-producer-constants.inc --header generated/encap-h4-m3.h --contract generated/encap-h4-m3-asm.json
 ENCAP_H4_M3_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(ENCAP_H4_M3_PRODUCER) $(ENCAP_H_INGRESS_H3_ASM) $(ENCAP_H4_M3_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/basemul.s $(UPSTREAM)/add.s $(UPSTREAM)/pack.s tests/test_encap_h4_m3_asm.c
 ENCAP_H4_M3_AUDIT_ARGS := --control-producer $(BUILD)/h4m3/producer-scale4.o --scale1-producer $(BUILD)/h4m3/producer-scale1.o --h4-object $(BUILD)/h4m3/h4-m3.o --contract generated/encap-h4-m3-asm.json --h1-audit generated/gt9x16-prod3-ma2-hash-h1-audit.json --output generated/encap-h4-m3-linked-audit.json
+ENCAP_H4_M2B_ARGS := --h4-map generated/encap-ma2-ct-egress-codesign-v1.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --m1 generated/encap-h4-terminal-presentation-search.json --m2 generated/encap-h4-joint-packed-egress-schedule.json --m3-contract generated/encap-h4-m3-asm.json --output generated/encap-h4-m2b-exact-ownership-search.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -359,6 +360,8 @@ generate:
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H4_M3_TEST_SOURCES) -o $(BUILD)/h4m3/test-h4-m3
 	$(BUILD)/h4m3/test-h4-m3
 	$(PYTHON) tools/audit_encap_h4_m3.py $(ENCAP_H4_M3_AUDIT_ARGS)
+	$(PYTHON) tools/generate_encap_h4_m2b_exact_ownership_search.py $(ENCAP_H4_M2B_ARGS)
+	$(PYTHON) tests/test_encap_h4_m2b_exact_ownership_search.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
@@ -569,6 +572,8 @@ check:
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H4_M3_TEST_SOURCES) -o $(BUILD)/h4m3/test-h4-m3
 	$(BUILD)/h4m3/test-h4-m3
 	$(PYTHON) tools/audit_encap_h4_m3.py $(ENCAP_H4_M3_AUDIT_ARGS) --check
+	$(PYTHON) tools/generate_encap_h4_m2b_exact_ownership_search.py $(ENCAP_H4_M2B_ARGS) --check
+	$(PYTHON) tests/test_encap_h4_m2b_exact_ownership_search.py
 	$(PYTHON) tests/test_encap_h_ingress_ma2_h3_price_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
@@ -789,6 +794,8 @@ audit:
 	$(CC) -mavx2 -I. -c $(ENCAP_H4_M3_PRODUCER) -o $(BUILD)/h4m3/producer-scale1.o
 	$(CC) -mavx2 -I. -c $(ENCAP_H4_M3_ASM) -o $(BUILD)/h4m3/h4-m3.o
 	$(PYTHON) tools/audit_encap_h4_m3.py $(ENCAP_H4_M3_AUDIT_ARGS)
+	$(PYTHON) tools/generate_encap_h4_m2b_exact_ownership_search.py $(ENCAP_H4_M2B_ARGS)
+	$(PYTHON) tests/test_encap_h4_m2b_exact_ownership_search.py
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/top_split_adapter.c -o $(BUILD)/full-audit/top_split_adapter.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c src/gt9x16_forward.c -o $(BUILD)/full-audit/gt9x16_forward.o
 	$(CC) $(CFLAGS_STRICT) -O3 -fstack-usage $(CPPFLAGS_LOCAL) -c ref/ntt9_reference.c -o $(BUILD)/full-audit/ntt9_reference.o

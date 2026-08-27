@@ -1,13 +1,15 @@
 # ENCAP MA2 ciphertext egress H4-M2
 
-> **Post-ASM correction (H4-M3):** the exact linked ciphertext differential
-> rejected M2's same-lane cross-plane pair-locality model.  In the frozen
-> Natural-Q ABI, MA2 vector 20 lane 15 is Official coefficient 0, vector 21
-> lane 15 is coefficient 16, while coefficient 1 is vector 20 lane 14.
-> Therefore the four-instruction `vpunpckwd(A,B)` primitive below does not
-> form Official 12-bit serializer pairs.  The 1502-instruction selection is
-> retained as historical schedule evidence, not as an authorized benchmark
-> candidate.  See `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3.md`.
+> **Post-ASM correction (H4-M2B):** the exact linked ciphertext differential
+> rejected the first M3 lowering, not M2's abstract same-lane cross-plane
+> wire-pair model.  The lowering confused Official physical coefficient IDs
+> with serialized wire-coefficient IDs.  Vector 20 lane 15 (physical 0) and
+> vector 20 lane 14 (physical 1) are not a ciphertext pair.  Wire pair 0 is
+> physical 0/16 in vectors 20/21 lane 15.  Exact M2B remapping validates all
+> 576 same-lane cross-vector wire pairs and keeps the four-instruction pair
+> primitive conditional on a corrected wire-keyed lowering.  The 1502 count
+> remains a symbolic estimate, not benchmark evidence.  See
+> `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M2B.md`.
 
 ## Scope
 
