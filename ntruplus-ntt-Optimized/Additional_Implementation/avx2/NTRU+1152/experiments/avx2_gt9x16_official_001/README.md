@@ -688,3 +688,14 @@ remain identical; both objects have zero stack, spill, call, branch, and
 `.rodata +416` bytes. Producer/caller-island pricing is authorized next, but
 no benchmark or native KEM was run here. See
 `CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-BETA-ASM.md`.
+
+Checkpoint GT9X16-PROD3-NATURAL-Q-T0-BETA-PRICE prices producer 1x/2x and the
+complete frozen Natural-Q resident-h/MA2/H1 caller in one SUPERCOP-derived
+same-ELF harness. Under the selected normal-placement ASLR-on headline,
+T0-beta saves 16.125 cycles for one forward, 38.354 cycles for two forwards,
+and 36.417 cycles for the caller. All three boundaries win 9/9 launches under
+normal/reversed placement and ASLR on/off, and all twelve bootstrap 95%
+confidence intervals are below zero. T0-beta is therefore the new frozen
+Natural-Q PROD3 research baseline. This is not native-KEM or production
+promotion evidence. See
+`CHECKPOINT-GT9X16-PROD3-NATURAL-Q-T0-BETA-PRICE.md`.

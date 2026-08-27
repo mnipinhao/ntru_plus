@@ -240,7 +240,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-consumer",
                                            "derived-gt9x16-prod3-hash-fanout",
                                            "derived-gt9x16-prod3-hash-h1-price",
-                                           "derived-gt9x16-prod3-qorder-price"),
+                                           "derived-gt9x16-prod3-qorder-price",
+                                           "derived-gt9x16-prod3-t0-beta-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -259,7 +260,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-consumer",
                      "derived-gt9x16-prod3-hash-fanout",
                      "derived-gt9x16-prod3-hash-h1-price",
-                     "derived-gt9x16-prod3-qorder-price") and args.parameter != "1152":
+                     "derived-gt9x16-prod3-qorder-price",
+                     "derived-gt9x16-prod3-t0-beta-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -317,7 +319,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-consumer",
                          "derived-gt9x16-prod3-hash-fanout",
                          "derived-gt9x16-prod3-hash-h1-price",
-                         "derived-gt9x16-prod3-qorder-price"):
+                         "derived-gt9x16-prod3-qorder-price",
+                         "derived-gt9x16-prod3-t0-beta-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -340,6 +343,8 @@ def main() -> int:
                     "gt9x16_prod3_hash_h1_price_measure.c",
                 "derived-gt9x16-prod3-qorder-price":
                     "gt9x16_prod3_qorder_price_measure.c",
+                "derived-gt9x16-prod3-t0-beta-price":
+                    "gt9x16_prod3_t0_beta_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -481,6 +486,14 @@ def main() -> int:
             "gt9x16_prod3_qorder_price_natural_first_cycles",
             "gt9x16_prod3_qorder_price_current_second_cycles",
         )
+    elif args.mode == "derived-gt9x16-prod3-t0-beta-price":
+        required = tuple(
+            f"gt9x16_prod3_t0_beta_price_{width}_{variant}_{position}_cycles"
+            for width in ("1x", "2x", "caller")
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1511,6 +1524,88 @@ def main() -> int:
             "native_kem_result": False,
             "freeze_qorder_after_four-setting-arbitration": True,
         }
+    if args.mode == "derived-gt9x16-prod3-t0-beta-price":
+        prefix = "gt9x16_prod3_t0_beta_price"
+        combined = {
+            f"{prefix}_{width}_{variant}_cycles": (
+                pooled[f"{prefix}_{width}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{width}_{variant}_second_cycles"])
+            for width in ("1x", "2x", "caller")
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        launches = []
+        for number, observed in enumerate(launch_observations, 1):
+            entry: dict[str, object] = {"launch": number}
+            for width in ("1x", "2x", "caller"):
+                control = stabilized_quartiles(
+                    observed[f"{prefix}_{width}_control_first_cycles"] +
+                    observed[f"{prefix}_{width}_control_second_cycles"])[1]
+                candidate = stabilized_quartiles(
+                    observed[f"{prefix}_{width}_candidate_first_cycles"] +
+                    observed[f"{prefix}_{width}_candidate_second_cycles"])[1]
+                entry.update({f"{width}_control_stq2": control,
+                              f"{width}_candidate_stq2": candidate,
+                              f"{width}_candidate_minus_control_cycles":
+                                  candidate - control})
+            launches.append(entry)
+        summary["balanced_paired_launches"] = {"launches": launches}
+        symbols = {
+            "control_1x": "ntruplus1152_exp001_t0_beta_price_control_1x",
+            "candidate_1x": "ntruplus1152_exp001_t0_beta_price_candidate_1x",
+            "control_2x": "ntruplus1152_exp001_t0_beta_price_control_2x",
+            "candidate_2x": "ntruplus1152_exp001_t0_beta_price_candidate_2x",
+            "control_caller": "ntruplus1152_exp001_t0_beta_price_control_caller",
+            "candidate_caller": "ntruplus1152_exp001_t0_beta_price_candidate_caller",
+            "control_forward":
+                "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q",
+            "candidate_forward":
+                "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta",
+            "top": "ntruplus1152_exp001_top_split_small",
+            "ma2": "ntruplus1152_exp001_f0_ma2_planes_natural_q",
+            "h1": "ntruplus1152_exp001_prod3_ma2_hash_h1_natural_q",
+        }
+        expected = {
+            "control_1x": [symbols["top"], symbols["control_forward"]],
+            "candidate_1x": [symbols["top"], symbols["candidate_forward"]],
+            "control_2x": [symbols["control_1x"], symbols["control_1x"]],
+            "candidate_2x": [symbols["candidate_1x"], symbols["candidate_1x"]],
+            "control_caller": [symbols["control_2x"], symbols["ma2"],
+                               symbols["h1"], symbols["h1"]],
+            "candidate_caller": [symbols["candidate_2x"], symbols["ma2"],
+                                 symbols["h1"], symbols["h1"]],
+        }
+        transfers = {key: direct_transfer_targets(saved_elf, symbols[key])
+                     for key in expected}
+        if transfers != expected:
+            raise SystemExit(f"T0-beta PRICE call graph changed: {transfers}")
+        summary["linked_t0_beta_price_audit"] = {
+            "direct_transfers": transfers,
+            "producer_semantic_abi":
+                "Natural-Q scale-4; raw representative may differ",
+            "producer_preflight": "canonical equality and signed-i16 range",
+            "caller_preflight": "ciphertext and hash bytes exact",
+            "shared_resident_h_ma2_h1": True,
+            "schedule_taxonomy": {"constant_operands": [666, 650],
+                                  "estimated_rodata_delta_bytes": 448},
+            "natural_q_linked_taxonomy": {
+                "constant_operands": [594, 578],
+                "actual_rodata_delta_bytes": 416},
+            "taxonomy_note":
+                "absolute baselines differ by schedule taxonomy and linker retained set; principal deltas agree",
+            "native_kem_result": False,
+        }
+        summary["elf_layout"] = elf_layout(saved_elf, tuple(symbols.values()))
+        summary["decision"] = {
+            "headline": "2x-producer-and-frozen-caller-island",
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1534,6 +1629,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-hash-fanout" if args.mode == "derived-gt9x16-prod3-hash-fanout"
                             else "supercop-derived-gt9x16-prod3-hash-h1-price" if args.mode == "derived-gt9x16-prod3-hash-h1-price"
                             else "supercop-derived-gt9x16-prod3-qorder-price" if args.mode == "derived-gt9x16-prod3-qorder-price"
+                            else "supercop-derived-gt9x16-prod3-t0-beta-price" if args.mode == "derived-gt9x16-prod3-t0-beta-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1582,7 +1678,9 @@ def main() -> int:
               "derived-gt9x16-prod3-hash-h1-price":
                   "gt9x16_prod3_hash_h1_price_measure.c",
               "derived-gt9x16-prod3-qorder-price":
-                  "gt9x16_prod3_qorder_price_measure.c"}[args.mode])
+                  "gt9x16_prod3_qorder_price_measure.c",
+              "derived-gt9x16-prod3-t0-beta-price":
+                  "gt9x16_prod3_t0_beta_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

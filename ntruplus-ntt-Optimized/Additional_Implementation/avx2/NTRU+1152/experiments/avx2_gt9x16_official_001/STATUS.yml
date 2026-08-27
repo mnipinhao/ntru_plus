@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-gt9x16-prod3-natural-q-t0-beta-asm-complete
+state: checkpoint-gt9x16-prod3-natural-q-t0-beta-price-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -604,9 +604,16 @@ checkpoint_gt9x16_prod3_t0_beta_size: text15489-to15297-minus192-rodata10400-to1
 checkpoint_gt9x16_prod3_t0_beta_sanitizer: passed-asan-ubsan
 checkpoint_gt9x16_prod3_t0_beta_asm: passed-full-namespaced-natural-q-forward
 checkpoint_gt9x16_prod3_t0_beta_benchmark: authorized-next-producer-and-frozen-caller-island-only
-research_encap_baseline: prod3-persistent-aos-natural-q-plus-direct-h1-plus-native-ma2
+gt9x16_prod3_t0_beta_price_result: results/gt9x16-prod3-t0-beta-price-intel155h-20260827-001/summary.json
+checkpoint_gt9x16_prod3_t0_beta_price_class: supercop-derived-producer-and-frozen-caller-not-native-kem
+checkpoint_gt9x16_prod3_t0_beta_price_method: fixed-common-o3gc-nine-launches-96-observations-normal-reversed-aslr-on-off
+checkpoint_gt9x16_prod3_t0_beta_price_headline: normal-aslr-on-one-minus16.125-two-minus38.3542-caller-minus36.4167-cycles
+checkpoint_gt9x16_prod3_t0_beta_price_controls: passed-all-three-boundaries-9of9-all-four-settings-all-bootstrap-ci-below-zero
+checkpoint_gt9x16_prod3_t0_beta_price_accounting: schedule666to650-plus448-vs-linked594to578-plus416-taxonomy-and-retained-set-difference-recorded
+checkpoint_gt9x16_prod3_t0_beta_price_decision: promoted-to-frozen-natural-q-prod3-research-baseline
+research_encap_baseline: prod3-persistent-aos-natural-q-t0-beta-plus-direct-h1-plus-native-ma2
 native_reentry_gate: caller-shaped-island-within-0-to-200-cycles-or-known-structural-opportunities-closed
-next_step: gt9x16-prod3-natural-q-t0-beta-producer-and-frozen-caller-island-pricing
+next_step: identify-next-architecture-level-debt-with-t0-beta-frozen-no-native-kem-yet
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -635,6 +642,7 @@ selected_candidates:
   - gt9x16-prod3-persistent-aos-boundary-minus429.1250-two-producer-paired-median-9of9
   - gt9x16-prod3-persistent-aos-consumer-minus432.0000-paired-median-9of9-native-encap-reopened
   - gt9x16-prod3-direct-h1-hash-serializer-minus314.6458-paired-median-9of9
+  - gt9x16-prod3-natural-q-t0-beta-two-forward-minus38.3542-caller-minus36.4167-headline-all-four-settings-9of9
 shortlisted_candidates:
   - g0-f1-terminal-major-consumer-natural-shortlist
   - g0-f3-terminal-basis-consumer-fused-shortlist
