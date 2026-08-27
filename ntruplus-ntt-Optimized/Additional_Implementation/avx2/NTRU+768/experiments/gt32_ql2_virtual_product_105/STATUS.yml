@@ -1,0 +1,21 @@
+experiment: GT32-QL2-VIRTUAL-PRODUCT-105
+research_baseline: 104-QL2
+production_baseline: b2a4bea
+production_modified: false
+correctness: PASS
+materialization_deletion:
+  final_ql2_stores: -48
+  serializer_reloads: -48
+v1:
+  island_tsc: 92.0
+  island_core_cycles: 88.5
+  retired_instructions: 85
+  status: FAIL
+v2:
+  island_tsc: 64.0
+  island_core_cycles: 67.6
+  retired_instructions: -66
+  branch_misses: approximately_zero
+  cache_misses: approximately_zero
+  status: FAIL
+decision: CLOSED_FOR_SCOPE
