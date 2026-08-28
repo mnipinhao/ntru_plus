@@ -169,6 +169,7 @@ ENCAP_H4_M3_AUDIT_ARGS := --control-producer $(BUILD)/h4m3/producer-scale4.o --s
 ENCAP_H4_M2B_ARGS := --h4-map generated/encap-ma2-ct-egress-codesign-v1.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --m1 generated/encap-h4-terminal-presentation-search.json --m2 generated/encap-h4-joint-packed-egress-schedule.json --m3-contract generated/encap-h4-m3-asm.json --output generated/encap-h4-m2b-exact-ownership-search.json
 ENCAP_H4_M2C_ARGS := --m2b generated/encap-h4-m2b-exact-ownership-search.json --m2-historical generated/encap-h4-joint-packed-egress-schedule.json --m3-contract generated/encap-h4-m3-asm.json --output generated/encap-h4-m2c-exact-egress-schedule.json
 ENCAP_H4_M2D_ARGS := --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --h4-map generated/encap-ma2-ct-egress-codesign-v1.json --h3-liveness generated/h3-machine-def-use-liveness.json --m2b generated/encap-h4-m2b-exact-ownership-search.json --m2c generated/encap-h4-m2c-exact-egress-schedule.json --pack-source $(UPSTREAM)/pack.s --output generated/encap-h4-m2d-physical-wire.json
+ENCAP_H4_M2E_ARGS := --m2d generated/encap-h4-m2d-physical-wire.json --h3-liveness generated/h3-machine-def-use-liveness.json --h3-object $(BUILD)/h3/h3.o --liveness-tool tools/audit_h3_machine_liveness.py --output generated/encap-h4-m2e-packed24-schedule.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
@@ -368,6 +369,8 @@ generate:
 	$(PYTHON) tests/test_encap_h4_m2c_exact_egress_schedule.py
 	$(PYTHON) tools/generate_encap_h4_m2d_physical_wire.py $(ENCAP_H4_M2D_ARGS)
 	$(PYTHON) tests/test_encap_h4_m2d_physical_wire.py
+	$(PYTHON) tools/generate_encap_h4_m2e_packed24_schedule.py $(ENCAP_H4_M2E_ARGS)
+	$(PYTHON) tests/test_encap_h4_m2e_packed24_schedule.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(PYTHON) tools/audit_gt9x16_prod3_ma2_qorder_natural_asm0.py $(GT9X16_PROD3_QORDER_NATURAL_AUDIT_ARGS)
@@ -584,6 +587,8 @@ check:
 	$(PYTHON) tests/test_encap_h4_m2c_exact_egress_schedule.py
 	$(PYTHON) tools/generate_encap_h4_m2d_physical_wire.py $(ENCAP_H4_M2D_ARGS) --check
 	$(PYTHON) tests/test_encap_h4_m2d_physical_wire.py
+	$(PYTHON) tools/generate_encap_h4_m2e_packed24_schedule.py $(ENCAP_H4_M2E_ARGS) --check
+	$(PYTHON) tests/test_encap_h4_m2e_packed24_schedule.py
 	$(PYTHON) tests/test_encap_h_ingress_ma2_h3_price_evidence.py
 	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_TEST_SOURCES) -o $(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0
 	$(BUILD)/prod3/test-gt9x16-prod3-ma2-qorder-natural-asm0

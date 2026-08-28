@@ -1,6 +1,6 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-encap-h4-m2-joint-packed-egress-complete
+state: checkpoint-encap-h4-m2e-linked-packed24-schedule-complete
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
@@ -777,9 +777,19 @@ checkpoint_h4_m2d_liveness_scope: vector-local-terminal-consumption-no-increment
 checkpoint_h4_m2d_asm: not-authorized-map-and-abstract-schedule-only
 checkpoint_h4_m2d_benchmark: not-authorized
 h4_m2d_physical_wire: generated/encap-h4-m2d-physical-wire.json
+checkpoint_h4_m2e_vpermd: hard56-address-absorbed8-none8-pair-orientation-routes184
+checkpoint_h4_m2e_store_strategy: selected-mixed-direct-wire-overlap75-exact69-store-instructions213
+checkpoint_h4_m2e_store_bytes: logical1728-written2028-overlap300-repaired264-ignored-padding36
+checkpoint_h4_m2e_final_copy: nine-blocks-six-loads-six-stores-zero-permutations
+checkpoint_h4_m2e_ledger: selected1115-exact1228-terminal-native1192-aggregate-lower-bound1156-s1s2-1452
+checkpoint_h4_m2e_liveness: linked-terminal-peak14-whole-symbol-peak16-one-temp-frame0-spill0
+checkpoint_h4_m2e_pair32: passed-576-direct-physical-c2i-plus-c2i1-shift12-and-exact-1728-wire-bytes
+checkpoint_h4_m2e_asm: authorized-one-corrected-namespaced-m3b-terminal-and-h1-fallback-only
+checkpoint_h4_m2e_benchmark: not-authorized
+h4_m2e_packed24_schedule: generated/encap-h4-m2e-packed24-schedule.json
 h3_machine_liveness: generated/h3-machine-def-use-liveness.json
 encap_ma2_ct_egress_codesign_v1: generated/encap-ma2-ct-egress-codesign-v1.json
-next_step: h4-m2e-linked-terminal-store-liveness-and-one-eight-vector-192byte-executable-schedule-no-benchmark
+next_step: h4-m3b-corrected-packed24-asm-terminal-stores-and-h1-fallback-only-no-benchmark
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
