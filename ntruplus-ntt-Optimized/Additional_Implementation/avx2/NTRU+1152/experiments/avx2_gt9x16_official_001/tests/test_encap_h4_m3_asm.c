@@ -3,7 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef TEST_H4_M3B
+#include "encap-h4-m3b-exact-egress.h"
+#define H4_FUNCTION ntruplus1152_exp001_encap_h4_m3b_exact_egress
+typedef int16_t scratch_element;
+#define SCRATCH_ELEMENTS N
+#else
 #include "encap-h4-m3.h"
+#define H4_FUNCTION ntruplus1152_exp001_encap_h4_m3
+typedef int16_t scratch_element;
+#define SCRATCH_ELEMENTS N
+#endif
 #include "encap-h-ingress-ma2-h3.h"
 #include "gt9x16_forward.h"
 #include "gt9x16_prod3_aos_full.h"
@@ -18,9 +28,9 @@ void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta(
 
 typedef struct {
   _Alignas(32) uint8_t pre[32];
-  _Alignas(32) int16_t value[N];
+  _Alignas(32) scratch_element value[SCRATCH_ELEMENTS];
   uint8_t post[32];
-} guarded_poly;
+} guarded_scratch;
 
 typedef struct {
   _Alignas(32) uint8_t pre[32];
@@ -63,7 +73,7 @@ static void encode12(uint8_t out[BYTES], const uint16_t in[N]) {
   }
 }
 
-static void guarded_poly_init(guarded_poly *value) {
+static void guarded_scratch_init(guarded_scratch *value) {
   memset(value, 0, sizeof(*value));
   memset(value->pre, 0xa5, sizeof(value->pre));
   memset(value->post, 0x5a, sizeof(value->post));
@@ -75,7 +85,7 @@ static void guarded_bytes_init(guarded_bytes *value) {
   memset(value->post, 0xc3, sizeof(value->post));
 }
 
-static void check_guards(const guarded_poly *scratch,
+static void check_guards(const guarded_scratch *scratch,
                          const guarded_bytes *ct, int trial) {
   int i;
   for (i = 0; i < 32; ++i) {
@@ -104,7 +114,7 @@ static void test_overlaps(const uint8_t pk[BYTES], const int16_t r[N],
                           const int16_t m[N], const uint8_t expected[BYTES],
                           int trial) {
   _Alignas(32) uint8_t arena[2 * BYTES + 64];
-  _Alignas(32) int16_t scratch[N];
+  _Alignas(32) scratch_element scratch[SCRATCH_ELEMENTS];
   static const int delta[] = {0, 16, -16};
   int which;
   for (which = 0; which < 3; ++which) {
@@ -112,7 +122,7 @@ static void test_overlaps(const uint8_t pk[BYTES], const int16_t r[N],
     uint8_t *ct_alias = pk_alias + delta[which];
     memset(arena, 0x6d, sizeof(arena));
     memcpy(pk_alias, pk, BYTES);
-    if (ntruplus1152_exp001_encap_h4_m3(
+    if (H4_FUNCTION(
             ct_alias, pk_alias, r, m, scratch) != 0)
       fail("overlap-return", trial, which);
     if (memcmp(ct_alias, expected, BYTES) != 0)
@@ -126,7 +136,7 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
   _Alignas(32) int16_t r4[N], r1[N], m4[N], m1[N], raw[N];
   _Alignas(32) int16_t r_before[N], m_before[N];
   poly h_official, r_official, m_official, c_official;
-  guarded_poly scratch;
+  guarded_scratch scratch;
   guarded_bytes ct;
   int i, result;
 
@@ -149,9 +159,9 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
   poly_add(&c_official, &c_official, &m_official);
   poly_tobytes(expected_ct, &c_official);
 
-  guarded_poly_init(&scratch);
+  guarded_scratch_init(&scratch);
   guarded_bytes_init(&ct);
-  result = ntruplus1152_exp001_encap_h4_m3(
+  result = H4_FUNCTION(
       ct.value, pk, r1, m1, scratch.value);
   if (result != 0) fail("valid-return", trial, -1);
   if (memcmp(pk, pk_before, BYTES) != 0) fail("pk-immutability", trial, -1);
@@ -175,10 +185,10 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
 static void run_invalid(const uint8_t pk[BYTES], const int16_t r[N],
                         const int16_t m[N], int trial) {
   _Alignas(32) uint8_t ct[BYTES];
-  _Alignas(32) int16_t scratch[N];
+  _Alignas(32) scratch_element scratch[SCRATCH_ELEMENTS];
   poly official;
   int expected = poly_frombytes(&official, pk);
-  int actual = ntruplus1152_exp001_encap_h4_m3(ct, pk, r, m, scratch);
+  int actual = H4_FUNCTION(ct, pk, r, m, scratch);
   if (expected != actual) fail("invalid-decode", trial, -1);
 }
 
@@ -223,6 +233,10 @@ int main(void) {
     for (i = 0; i < BYTES; ++i) pk[i] = (uint8_t)rnd();
     run_invalid(pk, r1, m1, 4000 + trial);
   }
+#ifdef TEST_H4_M3B
+  puts("H4-M3B ASM: scale1 semantic, canonical scratch, machine-probed exact ciphertext, overlap, and decoder gates passed");
+#else
   puts("H4-M3 ASM: scale1 semantic, canonical scratch, exact ciphertext, overlap, and decoder gates passed");
+#endif
   return 0;
 }

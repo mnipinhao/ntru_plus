@@ -170,10 +170,43 @@ ENCAP_H4_M2B_ARGS := --h4-map generated/encap-ma2-ct-egress-codesign-v1.json --d
 ENCAP_H4_M2C_ARGS := --m2b generated/encap-h4-m2b-exact-ownership-search.json --m2-historical generated/encap-h4-joint-packed-egress-schedule.json --m3-contract generated/encap-h4-m3-asm.json --output generated/encap-h4-m2c-exact-egress-schedule.json
 ENCAP_H4_M2D_ARGS := --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --h4-map generated/encap-ma2-ct-egress-codesign-v1.json --h3-liveness generated/h3-machine-def-use-liveness.json --m2b generated/encap-h4-m2b-exact-ownership-search.json --m2c generated/encap-h4-m2c-exact-egress-schedule.json --pack-source $(UPSTREAM)/pack.s --output generated/encap-h4-m2d-physical-wire.json
 ENCAP_H4_M2E_ARGS := --m2d generated/encap-h4-m2d-physical-wire.json --h3-liveness generated/h3-machine-def-use-liveness.json --h3-object $(BUILD)/h3/h3.o --liveness-tool tools/audit_h3_machine_liveness.py --output generated/encap-h4-m2e-packed24-schedule.json
+ENCAP_H4_M3B_ASM := asm/encap_h4_m3b_exact_egress.S
+ENCAP_H4_M3B_WIRE := generated/h1-natural-machine-wire-layout.json
+ENCAP_H4_M3B_GENERATOR_ARGS := --h3-source $(ENCAP_H_INGRESS_H3_ASM) --machine-wire $(ENCAP_H4_M3B_WIRE) --asm $(ENCAP_H4_M3B_ASM) --header generated/encap-h4-m3b-exact-egress.h --contract generated/encap-h4-m3b-exact-egress-asm.json
+ENCAP_H4_M3B_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(ENCAP_H4_M3_PRODUCER) $(ENCAP_H_INGRESS_H3_ASM) $(ENCAP_H4_M3B_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/basemul.s $(UPSTREAM)/add.s $(UPSTREAM)/pack.s tests/test_encap_h4_m3_asm.c
+ENCAP_H4_M3B_AUDIT_ARGS := --h3-object $(BUILD)/h4m3b/h3.o --candidate-object $(BUILD)/h4m3b/h4-m3b.o --contract generated/encap-h4-m3b-exact-egress-asm.json --machine-wire $(ENCAP_H4_M3B_WIRE) --output generated/encap-h4-m3b-exact-egress-linked-audit.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
 GT9X16_PROD3_HASH_H1_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_AOS_BRANCH_ASM) $(GT9X16_PROD3_HASH_H1_ASM) $(OFFICIAL_FORWARD) $(UPSTREAM)/pack.s tests/test_gt9x16_prod3_ma2_hash_h1.c
 GT9X16_PROD3_HASH_H1_AUDIT_ARGS := --object $(BUILD)/prod3/gt9x16-prod3-ma2-hash-h1.o --elf $(BUILD)/prod3/test-gt9x16-prod3-ma2-hash-h1 --source $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json --output generated/gt9x16-prod3-ma2-hash-h1-audit.json
+
+.PHONY: h4-m3b-generate h4-m3b-check h4-m3b-sanitize
+
+h4-m3b-generate:
+	mkdir -p $(BUILD)/h4m3b
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_ASM) tools/probe_h1_machine_wire_layout.c -o $(BUILD)/h4m3b/probe-h1-wire
+	$(BUILD)/h4m3b/probe-h1-wire $(ENCAP_H4_M3B_WIRE)
+	$(PYTHON) tools/generate_encap_h4_m3b_exact_egress_asm.py $(ENCAP_H4_M3B_GENERATOR_ARGS)
+	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h4m3b/h3.o
+	$(CC) -mavx2 -I. -c $(ENCAP_H4_M3B_ASM) -o $(BUILD)/h4m3b/h4-m3b.o
+	$(PYTHON) tools/audit_encap_h4_m3b_exact_egress.py $(ENCAP_H4_M3B_AUDIT_ARGS)
+
+h4-m3b-check:
+	mkdir -p $(BUILD)/h4m3b
+	$(CC) $(CFLAGS_STRICT) -O3 -Igenerated -I. $(GT9X16_PROD3_QORDER_NATURAL_ASM) tools/probe_h1_machine_wire_layout.c -o $(BUILD)/h4m3b/probe-h1-wire
+	$(BUILD)/h4m3b/probe-h1-wire $(BUILD)/h4m3b/h1-natural-machine-wire-layout.json
+	cmp $(ENCAP_H4_M3B_WIRE) $(BUILD)/h4m3b/h1-natural-machine-wire-layout.json
+	$(PYTHON) tools/generate_encap_h4_m3b_exact_egress_asm.py $(ENCAP_H4_M3B_GENERATOR_ARGS) --check
+	$(CC) -mavx2 -I. -c $(ENCAP_H_INGRESS_H3_ASM) -o $(BUILD)/h4m3b/h3.o
+	$(CC) -mavx2 -I. -c $(ENCAP_H4_M3B_ASM) -o $(BUILD)/h4m3b/h4-m3b.o
+	$(CC) $(CFLAGS_STRICT) -O3 -DTEST_H4_M3B -Isrc -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H4_M3B_TEST_SOURCES) -o $(BUILD)/h4m3b/test-h4-m3b
+	$(BUILD)/h4m3b/test-h4-m3b
+	$(PYTHON) tools/audit_encap_h4_m3b_exact_egress.py $(ENCAP_H4_M3B_AUDIT_ARGS) --check
+
+h4-m3b-sanitize:
+	mkdir -p $(BUILD)/h4m3b
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -DTEST_H4_M3B -Isrc -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H4_M3B_TEST_SOURCES) -o $(BUILD)/h4m3b/test-h4-m3b-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/h4m3b/test-h4-m3b-sanitize
 
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \

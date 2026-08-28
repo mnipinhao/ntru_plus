@@ -779,3 +779,15 @@ tile sorting is +118 under the selected S2 family.  `0x1c7` remains scoped to
 direct-wire only.  M3 may write one namespaced ASM prototype; M2 itself writes
 no ASM and authorizes no benchmark.  See
 `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M2.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-H4-M3B-ASM implements one namespaced exact
+Natural-Q ciphertext egress.  The first ASM hard gate disproved both the M2C
+direct-map ownership and M2D/M2E physical-index ownership models.  A basis
+probe of the qualified Natural-Q H1 machine object now supplies the exact
+1152-cell wire bijection.  The corrected ASM passes canonical scratch and
+pinned-Official ciphertext differentials, invalid decoder, overlap, canary,
+sanitizer, alignment, and linked opcode gates.  It contains 5,075
+instructions; its 1,056-instruction scratch-to-wire egress uses 72 loads, 72
+pair madds, 72 `vpermd`, 54 ciphertext stores, no frame, and no spills.  This
+checkpoint authorizes no benchmark or native KEM integration.  See
+`CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3B-ASM.md`.

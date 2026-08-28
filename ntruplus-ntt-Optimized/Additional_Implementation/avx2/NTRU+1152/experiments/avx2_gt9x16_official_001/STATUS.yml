@@ -787,9 +787,20 @@ checkpoint_h4_m2e_pair32: passed-576-direct-physical-c2i-plus-c2i1-shift12-and-e
 checkpoint_h4_m2e_asm: authorized-one-corrected-namespaced-m3b-terminal-and-h1-fallback-only
 checkpoint_h4_m2e_benchmark: not-authorized
 h4_m2e_packed24_schedule: generated/encap-h4-m2e-packed24-schedule.json
+checkpoint_h4_m3b_hard_gate: rejected-m2c-1008of1152-and-m2d-m2e-1141of1152-vs-natural-q-h1-machine-wire-basis
+checkpoint_h4_m3b_machine_wire: passed-1152-basis-bijection-576-same-lane-adjacent-terminal-vector-pairs-per-tile-lane-permutations
+checkpoint_h4_m3b_correctness: passed-1003-random-plus-fixed-canonical-scratch-official-exact-ct-invalid-decoder-overlap
+checkpoint_h4_m3b_egress: scratch-loads72-pair-unpack72-madd72-index-loads30-vpermd72-parity144-pack486-saves54-stores54-total1056
+checkpoint_h4_m3b_linked: instructions5075-delta-vs-h3-1488-text31348-rodata5728-entry-text-rodata-align32
+checkpoint_h4_m3b_abi: passed-call0-branch0-frame0-spill0-vzeroupper0-whole-peak16-egress-peak14
+checkpoint_h4_m3b_sanitizer: passed-asan-ubsan
+checkpoint_h4_m3b_benchmark: not-authorized-correctness-and-structure-only
+h4_m3b_contract: generated/encap-h4-m3b-exact-egress-asm.json
+h4_m3b_linked_audit: generated/encap-h4-m3b-exact-egress-linked-audit.json
+h4_m3b_machine_wire: generated/h1-natural-machine-wire-layout.json
 h3_machine_liveness: generated/h3-machine-def-use-liveness.json
 encap_ma2_ct_egress_codesign_v1: generated/encap-ma2-ct-egress-codesign-v1.json
-next_step: h4-m3b-corrected-packed24-asm-terminal-stores-and-h1-fallback-only-no-benchmark
+next_step: decide-h4-m3b-exact-egress-pricing-vs-h4-m3-natural-q-h1-fallback-no-native-kem
 rejected_candidates:
   - c1-split-radix8-doubles-vector-montgomery-multiplies-and-is-1.87x-c0
   - c2-terminal-pair-packing-halves-chains-but-full-transform-is-1.47x-c0
@@ -802,6 +813,8 @@ rejected_candidates:
   - f0-ma2-real-caller-plus1312.0787-native-enc-and-positive-fixed-elf-ci-all-four-settings
   - f0-prod1-p1h-generic-f0-plus259.1875-two-forward-cycles-loses-9of9
   - gt9x16-prod3-native-encap-plus1498.6991-cycles-fixed-common-positive-ci-all-four-settings
+  - h4-m2c-direct-map-wire-ownership-1008of1152-mismatches-vs-natural-q-h1-machine-basis
+  - h4-m2d-m2e-physical-index-wire-ownership-1141of1152-mismatches-vs-natural-q-h1-machine-basis
 deferred_candidates:
   - g0-f2-p-neg-p-three-of-four-nonzero-pairs-nonadjacent-and-factor-relation-unproved
 selected_candidates:

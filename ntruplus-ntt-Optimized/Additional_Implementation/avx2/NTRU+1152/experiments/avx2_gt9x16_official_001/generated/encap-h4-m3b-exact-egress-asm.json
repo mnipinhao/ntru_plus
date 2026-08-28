@@ -1,0 +1,43 @@
+{
+  "abi": {
+    "output": "1728 exact pinned-Official ciphertext bytes",
+    "pk_equals_ct": true,
+    "scratch": "2304-byte aligned canonical Natural-Q scale-1 i16"
+  },
+  "checkpoint": "ENCAP-MA2-CT-EGRESS-H4-M3B-EXACT-EGRESS-ASM",
+  "decision": {
+    "benchmark_authorized": false,
+    "correctness_authorized": true,
+    "native_kem_authorized": false
+  },
+  "expected": {
+    "egress_instructions": 1056,
+    "egress_peak_ymm": 14,
+    "frame_bytes": 0,
+    "terminal_normalization": 432,
+    "terminal_scratch_stores": 72,
+    "whole_function_peak_ymm": 16
+  },
+  "generator_ledger": {
+    "ciphertext_stores": 54,
+    "pack_routes": 486,
+    "pack_saves": 54,
+    "pair_madd": 72,
+    "pair_unpack": 72,
+    "parity_routes": 144,
+    "scratch_loads": 72,
+    "vpermd": 72,
+    "vpermd_index_loads": 30
+  },
+  "rejected": {
+    "m2c_symbolic_lowering": true,
+    "m2d_m2e_same_vector_lowering": true,
+    "reason": "both symbolic ownership revisions failed full Official ciphertext differential"
+  },
+  "schema": "encap-h4-m3b-exact-egress-asm/v1",
+  "source_schedule": "Natural-Q H1 machine basis probe",
+  "symbols": {
+    "h4_m3b": "ntruplus1152_exp001_encap_h4_m3b_exact_egress",
+    "producer_scale1": "ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1"
+  }
+}
