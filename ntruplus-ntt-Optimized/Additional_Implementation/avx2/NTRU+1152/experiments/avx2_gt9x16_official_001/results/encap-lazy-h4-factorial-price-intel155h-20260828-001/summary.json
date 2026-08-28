@@ -1,0 +1,1505 @@
+{
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-encap-lazy-h4-factorial-price",
+  "boundary": "coefficient-domain small r/m plus valid PK bytes to exact ciphertext",
+  "builds": {
+    "normal": {
+      "implementation": "avx2-gt9x16-lazy-h4-factorial-normal-exp001",
+      "measure_sha256": "4805c04801b1e9ea23047685ad073b80df5695420af012bec2bca1acca540a31",
+      "metadata_sha256": "4f3912aada1fae3e4fedbc0afc1e0c73c2cf9e1f86de9971f3ee51d059f7cf62"
+    },
+    "reversed": {
+      "implementation": "avx2-gt9x16-lazy-h4-factorial-reversed-exp001",
+      "measure_sha256": "49e52bcbae817cd165c62e4153c38a2fff85c73ed3f8c7a7975bb4f4503d11f9",
+      "metadata_sha256": "6cccc21b9926d7a2b0d35dba4f2ad580fdb8a1f669b12b4cfd30f7344f2f4fe6"
+    }
+  },
+  "cells": {
+    "C00": "current forward plus scale4 H3 plus H1",
+    "C01": "current scale1 forward plus H4-M3B",
+    "C10": "lazy forward plus scale4 H3 plus H1",
+    "C11": "lazy scale1 forward plus H4-M3B"
+  },
+  "compiler_policy": "fixed-common-O3GC",
+  "compiler_wrapper": "/home/nuc/src/ntru_plus/bench/supercop/okc-o3gc.sh",
+  "compiler_wrapper_sha256": "3f836a7681176963041dd28eea2bafec730c769a4ee0a537f146def2aaaad395",
+  "cpu": 2,
+  "created_at": "2026-08-28T04:15:57.808022+00:00",
+  "decision": "select integrated cell before native KEM Rebase #2",
+  "excluded": "r hash fanout, hash_g, SOTP, native KEM",
+  "headline_effects": {
+    "c11_minus_c00": {
+      "bootstrap_95pct_ci_median": [
+        -123.10416666666606,
+        -95.25
+      ],
+      "median_cycles": -119.4375,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "h4_at_lazy_off": {
+      "bootstrap_95pct_ci_median": [
+        -39.39583333333303,
+        -6.90625
+      ],
+      "median_cycles": -28.09375,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "h4_at_lazy_on": {
+      "bootstrap_95pct_ci_median": [
+        -39.96875,
+        -21.90625
+      ],
+      "median_cycles": -27.94791666666606,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "h4_main_effect": {
+      "bootstrap_95pct_ci_median": [
+        -39.125,
+        -14.635416666666515
+      ],
+      "median_cycles": -28.02083333333303,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "interaction": {
+      "bootstrap_95pct_ci_median": [
+        -15.45833333333303,
+        2.40625
+      ],
+      "median_cycles": -1.84375,
+      "negative_launches": 6,
+      "positive_launches": 3,
+      "zero_launches": 0
+    },
+    "lazy_at_h4_off": {
+      "bootstrap_95pct_ci_median": [
+        -91.61458333333394,
+        -72.88541666666697
+      ],
+      "median_cycles": -79.61458333333303,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "lazy_at_h4_on": {
+      "bootstrap_95pct_ci_median": [
+        -88.34375,
+        -83.70833333333303
+      ],
+      "median_cycles": -86.79166666666697,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    },
+    "lazy_main_effect": {
+      "bootstrap_95pct_ci_median": [
+        -88.69270833333303,
+        -78.41145833333303
+      ],
+      "median_cycles": -82.42708333333303,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "zero_launches": 0
+    }
+  },
+  "headline_setting": "normal-aslr-on",
+  "native_kem_result": false,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_cell_per_launch": 384,
+  "placement_policy": "predeclared from H4-M3B serious campaign",
+  "placement_reference": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/results/encap-h4-m3b-price-intel155h-20260828-001/summary.json",
+  "placement_reference_sha256": "f160f20a17a7b060fe8f4dad832f555c08743aa71080156cb24006e77ed67645",
+  "serious_launches_per_setting": 9,
+  "settings": {
+    "normal-aslr-off": {
+      "combined": {
+        "c00": {
+          "observations": 3456,
+          "stq1": 4617.512731481482,
+          "stq2": 4641.75462962963,
+          "stq3": 4672.2662037037035
+        },
+        "c01": {
+          "observations": 3456,
+          "stq1": 4591.81712962963,
+          "stq2": 4609.861111111111,
+          "stq3": 4633.7962962962965
+        },
+        "c10": {
+          "observations": 3456,
+          "stq1": 4534.0775462962965,
+          "stq2": 4558.824074074074,
+          "stq3": 4590.115740740741
+        },
+        "c11": {
+          "observations": 3456,
+          "stq1": 4508.08912037037,
+          "stq2": 4527.3900462962965,
+          "stq3": 4556.678240740741
+        }
+      },
+      "estimator_contract": {
+        "cell": "StQ2 pooled over all four balanced positions within each fresh launch",
+        "effects": "launch-local cell contrasts followed by median over launches",
+        "interaction": "C11-C10-C01+C00"
+      },
+      "evidence": {
+        "c11_minus_c00": {
+          "bootstrap_95pct_ci_median": [
+            -119.69791666666697,
+            -105.125
+          ],
+          "median_cycles": -117.61458333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_off": {
+          "bootstrap_95pct_ci_median": [
+            -36.80208333333394,
+            -23.98958333333303
+          ],
+          "median_cycles": -35.57291666666606,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_on": {
+          "bootstrap_95pct_ci_median": [
+            -36.84375,
+            -27.16666666666606
+          ],
+          "median_cycles": -35.33333333333394,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -36.546874999999545,
+            -22.47916666666697
+          ],
+          "median_cycles": -33.1875,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "interaction": {
+          "bootstrap_95pct_ci_median": [
+            -9.69791666666697,
+            9.63541666666788
+          ],
+          "median_cycles": 0.78125,
+          "negative_launches": 4,
+          "positive_launches": 5,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_off": {
+          "bootstrap_95pct_ci_median": [
+            -92.34375,
+            -79.01041666666697
+          ],
+          "median_cycles": -82.04166666666697,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_on": {
+          "bootstrap_95pct_ci_median": [
+            -83.32291666666697,
+            -80.83333333333303
+          ],
+          "median_cycles": -81.84375,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -86.73958333333348,
+            -80.13541666666697
+          ],
+          "median_cycles": -81.78645833333348,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        }
+      },
+      "launches": [
+        {
+          "cells": {
+            "c00": 4647.791666666667,
+            "c01": 4610.989583333333,
+            "c10": 4554.895833333333,
+            "c11": 4527.729166666667
+          },
+          "effects": {
+            "c11_minus_c00": -120.0625,
+            "h4_at_lazy_off": -36.80208333333394,
+            "h4_at_lazy_on": -27.16666666666606,
+            "h4_main_effect": -31.984375,
+            "interaction": 9.63541666666788,
+            "lazy_at_h4_off": -92.89583333333394,
+            "lazy_at_h4_on": -83.26041666666606,
+            "lazy_main_effect": -88.078125
+          },
+          "launch": 1
+        },
+        {
+          "cells": {
+            "c00": 4640.614583333333,
+            "c01": 4616.625,
+            "c10": 4548.270833333333,
+            "c11": 4535.489583333333
+          },
+          "effects": {
+            "c11_minus_c00": -105.125,
+            "h4_at_lazy_off": -23.98958333333303,
+            "h4_at_lazy_on": -12.78125,
+            "h4_main_effect": -18.385416666666515,
+            "interaction": 11.20833333333303,
+            "lazy_at_h4_off": -92.34375,
+            "lazy_at_h4_on": -81.13541666666697,
+            "lazy_main_effect": -86.73958333333348
+          },
+          "launch": 2
+        },
+        {
+          "cells": {
+            "c00": 4638.96875,
+            "c01": 4613.333333333333,
+            "c10": 4558.416666666667,
+            "c11": 4523.083333333333
+          },
+          "effects": {
+            "c11_minus_c00": -115.88541666666697,
+            "h4_at_lazy_off": -25.63541666666697,
+            "h4_at_lazy_on": -35.33333333333394,
+            "h4_main_effect": -30.484375000000455,
+            "interaction": -9.69791666666697,
+            "lazy_at_h4_off": -80.55208333333303,
+            "lazy_at_h4_on": -90.25,
+            "lazy_main_effect": -85.40104166666652
+          },
+          "launch": 3
+        },
+        {
+          "cells": {
+            "c00": 4643.4375,
+            "c01": 4607.0625,
+            "c10": 4559.333333333333,
+            "c11": 4523.739583333333
+          },
+          "effects": {
+            "c11_minus_c00": -119.69791666666697,
+            "h4_at_lazy_off": -36.375,
+            "h4_at_lazy_on": -35.59375,
+            "h4_main_effect": -35.984375,
+            "interaction": 0.78125,
+            "lazy_at_h4_off": -84.10416666666697,
+            "lazy_at_h4_on": -83.32291666666697,
+            "lazy_main_effect": -83.71354166666697
+          },
+          "launch": 4
+        },
+        {
+          "cells": {
+            "c00": 4644.59375,
+            "c01": 4607.8125,
+            "c10": 4562.552083333333,
+            "c11": 4526.979166666667
+          },
+          "effects": {
+            "c11_minus_c00": -117.61458333333303,
+            "h4_at_lazy_off": -36.78125,
+            "h4_at_lazy_on": -35.57291666666606,
+            "h4_main_effect": -36.17708333333303,
+            "interaction": 1.2083333333339397,
+            "lazy_at_h4_off": -82.04166666666697,
+            "lazy_at_h4_on": -80.83333333333303,
+            "lazy_main_effect": -81.4375
+          },
+          "launch": 5
+        },
+        {
+          "cells": {
+            "c00": 4642.427083333333,
+            "c01": 4606.854166666667,
+            "c10": 4561.614583333333,
+            "c11": 4524.09375
+          },
+          "effects": {
+            "c11_minus_c00": -118.33333333333303,
+            "h4_at_lazy_off": -35.57291666666606,
+            "h4_at_lazy_on": -37.52083333333303,
+            "h4_main_effect": -36.546874999999545,
+            "interaction": -1.9479166666669698,
+            "lazy_at_h4_off": -80.8125,
+            "lazy_at_h4_on": -82.76041666666697,
+            "lazy_main_effect": -81.78645833333348
+          },
+          "launch": 6
+        },
+        {
+          "cells": {
+            "c00": 4640.979166666667,
+            "c01": 4608.9375,
+            "c10": 4561.96875,
+            "c11": 4527.635416666667
+          },
+          "effects": {
+            "c11_minus_c00": -113.34375,
+            "h4_at_lazy_off": -32.04166666666697,
+            "h4_at_lazy_on": -34.33333333333303,
+            "h4_main_effect": -33.1875,
+            "interaction": -2.2916666666660603,
+            "lazy_at_h4_off": -79.01041666666697,
+            "lazy_at_h4_on": -81.30208333333303,
+            "lazy_main_effect": -80.15625
+          },
+          "launch": 7
+        },
+        {
+          "cells": {
+            "c00": 4648.229166666667,
+            "c01": 4606.885416666667,
+            "c10": 4565.84375,
+            "c11": 4529.0
+          },
+          "effects": {
+            "c11_minus_c00": -119.22916666666697,
+            "h4_at_lazy_off": -41.34375,
+            "h4_at_lazy_on": -36.84375,
+            "h4_main_effect": -39.09375,
+            "interaction": 4.5,
+            "lazy_at_h4_off": -82.38541666666697,
+            "lazy_at_h4_on": -77.88541666666697,
+            "lazy_main_effect": -80.13541666666697
+          },
+          "launch": 8
+        },
+        {
+          "cells": {
+            "c00": 4628.4375,
+            "c01": 4611.458333333333,
+            "c10": 4557.59375,
+            "c11": 4529.614583333333
+          },
+          "effects": {
+            "c11_minus_c00": -98.82291666666697,
+            "h4_at_lazy_off": -16.97916666666697,
+            "h4_at_lazy_on": -27.97916666666697,
+            "h4_main_effect": -22.47916666666697,
+            "interaction": -11.0,
+            "lazy_at_h4_off": -70.84375,
+            "lazy_at_h4_on": -81.84375,
+            "lazy_main_effect": -76.34375
+          },
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "combined": {
+        "c00": {
+          "observations": 3456,
+          "stq1": 4613.270833333333,
+          "stq2": 4638.497685185185,
+          "stq3": 4671.210648148148
+        },
+        "c01": {
+          "observations": 3456,
+          "stq1": 4594.228009259259,
+          "stq2": 4612.741898148148,
+          "stq3": 4639.2025462962965
+        },
+        "c10": {
+          "observations": 3456,
+          "stq1": 4531.987268518518,
+          "stq2": 4556.541666666667,
+          "stq3": 4591.277777777777
+        },
+        "c11": {
+          "observations": 3456,
+          "stq1": 4507.625,
+          "stq2": 4527.054398148148,
+          "stq3": 4557.271990740741
+        }
+      },
+      "estimator_contract": {
+        "cell": "StQ2 pooled over all four balanced positions within each fresh launch",
+        "effects": "launch-local cell contrasts followed by median over launches",
+        "interaction": "C11-C10-C01+C00"
+      },
+      "evidence": {
+        "c11_minus_c00": {
+          "bootstrap_95pct_ci_median": [
+            -123.10416666666606,
+            -95.25
+          ],
+          "median_cycles": -119.4375,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_off": {
+          "bootstrap_95pct_ci_median": [
+            -39.39583333333303,
+            -6.90625
+          ],
+          "median_cycles": -28.09375,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_on": {
+          "bootstrap_95pct_ci_median": [
+            -39.96875,
+            -21.90625
+          ],
+          "median_cycles": -27.94791666666606,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -39.125,
+            -14.635416666666515
+          ],
+          "median_cycles": -28.02083333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "interaction": {
+          "bootstrap_95pct_ci_median": [
+            -15.45833333333303,
+            2.40625
+          ],
+          "median_cycles": -1.84375,
+          "negative_launches": 6,
+          "positive_launches": 3,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_off": {
+          "bootstrap_95pct_ci_median": [
+            -91.61458333333394,
+            -72.88541666666697
+          ],
+          "median_cycles": -79.61458333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_on": {
+          "bootstrap_95pct_ci_median": [
+            -88.34375,
+            -83.70833333333303
+          ],
+          "median_cycles": -86.79166666666697,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -88.69270833333303,
+            -78.41145833333303
+          ],
+          "median_cycles": -82.42708333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        }
+      },
+      "launches": [
+        {
+          "cells": {
+            "c00": 4621.791666666667,
+            "c01": 4619.364583333333,
+            "c10": 4553.885416666667,
+            "c11": 4531.979166666667
+          },
+          "effects": {
+            "c11_minus_c00": -89.8125,
+            "h4_at_lazy_off": -2.4270833333339397,
+            "h4_at_lazy_on": -21.90625,
+            "h4_main_effect": -12.16666666666697,
+            "interaction": -19.47916666666606,
+            "lazy_at_h4_off": -67.90625,
+            "lazy_at_h4_on": -87.38541666666606,
+            "lazy_main_effect": -77.64583333333303
+          },
+          "launch": 1
+        },
+        {
+          "cells": {
+            "c00": 4625.927083333333,
+            "c01": 4613.833333333333,
+            "c10": 4547.15625,
+            "c11": 4529.770833333333
+          },
+          "effects": {
+            "c11_minus_c00": -96.15625,
+            "h4_at_lazy_off": -12.09375,
+            "h4_at_lazy_on": -17.38541666666697,
+            "h4_main_effect": -14.739583333333485,
+            "interaction": -5.29166666666697,
+            "lazy_at_h4_off": -78.77083333333303,
+            "lazy_at_h4_on": -84.0625,
+            "lazy_main_effect": -81.41666666666652
+          },
+          "launch": 2
+        },
+        {
+          "cells": {
+            "c00": 4644.885416666667,
+            "c01": 4606.604166666667,
+            "c10": 4559.78125,
+            "c11": 4519.8125
+          },
+          "effects": {
+            "c11_minus_c00": -125.07291666666697,
+            "h4_at_lazy_off": -38.28125,
+            "h4_at_lazy_on": -39.96875,
+            "h4_main_effect": -39.125,
+            "interaction": -1.6875,
+            "lazy_at_h4_off": -85.10416666666697,
+            "lazy_at_h4_on": -86.79166666666697,
+            "lazy_main_effect": -85.94791666666697
+          },
+          "launch": 3
+        },
+        {
+          "cells": {
+            "c00": 4651.0,
+            "c01": 4608.770833333333,
+            "c10": 4571.385416666667,
+            "c11": 4531.5625
+          },
+          "effects": {
+            "c11_minus_c00": -119.4375,
+            "h4_at_lazy_off": -42.22916666666697,
+            "h4_at_lazy_on": -39.82291666666697,
+            "h4_main_effect": -41.02604166666697,
+            "interaction": 2.40625,
+            "lazy_at_h4_off": -79.61458333333303,
+            "lazy_at_h4_on": -77.20833333333303,
+            "lazy_main_effect": -78.41145833333303
+          },
+          "launch": 4
+        },
+        {
+          "cells": {
+            "c00": 4645.291666666667,
+            "c01": 4617.197916666667,
+            "c10": 4553.677083333333,
+            "c11": 4525.729166666667
+          },
+          "effects": {
+            "c11_minus_c00": -119.5625,
+            "h4_at_lazy_off": -28.09375,
+            "h4_at_lazy_on": -27.94791666666606,
+            "h4_main_effect": -28.02083333333303,
+            "interaction": 0.14583333333393966,
+            "lazy_at_h4_off": -91.61458333333394,
+            "lazy_at_h4_on": -91.46875,
+            "lazy_main_effect": -91.54166666666697
+          },
+          "launch": 5
+        },
+        {
+          "cells": {
+            "c00": 4652.770833333333,
+            "c01": 4613.375,
+            "c10": 4559.09375,
+            "c11": 4529.666666666667
+          },
+          "effects": {
+            "c11_minus_c00": -123.10416666666606,
+            "h4_at_lazy_off": -39.39583333333303,
+            "h4_at_lazy_on": -29.42708333333303,
+            "h4_main_effect": -34.41145833333303,
+            "interaction": 9.96875,
+            "lazy_at_h4_off": -93.67708333333303,
+            "lazy_at_h4_on": -83.70833333333303,
+            "lazy_main_effect": -88.69270833333303
+          },
+          "launch": 6
+        },
+        {
+          "cells": {
+            "c00": 4640.1875,
+            "c01": 4615.739583333333,
+            "c10": 4557.229166666667,
+            "c11": 4530.9375
+          },
+          "effects": {
+            "c11_minus_c00": -109.25,
+            "h4_at_lazy_off": -24.44791666666697,
+            "h4_at_lazy_on": -26.29166666666697,
+            "h4_main_effect": -25.36979166666697,
+            "interaction": -1.84375,
+            "lazy_at_h4_off": -82.95833333333303,
+            "lazy_at_h4_on": -84.80208333333303,
+            "lazy_main_effect": -83.88020833333303
+          },
+          "launch": 7
+        },
+        {
+          "cells": {
+            "c00": 4620.697916666667,
+            "c01": 4613.791666666667,
+            "c10": 4547.8125,
+            "c11": 4525.447916666667
+          },
+          "effects": {
+            "c11_minus_c00": -95.25,
+            "h4_at_lazy_off": -6.90625,
+            "h4_at_lazy_on": -22.36458333333303,
+            "h4_main_effect": -14.635416666666515,
+            "interaction": -15.45833333333303,
+            "lazy_at_h4_off": -72.88541666666697,
+            "lazy_at_h4_on": -88.34375,
+            "lazy_main_effect": -80.61458333333348
+          },
+          "launch": 8
+        },
+        {
+          "cells": {
+            "c00": 4640.010416666667,
+            "c01": 4607.114583333333,
+            "c10": 4563.072916666667,
+            "c11": 4519.197916666667
+          },
+          "effects": {
+            "c11_minus_c00": -120.8125,
+            "h4_at_lazy_off": -32.89583333333394,
+            "h4_at_lazy_on": -43.875,
+            "h4_main_effect": -38.38541666666697,
+            "interaction": -10.97916666666606,
+            "lazy_at_h4_off": -76.9375,
+            "lazy_at_h4_on": -87.91666666666606,
+            "lazy_main_effect": -82.42708333333303
+          },
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          110970606908896,
+          110970606910880,
+          110970606908768,
+          110970606910752
+        ],
+        [
+          103881618974176,
+          103881618976160,
+          103881618974048,
+          103881618976032
+        ],
+        [
+          107793830823392,
+          107793830825376,
+          107793830823264,
+          107793830825248
+        ],
+        [
+          110696067462624,
+          110696067464608,
+          110696067462496,
+          110696067464480
+        ],
+        [
+          97874274571744,
+          97874274573728,
+          97874274571616,
+          97874274573600
+        ],
+        [
+          100990382446048,
+          100990382448032,
+          100990382445920,
+          100990382447904
+        ],
+        [
+          97115625797088,
+          97115625799072,
+          97115625796960,
+          97115625798944
+        ],
+        [
+          96528795665888,
+          96528795667872,
+          96528795665760,
+          96528795667744
+        ],
+        [
+          107936173843936,
+          107936173845920,
+          107936173843808,
+          107936173845792
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    },
+    "reversed-aslr-off": {
+      "combined": {
+        "c00": {
+          "observations": 3456,
+          "stq1": 4615.653935185185,
+          "stq2": 4641.667824074074,
+          "stq3": 4688.668981481482
+        },
+        "c01": {
+          "observations": 3456,
+          "stq1": 4592.136574074074,
+          "stq2": 4611.247685185185,
+          "stq3": 4637.892361111111
+        },
+        "c10": {
+          "observations": 3456,
+          "stq1": 4515.246527777777,
+          "stq2": 4539.739583333333,
+          "stq3": 4575.447916666667
+        },
+        "c11": {
+          "observations": 3456,
+          "stq1": 4503.730324074074,
+          "stq2": 4522.630787037037,
+          "stq3": 4548.090277777777
+        }
+      },
+      "estimator_contract": {
+        "cell": "StQ2 pooled over all four balanced positions within each fresh launch",
+        "effects": "launch-local cell contrasts followed by median over launches",
+        "interaction": "C11-C10-C01+C00"
+      },
+      "evidence": {
+        "c11_minus_c00": {
+          "bootstrap_95pct_ci_median": [
+            -127.40625,
+            -111.3125
+          ],
+          "median_cycles": -117.55208333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_off": {
+          "bootstrap_95pct_ci_median": [
+            -35.63541666666697,
+            -25.21875
+          ],
+          "median_cycles": -31.15625,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_on": {
+          "bootstrap_95pct_ci_median": [
+            -21.625,
+            -7.61458333333303
+          ],
+          "median_cycles": -20.47916666666606,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -31.114583333333485,
+            -17.552083333333485
+          ],
+          "median_cycles": -22.947916666666515,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "interaction": {
+          "bootstrap_95pct_ci_median": [
+            4.73958333333394,
+            21.77083333333394
+          ],
+          "median_cycles": 13.91666666666697,
+          "negative_launches": 0,
+          "positive_launches": 9,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_off": {
+          "bootstrap_95pct_ci_median": [
+            -108.85416666666697,
+            -93.85416666666697
+          ],
+          "median_cycles": -103.69791666666697,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_on": {
+          "bootstrap_95pct_ci_median": [
+            -92.0,
+            -84.79166666666697
+          ],
+          "median_cycles": -89.11458333333303,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -99.62500000000045,
+            -91.484375
+          ],
+          "median_cycles": -96.29166666666652,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        }
+      },
+      "launches": [
+        {
+          "cells": {
+            "c00": 4647.28125,
+            "c01": 4613.822916666667,
+            "c10": 4541.739583333333,
+            "c11": 4520.114583333333
+          },
+          "effects": {
+            "c11_minus_c00": -127.16666666666697,
+            "h4_at_lazy_off": -33.45833333333303,
+            "h4_at_lazy_on": -21.625,
+            "h4_main_effect": -27.541666666666515,
+            "interaction": 11.83333333333303,
+            "lazy_at_h4_off": -105.54166666666697,
+            "lazy_at_h4_on": -93.70833333333394,
+            "lazy_main_effect": -99.62500000000045
+          },
+          "launch": 1
+        },
+        {
+          "cells": {
+            "c00": 4647.322916666667,
+            "c01": 4611.6875,
+            "c10": 4546.510416666667,
+            "c11": 4519.916666666667
+          },
+          "effects": {
+            "c11_minus_c00": -127.40625,
+            "h4_at_lazy_off": -35.63541666666697,
+            "h4_at_lazy_on": -26.59375,
+            "h4_main_effect": -31.114583333333485,
+            "interaction": 9.04166666666697,
+            "lazy_at_h4_off": -100.8125,
+            "lazy_at_h4_on": -91.77083333333303,
+            "lazy_main_effect": -96.29166666666652
+          },
+          "launch": 2
+        },
+        {
+          "cells": {
+            "c00": 4637.25,
+            "c01": 4615.302083333333,
+            "c10": 4544.197916666667,
+            "c11": 4523.302083333333
+          },
+          "effects": {
+            "c11_minus_c00": -113.94791666666697,
+            "h4_at_lazy_off": -21.94791666666697,
+            "h4_at_lazy_on": -20.89583333333394,
+            "h4_main_effect": -21.421875000000455,
+            "interaction": 1.0520833333330302,
+            "lazy_at_h4_off": -93.05208333333303,
+            "lazy_at_h4_on": -92.0,
+            "lazy_main_effect": -92.52604166666652
+          },
+          "launch": 3
+        },
+        {
+          "cells": {
+            "c00": 4637.71875,
+            "c01": 4612.5,
+            "c10": 4543.864583333333,
+            "c11": 4523.385416666667
+          },
+          "effects": {
+            "c11_minus_c00": -114.33333333333303,
+            "h4_at_lazy_off": -25.21875,
+            "h4_at_lazy_on": -20.47916666666606,
+            "h4_main_effect": -22.84895833333303,
+            "interaction": 4.73958333333394,
+            "lazy_at_h4_off": -93.85416666666697,
+            "lazy_at_h4_on": -89.11458333333303,
+            "lazy_main_effect": -91.484375
+          },
+          "launch": 4
+        },
+        {
+          "cells": {
+            "c00": 4640.125,
+            "c01": 4610.21875,
+            "c10": 4545.302083333333,
+            "c11": 4529.3125
+          },
+          "effects": {
+            "c11_minus_c00": -110.8125,
+            "h4_at_lazy_off": -29.90625,
+            "h4_at_lazy_on": -15.98958333333303,
+            "h4_main_effect": -22.947916666666515,
+            "interaction": 13.91666666666697,
+            "lazy_at_h4_off": -94.82291666666697,
+            "lazy_at_h4_on": -80.90625,
+            "lazy_main_effect": -87.86458333333348
+          },
+          "launch": 5
+        },
+        {
+          "cells": {
+            "c00": 4640.895833333333,
+            "c01": 4609.739583333333,
+            "c10": 4527.291666666667,
+            "c11": 4523.34375
+          },
+          "effects": {
+            "c11_minus_c00": -117.55208333333303,
+            "h4_at_lazy_off": -31.15625,
+            "h4_at_lazy_on": -3.94791666666697,
+            "h4_main_effect": -17.552083333333485,
+            "interaction": 27.20833333333303,
+            "lazy_at_h4_off": -113.60416666666606,
+            "lazy_at_h4_on": -86.39583333333303,
+            "lazy_main_effect": -99.99999999999955
+          },
+          "launch": 6
+        },
+        {
+          "cells": {
+            "c00": 4635.90625,
+            "c01": 4609.385416666667,
+            "c10": 4532.208333333333,
+            "c11": 4524.59375
+          },
+          "effects": {
+            "c11_minus_c00": -111.3125,
+            "h4_at_lazy_off": -26.52083333333303,
+            "h4_at_lazy_on": -7.61458333333303,
+            "h4_main_effect": -17.06770833333303,
+            "interaction": 18.90625,
+            "lazy_at_h4_off": -103.69791666666697,
+            "lazy_at_h4_on": -84.79166666666697,
+            "lazy_main_effect": -94.24479166666697
+          },
+          "launch": 7
+        },
+        {
+          "cells": {
+            "c00": 4642.572916666667,
+            "c01": 4611.302083333333,
+            "c10": 4536.03125,
+            "c11": 4520.59375
+          },
+          "effects": {
+            "c11_minus_c00": -121.97916666666697,
+            "h4_at_lazy_off": -31.27083333333394,
+            "h4_at_lazy_on": -15.4375,
+            "h4_main_effect": -23.35416666666697,
+            "interaction": 15.83333333333394,
+            "lazy_at_h4_off": -106.54166666666697,
+            "lazy_at_h4_on": -90.70833333333303,
+            "lazy_main_effect": -98.625
+          },
+          "launch": 8
+        },
+        {
+          "cells": {
+            "c00": 4650.65625,
+            "c01": 4607.71875,
+            "c10": 4541.802083333333,
+            "c11": 4520.635416666667
+          },
+          "effects": {
+            "c11_minus_c00": -130.02083333333303,
+            "h4_at_lazy_off": -42.9375,
+            "h4_at_lazy_on": -21.16666666666606,
+            "h4_main_effect": -32.05208333333303,
+            "interaction": 21.77083333333394,
+            "lazy_at_h4_off": -108.85416666666697,
+            "lazy_at_h4_on": -87.08333333333303,
+            "lazy_main_effect": -97.96875
+          },
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ],
+        [
+          93824992241120,
+          93824992243104,
+          93824992240992,
+          93824992242976
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "combined": {
+        "c00": {
+          "observations": 3456,
+          "stq1": 4611.371527777777,
+          "stq2": 4638.966435185185,
+          "stq3": 4694.331018518518
+        },
+        "c01": {
+          "observations": 3456,
+          "stq1": 4592.8912037037035,
+          "stq2": 4613.40625,
+          "stq3": 4645.465277777777
+        },
+        "c10": {
+          "observations": 3456,
+          "stq1": 4519.403935185185,
+          "stq2": 4545.283564814815,
+          "stq3": 4592.055555555556
+        },
+        "c11": {
+          "observations": 3456,
+          "stq1": 4505.258101851852,
+          "stq2": 4526.114583333333,
+          "stq3": 4568.836805555556
+        }
+      },
+      "estimator_contract": {
+        "cell": "StQ2 pooled over all four balanced positions within each fresh launch",
+        "effects": "launch-local cell contrasts followed by median over launches",
+        "interaction": "C11-C10-C01+C00"
+      },
+      "evidence": {
+        "c11_minus_c00": {
+          "bootstrap_95pct_ci_median": [
+            -117.29166666666697,
+            -103.85416666666606
+          ],
+          "median_cycles": -114.35416666666697,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_off": {
+          "bootstrap_95pct_ci_median": [
+            -34.39583333333303,
+            -16.23958333333394
+          ],
+          "median_cycles": -27.64583333333394,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_at_lazy_on": {
+          "bootstrap_95pct_ci_median": [
+            -24.55208333333394,
+            -14.28125
+          ],
+          "median_cycles": -16.33333333333394,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "h4_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -26.16666666666697,
+            -16.27604166666697
+          ],
+          "median_cycles": -24.843749999999545,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "interaction": {
+          "bootstrap_95pct_ci_median": [
+            -1.9374999999990905,
+            19.10416666666697
+          ],
+          "median_cycles": 2.82291666666697,
+          "negative_launches": 3,
+          "positive_launches": 6,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_off": {
+          "bootstrap_95pct_ci_median": [
+            -98.02083333333303,
+            -89.84375
+          ],
+          "median_cycles": -92.46875,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_at_h4_on": {
+          "bootstrap_95pct_ci_median": [
+            -91.0625,
+            -83.84375
+          ],
+          "median_cycles": -88.98958333333394,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        },
+        "lazy_main_effect": {
+          "bootstrap_95pct_ci_median": [
+            -92.04166666666652,
+            -86.10416666666652
+          ],
+          "median_cycles": -90.09375,
+          "negative_launches": 9,
+          "positive_launches": 0,
+          "zero_launches": 0
+        }
+      },
+      "launches": [
+        {
+          "cells": {
+            "c00": 4642.78125,
+            "c01": 4612.65625,
+            "c10": 4544.760416666667,
+            "c11": 4528.427083333333
+          },
+          "effects": {
+            "c11_minus_c00": -114.35416666666697,
+            "h4_at_lazy_off": -30.125,
+            "h4_at_lazy_on": -16.33333333333394,
+            "h4_main_effect": -23.22916666666697,
+            "interaction": 13.79166666666606,
+            "lazy_at_h4_off": -98.02083333333303,
+            "lazy_at_h4_on": -84.22916666666697,
+            "lazy_main_effect": -91.125
+          },
+          "launch": 1
+        },
+        {
+          "cells": {
+            "c00": 4626.03125,
+            "c01": 4616.520833333333,
+            "c10": 4534.958333333333,
+            "c11": 4523.510416666667
+          },
+          "effects": {
+            "c11_minus_c00": -102.52083333333303,
+            "h4_at_lazy_off": -9.51041666666697,
+            "h4_at_lazy_on": -11.44791666666606,
+            "h4_main_effect": -10.479166666666515,
+            "interaction": -1.9374999999990905,
+            "lazy_at_h4_off": -91.07291666666697,
+            "lazy_at_h4_on": -93.01041666666606,
+            "lazy_main_effect": -92.04166666666652
+          },
+          "launch": 2
+        },
+        {
+          "cells": {
+            "c00": 4639.666666666667,
+            "c01": 4609.03125,
+            "c10": 4546.885416666667,
+            "c11": 4525.1875
+          },
+          "effects": {
+            "c11_minus_c00": -114.47916666666697,
+            "h4_at_lazy_off": -30.63541666666697,
+            "h4_at_lazy_on": -21.69791666666697,
+            "h4_main_effect": -26.16666666666697,
+            "interaction": 8.9375,
+            "lazy_at_h4_off": -92.78125,
+            "lazy_at_h4_on": -83.84375,
+            "lazy_main_effect": -88.3125
+          },
+          "launch": 3
+        },
+        {
+          "cells": {
+            "c00": 4642.072916666667,
+            "c01": 4614.427083333333,
+            "c10": 4549.604166666667,
+            "c11": 4524.78125
+          },
+          "effects": {
+            "c11_minus_c00": -117.29166666666697,
+            "h4_at_lazy_off": -27.64583333333394,
+            "h4_at_lazy_on": -24.82291666666697,
+            "h4_main_effect": -26.234375000000455,
+            "interaction": 2.82291666666697,
+            "lazy_at_h4_off": -92.46875,
+            "lazy_at_h4_on": -89.64583333333303,
+            "lazy_main_effect": -91.05729166666652
+          },
+          "launch": 4
+        },
+        {
+          "cells": {
+            "c00": 4649.1875,
+            "c01": 4614.791666666667,
+            "c10": 4539.020833333333,
+            "c11": 4523.729166666667
+          },
+          "effects": {
+            "c11_minus_c00": -125.45833333333303,
+            "h4_at_lazy_off": -34.39583333333303,
+            "h4_at_lazy_on": -15.29166666666606,
+            "h4_main_effect": -24.843749999999545,
+            "interaction": 19.10416666666697,
+            "lazy_at_h4_off": -110.16666666666697,
+            "lazy_at_h4_on": -91.0625,
+            "lazy_main_effect": -100.61458333333348
+          },
+          "launch": 5
+        },
+        {
+          "cells": {
+            "c00": 4632.791666666667,
+            "c01": 4616.552083333333,
+            "c10": 4542.947916666667,
+            "c11": 4526.635416666667
+          },
+          "effects": {
+            "c11_minus_c00": -106.15625,
+            "h4_at_lazy_off": -16.23958333333394,
+            "h4_at_lazy_on": -16.3125,
+            "h4_main_effect": -16.27604166666697,
+            "interaction": -0.07291666666606034,
+            "lazy_at_h4_off": -89.84375,
+            "lazy_at_h4_on": -89.91666666666606,
+            "lazy_main_effect": -89.88020833333303
+          },
+          "launch": 6
+        },
+        {
+          "cells": {
+            "c00": 4634.552083333333,
+            "c01": 4615.583333333333,
+            "c10": 4551.895833333333,
+            "c11": 4530.697916666667
+          },
+          "effects": {
+            "c11_minus_c00": -103.85416666666606,
+            "h4_at_lazy_off": -18.96875,
+            "h4_at_lazy_on": -21.19791666666606,
+            "h4_main_effect": -20.08333333333303,
+            "interaction": -2.2291666666660603,
+            "lazy_at_h4_off": -82.65625,
+            "lazy_at_h4_on": -84.88541666666606,
+            "lazy_main_effect": -83.77083333333303
+          },
+          "launch": 7
+        },
+        {
+          "cells": {
+            "c00": 4639.145833333333,
+            "c01": 4612.385416666667,
+            "c10": 4547.947916666667,
+            "c11": 4523.395833333333
+          },
+          "effects": {
+            "c11_minus_c00": -115.75,
+            "h4_at_lazy_off": -26.76041666666606,
+            "h4_at_lazy_on": -24.55208333333394,
+            "h4_main_effect": -25.65625,
+            "interaction": 2.2083333333321207,
+            "lazy_at_h4_off": -91.19791666666606,
+            "lazy_at_h4_on": -88.98958333333394,
+            "lazy_main_effect": -90.09375
+          },
+          "launch": 8
+        },
+        {
+          "cells": {
+            "c00": 4644.75,
+            "c01": 4609.135416666667,
+            "c10": 4547.979166666667,
+            "c11": 4533.697916666667
+          },
+          "effects": {
+            "c11_minus_c00": -111.05208333333303,
+            "h4_at_lazy_off": -35.61458333333303,
+            "h4_at_lazy_on": -14.28125,
+            "h4_main_effect": -24.947916666666515,
+            "interaction": 21.33333333333303,
+            "lazy_at_h4_off": -96.77083333333303,
+            "lazy_at_h4_on": -75.4375,
+            "lazy_main_effect": -86.10416666666652
+          },
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          103540700591584,
+          103540700593568,
+          103540700591456,
+          103540700593440
+        ],
+        [
+          109636623267296,
+          109636623269280,
+          109636623267168,
+          109636623269152
+        ],
+        [
+          96145369122272,
+          96145369124256,
+          96145369122144,
+          96145369124128
+        ],
+        [
+          101876172285408,
+          101876172287392,
+          101876172285280,
+          101876172287264
+        ],
+        [
+          109059193497056,
+          109059193499040,
+          109059193496928,
+          109059193498912
+        ],
+        [
+          109043815843296,
+          109043815845280,
+          109043815843168,
+          109043815845152
+        ],
+        [
+          111349826135520,
+          111349826137504,
+          111349826135392,
+          111349826137376
+        ],
+        [
+          100139864729056,
+          100139864731040,
+          100139864728928,
+          100139864730912
+        ],
+        [
+          106250859898336,
+          106250859900320,
+          106250859898208,
+          106250859900192
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    }
+  },
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}

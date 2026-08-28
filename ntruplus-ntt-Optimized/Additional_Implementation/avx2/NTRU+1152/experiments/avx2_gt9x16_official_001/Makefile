@@ -173,7 +173,7 @@ ENCAP_H4_M2E_ARGS := --m2d generated/encap-h4-m2d-physical-wire.json --h3-livene
 ENCAP_H4_M3B_ASM := asm/encap_h4_m3b_exact_egress.S
 ENCAP_H4_M3B_WIRE := generated/h1-natural-machine-wire-layout.json
 ENCAP_H4_M3B_GENERATOR_ARGS := --h3-source $(ENCAP_H_INGRESS_H3_ASM) --machine-wire $(ENCAP_H4_M3B_WIRE) --asm $(ENCAP_H4_M3B_ASM) --header generated/encap-h4-m3b-exact-egress.h --contract generated/encap-h4-m3b-exact-egress-asm.json
-ENCAP_H4_M3B_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(ENCAP_H4_M3_PRODUCER) $(ENCAP_H_INGRESS_H3_ASM) $(ENCAP_H4_M3B_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/basemul.s $(UPSTREAM)/add.s $(UPSTREAM)/pack.s tests/test_encap_h4_m3_asm.c
+ENCAP_H4_M3B_TEST_SOURCES := src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(ENCAP_H4_M3_PRODUCER) asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce.S $(ENCAP_H_INGRESS_H3_ASM) $(ENCAP_H4_M3B_ASM) $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/basemul.s $(UPSTREAM)/add.s $(UPSTREAM)/pack.s tests/test_encap_h4_m3_asm.c
 ENCAP_H4_M3B_AUDIT_ARGS := --h3-object $(BUILD)/h4m3b/h3.o --candidate-object $(BUILD)/h4m3b/h4-m3b.o --contract generated/encap-h4-m3b-exact-egress-asm.json --machine-wire $(ENCAP_H4_M3B_WIRE) --output generated/encap-h4-m3b-exact-egress-linked-audit.json
 GT9X16_PROD3_HASH_H1_ASM := asm/gt9x16_prod3_ma2_hash_h1.S
 GT9X16_PROD3_HASH_H1_GENERATOR_ARGS := --schedule generated/gt9x16-prod3-ma2-hash-direct-schedule.json --direct-map generated/gt9x16-prod3-ma2-hash-direct-map.json --asm $(GT9X16_PROD3_HASH_H1_ASM) --constants generated/gt9x16-prod3-ma2-hash-h1-constants.json --header generated/gt9x16-prod3-ma2-hash-h1.h --map-header generated/gt9x16-prod3-ma2-hash-h1-map.h --contract generated/gt9x16-prod3-ma2-hash-h1-asm.json
@@ -1263,6 +1263,17 @@ supercop-encap-h4-m3b-price:
 	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_encap_h4_m3b_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${H4_M3B_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-normal} --reversed-implementation $${H4_M3B_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --launches $${H4_M3B_PRICE_LAUNCHES:-9} --output $(RESULTS)/$@
+
+.PHONY: prepare-encap-lazy-h4-factorial-price supercop-encap-lazy-h4-factorial-price
+
+prepare-encap-lazy-h4-factorial-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_encap_lazy_h4_factorial_placements.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-source $${LAZY_H4_FACTORIAL_NORMAL_SOURCE:-avx2-gt9x16-prod3-h3-price-normal-exp005} --reversed-source $${LAZY_H4_FACTORIAL_REVERSED_SOURCE:-avx2-gt9x16-prod3-h3-price-reversed-exp005} --normal-implementation $${LAZY_H4_FACTORIAL_NORMAL_IMPLEMENTATION:-avx2-gt9x16-lazy-h4-factorial-normal} --reversed-implementation $${LAZY_H4_FACTORIAL_REVERSED_IMPLEMENTATION:-avx2-gt9x16-lazy-h4-factorial-reversed}
+
+supercop-encap-lazy-h4-factorial-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_encap_lazy_h4_factorial_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${LAZY_H4_FACTORIAL_NORMAL_IMPLEMENTATION:-avx2-gt9x16-lazy-h4-factorial-normal} --reversed-implementation $${LAZY_H4_FACTORIAL_REVERSED_IMPLEMENTATION:-avx2-gt9x16-lazy-h4-factorial-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --launches $${LAZY_H4_FACTORIAL_LAUNCHES:-9} --output $(RESULTS)/$@
 
 bench-forward-reduction-short:
 	mkdir -p $(BUILD)/prod3

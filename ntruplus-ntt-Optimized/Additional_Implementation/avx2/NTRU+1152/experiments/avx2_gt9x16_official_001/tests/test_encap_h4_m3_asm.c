@@ -25,6 +25,10 @@ typedef int16_t scratch_element;
 
 void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta(
     int16_t state[N]);
+#ifdef TEST_H4_M3B
+void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1_lazy_reduce(
+    int16_t state[N]);
+#endif
 
 typedef struct {
   _Alignas(32) uint8_t pre[32];
@@ -134,6 +138,9 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
                       const int16_t m_coeff[N], int trial, int overlap) {
   _Alignas(32) uint8_t pk[BYTES], pk_before[BYTES], expected_ct[BYTES];
   _Alignas(32) int16_t r4[N], r1[N], m4[N], m1[N], raw[N];
+#ifdef TEST_H4_M3B
+  _Alignas(32) int16_t r1_lazy[N], m1_lazy[N];
+#endif
   _Alignas(32) int16_t r_before[N], m_before[N];
   poly h_official, r_official, m_official, c_official;
   guarded_scratch scratch;
@@ -144,6 +151,20 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
   memcpy(pk_before, pk, BYTES);
   make_scale_states(r4, r1, r_coeff, trial);
   make_scale_states(m4, m1, m_coeff, trial);
+#ifdef TEST_H4_M3B
+  ntruplus1152_exp001_top_split_small(r1_lazy, r_coeff);
+  ntruplus1152_exp001_top_split_small(m1_lazy, m_coeff);
+  ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1_lazy_reduce(
+      r1_lazy);
+  ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta_scale1_lazy_reduce(
+      m1_lazy);
+  for (i = 0; i < N; ++i) {
+    if (canonical(r1[i]) != canonical(r1_lazy[i]))
+      fail("scale1-lazy-r-semantic", trial, i);
+    if (canonical(m1[i]) != canonical(m1_lazy[i]))
+      fail("scale1-lazy-m-semantic", trial, i);
+  }
+#endif
   memcpy(r_before, r1, sizeof(r1));
   memcpy(m_before, m1, sizeof(m1));
 
@@ -179,6 +200,15 @@ static void run_valid(const uint16_t h_values[N], const int16_t r_coeff[N],
       }
   }
   check_guards(&scratch, &ct, trial);
+#ifdef TEST_H4_M3B
+  guarded_scratch_init(&scratch);
+  guarded_bytes_init(&ct);
+  result = H4_FUNCTION(
+      ct.value, pk, r1_lazy, m1_lazy, scratch.value);
+  if (result != 0 || memcmp(ct.value, expected_ct, BYTES) != 0)
+    fail("scale1-lazy-ciphertext", trial, -1);
+  check_guards(&scratch, &ct, trial);
+#endif
   if (overlap) test_overlaps(pk, r1, m1, expected_ct, trial);
 }
 

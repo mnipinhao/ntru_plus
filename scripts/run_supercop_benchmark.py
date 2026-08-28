@@ -245,7 +245,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-encap-attribution-v2",
                                            "derived-gt9x16-prod3-encap-tail-attribution-v1",
                                            "derived-encap-h-ingress-ma2-h3-price",
-                                           "derived-encap-h4-m3b-price"),
+                                           "derived-encap-h4-m3b-price",
+                                           "derived-encap-lazy-h4-factorial-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -269,7 +270,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-encap-attribution-v2",
                      "derived-gt9x16-prod3-encap-tail-attribution-v1",
                      "derived-encap-h-ingress-ma2-h3-price",
-                     "derived-encap-h4-m3b-price") and args.parameter != "1152":
+                     "derived-encap-h4-m3b-price",
+                     "derived-encap-lazy-h4-factorial-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -332,7 +334,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-encap-attribution-v2",
                          "derived-gt9x16-prod3-encap-tail-attribution-v1",
                          "derived-encap-h-ingress-ma2-h3-price",
-                         "derived-encap-h4-m3b-price"):
+                         "derived-encap-h4-m3b-price",
+                         "derived-encap-lazy-h4-factorial-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -365,6 +368,8 @@ def main() -> int:
                     "encap_h_ingress_ma2_h3_price_measure.c",
                 "derived-encap-h4-m3b-price":
                     "encap_h4_m3b_price_measure.c",
+                "derived-encap-lazy-h4-factorial-price":
+                    "encap_lazy_h4_factorial_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -545,6 +550,11 @@ def main() -> int:
                                       ("candidate", "second"),
                                       ("candidate", "first"),
                                       ("control", "second")))
+    elif args.mode == "derived-encap-lazy-h4-factorial-price":
+        required = tuple(
+            f"encap_lazy_h4_factorial_price_{variant}_pos{position}_cycles"
+            for variant in ("c00", "c10", "c01", "c11")
+            for position in range(4))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -1817,6 +1827,31 @@ def main() -> int:
             "arithmetic": "identical H3 decode, producer, and MA2",
             "native_kem_result": False,
         }
+    if args.mode == "derived-encap-lazy-h4-factorial-price":
+        prefix = "encap_lazy_h4_factorial_price"
+        combined = {
+            f"{prefix}_{variant}_cycles": sum(
+                (pooled[f"{prefix}_{variant}_pos{position}_cycles"]
+                 for position in range(4)), [])
+            for variant in ("c00", "c10", "c01", "c11")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["lazy_h4_factorial_contract"] = {
+            "input": "coefficient-domain small r/m plus valid public-key bytes",
+            "output": "exact 1728-byte ciphertext",
+            "c00": "current forward plus scale4 H3 plus H1",
+            "c10": "lazy forward plus scale4 H3 plus H1",
+            "c01": "current scale1 forward plus H4-M3B",
+            "c11": "lazy scale1 forward plus H4-M3B",
+            "excluded": "r hash fanout, hash_g, SOTP, native KEM",
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1845,6 +1880,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-encap-tail-attribution-v1" if args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1"
                             else "supercop-derived-encap-h-ingress-ma2-h3-price" if args.mode == "derived-encap-h-ingress-ma2-h3-price"
                             else "supercop-derived-encap-h4-m3b-price" if args.mode == "derived-encap-h4-m3b-price"
+                            else "supercop-derived-encap-lazy-h4-factorial-price" if args.mode == "derived-encap-lazy-h4-factorial-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1903,7 +1939,9 @@ def main() -> int:
               "derived-encap-h-ingress-ma2-h3-price":
                   "encap_h_ingress_ma2_h3_price_measure.c",
               "derived-encap-h4-m3b-price":
-                  "encap_h4_m3b_price_measure.c"}[args.mode])
+                  "encap_h4_m3b_price_measure.c",
+              "derived-encap-lazy-h4-factorial-price":
+                  "encap_lazy_h4_factorial_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),
