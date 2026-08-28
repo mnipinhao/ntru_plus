@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation
+.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split
 
-check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation
+check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split
 
 check-reference: check-montgomery-reference
 
@@ -20,3 +20,6 @@ check-montgomery-reference:
 
 check-radix3-orientation:
 	$(MAKE) -C experiments/gt_9x32_radix3_orientation_reference check
+
+check-ld3-top-split:
+	$(MAKE) -C experiments/gt_2x9x16_ld3_top_split check

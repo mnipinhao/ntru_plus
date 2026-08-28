@@ -1,0 +1,13 @@
+baseline:
+  id: official_neon_ntruplus864_level0
+  source: ../../../../../NTRU+864/asm/ntt.s
+  input_pair: a[i] and a[i+432]
+  reduction: signed reciprocal fixed-constant multiplication
+  constants:
+    q: 3457
+    alpha: -722
+    alpha_reciprocal: -6844
+  coefficient_domain: normal R^0 int16
+  output_formulas:
+    alpha: low + alpha*high
+    beta: low + (1-alpha)*high

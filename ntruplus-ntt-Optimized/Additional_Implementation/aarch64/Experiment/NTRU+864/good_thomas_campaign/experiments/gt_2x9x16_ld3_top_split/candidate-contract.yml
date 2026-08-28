@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_2x9x16_ld3_top_split_v1
+  status: gate_passed
+scope:
+  changed_stage: top split and physical layout only
+  production_linked: false
+representation:
+  input: natural a[3*m+branch], normal R^0 int16
+  decomposition: m = s + 9*t + 144*half
+  main_output: main[top][branch][t][s=0..7]
+  tail_output: tail[t][top*3+branch], lanes 6..7 zero
+  output_coefficients: 896
+arithmetic:
+  fixed_constant_method: mul plus sqrdmulh plus mls
+  montgomery_transition: none
+  exact_neon_representatives: required
+memory:
+  input_output_overlap: forbidden
+  input_bytes_read: 1728
+  output_bytes_written: 1792
+required_checks:
+  - exact LD3 branch and lane mapping with tagged coefficients
+  - exact differential comparison against an instruction-level scalar model
+  - exhaustive fixed-multiply congruence for centered and canonical inputs
+  - zero padding lanes
+  - AArch64 baseline Neon feature audit
+forbidden_claims:
+  - full Good-Thomas correctness
+  - cycle improvement
+  - Production readiness
