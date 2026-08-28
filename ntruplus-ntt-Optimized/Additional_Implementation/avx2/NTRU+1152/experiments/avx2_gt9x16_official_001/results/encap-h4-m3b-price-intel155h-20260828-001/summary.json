@@ -1,0 +1,543 @@
+{
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-encap-h4-m3b-price",
+  "boundary": "valid PK plus resident scale-1 r/m to exact ciphertext",
+  "builds": {
+    "normal": {
+      "implementation": "avx2-gt9x16-h4-m3b-price-normal-exp001",
+      "measure_sha256": "4e187109b25aa6b5c00c6e07b88c67de404351c10d040d382c998c20ebfbad3e",
+      "metadata_sha256": "e0b29c9904258415a87abbcfd0757f3b6f4e0c954d45fdb90a1d3818d117b878"
+    },
+    "reversed": {
+      "implementation": "avx2-gt9x16-h4-m3b-price-reversed-exp001",
+      "measure_sha256": "3b9583fb797ec060ffc58c74b34872253456a816a9831d6c622a5e2c39eb00b1",
+      "metadata_sha256": "ef06b3dc2bd14000e80e03f5b201be5ab8587ba47a6918462dbb74f620f32e94"
+    }
+  },
+  "candidate": "H4-M3B canonical scratch plus exact direct egress",
+  "compiler_policy": "fixed-common-O3GC",
+  "compiler_wrapper": "/home/nuc/src/ntru_plus/bench/supercop/okc-o3gc.sh",
+  "compiler_wrapper_sha256": "3f836a7681176963041dd28eea2bafec730c769a4ee0a537f146def2aaaad395",
+  "control": "H4-M3 canonical scratch plus Natural-Q H1 fallback",
+  "cpu": 2,
+  "created_at": "2026-08-28T03:29:35.319109+00:00",
+  "decision": "price exact egress only; no native KEM or automatic promotion",
+  "headline_candidate_minus_control_cycles": -27.604166666666515,
+  "headline_setting": "normal-aslr-on",
+  "native_kem_result": false,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_label_per_launch": 96,
+  "placement_policy": "predeclared from H3-price campaign",
+  "placement_reference": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/results/encap-h-ingress-ma2-h3-price-intel155h-20260827-001/summary.json",
+  "placement_reference_sha256": "4e3cfcda2612945327d89907bcceed779228d3a2948711fa5c6ce2aefc09bb32",
+  "serious_launches_per_setting": 9,
+  "settings": {
+    "normal-aslr-off": {
+      "combined": {
+        "candidate": {
+          "observations": 1728,
+          "stq1": 2097.358796296296,
+          "stq2": 2108.6666666666665,
+          "stq3": 2123.75
+        },
+        "control": {
+          "observations": 1728,
+          "stq1": 2125.266203703704,
+          "stq2": 2135.391203703704,
+          "stq3": 2146.946759259259
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -27.5,
+          -24.41666666666697
+        ],
+        "median_cycles": -26.8125,
+        "negative_launches": 9,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -27.354166666666515,
+          "candidate_stq2": 2107.25,
+          "control_stq2": 2134.6041666666665,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -26.8125,
+          "candidate_stq2": 2109.9166666666665,
+          "control_stq2": 2136.7291666666665,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -25.895833333333485,
+          "candidate_stq2": 2109.25,
+          "control_stq2": 2135.1458333333335,
+          "launch": 3
+        },
+        {
+          "candidate_minus_control_cycles": -26.895833333333485,
+          "candidate_stq2": 2109.1666666666665,
+          "control_stq2": 2136.0625,
+          "launch": 4
+        },
+        {
+          "candidate_minus_control_cycles": -24.291666666666515,
+          "candidate_stq2": 2109.3958333333335,
+          "control_stq2": 2133.6875,
+          "launch": 5
+        },
+        {
+          "candidate_minus_control_cycles": -24.41666666666697,
+          "candidate_stq2": 2109.2291666666665,
+          "control_stq2": 2133.6458333333335,
+          "launch": 6
+        },
+        {
+          "candidate_minus_control_cycles": -27.5,
+          "candidate_stq2": 2107.9791666666665,
+          "control_stq2": 2135.4791666666665,
+          "launch": 7
+        },
+        {
+          "candidate_minus_control_cycles": -25.8125,
+          "candidate_stq2": 2110.7916666666665,
+          "control_stq2": 2136.6041666666665,
+          "launch": 8
+        },
+        {
+          "candidate_minus_control_cycles": -31.39583333333303,
+          "candidate_stq2": 2104.8958333333335,
+          "control_stq2": 2136.2916666666665,
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "combined": {
+        "candidate": {
+          "observations": 1728,
+          "stq1": 2096.5763888888887,
+          "stq2": 2107.377314814815,
+          "stq3": 2121.127314814815
+        },
+        "control": {
+          "observations": 1728,
+          "stq1": 2124.9375,
+          "stq2": 2134.8541666666665,
+          "stq3": 2146.564814814815
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -29.27083333333303,
+          -25.6875
+        ],
+        "median_cycles": -27.604166666666515,
+        "negative_launches": 9,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -28.0,
+          "candidate_stq2": 2106.1875,
+          "control_stq2": 2134.1875,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -27.541666666666515,
+          "candidate_stq2": 2106.8333333333335,
+          "control_stq2": 2134.375,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -25.6875,
+          "candidate_stq2": 2106.9166666666665,
+          "control_stq2": 2132.6041666666665,
+          "launch": 3
+        },
+        {
+          "candidate_minus_control_cycles": -29.27083333333303,
+          "candidate_stq2": 2105.7083333333335,
+          "control_stq2": 2134.9791666666665,
+          "launch": 4
+        },
+        {
+          "candidate_minus_control_cycles": -28.64583333333303,
+          "candidate_stq2": 2107.9583333333335,
+          "control_stq2": 2136.6041666666665,
+          "launch": 5
+        },
+        {
+          "candidate_minus_control_cycles": -27.604166666666515,
+          "candidate_stq2": 2107.9583333333335,
+          "control_stq2": 2135.5625,
+          "launch": 6
+        },
+        {
+          "candidate_minus_control_cycles": -26.89583333333303,
+          "candidate_stq2": 2108.7083333333335,
+          "control_stq2": 2135.6041666666665,
+          "launch": 7
+        },
+        {
+          "candidate_minus_control_cycles": -24.04166666666697,
+          "candidate_stq2": 2109.6666666666665,
+          "control_stq2": 2133.7083333333335,
+          "launch": 8
+        },
+        {
+          "candidate_minus_control_cycles": -29.45833333333303,
+          "candidate_stq2": 2106.7708333333335,
+          "control_stq2": 2136.2291666666665,
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          109472430279808,
+          109472430312832
+        ],
+        [
+          95411586284672,
+          95411586317696
+        ],
+        [
+          104974436543616,
+          104974436576640
+        ],
+        [
+          111220931189888,
+          111220931222912
+        ],
+        [
+          95305545460864,
+          95305545493888
+        ],
+        [
+          102017398897792,
+          102017398930816
+        ],
+        [
+          101887775054976,
+          101887775088000
+        ],
+        [
+          95951155231872,
+          95951155264896
+        ],
+        [
+          101210209279104,
+          101210209312128
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    },
+    "reversed-aslr-off": {
+      "combined": {
+        "candidate": {
+          "observations": 1728,
+          "stq1": 2097.7939814814813,
+          "stq2": 2108.9606481481483,
+          "stq3": 2126.071759259259
+        },
+        "control": {
+          "observations": 1728,
+          "stq1": 2123.685185185185,
+          "stq2": 2134.8611111111113,
+          "stq3": 2147.372685185185
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -28.416666666666515,
+          -23.416666666666515
+        ],
+        "median_cycles": -26.083333333333485,
+        "negative_launches": 9,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -22.85416666666697,
+          "candidate_stq2": 2112.1666666666665,
+          "control_stq2": 2135.0208333333335,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -24.375,
+          "candidate_stq2": 2108.75,
+          "control_stq2": 2133.125,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -26.854166666666515,
+          "candidate_stq2": 2107.625,
+          "control_stq2": 2134.4791666666665,
+          "launch": 3
+        },
+        {
+          "candidate_minus_control_cycles": -23.416666666666515,
+          "candidate_stq2": 2107.7708333333335,
+          "control_stq2": 2131.1875,
+          "launch": 4
+        },
+        {
+          "candidate_minus_control_cycles": -26.083333333333485,
+          "candidate_stq2": 2107.5,
+          "control_stq2": 2133.5833333333335,
+          "launch": 5
+        },
+        {
+          "candidate_minus_control_cycles": -28.416666666666515,
+          "candidate_stq2": 2107.6875,
+          "control_stq2": 2136.1041666666665,
+          "launch": 6
+        },
+        {
+          "candidate_minus_control_cycles": -24.958333333333485,
+          "candidate_stq2": 2111.2291666666665,
+          "control_stq2": 2136.1875,
+          "launch": 7
+        },
+        {
+          "candidate_minus_control_cycles": -26.520833333333485,
+          "candidate_stq2": 2109.375,
+          "control_stq2": 2135.8958333333335,
+          "launch": 8
+        },
+        {
+          "candidate_minus_control_cycles": -29.04166666666697,
+          "candidate_stq2": 2109.1666666666665,
+          "control_stq2": 2138.2083333333335,
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "combined": {
+        "candidate": {
+          "observations": 1728,
+          "stq1": 2098.722222222222,
+          "stq2": 2109.8425925925926,
+          "stq3": 2124.6180555555557
+        },
+        "control": {
+          "observations": 1728,
+          "stq1": 2124.337962962963,
+          "stq2": 2135.4513888888887,
+          "stq3": 2147.9513888888887
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -27.3125,
+          -24.541666666666515
+        ],
+        "median_cycles": -25.895833333333485,
+        "negative_launches": 9,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -25.979166666666515,
+          "candidate_stq2": 2110.5,
+          "control_stq2": 2136.4791666666665,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -27.4375,
+          "candidate_stq2": 2108.6875,
+          "control_stq2": 2136.125,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -26.208333333333485,
+          "candidate_stq2": 2109.5,
+          "control_stq2": 2135.7083333333335,
+          "launch": 3
+        },
+        {
+          "candidate_minus_control_cycles": -25.270833333333485,
+          "candidate_stq2": 2109.2916666666665,
+          "control_stq2": 2134.5625,
+          "launch": 4
+        },
+        {
+          "candidate_minus_control_cycles": -25.1875,
+          "candidate_stq2": 2111.7291666666665,
+          "control_stq2": 2136.9166666666665,
+          "launch": 5
+        },
+        {
+          "candidate_minus_control_cycles": -22.625,
+          "candidate_stq2": 2111.375,
+          "control_stq2": 2134.0,
+          "launch": 6
+        },
+        {
+          "candidate_minus_control_cycles": -27.3125,
+          "candidate_stq2": 2107.6666666666665,
+          "control_stq2": 2134.9791666666665,
+          "launch": 7
+        },
+        {
+          "candidate_minus_control_cycles": -25.895833333333485,
+          "candidate_stq2": 2110.8541666666665,
+          "control_stq2": 2136.75,
+          "launch": 8
+        },
+        {
+          "candidate_minus_control_cycles": -24.541666666666515,
+          "candidate_stq2": 2109.375,
+          "control_stq2": 2133.9166666666665,
+          "launch": 9
+        }
+      ],
+      "runtime_addresses": [
+        [
+          107942304305760,
+          107942304274400
+        ],
+        [
+          98928599781984,
+          98928599750624
+        ],
+        [
+          104716478263904,
+          104716478232544
+        ],
+        [
+          107966322786912,
+          107966322755552
+        ],
+        [
+          102514732647008,
+          102514732615648
+        ],
+        [
+          100725101965920,
+          100725101934560
+        ],
+        [
+          95849906430560,
+          95849906399200
+        ],
+        [
+          99558463513184,
+          99558463481824
+        ],
+        [
+          100025874850400,
+          100025874819040
+        ]
+      ],
+      "unique_runtime_address_tuples": 9
+    }
+  },
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}

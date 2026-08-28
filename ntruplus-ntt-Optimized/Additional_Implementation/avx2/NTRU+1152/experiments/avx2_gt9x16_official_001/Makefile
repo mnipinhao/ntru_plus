@@ -1253,6 +1253,17 @@ supercop-encap-h-ingress-ma2-h3-price:
 	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
 	$(PYTHON) $(REPO_ROOT)/scripts/run_encap_h_ingress_ma2_h3_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${H3_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-normal} --reversed-implementation $${H3_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-prod3-h3-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --output $(RESULTS)/$@
 
+.PHONY: prepare-encap-h4-m3b-price supercop-encap-h4-m3b-price
+
+prepare-encap-h4-m3b-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_encap_h4_m3b_price_placements.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-source $${H4_M3B_PRICE_NORMAL_SOURCE:-avx2-gt9x16-prod3-h3-price-normal-exp005} --reversed-source $${H4_M3B_PRICE_REVERSED_SOURCE:-avx2-gt9x16-prod3-h3-price-reversed-exp005} --normal-implementation $${H4_M3B_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-normal} --reversed-implementation $${H4_M3B_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-reversed}
+
+supercop-encap-h4-m3b-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_encap_h4_m3b_price.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${H4_M3B_PRICE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-normal} --reversed-implementation $${H4_M3B_PRICE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-h4-m3b-price-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --launches $${H4_M3B_PRICE_LAUNCHES:-9} --output $(RESULTS)/$@
+
 bench-forward-reduction-short:
 	mkdir -p $(BUILD)/prod3
 	$(CC) $(PAIRED_CFLAGS) -Isrc -Igenerated -I. src/top_split_adapter.c $(GT9X16_PROD3_T0_BETA_ASM) $(GT9X16_FORWARD_REDUCTION_ASM) bench/bench_gt9x16_forward_reduction_paired.c -o $(BUILD)/prod3/bench-forward-reduction

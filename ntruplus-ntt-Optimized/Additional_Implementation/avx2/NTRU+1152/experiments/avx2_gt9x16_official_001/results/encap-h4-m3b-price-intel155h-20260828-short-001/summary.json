@@ -1,0 +1,303 @@
+{
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-encap-h4-m3b-price",
+  "boundary": "valid PK plus resident scale-1 r/m to exact ciphertext",
+  "builds": {
+    "normal": {
+      "implementation": "avx2-gt9x16-h4-m3b-price-normal-exp001",
+      "measure_sha256": "4e187109b25aa6b5c00c6e07b88c67de404351c10d040d382c998c20ebfbad3e",
+      "metadata_sha256": "99f80271638157a404b444ff7326108bf3c67baa35589ce6868cf3cd21da792d"
+    },
+    "reversed": {
+      "implementation": "avx2-gt9x16-h4-m3b-price-reversed-exp001",
+      "measure_sha256": "3b9583fb797ec060ffc58c74b34872253456a816a9831d6c622a5e2c39eb00b1",
+      "metadata_sha256": "1fb1a8cbf826e76128ea698ff8f84d145a8cf2e15c1beb3e77dc89a5051b1499"
+    }
+  },
+  "candidate": "H4-M3B canonical scratch plus exact direct egress",
+  "compiler_policy": "fixed-common-O3GC",
+  "compiler_wrapper": "/home/nuc/src/ntru_plus/bench/supercop/okc-o3gc.sh",
+  "compiler_wrapper_sha256": "3f836a7681176963041dd28eea2bafec730c769a4ee0a537f146def2aaaad395",
+  "control": "H4-M3 canonical scratch plus Natural-Q H1 fallback",
+  "cpu": 2,
+  "created_at": "2026-08-28T03:28:55.750681+00:00",
+  "decision": "price exact egress only; no native KEM or automatic promotion",
+  "headline_candidate_minus_control_cycles": -27.6875,
+  "headline_setting": "normal-aslr-on",
+  "native_kem_result": false,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_label_per_launch": 96,
+  "placement_policy": "predeclared from H3-price campaign",
+  "placement_reference": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_gt9x16_official_001/results/encap-h-ingress-ma2-h3-price-intel155h-20260827-001/summary.json",
+  "placement_reference_sha256": "4e3cfcda2612945327d89907bcceed779228d3a2948711fa5c6ce2aefc09bb32",
+  "serious_launches_per_setting": 3,
+  "settings": {
+    "normal-aslr-off": {
+      "combined": {
+        "candidate": {
+          "observations": 576,
+          "stq1": 2096.1180555555557,
+          "stq2": 2108.3888888888887,
+          "stq3": 2126.8611111111113
+        },
+        "control": {
+          "observations": 576,
+          "stq1": 2125.7013888888887,
+          "stq2": 2135.590277777778,
+          "stq3": 2148.340277777778
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -27.5625,
+          -26.625
+        ],
+        "median_cycles": -27.416666666666515,
+        "negative_launches": 3,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -27.416666666666515,
+          "candidate_stq2": 2108.8333333333335,
+          "control_stq2": 2136.25,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -26.625,
+          "candidate_stq2": 2109.0,
+          "control_stq2": 2135.625,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -27.5625,
+          "candidate_stq2": 2107.3541666666665,
+          "control_stq2": 2134.9166666666665,
+          "launch": 3
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ],
+        [
+          93824992246912,
+          93824992279936
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "combined": {
+        "candidate": {
+          "observations": 576,
+          "stq1": 2095.8194444444443,
+          "stq2": 2106.902777777778,
+          "stq3": 2120.7291666666665
+        },
+        "control": {
+          "observations": 576,
+          "stq1": 2124.597222222222,
+          "stq2": 2134.3680555555557,
+          "stq3": 2147.0763888888887
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -27.895833333333485,
+          -27.0
+        ],
+        "median_cycles": -27.6875,
+        "negative_launches": 3,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -27.895833333333485,
+          "candidate_stq2": 2107.9166666666665,
+          "control_stq2": 2135.8125,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -27.0,
+          "candidate_stq2": 2106.5833333333335,
+          "control_stq2": 2133.5833333333335,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -27.6875,
+          "candidate_stq2": 2106.125,
+          "control_stq2": 2133.8125,
+          "launch": 3
+        }
+      ],
+      "runtime_addresses": [
+        [
+          104971901602944,
+          104971901635968
+        ],
+        [
+          103926446292096,
+          103926446325120
+        ],
+        [
+          104428321262720,
+          104428321295744
+        ]
+      ],
+      "unique_runtime_address_tuples": 3
+    },
+    "reversed-aslr-off": {
+      "combined": {
+        "candidate": {
+          "observations": 576,
+          "stq1": 2098.402777777778,
+          "stq2": 2109.3680555555557,
+          "stq3": 2128.590277777778
+        },
+        "control": {
+          "observations": 576,
+          "stq1": 2125.0486111111113,
+          "stq2": 2136.2013888888887,
+          "stq3": 2148.8194444444443
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -30.458333333333485,
+          -24.854166666666515
+        ],
+        "median_cycles": -25.104166666666515,
+        "negative_launches": 3,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -24.854166666666515,
+          "candidate_stq2": 2109.0208333333335,
+          "control_stq2": 2133.875,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -30.458333333333485,
+          "candidate_stq2": 2107.125,
+          "control_stq2": 2137.5833333333335,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -25.104166666666515,
+          "candidate_stq2": 2112.8125,
+          "control_stq2": 2137.9166666666665,
+          "launch": 3
+        }
+      ],
+      "runtime_addresses": [
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ],
+        [
+          93824992277088,
+          93824992245728
+        ]
+      ],
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "combined": {
+        "candidate": {
+          "observations": 576,
+          "stq1": 2096.5625,
+          "stq2": 2107.5625,
+          "stq3": 2122.7291666666665
+        },
+        "control": {
+          "observations": 576,
+          "stq1": 2124.375,
+          "stq2": 2134.9444444444443,
+          "stq3": 2147.4513888888887
+        }
+      },
+      "estimator_contract": {
+        "delta": "H4-M3B candidate minus H4-M3 control",
+        "headline": "median of nine launch-level deltas",
+        "operation": "balanced first/second StQ2 within each fresh launch"
+      },
+      "evidence": {
+        "bootstrap_95pct_ci_median": [
+          -28.083333333333485,
+          -26.666666666666515
+        ],
+        "median_cycles": -27.29166666666697,
+        "negative_launches": 3,
+        "positive_launches": 0,
+        "zero_launches": 0
+      },
+      "launches": [
+        {
+          "candidate_minus_control_cycles": -28.083333333333485,
+          "candidate_stq2": 2106.875,
+          "control_stq2": 2134.9583333333335,
+          "launch": 1
+        },
+        {
+          "candidate_minus_control_cycles": -26.666666666666515,
+          "candidate_stq2": 2108.2708333333335,
+          "control_stq2": 2134.9375,
+          "launch": 2
+        },
+        {
+          "candidate_minus_control_cycles": -27.29166666666697,
+          "candidate_stq2": 2107.7291666666665,
+          "control_stq2": 2135.0208333333335,
+          "launch": 3
+        }
+      ],
+      "runtime_addresses": [
+        [
+          102675837997664,
+          102675837966304
+        ],
+        [
+          94236649484896,
+          94236649453536
+        ],
+        [
+          97281237197408,
+          97281237166048
+        ]
+      ],
+      "unique_runtime_address_tuples": 3
+    }
+  },
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}

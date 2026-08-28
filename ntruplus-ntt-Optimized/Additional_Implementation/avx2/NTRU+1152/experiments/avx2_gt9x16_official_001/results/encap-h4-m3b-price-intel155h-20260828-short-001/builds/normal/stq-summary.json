@@ -1,0 +1,62 @@
+{
+  "balanced_combined_operations": {
+    "encap_h4_m3b_price_candidate_cycles": {
+      "observations": 192,
+      "stq1": 2097.4583333333335,
+      "stq2": 2108.3541666666665,
+      "stq3": 2120.9166666666665
+    },
+    "encap_h4_m3b_price_control_cycles": {
+      "observations": 192,
+      "stq1": 2123.4166666666665,
+      "stq2": 2134.4375,
+      "stq3": 2147.0416666666665
+    }
+  },
+  "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+  "fresh_process_launches": 1,
+  "h4_m3b_price_contract": {
+    "arithmetic": "identical H3 decode, producer, and MA2",
+    "candidate": "H4-M3B canonical scratch plus exact direct egress",
+    "control": "H4-M3 canonical scratch plus Natural-Q H1 fallback",
+    "input": "valid public-key bytes plus resident scale-1 r/m",
+    "native_kem_result": false,
+    "output": "exact 1728-byte ciphertext"
+  },
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-h4-m3b-price-normal-exp001 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "encap_h4_m3b_price_candidate_first_cycles": {
+      "observations": 96,
+      "stq1": 2094.2083333333335,
+      "stq2": 2103.7083333333335,
+      "stq3": 2114.8333333333335
+    },
+    "encap_h4_m3b_price_candidate_second_cycles": {
+      "observations": 96,
+      "stq1": 2102.0,
+      "stq2": 2112.7083333333335,
+      "stq3": 2134.0416666666665
+    },
+    "encap_h4_m3b_price_control_first_cycles": {
+      "observations": 96,
+      "stq1": 2123.9583333333335,
+      "stq2": 2134.875,
+      "stq3": 2145.4583333333335
+    },
+    "encap_h4_m3b_price_control_second_cycles": {
+      "observations": 96,
+      "stq1": 2122.9166666666665,
+      "stq2": 2134.0,
+      "stq3": 2149.0
+    }
+  },
+  "timings_per_loop": 32
+}

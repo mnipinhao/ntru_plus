@@ -244,7 +244,8 @@ def main() -> int:
                                            "derived-gt9x16-prod3-t0-beta-price",
                                            "derived-gt9x16-prod3-encap-attribution-v2",
                                            "derived-gt9x16-prod3-encap-tail-attribution-v1",
-                                           "derived-encap-h-ingress-ma2-h3-price"),
+                                           "derived-encap-h-ingress-ma2-h3-price",
+                                           "derived-encap-h4-m3b-price"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -267,7 +268,8 @@ def main() -> int:
                      "derived-gt9x16-prod3-t0-beta-price",
                      "derived-gt9x16-prod3-encap-attribution-v2",
                      "derived-gt9x16-prod3-encap-tail-attribution-v1",
-                     "derived-encap-h-ingress-ma2-h3-price") and args.parameter != "1152":
+                     "derived-encap-h-ingress-ma2-h3-price",
+                     "derived-encap-h4-m3b-price") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -329,7 +331,8 @@ def main() -> int:
                          "derived-gt9x16-prod3-t0-beta-price",
                          "derived-gt9x16-prod3-encap-attribution-v2",
                          "derived-gt9x16-prod3-encap-tail-attribution-v1",
-                         "derived-encap-h-ingress-ma2-h3-price"):
+                         "derived-encap-h-ingress-ma2-h3-price",
+                         "derived-encap-h4-m3b-price"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -360,6 +363,8 @@ def main() -> int:
                     "gt9x16_prod3_encap_tail_attribution_v1_measure.c",
                 "derived-encap-h-ingress-ma2-h3-price":
                     "encap_h_ingress_ma2_h3_price_measure.c",
+                "derived-encap-h4-m3b-price":
+                    "encap_h4_m3b_price_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -532,6 +537,13 @@ def main() -> int:
             for variant, position in (("control", "first"),
                                       ("h3", "second"),
                                       ("h3", "first"),
+                                      ("control", "second")))
+    elif args.mode == "derived-encap-h4-m3b-price":
+        required = tuple(
+            f"encap_h4_m3b_price_{variant}_{position}_cycles"
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
                                       ("control", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
@@ -1782,6 +1794,29 @@ def main() -> int:
             "serializer": "excluded",
             "native_kem_result": False,
         }
+    if args.mode == "derived-encap-h4-m3b-price":
+        prefix = "encap_h4_m3b_price"
+        combined = {
+            f"{prefix}_{variant}_cycles": (
+                pooled[f"{prefix}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{variant}_second_cycles"])
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["h4_m3b_price_contract"] = {
+            "input": "valid public-key bytes plus resident scale-1 r/m",
+            "output": "exact 1728-byte ciphertext",
+            "control": "H4-M3 canonical scratch plus Natural-Q H1 fallback",
+            "candidate": "H4-M3B canonical scratch plus exact direct egress",
+            "arithmetic": "identical H3 decode, producer, and MA2",
+            "native_kem_result": False,
+        }
     (args.result_dir / "stq-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1809,6 +1844,7 @@ def main() -> int:
                             else "supercop-derived-gt9x16-prod3-encap-attribution-v2" if args.mode == "derived-gt9x16-prod3-encap-attribution-v2"
                             else "supercop-derived-gt9x16-prod3-encap-tail-attribution-v1" if args.mode == "derived-gt9x16-prod3-encap-tail-attribution-v1"
                             else "supercop-derived-encap-h-ingress-ma2-h3-price" if args.mode == "derived-encap-h-ingress-ma2-h3-price"
+                            else "supercop-derived-encap-h4-m3b-price" if args.mode == "derived-encap-h4-m3b-price"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1865,7 +1901,9 @@ def main() -> int:
               "derived-gt9x16-prod3-encap-tail-attribution-v1":
                   "gt9x16_prod3_encap_tail_attribution_v1_measure.c",
               "derived-encap-h-ingress-ma2-h3-price":
-                  "encap_h_ingress_ma2_h3_price_measure.c"}[args.mode])
+                  "encap_h_ingress_ma2_h3_price_measure.c",
+              "derived-encap-h4-m3b-price":
+                  "encap_h4_m3b_price_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

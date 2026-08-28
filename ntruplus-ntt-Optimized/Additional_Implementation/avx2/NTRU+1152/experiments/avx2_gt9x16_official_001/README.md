@@ -791,3 +791,13 @@ instructions; its 1,056-instruction scratch-to-wire egress uses 72 loads, 72
 pair madds, 72 `vpermd`, 54 ciphertext stores, no frame, and no spills.  This
 checkpoint authorizes no benchmark or native KEM integration.  See
 `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3B-ASM.md`.
+
+Checkpoint ENCAP-MA2-CT-EGRESS-H4-M3B-PRICE prices that exact egress against
+the H4-M3 Natural-Q H1 fallback at the identical valid-PK plus resident
+scale-1 r/m to exact-ciphertext boundary.  Under pinned SUPERCOP `cpucycles()`,
+fixed O3GC, and the predeclared normal/ASLR-on setting, M3B wins by 27.6042
+cycles with bootstrap 95% CI `[-29.2708,-25.6875]`.  All 36 serious launches
+across normal/reversed and ASLR on/off agree in direction.  M3B becomes the
+research egress baseline, but this SUPERCOP-derived result does not authorize
+native KEM or production promotion.  See
+`CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3B-PRICE.md`.
