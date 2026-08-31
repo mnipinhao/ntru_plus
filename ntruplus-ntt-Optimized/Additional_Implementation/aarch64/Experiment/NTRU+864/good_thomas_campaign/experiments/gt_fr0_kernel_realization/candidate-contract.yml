@@ -1,0 +1,21 @@
+candidate: M5A_FR0_stackless_block_asm
+isa: AArch64_Armv8_A_Neon
+calls_per_polynomial: 12
+block:
+  live_coefficients: "v0-v7,v16"
+  constants_and_scratch: "v17-v31"
+  callee_saved_neon: none
+  stack: none
+  coefficient_spill: none
+range:
+  producer_requirement: "every P8+tail value in [-15752,15752]"
+  arithmetic: no_int16_wrap_before_declared_Montgomery_reductions
+leaf_abi:
+  physical: "group=top*18+row*2+column//8; lane=column%8"
+  cubic_component: "24*group+8*component+lane"
+  zeta: "theta^(residue+6*column+96*row) in Montgomery form"
+forbidden:
+  - Production_linkage
+  - coefficient_spill
+  - secret_dependent_control_or_addressing
+  - SUPERCOP_claim_from_local_timer

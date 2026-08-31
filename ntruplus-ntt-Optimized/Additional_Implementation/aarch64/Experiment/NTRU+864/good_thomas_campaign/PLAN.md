@@ -386,18 +386,15 @@ After a change:
 
 ## Immediate next action
 
-The scalar relation, transform-domain tile ABI search, and first real Neon
-boundary comparison now pass.  The next turn should not add another layout
-family.  It should open a separate fused-FR assembly experiment and:
+M5A `gt_fr0_kernel_realization` now passes: FR-0 has a stackless handwritten
+Neon block, zero coefficient spills, an exact-representative differential
+gate, a maximum conditional producer bound of `|x| <= 15752`, and generated
+BaseMul/inverse leaf maps. The next experiment must not add a layout family.
 
-1. freeze FR-0's exact register live-in/live-out map and prove that NTT
-   coefficient vectors never spill between P8 load and SoA store;
-2. replace compiler pointer/constant spills with an explicit AAPCS64 register
-   budget and scheduled assembly;
-3. prove worst-case bounds through twist, both radix-3 layers, and the BaseMul
-   input boundary rather than relying on the current observed maxima;
-4. generate the branch-specific BaseMul zeta order and exact inverse physical
-   map for FR-0, with FR-lane metadata retained only as a conditional control;
-5. integrate forward-only behind an Experiment build flag, then run the
-   current NTT oracle, KEM/KAT, source-closure, target-host attribution, and
-   finally SUPERCOP before any Production decision.
+1. Prove the actual NTT16 producer's P8+tail output satisfies the M5A bound;
+   otherwise insert and cost a justified reduction before composition.
+2. Use the generated FR-0 zeta order in an actual BaseMul/BaseMulAdd arithmetic
+   differential test; root-set equality alone is not arithmetic integration.
+3. Implement and verify the matching inverse arithmetic/permutation path.
+4. Only then create an Experiment-only full Forward composition and run the
+   NTT oracle, KEM/KAT, source closure, target-host attribution, and SUPERCOP.

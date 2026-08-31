@@ -75,7 +75,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 17,
       "artifact_budget_waiver_reason": "M4 compares three implementations across one equal boundary and keeps correctness, timing, code-shape, rotation-search, and exact-ABI generators separately auditable; splitting them would duplicate the shared boundary contract and weaken the A/B gate.",
-      "next": "fused FR assembly register-budget and formal-range experiment"
+      "next": "gt_fr0_kernel_realization"
+    },
+    {
+      "id": "gt_fr0_kernel_realization",
+      "path": "gt_fr0_kernel_realization",
+      "question": "Can fused FR-0 be realized as exact stackless Neon assembly with a proved range contract and closed leaf map?",
+      "status": "passed",
+      "role": "first_handwritten_fr0_assembly_baseline",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The bounded kernel-realization gate keeps assembly, wrapper, exact differential test, range proof, disassembly audit, map generator, diagnostic benchmark, and the two required human-readable proof views independently auditable; generated outputs remain ignored.",
+      "next": "NTT16 producer-bound proof, FR-0 BaseMul arithmetic, and inverse arithmetic experiment"
     }
   ]
 }

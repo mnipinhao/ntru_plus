@@ -22,6 +22,12 @@ make check
 
 This target does not build or link Production and does not run benchmarks.
 
+Current checkpoint: M5A `experiments/gt_fr0_kernel_realization` is the frozen
+first handwritten FR-0 assembly baseline. It passes exact differential,
+stack/register, formal-range, and leaf-map gates. Its producer bound is
+conditional (`|P8+tail| <= 15752`); BaseMul/inverse arithmetic, full KEM, and
+SUPERCOP remain future gates.
+
 Run only the authoritative GT C reference gate:
 
 ```sh

@@ -1,0 +1,15 @@
+mode: fused_fr0_kernel_realization
+baseline: M4_FR0_intrinsic
+input:
+  layout: P8_plus_tail
+  coefficients: 896
+operation: complete_weighted_positive_exponent_oriented_NTT9
+output:
+  layout: BaseMul_SoA_tile8
+  coefficients: 864
+  offset: "24*group + 8*component + lane"
+representation:
+  coefficients: normal_R0_signed_int16
+  public_constants: centered_Montgomery
+comparison: exact_int16_representative
+production_linked: false

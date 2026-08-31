@@ -24,5 +24,6 @@ Current experiments:
 | `gt_layout_consumer_abi_gate` | What exact stock Forward leaf layout do BaseMul and BaseMulAdd consume? | passed | no |
 | `gt_transform_domain_tile_abi_search` | Which GT tile ABI gives NTT9 the cheapest producer shape while preserving SoA BaseMul? | passed | no |
 | `gt_boundary_cost_campaign` | Across the same P8+tail to BaseMul-SoA boundary, which M3 survivor has the lowest measured Neon cost? | passed; FR-0 retained | no |
+| `gt_fr0_kernel_realization` | Can FR-0 be exact, stackless handwritten Neon with proved range and leaf maps? | passed; assembly baseline retained | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.
