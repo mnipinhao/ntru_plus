@@ -86,7 +86,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 18,
       "artifact_budget_waiver_reason": "The bounded kernel-realization gate keeps assembly, wrapper, exact differential test, range proof, disassembly audit, map generator, diagnostic benchmark, and the two required human-readable proof views independently auditable; generated outputs remain ignored.",
-      "next": "NTT16 producer-bound proof, FR-0 BaseMul arithmetic, and inverse arithmetic experiment"
+      "next": "gt_ntt16_producer_range"
+    },
+    {
+      "id": "gt_ntt16_producer_range",
+      "path": "gt_ntt16_producer_range",
+      "question": "Does the exact top-split and twisted radix-2 NTT16 schedule satisfy M5A's input bound without an extra reduction boundary?",
+      "status": "passed",
+      "role": "ntt16_arithmetic_and_range_contract",
+      "production_linked": false,
+      "artifact_budget_waiver": 15,
+      "artifact_budget_waiver_reason": "The bounded range gate keeps the executable Neon schedule, compile-time tables, exact/direct differential test, machine range proof, and compiler spill inventory independently auditable; generated binaries and JSON remain ignored.",
+      "next": "FR-0 BaseMul and BaseMulAdd arithmetic differential experiment"
     }
   ]
 }

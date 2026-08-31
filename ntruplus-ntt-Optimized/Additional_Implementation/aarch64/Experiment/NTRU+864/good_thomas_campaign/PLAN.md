@@ -386,15 +386,16 @@ After a change:
 
 ## Immediate next action
 
-M5A `gt_fr0_kernel_realization` now passes: FR-0 has a stackless handwritten
-Neon block, zero coefficient spills, an exact-representative differential
-gate, a maximum conditional producer bound of `|x| <= 15752`, and generated
-BaseMul/inverse leaf maps. The next experiment must not add a layout family.
+M5B `gt_ntt16_producer_range` closes the conditional producer obligation. For
+every input representative in `[-3456,3456]`, the exact top split and twisted
+radix-2 NTT16 schedule reaches at most 8874, below M5A's 15752 limit. No extra
+Barrett reduction is needed. The intrinsics realization spills its 16-vector
+array, so it freezes arithmetic/range but not the final memory schedule.
 
-1. Prove the actual NTT16 producer's P8+tail output satisfies the M5A bound;
-   otherwise insert and cost a justified reduction before composition.
-2. Use the generated FR-0 zeta order in an actual BaseMul/BaseMulAdd arithmetic
+1. Use the generated FR-0 zeta order in an actual BaseMul/BaseMulAdd arithmetic
    differential test; root-set equality alone is not arithmetic integration.
-3. Implement and verify the matching inverse arithmetic/permutation path.
-4. Only then create an Experiment-only full Forward composition and run the
-   NTT oracle, KEM/KAT, source closure, target-host attribution, and SUPERCOP.
+2. Implement and verify the matching inverse arithmetic/permutation path.
+3. Handwrite the NTT16 producer/composition with an explicit register budget,
+   preserving M5B arithmetic and the intended two-load/two-store schedule.
+4. Only then run the full Forward oracle, KEM/KAT, source closure, target-host
+   attribution, and SUPERCOP before any Production decision.

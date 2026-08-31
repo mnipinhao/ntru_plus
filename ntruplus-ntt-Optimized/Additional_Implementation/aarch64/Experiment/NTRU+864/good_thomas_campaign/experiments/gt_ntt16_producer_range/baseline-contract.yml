@@ -1,0 +1,15 @@
+mode: ntt16_producer_range_gate
+input:
+  source: gt864_top_split_ld3
+  natural_coefficients: 864
+  accepted_field_representatives: "[-3456,3456]"
+intermediate_layout:
+  name: P8_plus_tail
+  coefficients: 896
+consumer:
+  name: M5A_FR0
+  required_bound: "[-15752,15752]"
+comparison:
+  algebra: direct_32_term_evaluation_mod_q
+  realization: exact_scalar_schedule_representatives
+production_linked: false

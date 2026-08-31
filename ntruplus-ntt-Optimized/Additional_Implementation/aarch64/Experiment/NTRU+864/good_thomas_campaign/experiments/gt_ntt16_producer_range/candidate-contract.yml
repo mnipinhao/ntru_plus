@@ -1,0 +1,19 @@
+candidate: twisted_bitreverse_DIT_NTT16
+roots:
+  q: 3457
+  theta: 9
+  zeta_top: "theta^(9*residue), residue in {1,5}"
+  omega16: "theta^54"
+representation:
+  coefficients: signed_int16_normal_R0
+  constants: centered_Montgomery_R1
+schedule:
+  branch_twist: "x[t] *= zeta_top^t"
+  public_register_map: "register[bitreverse4(t)] = twisted x[t]"
+  radix2_lengths: [2,4,8,16]
+  explicit_barrett_reductions: 0
+output:
+  layout: unchanged_P8_plus_tail
+  column_order: natural_0_to_15
+non_goal: handwritten_no_spill_assembly_or_performance_claim
+production_linked: false

@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization
+.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range
 
-check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization
+check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range
 
 check-reference: check-montgomery-reference
 
@@ -35,3 +35,6 @@ check-boundary-cost:
 
 check-fr0-realization:
 	$(MAKE) -C experiments/gt_fr0_kernel_realization check PYTHON=$(PYTHON)
+
+check-ntt16-producer-range:
+	$(MAKE) -C experiments/gt_ntt16_producer_range check PYTHON=$(PYTHON)
