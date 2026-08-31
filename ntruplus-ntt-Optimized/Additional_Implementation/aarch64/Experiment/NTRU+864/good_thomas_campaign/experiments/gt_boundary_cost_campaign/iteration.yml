@@ -1,0 +1,24 @@
+iteration:
+  id: gt864_boundary_cost_m4_v1
+  hypothesis: >-
+    Eight-column fixed-row NTT9 will repay its transpose cost by using all Neon
+    lanes, while fixed-column will expose whether avoiding the main bridge can
+    compensate for cross-lane routing and row8 repacking.
+  isolation: default-off NTRU+864 Good-Thomas campaign
+  implementation: AArch64_Neon_intrinsics_compiled_by_Apple_Clang_21
+  correctness:
+    differential_cases: 105
+    mismatches: 0
+    abi_metadata: machine_checked
+  measurement:
+    authority: diagnostic_only_not_SUPERCOP
+    timer: mach_continuous_time
+    batches: 3
+    samples_per_batch: 41
+    iterations_per_sample: 5000
+    execution_order: sample_rotated
+  result:
+    survivor: FR-0
+    FC-0: control_only
+    FR-lane-0: conditional_table_compression_only
+  production_linked: false

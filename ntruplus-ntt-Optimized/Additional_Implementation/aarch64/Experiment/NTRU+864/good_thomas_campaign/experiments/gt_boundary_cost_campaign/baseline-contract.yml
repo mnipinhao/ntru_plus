@@ -1,0 +1,22 @@
+mode: transform_boundary_cost_campaign
+input:
+  physical_layout: P8_plus_tail
+  coefficients: 896
+  main: "in[(((top*3+component)*16+column)*8)+s], s=0..7"
+  tail: "in[768+column*8+top*3+component], s=8; lanes 6,7 are padding"
+operation: complete_weighted_paper_oriented_positive_exponent_ntt9
+output:
+  physical_layout: BaseMul_SoA_tile8
+  coefficients: 864
+  offset: "24*group + 8*component + lane"
+mathematics:
+  q: 3457
+  theta: 9
+  eta: "theta^96, order 9"
+  lambda_alpha: "theta^(1+6*column)"
+  lambda_beta: "theta^(5+6*column)"
+representation:
+  coefficients: normal_R0
+  public_factors: centered_Montgomery
+comparison_rule: same_complete_input_to_output_boundary
+production_linked: false

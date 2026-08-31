@@ -7,7 +7,7 @@ math_contract:
   operation: coefficient polynomial to 288 cubic base-ring elements
   ring: Z_3457[x]/(x^864-x^432+1)
   input_representation: natural coefficient order
-  output_representation: current block layout consumed by cubic base operations
+  output_representation: eight-leaf SoA tiles consumed by Neon cubic base operations
   coefficient_bounds_before: caller-dependent-and-not-yet-fully-recorded
   coefficient_bounds_after: centered/bounded-current-contract-needs-exact-proof
   exact_or_rounded: exact modulo 3457
@@ -20,13 +20,13 @@ dependencies:
   - radix-2 layer at step 12
   - radix-2 layer at step 6
   - radix-2 layer at step 3
-  - store 288 contiguous cubic blocks
+  - store 36 SoA tiles; each tile holds j0[8], j1[8], j2[8]
 
 dataflow:
   inputs:
     - 864 int16 coefficient representatives
   outputs:
-    - 288 blocks of three int16 field representatives
+    - 288 leaves in 36 physical SoA tiles of 24 int16 coefficients
   live_ins:
     - source pointer
     - destination pointer
@@ -59,6 +59,14 @@ memory:
   alignment: poly is 16-byte aligned
   aliasing: public API permits in-place use and must be tested
   public_offsets_only: true
+
+consumer_abi:
+  physical_leaf: "leaf=8*group+lane"
+  coefficient_offsets: "24*group + 8*j + lane"
+  basemul_loads: "three consecutive q registers for j=0,1,2"
+  basemuladd_addend: same three-register SoA tile
+  zeta_lane: "zetas_mul[group][lane] labels the same leaf"
+  logical_map_gate: experiments/gt_layout_consumer_abi_gate
 
 forbidden:
   - secret_dependent_branch

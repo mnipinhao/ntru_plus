@@ -72,6 +72,46 @@ and the final four levels in a second pass. `poly_basemul`, `poly_basemul_add`,
 and `poly_baseinv` consume the cubic-block representation; `poly_invntt`
 reverses it.
 
+The exact stock Neon boundary is now frozen by
+`experiments/gt_layout_consumer_abi_gate`: it is not leaf-major AoS.  Forward
+stores 36 eight-leaf SoA tiles, each laid out as `j0[8], j1[8], j2[8]`.
+BaseMul and BaseMulAdd consume the same shape, with one zeta vector lane matched
+to each physical leaf.  Groups `0..17` are alpha leaves and `18..35` are beta
+leaves; their row/column lane patterns match.  The legacy pattern mixes rows
+and columns inside a tile and is therefore an ordering convention, not a
+consumer requirement when data, zetas, and inverse mapping move together.
+
+The follow-up M3 experiment
+`experiments/gt_transform_domain_tile_abi_search` freezes fixed-row,
+eight-column batching as the primary producer ABI: NTT9 runs across nine
+registers while eight columns occupy Neon lanes, and each output register can
+be stored directly as one BaseMul component vector.  Public `P9` is carried as
+register/store order and public `P16` as lane/table order.  Lane-dependent row
+rotation remains a conditional extension for the later twist-table study.
+Fixed-column row-lane batching remains a secondary no-main-transpose candidate
+until its cross-lane NTT9 and row-8 tail cost is measured; arbitrary
+column-stream chunking is rejected because nine outputs cross every eight-leaf
+BaseMul tile boundary.
+
+The M4 equal-boundary experiment
+`experiments/gt_boundary_cost_campaign` now closes that comparison.  All
+candidates consume the exact 896-value P8+tail contract and complete the same
+weighted, paper-oriented NTT9 before storing 36 BaseMul SoA tiles.  Native
+Apple-arm64 diagnostics retain fused fixed-row FR-0: its stabilized median was
+383.658 ns versus 1029.133 ns for FC-0.  FC's cheaper isolated bridge does not
+offset the cost of running each radix-3 transform with only three useful
+lanes.  The best searched lane rotation has identical code shape and only a
+potential 32-byte exact table saving; its timing overlaps FR-0, so it remains
+conditional rather than changing the ABI.
+
+The fused FR implementation directly transposes each eight-column P8 tile into
+NTT9 registers, constructs `s=8` with exact lane loads, and stores SoA without
+an 864-value scratch.  This preserves the intended logical two-load/two-store
+forward schedule.  The intrinsic code is still an Experiment prototype: its
+observed range is not a formal proof, compiler-emitted stack traffic still
+needs an assembly register-budget pass, and no BaseMul/inverse/full-KEM or
+SUPERCOP claim has been made.
+
 The full KEM call counts that matter are:
 
 | Path | Forward NTT | Base inverse | Base multiply/add | Inverse NTT |
@@ -346,17 +386,18 @@ After a change:
 
 ## Immediate next action
 
-The full-KEM SUPERCOP baseline is captured. The next implementation turn should
-complete the minimum Phase 1 boundary contract and begin the scalar Phase 2
-proof:
+The scalar relation, transform-domain tile ABI search, and first real Neon
+boundary comparison now pass.  The next turn should not add another layout
+family.  It should open a separate fused-FR assembly experiment and:
 
-1. freeze coefficient input, aliasing, ring relation, serialization, and
-   caller-visible scale/representative rules;
-2. choose the closed GT-family route unless compatibility with an unchanged
-   current consumer is demonstrably cheaper;
-3. derive and test the 9-by-32 maps, roots, twists, inverse scale, and full
-   polynomial relation without first reconstructing the old packed layout;
-4. inspect old block indices or packed zeta order only to connect an unchanged
-   consumer or diagnose a differential failure.
-
-Do not write a GT Neon kernel until the scalar relation passes.
+1. freeze FR-0's exact register live-in/live-out map and prove that NTT
+   coefficient vectors never spill between P8 load and SoA store;
+2. replace compiler pointer/constant spills with an explicit AAPCS64 register
+   budget and scheduled assembly;
+3. prove worst-case bounds through twist, both radix-3 layers, and the BaseMul
+   input boundary rather than relying on the current observed maxima;
+4. generate the branch-specific BaseMul zeta order and exact inverse physical
+   map for FR-0, with FR-lane metadata retained only as a conditional control;
+5. integrate forward-only behind an Experiment build flag, then run the
+   current NTT oracle, KEM/KAT, source-closure, target-host attribution, and
+   finally SUPERCOP before any Production decision.

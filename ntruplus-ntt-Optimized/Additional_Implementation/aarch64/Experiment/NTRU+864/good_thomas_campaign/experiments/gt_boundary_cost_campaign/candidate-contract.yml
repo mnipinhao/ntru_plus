@@ -1,0 +1,26 @@
+candidates:
+  FR-0:
+    family: fixed_row_eight_column_batch
+    bridge: fused_in_register_8x8_transpose_plus_exact_s8_lane_loads
+    ntt9: across_nine_registers_with_eight_columns_in_lanes
+    output: one_output_register_per_SoA_component_vector
+  FC-0:
+    family: fixed_column_row_lanes
+    bridge: no_main_bridge
+    ntt9: within_register_three_live_radix3_lanes
+    tail: repack_sixteen_row8_scalars_into_two_tiles
+  FR-lane-0:
+    family: conditional_lane_dependent_row_rotation
+    rotations: [0,1,2,1,2,1,1,0,1,2,0,2,0,2,2,1]
+    realization: "lambda_c -> lambda_c*eta^a_c"
+    logical_map: "logical_row=(physical_row+a_c) mod 9"
+    separate_permutation_stage: false
+fixed_skeleton:
+  vector_twist_mulmods: 96
+  vector_twist_constant_loads: 96
+  coefficient_scale_change: none
+forbidden:
+  - new_layout_family
+  - separate_runtime_row_permutation
+  - Production_linkage
+  - SUPERCOP_claim_from_local_timer

@@ -1,0 +1,15 @@
+candidate:
+  id: gt864_transform_domain_tile_abi_search_v1
+  primary_family: fixed_row_column_batch
+  physical_axes:
+    register: NTT9 output row/component
+    lane: one of eight public-permuted columns
+  permitted_orders:
+    row: arbitrary public P9
+    column: arbitrary public P16
+  extension: "lane c may relabel row by public a_c via lambda_c -> lambda_c*eta^a_c"
+  output: stock-compatible SoA tile8
+secondary:
+  - fixed_column_row_lanes
+rejected:
+  - mixed_column_stream

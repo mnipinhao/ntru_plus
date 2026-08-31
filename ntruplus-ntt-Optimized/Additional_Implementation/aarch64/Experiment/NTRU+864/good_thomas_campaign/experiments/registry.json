@@ -47,6 +47,35 @@
       "role": "neon_top_split_layout_candidate",
       "production_linked": false,
       "next": "open a separate NTT16 experiment comparing padded P8-plus-tail against compact layout"
+    },
+    {
+      "id": "gt_layout_consumer_abi_gate",
+      "path": "gt_layout_consumer_abi_gate",
+      "question": "What exact stock Neon leaf layout does Forward store and BaseMul/BaseMulAdd consume?",
+      "status": "passed",
+      "role": "layout_and_consumer_abi_oracle",
+      "production_linked": false,
+      "next": "cost a GT NTT9 producer against the frozen eight-leaf SoA consumer ABI"
+    },
+    {
+      "id": "gt_transform_domain_tile_abi_search",
+      "path": "gt_transform_domain_tile_abi_search",
+      "question": "Which pure-permutation GT tile ABI minimizes NTT9 producer routing while preserving the SoA BaseMul consumer?",
+      "status": "passed",
+      "role": "transform_domain_tile_abi_search",
+      "production_linked": false,
+      "next": "gt_boundary_cost_campaign"
+    },
+    {
+      "id": "gt_boundary_cost_campaign",
+      "path": "gt_boundary_cost_campaign",
+      "question": "Across the same P8-plus-tail to BaseMul-SoA boundary, is fixed-row, fixed-column, or conditional row-rotated NTT9 cheapest?",
+      "status": "passed",
+      "role": "transform_boundary_cost_and_codegen_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 17,
+      "artifact_budget_waiver_reason": "M4 compares three implementations across one equal boundary and keeps correctness, timing, code-shape, rotation-search, and exact-ABI generators separately auditable; splitting them would duplicate the shared boundary contract and weaken the A/B gate.",
+      "next": "fused FR assembly register-budget and formal-range experiment"
     }
   ]
 }
