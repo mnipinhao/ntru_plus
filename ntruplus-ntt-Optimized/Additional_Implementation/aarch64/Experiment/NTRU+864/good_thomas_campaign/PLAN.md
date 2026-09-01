@@ -416,12 +416,15 @@ instantiation: NTT16 reaches 9342 and the complete changed DAG reaches 28568
 with zero unsafe signed-halfword nodes. It uses 24 NTT9 fixed multiplications
 per block and an estimated 22-register NTT9 peak; main NTT16 still sets the
 whole-kernel peak at 24. The 15-instruction B3 source uses only Slothy
-symbolic registers.
+symbolic registers. Its remote hard gate passes: Slothy 0.2.2 returns an
+OPTIMAL 24-cycle N1-proxy schedule using exactly `v0,v24-v31`, with no spill,
+stack, memory, GPR, or forbidden-vector instruction.
 The next steps are:
 
-1. Run the M5G symbolic B3 in the configured remote Slothy environment and
-   return both allocated assembly and log for register/spill audit.
-2. Expand only a passing allocation into the surrounding NTT9 region, then
-   realize the complete fused Forward and audit linked closure and code size.
+1. Expand the passing B3 allocation into the surrounding NTT9 symbolic
+   region, where the fifteen live-through values become actual dataflow.
+2. If that larger register/allocation gate passes, realize the surrounding
+   NTT9 schedule and complete fused Forward, then audit linked closure and
+   code size.
 3. Run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

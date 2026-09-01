@@ -1,7 +1,7 @@
 iteration:
   id: m5g-iter-001
   mode: new_symbolic_kernel
-  current_state: Slothy_run_by_user
+  current_state: oracle_correctness
   hypothesis: the correlation-safe two-product B3 DAG fits the nine-register window left by fifteen live-through data vectors
   changed_artifacts:
     - prove_exact_dag.py
@@ -16,7 +16,8 @@ artifacts:
   instruction_dag: instruction-dag.yml
   symbolic_source: gt864_forward_b3_two_product.sym.S
   slothy_driver: optimize.py
-  slothy_log:
+  slothy_output: slothy-output/gt864_forward_b3_two_product.n1.opt.S
+  slothy_log: slothy-output/gt864_forward_b3_two_product.n1.log
   candidate_contract: candidate-contract.yml
   candidate_score:
   promotion_report:
@@ -27,9 +28,9 @@ gates:
   instruction_dag: passed_manual_trace_and_correlation_range
   symbolic_asm: passed
   static_checks: passed
-  Slothy_run_by_user: pending
-  parse_slothy_result: pending
-  oracle_correctness: C_DAG_passed_symbolic_pending
+  Slothy_run_by_user: passed_remote_repo_venv
+  parse_slothy_result: passed_OPTIMAL_24_cycles_20_stalls
+  oracle_correctness: C_DAG_passed_Slothy_selfcheck_passed_emitted_source_assembles
   full_path_benchmark: pending
   score_candidate: pending
   promotion_decision: pending
@@ -39,3 +40,5 @@ notes:
   - repository policy requires remote Slothy on pinhao@172.25.166.141 port 51208
   - neoverse_n1_experimental is a proxy model and requires target validation
   - rejected 3a DAG reached magnitude 50448 at 176 nodes
+  - first remote attempt failed before solving because outputs a,b,c were not declared
+  - second attempt used outputs a,b,c and allocated exactly v0,v24-v31 without spills

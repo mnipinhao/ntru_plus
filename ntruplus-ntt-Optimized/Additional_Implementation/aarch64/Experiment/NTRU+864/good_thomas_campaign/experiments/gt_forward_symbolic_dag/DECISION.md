@@ -11,7 +11,14 @@ live-through data vectors by reserving `v1-v23`. The first Slothy question is
 strictly whether this 15-instruction region is allocatable and schedulable in
 the remaining nine physical registers under the N1 proxy model.
 
-Do not promote this experiment on static checks. A valid next result must
-include the returned Slothy assembly and log, a parsed register/spill audit,
-and then a larger-region integration test. The N1 model is only a proxy; Pi 5
-target attribution and SUPERCOP remain later gates.
+The bounded allocation question passes. Slothy allocates and schedules the
+15-instruction B3 in exactly the nine-register window `v0,v24-v31`, with
+spills disabled and no emitted stack or memory instruction. Freeze the
+returned assembly and log as evidence, but keep the candidate status at
+`investigate`.
+
+The next experiment must expand the boundary to the surrounding NTT9 region.
+That is where overlapping B3 live ranges, twist/eta constants, and the other
+fifteen live data vectors become real instructions rather than reserved-name
+pressure. The N1 model remains a proxy; Pi 5 target attribution and SUPERCOP
+remain later gates.

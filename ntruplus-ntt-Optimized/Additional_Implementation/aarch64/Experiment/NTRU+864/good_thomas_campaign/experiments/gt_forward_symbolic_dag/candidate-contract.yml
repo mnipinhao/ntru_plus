@@ -3,12 +3,17 @@ candidate_status: investigate
 kernel_contract: kernel-contract.yml
 instruction_dag: instruction-dag.yml
 symbolic_source: gt864_forward_b3_two_product.sym.S
-physical_allocation: none
-slothy_result: missing
-oracle_correctness: C_DAG_passed_symbolic_pending
+physical_allocation: v0_and_v24_through_v31
+slothy_result: optimal
+slothy_version: 0.2.2
+slothy_checkout_revision: d636d638d06b370d1acc5774ca31c9572d3d2e6f
+slothy_expected_cycles: 24
+slothy_minimum_stalls: 20
+spill_or_stack_instructions: 0
+forbidden_vector_registers_used: []
+oracle_correctness: C_DAG_passed_Slothy_selfcheck_passed_emitted_source_assembles
 full_path_benchmark: missing
 promotion_blockers:
-  - Slothy allocation and scheduling not yet run
-  - Slothy output not supplied
   - full Forward integration unavailable
+  - Pi5 target validation unavailable for the N1 proxy schedule
 production_linked: false

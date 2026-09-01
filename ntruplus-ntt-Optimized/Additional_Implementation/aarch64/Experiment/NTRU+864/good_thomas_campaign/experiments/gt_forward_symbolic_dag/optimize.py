@@ -42,6 +42,11 @@ def main() -> None:
     optimizer.load_source_from_file(str(arguments.input))
     optimizer.config.variable_size = True
     optimizer.config.inputs_are_outputs = False
+    # The region is in-place at the caller boundary: a, b, and c leave as
+    # y0, y1, and y2. roots/modq are read-only inputs; saved_a/quotient are
+    # internal clobbers. Symbolic output names are required so Slothy retains
+    # all three terminal values while it chooses their physical registers.
+    optimizer.config.outputs = ["a", "b", "c"]
     optimizer.config.selftest = False
     optimizer.config.allow_useless_instructions = False
     optimizer.config.constraints.allow_spills = False

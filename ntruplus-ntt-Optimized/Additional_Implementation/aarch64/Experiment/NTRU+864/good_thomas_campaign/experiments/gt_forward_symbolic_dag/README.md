@@ -28,8 +28,14 @@ Slothy sees the exact nine-register window `v0,v24-v31` left by fifteen
 live-through data vectors and the ABI prohibition on `v8-v15`. This is a
 pressure experiment for one B3 region, not yet a complete Forward kernel.
 
-Run `make check` for the mathematical and artifact gates. The repository has
-no local Slothy checkout or virtual environment. A known remote interpreter is
-`/home/pinhao/slothy/venv/bin/python`, but no allocation, schedule, cycle, or
-code-size result exists until its generated assembly and log are returned and
-audited.
+The remote hard gate used `/home/pinhao/slothy/venv/bin/python` and checkout
+revision `d636d638d06b370d1acc5774ca31c9572d3d2e6f`. The first attempt correctly
+failed before solving because the driver omitted the three boundary outputs.
+After deriving and declaring `outputs=["a","b","c"]`, Slothy 0.2.2 found an
+OPTIMAL 24-cycle N1-proxy schedule with 20 stalls and passed its selfcheck.
+
+The emitted instructions use exactly `v0,v24-v31`: all nine available vector
+registers, no `v1-v23`, no GPR, no stack, and no memory instruction. The
+returned source and log are frozen under `slothy-output/`; `make check` audits
+them and assembles the emitted source. This proves the bounded B3 allocation
+gate, not complete Forward feasibility or Pi 5 performance.

@@ -47,10 +47,11 @@ four-product reduction search. M5G `experiments/gt_forward_symbolic_dag`
 changes B3 to two products and supplies the current correlation-aware proof:
 NTT16 reaches 9342 and the exact full-Forward DAG reaches 28568 with zero
 unsafe halfword nodes. Its 15-instruction B3 is written entirely with Slothy
-symbolic registers. Static gates pass, but no remote Slothy allocation or
-cycle result exists. The whole schedule still peaks at 24 caller-saved vector
-registers. Handwritten forward integration, full KEM, and SUPERCOP remain
-future gates.
+symbolic registers. The remote Slothy gate is OPTIMAL at 24 N1-proxy cycles
+and allocates exactly `v0,v24-v31`, with no spill, stack, memory, GPR, or
+forbidden-vector instruction. The whole schedule still peaks at 24
+caller-saved vector registers. Surrounding NTT9 realization, handwritten
+forward integration, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 
