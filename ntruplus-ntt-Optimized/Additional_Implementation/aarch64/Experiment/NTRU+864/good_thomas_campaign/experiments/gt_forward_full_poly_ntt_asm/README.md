@@ -3,7 +3,9 @@
 This Experiment composes the frozen `LD3` top split with the frozen M5N
 six-bank pass 2 into one callable natural-input-to-FR0 Forward transform.
 `gt864_forward_poly_ntt_experiment(out, in)` uses a fixed 1792-byte stack P8
-buffer and requires disjoint 864-halfword input and output arrays.
+buffer and supports either disjoint arrays or exact `out == in` aliasing;
+partial overlap is unsupported.  M5P later validated 384 in-place Pi 5 cases
+with surrounding sentinels.
 
 The candidate deliberately returns FR-0, not Official's physical transform
 ABI.  `generate_official_map.py` reconstructs every Official physical leaf

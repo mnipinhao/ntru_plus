@@ -3,8 +3,9 @@
  *
  * x0: 864-int16 FR-0 output
  * x1: 864-int16 natural-order input
- * Contract: x0 and x1 are disjoint.  The fixed stack object is the
- * 896-int16 P8-plus-tail buffer passed between the two frozen kernels.
+ * Contract: x0/x1 may be disjoint or exactly equal; partial overlap is not
+ * supported.  The producer finishes reading x1 into the fixed stack object
+ * before pass 2 writes x0.  M5P exercises exact aliasing with sentinels.
  */
 .text
 .p2align 2

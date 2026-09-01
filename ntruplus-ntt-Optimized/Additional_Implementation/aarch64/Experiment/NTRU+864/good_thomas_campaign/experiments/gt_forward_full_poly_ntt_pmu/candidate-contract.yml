@@ -1,0 +1,22 @@
+candidate:
+  id: gt864_forward_full_poly_ntt_pmu_m5p
+  status: rejected_performance_hypothesis
+  symbol: gt864_forward_poly_ntt_experiment
+  source_components:
+    - ../gt_forward_full_poly_ntt_asm/gt864_forward_poly_ntt_experiment.S
+    - ../gt_2x9x16_ld3_top_split/gt864_top_split.s
+    - ../gt_forward_six_bank_pass2_asm/gt864_forward_six_bank_pass2.S
+fixed_contract:
+  ring_representation_range_and_fr0_abi: unchanged_from_M5O
+  runtime_official_layout_conversion: none
+  stack_p8_bytes: 1792
+hypothesis_gate:
+  observation: M5O closes full Forward correctness with two meaningful loads and stores per coefficient, but M5N has a shared-helper call boundary and a 5268-byte combined object footprint
+  hypothesis: saved coefficient-memory traffic is sufficient for the complete GT Forward to beat Official on Cortex-A76 despite helper calls and code footprint
+  exact_change: none; benchmark the frozen M5O candidate
+  expected_static_effect: none
+  expected_performance_effect: lower median cycles per complete Forward call
+  expected_register_pressure_effect: none
+  correctness_or_range_impact: none
+  falsification: candidate fails correctness, throttles, or does not beat Official cycles in all three complete repetitions
+production_linked: false

@@ -9,7 +9,7 @@ contract:
   official_output: 864 signed halfwords in the stock SoA tile-of-eight leaf ABI
   candidate_output: 864 signed halfwords in frozen FR-0 top-row-block-component-lane order
   equivalence: coefficientwise equality modulo q after the machine-generated FR-0-to-stock ABI permutation
-  aliasing: input and output are disjoint
+  aliasing: input and output may be disjoint or exactly equal; partial overlap is unsupported
 limitations:
   - the two frozen experimental kernels have not previously been called as one full Forward transform
   - pass-2 output intentionally does not use the stock physical ABI

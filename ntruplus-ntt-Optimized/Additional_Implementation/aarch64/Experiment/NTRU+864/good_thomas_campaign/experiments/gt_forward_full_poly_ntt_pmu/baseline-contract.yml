@@ -1,0 +1,21 @@
+baseline:
+  id: official_neon_gt864_forward_pi5
+  source: ../../../../../NTRU+864/asm/ntt.s
+  symbol: poly_ntt
+  host: Raspberry Pi 5
+  microarchitecture: Cortex-A76
+  compiler_policy: gcc -O3 -march=armv8-a+simd
+benchmark:
+  same_binary: true
+  pinned_core: 3
+  samples_per_order: 61
+  calls_per_sample: 20000
+  warmups_per_variant: 100
+  complete_repetitions: 3
+  order_per_repetition: Official-GT then GT-Official
+  counters: cycles and instructions in one perf_event group
+  kernel_and_hypervisor_excluded: true
+correctness:
+  comparison: coefficientwise modulo q through the frozen M5O ABI map
+  input_preservation_and_output_sentinels: required
+  in_place_and_disjoint_calls: required

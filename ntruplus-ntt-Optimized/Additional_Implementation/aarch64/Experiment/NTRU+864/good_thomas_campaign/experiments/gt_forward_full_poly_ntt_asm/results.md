@@ -19,7 +19,7 @@
 - Direct prerequisite regressions: top split 106 differential plus 5,185
   fixed-multiply checks passed; M5N 1,122 exact representative cases passed.
 - Wrapper SHA-256:
-  `be9fb246c8c792481d7452c5900a5001f4b824b5c5d07dc40eed91533e4211e9`.
+  `9f6537d049dd81ef5a20b328e7ff20afd3c6afecf84624c1d0b1ce83a969f4af`.
 
 This is correctness and composition evidence only.  It is not a cycle,
 SUPERCOP, KEM/KAT, or Production-promotion result.
