@@ -1,0 +1,20 @@
+id: M5E
+observation: >-
+  M5D proved the inverse arithmetic and two-pass ABI, but compiler-generated
+  intrinsics used 160-byte and 416-byte stack frames.
+bottleneck_hypothesis: >-
+  Register allocation and component-strided output stores, rather than the
+  algebra, prevent the reference from being the final inverse kernel.
+candidate: >-
+  Use three fully unrolled public-control assembly blocks: a nine-row inverse
+  NTT9 block, a packed alpha/beta inverse NTT16 main block, and a six-lane tail
+  block. Keep v8-v15 untouched and destructively consume completed vectors.
+falsifier:
+  - any exact representative mismatch against M5D
+  - any write to P8 tail padding
+  - any stack reference or coefficient spill in an arithmetic block
+  - any v8-v15 reference or branch in an arithmetic block
+  - any extra full-buffer pass
+result: passed
+decision: retain_as_experimental_inverse_assembly_baseline
+next: handwritten_forward_NTT16_producer_and_composition

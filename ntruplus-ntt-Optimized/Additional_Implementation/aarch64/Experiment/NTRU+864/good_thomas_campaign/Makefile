@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse
+.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm
 
-check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse
+check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm
 
 check-reference: check-montgomery-reference
 
@@ -44,3 +44,6 @@ check-fr0-basemul:
 
 check-fr0-inverse:
 	$(MAKE) -C experiments/gt_fr0_inverse_consumer check PYTHON=$(PYTHON)
+
+check-fr0-inverse-asm:
+	$(MAKE) -C experiments/gt_fr0_inverse_asm_realization check PYTHON=$(PYTHON)

@@ -33,7 +33,12 @@ in working BaseMul/BaseMulAdd tile arithmetic with proved int32/R0 bounds. M5D
 `experiments/gt_fr0_inverse_consumer` closes the matching inverse arithmetic:
 inverse NTT9 returns FR-0 to P8+tail, while packed alpha/beta inverse NTT16 and
 top recombination finish in the second pass without a top-branch scratch.
-Handwritten inverse assembly, full KEM, and SUPERCOP remain future gates.
+M5E `experiments/gt_fr0_inverse_asm_realization` realizes that exact two-pass
+map in handwritten Neon. Its arithmetic blocks have no stack, coefficient
+spill, callee-saved vector use, or branches, and the local component diagnostic
+is faster than the M5D intrinsics. The fully unrolled inverse costs 10,744 code
+bytes, so target instruction-cache attribution remains mandatory. Handwritten
+forward composition, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

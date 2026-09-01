@@ -397,12 +397,15 @@ M5C `gt_fr0_basemul_arithmetic` closes BaseMul/BaseMulAdd. M5D
 FR-0 returns to P8 through inverse NTT9, then a packed alpha/beta inverse NTT16
 recombines directly to natural coefficients. It proves the M5C `[-2168,2168]`
 input contract, a 19512 maximum lazy halfword magnitude, a 3696 output bound,
-and exactly two algorithmic full-buffer load/store passes. The intrinsic
-compiler spills, so the next steps are:
+and exactly two algorithmic full-buffer load/store passes. M5E
+`gt_fr0_inverse_asm_realization` now realizes the exact inverse in three
+stackless, branchless arithmetic blocks without coefficient spills or
+callee-saved vector registers. It retains the two-pass boundary and is locally
+14.6% faster than the M5D intrinsic combined median-of-medians, but fully
+unrolling costs 10,744 bytes and the wrapper retains a 48-byte GPR call frame.
+The next steps are:
 
-1. Handwrite and cost the inverse memory/component-store realization while
-   preserving M5D's packed-top ABI and two-pass boundary.
-2. Handwrite the forward NTT16 producer/composition with an explicit register budget,
+1. Handwrite the forward NTT16 producer/composition with an explicit register budget,
    preserving M5B arithmetic and the intended two-load/two-store schedule.
-3. Only then run the full Forward oracle, KEM/KAT, source closure, target-host
+2. Then run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

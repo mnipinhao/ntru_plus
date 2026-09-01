@@ -119,7 +119,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 16,
       "artifact_budget_waiver_reason": "The inverse hard gate keeps two executable Neon passes, generated inverse tables/maps, official/direct/full-product tests, exact interval proof, compiler spill inventory, and separate register/memory explanation independently auditable; generated headers, binaries, and JSON remain ignored.",
-      "next": "handwritten inverse memory and component-store realization"
+      "next": "gt_fr0_inverse_asm_realization"
+    },
+    {
+      "id": "gt_fr0_inverse_asm_realization",
+      "path": "gt_fr0_inverse_asm_realization",
+      "question": "Can handwritten Neon realize M5D's exact inverse map in two full-buffer passes without coefficient spills, callee-saved vector use, or secret-dependent control flow?",
+      "status": "passed",
+      "role": "first_handwritten_fr0_inverse_assembly_baseline",
+      "production_linked": false,
+      "artifact_budget_waiver": 16,
+      "artifact_budget_waiver_reason": "The bounded inverse realization keeps two assembly sources, wrapper ABI, exact differential and padding test, disassembly audit, diagnostic benchmark, contracts, and a separate register-flow explanation independently auditable; generated tables, binaries, and JSON remain ignored.",
+      "next": "handwritten forward NTT16 producer and composition"
     }
   ]
 }

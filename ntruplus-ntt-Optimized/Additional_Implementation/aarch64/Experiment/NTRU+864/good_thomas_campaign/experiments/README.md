@@ -28,5 +28,6 @@ Current experiments:
 | `gt_ntt16_producer_range` | Does the real twisted radix-2 NTT16 schedule satisfy M5A without an extra reduction? | passed; maximum 8874 | no |
 | `gt_fr0_basemul_arithmetic` | Does FR-0 zeta ordering support safe BaseMul/BaseMulAdd arithmetic directly on SoA tiles? | passed | no |
 | `gt_fr0_inverse_consumer` | Can FR-0 BaseMul output return to natural coefficients in two load/store passes without a top-branch scratch? | passed | no |
+| `gt_fr0_inverse_asm_realization` | Can handwritten Neon realize M5D exactly without coefficient spills, and what do component stores cost? | passed; inverse assembly baseline retained | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

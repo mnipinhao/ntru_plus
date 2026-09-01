@@ -1,0 +1,33 @@
+id: M5E
+question: >-
+  Can handwritten AArch64 Neon realize M5D's exact inverse map in two
+  full-buffer passes without coefficient spills, callee-saved vector use, or
+  secret-dependent control flow, and what do scalar component stores cost?
+status: passed
+input:
+  layout: FR-0_36_tiles_SoA_3x8
+  scale: R0
+  bound: [-2168, 2168]
+output:
+  layout: natural_864_coefficients
+  scale: R0_bounded_noncanonical
+  bound_inherited_from_M5D: [-3696, 3696]
+realization:
+  pass1_blocks: 12
+  pass2_main_blocks: 6
+  pass2_tail_blocks: 1
+  arithmetic_blocks_stackless: true
+  coefficient_spills: 0
+  wrapper_gpr_call_frame_bytes: 48
+  aapcs_v8_v15_touched: false
+memory_contract:
+  meaningful_bytes_per_full_input_or_output: 1728
+  algorithmic_full_buffer_loads: 2
+  algorithmic_full_buffer_stores: 2
+  full_top_branch_scratch_bytes: 0
+padding: tail_lanes_6_7_preserved
+production_linked: false
+non_claims:
+  - full_KEM_performance
+  - SUPERCOP_performance
+  - production_readiness

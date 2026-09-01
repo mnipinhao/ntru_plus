@@ -1,0 +1,18 @@
+id: gt_fr0_inverse_asm_realization
+baseline: M5D_gt_fr0_inverse_consumer_intrinsics
+parameter_set: NTRU+864
+input:
+  layout: FR-0_36_tiles_SoA_3x8
+  scale: R0
+  bound: [-2168, 2168]
+passes:
+  - inverse_oriented_NTT9_and_inverse_twist_to_P8_plus_tail
+  - packed_alpha_beta_inverse_NTT16_and_top_recombine_to_natural
+memory_contract:
+  algorithmic_full_buffer_loads: 2
+  algorithmic_full_buffer_stores: 2
+  full_top_branch_scratch: false
+compiler_observation:
+  pass1_stack_frame_bytes: 160
+  pass2_stack_frame_bytes: 416
+production_linked: false
