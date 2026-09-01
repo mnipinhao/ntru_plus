@@ -405,9 +405,16 @@ paired Algorithm-10 `mul/sqrdmulh/mls` and groups independent operations by
 register budget. It retains the two-pass boundary, proves a 6888 final bound,
 uses 7,292 code bytes, and is locally 48.8% faster than the M5D intrinsic
 combined median-of-medians. The wrapper retains a 48-byte GPR call frame.
-The next steps are:
+M5F `gt_forward_composition_barrett` now closes the forward composition ABI.
+It packs each bank's tail NTT16 into two registers, keeps both column blocks
+live beside the main NTT16, and proves exactly 864 meaningful loads plus 864
+stores in pass 2 with no intermediate NTT16 traffic. Paired Barrett changes
+the old range schedule: the `s=0` identity and the level-one `b0/c0` nodes must
+be explicitly reduced. The conservative final bound is 25925 and the peak
+allocation is exactly 24 caller-saved vector registers. The next steps are:
 
-1. Handwrite the forward NTT16 producer/composition with an explicit register budget,
-   preserving M5B arithmetic and the intended two-load/two-store schedule.
-2. Then run the full Forward oracle, KEM/KAT, source closure, target-host
+1. Realize the frozen M5F schedule in handwritten assembly and audit its
+   register allocation, instruction counts, linked closure, and code size.
+2. Create actual remote Slothy candidates only after assembly regions exist.
+3. Then run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

@@ -39,7 +39,13 @@ constants and grouped independent operations. Its arithmetic blocks have no
 stack, coefficient spill, callee-saved vector use, or branches; code size is
 7,292 bytes and the local combined diagnostic is 545.354 ns versus 1065.938 ns
 for M5D intrinsics. Target attribution remains mandatory. Handwritten
-forward composition, full KEM, and SUPERCOP remain future gates.
+M5F `experiments/gt_forward_composition_barrett` now proves the forward
+NTT16-to-NTT9 schedule can consume every meaningful P8 coefficient once and
+write every FR-0 coefficient once without an intermediate NTT16 boundary. Its
+Algorithm-10 range contract requires identity reductions at `s=0`, `b0`, and
+`c0`, reaches a conservative 25925, and fits exactly in 24 caller-saved vector
+registers. Handwritten forward realization, full KEM, and SUPERCOP remain
+future gates.
 
 Run only the authoritative GT C reference gate:
 

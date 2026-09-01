@@ -29,5 +29,6 @@ Current experiments:
 | `gt_fr0_basemul_arithmetic` | Does FR-0 zeta ordering support safe BaseMul/BaseMulAdd arithmetic directly on SoA tiles? | passed | no |
 | `gt_fr0_inverse_consumer` | Can FR-0 BaseMul output return to natural coefficients in two load/store passes without a top-branch scratch? | passed | no |
 | `gt_fr0_inverse_asm_realization` | Can handwritten Neon realize M5D exactly without coefficient spills, and what do component stores cost? | passed; inverse assembly baseline retained | no |
+| `gt_forward_composition_barrett` | Can Algorithm-10 NTT16 and NTT9 compose directly from P8+tail to FR-0 with one pass-2 load/store and no coefficient spill requirement? | passed; assembly schedule frozen | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

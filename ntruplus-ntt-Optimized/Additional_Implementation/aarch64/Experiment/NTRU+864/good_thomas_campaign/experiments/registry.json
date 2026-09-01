@@ -130,7 +130,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 19,
       "artifact_budget_waiver_reason": "The bounded inverse realization keeps two assembly sources, wrapper ABI, mod-q differential and padding test, exhaustive Algorithm-10 constant proof, range proof, disassembly audit, diagnostic benchmark, contracts, and separate register-flow/Slothy-region explanations independently auditable; generated tables, binaries, and JSON remain ignored.",
-      "next": "handwritten forward NTT16 producer and composition"
+      "next": "gt_forward_composition_barrett"
+    },
+    {
+      "id": "gt_forward_composition_barrett",
+      "path": "gt_forward_composition_barrett",
+      "question": "Can paired-Barrett NTT16 and NTT9 compose directly from P8+tail to FR-0 with one meaningful pass-2 load and store per coefficient and a caller-saved register allocation?",
+      "status": "passed",
+      "role": "forward_composition_arithmetic_memory_and_register_contract",
+      "production_linked": false,
+      "artifact_budget_waiver": 15,
+      "artifact_budget_waiver_reason": "The bounded composition gate keeps generated compile-time tables, the readable executable schedule, differential test, exhaustive fixed-product proof, coordinate/range/register proof, contracts, and separate register-flow and decision records independently auditable; generated headers, binaries, and JSON remain ignored.",
+      "next": "handwritten forward composition realization"
     }
   ]
 }
