@@ -42,10 +42,12 @@ for M5D intrinsics. Target attribution remains mandatory. Handwritten
 M5F `experiments/gt_forward_composition_barrett` now proves the forward
 NTT16-to-NTT9 schedule can consume every meaningful P8 coefficient once and
 write every FR-0 coefficient once without an intermediate NTT16 boundary. Its
-Algorithm-10 range contract requires identity reductions at `s=0`, `b0`, and
-`c0`, reaches a conservative 25925, and fits exactly in 24 caller-saved vector
-registers. Handwritten forward realization, full KEM, and SUPERCOP remain
-future gates.
+M5F-r2 `experiments/gt_forward_barrett_reduction_search` exhausts the exact
+276-constant set and selects R0: zero identity reductions. Its sound
+constant-specific interval reaches 9342 after NTT16 and 25569 over the whole
+Forward; the compiled composition replay remains mod-q exact. The whole
+schedule still peaks at 24 caller-saved vector registers. Handwritten forward
+realization, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

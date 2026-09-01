@@ -408,10 +408,13 @@ combined median-of-medians. The wrapper retains a 48-byte GPR call frame.
 M5F `gt_forward_composition_barrett` now closes the forward composition ABI.
 It packs each bank's tail NTT16 into two registers, keeps both column blocks
 live beside the main NTT16, and proves exactly 864 meaningful loads plus 864
-stores in pass 2 with no intermediate NTT16 traffic. Paired Barrett changes
-the old range schedule: the `s=0` identity and the level-one `b0/c0` nodes must
-be explicitly reduced. The conservative final bound is 25925 and the peak
-allocation is exactly 24 caller-saved vector registers. The next steps are:
+stores in pass 2 with no intermediate NTT16 traffic. M5F-r2
+`gt_forward_barrett_reduction_search` replaces the generic 5185 propagation
+with exhaustive transfer for all 276 actual constants. R0, with no identity
+reductions, is safe: NTT16 reaches 9342 and the complete Forward reaches
+25569. It uses 36 NTT9 fixed multiplications per block and an estimated
+23-register NTT9 peak; main NTT16 still sets the whole-kernel peak at 24.
+The next steps are:
 
 1. Realize the frozen M5F schedule in handwritten assembly and audit its
    register allocation, instruction counts, linked closure, and code size.

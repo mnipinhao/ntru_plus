@@ -5,9 +5,10 @@ closes the previous tail uncertainty without a scratch boundary: tail NTT16
 uses two registers, then its two column-block vectors stay live beside the
 sixteen main states.
 
-The three new identity reductions are mandatory parts of the Barrett range
-contract. Do not copy M5A's skipped `s=0` identity or remove the `b0/c0`
-boundaries unless a replacement machine proof is supplied.
+M5F-r2 supplies the replacement proof and selects R0: no identity reductions.
+The exact constant set bounds all NTT16 nodes by 9342 and all complete Forward
+nodes by 25569. Do not reintroduce generic 5185 propagation or change the
+constant/reduction set without rerunning the placement search.
 
 This gate promotes only algebraic, memory, range, and register feasibility.
 Handwritten assembly, disassembly audit, actual Slothy output, target timing,

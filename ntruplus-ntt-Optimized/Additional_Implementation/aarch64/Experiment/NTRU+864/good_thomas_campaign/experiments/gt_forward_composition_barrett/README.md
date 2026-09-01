@@ -15,17 +15,17 @@ Repeat for the other block. Thus every meaningful P8 coefficient is loaded
 once in pass 2 and every FR-0 coefficient is stored once; no NTT16 result is
 materialized in memory.
 
-Algorithm-10 changes the range schedule. Four radix-2 layers can leave the
-unmultiplied path at 25920. Therefore NTT9 must execute its `s=0` identity
-twist instead of skipping it. Before the second radix-3 direct-sum group,
-`b0` and `c0` also need identity fixed reductions. Without them the
-conservative direct-sum bound is 46656; with them every NTT9 output path is
-bounded by 25920.
+M5F-r2 replaces the generic Algorithm-10 bound with exhaustive transfer for
+the exact 276-constant set. The fixed multiply maximum is 3436, the
+constant-specific NTT16 interval reaches 9342, and the zero-identity-reduction
+R0 schedule reaches at most 25569. Therefore `s=0`, `b0`, and `c0` are all
+left unreduced. The earlier three-reduction schedule remains recorded only as
+R4 in the separate placement search.
 
 `prove_schedule.py` proves exact P8 coverage, untouched padding, the range
 bound, and a maximum 24 caller-saved-vector register budget. The intended
 assembly uses four-way expansion only during main NTT16; the NTT9 phase has
-only six free registers while the other column block remains live.
+an estimated 23-register peak while the other column block remains live.
 
 Run `make check`. Passing proves mod-q composition and schedule feasibility;
 it does not prove handwritten code shape, Slothy scheduling, SUPERCOP cycles,

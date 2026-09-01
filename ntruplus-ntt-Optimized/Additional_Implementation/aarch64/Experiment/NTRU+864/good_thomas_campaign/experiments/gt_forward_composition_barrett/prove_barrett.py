@@ -24,24 +24,29 @@ def constants() -> set[tuple[int, int]]:
     return {pair(value) for value in values}
 
 
-checked = 0
-maximum = 0
-for b, bprime in sorted(constants()):
-    for a in range(-32768, 32768):
-        quotient = (2 * a * bprime + (1 << 15)) >> 16
-        z = a * b - quotient * Q
-        assert -32768 <= z <= 32767
-        assert (z - a * b) % Q == 0
-        maximum = max(maximum, abs(z))
-        checked += 1
+def main() -> None:
+    checked = 0
+    maximum = 0
+    for b, bprime in sorted(constants()):
+        for a in range(-32768, 32768):
+            quotient = (2 * a * bprime + (1 << 15)) >> 16
+            z = a * b - quotient * Q
+            assert -32768 <= z <= 32767
+            assert (z - a * b) % Q == 0
+            maximum = max(maximum, abs(z))
+            checked += 1
 
-print(json.dumps({
-    "gate": "gt864_forward_algorithm10_exhaustive",
-    "status": "pass",
-    "distinct_constants": len(constants()),
-    "signed_halfword_products": checked,
-    "maximum_output_abs": maximum,
-    "all_outputs_fit_int16": True,
-    "all_outputs_congruent": True,
-    "production_linked": False,
-}, indent=2, sort_keys=True))
+    print(json.dumps({
+        "gate": "gt864_forward_algorithm10_exhaustive",
+        "status": "pass",
+        "distinct_constants": len(constants()),
+        "signed_halfword_products": checked,
+        "maximum_output_abs": maximum,
+        "all_outputs_fit_int16": True,
+        "all_outputs_congruent": True,
+        "production_linked": False,
+    }, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

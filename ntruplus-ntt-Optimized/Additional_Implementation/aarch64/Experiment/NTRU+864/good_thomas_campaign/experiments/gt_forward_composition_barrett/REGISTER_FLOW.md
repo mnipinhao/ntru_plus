@@ -8,10 +8,11 @@ ABI save frame.
 2. Main NTT16: sixteen state registers plus the two saved tail outputs are
    live. A four-butterfly group adds q, one packed scalar-constant vector, and
    four quotient registers: exactly 24 registers.
-3. NTT9 block: nine registers are the current block, nine preserve the other
-   block and its tail, and six implement q, two lane-varying constants, one
-   quotient, and two B3 temporaries. The 8x8 transpose must therefore be
-   destructive/in-place with two temporaries.
+3. NTT9 block: nine registers are the current block and nine preserve the
+   other block and its tail. R0 has no identity-reduction quotient. Twist and
+   B3 phases reuse q, constant, quotient, and temporary registers rather than
+   keeping all support classes live simultaneously; the cost model peaks at
+   23. The 8x8 transpose remains destructive/in-place with two temporaries.
 4. After the first nine FR-0 rows are stored, its registers become scratch for
    the second block. No coefficient spill or intermediate NTT16 store is
    required by the register contract.

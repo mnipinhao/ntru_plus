@@ -55,8 +55,9 @@ static void ntt9(int16_t out[9], const int16_t input[9],
     int16_t f[9];
     int16_t a[3], b[3], c[3], g0[3], g1[3], g2[3];
 
-    /* Including s=0 is deliberate: it bounds the NTT16 lazy left path. */
-    for (int s = 0; s < 9; s++)
+    /* M5F-r2 proves the unreduced s=0 path is safe for the exact constants. */
+    f[0] = input[0];
+    for (int s = 1; s < 9; s++)
         f[s] = fqmul_barrett(
             input[s], gt864_forward9_twist[top][block][s][lane]);
 
@@ -64,9 +65,6 @@ static void ntt9(int16_t out[9], const int16_t input[9],
     b3(b, f[1], f[4], f[7]);
     b3(c, f[8], f[2], f[5]);
 
-    /* Only the direct-sum inputs need another boundary before level two. */
-    b[0] = fqmul_barrett(b[0], gt864_barrett_one);
-    c[0] = fqmul_barrett(c[0], gt864_barrett_one);
     b3(g0, a[0], b[0], c[0]);
     b3(g1, a[1], fqmul_barrett(b[1], gt864_barrett_eta),
        fqmul_barrett(c[1], gt864_barrett_eta_inv));
