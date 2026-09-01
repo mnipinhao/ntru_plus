@@ -1,0 +1,170 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_b3_two_product
+  name: GT864 Forward correlation-safe two-product B3 symbolic region
+  source: gt864_forward_b3_two_product.sym.S
+  scheme: NTRU+864
+  operation: one in-place oriented radix-3 butterfly under full NTT9 live-through pressure
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: allocate-and-optimize symbolic region; fixed-register scheduling follows only after a returned allocation
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_b3_two_product.n1.opt.S
+    - build/gt864_forward_b3_two_product.n1.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_b3_slothy_start
+  end_label: gt864_forward_b3_slothy_end
+  expected_instruction_count: 15
+  live_in:
+    - Q<a> B3 input a
+    - Q<b> B3 input b
+    - Q<c> B3 input c
+    - Q<roots> packed rho/rho-prime/rho2/rho2-prime constants
+    - Q<modq> modulus 3457 in every halfword
+    - fifteen reserved live-through data vectors model the other current and future NTT9 states
+  live_out:
+    - Q<a> overwritten with y0
+    - Q<b> overwritten with y1
+    - Q<c> overwritten with y2
+    - fifteen reserved live-through data vectors unchanged
+
+abi:
+  inputs:
+    - symbolic Q<a>, Q<b>, Q<c>, Q<roots>, Q<modq>
+  outputs:
+    - symbolic Q<a>=y0, Q<b>=y1, Q<c>=y2
+  clobbers:
+    - symbolic Q<saved_a>
+    - symbolic Q<quotient>
+  concrete_gprs_allowed:
+    - none_register_only_region
+  fixed_vector_registers: []
+  reserved_registers:
+    - sp
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: >
+    Fifteen instructions preserve a with an explicit ORR copy, form y0, perform exactly two
+    mul/sqrdmulh/mls fixed products, form y1, then derive y2 as
+    (a-y0)+(a-y1)+a. The rejected 3a intermediate is absent.
+
+layout:
+  input_representation: three signed-int16 row vectors across eight public columns
+  output_representation: y0, y1, y2 in the same three symbolic vector names
+  vector_lanes: eight independent signed int16 lanes
+  packing: roots lanes are rho, rho-prime, rho2, rho2-prime followed by unused public lanes
+
+memory_contract:
+  loads:
+    - none_register_only_region
+  stores:
+    - none_register_only_region
+  aliasing: register-only region
+  alignment: not_applicable_inside_region
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants:
+    - Q<roots>.h[0]=rho
+    - Q<roots>.h[1]=round(rho*2^15/3457)
+    - Q<roots>.h[2]=rho2
+    - Q<roots>.h[3]=round(rho2*2^15/3457)
+    - Q<modq>=3457 in every halfword
+  modulus: 3457
+  representation: normal R0 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul/sqrdmulh/mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - exact Forward B3 input union is [-16816,16816]
+    - per-instantiation asymmetric intervals are emitted by prove_exact_dag.py
+  intermediate_ranges:
+    - every mul/sqrdmulh/mls result is signed16; exhaustive fixed maximum is 3436
+    - every exact-DAG add/sub is signed16
+    - maximum exact-DAG node magnitude is 28568
+  output_ranges:
+    - union across all Forward B3 outputs is [-28568,28565]
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient vectors Q<a>, Q<b>, Q<c>
+  public_inputs:
+    - packed roots and modulus
+    - fixed region shape
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ../gt_forward_composition_barrett check
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_full_Forward_integration
+  benchmark_metric: cycles
+  lower_is_better: true

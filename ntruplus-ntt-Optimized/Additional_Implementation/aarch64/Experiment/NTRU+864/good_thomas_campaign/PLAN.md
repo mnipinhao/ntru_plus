@@ -409,15 +409,19 @@ M5F `gt_forward_composition_barrett` now closes the forward composition ABI.
 It packs each bank's tail NTT16 into two registers, keeps both column blocks
 live beside the main NTT16, and proves exactly 864 meaningful loads plus 864
 stores in pass 2 with no intermediate NTT16 traffic. M5F-r2
-`gt_forward_barrett_reduction_search` replaces the generic 5185 propagation
-with exhaustive transfer for all 276 actual constants. R0, with no identity
-reductions, is safe: NTT16 reaches 9342 and the complete Forward reaches
-25569. It uses 36 NTT9 fixed multiplications per block and an estimated
-23-register NTT9 peak; main NTT16 still sets the whole-kernel peak at 24.
+`gt_forward_barrett_reduction_search` records the historical four-product R0
+result. M5G `gt_forward_symbolic_dag` changes B3 to the exact two-product
+destructive DAG. Its correlation-aware proof covers every Forward
+instantiation: NTT16 reaches 9342 and the complete changed DAG reaches 28568
+with zero unsafe signed-halfword nodes. It uses 24 NTT9 fixed multiplications
+per block and an estimated 22-register NTT9 peak; main NTT16 still sets the
+whole-kernel peak at 24. The 15-instruction B3 source uses only Slothy
+symbolic registers.
 The next steps are:
 
-1. Realize the frozen M5F schedule in handwritten assembly and audit its
-   register allocation, instruction counts, linked closure, and code size.
-2. Create actual remote Slothy candidates only after assembly regions exist.
-3. Then run the full Forward oracle, KEM/KAT, source closure, target-host
+1. Run the M5G symbolic B3 in the configured remote Slothy environment and
+   return both allocated assembly and log for register/spill audit.
+2. Expand only a passing allocation into the surrounding NTT9 region, then
+   realize the complete fused Forward and audit linked closure and code size.
+3. Run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

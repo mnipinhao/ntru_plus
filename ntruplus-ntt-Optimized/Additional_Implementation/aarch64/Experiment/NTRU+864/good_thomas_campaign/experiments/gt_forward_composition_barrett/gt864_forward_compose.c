@@ -41,12 +41,15 @@ static void b3(int16_t out[3], int16_t a, int16_t b, int16_t c)
 {
     int16_t rb = fqmul_barrett(b, gt864_barrett_rho);
     int16_t r2c = fqmul_barrett(c, gt864_barrett_rho2);
-    int16_t r2b = fqmul_barrett(b, gt864_barrett_rho2);
-    int16_t rc = fqmul_barrett(c, gt864_barrett_rho);
+    int16_t y0 = narrow_checked((int32_t)a + b + c);
+    int16_t y1 = narrow_checked((int32_t)a + rb + r2c);
+    int16_t a_minus_y0 = narrow_checked((int32_t)a - y0);
+    int16_t a_minus_y1 = narrow_checked((int32_t)a - y1);
+    int16_t partial = narrow_checked((int32_t)a_minus_y0 + a_minus_y1);
 
-    out[0] = narrow_checked((int32_t)a + b + c);
-    out[1] = narrow_checked((int32_t)a + rb + r2c);
-    out[2] = narrow_checked((int32_t)a + r2b + rc);
+    out[0] = y0;
+    out[1] = y1;
+    out[2] = narrow_checked((int32_t)partial + a);
 }
 
 static void ntt9(int16_t out[9], const int16_t input[9],

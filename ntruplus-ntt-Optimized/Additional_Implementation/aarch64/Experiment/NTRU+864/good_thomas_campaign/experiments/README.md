@@ -31,5 +31,6 @@ Current experiments:
 | `gt_fr0_inverse_asm_realization` | Can handwritten Neon realize M5D exactly without coefficient spills, and what do component stores cost? | passed; inverse assembly baseline retained | no |
 | `gt_forward_composition_barrett` | Can Algorithm-10 NTT16 and NTT9 compose directly from P8+tail to FR-0 with one pass-2 load/store and no coefficient spill requirement? | passed; assembly schedule frozen | no |
 | `gt_forward_barrett_reduction_search` | How many identity reductions does the exact 276-constant Forward schedule require, and where should they be placed? | passed; zero-reduction R0 selected | no |
+| `gt_forward_symbolic_dag` | Does the two-product B3 exact DAG fit signed halfwords and have a clean Slothy symbolic-register form under full NTT9 pressure? | passed; remote Slothy result pending | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

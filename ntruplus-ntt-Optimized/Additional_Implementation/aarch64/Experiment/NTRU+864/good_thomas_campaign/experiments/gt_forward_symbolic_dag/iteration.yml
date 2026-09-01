@@ -1,0 +1,41 @@
+iteration:
+  id: m5g-iter-001
+  mode: new_symbolic_kernel
+  current_state: Slothy_run_by_user
+  hypothesis: the correlation-safe two-product B3 DAG fits the nine-register window left by fifteen live-through data vectors
+  changed_artifacts:
+    - prove_exact_dag.py
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - gt864_forward_b3_two_product.sym.S
+    - optimize.py
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: gt864_forward_b3_two_product.sym.S
+  slothy_driver: optimize.py
+  slothy_log:
+  candidate_contract: candidate-contract.yml
+  candidate_score:
+  promotion_report:
+gates:
+  repo_probe: passed_no_local_slothy_remote_policy_recorded
+  baseline_contract: passed_C_oracle_no_full_path_benchmark
+  kernel_contract: passed
+  instruction_dag: passed_manual_trace_and_correlation_range
+  symbolic_asm: passed
+  static_checks: passed
+  Slothy_run_by_user: pending
+  parse_slothy_result: pending
+  oracle_correctness: C_DAG_passed_symbolic_pending
+  full_path_benchmark: pending
+  score_candidate: pending
+  promotion_decision: pending
+  iteration_or_promote: pending
+notes:
+  - local probe found no Slothy checkout or venv
+  - repository policy requires remote Slothy on pinhao@172.25.166.141 port 51208
+  - neoverse_n1_experimental is a proxy model and requires target validation
+  - rejected 3a DAG reached magnitude 50448 at 176 nodes

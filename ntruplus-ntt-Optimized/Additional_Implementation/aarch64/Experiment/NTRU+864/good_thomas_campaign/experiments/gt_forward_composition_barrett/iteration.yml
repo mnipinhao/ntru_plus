@@ -1,6 +1,6 @@
 observation: M5B and M5A are separately correct but materializing their boundary would add a full NTT16 store and reload
 hypothesis: pack each bank's tail NTT16 into two registers and keep both column blocks live so pass2 reads and writes every meaningful coefficient once
-change: compose NTT16 and oriented NTT9 with Algorithm-10 tables; M5F-r2 removes all identity reduction boundaries
+change: compose NTT16 and oriented NTT9 with Algorithm-10 tables; M5G replaces each historical four-product B3 with a correlation-safe two-product destructive DAG
 falsifiers:
   - mod_q_mismatch_against_M5B_plus_M4
   - duplicate_or_missing_P8_index

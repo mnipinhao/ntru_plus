@@ -1,0 +1,46 @@
+dag:
+  id: gt864_forward_b3_two_product_dag
+  kernel_contract: kernel-contract.yml
+  description: correlation-safe destructive two-product radix-3 butterfly
+
+inputs:
+  - Q<a>
+  - Q<b>
+  - Q<c>
+  - Q<roots>
+  - Q<modq>
+constants:
+  - Q<roots>.h[0]=rho
+  - Q<roots>.h[1]=rho_prime
+  - Q<roots>.h[2]=rho2
+  - Q<roots>.h[3]=rho2_prime
+  - Q<modq>.8h=3457
+
+nodes:
+  - {id: n00_save_a, op: orr_copy, inputs: [Q<a>, Q<a>], outputs: [Q<saved_a>], instruction_shape: "orr Q<saved_a>.16b, Q<a>.16b, Q<a>.16b", tied_operands: [], range_before: per-instance-a, range_after: unchanged, may_reorder_with: [], must_precede: [n01_a_plus_b, n10_y1, n11_a_minus_y0, n12_a_minus_y1, n14_y2]}
+  - {id: n01_a_plus_b, op: add_s16, inputs: [Q<a>, Q<b>], outputs: [Q<a>], instruction_shape: "add Q<a>.8h, Q<a>.8h, Q<b>.8h", tied_operands: [output0=input0], range_before: exact-proof-node, range_after: exact-proof-node, may_reorder_with: [], must_precede: [n02_y0]}
+  - {id: n02_y0, op: add_s16, inputs: [Q<a>, Q<c>], outputs: [Q<a>], instruction_shape: "add Q<a>.8h, Q<a>.8h, Q<c>.8h", tied_operands: [output0=input0], range_before: exact-proof-node, range_after: y0, may_reorder_with: [n03_qrho_b, n06_qrho2_c], must_precede: [n04_mul_rho_b, n07_mul_rho2_c, n11_a_minus_y0]}
+  - {id: n03_qrho_b, op: sqrdmulh_s16, inputs: [Q<b>, Q<roots>.h[1]], outputs: [Q<quotient>], instruction_shape: "sqrdmulh Q<quotient>.8h, Q<b>.8h, V<roots>.h[1]", tied_operands: [], range_before: b, range_after: signed16_quotient, may_reorder_with: [n02_y0, n06_qrho2_c], must_precede: [n04_mul_rho_b]}
+  - {id: n04_mul_rho_b, op: mul_s16, inputs: [Q<b>, Q<roots>.h[0]], outputs: [Q<b>], instruction_shape: "mul Q<b>.8h, Q<b>.8h, V<roots>.h[0]", tied_operands: [output0=input0], range_before: b, range_after: low_half, may_reorder_with: [], must_precede: [n05_reduce_rho_b]}
+  - {id: n05_reduce_rho_b, op: mls_s16, inputs: [Q<b>, Q<quotient>, Q<modq>], outputs: [Q<b>], instruction_shape: "mls Q<b>.8h, Q<quotient>.8h, Q<modq>.8h", tied_operands: [output0=input0], range_before: low_half_and_quotient, range_after: abs_le_3436, may_reorder_with: [], must_precede: [n09_weighted_partial]}
+  - {id: n06_qrho2_c, op: sqrdmulh_s16, inputs: [Q<c>, Q<roots>.h[3]], outputs: [Q<quotient>], instruction_shape: "sqrdmulh Q<quotient>.8h, Q<c>.8h, V<roots>.h[3]", tied_operands: [], range_before: c, range_after: signed16_quotient, may_reorder_with: [n02_y0], must_precede: [n07_mul_rho2_c]}
+  - {id: n07_mul_rho2_c, op: mul_s16, inputs: [Q<c>, Q<roots>.h[2]], outputs: [Q<c>], instruction_shape: "mul Q<c>.8h, Q<c>.8h, V<roots>.h[2]", tied_operands: [output0=input0], range_before: c, range_after: low_half, may_reorder_with: [], must_precede: [n08_reduce_rho2_c]}
+  - {id: n08_reduce_rho2_c, op: mls_s16, inputs: [Q<c>, Q<quotient>, Q<modq>], outputs: [Q<c>], instruction_shape: "mls Q<c>.8h, Q<quotient>.8h, Q<modq>.8h", tied_operands: [output0=input0], range_before: low_half_and_quotient, range_after: abs_le_3436, may_reorder_with: [], must_precede: [n09_weighted_partial]}
+  - {id: n09_weighted_partial, op: add_s16, inputs: [Q<b>, Q<c>], outputs: [Q<b>], instruction_shape: "add Q<b>.8h, Q<b>.8h, Q<c>.8h", tied_operands: [output0=input0], range_before: two_fixed_products, range_after: exact-proof-node, may_reorder_with: [], must_precede: [n10_y1]}
+  - {id: n10_y1, op: add_s16, inputs: [Q<b>, Q<saved_a>], outputs: [Q<b>], instruction_shape: "add Q<b>.8h, Q<b>.8h, Q<saved_a>.8h", tied_operands: [output0=input0], range_before: exact-proof-node, range_after: y1, may_reorder_with: [], must_precede: [n12_a_minus_y1]}
+  - {id: n11_a_minus_y0, op: sub_s16, inputs: [Q<saved_a>, Q<a>], outputs: [Q<c>], instruction_shape: "sub Q<c>.8h, Q<saved_a>.8h, Q<a>.8h", tied_operands: [], range_before: shared_a_y0, range_after: correlated_minus_b_minus_c, may_reorder_with: [n12_a_minus_y1], must_precede: [n13_sum_partials]}
+  - {id: n12_a_minus_y1, op: sub_s16, inputs: [Q<saved_a>, Q<b>], outputs: [Q<quotient>], instruction_shape: "sub Q<quotient>.8h, Q<saved_a>.8h, Q<b>.8h", tied_operands: [], range_before: shared_a_y1, range_after: correlated_minus_products, may_reorder_with: [n11_a_minus_y0], must_precede: [n13_sum_partials]}
+  - {id: n13_sum_partials, op: add_s16, inputs: [Q<c>, Q<quotient>], outputs: [Q<c>], instruction_shape: "add Q<c>.8h, Q<c>.8h, Q<quotient>.8h", tied_operands: [output0=input0], range_before: correlated_shared_b_c, range_after: correlation-aware-proof-node, may_reorder_with: [], must_precede: [n14_y2]}
+  - {id: n14_y2, op: add_s16, inputs: [Q<c>, Q<saved_a>], outputs: [Q<c>], instruction_shape: "add Q<c>.8h, Q<c>.8h, Q<saved_a>.8h", tied_operands: [output0=input0], range_before: correlation-aware-proof-node, range_after: y2, may_reorder_with: [], must_precede: []}
+
+memory:
+  loads: []
+  stores: []
+  ordering_constraints: []
+outputs: [Q<a>=y0, Q<b>=y1, Q<c>=y2]
+live_out: [Q<a>, Q<b>, Q<c>]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

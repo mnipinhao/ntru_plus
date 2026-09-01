@@ -15,17 +15,20 @@ Repeat for the other block. Thus every meaningful P8 coefficient is loaded
 once in pass 2 and every FR-0 coefficient is stored once; no NTT16 result is
 materialized in memory.
 
-M5F-r2 replaces the generic Algorithm-10 bound with exhaustive transfer for
-the exact 276-constant set. The fixed multiply maximum is 3436, the
-constant-specific NTT16 interval reaches 9342, and the zero-identity-reduction
-R0 schedule reaches at most 25569. Therefore `s=0`, `b0`, and `c0` are all
-left unreduced. The earlier three-reduction schedule remains recorded only as
-R4 in the separate placement search.
+M5F-r2 first proved that the original four-product B3 schedule needs no
+identity reductions. M5G then changes the B3 instruction DAG itself. It uses
+only the two mathematical products by `rho` and `rho2`, and derives the third
+output as `(a-y0)+(a-y1)+a`. The correlation-aware proof bounds NTT16 by 9342
+and every node in this exact two-product Forward DAG by 28568. Therefore
+`s=0`, `b0`, and `c0` remain unreduced. M5F-r2 remains the historical proof
+for the old four-product schedule; it must not be used as the range proof for
+this changed arithmetic order.
 
 `prove_schedule.py` proves exact P8 coverage, untouched padding, the range
 bound, and a maximum 24 caller-saved-vector register budget. The intended
-assembly uses four-way expansion only during main NTT16; the NTT9 phase has
-an estimated 23-register peak while the other column block remains live.
+assembly uses four-way expansion only during main NTT16; the two-product NTT9
+phase has an estimated 22-register peak while the other column block remains
+live.
 
 Run `make check`. Passing proves mod-q composition and schedule feasibility;
 it does not prove handwritten code shape, Slothy scheduling, SUPERCOP cycles,
