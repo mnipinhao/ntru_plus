@@ -1,0 +1,20 @@
+identity: rho_squared_plus_rho_plus_one_equals_zero
+old_b3:
+  instructions: 14
+  mulmods: 2
+new_b3:
+  instructions: 10
+  mulmods: 1
+  nodes:
+    - "sum01 = x0 + x1"
+    - "y0 = sum01 + x2"
+    - "d = x1 - x2"
+    - "r = Algorithm10(d, rho)"
+    - "y1_base = x0 - x2"
+    - "y1 = y1_base + r"
+    - "y2_base = x0 - x1"
+    - "y2 = y2_base - r"
+scope:
+  b3_per_ntt9_block: 3
+  ntt9_blocks_per_bank: 2
+  banks_per_forward: 6

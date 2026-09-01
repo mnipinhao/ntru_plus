@@ -1,0 +1,14 @@
+mode: existing_region_replacement
+architecture: aarch64_neon
+target_model: neoverse_n1_experimental
+region: one_complete_GT864_pass2_bank
+inputs:
+  gpr: [x0, x1, x2, x3]
+  pinned_vector: [v13, v14, v15, v16, v17]
+outputs:
+  vectors: 18
+available_vector_registers: v0-v12_and_v18-v31
+allow_spills: false
+coefficient_stores_inside_region: 0
+ordinary_add_sub_semantics: signed_int16_no_wrap
+fixed_multiplication: Algorithm_10_mul_sqrdmulh_mls
