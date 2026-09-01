@@ -36,5 +36,6 @@ Current experiments:
 | `gt_forward_ntt9_core_slothy` | Can the complete two-level NTT9 plus eta corrections fit while the other nine-vector block stays live? | passed; RA OPTIMAL and split-window full OK with all 15 allowed registers | no |
 | `gt_forward_ntt16_ntt9_handoff_slothy` | Can the real NTT16 column output transpose, twist, and enter one complete NTT9 while preserving the other block without coefficient traffic? | passed; RA OPTIMAL and split-window full OK with fixed held-tail `v16` | no |
 | `gt_forward_two_ntt9_blocks_slothy` | Can both eight-column NTT9 blocks complete while the first nine outputs and fixed second tail have their real long lifetimes? | passed; 333 instructions, RA OPTIMAL and split-window full OK using all 24 caller-saved vectors | no |
+| `gt_forward_full_register_pass2_dag` | Can opening v8-v15 remove copies and repeated constants after paying one outer ABI save/restore? | passed; 91 full-path instructions and 25.90 Pi5 cycles removed; still slower than Official | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

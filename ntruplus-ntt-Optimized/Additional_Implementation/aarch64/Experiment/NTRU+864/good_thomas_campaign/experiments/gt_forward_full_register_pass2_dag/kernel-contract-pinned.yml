@@ -1,0 +1,90 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_one_bank_full_register_pinned
+  name: GT864 full-register Pass-2 DAG with pinned common constants
+  source: gt864_forward_one_bank_full_register_pinned.sym.S
+  scheme: NTRU+864
+  operation: remove thirteen preservation copies and consume pinned q roots and bitrev3 vectors across six inlined bank calls
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: RA-only allocation over 617 real instructions followed by real-instruction split-window scheduling
+  driver: optimize_pinned.py
+  expected_outputs:
+    - build/gt864_forward_one_bank_full_register_pinned.n1.alloc.S
+    - build/gt864_forward_one_bank_full_register_pinned.n1.opt.S
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_one_bank_full_register_pinned_slothy_start
+  end_label: gt864_forward_one_bank_full_register_pinned_slothy_end
+  expected_instruction_count: 617
+  live_in:
+    - x0 x1 x2 x3 x4 coefficient and public-table state
+    - v13 is bitrev3 bytes
+    - v14 is q=3457 in every halfword
+    - v15 is the rho/rho2/eta/eta-inverse roots vector
+  live_out:
+    - Q<out0> through Q<out17>
+    - x0 x1 x2 x3 with pinned constants unchanged
+
+abi:
+  inputs: [x0, x1, x2, x3, x4, v13, v14, v15]
+  outputs: [out0-through-out17, x0, x1, x2, x3]
+  clobbers: [all nonfixed vector registers inside core]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13, v14, v15, v16, v17]
+  reserved_registers: [sp, x5-x30, v13, v14, v15, v16, v17]
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: 620-instruction copy-free DAG minus q roots and bitrev3 loads; those constants become fixed live-ins and their table vectors are hoisted to the six-bank wrapper
+
+layout:
+  input_representation: unchanged M5M P8 bank
+  output_representation: unchanged eighteen paper-oriented NTT9 vectors in FR-0 ordering
+  vector_lanes: unchanged eight int16 lanes
+  packing: NTT16 top tables omit the bitrev vector; q roots and bitrev are in one common block
+
+memory_contract:
+  loads:
+    - sixteen exact halfword tail coefficient loads
+    - sixteen sequential main coefficient vectors
+    - fifty-three per-bank public constant vectors
+  stores: [none]
+  aliasing: unchanged read-only coefficient inputs and disjoint public tables
+  alignment: x0 x2 x3 are 16-byte aligned and x1 is 2-byte aligned
+  public_offsets_only: true
+  pointer_updates: [x0-plus-256, x1-plus-256, x2-plus-336, x3-plus-512, x4-unchanged]
+
+constant_contract:
+  constants: [pinned-q-v14, pinned-roots-v15, pinned-bitrev-v13, tail-NTT16, main-NTT16, NTT9-twists]
+  modulus: 3457
+  representation: normal R0 signed int16 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul sqrdmulh mls fixed Barrett
+
+range_contract:
+  input_ranges: ['[-15752,15752]']
+  intermediate_ranges: ['NTT16 abs <= 9342', 'twists abs <= 3436']
+  output_ranges: ['[-28568,28565]']
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: [all P8 coefficient data]
+  public_inputs: [pointers, stride, bank selection, fixed tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make check-oracle
+  test_command: make static-pinned
+  full_path_benchmark_command: make bench-pi5
+  benchmark_metric: cycles
+  lower_is_better: true

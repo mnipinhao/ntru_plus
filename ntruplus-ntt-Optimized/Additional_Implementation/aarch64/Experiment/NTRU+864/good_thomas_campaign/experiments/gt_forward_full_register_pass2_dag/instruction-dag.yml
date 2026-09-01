@@ -1,0 +1,41 @@
+kernel_id: gt864_forward_one_bank_full_register
+
+inputs:
+  secret: [main-P8-vectors, strided-s8-tail]
+  public: [x0, x1, x2, x3, x4, x5, fixed-tables]
+
+preserved_nodes:
+  - common_modulus
+  - tail_producer
+  - main_branch_twist
+  - main_ntt16_layers
+  - delayed_roots
+  - two_transposes
+  - two_sets_of_eight_twists
+  - twelve_oriented_radix3_butterflies
+
+removed_nodes:
+  - {id: copy_a_saved, count: 2, replacement: keep each A input live through its butterfly}
+  - {id: copy_b_saved, count: 2, replacement: keep each B input live through its butterfly}
+  - {id: copy_c_saved, count: 2, replacement: keep each C input live through its butterfly}
+  - {id: copy_g0_saved, count: 2, replacement: keep each G0 input live through its butterfly}
+  - {id: copy_g1_saved, count: 2, replacement: keep each G1 input live through its butterfly}
+  - {id: copy_g2_saved, count: 2, replacement: keep each G2 input live through its butterfly}
+  - {id: capture_fixed_tail, count: 1, replacement: consume fixed v16 directly}
+
+dependencies:
+  - source values formerly copied by ORR now remain true inputs of every former saved-value consumer
+  - fixed v16 remains live until the second block s8 twist
+  - all post-increment pointer chains preserve baseline order
+  - all eighteen outputs preserve their exact symbolic names and equations
+
+memory_invariants:
+  coefficient_loads: 32
+  coefficient_stores_inside_region: 0
+  constant_loads_initial_feasibility_candidate: 56
+  new_memory_boundaries: 0
+
+instruction_accounting:
+  baseline: 633
+  removed_copy_nodes: 13
+  candidate: 620

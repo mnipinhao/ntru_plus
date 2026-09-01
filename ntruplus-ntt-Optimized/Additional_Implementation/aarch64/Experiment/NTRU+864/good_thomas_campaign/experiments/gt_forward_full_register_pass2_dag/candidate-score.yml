@@ -1,0 +1,36 @@
+candidate:
+  id: gt864_forward_one_bank_full_register_pinned
+  status: candidate
+  mode: existing_region_replacement
+
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [v8-v15 core clobber, outer d8-d15 preservation, pinned common constant live-ins]
+  approval_note: explicitly requested by the user
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
+slothy:
+  status: pass
+  baseline_expected_cycles: 0
+  candidate_expected_cycles: 0
+  parity_justification: functional-only RA has zero timing objective; real-instruction split-window scheduling ends in split_heuristic_full OK, and Pi5 PMU is authoritative
+  log_json: manual audit because canonical parser treats the configured phrase Setting timeout as a failure token
+
+benchmark:
+  status: pass
+  command: python3 run_pi5.py
+  metric: cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 4695.155125
+  candidate: 4669.251475
+
+decision:
+  reason: candidate improves the rejected M5O experiment by 0.5517 percent but is still 6.1925 percent slower than Official
+  next_iteration: decompose whether additional constant pinning or NTT9 instruction selection can remove the remaining 706 instructions without a memory boundary

@@ -1,0 +1,59 @@
+candidate:
+  id: gt864_forward_one_bank_full_register_pinned
+  status: candidate
+  kernel_contract: kernel-contract-pinned.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: gt864_forward_one_bank_full_register_pinned.sym.S
+  slothy_driver: optimize_pinned.py
+  slothy_log: slothy-output/gt864_forward_one_bank_full_register_pinned.schedule.log
+  generated_output: slothy-output/gt864_forward_one_bank_full_register_pinned.n1.opt.S
+
+contract_preservation:
+  baseline_compared: true
+  preserved: false
+  approved_changes: true
+  approved_by: user in current task
+  changed_fields:
+    - core may clobber v8-v15 while public wrapper preserves d8-d15
+    - q roots and bitrev3 are fixed core live-ins loaded once by the public Pass-2 wrapper
+    - NTT16 table omits its formerly repeated bitrev3 vector
+
+region:
+  start_label: gt864_forward_one_bank_full_register_pinned_slothy_start
+  end_label: gt864_forward_one_bank_full_register_pinned_slothy_end
+  live_in: [x0, x1, x2, x3, x4, v13-bitrev, v14-q, v15-roots]
+  live_out: [out0-through-out17, x0, x1, x2, x3]
+
+abi:
+  inputs: [x0, x1, x2, x3, x4, v13, v14, v15]
+  outputs: [out0-through-out17, x0, x1, x2, x3]
+  clobbers: [v0-v31-inside-core-except-fixed-live-ins]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13, v14, v15, v16, v17]
+  reserved_registers: [sp, x5-x30, v13, v14, v15, v16, v17]
+
+memory_contract:
+  loads: [sixteen-tail-halfwords, sixteen-main-vectors, fifty-three-per-bank-constant-vectors]
+  stores: [none]
+  aliasing: read-only coefficient inputs and disjoint public tables
+  alignment: x0 x2 x3 are 16-byte aligned and x1 is 2-byte aligned
+  public_offsets_only: true
+  pointer_updates: [x0-plus-256, x1-plus-256, x2-plus-336, x3-plus-512, x4-unchanged]
+
+constant_contract:
+  constants: [pinned-q-v14, pinned-roots-v15, pinned-bitrev-v13, tail-NTT16, main-NTT16, NTT9-twists]
+  modulus: 3457
+  representation: normal R0 signed int16 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul sqrdmulh mls fixed Barrett
+
+range_contract:
+  input_ranges: ['[-15752,15752]']
+  intermediate_ranges: ['NTT16 abs <= 9342', 'twists abs <= 3436']
+  output_ranges: ['[-28568,28565]']
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: [all P8 coefficient data]
+  public_inputs: [pointers, stride, bank selection, fixed tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

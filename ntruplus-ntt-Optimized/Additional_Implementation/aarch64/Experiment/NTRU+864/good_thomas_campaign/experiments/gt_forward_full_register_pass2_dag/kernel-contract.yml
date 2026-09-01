@@ -1,0 +1,127 @@
+mode: existing_region_replacement
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_one_bank_full_register
+  name: GT864 full-register Pass-2 DAG
+  source: gt864_forward_one_bank_full_register.sym.S
+  scheme: NTRU+864
+  operation: remove twelve radix-3 preservation copies and the fixed-tail capture while retaining the exact one-bank transform
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: RA-only allocation over 620 real instructions followed by real-instruction split-window scheduling
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_one_bank_full_register.n1.alloc.S
+    - build/gt864_forward_one_bank_full_register.n1.opt.S
+    - build/gt864_forward_one_bank_full_register.ra.log
+    - build/gt864_forward_one_bank_full_register.schedule.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_one_bank_full_register_slothy_start
+  end_label: gt864_forward_one_bank_full_register_slothy_end
+  expected_instruction_count: 620
+  live_in:
+    - x0 points to sixteen sequential main P8 vectors
+    - x1 points to sixteen strided tail coefficients
+    - x2 x3 x5 point to public constant tables
+    - x4 is public stride 16
+  live_out:
+    - Q<out0> through Q<out17>
+    - x0 x1 x2 x3 x5 with the baseline public advances
+
+abi:
+  inputs: [x0, x1, x2, x3, x4, x5]
+  outputs: [out0-through-out17, x0, x1, x2, x3, x5]
+  clobbers:
+    - v0 through v31 inside the GT core
+    - public wrapper preserves d8 through d15 once
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5]
+  fixed_vector_registers: [v16, v17]
+  reserved_registers:
+    - sp
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact M5M DAG with copy nodes replaced by longer true live ranges; no arithmetic, layout, reduction, or memory node changes
+
+layout:
+  input_representation: unchanged M5M P8 bank with s0-s7 in vector lanes and s8 in the strided tail
+  output_representation: unchanged eighteen paper-oriented NTT9 vectors in FR-0 ordering
+  vector_lanes: eight independent signed int16 row coordinates before transpose and eight independent columns after transpose
+  packing: unchanged branch and NTT16 packed Barrett constant tables
+
+memory_contract:
+  loads:
+    - sixteen exact halfword tail coefficient loads
+    - sixteen sequential 16-byte main coefficient loads
+    - fifty-six public constant loads in the one-bank feasibility candidate
+  stores: [none]
+  aliasing: unchanged read-only coefficient inputs and disjoint public tables
+  alignment: x0 x2 x3 x5 are 16-byte aligned and x1 is 2-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x0 advances 256 bytes
+    - x1 advances 256 bytes
+    - x2 advances 352 bytes
+    - x3 advances 512 bytes
+    - x4 is unchanged
+    - x5 advances 32 bytes
+
+constant_contract:
+  constants:
+    - unchanged M5M q roots tail NTT16 main NTT16 and NTT9 twist tables
+  modulus: 3457
+  representation: normal R0 signed int16 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul sqrdmulh mls fixed Barrett
+
+range_contract:
+  input_ranges: ['[-15752,15752]']
+  intermediate_ranges: ['NTT16 abs <= 9342', 'twists abs <= 3436']
+  output_ranges: ['[-28568,28565]']
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: [all P8 coefficient data]
+  public_inputs: [pointers, stride, bank selection, fixed tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make check-oracle
+  test_command: make static
+  full_path_benchmark_command: make bench-pi5
+  benchmark_metric: cycles
+  lower_is_better: true

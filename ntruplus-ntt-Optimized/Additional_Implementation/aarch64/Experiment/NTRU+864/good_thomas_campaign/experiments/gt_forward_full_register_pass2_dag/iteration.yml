@@ -1,0 +1,49 @@
+iteration:
+  id: M5R
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  hypothesis: eight additional vector registers permit the exact Pass-2 DAG to retain thirteen source values instead of copying them, then permit selected constants to remain live across inlined bank runs without coefficient spills or a new memory boundary
+  changed_artifacts:
+    - baseline-region.S
+    - baseline-contract.yml
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - gt864_forward_one_bank_full_register.sym.S
+    - gt864_forward_one_bank_full_register_pinned.sym.S
+    - slothy-output
+    - gt864_forward_six_bank_full_register.S
+    - gt864_forward_poly_ntt_full_register.S
+  earliest_state_to_revisit: instruction_dag
+
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: gt864_forward_one_bank_full_register.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-output/gt864_forward_one_bank_full_register_pinned.schedule.log
+  candidate_contract: candidate-contract-pinned.yml
+  candidate_score: candidate-score.yml
+  promotion_report:
+
+gates:
+  repo_probe: passed
+  baseline_contract: passed
+  kernel_contract: passed
+  instruction_dag: passed
+  symbolic_asm: passed
+  static_checks: passed
+  Slothy_run_by_user: passed
+  parse_slothy_result: passed_with_parser_false_positive_documented
+  oracle_correctness: passed
+  full_path_benchmark: passed_vs_M5O
+  score_candidate: passed_relative_to_rejected_M5O_baseline
+  promotion_decision: keep_experimental_candidate
+  iteration_or_promote: passed
+
+notes:
+  - remote Slothy endpoint is pinhao@172.25.166.141 port 51208
+  - N1 remains a scheduling proxy; Pi5 Cortex-A76 PMU is authoritative
+  - wrapper ABI cost is four stp d-pairs plus four ldp d-pairs, once per public Forward call
+  - canonical parser mistakes the phrase Setting timeout for a timeout failure; both logs end in explicit selfcheck OK
+  - M5R improves M5O but remains 6.1925 percent slower than Official and is not production-linked
