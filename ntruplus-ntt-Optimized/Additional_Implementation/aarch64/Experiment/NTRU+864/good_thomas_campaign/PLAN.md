@@ -400,9 +400,11 @@ input contract, a 19512 maximum lazy halfword magnitude, a 3696 output bound,
 and exactly two algorithmic full-buffer load/store passes. M5E
 `gt_fr0_inverse_asm_realization` now realizes the exact inverse in three
 stackless, branchless arithmetic blocks without coefficient spills or
-callee-saved vector registers. It retains the two-pass boundary and is locally
-14.6% faster than the M5D intrinsic combined median-of-medians, but fully
-unrolling costs 10,744 bytes and the wrapper retains a 48-byte GPR call frame.
+callee-saved vector registers. M5E-r1 replaces widening Montgomery FQMUL with
+paired Algorithm-10 `mul/sqrdmulh/mls` and groups independent operations by
+register budget. It retains the two-pass boundary, proves a 6888 final bound,
+uses 7,292 code bytes, and is locally 48.8% faster than the M5D intrinsic
+combined median-of-medians. The wrapper retains a 48-byte GPR call frame.
 The next steps are:
 
 1. Handwrite the forward NTT16 producer/composition with an explicit register budget,

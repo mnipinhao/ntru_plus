@@ -1,13 +1,17 @@
 # M5E: FR-0 inverse assembly realization
 
 This default-off experiment replaces M5D's two intrinsic functions with
-handwritten Armv8-A Neon while preserving every algebra, layout, scale, bound,
-and memory-pass boundary. It does not modify or link NTRU+864 Production.
+handwritten Armv8-A Neon while preserving algebra, layout, scale, and the
+memory-pass boundary. M5E-r1 intentionally changes the noncanonical
+representatives by replacing widening Montgomery multiplication with
+Algorithm-10 fixed Barrett multiplication; equivalence to M5D is therefore
+coefficientwise modulo q. It does not modify or link NTRU+864 Production.
 
-The fixed hypothesis is that the M5D map fits in caller-saved vector registers
-without coefficient spills. The primary falsifiers are an exact differential
-mismatch, a padding write, a stack or `v8-v15` reference inside an arithmetic
-block, a branch inside an unrolled block, or a third full-buffer pass.
+Every fixed constant is stored as `(b, round(b*2^15/q))`; multiplication is the
+three-instruction `mul`, `sqrdmulh`, `mls` DAG used by official NTRU+ Neon and
+neon-ntt. Four independent inverse16 butterflies are expanded together. This
+is not a runtime macro call: assembler macros are expanded, while the larger
+macro determines the instruction DAG exposed to later scheduling.
 
 ## Run
 
@@ -37,3 +41,5 @@ the 16 tail vectors with six live lanes. It reads and writes 1728 meaningful
 bytes and creates no 2x432 top-branch scratch.
 
 See `REGISTER_FLOW.md` for exact register meanings and the store trade-off.
+See `SLOTHY_PLAN.md` for why the chosen scheduling regions stop at two NTT16
+layers or four completed output states.

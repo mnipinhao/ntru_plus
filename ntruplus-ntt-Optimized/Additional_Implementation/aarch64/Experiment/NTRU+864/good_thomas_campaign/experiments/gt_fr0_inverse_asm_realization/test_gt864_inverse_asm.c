@@ -5,10 +5,19 @@
 #include <stdio.h>
 
 static uint32_t random_state = 0x5eU;
-static int pass1_mismatches;
-static int pass2_mismatches;
+static int pass1_modq_mismatches;
+static int pass2_modq_mismatches;
+static int pass1_representative_differences;
+static int pass2_representative_differences;
 static int padding_writes;
+static int maximum_output_abs;
 static int cases;
+
+static int congruent(int16_t left, int16_t right)
+{
+    int difference = (int)left - (int)right;
+    return difference % 3457 == 0;
+}
 
 static void check_case(const int16_t fr0[864], const char *label)
 {
@@ -29,22 +38,29 @@ static void check_case(const int16_t fr0[864], const char *label)
                 padding_writes++;
             continue;
         }
-        if (assembly_p8[i] != intrinsic_p8[i]) {
-            if (pass1_mismatches < 8)
-                fprintf(stderr, "%s pass1 mismatch i=%d asm=%d ref=%d\n",
+        if (assembly_p8[i] != intrinsic_p8[i])
+            pass1_representative_differences++;
+        if (!congruent(assembly_p8[i], intrinsic_p8[i])) {
+            if (pass1_modq_mismatches < 8)
+                fprintf(stderr, "%s pass1 mod-q mismatch i=%d asm=%d ref=%d\n",
                         label, i, assembly_p8[i], intrinsic_p8[i]);
-            pass1_mismatches++;
+            pass1_modq_mismatches++;
         }
     }
 
     gt864_fr0_inverse_finish_neon(intrinsic_out, intrinsic_p8);
     gt864_fr0_inverse_finish_asm(assembly_out, assembly_p8);
     for (int i = 0; i < 864; i++) {
-        if (assembly_out[i] != intrinsic_out[i]) {
-            if (pass2_mismatches < 8)
-                fprintf(stderr, "%s pass2 mismatch i=%d asm=%d ref=%d\n",
+        int magnitude = assembly_out[i] < 0 ? -assembly_out[i] : assembly_out[i];
+        if (magnitude > maximum_output_abs)
+            maximum_output_abs = magnitude;
+        if (assembly_out[i] != intrinsic_out[i])
+            pass2_representative_differences++;
+        if (!congruent(assembly_out[i], intrinsic_out[i])) {
+            if (pass2_modq_mismatches < 8)
+                fprintf(stderr, "%s pass2 mod-q mismatch i=%d asm=%d ref=%d\n",
                         label, i, assembly_out[i], intrinsic_out[i]);
-            pass2_mismatches++;
+            pass2_modq_mismatches++;
         }
     }
     cases++;
@@ -78,11 +94,17 @@ int main(void)
     }
 
     printf("gt864_inverse_asm_gate=%s\n",
-           pass1_mismatches + pass2_mismatches == 0 ? "pass" : "fail");
+           pass1_modq_mismatches + pass2_modq_mismatches + padding_writes == 0
+               ? "pass" : "fail");
     printf("cases=%d\n", cases);
-    printf("pass1_exact_mismatches=%d\n", pass1_mismatches);
-    printf("pass2_exact_mismatches=%d\n", pass2_mismatches);
+    printf("pass1_modq_mismatches=%d\n", pass1_modq_mismatches);
+    printf("pass2_modq_mismatches=%d\n", pass2_modq_mismatches);
+    printf("pass1_representative_differences=%d\n",
+           pass1_representative_differences);
+    printf("pass2_representative_differences=%d\n",
+           pass2_representative_differences);
+    printf("maximum_output_abs=%d\n", maximum_output_abs);
     printf("padding_writes=%d\n", padding_writes);
     printf("production_linked=0\n");
-    return pass1_mismatches + pass2_mismatches + padding_writes != 0;
+    return pass1_modq_mismatches + pass2_modq_mismatches + padding_writes != 0;
 }

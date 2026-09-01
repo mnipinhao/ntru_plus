@@ -11,7 +11,16 @@ input:
 output:
   layout: natural_864_coefficients
   scale: R0_bounded_noncanonical
-  bound_inherited_from_M5D: [-3696, 3696]
+  proved_bound: [-6888, 6888]
+equivalence:
+  relation_to_M5D: coefficientwise_mod_q
+  exact_representatives_preserved: false
+fixed_multiplication:
+  algorithm: neon_ntt_Algorithm_10
+  instructions: [mul, sqrdmulh, mls]
+  table_pair: [b, round_b_times_2pow15_over_q]
+  distinct_constants: 270
+  exhaustive_signed_halfword_checks: 17694720
 realization:
   pass1_blocks: 12
   pass2_main_blocks: 6
@@ -20,6 +29,9 @@ realization:
   coefficient_spills: 0
   wrapper_gpr_call_frame_bytes: 48
   aapcs_v8_v15_touched: false
+  inverse9_grouping: radix3_pairs_and_three_twists
+  inverse16_butterfly_grouping: 4
+  inverse16_recombine_grouping: 2
 memory_contract:
   meaningful_bytes_per_full_input_or_output: 1728
   algorithmic_full_buffer_loads: 2

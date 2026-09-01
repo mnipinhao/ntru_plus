@@ -50,9 +50,18 @@ def main() -> None:
             r"(?:ldr|ldp|ld1|ld1r)\b", line.strip())]
         stores = [line for line in instructions if re.match(
             r"(?:str|strh|stp|st1)\b", line.strip())]
+        widening_montgomery = [line for line in instructions if re.match(
+            r"(?:smull|smull2|smlal|smlal2|uzp1|uzp2)\b", line.strip())]
+        mul = [line for line in instructions if re.match(r"mul\b", line.strip())]
+        sqrdmulh = [line for line in instructions if re.match(
+            r"sqrdmulh\b", line.strip())]
+        mls = [line for line in instructions if re.match(r"mls\b", line.strip())]
         assert not stack_refs, (symbol, stack_refs)
         assert not forbidden, (symbol, forbidden)
         assert not branches, (symbol, branches)
+        assert not widening_montgomery, (symbol, widening_montgomery)
+        assert len(mul) == len(sqrdmulh) == len(mls), (
+            symbol, len(mul), len(sqrdmulh), len(mls))
         total += size
         reports[symbol] = {
             "instruction_count": len(instructions),
@@ -62,6 +71,8 @@ def main() -> None:
             "data_dependent_or_other_branches": 0,
             "static_load_instructions": len(loads),
             "static_store_instructions": len(stores),
+            "fixed_barrett_mul_sqrdmulh_mls_triplets": len(mul),
+            "widening_montgomery_instructions": 0,
         }
 
     print(json.dumps({

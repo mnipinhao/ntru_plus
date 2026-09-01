@@ -1,4 +1,5 @@
 #include "gt864_fr0_inverse_asm.h"
+#include "gt864_fr0_inverse_barrett_tables.h"
 #include "gt864_fr0_inverse_tables.h"
 
 #include <stddef.h>
@@ -25,7 +26,7 @@ void gt864_fr0_inverse_ntt9_asm(int16_t out[896], const int16_t in[864])
                     out + p8_main_index(top, component, first_column),
                     out + 768 + 8 * first_column + bank,
                     in + fr_index(top, 0, first_column, component),
-                    gt864_inverse9_twist_mont[top][block]);
+                    gt864_inverse9_twist_barrett[top][block]);
             }
         }
     }
@@ -39,12 +40,12 @@ void gt864_fr0_inverse_finish_asm(int16_t out[864], const int16_t in[896])
                 out + 3 * (4 * half_s) + component,
                 in + p8_main_index(0, component, 0) + 4 * half_s,
                 in + p8_main_index(1, component, 0) + 4 * half_s,
-                gt864_inverse16_stage_twiddle_mont,
-                gt864_inverse16_main_scale_mont);
+                gt864_inverse16_stage_barrett,
+                gt864_inverse16_main_scale_barrett);
         }
     }
     gt864_inverse16_tail_block_asm(
         out + 3 * 8, in + 768, 0,
-        gt864_inverse16_stage_twiddle_mont,
-        gt864_inverse16_tail_scale_mont);
+        gt864_inverse16_stage_barrett,
+        gt864_inverse16_tail_scale_barrett);
 }

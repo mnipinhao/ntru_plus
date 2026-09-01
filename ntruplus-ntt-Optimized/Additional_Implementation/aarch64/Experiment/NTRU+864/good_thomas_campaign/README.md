@@ -34,10 +34,11 @@ in working BaseMul/BaseMulAdd tile arithmetic with proved int32/R0 bounds. M5D
 inverse NTT9 returns FR-0 to P8+tail, while packed alpha/beta inverse NTT16 and
 top recombination finish in the second pass without a top-branch scratch.
 M5E `experiments/gt_fr0_inverse_asm_realization` realizes that exact two-pass
-map in handwritten Neon. Its arithmetic blocks have no stack, coefficient
-spill, callee-saved vector use, or branches, and the local component diagnostic
-is faster than the M5D intrinsics. The fully unrolled inverse costs 10,744 code
-bytes, so target instruction-cache attribution remains mandatory. Handwritten
+map modulo q in handwritten Neon. M5E-r1 uses paired Algorithm-10 fixed Barrett
+constants and grouped independent operations. Its arithmetic blocks have no
+stack, coefficient spill, callee-saved vector use, or branches; code size is
+7,292 bytes and the local combined diagnostic is 545.354 ns versus 1065.938 ns
+for M5D intrinsics. Target attribution remains mandatory. Handwritten
 forward composition, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:

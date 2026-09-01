@@ -4,13 +4,13 @@
  * x0 main_out: eight contiguous P8 column vectors
  * x1 tail_out: first scalar tail slot, next columns are +16 bytes
  * x2 rows: row-0 vector, next FR-0 rows are +96 bytes
- * x3 inverse_twist: nine public vectors
+ * x3 inverse_twist: nine public (b,b') vector pairs for Algorithm 10
  *
  * v0-v7,v16  nine row/state vectors
- * v17         current public Montgomery constant
- * v18-v21     widening Montgomery scratch
+ * v17-v22     public fixed-Barrett constants
+ * v23-v29     radix-3 / quotient / transpose scratch
  * v22-v29     radix-3 / transpose scratch
- * v30,v31     q and -q^-1
+ * v30         q
  *
  * v8-v15 are untouched; no stack or coefficient spill is permitted.
  */
@@ -18,14 +18,33 @@
 .text
 .p2align 2
 
-.macro FQMUL dst, src
-    smull   v18.4s, \src\().4h, v17.4h
-    smull2  v19.4s, \src\().8h, v17.8h
-    uzp1    v20.8h, v18.8h, v19.8h
-    mul     v20.8h, v20.8h, v31.8h
-    smlal   v18.4s, v20.4h, v30.4h
-    smlal2  v19.4s, v20.8h, v30.8h
-    uzp2    \dst\().8h, v18.8h, v19.8h
+.macro LOAD_PAIR lo, hi, blo, bhi
+    mov     w8, #((\blo) & 0xffff)
+    dup     \lo\().8h, w8
+    mov     w8, #((\bhi) & 0xffff)
+    dup     \hi\().8h, w8
+.endm
+
+/* Algorithm 10, grouped so the two independent quotient chains overlap. */
+.macro FQMUL2 d0, s0, lo0, hi0, q0, d1, s1, lo1, hi1, q1
+    sqrdmulh \q0\().8h, \s0\().8h, \hi0\().8h
+    sqrdmulh \q1\().8h, \s1\().8h, \hi1\().8h
+    mul     \d0\().8h, \s0\().8h, \lo0\().8h
+    mul     \d1\().8h, \s1\().8h, \lo1\().8h
+    mls     \d0\().8h, \q0\().8h, v30.8h
+    mls     \d1\().8h, \q1\().8h, v30.8h
+.endm
+
+.macro FQMUL3 d0, s0, lo0, hi0, q0, d1, s1, lo1, hi1, q1, d2, s2, lo2, hi2, q2
+    sqrdmulh \q0\().8h, \s0\().8h, \hi0\().8h
+    sqrdmulh \q1\().8h, \s1\().8h, \hi1\().8h
+    sqrdmulh \q2\().8h, \s2\().8h, \hi2\().8h
+    mul     \d0\().8h, \s0\().8h, \lo0\().8h
+    mul     \d1\().8h, \s1\().8h, \lo1\().8h
+    mul     \d2\().8h, \s2\().8h, \lo2\().8h
+    mls     \d0\().8h, \q0\().8h, v30.8h
+    mls     \d1\().8h, \q1\().8h, v30.8h
+    mls     \d2\().8h, \q2\().8h, v30.8h
 .endm
 
 /* Unscaled negative-exponent B3, destructive on (a,b,c). */
@@ -33,21 +52,13 @@
     add     v22.8h, \a\().8h, \b\().8h
     add     v22.8h, v22.8h, \c\().8h
 
-    mov     w8, #1033
-    dup     v17.8h, w8
-    FQMUL   v23, \b
-    mov     w8, #64650              /* rho*R = -886 */
-    dup     v17.8h, w8
-    FQMUL   v24, \c
+    LOAD_PAIR v17, v18, 722, 6844
+    LOAD_PAIR v19, v20, -723, -6853
+    FQMUL2 v23, \b, v17, v18, v27, v24, \c, v19, v20, v28
     add     v25.8h, v23.8h, v24.8h
     add     v25.8h, \a\().8h, v25.8h
 
-    mov     w8, #64650
-    dup     v17.8h, w8
-    FQMUL   v23, \b
-    mov     w8, #1033
-    dup     v17.8h, w8
-    FQMUL   v24, \c
+    FQMUL2 v23, \b, v19, v20, v27, v24, \c, v17, v18, v28
     add     v26.8h, v23.8h, v24.8h
     add     v26.8h, \a\().8h, v26.8h
 
@@ -56,9 +67,16 @@
     mov     \c\().16b, v26.16b
 .endm
 
-.macro TWIST reg, offset
-    ldr     q17, [x3, #\offset]
-    FQMUL   \reg, \reg
+.macro TWIST3 r0, r1, r2, offset
+    ldr     q17, [x3, #(\offset + 0)]
+    ldr     q18, [x3, #(\offset + 16)]
+    ldr     q19, [x3, #(\offset + 32)]
+    ldr     q20, [x3, #(\offset + 48)]
+    ldr     q21, [x3, #(\offset + 64)]
+    ldr     q22, [x3, #(\offset + 80)]
+    FQMUL3 \r0, \r0, v17, v18, v23, \
+           \r1, \r1, v19, v20, v24, \
+           \r2, \r2, v21, v22, v25
 .endm
 
 .global gt864_fr0_inverse9_block_asm
@@ -67,8 +85,6 @@ gt864_fr0_inverse9_block_asm:
 _gt864_fr0_inverse9_block_asm:
     mov     w8, #3457
     dup     v30.8h, w8
-    mov     w8, #52607
-    dup     v31.8h, w8
 
     ldr     q0,  [x2, #0]
     ldr     q1,  [x2, #96]
@@ -84,31 +100,19 @@ _gt864_fr0_inverse9_block_asm:
     B3INV   v1, v4, v7
     B3INV   v16, v2, v5
 
-    mov     w8, #1510              /* undo eta on group-1 b */
-    dup     v17.8h, w8
-    FQMUL   v4, v4
-    mov     w8, #708               /* undo eta^-1 on group-2 b */
-    dup     v17.8h, w8
-    FQMUL   v7, v7
-    FQMUL   v2, v2                 /* undo eta^-1 on group-1 c */
-    mov     w8, #1510
-    dup     v17.8h, w8
-    FQMUL   v5, v5                 /* undo eta on group-2 c */
+    LOAD_PAIR v17, v18, 366, 3469   /* eta^-1 */
+    FQMUL2 v4, v4, v17, v18, v27, v5, v5, v17, v18, v28
+    LOAD_PAIR v17, v18, 1124, 10654 /* eta */
+    FQMUL2 v7, v7, v17, v18, v27, v2, v2, v17, v18, v28
 
     B3INV   v0, v1, v16
     B3INV   v3, v4, v2
     B3INV   v6, v7, v5
 
     /* Logical s order is v0,v3,v7,v1,v4,v5,v16,v2,v6. */
-    TWIST   v0, 0
-    TWIST   v3, 16
-    TWIST   v7, 32
-    TWIST   v1, 48
-    TWIST   v4, 64
-    TWIST   v5, 80
-    TWIST   v16, 96
-    TWIST   v2, 112
-    TWIST   v6, 128
+    TWIST3  v0, v3, v7, 0
+    TWIST3  v1, v4, v5, 96
+    TWIST3  v16, v2, v6, 192
 
     mov     v22.16b, v1.16b
     mov     v1.16b, v3.16b

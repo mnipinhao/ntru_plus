@@ -9,10 +9,10 @@ eight adjacent GT columns for a fixed `(top, component, block)`.
 
 **Inverse NTT9.** `B3INV` performs two oriented radix-3 layers. The first layer
 acts on row triples; public `eta` corrections regroup the three branches; the
-second layer produces logical `s` order. `v17` is the current Montgomery
-constant, `v18-v21` are widening Montgomery temporaries, `v22-v26` are
-destructive radix-3 temporaries, and `v30/v31` hold `q/-q^-1`. Scale remains
-R0 because the multiplied tables are R1.
+second layer produces logical `s` order. Public constants occupy `v17-v22`,
+`v23-v29` are radix-3/quotient/transpose scratch, and `v30` holds q. Constants
+are normal R0 values paired with rounded reciprocals, so Algorithm 10 maps R0
+to R0 directly. Two weighted B3 products or three twists are issued together.
 
 **Inverse twist and layout.** Logical `s=0..8` receives one public inverse
 twist per vector. After public register renaming, `v0-v7` hold `s=0..7` and
@@ -29,18 +29,20 @@ The next consumer sees the exact M5D P8+tail ABI.
 
 **Entry.** `x0` is one natural-output component/half base; `x1/x2` point to the
 alpha/beta P8 banks; `x3/x4` point to public stage and scale tables. For each
-column, `ldr dN` loads four alpha lanes and `ldr d24` plus `ins` places four
+column, `ldr dN` loads four alpha lanes and `ldr d30` plus `ins` places four
 beta lanes in the high half. Public bit-reversed register placement maps NTT16
-states 0..15 onto `v0-v7,v16-v23`.
+states 0..15 onto `v24,v1-v7,v16-v23`.
 
-**Inverse NTT16.** Four fully unrolled radix-2 layers use `v28` as the saved
-left operand, `v29` as the current R1 twiddle, `v24-v27` as widening Montgomery
-scratch, and `v30/v31` as modulus constants. Lanes 0..3 remain alpha and lanes
-4..7 remain beta; there is no lane-dependent routing during the transform.
+**Inverse NTT16.** Each `B2X4` loads four adjacent `(b,b')` pairs into `v0`,
+issues four `sqrdmulh`, four `mul`, and four `mls`, then performs public
+butterfly updates. `v25-v28` are quotient/saved scratch, `v29` is destructive
+scratch, and `v31` is q. Using `v0` is an encoding constraint: halfword
+vector-by-element operands must use the low vector bank. Lanes 0..3 remain
+alpha and lanes 4..7 remain beta.
 
 **Finish/store.** A public scale is applied per completed state. `ext #8`
-exposes beta lanes, then fixed Montgomery multiplications implement top
-recombination. Each completed vector is destroyed and emitted with `umov` plus
+exposes beta lanes, then fixed Algorithm-10 Barrett multiplications implement
+top recombination. Each completed vector is destroyed and emitted with `umov` plus
 `strh` to eight public, component-strided natural positions. This avoids a
 third buffer pass, but costs 128 static scalar stores per main block and makes
 the block large.
@@ -58,5 +60,5 @@ The three arithmetic blocks have zero stack references, zero `v8-v15`
 references, zero branches, and zero coefficient spills. The C wrappers still
 have a 48-byte GPR-only call frame for public loop counters and saved link/GPR
 state; therefore only the arithmetic blocks—not the complete wrapper—are
-described as stackless. Fully unrolled block code totals 10,744 bytes, the main
-cost that must be revisited if instruction-cache behavior is poor on target.
+described as stackless. M5E-r1 totals 7,292 code bytes, down from 10,744 for the
+initial widening-Montgomery realization.

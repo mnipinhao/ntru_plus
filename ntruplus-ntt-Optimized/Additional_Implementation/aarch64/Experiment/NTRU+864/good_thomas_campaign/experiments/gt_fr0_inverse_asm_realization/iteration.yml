@@ -1,20 +1,22 @@
 id: M5E
 observation: >-
-  M5D proved the inverse arithmetic and two-pass ABI, but compiler-generated
-  intrinsics used 160-byte and 416-byte stack frames.
+  The first M5E assembly used an eight-instruction widening Montgomery FQMUL
+  and serialized every expanded macro, unlike the official/neon-ntt paired
+  fixed-Barrett pattern.
 bottleneck_hypothesis: >-
-  Register allocation and component-strided output stores, rather than the
-  algebra, prevent the reference from being the final inverse kernel.
+  Algorithm-10 mul/sqrdmulh/mls plus bounded independent grouping will reduce
+  instruction count and expose enough ILP without making one whole transform a
+  Slothy region or increasing spills.
 candidate: >-
-  Use three fully unrolled public-control assembly blocks: a nine-row inverse
-  NTT9 block, a packed alpha/beta inverse NTT16 main block, and a six-lane tail
-  block. Keep v8-v15 untouched and destructively consume completed vectors.
+  Convert every public Montgomery constant to (normal b, rounded reciprocal),
+  group NTT16 butterflies four at a time, group top recombination two at a
+  time, and group radix-3 products according to their two/three-way structure.
 falsifier:
-  - any exact representative mismatch against M5D
+  - any coefficient mismatch modulo q against M5D
   - any write to P8 tail padding
   - any stack reference or coefficient spill in an arithmetic block
   - any v8-v15 reference or branch in an arithmetic block
   - any extra full-buffer pass
 result: passed
-decision: retain_as_experimental_inverse_assembly_baseline
+decision: replace_initial_M5E_with_barrett_grouped_experimental_baseline
 next: handwritten_forward_NTT16_producer_and_composition
