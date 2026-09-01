@@ -55,8 +55,13 @@ caller-saved vector registers. M5H
 level-1 B3s while nine registers preserve the other column block. Its remote
 OPTIMAL schedule is 48 N1-proxy cycles and uses exactly all fifteen available
 registers `v0-v7,v25-v31`, again without spill or reserved-register use.
-Level-2 eta/B3 realization, handwritten forward integration, full KEM, and
-SUPERCOP remain future gates.
+M5I `experiments/gt_forward_ntt9_core_slothy` adds the four eta products and
+all three level-2 B3s. Its 102-instruction RA-first gate is OPTIMAL, and the
+corrected physical-live-out split-window pass ends in
+`split_heuristic_full:OK!` at 25 N1-proxy cycles. Both artifacts use exactly
+`v0-v7,v25-v31` with no spill or reserved-register use. NTT16-to-NTT9 physical
+handoff, handwritten forward integration, full KEM, and SUPERCOP remain future
+gates.
 
 Run only the authoritative GT C reference gate:
 

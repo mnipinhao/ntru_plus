@@ -73,7 +73,7 @@
       "status": "passed",
       "role": "transform_boundary_cost_and_codegen_gate",
       "production_linked": false,
-      "artifact_budget_waiver": 17,
+      "artifact_budget_waiver": 18,
       "artifact_budget_waiver_reason": "M4 compares three implementations across one equal boundary and keeps correctness, timing, code-shape, rotation-search, and exact-ABI generators separately auditable; splitting them would duplicate the shared boundary contract and weaken the A/B gate.",
       "next": "gt_fr0_kernel_realization"
     },
@@ -172,7 +172,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 15,
       "artifact_budget_waiver_reason": "The bounded level-1 gate keeps the SSA symbolic source, remote driver, exact imported range proof, kernel/baseline/candidate contracts, static and emitted-code audit, lifecycle and decision records, and returned optimized assembly/log independently auditable; transient build products remain ignored.",
-      "next": "add eta corrections and level-2 B3s with destructive output reuse"
+      "next": "gt_forward_ntt9_core_slothy"
+    },
+    {
+      "id": "gt_forward_ntt9_core_slothy",
+      "path": "gt_forward_ntt9_core_slothy",
+      "question": "Can the complete two-level NTT9 with eta corrections allocate and schedule without spills while the other nine-vector column block remains live?",
+      "status": "passed",
+      "role": "forward_complete_ntt9_register_pressure_and_slothy_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 17,
+      "artifact_budget_waiver_reason": "The bounded complete-core gate keeps the exact imported range proof, instruction DAG, SSA symbolic source, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus log independently auditable; transient build products remain ignored.",
+      "next": "derive exact NTT16 producer to NTT9 consumer physical ABI"
     }
   ]
 }

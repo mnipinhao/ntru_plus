@@ -1,0 +1,68 @@
+dag:
+  id: gt864_forward_ntt9_complete_core_dag
+  kernel_contract: kernel-contract.yml
+  description: consumer-ordered complete paper-oriented NTT9 with correlation-safe B3s
+
+inputs: [Q<f0>, Q<f1>, Q<f2>, Q<f3>, Q<f4>, Q<f5>, Q<f6>, Q<f7>, Q<f8>, Q<roots>, Q<modq>]
+constants:
+  roots_lanes: [rho, rho_prime, rho2, rho2_prime, eta, eta_prime, eta_inv, eta_inv_prime]
+  modulus: 3457
+
+templates:
+  b3_two_product:
+    source: ../gt_forward_symbolic_dag/instruction-dag.yml
+    instruction_count: 15
+    formula:
+      - y0=a+b+c
+      - y1=a+rho*b+rho2*c
+      - y2=(a-y0)+(a-y1)+a
+    true_dependencies:
+      - save a before forming y0
+      - each sqrdmulh quotient precedes its matching mls
+      - each mul low product precedes its matching mls
+      - y2 consumes the same saved a, y0, and y1
+    tied_operands:
+      - mls accumulator is read-write
+    range_source: ../gt_forward_symbolic_dag/prove_exact_dag.py
+  fixed_barrett:
+    instruction_count: 3
+    instructions:
+      - sqrdmulh quotient,input,constant_prime_lane
+      - mul product,input,constant_lane
+      - mls product,quotient,modq
+    true_dependencies:
+      - quotient and product both consume the same input
+      - mls consumes quotient, product, and modq
+    tied_operands:
+      - mls product is read-write
+
+instantiations:
+  - {id: level1_a, template: b3_two_product, inputs: [f0, f3, f6], outputs: [a0, a1, a2]}
+  - {id: level1_b, template: b3_two_product, inputs: [f1, f4, f7], outputs: [b0, b1, b2]}
+  - {id: level1_c, template: b3_two_product, inputs: [f8, f2, f5], outputs: [c0, c1, c2], note: paper-oriented input order}
+  - {id: level2_g0, template: b3_two_product, inputs: [a0, b0, c0], outputs: [out0, out3, out6]}
+  - {id: eta_b1, template: fixed_barrett, inputs: [b1, eta], outputs: [eta_b1]}
+  - {id: eta_inv_c1, template: fixed_barrett, inputs: [c1, eta_inv], outputs: [eta_inv_c1]}
+  - {id: level2_g1, template: b3_two_product, inputs: [a1, eta_b1, eta_inv_c1], outputs: [out1, out4, out7]}
+  - {id: eta_inv_b2, template: fixed_barrett, inputs: [b2, eta_inv], outputs: [eta_inv_b2]}
+  - {id: eta_c2, template: fixed_barrett, inputs: [c2, eta], outputs: [eta_c2]}
+  - {id: level2_g2, template: b3_two_product, inputs: [a2, eta_inv_b2, eta_c2], outputs: [out8, out2, out5]}
+
+consumer_order:
+  - produce all level-1 values because each B3 creates one value for every level-2 group
+  - consume a0,b0,c0 immediately in g0
+  - create eta_b1 and eta_inv_c1 immediately before g1, then consume them
+  - create eta_inv_b2 and eta_c2 immediately before g2, then consume them
+  - do not retain any eta product across an unrelated level-2 B3
+
+memory:
+  loads: []
+  stores: []
+  ordering_constraints: []
+outputs: [Q<out0>, Q<out1>, Q<out2>, Q<out3>, Q<out4>, Q<out5>, Q<out6>, Q<out7>, Q<out8>]
+review:
+  expected_instruction_count: 102
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

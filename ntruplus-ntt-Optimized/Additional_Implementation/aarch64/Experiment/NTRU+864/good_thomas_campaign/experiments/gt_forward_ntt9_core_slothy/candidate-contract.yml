@@ -1,0 +1,19 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel_contract: kernel-contract.yml
+instruction_dag: instruction-dag.yml
+symbolic_source: gt864_forward_ntt9_core.sym.S
+slothy_workflow: RA-only_then_real_split-window_schedule
+physical_allocation: v0_through_v7_and_v25_through_v31
+physical_liveouts: [v0, v25, v2, v7, v29, v30, v3, v26, v28]
+slothy_result: RA_OPTIMAL_and_split_heuristic_full_OK
+slothy_version: 0.2.2
+slothy_checkout_revision: d636d638d06b370d1acc5774ca31c9572d3d2e6f
+n1_proxy_expected_cycles: 25
+spill_policy: forbidden
+oracle_correctness: M5G_exact_DAG_and_M5F_C_oracle_inherited
+full_path_benchmark: missing
+promotion_blockers:
+  - NTT16 producer-to-NTT9 physical boundary not integrated
+  - full Forward integration unavailable
+production_linked: false

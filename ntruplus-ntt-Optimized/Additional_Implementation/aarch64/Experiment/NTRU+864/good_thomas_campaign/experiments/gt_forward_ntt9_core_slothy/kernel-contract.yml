@@ -1,0 +1,178 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_ntt9_complete_core
+  name: GT864 Forward complete paper-oriented NTT9 core
+  source: gt864_forward_ntt9_core.sym.S
+  scheme: NTRU+864
+  operation: complete correlation-safe two-level radix-3 NTT9 over nine already-twisted vectors
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: RA-only allocation over 102 real instructions followed by real-instruction split-window scheduling
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_ntt9_core.n1.alloc.S
+    - build/gt864_forward_ntt9_core.n1.opt.S
+    - build/gt864_forward_ntt9_core.n1.log
+  returned_outputs:
+    - slothy-output/gt864_forward_ntt9_core.n1.alloc.S
+    - slothy-output/gt864_forward_ntt9_core.n1.opt.S
+    - slothy-output/gt864_forward_ntt9_core.n1.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_ntt9_core_slothy_start
+  end_label: gt864_forward_ntt9_core_slothy_end
+  expected_instruction_count: 102
+  live_in:
+    - Q<f0>
+    - Q<f1>
+    - Q<f2>
+    - Q<f3>
+    - Q<f4>
+    - Q<f5>
+    - Q<f6>
+    - Q<f7>
+    - Q<f8>
+    - Q<roots> packs rho/rho-prime/rho2/rho2-prime/eta/eta-prime/eta-inverse/eta-inverse-prime
+    - Q<modq> contains 3457 in every halfword
+    - nine reserved vector registers model the untouched other column block
+  live_out:
+    - Q<out0>
+    - Q<out1>
+    - Q<out2>
+    - Q<out3>
+    - Q<out4>
+    - Q<out5>
+    - Q<out6>
+    - Q<out7>
+    - Q<out8>
+    - nine reserved other-block vectors are unchanged
+
+abi:
+  inputs:
+    - symbolic Q<f0>, Q<f1>, Q<f2>, Q<f3>, Q<f4>, Q<f5>, Q<f6>, Q<f7>, Q<f8>, Q<roots>, Q<modq>
+  outputs:
+    - symbolic Q<out0>, Q<out1>, Q<out2>, Q<out3>, Q<out4>, Q<out5>, Q<out6>, Q<out7>, Q<out8>
+  clobbers:
+    - SSA-named saved values, quotient estimates, fixed products, sums, and partials
+  concrete_gprs_allowed:
+    - none_register_only_region
+  fixed_vector_registers: []
+  reserved_registers:
+    - sp
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: six correlation-safe 15-instruction B3 DAGs plus four 3-instruction Algorithm-10 eta products in consumer order
+
+layout:
+  input_representation: nine signed-int16 vectors f0 through f8 across eight public columns
+  output_representation: paper-oriented order g0[0],g1[0],g2[1],g0[1],g1[1],g2[2],g0[2],g1[2],g2[0]
+  vector_lanes: eight independent signed int16 lanes
+  packing: roots lanes 0..7 are rho,rho-prime,rho2,rho2-prime,eta,eta-prime,eta-inverse,eta-inverse-prime
+
+memory_contract:
+  loads:
+    - none_register_only_region
+  stores:
+    - none_register_only_region
+  aliasing: register-only region
+  alignment: not_applicable_inside_region
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants:
+    - Q<roots>.h[0]=rho=-723
+    - Q<roots>.h[1]=rho-prime=-6853
+    - Q<roots>.h[2]=rho2=722
+    - Q<roots>.h[3]=rho2-prime=6844
+    - Q<roots>.h[4]=eta=1124
+    - Q<roots>.h[5]=eta-prime=10654
+    - Q<roots>.h[6]=eta-inverse=366
+    - Q<roots>.h[7]=eta-inverse-prime=3469
+    - Q<modq>=3457 in every halfword
+  modulus: 3457
+  representation: normal R0 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul/sqrdmulh/mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - exact per-position intervals come from M5G after NTT16 and twist
+  intermediate_ranges:
+    - prove_core.py imports the complete correlation-aware M5G Forward DAG
+    - maximum exact complete-core node magnitude is 28568
+  output_ranges:
+    - exact full-core union is [-28568,28565]
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient vectors Q<f0> through Q<f8>
+  public_inputs:
+    - packed roots, modulus, and fixed region shape
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ../gt_forward_composition_barrett check
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_full_Forward_integration
+  benchmark_metric: cycles
+  lower_is_better: true

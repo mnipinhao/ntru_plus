@@ -424,12 +424,19 @@ vectors real dataflow while reserving nine registers for the other column
 block. Slothy returns an OPTIMAL 48-cycle N1-proxy schedule using all fifteen
 allowed registers `v0-v7,v25-v31`, with zero reserved-register, spill, stack,
 memory, branch, or GPR instruction.
+M5I `gt_forward_ntt9_core_slothy` closes the complete NTT9 register-only
+boundary: six B3s plus four eta products are 102 real instructions. A
+functional RA-only pass is OPTIMAL and preserves source order; a second fresh
+Slothy instance declares the extracted nine physical live-outs explicitly and
+finishes split-window scheduling with `split_heuristic_full:OK!`. The returned
+allocation and schedule both use exactly the same fifteen allowed registers,
+with no reserved vector, spill, stack, memory, branch, or GPR instruction.
 The next steps are:
 
-1. Add four eta/eta-inverse products and the three level-2 B3s with
-   consumer-driven destructive reuse; no spare support register may be
-   assumed after M5H.
-2. If that complete NTT9 register gate passes, connect its allocation to the
-   NTT16 producer, realize fused Forward, then audit linked closure/code size.
+1. Derive the exact NTT16 producer live-out placement and constrain or cost the
+   handoff into the M5I NTT9 input ABI; the solver's register numbers are not a
+   free stable ABI.
+2. Realize the fused Forward only after that boundary fits without an
+   intermediate load/store, then audit linked closure and code size.
 3. Run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.
