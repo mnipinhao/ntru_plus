@@ -161,7 +161,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 16,
       "artifact_budget_waiver_reason": "The bounded symbolic gate keeps the exact correlation-aware proof, kernel/baseline/candidate contracts, instruction DAG, symbolic source, remote-only Slothy driver, static audit, lifecycle record, human-readable evidence, and the returned optimized assembly/log independently auditable; transient generated reports remain ignored.",
-      "next": "expand the symbolic boundary to the surrounding NTT9 region"
+      "next": "gt_forward_ntt9_level1_slothy"
+    },
+    {
+      "id": "gt_forward_ntt9_level1_slothy",
+      "path": "gt_forward_ntt9_level1_slothy",
+      "question": "Can all three level-1 NTT9 B3s allocate and schedule without spills while the other nine-vector column block remains live?",
+      "status": "passed",
+      "role": "forward_ntt9_level1_register_pressure_and_slothy_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 15,
+      "artifact_budget_waiver_reason": "The bounded level-1 gate keeps the SSA symbolic source, remote driver, exact imported range proof, kernel/baseline/candidate contracts, static and emitted-code audit, lifecycle and decision records, and returned optimized assembly/log independently auditable; transient build products remain ignored.",
+      "next": "add eta corrections and level-2 B3s with destructive output reuse"
     }
   ]
 }

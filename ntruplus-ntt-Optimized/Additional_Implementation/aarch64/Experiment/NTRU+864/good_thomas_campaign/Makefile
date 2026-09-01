@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-composition
+.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-composition
 
-check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-composition
+check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-composition
 
 check-reference: check-montgomery-reference
 
@@ -53,6 +53,9 @@ check-forward-reduction-search:
 
 check-forward-symbolic-dag:
 	$(MAKE) -C experiments/gt_forward_symbolic_dag check PYTHON=$(PYTHON)
+
+check-forward-ntt9-level1:
+	$(MAKE) -C experiments/gt_forward_ntt9_level1_slothy check PYTHON=$(PYTHON)
 
 check-forward-composition:
 	$(MAKE) -C experiments/gt_forward_composition_barrett check PYTHON=$(PYTHON)

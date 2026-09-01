@@ -50,8 +50,13 @@ unsafe halfword nodes. Its 15-instruction B3 is written entirely with Slothy
 symbolic registers. The remote Slothy gate is OPTIMAL at 24 N1-proxy cycles
 and allocates exactly `v0,v24-v31`, with no spill, stack, memory, GPR, or
 forbidden-vector instruction. The whole schedule still peaks at 24
-caller-saved vector registers. Surrounding NTT9 realization, handwritten
-forward integration, full KEM, and SUPERCOP remain future gates.
+caller-saved vector registers. M5H
+`experiments/gt_forward_ntt9_level1_slothy` expands this to all three
+level-1 B3s while nine registers preserve the other column block. Its remote
+OPTIMAL schedule is 48 N1-proxy cycles and uses exactly all fifteen available
+registers `v0-v7,v25-v31`, again without spill or reserved-register use.
+Level-2 eta/B3 realization, handwritten forward integration, full KEM, and
+SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

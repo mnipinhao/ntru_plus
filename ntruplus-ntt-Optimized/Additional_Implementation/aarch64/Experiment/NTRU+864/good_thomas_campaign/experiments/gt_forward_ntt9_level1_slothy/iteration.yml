@@ -1,0 +1,31 @@
+iteration:
+  id: m5h-iter-001
+  mode: new_symbolic_kernel
+  current_state: oracle_correctness
+  hypothesis: three complete level-1 B3s fit fifteen available vector registers while the other nine-vector column block remains live
+  changed_artifacts:
+    - gt864_forward_ntt9_level1.sym.S
+    - optimize.py
+    - kernel-contract.yml
+    - prove_level1.py
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: gt864_forward_ntt9_level1.sym.S
+  slothy_driver: optimize.py
+  slothy_output: slothy-output/gt864_forward_ntt9_level1.n1.opt.S
+  slothy_log: slothy-output/gt864_forward_ntt9_level1.n1.log
+  candidate_contract: candidate-contract.yml
+gates:
+  range_contract: passed_max_16816
+  kernel_contract: passed
+  symbolic_asm: passed
+  remote_slothy: passed_OPTIMAL_48_cycles_36_stalls
+  emitted_assembly: passed_AArch64_assembler
+  register_audit: passed_exactly_v0_v7_v25_v31_no_reserved_or_spill
+  full_path_benchmark: pending
+notes:
+  - v8-v15 are ABI-forbidden
+  - v16-v24 model the untouched other nine-vector column block
+  - v0-v7 and v25-v31 are the fifteen-register candidate set

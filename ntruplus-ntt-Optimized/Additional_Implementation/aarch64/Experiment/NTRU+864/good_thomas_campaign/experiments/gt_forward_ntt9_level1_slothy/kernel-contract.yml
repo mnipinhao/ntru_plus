@@ -1,0 +1,158 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_ntt9_level1_triplet
+  name: GT864 Forward complete oriented NTT9 level-1 triplet
+  source: gt864_forward_ntt9_level1.sym.S
+  scheme: NTRU+864
+  operation: three independent correlation-safe B3 butterflies over nine already-twisted vectors
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: combined allocation and scheduling over 45 real instructions
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_ntt9_level1.n1.opt.S
+    - build/gt864_forward_ntt9_level1.n1.log
+  returned_outputs:
+    - slothy-output/gt864_forward_ntt9_level1.n1.opt.S
+    - slothy-output/gt864_forward_ntt9_level1.n1.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_ntt9_level1_slothy_start
+  end_label: gt864_forward_ntt9_level1_slothy_end
+  expected_instruction_count: 45
+  live_in:
+    - Q<f0> through Q<f8> are one already-twisted NTT9 column block
+    - Q<roots> packs rho/rho-prime/rho2/rho2-prime
+    - Q<modq> contains 3457 in every halfword
+    - nine reserved vector registers model the untouched other column block
+  live_out:
+    - Q<a0>, Q<a1>, Q<a2> are B3(f0,f3,f6)
+    - Q<b0>, Q<b1>, Q<b2> are B3(f1,f4,f7)
+    - Q<c0>, Q<c1>, Q<c2> are B3(f8,f2,f5)
+    - nine reserved other-block vectors are unchanged
+
+abi:
+  inputs:
+    - symbolic Q<f0> through Q<f8>, Q<roots>, Q<modq>
+  outputs:
+    - symbolic Q<a0>, Q<a1>, Q<a2>, Q<b0>, Q<b1>, Q<b2>, Q<c0>, Q<c1>, Q<c2>
+  clobbers:
+    - SSA-named saved values, quotient estimates, fixed products, sums, and partials
+  concrete_gprs_allowed:
+    - none_register_only_region
+  fixed_vector_registers: []
+  reserved_registers:
+    - sp
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+
+instruction_dag:
+  file: gt864_forward_ntt9_level1.sym.S
+  summary: three independent 15-instruction M5G two-product B3 DAGs with shared read-only roots and modulus
+
+layout:
+  input_representation: nine signed-int16 vectors f0 through f8 across eight public columns
+  output_representation: three B3 result triples A, B, C in paper-oriented level-1 order
+  vector_lanes: eight independent signed int16 lanes
+  packing: roots lanes are rho, rho-prime, rho2, rho2-prime
+
+memory_contract:
+  loads:
+    - none_register_only_region
+  stores:
+    - none_register_only_region
+  aliasing: register-only region
+  alignment: not_applicable_inside_region
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants:
+    - Q<roots>.h[0]=rho
+    - Q<roots>.h[1]=round(rho*2^15/3457)
+    - Q<roots>.h[2]=rho2
+    - Q<roots>.h[3]=round(rho2*2^15/3457)
+    - Q<modq>=3457 in every halfword
+  modulus: 3457
+  representation: normal R0 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul/sqrdmulh/mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - exact per-position intervals come from M5G after NTT16 and twist
+  intermediate_ranges:
+    - prove_level1.py imports the complete correlation-aware M5G DAG
+    - maximum exact level-1 node magnitude is 16816
+  output_ranges:
+    - union across all level-1 outputs is [-16816,16816]
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient vectors Q<f0> through Q<f8>
+  public_inputs:
+    - packed roots, modulus, and fixed region shape
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ../gt_forward_composition_barrett check
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_full_Forward_integration
+  benchmark_metric: cycles
+  lower_is_better: true
