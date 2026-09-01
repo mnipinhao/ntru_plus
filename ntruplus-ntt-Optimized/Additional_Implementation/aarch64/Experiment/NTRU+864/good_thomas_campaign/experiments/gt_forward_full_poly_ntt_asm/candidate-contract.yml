@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_forward_full_poly_ntt_m5o
+  status: passed_bounded_candidate
+  source: gt864_forward_poly_ntt_experiment.S
+  public_symbol: gt864_forward_poly_ntt_experiment
+composition:
+  first_call: gt864_top_split_ld3
+  second_call: gt864_forward_six_bank_pass2
+  internal_scratch_halfwords: 896
+  fixed_stack_scratch_bytes: 1792
+memory_contract:
+  input_coefficient_loads: 864
+  intermediate_p8_stores: 896
+  meaningful_intermediate_p8_loads: 864
+  output_coefficient_stores: 864
+  meaningful_loads_per_coefficient: 2
+  meaningful_stores_per_coefficient: 2
+  note: 32 zero padding halfwords are written by top split and deliberately not read by pass 2
+abi_contract:
+  output: frozen FR-0, not the stock physical ABI
+  comparison_adapter: oracle-only compile-time permutation generated from stock zeta tables
+  stack_alignment: 16 bytes at both calls
+constant_time_contract:
+  public_fixed_trip_count_only: true
+  secret_dependent_branches: zero
+  secret_dependent_addresses: zero
+slothy:
+  new_schedulable_region: false
+  reason: wrapper only composes two already-frozen assembly regions
+production_linked: false
