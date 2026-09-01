@@ -97,7 +97,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 15,
       "artifact_budget_waiver_reason": "The bounded range gate keeps the executable Neon schedule, compile-time tables, exact/direct differential test, machine range proof, and compiler spill inventory independently auditable; generated binaries and JSON remain ignored.",
-      "next": "FR-0 BaseMul and BaseMulAdd arithmetic differential experiment"
+      "next": "gt_fr0_basemul_arithmetic"
+    },
+    {
+      "id": "gt_fr0_basemul_arithmetic",
+      "path": "gt_fr0_basemul_arithmetic",
+      "question": "Does generated FR-0 zeta ordering support safe and compatible BaseMul/BaseMulAdd arithmetic on the 36-tile SoA ABI?",
+      "status": "passed",
+      "role": "fr0_pointwise_consumer_arithmetic_contract",
+      "production_linked": false,
+      "artifact_budget_waiver": 14,
+      "artifact_budget_waiver_reason": "The bounded consumer gate keeps generated zeta/legacy maps, the executable Neon tile arithmetic, exact/canonical/alias tests, and a machine accumulator/scale proof independently auditable; generated headers and JSON remain ignored.",
+      "next": "FR-0 inverse permutation and inverse arithmetic experiment"
     }
   ]
 }

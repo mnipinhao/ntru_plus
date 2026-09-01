@@ -28,7 +28,9 @@ stack/register, formal-range, and leaf-map gates. Its producer bound is
 `|P8+tail| <= 15752`. M5B `experiments/gt_ntt16_producer_range` now proves the
 actual twisted radix-2 producer reaches at most 8874 with no extra Barrett
 reduction. Its intrinsics spill, so assembly memory scheduling remains open;
-BaseMul/inverse arithmetic, full KEM, and SUPERCOP are also future gates.
+M5C `experiments/gt_fr0_basemul_arithmetic` now consumes the generated zetas
+in working BaseMul/BaseMulAdd tile arithmetic with proved int32/R0 bounds.
+Inverse arithmetic, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

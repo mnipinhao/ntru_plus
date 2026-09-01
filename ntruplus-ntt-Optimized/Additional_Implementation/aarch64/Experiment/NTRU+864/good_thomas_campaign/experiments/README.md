@@ -26,5 +26,6 @@ Current experiments:
 | `gt_boundary_cost_campaign` | Across the same P8+tail to BaseMul-SoA boundary, which M3 survivor has the lowest measured Neon cost? | passed; FR-0 retained | no |
 | `gt_fr0_kernel_realization` | Can FR-0 be exact, stackless handwritten Neon with proved range and leaf maps? | passed; assembly baseline retained | no |
 | `gt_ntt16_producer_range` | Does the real twisted radix-2 NTT16 schedule satisfy M5A without an extra reduction? | passed; maximum 8874 | no |
+| `gt_fr0_basemul_arithmetic` | Does FR-0 zeta ordering support safe BaseMul/BaseMulAdd arithmetic directly on SoA tiles? | passed | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

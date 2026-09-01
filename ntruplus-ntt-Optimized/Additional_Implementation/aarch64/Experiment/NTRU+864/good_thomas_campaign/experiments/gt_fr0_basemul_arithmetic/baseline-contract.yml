@@ -1,0 +1,17 @@
+mode: fr0_basemul_arithmetic_gate
+input:
+  layout: FR0_BaseMul_SoA_tile8
+  coefficients: 864
+  offset: "24*group+8*component+lane"
+  scale: R0
+  proved_bound: "[-24438,24438]"
+zeta:
+  source: generated_from_theta_and_checked_against_official_leaf_zetas
+  scale: R1_Montgomery
+operations:
+  - cubic_BaseMul
+  - cubic_BaseMulAdd
+output:
+  layout: unchanged_FR0_SoA
+  scale: R0
+production_linked: false

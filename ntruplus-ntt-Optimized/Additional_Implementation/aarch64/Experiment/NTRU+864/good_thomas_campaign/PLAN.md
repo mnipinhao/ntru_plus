@@ -392,10 +392,13 @@ radix-2 NTT16 schedule reaches at most 8874, below M5A's 15752 limit. No extra
 Barrett reduction is needed. The intrinsics realization spills its 16-vector
 array, so it freezes arithmetic/range but not the final memory schedule.
 
-1. Use the generated FR-0 zeta order in an actual BaseMul/BaseMulAdd arithmetic
-   differential test; root-set equality alone is not arithmetic integration.
-2. Implement and verify the matching inverse arithmetic/permutation path.
-3. Handwrite the NTT16 producer/composition with an explicit register budget,
+M5C `gt_fr0_basemul_arithmetic` now closes the first item: generated FR-0
+zetas are consumed by working 36-tile BaseMul/BaseMulAdd arithmetic, match the
+official leaves through a bijection, and pass exact, canonical, alias, and
+int32/scale gates. The next steps are:
+
+1. Implement and verify the matching inverse arithmetic/permutation path.
+2. Handwrite the NTT16 producer/composition with an explicit register budget,
    preserving M5B arithmetic and the intended two-load/two-store schedule.
-4. Only then run the full Forward oracle, KEM/KAT, source closure, target-host
+3. Only then run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.
