@@ -1,0 +1,27 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: gt864_forward_tail_ntt16
+  operation: exact strided P8 tail gather, branch twist, and packed 16-point NTT
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+region:
+  instruction_count: 65
+  live_in: [x1_tail_bank_pointer, x2_public_table_pointer, x4_public_stride_16, V_modq]
+  live_out: [V_tail0_columns_0_7, V_tail1_columns_8_15, x1_advanced_256, x2_advanced_208]
+memory_contract:
+  coefficient_loads: 16_exact_halfwords
+  coefficient_stores: 0
+  public_vector_loads: 13
+  overread: false
+register_contract:
+  allowed_vectors: [v0-v7, v16-v31]
+  forbidden_vectors: [v8-v15]
+  allowed_gprs: [x1, x2, x4]
+  spills: forbidden
+validation:
+  exact_dag: prove_tail_ntt16.py
+  remote_host: pinhao@172.25.166.141:51208
+  result: RA_OPTIMAL_split_heuristic_full_OK_16_N1_proxy_cycles
+  full_path_benchmark: pending

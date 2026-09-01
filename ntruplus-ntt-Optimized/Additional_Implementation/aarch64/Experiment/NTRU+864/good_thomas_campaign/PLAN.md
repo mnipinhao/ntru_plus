@@ -447,10 +447,18 @@ coefficient memory operations. Remote RA is OPTIMAL, real split-window
 scheduling completes at 83 N1-proxy cycles, and both artifacts use all 24
 caller-saved vectors `v0-v7,v16-v31` without `v8-v15`, stack, branch, store,
 or spill instructions.
+M5L `gt_forward_tail_ntt16_slothy` closes the strided-tail producer sub-gate.
+For one bank it performs sixteen exact `ld1` halfword lane loads with public
+`x4=16`, two branch-twist products, and a four-layer two-vector NTT16.  The
+length-2 multiply-by-one remains because it changes the exact representative
+at the proven bound.  Three `trn` boundaries plus two final `tbl` operations
+produce M5K's canonical two-tail-vector ABI.  The 65-instruction remote RA is
+OPTIMAL and split-window scheduling is full OK at 16 N1-proxy cycles; both
+artifacts assemble with no `v8-v15`, stack, store, branch, over-read, or spill.
 The next steps are:
 
-1. Prepend the exact pass-2 coefficient loads and NTT16 producer assembly for
-   one `(top,component)` bank, and prove that it enters M5K without spills.
+1. Add the sixteen-vector main P8 load/twist/NTT16 producer after M5L and prove
+   that both tail outputs survive until the combined region enters M5K.
 2. Add repeated-bank control and FR-0 stores only after that producer-consumer
    region passes, then audit linked closure and code size.
 3. Run the full Forward oracle, KEM/KAT, source closure, target-host

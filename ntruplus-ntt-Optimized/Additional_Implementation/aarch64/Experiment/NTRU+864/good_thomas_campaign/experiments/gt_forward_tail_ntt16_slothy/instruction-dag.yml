@@ -1,0 +1,17 @@
+nodes:
+  - id: gather
+    instructions: 18
+    detail: two movi definitions and sixteen x4-stride halfword lane loads
+  - id: fixed_products
+    instructions: 31
+    detail: thirteen public loads and six Algorithm-10 mul/sqrdmulh/mls triples
+  - id: butterflies
+    instructions: 14
+    detail: four add/sub pairs, three trn1/trn2 pairs
+  - id: canonicalize
+    instructions: 2
+    detail: two single-table tbl permutations using the already-counted public index load
+edges:
+  - gather -> fixed_products
+  - fixed_products -> butterflies
+  - butterflies -> canonicalize

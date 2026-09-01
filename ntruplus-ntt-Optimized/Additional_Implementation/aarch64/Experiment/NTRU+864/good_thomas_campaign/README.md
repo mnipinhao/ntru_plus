@@ -71,9 +71,14 @@ coefficient traffic or spills. M5K
 while all nine first-block outputs stay live. Its deterministic 333-instruction
 region is RA OPTIMAL and split-window full OK at 83 N1-proxy cycles. Both
 artifacts use all 24 caller-saved vectors `v0-v7,v16-v31`, with 32 public loads
-and no coefficient traffic, store, stack, branch, or spill. The real pass-2
-loads/NTT16 producer, repeated-bank Forward integration, full KEM, and
-SUPERCOP remain future gates.
+and no coefficient traffic, store, stack, branch, or spill. M5L
+`experiments/gt_forward_tail_ntt16_slothy` now realizes the non-contiguous tail
+half of the producer: sixteen exact x4-stride halfword loads and a packed
+two-vector NTT16 form a 65-instruction region. Remote RA is OPTIMAL and
+split-window full OK at 16 N1-proxy cycles; both artifacts assemble without
+over-read, `v8-v15`, stack, store, branch, or spill. The main sixteen-vector
+NTT16 producer, repeated-bank Forward integration, full KEM, and SUPERCOP
+remain future gates.
 
 Run only the authoritative GT C reference gate:
 

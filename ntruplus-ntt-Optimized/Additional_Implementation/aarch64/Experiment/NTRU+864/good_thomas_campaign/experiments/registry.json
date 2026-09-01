@@ -205,7 +205,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 19,
       "artifact_budget_waiver_reason": "The bounded two-block gate keeps the deterministic symbolic composer, exact structure/range proof, instruction DAG, fixed-tail and eighteen-output ABI, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus complete remote log independently auditable; transient build products remain ignored.",
-      "next": "prepend exact pass-2 loads and NTT16 producer assembly for one bank"
+      "next": "gt_forward_tail_ntt16_slothy"
+    },
+    {
+      "id": "gt_forward_tail_ntt16_slothy",
+      "path": "gt_forward_tail_ntt16_slothy",
+      "question": "Can the sixteen strided P8 tail coefficients for one bank be gathered exactly and transformed by a packed NTT16 into M5K's two-vector tail ABI without spill?",
+      "status": "passed",
+      "role": "forward_exact_tail_gather_packed_ntt16_and_slothy_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The bounded tail-producer gate keeps its exact coordinate/representative proof, real lane-load model, symbolic source, contracts, register flow, static and assembler audit, lifecycle and decision records, and returned allocated/scheduled assembly plus complete remote log independently auditable; transient build products remain ignored.",
+      "next": "prepend the sixteen-vector main P8 load/twist/NTT16 producer and enter M5K with both tail outputs live"
     }
   ]
 }

@@ -1,0 +1,12 @@
+iteration:
+  id: m5l-iter-001
+  mode: new_symbolic_kernel
+  current_state: oracle_correctness
+  hypothesis: exact strided tail gather and packed NTT16 fit caller-saved Neon without spill
+gates:
+  exact_coordinate_and_representative_dag: passed
+  real_lane_load_encoding: passed_x4_stride
+  remote_slothy_ra: passed_OPTIMAL
+  remote_real_schedule: passed_split_heuristic_full_OK
+  assembler: passed
+  full_path_benchmark: pending
