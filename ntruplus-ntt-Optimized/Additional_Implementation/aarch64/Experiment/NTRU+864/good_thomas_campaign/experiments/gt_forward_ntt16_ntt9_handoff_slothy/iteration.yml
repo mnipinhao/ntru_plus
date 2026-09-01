@@ -1,0 +1,37 @@
+iteration:
+  id: m5j-iter-001
+  mode: new_symbolic_kernel
+  current_state: oracle_correctness
+  hypothesis: two NTT16 column blocks can cross the real physical boundary, transpose in registers, preserve one nine-vector block, and completely consume the other without spill or coefficient memory traffic
+  changed_artifacts:
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - gt864_forward_ntt16_ntt9_handoff.sym.S
+    - optimize.py
+    - prove_handoff.py
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: gt864_forward_ntt16_ntt9_handoff.sym.S
+  slothy_driver: optimize.py
+  allocation_output: slothy-output/gt864_forward_ntt16_ntt9_handoff.n1.alloc.S
+  slothy_output: slothy-output/gt864_forward_ntt16_ntt9_handoff.n1.opt.S
+  slothy_log: slothy-output/gt864_forward_ntt16_ntt9_handoff.n1.log
+  candidate_contract: candidate-contract.yml
+gates:
+  coordinate_map: passed_144_exact_coordinates
+  range_contract: passed_ntt16_9342_twist_3436_complete_ntt9_28568
+  kernel_contract: passed
+  symbolic_asm: passed_190_real_instructions_no_physical_vectors
+  remote_slothy_allocation: passed_OPTIMAL_order_preserved_no_spill
+  remote_slothy_schedule: passed_split_heuristic_full_OK_47_N1_proxy_cycles
+  emitted_assembly: passed_local_AArch64_assembler
+  register_audit: passed_all_23_allocatable_vectors_no_v8_v16_or_spill
+  full_path_benchmark: pending
+notes:
+  - v8-v15 are ABI-forbidden
+  - v16 is the fixed live-through held row-8 tail and is intentionally absent from instructions
+  - v0-v7 and v17-v31 are the 23-register allocator set
+  - the sixteen ldr instructions read public twist constants only

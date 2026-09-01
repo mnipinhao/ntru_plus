@@ -1,0 +1,20 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel_contract: kernel-contract.yml
+instruction_dag: instruction-dag.yml
+symbolic_source: gt864_forward_ntt16_ntt9_handoff.sym.S
+slothy_workflow: RA-only_then_real_split-window_schedule
+allocatable_vectors: v0_through_v7_and_v17_through_v31
+fixed_live_through: v16_is_held_s8_tail
+physical_liveouts: [v18,v27,v28,v1,v26,v4,v2,v25,v3,v21,v17,v20,v7,v23,v24,v31,v22]
+slothy_result: RA_OPTIMAL_and_split_heuristic_full_OK
+slothy_version: 0.2.2
+slothy_checkout_revision: d636d638d06b370d1acc5774ca31c9572d3d2e6f
+n1_proxy_expected_cycles: 47
+spill_policy: forbidden
+oracle_correctness: M5G_exact_DAG_and_M5F_C_oracle_inherited
+full_path_benchmark: missing
+promotion_blockers:
+  - remaining second column block is not yet twisted or consumed
+  - full Forward wrapper and Pi 5 SUPERCOP benchmark are unavailable
+production_linked: false

@@ -60,8 +60,14 @@ all three level-2 B3s. Its 102-instruction RA-first gate is OPTIMAL, and the
 corrected physical-live-out split-window pass ends in
 `split_heuristic_full:OK!` at 25 N1-proxy cycles. Both artifacts use exactly
 `v0-v7,v25-v31` with no spill or reserved-register use. NTT16-to-NTT9 physical
-handoff, handwritten forward integration, full KEM, and SUPERCOP remain future
-gates.
+handoff is now closed by M5J
+`experiments/gt_forward_ntt16_ntt9_handoff_slothy`: two exact 8x8 transposes,
+eight lane twists, and one complete NTT9 form a 190-instruction region. Remote
+RA is OPTIMAL and split-window scheduling completes at 47 N1-proxy cycles.
+The returned artifacts use exactly `v0-v7,v17-v31`; forbidden `v8-v15` and
+fixed held-tail `v16` remain untouched, with sixteen public table loads and no
+coefficient traffic or spills. Consuming the held block, handwritten Forward
+integration, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

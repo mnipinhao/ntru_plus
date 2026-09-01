@@ -1,0 +1,192 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_ntt16_ntt9_handoff
+  name: GT864 NTT16 column-to-oriented-NTT9 fused handoff
+  source: gt864_forward_ntt16_ntt9_handoff.sym.S
+  scheme: NTRU+864
+  operation: transpose two NTT16 column blocks, twist one block, and consume it with the complete paper-oriented NTT9 while preserving the other block
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: RA-only allocation over 190 real instructions followed by real-instruction split-window scheduling
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_ntt16_ntt9_handoff.n1.alloc.S
+    - build/gt864_forward_ntt16_ntt9_handoff.n1.opt.S
+    - build/gt864_forward_ntt16_ntt9_handoff.n1.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_ntt16_ntt9_handoff_slothy_start
+  end_label: gt864_forward_ntt16_ntt9_handoff_slothy_end
+  expected_instruction_count: 190
+  live_in:
+    - Q<c0>
+    - Q<c1>
+    - Q<c2>
+    - Q<c3>
+    - Q<c4>
+    - Q<c5>
+    - Q<c6>
+    - Q<c7>
+    - Q<c8>
+    - Q<c9>
+    - Q<c10>
+    - Q<c11>
+    - Q<c12>
+    - Q<c13>
+    - Q<c14>
+    - Q<c15>
+    - Q<tail0>
+    - Q<roots>
+    - Q<modq>
+    - fixed v16 contains row-coordinate s=8 for columns 8..15 and is live-through
+    - x3 points to the public block-specific NTT9 twist table
+  live_out:
+    - Q<out0>
+    - Q<out1>
+    - Q<out2>
+    - Q<out3>
+    - Q<out4>
+    - Q<out5>
+    - Q<out6>
+    - Q<out7>
+    - Q<out8>
+    - Q<hold0>
+    - Q<hold1>
+    - Q<hold2>
+    - Q<hold3>
+    - Q<hold4>
+    - Q<hold5>
+    - Q<hold6>
+    - Q<hold7>
+    - fixed v16 still contains row-coordinate s=8 for columns 8..15
+    - x3 is advanced by 256 public bytes
+
+abi:
+  inputs:
+    - symbolic Q<c0> through Q<c15>, Q<tail0>, Q<roots>, Q<modq>
+    - fixed live-through v16 holds the second block tail
+    - concrete public table pointer x3
+  outputs:
+    - symbolic Q<out0> through Q<out8> and Q<hold0> through Q<hold7>
+    - fixed live-through v16 remains the second block tail
+    - updated concrete public table pointer x3
+  clobbers:
+    - SSA-named transpose nodes, twist constants, quotient estimates, fixed products, sums, and B3 partials
+  concrete_gprs_allowed:
+    - x3
+  fixed_vector_registers:
+    - v16
+  reserved_registers:
+    - sp
+    - x0
+    - x1
+    - x2
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: two 24-instruction 8x8 halfword transposes, sixteen public constant loads, eight Algorithm-10 twists, and the 102-instruction M5I complete NTT9 core
+
+layout:
+  input_representation: sixteen NTT16 column vectors with s0..s7 in lanes plus two s8 tail vectors
+  producer_main: Q<cN>.h[s] is NTT16 output at column N and row-coordinate s for N=0..15 and s=0..7
+  producer_tail: Q<tail0>.h[lane] and fixed v16.h[lane] are row-coordinate s=8 for columns lane and 8+lane
+  consumer_current: Q<fS>.h[lane] is row-coordinate S at column lane for columns 0..7
+  consumer_held: Q<holdS>.h[lane] is row-coordinate S at column 8+lane; fixed v16 is S=8; all remain untwisted
+  output_representation: paper-oriented NTT9 order for columns 0..7 plus untouched consumer-ready columns 8..15
+  vector_lanes: eight independent signed int16 columns after transpose
+
+memory_contract:
+  loads:
+    - sixteen sequential 16-byte public twist-constant loads from x3
+  stores:
+    - none
+  coefficient_loads_or_stores: none
+  public_table_bytes: 256
+  aliasing: twist table is read-only and disjoint from coefficients
+  alignment: x3 is 16-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x3 advances by 16 bytes after each load, 256 bytes total
+
+constant_contract:
+  constants:
+    - Q<roots>.h[0..7]=rho,rho-prime,rho2,rho2-prime,eta,eta-prime,eta-inverse,eta-inverse-prime
+    - Q<modq>=3457 in every halfword
+    - for s=1..8 the table stores b_s[8] followed by bprime_s[8]
+    - b_s[lane]=theta^((residue+6*lane)*s) centered modulo 3457 for the selected top and column block
+    - bprime_s[lane]=round(b_s[lane]*2^15/3457)
+  modulus: 3457
+  representation: normal R0 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul/sqrdmulh/mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - exact NTT16 producer intervals from M5G, maximum magnitude 9342
+  intermediate_ranges:
+    - transpose preserves exact values
+    - every twist output has magnitude at most 3436
+    - complete correlation-aware NTT9 core maximum magnitude is 28568
+  output_ranges:
+    - transformed block union is [-28568,28565]
+    - held block retains the exact NTT16 producer intervals
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - coefficient vectors Q<c0> through Q<c15>, Q<tail0>, and fixed live-through v16
+  public_inputs:
+    - roots, modulus, public twist table, fixed instruction sequence
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ../gt_forward_composition_barrett check
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_full_Forward_integration
+  benchmark_metric: cycles
+  lower_is_better: true

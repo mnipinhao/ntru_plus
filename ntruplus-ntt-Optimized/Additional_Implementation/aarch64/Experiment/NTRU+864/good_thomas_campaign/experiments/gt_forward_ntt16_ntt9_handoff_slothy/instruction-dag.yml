@@ -1,0 +1,67 @@
+dag:
+  id: gt864_forward_ntt16_ntt9_handoff_dag
+  kernel_contract: kernel-contract.yml
+  description: exact producer-column to oriented-NTT9 consumer boundary with one block consumed and one block preserved
+
+inputs:
+  vectors: [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,tail0,roots,modq]
+  fixed_vectors: [v16]
+  gprs: [x3]
+
+templates:
+  transpose8x8_s16:
+    instruction_count: 24
+    stages:
+      - eight trn1/trn2 .8h operations pair adjacent columns
+      - eight trn1/trn2 .4s operations merge four-column groups
+      - eight trn1/trn2 .2d operations produce one row-coordinate per vector
+    output_order: [row0,row1,row2,row3,row4,row5,row6,row7]
+    range_change: none
+  twist_fixed_barrett:
+    instruction_count: 5
+    instructions:
+      - ldr Q<twist>, [x3], #16
+      - ldr Q<twist_prime>, [x3], #16
+      - sqrdmulh quotient,input,twist_prime
+      - mul output,input,twist
+      - mls output,quotient,modq
+    table_bytes: 32
+    tied_operands:
+      - x3 is read-write in each load
+      - mls output is read-write
+  complete_ntt9:
+    source: ../gt_forward_ntt9_core_slothy/instruction-dag.yml
+    instruction_count: 102
+
+instantiations:
+  - {id: transpose_columns_0_7, template: transpose8x8_s16, inputs: [c0,c1,c2,c3,c4,c5,c6,c7], outputs: [f0_raw,f1_raw,f2_raw,f3_raw,f4_raw,f5_raw,f6_raw,f7_raw]}
+  - {id: transpose_columns_8_15, template: transpose8x8_s16, inputs: [c8,c9,c10,c11,c12,c13,c14,c15], outputs: [hold0,hold1,hold2,hold3,hold4,hold5,hold6,hold7]}
+  - {id: twist_s1, template: twist_fixed_barrett, inputs: [f1_raw,x3,modq], outputs: [f1,x3]}
+  - {id: twist_s2, template: twist_fixed_barrett, inputs: [f2_raw,x3,modq], outputs: [f2,x3]}
+  - {id: twist_s3, template: twist_fixed_barrett, inputs: [f3_raw,x3,modq], outputs: [f3,x3]}
+  - {id: twist_s4, template: twist_fixed_barrett, inputs: [f4_raw,x3,modq], outputs: [f4,x3]}
+  - {id: twist_s5, template: twist_fixed_barrett, inputs: [f5_raw,x3,modq], outputs: [f5,x3]}
+  - {id: twist_s6, template: twist_fixed_barrett, inputs: [f6_raw,x3,modq], outputs: [f6,x3]}
+  - {id: twist_s7, template: twist_fixed_barrett, inputs: [f7_raw,x3,modq], outputs: [f7,x3]}
+  - {id: twist_s8, template: twist_fixed_barrett, inputs: [tail0,x3,modq], outputs: [f8,x3]}
+  - {id: ntt9_current_block, template: complete_ntt9, inputs: [f0_raw,f1,f2,f3,f4,f5,f6,f7,f8,roots,modq], outputs: [out0,out1,out2,out3,out4,out5,out6,out7,out8]}
+
+live_through:
+  - fixed v16 is hold8 without an instruction and remains unchanged
+  - hold0 through hold7 and fixed v16 remain live while the current block is twisted and consumed
+
+memory:
+  coefficient_loads: []
+  coefficient_stores: []
+  public_constant_loads: 16
+  public_constant_bytes: 256
+  ordering_constraints:
+    - x3 post-increment serializes public table order s1 through s8
+
+outputs: [out0,out1,out2,out3,out4,out5,out6,out7,out8,hold0,hold1,hold2,hold3,hold4,hold5,hold6,hold7,v16,x3]
+review:
+  expected_instruction_count: 190
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

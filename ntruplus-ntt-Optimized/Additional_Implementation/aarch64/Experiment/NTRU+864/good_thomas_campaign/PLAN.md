@@ -431,12 +431,20 @@ Slothy instance declares the extracted nine physical live-outs explicitly and
 finishes split-window scheduling with `split_heuristic_full:OK!`. The returned
 allocation and schedule both use exactly the same fifteen allowed registers,
 with no reserved vector, spill, stack, memory, branch, or GPR instruction.
+M5J `gt_forward_ntt16_ntt9_handoff_slothy` now closes the previously assumed
+producer boundary. Two exact 8x8 transposes convert sixteen NTT16 column
+vectors into current and held NTT9 row blocks; fixed `v16` preserves the held
+`s=8` tail. Eight lane-dependent Algorithm-10 twists feed the complete M5I
+core. The 190-instruction remote RA is OPTIMAL and real split-window
+scheduling completes at 47 N1-proxy cycles. Both artifacts use exactly
+`v0-v7,v17-v31`, leave `v8-v16` untouched, and contain only sixteen public
+table loads with no coefficient traffic, store, stack, branch, or spill.
 The next steps are:
 
-1. Derive the exact NTT16 producer live-out placement and constrain or cost the
-   handoff into the M5I NTT9 input ABI; the solver's register numbers are not a
-   free stable ABI.
-2. Realize the fused Forward only after that boundary fits without an
+1. Consume the held NTT9 block while all nine first-block outputs remain live;
+   make fixed `v16` a real second-block input and retain zero coefficient
+   memory traffic.
+2. Realize the fused Forward only after both block consumers fit without an
    intermediate load/store, then audit linked closure and code size.
 3. Run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

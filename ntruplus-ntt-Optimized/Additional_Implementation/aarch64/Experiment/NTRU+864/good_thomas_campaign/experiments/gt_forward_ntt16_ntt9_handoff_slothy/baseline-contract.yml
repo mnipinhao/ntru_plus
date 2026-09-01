@@ -1,0 +1,12 @@
+baseline: M5F_exact_NTT16_column_schedule_plus_M5I_complete_NTT9_core
+producer_source: ../gt_ntt16_producer_range/gt864_ntt16.c
+consumer_source: ../gt_forward_ntt9_core_slothy/gt864_forward_ntt9_core.sym.S
+producer_vectors: sixteen main columns plus two s8 tail vectors
+required_layout_operation: two independent 8x8 signed-halfword transposes
+required_twists: eight Algorithm-10 lane-dependent products for the consumed block
+coefficient_memory_boundary: forbidden
+caller_saved_vector_budget: 24
+range_proof: prove_handoff.py
+full_path_integrated: false
+full_path_benchmark_available: false
+production_linked: false

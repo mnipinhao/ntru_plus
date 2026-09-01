@@ -183,7 +183,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 17,
       "artifact_budget_waiver_reason": "The bounded complete-core gate keeps the exact imported range proof, instruction DAG, SSA symbolic source, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus log independently auditable; transient build products remain ignored.",
-      "next": "derive exact NTT16 producer to NTT9 consumer physical ABI"
+      "next": "gt_forward_ntt16_ntt9_handoff_slothy"
+    },
+    {
+      "id": "gt_forward_ntt16_ntt9_handoff_slothy",
+      "path": "gt_forward_ntt16_ntt9_handoff_slothy",
+      "question": "Can the exact NTT16 producer layout transpose, lane-twist, and consume one NTT9 block while preserving the other block without coefficient memory traffic?",
+      "status": "passed",
+      "role": "forward_ntt16_to_ntt9_physical_abi_and_slothy_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The bounded physical-ABI gate keeps the coordinate/table/range proof, instruction DAG, SSA source, fixed-tail ABI, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus complete remote log independently auditable; transient build products remain ignored.",
+      "next": "consume the held NTT9 block while preserving all first-block outputs"
     }
   ]
 }
