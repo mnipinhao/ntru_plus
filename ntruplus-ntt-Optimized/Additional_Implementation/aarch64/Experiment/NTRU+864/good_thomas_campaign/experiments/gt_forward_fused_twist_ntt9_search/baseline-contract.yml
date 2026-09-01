@@ -1,0 +1,40 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: gt864_forward_one_bank_m5r_b
+  source: ../gt_forward_full_register_pass2_dag/gt864_forward_one_bank_full_register_pinned.sym.S
+  extracted_region: baseline-region.S
+  start_label: gt864_forward_one_bank_full_register_pinned_slothy_start
+  end_label: gt864_forward_one_bank_full_register_pinned_slothy_end
+region:
+  instruction_count: 617
+  block_instruction_count: 136
+  historical_pre_m5r_block_instruction_count: 142
+  live_in: [x0, x1, x2, x3, x4, v13, v14, v15]
+  live_out: [out0-through-out17, x0, x1, x2, x3]
+abi:
+  inputs: [x0, x1, x2, x3, x4, v13, v14, v15]
+  outputs: [out0-through-out17, x0, x1, x2, x3]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13, v14, v15, v16, v17]
+  reserved_registers: [sp, x5-x30, v13, v14, v15, v16, v17]
+memory_contract:
+  loads: [sixteen-tail-halfwords, sixteen-main-vectors, fifty-three-public-constant-vectors]
+  stores: [none]
+  alignment: x0 x2 x3 are 16-byte aligned and x1 is 2-byte aligned
+  pointer_updates: [x0-plus-256, x1-plus-256, x2-plus-336, x3-plus-512]
+constant_contract:
+  modulus: 3457
+  representation: R0
+  reduction_method: Algorithm-10 fixed Barrett
+range_contract:
+  input_ranges: ['[-15752,15752]']
+  intermediate_ranges: ['NTT16 abs <= 9342', 'twists abs <= 3436']
+  output_ranges: ['[-28568,28565]']
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 617
+  full_forward_instructions: 4734
+  full_forward_pi5_p50_cycles: 4669.251475

@@ -473,11 +473,35 @@ has no intermediate coefficient traffic. Actual arm64 assembly passes every
 meaningful input basis coordinate plus bound and random cases: 1122 exact
 representative comparisons with M5F, zero mismatches. Its linked object is
 4928 bytes with zero undefined symbols or stack instructions.
+M5O through M5R subsequently close the complete Forward, dynamic-cost, and
+full-register gates.  M5R-B is the current experimental GT Forward: its bank
+uses 617 instructions, Pass-2 3861, and complete Forward 4734.  It is correct,
+ABI-safe, no-spill, and 0.5517% faster than M5O on Pi 5, but remains 6.1925%
+slower than Official and is not Production-linked.
+
+M5S `gt_forward_fused_twist_ntt9_search` separates Forward-local fusion from
+transform-domain ABI changes.  Exact enumeration proves cyclic B3 orientation
+cannot reduce the four eta corrections.  Pairing the eight `(b,bprime)` loads
+per block passes the `<142` static gate (136 to 128), produces a 601-instruction
+no-spill Slothy bank and lowers complete Forward to 4638 instructions, but Pi 5
+cycles regress by 0.7545%; the load-fusion candidate is rejected.
+
+M5T `gt_delayed_twist_abi_algebra` separately rejects the proposed scalar
+pending-factor model.  Removing `lambda^s` changes the evaluation coset and is
+not `d_k` times a permuted FR-0 transform for any of the 32 leaves.  Only
+`lambda -> lambda*eta^a` survives as a pure row rotation.  The 864-slot C
+boundary oracle verifies this rotation through BaseMul and Inverse, but it
+does not remove the lambda twist or reduce total cost.
+
 The next steps are:
 
-1. Implement the exact top-split producer for the 896-halfword P8 contract and
-   compose it with M5N as an experimental complete `poly_ntt`.
-2. Differential-test complete Forward output against the official transform
-   and audit the linked top-split/pass-2 boundary.
-3. Run full KEM/KAT, source closure, target-host
-   attribution, and SUPERCOP before any Production decision.
+1. Retain M5R-B as the experimental Forward baseline and retain Official as
+   Production.
+2. Reopen Forward-local fusion only with an exact arithmetic DAG that removes
+   at least one Algorithm-10 multiplication; instruction-encoding reductions
+   alone are not a sufficient hypothesis.
+3. Permit transform-domain ABI candidates only after the shared
+   `phase-layout-ledger.yml` basis relation proves their pending factor and
+   permutation.  Compare Forward + BaseMul + Inverse, never Forward alone.
+4. Run full KEM/KAT and SUPERCOP only after a candidate beats M5R-B and
+   approaches or beats Official in the relevant complete path.

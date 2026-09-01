@@ -1,0 +1,34 @@
+kernel_id: gt864_forward_one_bank_paired_twist_loads
+inputs:
+  secret: [unchanged-P8-coefficients]
+  public: [x0, x1, x2, x3, x4, fixed-tables, v13, v14, v15]
+preserved_nodes:
+  - tail-producer
+  - NTT16-producer
+  - transpose-and-held-block
+  - sixteen-Algorithm10-input-twists
+  - twenty-four-radix3-Algorithm10-products
+  - eta-corrections
+  - eighteen-FR0-liveouts
+replaced_nodes:
+  - id: first-block-eight-paired-twist-loads
+    before: sixteen ordered ldr q instructions
+    after: eight ordered ldp q,q instructions
+  - id: second-block-eight-paired-twist-loads
+    before: sixteen ordered ldr q instructions
+    after: eight ordered ldp q,q instructions
+dependencies:
+  - each ldp produces the exact b and bprime consumed by one Algorithm-10 multiply
+  - x3 advances by 32 bytes per pair and 512 bytes over the bank exactly as before
+  - no arithmetic node or coefficient-memory node changes
+memory_invariants:
+  coefficient_loads: unchanged
+  coefficient_stores_inside_region: 0
+  public_constant_bytes: unchanged
+  new_memory_boundaries: 0
+instruction_accounting:
+  baseline_bank: 617
+  removed_load_instructions: 16
+  candidate_bank: 601
+  baseline_block_after_M5R: 136
+  candidate_block: 128

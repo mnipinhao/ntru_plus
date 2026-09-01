@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_forward_one_bank_paired_twist_loads
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: []
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 0
+  candidate_expected_cycles: 0
+  parity_justification: functional RA has no timing objective; real split-window scheduling succeeds and Pi5 PMU is authoritative
+  log_json: manual audit because canonical parser treats the benign Setting-timeout configuration line as a failure token
+benchmark:
+  status: pass
+  command: python3 run_pi5.py
+  metric: cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.25
+  baseline: 4668.3567
+  candidate: 4703.579875
+decision:
+  reason: 96 fewer instructions regress complete Forward cycles by 0.754509 percent
+  next_iteration: require removal of at least one Algorithm-10 multiplication before reopening Forward-local fusion

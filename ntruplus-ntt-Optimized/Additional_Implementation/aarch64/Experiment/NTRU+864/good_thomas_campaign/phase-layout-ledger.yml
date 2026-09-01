@@ -1,0 +1,33 @@
+schema: gt864-phase-layout-v1
+coordinate:
+  physical: [top, row, column, component]
+  leaf_group: top*18+row*2+column//8
+  lane: column%8
+logical_root:
+  theta: 9
+  modulus: 3457
+  top_residue: [1, 5]
+  lambda: theta^(top_residue+6*column)
+  eta: theta^96
+  zeta: lambda*eta^row
+pending_factor:
+  FR0: 1
+  scalar_delayed_twist: invalid-because-untwisted-transform-is-not-diagonal-times-permuted-FR0
+pending_permutation:
+  lambda_to_lambda_eta_power_a: physical-row-k-represents-logical-row-k-plus-a-mod-9
+scale:
+  forward_input: R0
+  fixed_Barrett_constant: R0-with-precomputed-reciprocal
+  forward_output: R0
+  BaseMul_internal: widening-Montgomery-as-documented-by-FR0-consumer
+bound:
+  pass2_input_abs: 15752
+  ntt16_abs: 9342
+  post_twist_abs: 3436
+  FR0_output: [-28568, 28565]
+operations:
+  input_geometric_factor: updates-lambda-coset-and-is-not-generally-a-leaf-scalar
+  lambda_eta_orientation: updates-row-permutation-only
+  cyclic_B3_orientation: changes-phases-by-powers-of-rho-equals-eta^3
+  carry_scalar_to_basemul: allowed-only-after-basis-proof-of-diagonal-equivalence
+  carry_row_rotation_to_basemul: rotate-zeta-table-and-inverse-row-map-together

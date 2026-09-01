@@ -1,0 +1,44 @@
+candidate:
+  id: gt864_forward_one_bank_paired_twist_loads
+  status: reject
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: gt864_forward_one_bank_paired_twist_loads.sym.S
+contract_preservation:
+  baseline_compared: true
+  preserved: true
+  approved_changes: false
+region:
+  instruction_count: 601
+  block_instruction_count: 128
+  live_in: [x0, x1, x2, x3, x4, v13, v14, v15]
+  live_out: [out0-through-out17, x0, x1, x2, x3]
+abi:
+  inputs: [x0, x1, x2, x3, x4, v13, v14, v15]
+  outputs: [out0-through-out17, x0, x1, x2, x3]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13, v14, v15, v16, v17]
+  reserved_registers: [sp, x5-x30, v13, v14, v15, v16, v17]
+memory_contract:
+  loads: [sixteen-tail-halfwords, sixteen-main-vectors, fifty-three-public-constant-vectors]
+  stores: [none]
+  alignment: x0 x2 x3 are 16-byte aligned and x1 is 2-byte aligned
+  pointer_updates: [x0-plus-256, x1-plus-256, x2-plus-336, x3-plus-512]
+constant_contract:
+  modulus: 3457
+  representation: R0
+  reduction_method: Algorithm-10 fixed Barrett
+range_contract:
+  input_ranges: ['[-15752,15752]']
+  intermediate_ranges: ['NTT16 abs <= 9342', 'twists abs <= 3436']
+  output_ranges: ['[-28568,28565]']
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+evidence:
+  remote_slothy: RA-OPTIMAL-no-spill-and-split-heuristic-full-OK
+  linked_correctness: pass
+  full_forward_instructions: 4638
+  Pi5_p50_cycles: 4703.579875
+  baseline_Pi5_p50_cycles: 4668.3567
+  regression_percent: 0.754509

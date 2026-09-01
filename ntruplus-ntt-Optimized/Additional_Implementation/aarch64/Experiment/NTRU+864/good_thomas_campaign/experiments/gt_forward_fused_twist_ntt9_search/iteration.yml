@@ -1,0 +1,18 @@
+iteration: M5S-A
+mode: existing_region_replacement
+hypothesis: cyclic B3 orientations cannot remove eta corrections, but paired b/bprime loads can reduce each copy-free Forward NTT9 block from 136 to 128 without changing arithmetic or memory boundaries
+state: iteration_or_promote
+changed_artifacts:
+  - exact baseline region
+  - algebra and cost search
+  - paired-load symbolic candidate
+gates:
+  exact_instruction_count_below_142: pass-128
+  remove_mulmod_or_two_constant_loads: pass-eight-load-instructions-per-block
+  root_scale_range_machine_check: pass
+  no_spill: pass-remote-slothy-RA-OPTIMAL
+  coefficient_memory_boundary: pass-unchanged
+  FR0_pure_permutation: pass-identity
+  linked_correctness: pass
+  Pi5_full_forward: fail-plus-0.7545-percent-cycles
+status: reject

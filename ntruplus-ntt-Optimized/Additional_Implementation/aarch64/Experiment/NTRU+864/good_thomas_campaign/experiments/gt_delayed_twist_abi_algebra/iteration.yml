@@ -1,0 +1,12 @@
+iteration: M5T-A
+scope: explore
+mode: design
+hypothesis: a missing lambda twist can cross the transform boundary as per-leaf scalar factors or row rotations
+oracle: compare ordinary FR0 Forward-BaseMul-Inverse with candidate ABI across all 864 boundary coefficients
+gates:
+  scalar_diagonal_permutation_relation: fail
+  row_rotation_relation: pass
+  complete_864_boundary_multiplication: pass-746496-comparisons-for-row-rotation-subfamily
+  natural_coefficient_polynomial_multiplication: blocked-by-failed-scalar-premise
+  no_extra_memory_pass: not-claimed-before-a-viable-cost-reducing-ABI-exists
+status: reject
