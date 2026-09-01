@@ -29,8 +29,11 @@ stack/register, formal-range, and leaf-map gates. Its producer bound is
 actual twisted radix-2 producer reaches at most 8874 with no extra Barrett
 reduction. Its intrinsics spill, so assembly memory scheduling remains open;
 M5C `experiments/gt_fr0_basemul_arithmetic` now consumes the generated zetas
-in working BaseMul/BaseMulAdd tile arithmetic with proved int32/R0 bounds.
-Inverse arithmetic, full KEM, and SUPERCOP remain future gates.
+in working BaseMul/BaseMulAdd tile arithmetic with proved int32/R0 bounds. M5D
+`experiments/gt_fr0_inverse_consumer` closes the matching inverse arithmetic:
+inverse NTT9 returns FR-0 to P8+tail, while packed alpha/beta inverse NTT16 and
+top recombination finish in the second pass without a top-branch scratch.
+Handwritten inverse assembly, full KEM, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

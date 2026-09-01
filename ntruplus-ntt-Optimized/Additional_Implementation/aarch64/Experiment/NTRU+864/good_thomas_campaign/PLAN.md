@@ -392,13 +392,17 @@ radix-2 NTT16 schedule reaches at most 8874, below M5A's 15752 limit. No extra
 Barrett reduction is needed. The intrinsics realization spills its 16-vector
 array, so it freezes arithmetic/range but not the final memory schedule.
 
-M5C `gt_fr0_basemul_arithmetic` now closes the first item: generated FR-0
-zetas are consumed by working 36-tile BaseMul/BaseMulAdd arithmetic, match the
-official leaves through a bijection, and pass exact, canonical, alias, and
-int32/scale gates. The next steps are:
+M5C `gt_fr0_basemul_arithmetic` closes BaseMul/BaseMulAdd. M5D
+`gt_fr0_inverse_consumer` now closes the inverse permutation and arithmetic:
+FR-0 returns to P8 through inverse NTT9, then a packed alpha/beta inverse NTT16
+recombines directly to natural coefficients. It proves the M5C `[-2168,2168]`
+input contract, a 19512 maximum lazy halfword magnitude, a 3696 output bound,
+and exactly two algorithmic full-buffer load/store passes. The intrinsic
+compiler spills, so the next steps are:
 
-1. Implement and verify the matching inverse arithmetic/permutation path.
-2. Handwrite the NTT16 producer/composition with an explicit register budget,
+1. Handwrite and cost the inverse memory/component-store realization while
+   preserving M5D's packed-top ABI and two-pass boundary.
+2. Handwrite the forward NTT16 producer/composition with an explicit register budget,
    preserving M5B arithmetic and the intended two-load/two-store schedule.
 3. Only then run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

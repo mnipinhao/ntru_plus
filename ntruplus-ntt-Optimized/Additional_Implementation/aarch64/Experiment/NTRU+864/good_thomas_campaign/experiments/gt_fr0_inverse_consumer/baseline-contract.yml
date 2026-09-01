@@ -1,0 +1,14 @@
+id: gt_fr0_inverse_consumer
+scope: default_off_experiment
+parameter_set: NTRU+864
+input:
+  layout: FR-0_36_tiles_SoA_3x8
+  scale: R0
+  bound: [-2168, 2168]
+  source: M5C_BaseMulAdd_contract
+oracle:
+  - direct_inverse_ntt9_relation
+  - official_scalar_invntt_mod_q
+  - normalized_forward_inverse_roundtrip
+  - full_schoolbook_quotient_ring_product
+production_linked: false

@@ -1,0 +1,22 @@
+passes:
+  - input: FR-0_SoA
+    operation: inverse_oriented_NTT9_and_inverse_twist
+    output: P8_plus_tail
+  - input: P8_plus_tail
+    operation: packed_alpha_beta_inverse_NTT16_and_top_recombine
+    output: natural_864_coefficients
+scale:
+  input: R0
+  public_tables: R1
+  intermediate: R0
+  output: R0_bounded_noncanonical
+memory_contract:
+  algorithmic_full_buffer_loads: 2
+  algorithmic_full_buffer_stores: 2
+  full_top_branch_scratch: false
+  external_P8_scratch_coefficients: 896
+aliasing:
+  pass1_input_output: disjoint
+  pass2_input_output: disjoint
+padding: P8_tail_lanes_6_7_are_dont_care
+non_goal: production_performance_or_stackless_assembly

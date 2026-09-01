@@ -1,0 +1,16 @@
+id: M5D
+question: >-
+  Can FR-0 BaseMul/BaseMulAdd output be inverted with exact coordinate, scale,
+  and range closure using two full-buffer memory passes and no top-branch
+  scratch?
+status: passed
+evidence:
+  inverse_cases: 49
+  product_cases: 8
+  all_correctness_mismatches: 0
+  inverse9_p8_max_abs: 2048
+  maximum_halfword_abs_any_stage: 19512
+  final_output_max_abs: 3696
+  algorithmic_load_store_passes: 2_load_2_store
+limitation: compiler_intrinsics_spill_handwritten_assembly_required
+next: handwritten_inverse_memory_schedule_and_component_store_realization
