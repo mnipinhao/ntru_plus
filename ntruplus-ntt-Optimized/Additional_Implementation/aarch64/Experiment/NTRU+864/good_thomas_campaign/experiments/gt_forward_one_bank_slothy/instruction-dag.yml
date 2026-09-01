@@ -1,0 +1,60 @@
+kernel_id: gt864_forward_one_bank
+
+inputs:
+  secret:
+    - main coefficients P8[bank][t][s0-s7]
+    - strided tail coefficients P8[tail][t][bank]
+  public:
+    - x0 x1 x2 x3 x4 x5 and all fixed tables
+
+nodes:
+  - id: common_modulus
+    outputs: [modq]
+    instructions: [ldr]
+    range: q exactly 3457 in every halfword
+  - id: tail_producer
+    inputs: [x1, x2, x4, modq]
+    outputs: [fixed_v17_tail0, fixed_v16_tail1]
+    instructions: [movi, ld1_lane, ldr, mul, sqrdmulh, mls, add, sub, trn1, trn2, tbl]
+    count: 65
+    ordering: x1 and x2 post-increment chains are ordered
+    range: exact M5G NTT16 maximum 9342
+  - id: main_branch_twist
+    inputs: [x0, x2, modq]
+    outputs: [state_br0_through_state_br15]
+    instructions: [ldr_coefficient, ldr_packed_constants, mul_lane, sqrdmulh_lane, mls]
+    count: 68
+    layout: natural t input is named into state[bit_reverse4(t)] without an instruction permutation
+  - id: main_ntt16_layers
+    inputs: [state_br0_through_state_br15, x2, modq]
+    outputs: [c0_through_c15]
+    instructions: [ldr_packed_constants, mul_lane, sqrdmulh_lane, mls, add, sub]
+    count: 165
+    stage_lengths: [2, 4, 8, 16]
+    true_dependencies: every right operand fixed product precedes its add and sub; each stage output precedes the next stage
+    range: exact M5G NTT16 maximum 9342
+  - id: delayed_roots
+    inputs: [x5]
+    outputs: [roots]
+    instructions: [ldr]
+    count: 1
+    ordering: occurs after main NTT16 so roots do not consume producer register budget
+  - id: two_block_consumer
+    inputs: [c0_through_c15, fixed_v17_tail0, fixed_v16_tail1, roots, modq, x3]
+    outputs: [out0_through_out17]
+    instructions: [M5K_exact_333_instruction_region]
+    count: 333
+    range: complete output union [-28568,28565]
+
+edges:
+  - common_modulus -> tail_producer
+  - common_modulus -> main_branch_twist
+  - tail_producer -> two_block_consumer
+  - main_branch_twist -> main_ntt16_layers
+  - main_ntt16_layers -> two_block_consumer
+  - delayed_roots -> two_block_consumer
+
+memory_order:
+  - x1 lane loads remain in increasing public t order
+  - x0 vector loads remain in increasing public t order
+  - each post-increment public table chain remains ordered

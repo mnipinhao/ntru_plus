@@ -455,11 +455,19 @@ at the proven bound.  Three `trn` boundaries plus two final `tbl` operations
 produce M5K's canonical two-tail-vector ABI.  The 65-instruction remote RA is
 OPTIMAL and split-window scheduling is full OK at 16 N1-proxy cycles; both
 artifacts assemble with no `v8-v15`, stack, store, branch, over-read, or spill.
+M5M `gt_forward_one_bank_slothy` now closes the complete bounded one-bank
+producer-consumer gate. It adds sixteen sequential main P8 loads, packed
+branch/stage constants, and the exact four-layer main NTT16 before entering
+the frozen M5K consumer with both M5L tails live. The 633-instruction region
+reads exactly 144 meaningful coefficient halfwords and 56 public vectors, and
+performs no coefficient store. Remote RA is OPTIMAL in 143.014540 seconds;
+real split-window scheduling is full OK at 158 N1-proxy cycles. Both artifacts
+assemble and use exactly `v0-v7,v16-v31` plus `x0-x5`, with no `v8-v15`,
+stack, branch, store, or spill.
 The next steps are:
 
-1. Add the sixteen-vector main P8 load/twist/NTT16 producer after M5L and prove
-   that both tail outputs survive until the combined region enters M5K.
-2. Add repeated-bank control and FR-0 stores only after that producer-consumer
-   region passes, then audit linked closure and code size.
-3. Run the full Forward oracle, KEM/KAT, source closure, target-host
+1. Add repeated-bank control and exact FR-0 stores around M5M; prove six-bank
+   input/output coverage and run the complete Forward oracle.
+2. Audit linked closure, code size, memory traffic, and constant-time control.
+3. Run full KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

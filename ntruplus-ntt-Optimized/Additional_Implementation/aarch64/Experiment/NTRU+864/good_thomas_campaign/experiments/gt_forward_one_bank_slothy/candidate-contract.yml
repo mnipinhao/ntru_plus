@@ -1,0 +1,27 @@
+candidate:
+  id: gt864_forward_one_bank_m5m
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: gt864_forward_one_bank.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: exact M5F arithmetic, M5G ranges, M5L tail ABI, and M5K two-block output ABI
+  approved_changes: none because this is a new experiment-only composition
+region:
+  start_label: gt864_forward_one_bank_slothy_start
+  end_label: gt864_forward_one_bank_slothy_end
+  live_in: [x0, x1, x2, x3, x4, x5]
+  live_out: [out0 through out17, updated x0 x1 x2 x3 x5]
+abi:
+  inputs: [one P8 main and tail bank plus public tables]
+  outputs: [eighteen oriented NTT9 vectors]
+memory_contract:
+  loads: [144 meaningful coefficient halfwords, 56 public q vectors]
+  stores: zero stores inside the bounded one-bank region
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+slothy_result: remote RA OPTIMAL and selfcheck OK; real split-window scheduling full OK at 158 N1-proxy cycles; no spill
+full_path_benchmark: pending_full_Forward_integration
+production_linked: false

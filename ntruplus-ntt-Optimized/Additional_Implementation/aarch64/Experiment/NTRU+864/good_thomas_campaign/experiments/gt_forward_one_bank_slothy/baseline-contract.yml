@@ -1,0 +1,24 @@
+baseline:
+  id: M5L_plus_unrealized_main_producer_plus_M5K
+  source: ../gt_forward_tail_ntt16_slothy/gt864_forward_tail_ntt16.sym.S and ../gt_forward_two_ntt9_blocks_slothy/gt864_forward_two_ntt9_blocks.sym.S
+  extracted_region: no single existing region; M5M is a new composition gate
+  function: none_experiment_only
+  start_label: gt864_forward_tail_ntt16_slothy_start
+  end_label: gt864_forward_two_ntt9_blocks_slothy_end
+region:
+  instruction_count: 398 plus unrealized main producer
+  live_in: [P8 main and tail coefficients, public tables]
+  live_out: [eighteen one-bank NTT9 output vectors]
+abi:
+  inputs: [x0, x1, x2, x3, x4, x5]
+  outputs: [out0 through out17]
+memory_contract:
+  loads: [144 meaningful coefficients plus public constants]
+  stores: none inside the bounded one-bank region
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: unknown_until_M5M_generation
+  benchmark_command: unavailable_until_full_Forward_integration

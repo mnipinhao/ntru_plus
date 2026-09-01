@@ -76,9 +76,13 @@ and no coefficient traffic, store, stack, branch, or spill. M5L
 half of the producer: sixteen exact x4-stride halfword loads and a packed
 two-vector NTT16 form a 65-instruction region. Remote RA is OPTIMAL and
 split-window full OK at 16 N1-proxy cycles; both artifacts assemble without
-over-read, `v8-v15`, stack, store, branch, or spill. The main sixteen-vector
-NTT16 producer, repeated-bank Forward integration, full KEM, and SUPERCOP
-remain future gates.
+over-read, `v8-v15`, stack, store, branch, or spill. M5M
+`experiments/gt_forward_one_bank_slothy` adds the exact sixteen-vector main
+producer and enters both M5K blocks with the tails live. Its 633-instruction
+region reads all 144 meaningful bank coefficients once, performs no
+coefficient store, and passes remote no-spill RA plus real split-window
+scheduling at 158 N1-proxy cycles. Repeated-bank Forward integration, exact
+FR-0 stores, full KEM, Pi 5 PMU, and SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

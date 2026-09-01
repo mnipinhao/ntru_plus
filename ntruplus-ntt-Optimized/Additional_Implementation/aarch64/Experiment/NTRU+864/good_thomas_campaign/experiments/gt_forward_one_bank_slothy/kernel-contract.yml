@@ -1,0 +1,163 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_one_bank
+  name: GT864 exact one-bank pass-2 producer and two-block NTT9 consumer
+  source: gt864_forward_one_bank.sym.S
+  scheme: NTRU+864
+  operation: gather and transform the s8 tail, load and transform sixteen s0-s7 main vectors, then consume both NTT9 column blocks without coefficient spills
+
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_pi5_validation_required
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: RA-only allocation over 633 real instructions followed by real-instruction split-window scheduling
+  driver: optimize.py
+  expected_outputs:
+    - build/gt864_forward_one_bank.n1.alloc.S
+    - build/gt864_forward_one_bank.n1.opt.S
+    - build/gt864_forward_one_bank.ra.log
+    - build/gt864_forward_one_bank.schedule.log
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_one_bank_slothy_start
+  end_label: gt864_forward_one_bank_slothy_end
+  expected_instruction_count: 633
+  live_in:
+    - x0 points to sixteen sequential main P8 vectors for one bank
+    - x1 points to the first strided s8 tail coefficient for the same bank
+    - x2 points to the public NTT16 table for the selected top branch
+    - x3 points to two public NTT9 twist tables for the selected top branch
+    - x4 contains the public tail byte stride 16
+    - x5 points to public modulus and NTT9-root vectors
+  live_out:
+    - Q<out0> through Q<out17> contain the complete two-block oriented NTT9 outputs
+    - x0 x1 x2 x3 and x5 have fixed public advances
+
+abi:
+  inputs:
+    - concrete coefficient pointers x0 and x1
+    - concrete public table pointers x2 x3 and x5
+    - concrete public stride x4 equal to 16
+  outputs:
+    - symbolic Q<out0> through Q<out17>
+    - updated concrete pointers x0 x1 x2 x3 and x5
+  clobbers:
+    - exact tail-gather nodes, main NTT16 state nodes, transposes, fixed products, quotient estimates, sums, and NTT9 B3 partials
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+  fixed_vector_registers:
+    - v16
+    - v17
+  reserved_registers:
+    - sp
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: one public modulus load, exact M5L tail producer into fixed v17 and v16, packed-constant sixteen-vector main NTT16, one delayed roots load, and the exact M5K two-block consumer
+
+layout:
+  input_representation: one P8 bank has sixteen sequential q vectors with s0-s7 in lanes and sixteen s8 scalars at public 16-byte stride
+  output_representation: eighteen paper-oriented NTT9 row vectors covering columns 0 through 15 for one top and component
+  vector_lanes: eight independent signed int16 row coordinates before transpose and eight independent columns after transpose
+  packing: main NTT16 fixed constants are packed as four adjacent b-bprime pairs per public q vector
+
+memory_contract:
+  loads:
+    - sixteen exact halfword coefficient lane loads from x1
+    - sixteen sequential 16-byte main coefficient loads from x0
+    - fifty-six sequential 16-byte public constant loads across x2 x3 and x5
+  stores:
+    - none
+  aliasing: coefficient inputs are read-only during the region and public tables are disjoint from coefficients
+  alignment: x0 x2 x3 and x5 are 16-byte aligned; x1 is 2-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x0 advances 256 bytes
+    - x1 advances 256 bytes through public x4 stride
+    - x2 advances 352 bytes
+    - x3 advances 512 bytes
+    - x4 is unchanged
+    - x5 advances 32 bytes
+
+constant_contract:
+  constants:
+    - x5 first vector is q=3457 in every halfword and second vector packs rho rho-prime rho2 rho2-prime eta eta-prime eta-inverse eta-inverse-prime
+    - M5L consumes thirteen public vectors for s8 branch twist, four NTT16 layers, and bit-reverse-3 bytes
+    - main branch twist stores four vectors each containing four adjacent b-bprime pairs in natural t order
+    - main NTT16 layers store one packed vector for length 2, one for length 4, one for length 8, and two for length 16
+    - each NTT9 block stores b_s[8] then bprime_s[8] for s=1 through 8
+  modulus: 3457
+  representation: normal R0 signed int16 coefficients and normal fixed constants
+  reduction_method: Algorithm-10 mul sqrdmulh mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - exact P8 plus tail interval from M5F is within [-15752,15752]
+  intermediate_ranges:
+    - exact M5G NTT16 DAG maximum magnitude is 9342
+    - NTT9 twist products have maximum magnitude 3436
+    - each correlation-aware NTT9 core has maximum magnitude 28568
+  output_ranges:
+    - both transformed block unions are within [-28568,28565]
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - all 144 P8 coefficients read from x0 and x1
+  public_inputs:
+    - pointers, bank selection, stride, tables, and fixed instruction sequence
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make -C ../gt_forward_composition_barrett check
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_full_Forward_integration
+  benchmark_metric: cycles
+  lower_is_better: true

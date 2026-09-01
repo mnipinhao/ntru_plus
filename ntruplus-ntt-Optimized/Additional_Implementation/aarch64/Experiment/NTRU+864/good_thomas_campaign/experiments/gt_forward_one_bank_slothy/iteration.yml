@@ -1,0 +1,20 @@
+iteration:
+  id: m5m-iter-001
+  mode: new_symbolic_kernel
+  current_state: passed_bounded_candidate
+  hypothesis: packed scalar constants keep the exact tail plus sixteen-vector main NTT16 producer within 24 caller-saved vectors and allow direct entry to M5K without coefficient spills
+  changed_artifacts:
+    - baseline-contract.yml
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - gt864_forward_one_bank.sym.S
+    - slothy-output/gt864_forward_one_bank.n1.alloc.S
+    - slothy-output/gt864_forward_one_bank.n1.opt.S
+  earliest_state_to_revisit: full_path_integration
+gates:
+  kernel_contract: passed
+  symbolic_asm: passed
+  remote_slothy_allocation: passed_optimal_no_spill
+  remote_slothy_schedule: passed_split_heuristic_full
+  oracle_correctness: passed_exact_one_bank_dag
+  full_path_benchmark: pending
