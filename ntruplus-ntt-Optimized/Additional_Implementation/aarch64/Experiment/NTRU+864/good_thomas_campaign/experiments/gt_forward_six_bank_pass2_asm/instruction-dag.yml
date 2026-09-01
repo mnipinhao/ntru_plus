@@ -1,0 +1,44 @@
+kernel_id: gt864_forward_six_bank_pass2
+
+inputs:
+  secret:
+    - p8[0..895] with only the frozen 864 meaningful coordinates consumed
+  public:
+    - output and input bases, six fixed bank identities, and compile-time tables
+
+nodes:
+  - id: wrapper_state
+    inputs: [x0_output, x1_p8, x30_return]
+    outputs: [x6_output_base, x7_p8_base, x16_saved_return, x4_stride_16]
+    instructions: [mov]
+  - id: bank_calls
+    repeat: [top0_component0, top0_component1, top0_component2, top1_component0, top1_component1, top1_component2]
+    inputs: [x7_p8_base, top_specific_ntt16_table, top_specific_ntt9_table, common_table]
+    outputs: [out0_through_out17]
+    instructions: [add, adr, bl, M5M_exact_633_instruction_helper, ret]
+    memory: each bank reads 128 contiguous main halfwords and sixteen x4-stride tail halfwords
+    ordering: bank calls are kept in top-major then component-major public order
+  - id: direct_fr0_stores
+    inputs: [out0_through_out17, x6_output_base, top, component]
+    outputs: [eighteen_memory_visible_row_block_vectors_per_bank]
+    instructions: [str_q_unsigned_public_offset]
+    mapping: byte_offset equals 2 times ((top*18 + row*2 + block)*24 + 8*component), where output register index equals block*9+row
+    ordering: every bank's eighteen outputs are stored before the next call reuses vector registers
+  - id: wrapper_return
+    inputs: [x16_saved_return]
+    outputs: [x30_return]
+    instructions: [mov, ret]
+
+edges:
+  - wrapper_state -> bank_calls
+  - bank_calls -> direct_fr0_stores
+  - direct_fr0_stores -> next bank_calls
+  - final direct_fr0_stores -> wrapper_return
+
+memory_order:
+  - input and output are disjoint, so bank loads and completed-bank stores may follow program order
+  - all coefficient and table addresses depend only on public bank identities
+  - no intermediate coefficient load or store exists
+
+outputs:
+  - complete bijective FR-0 coefficient set out[0..863]

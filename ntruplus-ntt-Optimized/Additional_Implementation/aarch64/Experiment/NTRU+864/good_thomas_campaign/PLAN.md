@@ -464,10 +464,20 @@ performs no coefficient store. Remote RA is OPTIMAL in 143.014540 seconds;
 real split-window scheduling is full OK at 158 N1-proxy cycles. Both artifacts
 assemble and use exactly `v0-v7,v16-v31` plus `x0-x5`, with no `v8-v15`,
 stack, branch, store, or spill.
+M5N `gt_forward_six_bank_pass2_asm` now closes the complete P8-to-FR0 second
+pass. A stackless wrapper invokes one shared copy of the exact M5M body for all
+six public banks and immediately issues eighteen fixed-offset FR-0 stores per
+bank. The resulting 790-instruction static image reads all 864 meaningful P8
+halfwords, ignores all 32 padding halfwords, writes all 864 outputs once, and
+has no intermediate coefficient traffic. Actual arm64 assembly passes every
+meaningful input basis coordinate plus bound and random cases: 1122 exact
+representative comparisons with M5F, zero mismatches. Its linked object is
+4928 bytes with zero undefined symbols or stack instructions.
 The next steps are:
 
-1. Add repeated-bank control and exact FR-0 stores around M5M; prove six-bank
-   input/output coverage and run the complete Forward oracle.
-2. Audit linked closure, code size, memory traffic, and constant-time control.
+1. Implement the exact top-split producer for the 896-halfword P8 contract and
+   compose it with M5N as an experimental complete `poly_ntt`.
+2. Differential-test complete Forward output against the official transform
+   and audit the linked top-split/pass-2 boundary.
 3. Run full KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

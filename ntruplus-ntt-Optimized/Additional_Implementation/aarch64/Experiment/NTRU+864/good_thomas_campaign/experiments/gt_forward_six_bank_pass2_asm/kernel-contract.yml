@@ -1,0 +1,137 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+
+kernel:
+  id: gt864_forward_six_bank_pass2
+  name: GT864 complete six-bank P8-to-FR0 Forward pass-2 assembly
+  source: gt864_forward_six_bank_pass2.S
+  scheme: NTRU+864
+  operation: invoke the frozen M5M one-bank body for all six public top-component banks and store every output directly in FR-0 order
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_raspberry_pi5_measurement_pending
+  slothy_arch_module: inherited from M5M slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: inherited from M5M slothy.targets.aarch64.neoverse_n1_experimental
+
+slothy:
+  workflow: no new solver region; reuse the exact returned M5M allocated and scheduled 633-instruction helper
+  driver: ../gt_forward_one_bank_slothy/optimize.py
+  expected_outputs:
+    - gt864_forward_six_bank_pass2.S
+    - build/gt864_forward_six_bank_pass2.o
+  allow_spills: false
+
+region:
+  start_label: gt864_forward_six_bank_pass2
+  end_label: gt864_forward_six_bank_pass2_end
+  expected_instruction_count: 790 static instructions including wrapper and one shared helper
+  live_in:
+    - x0 points to 864-halfword FR-0 output
+    - x1 points to 896-halfword P8 input
+  live_out:
+    - every FR-0 output coefficient is stored exactly once
+    - no coefficient vector remains live
+
+abi:
+  inputs:
+    - concrete output pointer x0
+    - concrete read-only P8 pointer x1
+  outputs:
+    - complete memory-visible FR-0 output
+  clobbers:
+    - x0 through x7 x16 x30 and all caller-saved vector registers
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - x16
+    - x30
+  fixed_vector_registers:
+    - inherited M5M v16 and v17 tail ABI inside the helper
+  reserved_registers:
+    - sp
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: save public wrapper state in helper-reserved GPRs, execute six M5M calls with public pointers and top tables, and issue eighteen direct FR-0 vector stores after each call
+
+layout:
+  input_representation: P8 main banks are six contiguous 256-byte regions and each bank's sixteen s8 tails are 16 bytes apart from p8[768+bank]
+  output_representation: output index equals 24 times top-row-block group plus 8 times component plus lane
+  vector_lanes: each returned vector contains eight consecutive columns within one NTT9 output row and block
+  packing: M5M tables retain the exact tail, packed main NTT16, and NTT9 layouts already proved in M5L through M5M
+
+memory_contract:
+  loads:
+    - 96 sequential 16-byte main coefficient vector loads across six banks
+    - 96 exact halfword tail lane loads across six banks
+    - 336 public 16-byte constant loads across six banks
+  stores:
+    - 108 direct 16-byte FR-0 vector stores, exactly eighteen after each bank
+  aliasing: output and P8 input must be disjoint; public tables are internal read-only data
+  alignment: output and each main-bank base are 16-byte aligned; tail bases are 2-byte aligned
+  public_offsets_only: true
+  pointer_updates:
+    - wrapper computes each bank pointer from immutable public bases x6 and x7
+    - helper-local post increments do not escape the bank call
+
+constant_contract:
+  constants:
+    - one shared 32-byte modulus and oriented-root table
+    - two top-specific 352-byte NTT16 tables
+    - two top-specific 512-byte NTT9 tables
+  modulus: 3457
+  representation: normal R0 signed int16 coefficients and normal fixed constants
+  reduction_method: inherited Algorithm-10 mul sqrdmulh mls fixed Barrett
+
+range_contract:
+  input_ranges:
+    - meaningful P8 representatives are within [-15752,15752]
+  intermediate_ranges:
+    - exact M5G NTT16 maximum magnitude is 9342
+    - exact complete NTT9 maximum magnitude is 28568
+  output_ranges:
+    - complete FR-0 output is within [-28568,28565]
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs:
+    - all 864 meaningful P8 coefficients
+  public_inputs:
+    - fixed six-bank sequence, pointer offsets, table addresses, and store offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: make check-oracle
+  test_command: make check
+  full_path_benchmark_command: unavailable_until_top_split_and_poly_ntt_integration
+  benchmark_metric: cycles
+  lower_is_better: true

@@ -1,0 +1,22 @@
+iteration:
+  id: m5n-iter-001
+  mode: new_kernel_baseline_then_iterate
+  current_state: passed_bounded_candidate
+  hypothesis: one shared M5M helper plus an unrolled six-bank wrapper and direct fixed-offset stores closes the full pass-2 memory contract without duplicating the 633-instruction body
+  changed_artifacts:
+    - baseline-contract.yml
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - generate_asm.py
+    - gt864_forward_six_bank_pass2.S
+    - test_gt864_forward_six_bank.c
+  earliest_state_to_revisit: full_poly_ntt_integration
+gates:
+  repo_probe: passed
+  baseline_contract: passed
+  kernel_contract: passed
+  instruction_dag: passed
+  assembly_generation: passed
+  six_bank_oracle: passed_1122_exact_representative_cases
+  linked_object_audit: passed_4928_bytes_zero_undefined_symbols
+  full_poly_ntt_benchmark: pending

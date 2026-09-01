@@ -1,0 +1,16 @@
+baseline:
+  id: M5F_readable_six_bank_pass2_oracle_plus_M5M_one_bank_assembly
+  source: ../gt_forward_composition_barrett/gt864_forward_compose.c and ../gt_forward_one_bank_slothy/slothy-output/gt864_forward_one_bank.n1.opt.S
+  behavior: transform all six public top-component banks from P8 to the complete FR-0 tile layout
+  correctness_command: make check
+  benchmark: unavailable until top-split and full poly_ntt integration
+contract:
+  input: 896 signed halfwords in P8 plus tail layout, with 864 meaningful and 32 padding positions
+  output: 864 signed halfwords in the frozen FR-0 BaseMul ABI
+  memory: 864 meaningful coefficient loads, 864 coefficient stores, and no intermediate coefficient traffic
+  arithmetic: exact M5F Algorithm-10 DAG and M5G range schedule
+  one_bank_backend: frozen M5M returned optimized assembly and fixed physical output ABI
+limitations:
+  - M5F is readable C and not performance evidence
+  - M5M has no repeated-bank control or stores
+  - neither baseline is linked into Production

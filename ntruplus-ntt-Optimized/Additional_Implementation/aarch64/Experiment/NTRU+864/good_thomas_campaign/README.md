@@ -82,7 +82,13 @@ producer and enters both M5K blocks with the tails live. Its 633-instruction
 region reads all 144 meaningful bank coefficients once, performs no
 coefficient store, and passes remote no-spill RA plus real split-window
 scheduling at 158 N1-proxy cycles. Repeated-bank Forward integration, exact
-FR-0 stores, full KEM, Pi 5 PMU, and SUPERCOP remain future gates.
+FR-0 stores. M5N `experiments/gt_forward_six_bank_pass2_asm` now provides that
+complete second pass: one shared M5M helper, six public bank calls, and 108
+direct FR-0 stores form a 4928-byte linked object. Actual assembly passes 1122
+exact-representative oracle cases, covers all 864 meaningful inputs and
+outputs, ignores 32 padding positions, and uses no stack or scratch coefficient
+traffic. Top-split/full `poly_ntt`, KEM, Pi 5 PMU, and SUPERCOP remain future
+gates.
 
 Run only the authoritative GT C reference gate:
 

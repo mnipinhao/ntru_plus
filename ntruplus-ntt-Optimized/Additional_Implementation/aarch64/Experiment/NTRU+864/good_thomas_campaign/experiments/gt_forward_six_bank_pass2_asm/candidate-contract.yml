@@ -1,0 +1,24 @@
+candidate:
+  id: gt864_forward_six_bank_pass2_m5n
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  generated_source: gt864_forward_six_bank_pass2.S
+  generator: generate_asm.py
+contract_preservation:
+  preserved: exact M5F arithmetic, M5G ranges, M5M one-bank body, fixed output-register ABI, and frozen FR-0 store map
+  approved_changes: none because this is a new Experiment-only full pass-2 integration
+region:
+  public_symbol: gt864_forward_six_bank_pass2
+  static_instructions: 790
+  shared_helper_instructions: 633
+memory_contract:
+  meaningful_input_halfwords: 864
+  output_halfwords: 864
+  intermediate_coefficient_traffic: zero
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+slothy_result: inherited exact M5M returned allocation and schedule; wrapper adds no new allocatable vector region
+full_path_benchmark: pending top-split and poly_ntt integration
+production_linked: false
