@@ -194,7 +194,18 @@
       "production_linked": false,
       "artifact_budget_waiver": 18,
       "artifact_budget_waiver_reason": "The bounded physical-ABI gate keeps the coordinate/table/range proof, instruction DAG, SSA source, fixed-tail ABI, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus complete remote log independently auditable; transient build products remain ignored.",
-      "next": "consume the held NTT9 block while preserving all first-block outputs"
+      "next": "gt_forward_two_ntt9_blocks_slothy"
+    },
+    {
+      "id": "gt_forward_two_ntt9_blocks_slothy",
+      "path": "gt_forward_two_ntt9_blocks_slothy",
+      "question": "Can both complete NTT9 column blocks allocate and schedule while fixed v16 crosses block one and all nine first-block outputs cross block two?",
+      "status": "passed",
+      "role": "forward_two_block_live_through_register_pressure_and_slothy_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 19,
+      "artifact_budget_waiver_reason": "The bounded two-block gate keeps the deterministic symbolic composer, exact structure/range proof, instruction DAG, fixed-tail and eighteen-output ABI, RA-first driver, contracts, static and emitted-code audit, lifecycle and decision records, and returned allocated/scheduled assembly plus complete remote log independently auditable; transient build products remain ignored.",
+      "next": "prepend exact pass-2 loads and NTT16 producer assembly for one bank"
     }
   ]
 }

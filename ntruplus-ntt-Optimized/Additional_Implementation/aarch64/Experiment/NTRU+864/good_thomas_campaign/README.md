@@ -66,8 +66,14 @@ eight lane twists, and one complete NTT9 form a 190-instruction region. Remote
 RA is OPTIMAL and split-window scheduling completes at 47 N1-proxy cycles.
 The returned artifacts use exactly `v0-v7,v17-v31`; forbidden `v8-v15` and
 fixed held-tail `v16` remain untouched, with sixteen public table loads and no
-coefficient traffic or spills. Consuming the held block, handwritten Forward
-integration, full KEM, and SUPERCOP remain future gates.
+coefficient traffic or spills. M5K
+`experiments/gt_forward_two_ntt9_blocks_slothy` then consumes the held block
+while all nine first-block outputs stay live. Its deterministic 333-instruction
+region is RA OPTIMAL and split-window full OK at 83 N1-proxy cycles. Both
+artifacts use all 24 caller-saved vectors `v0-v7,v16-v31`, with 32 public loads
+and no coefficient traffic, store, stack, branch, or spill. The real pass-2
+loads/NTT16 producer, repeated-bank Forward integration, full KEM, and
+SUPERCOP remain future gates.
 
 Run only the authoritative GT C reference gate:
 

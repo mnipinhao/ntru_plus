@@ -1,0 +1,69 @@
+dag:
+  id: gt864_forward_two_ntt9_blocks_dag
+  kernel_contract: kernel-contract.yml
+  description: exact two-column-block producer boundary through both complete oriented NTT9 consumers
+
+inputs:
+  symbolic_vectors: [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,tail0,roots,modq]
+  fixed_vectors: [v16]
+  gprs: [x3]
+
+templates:
+  first_block_handoff:
+    source: ../gt_forward_ntt16_ntt9_handoff_slothy/instruction-dag.yml
+    instruction_count: 190
+    outputs: [out0,out1,out2,out3,out4,out5,out6,out7,out8,hold0,hold1,hold2,hold3,hold4,hold5,hold6,hold7]
+  capture_fixed_tail:
+    instruction_count: 1
+    instruction: orr hold8,v16,v16
+    semantics: copy fixed second-block s8 tail into an allocatable SSA value immediately before consumption
+    range_change: none
+  twist_fixed_barrett:
+    instruction_count: 5
+    instructions:
+      - ldr Q<twist>, [x3], #16
+      - ldr Q<twist_prime>, [x3], #16
+      - sqrdmulh quotient,input,twist_prime
+      - mul output,input,twist
+      - mls output,quotient,modq
+    table_bytes: 32
+    tied_operands:
+      - x3 is read-write in each load
+      - mls output is read-write
+  complete_ntt9:
+    source: ../gt_forward_ntt9_core_slothy/instruction-dag.yml
+    instruction_count: 102
+
+instantiations:
+  - {id: first_block, template: first_block_handoff}
+  - {id: capture_hold8, template: capture_fixed_tail, inputs: [v16], outputs: [hold8]}
+  - {id: twist_second_s1, template: twist_fixed_barrett, inputs: [hold1,x3,modq], outputs: [h1,x3]}
+  - {id: twist_second_s2, template: twist_fixed_barrett, inputs: [hold2,x3,modq], outputs: [h2,x3]}
+  - {id: twist_second_s3, template: twist_fixed_barrett, inputs: [hold3,x3,modq], outputs: [h3,x3]}
+  - {id: twist_second_s4, template: twist_fixed_barrett, inputs: [hold4,x3,modq], outputs: [h4,x3]}
+  - {id: twist_second_s5, template: twist_fixed_barrett, inputs: [hold5,x3,modq], outputs: [h5,x3]}
+  - {id: twist_second_s6, template: twist_fixed_barrett, inputs: [hold6,x3,modq], outputs: [h6,x3]}
+  - {id: twist_second_s7, template: twist_fixed_barrett, inputs: [hold7,x3,modq], outputs: [h7,x3]}
+  - {id: twist_second_s8, template: twist_fixed_barrett, inputs: [hold8,x3,modq], outputs: [h8,x3]}
+  - {id: second_ntt9, template: complete_ntt9, inputs: [hold0,h1,h2,h3,h4,h5,h6,h7,h8,roots,modq], outputs: [out9,out10,out11,out12,out13,out14,out15,out16,out17]}
+
+live_through:
+  - out0 through out8 remain unchanged throughout capture, second-block twists, and the second complete NTT9
+  - roots and modq remain live from region input through both NTT9 consumers
+  - fixed v16 remains live from region input until capture_hold8
+
+memory:
+  coefficient_loads: []
+  coefficient_stores: []
+  public_constant_loads: 32
+  public_constant_bytes: 512
+  ordering_constraints:
+    - x3 post-increment serializes first-block s1 through s8 then second-block s1 through s8
+
+outputs: [out0,out1,out2,out3,out4,out5,out6,out7,out8,out9,out10,out11,out12,out13,out14,out15,out16,out17,x3]
+review:
+  expected_instruction_count: 333
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

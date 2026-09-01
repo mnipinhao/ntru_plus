@@ -1,0 +1,33 @@
+iteration:
+  id: m5k-iter-001
+  mode: new_symbolic_kernel
+  current_state: oracle_correctness
+  hypothesis: both complete NTT9 blocks fit one coefficient-memory-free region when fixed v16 stays live through block one and all nine block-one outputs stay live through block two
+  changed_artifacts:
+    - kernel-contract.yml
+    - instruction-dag.yml
+    - generate_symbolic.py
+    - gt864_forward_two_ntt9_blocks.sym.S
+    - optimize.py
+    - prove_two_blocks.py
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_generator: generate_symbolic.py
+  symbolic_source: gt864_forward_two_ntt9_blocks.sym.S
+  slothy_driver: optimize.py
+  allocation_output: slothy-output/gt864_forward_two_ntt9_blocks.n1.alloc.S
+  slothy_output: slothy-output/gt864_forward_two_ntt9_blocks.n1.opt.S
+  slothy_log: slothy-output/gt864_forward_two_ntt9_blocks.n1.log
+  candidate_contract: candidate-contract.yml
+gates:
+  kernel_contract: passed
+  symbolic_asm: passed_333_real_instructions_fixed_v16_only_physical_vector
+  coordinate_and_range_proof: passed_144_coordinates_ntt16_9342_twist_3436_ntt9_28568
+  remote_slothy_allocation: passed_OPTIMAL_order_preserved_no_spill
+  remote_slothy_schedule: passed_split_heuristic_full_OK_83_N1_proxy_cycles
+  emitted_assembly: passed_local_AArch64_assembler
+  register_audit: passed_all_24_caller_saved_vectors_no_v8_v15_or_spill
+  full_path_benchmark: pending

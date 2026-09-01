@@ -439,12 +439,19 @@ core. The 190-instruction remote RA is OPTIMAL and real split-window
 scheduling completes at 47 N1-proxy cycles. Both artifacts use exactly
 `v0-v7,v17-v31`, leave `v8-v16` untouched, and contain only sixteen public
 table loads with no coefficient traffic, store, stack, branch, or spill.
+M5K `gt_forward_two_ntt9_blocks_slothy` consumes the held block under the
+actual long lifetimes. Fixed `v16` crosses the entire first NTT9 before one
+capture, while `out0-out8` cross the entire second NTT9 as declared outputs.
+The resulting 333-instruction one-bank region has 32 public table loads and no
+coefficient memory operations. Remote RA is OPTIMAL, real split-window
+scheduling completes at 83 N1-proxy cycles, and both artifacts use all 24
+caller-saved vectors `v0-v7,v16-v31` without `v8-v15`, stack, branch, store,
+or spill instructions.
 The next steps are:
 
-1. Consume the held NTT9 block while all nine first-block outputs remain live;
-   make fixed `v16` a real second-block input and retain zero coefficient
-   memory traffic.
-2. Realize the fused Forward only after both block consumers fit without an
-   intermediate load/store, then audit linked closure and code size.
+1. Prepend the exact pass-2 coefficient loads and NTT16 producer assembly for
+   one `(top,component)` bank, and prove that it enters M5K without spills.
+2. Add repeated-bank control and FR-0 stores only after that producer-consumer
+   region passes, then audit linked closure and code size.
 3. Run the full Forward oracle, KEM/KAT, source closure, target-host
    attribution, and SUPERCOP before any Production decision.

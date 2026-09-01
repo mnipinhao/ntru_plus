@@ -1,0 +1,12 @@
+baseline: M5J_first_block_handoff_plus_symmetric_second_M5I_consumer
+producer_source: ../gt_forward_ntt16_ntt9_handoff_slothy/gt864_forward_ntt16_ntt9_handoff.sym.S
+first_consumer_source: ../gt_forward_ntt9_core_slothy/gt864_forward_ntt9_core.sym.S
+input_vectors: sixteen NTT16 columns plus two s8 tails and roots/modulus
+required_layout_operation: two independent 8x8 signed-halfword transposes
+required_twists: sixteen Algorithm-10 lane-dependent products across two blocks
+coefficient_memory_boundary: forbidden
+caller_saved_vector_budget: 24
+range_proof: prove_two_blocks.py
+full_path_integrated: false
+full_path_benchmark_available: false
+production_linked: false

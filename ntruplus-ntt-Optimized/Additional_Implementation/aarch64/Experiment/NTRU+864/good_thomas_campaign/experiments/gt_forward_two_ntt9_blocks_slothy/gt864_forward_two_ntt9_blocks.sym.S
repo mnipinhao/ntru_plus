@@ -1,0 +1,372 @@
+/* M5K: complete two-block NTT16-column to oriented-NTT9 region. */
+// symbolic live-in: c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,tail0,roots,modq
+// fixed live-in: v16 is held s8; x3 is the public table pointer
+// symbolic live-out: out0,out1,out2,out3,out4,out5,out6,out7,out8,out9,out10,out11,out12,out13,out14,out15,out16,out17
+// concrete live-out: x3 advances by 512 bytes
+// v16 remains live through the first complete NTT9 and is captured before block two
+// reserved physical registers: v8-v15 and every GPR except public x3
+// range: NTT16 max 9342; twists max 3436; each complete NTT9 max 28568
+// memory: thirty-two public twist-table loads, zero coefficient loads or stores
+
+gt864_forward_two_ntt9_blocks_slothy_start:
+    // Transpose columns 0..7: Q<c>.h[s] -> Q<fS_raw>.h[column].
+    trn1 V<t0e>.8h, V<c0>.8h, V<c1>.8h
+    trn2 V<t0o>.8h, V<c0>.8h, V<c1>.8h
+    trn1 V<t1e>.8h, V<c2>.8h, V<c3>.8h
+    trn2 V<t1o>.8h, V<c2>.8h, V<c3>.8h
+    trn1 V<t2e>.8h, V<c4>.8h, V<c5>.8h
+    trn2 V<t2o>.8h, V<c4>.8h, V<c5>.8h
+    trn1 V<t3e>.8h, V<c6>.8h, V<c7>.8h
+    trn2 V<t3o>.8h, V<c6>.8h, V<c7>.8h
+    trn1 V<u0>.4s, V<t0e>.4s, V<t1e>.4s
+    trn2 V<u2>.4s, V<t0e>.4s, V<t1e>.4s
+    trn1 V<u1>.4s, V<t0o>.4s, V<t1o>.4s
+    trn2 V<u3>.4s, V<t0o>.4s, V<t1o>.4s
+    trn1 V<u4>.4s, V<t2e>.4s, V<t3e>.4s
+    trn2 V<u6>.4s, V<t2e>.4s, V<t3e>.4s
+    trn1 V<u5>.4s, V<t2o>.4s, V<t3o>.4s
+    trn2 V<u7>.4s, V<t2o>.4s, V<t3o>.4s
+    trn1 V<f0_raw>.2d, V<u0>.2d, V<u4>.2d
+    trn2 V<f4_raw>.2d, V<u0>.2d, V<u4>.2d
+    trn1 V<f2_raw>.2d, V<u2>.2d, V<u6>.2d
+    trn2 V<f6_raw>.2d, V<u2>.2d, V<u6>.2d
+    trn1 V<f1_raw>.2d, V<u1>.2d, V<u5>.2d
+    trn2 V<f5_raw>.2d, V<u1>.2d, V<u5>.2d
+    trn1 V<f3_raw>.2d, V<u3>.2d, V<u7>.2d
+    trn2 V<f7_raw>.2d, V<u3>.2d, V<u7>.2d
+
+    // Transpose columns 8..15 into the held block.
+    trn1 V<h_t0e>.8h, V<c8>.8h, V<c9>.8h
+    trn2 V<h_t0o>.8h, V<c8>.8h, V<c9>.8h
+    trn1 V<h_t1e>.8h, V<c10>.8h, V<c11>.8h
+    trn2 V<h_t1o>.8h, V<c10>.8h, V<c11>.8h
+    trn1 V<h_t2e>.8h, V<c12>.8h, V<c13>.8h
+    trn2 V<h_t2o>.8h, V<c12>.8h, V<c13>.8h
+    trn1 V<h_t3e>.8h, V<c14>.8h, V<c15>.8h
+    trn2 V<h_t3o>.8h, V<c14>.8h, V<c15>.8h
+    trn1 V<h_u0>.4s, V<h_t0e>.4s, V<h_t1e>.4s
+    trn2 V<h_u2>.4s, V<h_t0e>.4s, V<h_t1e>.4s
+    trn1 V<h_u1>.4s, V<h_t0o>.4s, V<h_t1o>.4s
+    trn2 V<h_u3>.4s, V<h_t0o>.4s, V<h_t1o>.4s
+    trn1 V<h_u4>.4s, V<h_t2e>.4s, V<h_t3e>.4s
+    trn2 V<h_u6>.4s, V<h_t2e>.4s, V<h_t3e>.4s
+    trn1 V<h_u5>.4s, V<h_t2o>.4s, V<h_t3o>.4s
+    trn2 V<h_u7>.4s, V<h_t2o>.4s, V<h_t3o>.4s
+    trn1 V<hold0>.2d, V<h_u0>.2d, V<h_u4>.2d
+    trn2 V<hold4>.2d, V<h_u0>.2d, V<h_u4>.2d
+    trn1 V<hold2>.2d, V<h_u2>.2d, V<h_u6>.2d
+    trn2 V<hold6>.2d, V<h_u2>.2d, V<h_u6>.2d
+    trn1 V<hold1>.2d, V<h_u1>.2d, V<h_u5>.2d
+    trn2 V<hold5>.2d, V<h_u1>.2d, V<h_u5>.2d
+    trn1 V<hold3>.2d, V<h_u3>.2d, V<h_u7>.2d
+    trn2 V<hold7>.2d, V<h_u3>.2d, V<h_u7>.2d
+
+    // f0 has identity twist. Load b then bprime for each s=1..8.
+    ldr Q<tw1>, [x3], #16
+    ldr Q<tw1p>, [x3], #16
+    sqrdmulh V<tw1q>.8h, V<f1_raw>.8h, V<tw1p>.8h
+    mul V<f1>.8h, V<f1_raw>.8h, V<tw1>.8h
+    mls V<f1>.8h, V<tw1q>.8h, V<modq>.8h
+    ldr Q<tw2>, [x3], #16
+    ldr Q<tw2p>, [x3], #16
+    sqrdmulh V<tw2q>.8h, V<f2_raw>.8h, V<tw2p>.8h
+    mul V<f2>.8h, V<f2_raw>.8h, V<tw2>.8h
+    mls V<f2>.8h, V<tw2q>.8h, V<modq>.8h
+    ldr Q<tw3>, [x3], #16
+    ldr Q<tw3p>, [x3], #16
+    sqrdmulh V<tw3q>.8h, V<f3_raw>.8h, V<tw3p>.8h
+    mul V<f3>.8h, V<f3_raw>.8h, V<tw3>.8h
+    mls V<f3>.8h, V<tw3q>.8h, V<modq>.8h
+    ldr Q<tw4>, [x3], #16
+    ldr Q<tw4p>, [x3], #16
+    sqrdmulh V<tw4q>.8h, V<f4_raw>.8h, V<tw4p>.8h
+    mul V<f4>.8h, V<f4_raw>.8h, V<tw4>.8h
+    mls V<f4>.8h, V<tw4q>.8h, V<modq>.8h
+    ldr Q<tw5>, [x3], #16
+    ldr Q<tw5p>, [x3], #16
+    sqrdmulh V<tw5q>.8h, V<f5_raw>.8h, V<tw5p>.8h
+    mul V<f5>.8h, V<f5_raw>.8h, V<tw5>.8h
+    mls V<f5>.8h, V<tw5q>.8h, V<modq>.8h
+    ldr Q<tw6>, [x3], #16
+    ldr Q<tw6p>, [x3], #16
+    sqrdmulh V<tw6q>.8h, V<f6_raw>.8h, V<tw6p>.8h
+    mul V<f6>.8h, V<f6_raw>.8h, V<tw6>.8h
+    mls V<f6>.8h, V<tw6q>.8h, V<modq>.8h
+    ldr Q<tw7>, [x3], #16
+    ldr Q<tw7p>, [x3], #16
+    sqrdmulh V<tw7q>.8h, V<f7_raw>.8h, V<tw7p>.8h
+    mul V<f7>.8h, V<f7_raw>.8h, V<tw7>.8h
+    mls V<f7>.8h, V<tw7q>.8h, V<modq>.8h
+    ldr Q<tw8>, [x3], #16
+    ldr Q<tw8p>, [x3], #16
+    sqrdmulh V<tw8q>.8h, V<tail0>.8h, V<tw8p>.8h
+    mul V<f8>.8h, V<tail0>.8h, V<tw8>.8h
+    mls V<f8>.8h, V<tw8q>.8h, V<modq>.8h
+
+    // Complete M5I NTT9 core; f0_raw is the untwisted s=0 input.
+    orr V<a_saved>.16b, V<f0_raw>.16b, V<f0_raw>.16b
+    add V<a_sum01>.8h, V<f0_raw>.8h, V<f3>.8h
+    add V<a0>.8h, V<a_sum01>.8h, V<f6>.8h
+    sqrdmulh V<a_qb>.8h, V<f3>.8h, V<roots>.h[1]
+    mul V<a_rb>.8h, V<f3>.8h, V<roots>.h[0]
+    mls V<a_rb>.8h, V<a_qb>.8h, V<modq>.8h
+    sqrdmulh V<a_qc>.8h, V<f6>.8h, V<roots>.h[3]
+    mul V<a_r2c>.8h, V<f6>.8h, V<roots>.h[2]
+    mls V<a_r2c>.8h, V<a_qc>.8h, V<modq>.8h
+    add V<a_weighted>.8h, V<a_rb>.8h, V<a_r2c>.8h
+    add V<a1>.8h, V<a_weighted>.8h, V<a_saved>.8h
+    sub V<a_p0>.8h, V<a_saved>.8h, V<a0>.8h
+    sub V<a_p1>.8h, V<a_saved>.8h, V<a1>.8h
+    add V<a_p2>.8h, V<a_p0>.8h, V<a_p1>.8h
+    add V<a2>.8h, V<a_p2>.8h, V<a_saved>.8h
+    orr V<b_saved>.16b, V<f1>.16b, V<f1>.16b
+    add V<b_sum01>.8h, V<f1>.8h, V<f4>.8h
+    add V<b0>.8h, V<b_sum01>.8h, V<f7>.8h
+    sqrdmulh V<b_qb>.8h, V<f4>.8h, V<roots>.h[1]
+    mul V<b_rb>.8h, V<f4>.8h, V<roots>.h[0]
+    mls V<b_rb>.8h, V<b_qb>.8h, V<modq>.8h
+    sqrdmulh V<b_qc>.8h, V<f7>.8h, V<roots>.h[3]
+    mul V<b_r2c>.8h, V<f7>.8h, V<roots>.h[2]
+    mls V<b_r2c>.8h, V<b_qc>.8h, V<modq>.8h
+    add V<b_weighted>.8h, V<b_rb>.8h, V<b_r2c>.8h
+    add V<b1>.8h, V<b_weighted>.8h, V<b_saved>.8h
+    sub V<b_p0>.8h, V<b_saved>.8h, V<b0>.8h
+    sub V<b_p1>.8h, V<b_saved>.8h, V<b1>.8h
+    add V<b_p2>.8h, V<b_p0>.8h, V<b_p1>.8h
+    add V<b2>.8h, V<b_p2>.8h, V<b_saved>.8h
+    orr V<c_saved>.16b, V<f8>.16b, V<f8>.16b
+    add V<c_sum01>.8h, V<f8>.8h, V<f2>.8h
+    add V<c0_out>.8h, V<c_sum01>.8h, V<f5>.8h
+    sqrdmulh V<c_qb>.8h, V<f2>.8h, V<roots>.h[1]
+    mul V<c_rb>.8h, V<f2>.8h, V<roots>.h[0]
+    mls V<c_rb>.8h, V<c_qb>.8h, V<modq>.8h
+    sqrdmulh V<c_qc>.8h, V<f5>.8h, V<roots>.h[3]
+    mul V<c_r2c>.8h, V<f5>.8h, V<roots>.h[2]
+    mls V<c_r2c>.8h, V<c_qc>.8h, V<modq>.8h
+    add V<c_weighted>.8h, V<c_rb>.8h, V<c_r2c>.8h
+    add V<c1_out>.8h, V<c_weighted>.8h, V<c_saved>.8h
+    sub V<c_p0>.8h, V<c_saved>.8h, V<c0_out>.8h
+    sub V<c_p1>.8h, V<c_saved>.8h, V<c1_out>.8h
+    add V<c_p2>.8h, V<c_p0>.8h, V<c_p1>.8h
+    add V<c2_out>.8h, V<c_p2>.8h, V<c_saved>.8h
+
+    orr V<g0_saved>.16b, V<a0>.16b, V<a0>.16b
+    add V<g0_sum01>.8h, V<a0>.8h, V<b0>.8h
+    add V<out0>.8h, V<g0_sum01>.8h, V<c0_out>.8h
+    sqrdmulh V<g0_qb>.8h, V<b0>.8h, V<roots>.h[1]
+    mul V<g0_rb>.8h, V<b0>.8h, V<roots>.h[0]
+    mls V<g0_rb>.8h, V<g0_qb>.8h, V<modq>.8h
+    sqrdmulh V<g0_qc>.8h, V<c0_out>.8h, V<roots>.h[3]
+    mul V<g0_r2c>.8h, V<c0_out>.8h, V<roots>.h[2]
+    mls V<g0_r2c>.8h, V<g0_qc>.8h, V<modq>.8h
+    add V<g0_weighted>.8h, V<g0_rb>.8h, V<g0_r2c>.8h
+    add V<out3>.8h, V<g0_weighted>.8h, V<g0_saved>.8h
+    sub V<g0_p0>.8h, V<g0_saved>.8h, V<out0>.8h
+    sub V<g0_p1>.8h, V<g0_saved>.8h, V<out3>.8h
+    add V<g0_p2>.8h, V<g0_p0>.8h, V<g0_p1>.8h
+    add V<out6>.8h, V<g0_p2>.8h, V<g0_saved>.8h
+    sqrdmulh V<eta_b1_q>.8h, V<b1>.8h, V<roots>.h[5]
+    mul V<eta_b1>.8h, V<b1>.8h, V<roots>.h[4]
+    mls V<eta_b1>.8h, V<eta_b1_q>.8h, V<modq>.8h
+    sqrdmulh V<eta_inv_c1_q>.8h, V<c1_out>.8h, V<roots>.h[7]
+    mul V<eta_inv_c1>.8h, V<c1_out>.8h, V<roots>.h[6]
+    mls V<eta_inv_c1>.8h, V<eta_inv_c1_q>.8h, V<modq>.8h
+    orr V<g1_saved>.16b, V<a1>.16b, V<a1>.16b
+    add V<g1_sum01>.8h, V<a1>.8h, V<eta_b1>.8h
+    add V<out1>.8h, V<g1_sum01>.8h, V<eta_inv_c1>.8h
+    sqrdmulh V<g1_qb>.8h, V<eta_b1>.8h, V<roots>.h[1]
+    mul V<g1_rb>.8h, V<eta_b1>.8h, V<roots>.h[0]
+    mls V<g1_rb>.8h, V<g1_qb>.8h, V<modq>.8h
+    sqrdmulh V<g1_qc>.8h, V<eta_inv_c1>.8h, V<roots>.h[3]
+    mul V<g1_r2c>.8h, V<eta_inv_c1>.8h, V<roots>.h[2]
+    mls V<g1_r2c>.8h, V<g1_qc>.8h, V<modq>.8h
+    add V<g1_weighted>.8h, V<g1_rb>.8h, V<g1_r2c>.8h
+    add V<out4>.8h, V<g1_weighted>.8h, V<g1_saved>.8h
+    sub V<g1_p0>.8h, V<g1_saved>.8h, V<out1>.8h
+    sub V<g1_p1>.8h, V<g1_saved>.8h, V<out4>.8h
+    add V<g1_p2>.8h, V<g1_p0>.8h, V<g1_p1>.8h
+    add V<out7>.8h, V<g1_p2>.8h, V<g1_saved>.8h
+    sqrdmulh V<eta_inv_b2_q>.8h, V<b2>.8h, V<roots>.h[7]
+    mul V<eta_inv_b2>.8h, V<b2>.8h, V<roots>.h[6]
+    mls V<eta_inv_b2>.8h, V<eta_inv_b2_q>.8h, V<modq>.8h
+    sqrdmulh V<eta_c2_q>.8h, V<c2_out>.8h, V<roots>.h[5]
+    mul V<eta_c2>.8h, V<c2_out>.8h, V<roots>.h[4]
+    mls V<eta_c2>.8h, V<eta_c2_q>.8h, V<modq>.8h
+    orr V<g2_saved>.16b, V<a2>.16b, V<a2>.16b
+    add V<g2_sum01>.8h, V<a2>.8h, V<eta_inv_b2>.8h
+    add V<out8>.8h, V<g2_sum01>.8h, V<eta_c2>.8h
+    sqrdmulh V<g2_qb>.8h, V<eta_inv_b2>.8h, V<roots>.h[1]
+    mul V<g2_rb>.8h, V<eta_inv_b2>.8h, V<roots>.h[0]
+    mls V<g2_rb>.8h, V<g2_qb>.8h, V<modq>.8h
+    sqrdmulh V<g2_qc>.8h, V<eta_c2>.8h, V<roots>.h[3]
+    mul V<g2_r2c>.8h, V<eta_c2>.8h, V<roots>.h[2]
+    mls V<g2_r2c>.8h, V<g2_qc>.8h, V<modq>.8h
+    add V<g2_weighted>.8h, V<g2_rb>.8h, V<g2_r2c>.8h
+    add V<out2>.8h, V<g2_weighted>.8h, V<g2_saved>.8h
+    sub V<g2_p0>.8h, V<g2_saved>.8h, V<out8>.8h
+    sub V<g2_p1>.8h, V<g2_saved>.8h, V<out2>.8h
+    add V<g2_p2>.8h, V<g2_p0>.8h, V<g2_p1>.8h
+    add V<out5>.8h, V<g2_p2>.8h, V<g2_saved>.8h
+
+    // Capture the fixed tail only when the second consumer becomes active.
+    orr V<hold8>.16b, v16.16b, v16.16b
+
+    // Twist held rows 1..8; x3 already points past the first block table.
+    ldr Q<h_tw1>, [x3], #16
+    ldr Q<h_tw1p>, [x3], #16
+    sqrdmulh V<h_tw1q>.8h, V<hold1>.8h, V<h_tw1p>.8h
+    mul V<h1>.8h, V<hold1>.8h, V<h_tw1>.8h
+    mls V<h1>.8h, V<h_tw1q>.8h, V<modq>.8h
+    ldr Q<h_tw2>, [x3], #16
+    ldr Q<h_tw2p>, [x3], #16
+    sqrdmulh V<h_tw2q>.8h, V<hold2>.8h, V<h_tw2p>.8h
+    mul V<h2>.8h, V<hold2>.8h, V<h_tw2>.8h
+    mls V<h2>.8h, V<h_tw2q>.8h, V<modq>.8h
+    ldr Q<h_tw3>, [x3], #16
+    ldr Q<h_tw3p>, [x3], #16
+    sqrdmulh V<h_tw3q>.8h, V<hold3>.8h, V<h_tw3p>.8h
+    mul V<h3>.8h, V<hold3>.8h, V<h_tw3>.8h
+    mls V<h3>.8h, V<h_tw3q>.8h, V<modq>.8h
+    ldr Q<h_tw4>, [x3], #16
+    ldr Q<h_tw4p>, [x3], #16
+    sqrdmulh V<h_tw4q>.8h, V<hold4>.8h, V<h_tw4p>.8h
+    mul V<h4>.8h, V<hold4>.8h, V<h_tw4>.8h
+    mls V<h4>.8h, V<h_tw4q>.8h, V<modq>.8h
+    ldr Q<h_tw5>, [x3], #16
+    ldr Q<h_tw5p>, [x3], #16
+    sqrdmulh V<h_tw5q>.8h, V<hold5>.8h, V<h_tw5p>.8h
+    mul V<h5>.8h, V<hold5>.8h, V<h_tw5>.8h
+    mls V<h5>.8h, V<h_tw5q>.8h, V<modq>.8h
+    ldr Q<h_tw6>, [x3], #16
+    ldr Q<h_tw6p>, [x3], #16
+    sqrdmulh V<h_tw6q>.8h, V<hold6>.8h, V<h_tw6p>.8h
+    mul V<h6>.8h, V<hold6>.8h, V<h_tw6>.8h
+    mls V<h6>.8h, V<h_tw6q>.8h, V<modq>.8h
+    ldr Q<h_tw7>, [x3], #16
+    ldr Q<h_tw7p>, [x3], #16
+    sqrdmulh V<h_tw7q>.8h, V<hold7>.8h, V<h_tw7p>.8h
+    mul V<h7>.8h, V<hold7>.8h, V<h_tw7>.8h
+    mls V<h7>.8h, V<h_tw7q>.8h, V<modq>.8h
+    ldr Q<h_tw8>, [x3], #16
+    ldr Q<h_tw8p>, [x3], #16
+    sqrdmulh V<h_tw8q>.8h, V<hold8>.8h, V<h_tw8p>.8h
+    mul V<h8>.8h, V<hold8>.8h, V<h_tw8>.8h
+    mls V<h8>.8h, V<h_tw8q>.8h, V<modq>.8h
+
+    // Level 1 A = B3(f0,f3,f6)
+    orr       V<second_a_saved>.16b, V<hold0>.16b, V<hold0>.16b
+    add       V<second_a_sum01>.8h, V<hold0>.8h, V<h3>.8h
+    add       V<second_a0>.8h, V<second_a_sum01>.8h, V<h6>.8h
+    sqrdmulh  V<second_a_qb>.8h, V<h3>.8h, V<roots>.h[1]
+    mul       V<second_a_rb>.8h, V<h3>.8h, V<roots>.h[0]
+    mls       V<second_a_rb>.8h, V<second_a_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_a_qc>.8h, V<h6>.8h, V<roots>.h[3]
+    mul       V<second_a_r2c>.8h, V<h6>.8h, V<roots>.h[2]
+    mls       V<second_a_r2c>.8h, V<second_a_qc>.8h, V<modq>.8h
+    add       V<second_a_weighted>.8h, V<second_a_rb>.8h, V<second_a_r2c>.8h
+    add       V<second_a1>.8h, V<second_a_weighted>.8h, V<second_a_saved>.8h
+    sub       V<second_a_p0>.8h, V<second_a_saved>.8h, V<second_a0>.8h
+    sub       V<second_a_p1>.8h, V<second_a_saved>.8h, V<second_a1>.8h
+    add       V<second_a_p2>.8h, V<second_a_p0>.8h, V<second_a_p1>.8h
+    add       V<second_a2>.8h, V<second_a_p2>.8h, V<second_a_saved>.8h
+
+    // Level 1 B = B3(f1,f4,f7)
+    orr       V<second_b_saved>.16b, V<h1>.16b, V<h1>.16b
+    add       V<second_b_sum01>.8h, V<h1>.8h, V<h4>.8h
+    add       V<second_b0>.8h, V<second_b_sum01>.8h, V<h7>.8h
+    sqrdmulh  V<second_b_qb>.8h, V<h4>.8h, V<roots>.h[1]
+    mul       V<second_b_rb>.8h, V<h4>.8h, V<roots>.h[0]
+    mls       V<second_b_rb>.8h, V<second_b_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_b_qc>.8h, V<h7>.8h, V<roots>.h[3]
+    mul       V<second_b_r2c>.8h, V<h7>.8h, V<roots>.h[2]
+    mls       V<second_b_r2c>.8h, V<second_b_qc>.8h, V<modq>.8h
+    add       V<second_b_weighted>.8h, V<second_b_rb>.8h, V<second_b_r2c>.8h
+    add       V<second_b1>.8h, V<second_b_weighted>.8h, V<second_b_saved>.8h
+    sub       V<second_b_p0>.8h, V<second_b_saved>.8h, V<second_b0>.8h
+    sub       V<second_b_p1>.8h, V<second_b_saved>.8h, V<second_b1>.8h
+    add       V<second_b_p2>.8h, V<second_b_p0>.8h, V<second_b_p1>.8h
+    add       V<second_b2>.8h, V<second_b_p2>.8h, V<second_b_saved>.8h
+
+    // Level 1 C = B3(f8,f2,f5), paper-oriented input order
+    orr       V<second_c_saved>.16b, V<h8>.16b, V<h8>.16b
+    add       V<second_c_sum01>.8h, V<h8>.8h, V<h2>.8h
+    add       V<second_c0>.8h, V<second_c_sum01>.8h, V<h5>.8h
+    sqrdmulh  V<second_c_qb>.8h, V<h2>.8h, V<roots>.h[1]
+    mul       V<second_c_rb>.8h, V<h2>.8h, V<roots>.h[0]
+    mls       V<second_c_rb>.8h, V<second_c_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_c_qc>.8h, V<h5>.8h, V<roots>.h[3]
+    mul       V<second_c_r2c>.8h, V<h5>.8h, V<roots>.h[2]
+    mls       V<second_c_r2c>.8h, V<second_c_qc>.8h, V<modq>.8h
+    add       V<second_c_weighted>.8h, V<second_c_rb>.8h, V<second_c_r2c>.8h
+    add       V<second_c1>.8h, V<second_c_weighted>.8h, V<second_c_saved>.8h
+    sub       V<second_c_p0>.8h, V<second_c_saved>.8h, V<second_c0>.8h
+    sub       V<second_c_p1>.8h, V<second_c_saved>.8h, V<second_c1>.8h
+    add       V<second_c_p2>.8h, V<second_c_p0>.8h, V<second_c_p1>.8h
+    add       V<second_c2>.8h, V<second_c_p2>.8h, V<second_c_saved>.8h
+
+    // Consume row 0 immediately: G0 = B3(a0,b0,c0)
+    orr       V<second_g0_saved>.16b, V<second_a0>.16b, V<second_a0>.16b
+    add       V<second_g0_sum01>.8h, V<second_a0>.8h, V<second_b0>.8h
+    add       V<out9>.8h, V<second_g0_sum01>.8h, V<second_c0>.8h
+    sqrdmulh  V<second_g0_qb>.8h, V<second_b0>.8h, V<roots>.h[1]
+    mul       V<second_g0_rb>.8h, V<second_b0>.8h, V<roots>.h[0]
+    mls       V<second_g0_rb>.8h, V<second_g0_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_g0_qc>.8h, V<second_c0>.8h, V<roots>.h[3]
+    mul       V<second_g0_r2c>.8h, V<second_c0>.8h, V<roots>.h[2]
+    mls       V<second_g0_r2c>.8h, V<second_g0_qc>.8h, V<modq>.8h
+    add       V<second_g0_weighted>.8h, V<second_g0_rb>.8h, V<second_g0_r2c>.8h
+    add       V<out12>.8h, V<second_g0_weighted>.8h, V<second_g0_saved>.8h
+    sub       V<second_g0_p0>.8h, V<second_g0_saved>.8h, V<out9>.8h
+    sub       V<second_g0_p1>.8h, V<second_g0_saved>.8h, V<out12>.8h
+    add       V<second_g0_p2>.8h, V<second_g0_p0>.8h, V<second_g0_p1>.8h
+    add       V<out15>.8h, V<second_g0_p2>.8h, V<second_g0_saved>.8h
+
+    // Eta corrections are created only when their level-2 consumer is ready.
+    sqrdmulh  V<second_eta_b1_q>.8h, V<second_b1>.8h, V<roots>.h[5]
+    mul       V<second_eta_b1>.8h, V<second_b1>.8h, V<roots>.h[4]
+    mls       V<second_eta_b1>.8h, V<second_eta_b1_q>.8h, V<modq>.8h
+    sqrdmulh  V<second_eta_inv_c1_q>.8h, V<second_c1>.8h, V<roots>.h[7]
+    mul       V<second_eta_inv_c1>.8h, V<second_c1>.8h, V<roots>.h[6]
+    mls       V<second_eta_inv_c1>.8h, V<second_eta_inv_c1_q>.8h, V<modq>.8h
+
+    // G1 = B3(a1,eta*b1,eta^-1*c1)
+    orr       V<second_g1_saved>.16b, V<second_a1>.16b, V<second_a1>.16b
+    add       V<second_g1_sum01>.8h, V<second_a1>.8h, V<second_eta_b1>.8h
+    add       V<out10>.8h, V<second_g1_sum01>.8h, V<second_eta_inv_c1>.8h
+    sqrdmulh  V<second_g1_qb>.8h, V<second_eta_b1>.8h, V<roots>.h[1]
+    mul       V<second_g1_rb>.8h, V<second_eta_b1>.8h, V<roots>.h[0]
+    mls       V<second_g1_rb>.8h, V<second_g1_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_g1_qc>.8h, V<second_eta_inv_c1>.8h, V<roots>.h[3]
+    mul       V<second_g1_r2c>.8h, V<second_eta_inv_c1>.8h, V<roots>.h[2]
+    mls       V<second_g1_r2c>.8h, V<second_g1_qc>.8h, V<modq>.8h
+    add       V<second_g1_weighted>.8h, V<second_g1_rb>.8h, V<second_g1_r2c>.8h
+    add       V<out13>.8h, V<second_g1_weighted>.8h, V<second_g1_saved>.8h
+    sub       V<second_g1_p0>.8h, V<second_g1_saved>.8h, V<out10>.8h
+    sub       V<second_g1_p1>.8h, V<second_g1_saved>.8h, V<out13>.8h
+    add       V<second_g1_p2>.8h, V<second_g1_p0>.8h, V<second_g1_p1>.8h
+    add       V<out16>.8h, V<second_g1_p2>.8h, V<second_g1_saved>.8h
+
+    sqrdmulh  V<second_eta_inv_b2_q>.8h, V<second_b2>.8h, V<roots>.h[7]
+    mul       V<second_eta_inv_b2>.8h, V<second_b2>.8h, V<roots>.h[6]
+    mls       V<second_eta_inv_b2>.8h, V<second_eta_inv_b2_q>.8h, V<modq>.8h
+    sqrdmulh  V<second_eta_c2_q>.8h, V<second_c2>.8h, V<roots>.h[5]
+    mul       V<second_eta_c2>.8h, V<second_c2>.8h, V<roots>.h[4]
+    mls       V<second_eta_c2>.8h, V<second_eta_c2_q>.8h, V<modq>.8h
+
+    // G2 = B3(a2,eta^-1*b2,eta*c2); map to paper output order.
+    orr       V<second_g2_saved>.16b, V<second_a2>.16b, V<second_a2>.16b
+    add       V<second_g2_sum01>.8h, V<second_a2>.8h, V<second_eta_inv_b2>.8h
+    add       V<out17>.8h, V<second_g2_sum01>.8h, V<second_eta_c2>.8h
+    sqrdmulh  V<second_g2_qb>.8h, V<second_eta_inv_b2>.8h, V<roots>.h[1]
+    mul       V<second_g2_rb>.8h, V<second_eta_inv_b2>.8h, V<roots>.h[0]
+    mls       V<second_g2_rb>.8h, V<second_g2_qb>.8h, V<modq>.8h
+    sqrdmulh  V<second_g2_qc>.8h, V<second_eta_c2>.8h, V<roots>.h[3]
+    mul       V<second_g2_r2c>.8h, V<second_eta_c2>.8h, V<roots>.h[2]
+    mls       V<second_g2_r2c>.8h, V<second_g2_qc>.8h, V<modq>.8h
+    add       V<second_g2_weighted>.8h, V<second_g2_rb>.8h, V<second_g2_r2c>.8h
+    add       V<out11>.8h, V<second_g2_weighted>.8h, V<second_g2_saved>.8h
+    sub       V<second_g2_p0>.8h, V<second_g2_saved>.8h, V<out17>.8h
+    sub       V<second_g2_p1>.8h, V<second_g2_saved>.8h, V<out11>.8h
+    add       V<second_g2_p2>.8h, V<second_g2_p0>.8h, V<second_g2_p1>.8h
+    add       V<out14>.8h, V<second_g2_p2>.8h, V<second_g2_saved>.8h
+gt864_forward_two_ntt9_blocks_slothy_end:

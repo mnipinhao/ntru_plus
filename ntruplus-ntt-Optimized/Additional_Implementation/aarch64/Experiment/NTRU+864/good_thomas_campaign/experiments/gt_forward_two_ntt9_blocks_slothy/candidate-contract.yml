@@ -1,0 +1,20 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel_contract: kernel-contract.yml
+instruction_dag: instruction-dag.yml
+symbolic_source: gt864_forward_two_ntt9_blocks.sym.S
+slothy_workflow: RA-only_then_real_split-window_schedule
+fixed_input: v16_is_second_block_s8_tail
+physical_allocation: v0_through_v7_and_v16_through_v31
+physical_liveouts: [v20,v25,v5,v1,v27,v22,v29,v30,v19,v24,v26,v23,v28,v21,v7,v3,v17,v31]
+slothy_result: RA_OPTIMAL_and_split_heuristic_full_OK
+slothy_version: 0.2.2
+slothy_checkout_revision: d636d638d06b370d1acc5774ca31c9572d3d2e6f
+n1_proxy_expected_cycles: 83
+spill_policy: forbidden
+oracle_correctness: M5G_exact_DAG_and_M5F_C_oracle_inherited
+full_path_benchmark: missing
+promotion_blockers:
+  - pass-2 coefficient loads and actual NTT16 producer assembly are not in this region
+  - full Forward wrapper and Pi 5 SUPERCOP benchmark are unavailable
+production_linked: false
