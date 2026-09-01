@@ -1,0 +1,18 @@
+iteration:
+  id: m5q-iter-001
+  mode: understand
+  current_state: passed_analysis_gate
+  observation: M5O is correct and has higher IPC, but retires exactly 797 more instructions than Official under M5P
+  hypothesis: most cost is repeated arithmetic inside the six 633-instruction bank runs, not the 16-instruction outer wrapper or 162-instruction pass-2 control/store shell
+  exact_change: none
+  expected_static_effect: exact stage ledger and physical-register lifetime map
+  expected_performance_effect: none
+  expected_register_pressure_effect: none
+  correctness_or_range_impact: none
+  falsification: component PMU does not match the static dynamic-count ledger within common caller overhead
+gates:
+  static_dynamic_ledger: passed_exact_4825_and_797_excess
+  symbolic_to_physical_register_map: passed_513_values_633_instruction_alignment
+  pi5_component_pmu: passed_three_repetitions
+  complete_register_flow: passed
+  next_hypothesis: full_v0_v31_core_with_outer_d8_d15_preservation

@@ -1,0 +1,17 @@
+baseline:
+  id: m5p_measured_full_forward
+  official_dynamic_instructions_with_common_harness: 4035.0012
+  gt_dynamic_instructions_with_common_harness: 4832.0012
+  excess: 797
+  official_p50_cycles: 4395.98
+  gt_p50_cycles: 4695.42
+fixed_sources:
+  top_split: ../gt_2x9x16_ld3_top_split/gt864_top_split.s
+  pass2: ../gt_forward_six_bank_pass2_asm/gt864_forward_six_bank_pass2.S
+  wrapper: ../gt_forward_full_poly_ntt_asm/gt864_forward_poly_ntt_experiment.S
+  one_bank_symbolic: ../gt_forward_one_bank_slothy/gt864_forward_one_bank.sym.S
+  one_bank_allocated: ../gt_forward_one_bank_slothy/slothy-output/gt864_forward_one_bank.n1.alloc.S
+contract:
+  action: understand and benchmark; do not modify the kernel
+  representation_layout_range_and_memory: frozen at M5O
+  primary_bottleneck_class: dynamic instruction count
