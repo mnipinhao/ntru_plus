@@ -1,0 +1,39 @@
+dag:
+  id: gt864_friso2_two_block_boundary_dag
+  kernel_contract: kernel-contract.yml
+  description: two_exact_CF1_affine_scaled_NTT9_blocks_with_an_explicit_register_only_boundary
+inputs:
+  - nine NTT16 vectors for columns 0 through 7
+  - nine NTT16 vectors for columns 8 through 15
+  - one fixed top-component CF1 witness assignment
+constants:
+  - q=3457 in fixed v31
+  - shared packed scalar Algorithm-10 pairs
+  - block-specific public vector b and bprime pairs in exact consumption order
+nodes:
+  - id: scaled_block0
+    op: CF1_exact_affine_rescaling_of_complete_one_product_oriented_NTT9
+    inputs: [block0_raw0-block0_raw8]
+    outputs: [out0-out8]
+    instruction_shape: 42_add_sub_plus_26_Algorithm10_mulmods_plus_case_specific_constant_loads
+    must_precede: [scaled_block1]
+  - id: scaled_block1
+    op: same_CF1_DAG_with_lane_exponents_recomputed_for_columns_8_through_15
+    inputs: [block1_raw0-block1_raw8]
+    outputs: [out9-out17]
+    instruction_shape: 42_add_sub_plus_26_Algorithm10_mulmods_plus_case_specific_constant_loads
+    boundary_obligation: out0-out8_remain_live_and_unchanged
+memory:
+  loads:
+    - packed common constants are shared live-ins across both blocks
+    - two independent public ldr instructions per lane-varying mulmod
+  stores: []
+  ordering_constraints:
+    - block0 public table loads precede block1 public table loads
+    - x3 postincrement order exactly follows the generated two-block ledger
+outputs: [out0-out17_in_existing_two_block_row_order, x3]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

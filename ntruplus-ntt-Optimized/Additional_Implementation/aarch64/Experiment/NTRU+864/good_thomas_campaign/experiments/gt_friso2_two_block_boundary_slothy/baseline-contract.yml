@@ -1,0 +1,49 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: M5R-D_two_contiguous_NTT9_blocks
+  source: ../gt_forward_level2_one_mul_b3/gt864_forward_one_bank_all_one_mul_b3.sym.S
+  extracted_region: baseline-region.S
+  function: exact_two_NTT9_consumer_span_of_M5R-D_one_bank
+  start_label: gt864_m5rd_two_ntt9_boundary_start
+  end_label: gt864_m5rd_two_ntt9_boundary_end
+  source_commit: 7fc550144fdefea674c763eb388eadf77aa40945
+region:
+  instruction_count: 224
+  live_in: [nine_active_NTT16_vectors, nine_held_sibling_NTT16_vectors, x3, v14_as_q, v15_as_common_roots]
+  live_out: [out0-out17, x3]
+  clobbers: [allocatable_vector_temporaries]
+abi:
+  inputs: [eighteen_NTT16_column_vectors, M5R-D_NTT9_table, q_and_root_constants]
+  outputs: [eighteen_FR0_vectors]
+  clobbers: [allocatable_vector_temporaries]
+  concrete_gprs_allowed: [x3]
+  fixed_vector_registers: [v14, v15, v16, v17]
+  reserved_registers: [all_GPR_except_x3]
+memory_contract:
+  loads: [thirty_two_public_NTT9_constant_vectors]
+  stores: [none_inside_region]
+  aliasing: read_only_public_tables_no_store_inside_region
+  alignment: public_tables_16_byte
+  public_offsets_only: true
+  pointer_updates: [x3_plus_512]
+constant_contract:
+  constants: [q, rho, eta, eta_inv, two_blocks_of_NTT9_twists]
+  modulus: 3457
+  representation: R0_bounded_FR0
+  reduction_method: Algorithm10_mul_sqrdmulh_mls
+range_contract:
+  input_ranges: [NTT16_abs_at_most_9342]
+  intermediate_ranges: [NTT9_abs_at_most_28568]
+  output_ranges: [signed_int16_FR0_bounded_representatives]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [pointers, tables, fixed_region_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 224
+  slothy_expected_cycles: not_isolated_in_M5R-D
+  full_path_benchmark: 4229.9409_cycles_p50_for_M5R-D_full_Forward
+  benchmark_command: python3 ../gt_forward_level2_one_mul_b3/run_pi5.py

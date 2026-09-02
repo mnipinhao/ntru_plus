@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_friso2_two_block_boundary_slothy
+  name: GT864 paired scaled NTT9 zero-copy boundary
+  source: gt864_friso2_two_block_variants.sym.S
+  scheme: NTRU+864
+  operation: two_eight_lane_oriented_NTT9_blocks_with_FRISO2_scale_and_eighteen_simultaneous_liveouts
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_validated_via_neoverse_n1_schedule_proxy
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+slothy:
+  workflow: RA_first_no_reorder_then_split_window_schedule_for_276_to_308_real_instructions
+  driver: optimize.py
+  expected_outputs: [four_allocated_S, four_optimized_S, four_RA_logs, four_schedule_logs]
+  allow_spills: false
+region:
+  start_label: case_specific_gt864_friso2_pair_tXcY_slothy_start
+  end_label: case_specific_gt864_friso2_pair_tXcY_slothy_end
+  expected_instruction_count: top0_cases_308_top1_cases_276
+  live_in: [block0_f0-f8_raw, block1_f0-f8_raw, packed_common_constants, x3, v31_as_q]
+  live_out: [out0-out17, x3]
+abi:
+  inputs: [eighteen_NTT16_column_vectors, witness_specific_two_block_composite_constant_table, packed_common_constants]
+  outputs: [eighteen_FRISO2_vectors]
+  clobbers: [v0-v30, x3]
+  concrete_gprs_allowed: [x3]
+  fixed_vector_registers: [v31]
+  reserved_registers: [x0-x2, x4-x30, sp, v31]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: sequential_CF1_block0_and_block1_with_first_nine_outputs_live_through_the_complete_second_block
+layout:
+  input_representation: two_eight_lane_NTT16_column_blocks_for_one_fixed_top_component
+  output_representation: same_eighteen_physical_row_slots_with_FRISO2_component_scale
+  vector_lanes: block0_columns_0_to_7_and_block1_columns_8_to_15
+  packing: both_blocks_live_in_registers_no_boundary_copy
+memory_contract:
+  loads: [independent_ldr_for_each_lane_varying_b_and_bprime]
+  stores: [none_inside_region]
+  aliasing: read_only_public_tables_no_store_inside_region
+  alignment: public_tables_16_byte
+  public_offsets_only: true
+  pointer_updates: [x3_plus_1088_for_top0_or_plus_576_for_top1]
+constant_contract:
+  constants: [q, exact_CF1_composite_Algorithm10_pairs_for_both_column_blocks]
+  modulus: 3457
+  representation: R0_bounded_FRISO2
+  reduction_method: Algorithm10_mul_sqrdmulh_mls_with_two_independent_ldr_for_lane_varying_pairs
+range_contract:
+  input_ranges: [NTT16_abs_at_most_9342]
+  intermediate_ranges: [witness_max_abs_at_most_19427]
+  output_ranges: [signed_int16_FRISO2_bounded_representatives]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [pointers, witness_specific_tables, fixed_region_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 verify_pairs.py
+  test_command: make static-check
+  full_path_benchmark_command: deferred_until_one_bank_integration_pass
+  benchmark_metric: cycles_p50
+  lower_is_better: true
