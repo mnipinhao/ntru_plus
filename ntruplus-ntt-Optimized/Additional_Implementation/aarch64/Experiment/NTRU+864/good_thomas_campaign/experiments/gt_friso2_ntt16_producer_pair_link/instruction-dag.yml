@@ -1,0 +1,27 @@
+dag:
+  id: gt864_cf5_ntt16_producer_pair_link
+  boundary: logical_after_both_NTT16_transposes_before_any_NTT9_arithmetic
+nodes:
+  - id: frozen_m5rd_ntt16_producer
+    outputs:
+      - lo_f0_raw-lo_f7_raw_from_main_columns_0_to_7
+      - lo_f8_raw_from_tail_NTT16_low_half
+      - hi_f0_raw-hi_f7_raw_from_main_columns_8_to_15
+      - hi_f8_raw_from_tail_NTT16_high_half
+    constraints: [arithmetic_unchanged, coefficient_loads_unchanged, public_NTT16_load_order_unchanged]
+  - id: case_specific_cf3_common_loads
+    inputs: [x3]
+    outputs: [one_common_pack_for_top0_or_three_common_packs_for_top1, advanced_x3]
+  - id: cf3_scaled_block0
+    inputs: [lo_f0_raw-lo_f8_raw]
+    outputs: [out0-out8]
+  - id: cf3_scaled_block1
+    inputs: [hi_f0_raw-hi_f8_raw, out0-out8_live]
+    outputs: [out9-out17]
+edges:
+  - producer_eighteen_physical_liveouts_directly_feed_consumer_without_moves
+  - block0_outputs_remain_live_through_block1
+memory:
+  coefficient_loads: producer_only
+  coefficient_stores: none
+  public_table_loads: allowed_in_both_regions

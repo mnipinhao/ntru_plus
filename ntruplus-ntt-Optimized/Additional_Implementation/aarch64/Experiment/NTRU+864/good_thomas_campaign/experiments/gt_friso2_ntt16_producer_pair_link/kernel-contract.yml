@@ -1,0 +1,57 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_friso2_ntt16_producer_pair_link
+  name: GT864 M5R-D NTT16 producer to CF3 paired scaled NTT9
+  scheme: NTRU+864
+  operation: one_GT_bank_NTT16_producer_followed_by_two_FRISO2_NTT9_blocks
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_validated_via_neoverse_n1_schedule_proxy
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+slothy:
+  workflow: two_bounded_regions_producer_then_fixed_livein_consumer
+  producer_driver: optimize_producer.py
+  consumer_driver: optimize_consumers.py
+  allow_spills: false
+region:
+  producer:
+    start_label: gt864_cf5_ntt16_producer_slothy_start
+    end_label: gt864_cf5_ntt16_producer_slothy_end
+    live_out: [lo_f0_raw-lo_f8_raw, hi_f0_raw-hi_f8_raw, x0, x1, x2, x3]
+  consumer:
+    start_label: case_specific_gt864_cf5_pair_tXcY_slothy_start
+    end_label: case_specific_gt864_cf5_pair_tXcY_slothy_end
+    live_in: [eighteen_fixed_physical_producer_liveouts, x3, v13_as_bitrev_preserved, v14_as_q, v15_as_roots_preserved]
+    live_out: [out0-out17, x3]
+abi:
+  inputs: [one_M5R-D_P8_bank, strided_tail, NTT16_table, case_specific_CF3_table]
+  outputs: [eighteen_FRISO2_vectors]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13_as_bitrev_across_all_banks, v14_as_q, v15_as_roots_across_all_banks]
+layout:
+  producer_output: [lo_block_columns_0_to_7_plus_tail_column_8, hi_block_columns_8_to_15_plus_tail_column_8]
+  consumer_input: exact_same_eighteen_vectors_with_physical_registers_pinned
+  output_representation: FRISO2_in_CF3_row_order
+memory_contract:
+  coefficient_loads: frozen_M5R-D_producer_only
+  coefficient_stores_inside_regions: none
+  new_coefficient_boundary: forbidden
+  public_loads: M5R-D_NTT16_tables_plus_CF3_common_and_lane_varying_tables
+constant_contract:
+  modulus: 3457
+  reduction_method: Algorithm10_mul_sqrdmulh_mls
+  scale_in: R0
+  scale_out: FRISO2
+range_contract:
+  producer_output_abs_bound: 9342
+  consumer_intermediate_abs_bound: 19427
+  narrowing_points: []
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  local_static_command: make static-check
+  remote_slothy_host: pinhao@172.25.166.141:51208
+  pi5_timing: deferred_until_linked_bank_gate_passes

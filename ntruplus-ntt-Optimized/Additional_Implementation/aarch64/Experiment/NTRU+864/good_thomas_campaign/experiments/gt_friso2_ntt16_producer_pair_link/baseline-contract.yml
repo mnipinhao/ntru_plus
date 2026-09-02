@@ -1,0 +1,22 @@
+mode: existing_region_replacement
+baseline:
+  id: M5R-D_one_bank
+  source: ../gt_forward_level2_one_mul_b3/gt864_forward_one_bank_all_one_mul_b3.sym.S
+  scheduled_source: ../gt_forward_level2_one_mul_b3/slothy-output/gt864_forward_one_bank_all_one_mul_b3.n1.opt.S
+  one_bank_instructions: 569
+  two_NTT9_consumer_instructions: 224
+  full_forward_instructions: 4446
+  full_forward_pi5_cycles_p50: 4229.9409
+frozen:
+  - top_and_branch_twist_arithmetic
+  - tail_NTT16_arithmetic_and_exact_16_halfword_reads
+  - main_NTT16_arithmetic
+  - NTT16_transpose_layout
+  - coefficient_memory_schedule
+replaced:
+  - two_M5R-D_FR0_NTT9_consumers
+comparison:
+  rejected_CF0_full_forward_instructions: 4738
+  prior_CF3_estimate_with_four_assumed_extra_address_setups: 4730
+  CF5_colocated_common_and_lane_table_estimate: 4726
+  maximum_total_boundary_overhead_before_losing_CF0_static_advantage: 11

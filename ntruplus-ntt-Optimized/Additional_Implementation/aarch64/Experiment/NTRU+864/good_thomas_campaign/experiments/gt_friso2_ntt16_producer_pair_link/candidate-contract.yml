@@ -1,0 +1,20 @@
+mode: existing_region_replacement
+candidate:
+  id: M5U-CF5-A
+  status: investigate
+  kernel_contract: kernel-contract.yml
+contract_preservation:
+  approved_changes: [FR0_to_FRISO2_leaf_scale, NTT9_public_table_contents_and_advance]
+  unchanged: [NTT16_math, NTT16_layout, coefficient_loads, coefficient_stores, top_split, Montgomery_R0_input]
+hard_gate:
+  required:
+    - exactly_eighteen_distinct_NTT16_boundary_values_including_both_tail_f8_values
+    - producer_liveouts_are_direct_consumer_liveins
+    - zero_boundary_copy
+    - zero_spill_or_stack_access
+    - v13_bitrev_v14_q_v15_roots_preserved_for_the_next_bank
+    - zero_new_coefficient_load_or_store
+    - exact_CF3_table_advance
+    - arithmetic_layout_range_and_ABI_checks_pass
+    - linked_static_full_forward_estimate_below_CF0_4738
+  excluded: [full_forward_link, Pi5_timing, BaseMul, Inverse, SUPERCOP]
