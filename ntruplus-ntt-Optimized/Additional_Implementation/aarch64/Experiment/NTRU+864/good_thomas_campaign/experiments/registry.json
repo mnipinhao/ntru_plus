@@ -360,6 +360,17 @@
       "artifact_budget_waiver": 19,
       "artifact_budget_waiver_reason": "The isolated arithmetic gate keeps two same-ABI Neon kernels, header, correctness and range proof, PMU harness and reproducible runner, returned-evidence audit, hypothesis, contracts, benchmark report, lifecycle, results and decision independently auditable; raw PMU logs, synchronized sources, objects, binaries and JSON remain ignored.",
       "next": "derive and measure scaled NTT9 Forward and Inverse absorption against the measured 334-cycle BaseMul budget"
+    },
+    {
+      "id": "gt_friso2_forward_absorption",
+      "path": "gt_friso2_forward_absorption",
+      "question": "Can M5R-D directly emit FR-ISO2 by scaling live NTT9 outputs without a new coefficient boundary, while keeping the cost of two Forwards below the measured direct-wide BaseMul saving?",
+      "status": "rejected",
+      "role": "zero_conversion_liveout_FRISO2_Forward_correctness_range_ABI_and_paired_Pi5_PMU_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The measured representation gate keeps its deterministic integration and constant-table generator, generated candidate assembly, exact range proof, full Forward and ABI tests, static audit, PMU harness and reproducible Pi5 runner, contracts, hypothesis, benchmark report, lifecycle, results and decision independently auditable; raw synchronized sources, PMU rows, objects, binaries and JSON remain ignored.",
+      "next": "retain M5R-D FR0; reopen FR-ISO2 only with an exact scaled-NTT9 DAG that removes or merges CF0 scale mulmods before Pi5 timing"
     }
   ]
 }

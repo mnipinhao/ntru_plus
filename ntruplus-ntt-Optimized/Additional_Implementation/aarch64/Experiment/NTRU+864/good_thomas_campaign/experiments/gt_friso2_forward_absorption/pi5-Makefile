@@ -1,0 +1,20 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Wpedantic -march=armv8-a+simd
+BENCH_ABI_CFLAGS := -ffixed-v8 -ffixed-v9 -ffixed-v10 -ffixed-v11 \
+	-ffixed-v12 -ffixed-v13 -ffixed-v14 -ffixed-v15
+BUILD := build
+DEPS := deps
+OBJECTS := $(BUILD)/top_split.s.o $(BUILD)/baseline_pass2.S.o \
+	$(BUILD)/baseline_wrapper.S.o $(BUILD)/candidate_pass2.S.o \
+	$(BUILD)/candidate_wrapper.S.o $(BUILD)/noop.S.o
+
+.PHONY: all clean
+all: $(BUILD)/bench_pmu
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/%.o: $(DEPS)/% | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+$(BUILD)/bench_pmu: bench_pmu.c $(OBJECTS)
+	$(CC) $(CFLAGS) $(BENCH_ABI_CFLAGS) -o $@ bench_pmu.c $(OBJECTS)
+clean:
+	rm -f -r $(BUILD)
